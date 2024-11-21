@@ -281,9 +281,10 @@ class Application_Service_ApiServices
                 $responseStatus = "nottested";
             }
             $data = [
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($param['shipmentDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($param['testingDate']),
+                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($param['shipmentReceiptDate']),
+                "shipment_test_date" => $param['testingDate'],
                 "attributes" => $attributes,
+                "received_pt_panel" => $param['receivedPtPanel'],
                 "supervisor_approval" => $param['supervisorReview'],
                 "participant_supervisor" => $param['supervisorName'],
                 "user_comment" => $param['comments'],

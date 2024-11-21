@@ -1365,6 +1365,8 @@ class Application_Service_Evaluation
 					'p.state',
 					'p.city',
 					'p.district',
+					'p.phone',
+					'p.email',
 					'p.region',
 					'p.site_type',
 					'p.department_name',
@@ -1457,7 +1459,22 @@ class Application_Service_Evaluation
 					->where("resdts.shipment_map_id = ?", $res['map_id']);
 				// die($sQuery);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-				//Zend_Debug::dump($shipmentResult);
+				$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+				$score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
+				$statisticsSql = $db->select()->from(array('rrd' => 'response_result_dts'), array(''))
+					->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array(
+						'number_not_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is null OR spm.response_status != 'responded') THEN 1 ELSE 0 END)"),
+						'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
+						'providersWith100' => new Zend_Db_Expr("SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) = 100 THEN 1 ELSE 0 END)"),
+						'providers>80' => new Zend_Db_Expr("SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) >= $score THEN 1 ELSE 0 END)"),
+						'providers<80' => new Zend_Db_Expr("SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) < $score THEN 1 ELSE 0 END)")
+					))
+					->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
+					->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
+					->where("s.shipment_id = ?", $shipmentId)
+					->group(array('s.shipment_id'));
+				// die($statisticsSql);
+				$shipmentResult['statistics'] = $db->fetchRow($statisticsSql);
 			} elseif ($res['scheme_type'] == 'recency') {
 
 				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))

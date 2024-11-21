@@ -2076,7 +2076,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         return array('status' => 'success', 'data' => $data, 'profileInfo' => $aResult['profileInfo']);
     }
 
-    public function fetchSchemeTypeShipmentDetailsInAPI($params)
+    public function fetchSchemeTypeShipmentDetailsInAPIV2($params)
     {
         $schemeType = $params['schemeType'];
         /* Check the app versions & parameters */
@@ -2175,6 +2175,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 'evaluationStatus' => $row['evaluation_status'],
                 'is_excluded'      => $row['is_excluded'] ?? 'no',
                 'shipmentDate'     => $row['shipment_date'],
+                'shipmentReceiptDate' => $row['shipment_receipt_date'],
                 'resultDueDate'    => $row['lastdate_response'],
                 'responseDate'     => $row['RESPONSEDATE'],
                 'testingDate'      => $row['shipment_test_date'],
@@ -2291,18 +2292,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[$key]['notTestedReason'] = $row["vl_not_tested_reason"] ?? null;
             $data[$key]['ptNotTestedComments'] = $row["pt_test_not_performed_comments"] ?? null;
             $data[$key]['ptSupportComment'] = $row["pt_support_comments"] ?? null;
-            if ($schemeType == 'dts') {
-                foreach (range(1, 3) as $no) {
-                    $data[$key]['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
-                    $data[$key]['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
-                    $data[$key]['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
-                    $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
-                    $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
-                    $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
-                }
-            }
             if (isset($allSamples) && !empty($allSamples)) {
                 foreach ($allSamples as $sample) {
+                    if ($schemeType == 'dts') {
+                        foreach (range(1, 3) as $no) {
+                            $data[$key]['test_kit_name_' . $no] = $sample["test_kit_name_" . $no] ?? null;
+                            $data[$key]['repeat_test_kit_name_' . $no] = $sample["repeat_test_kit_name_" . $no] ?? null;
+                            $data[$key]['exp_date_' . $no] = $sample["exp_date_" . $no] ?? null;
+                            $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
+                            $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
+                            $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
+                        }
+                    }
                     if ($schemeType == 'dts') {
                         foreach (range(1, 3) as $no) {
                             $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;

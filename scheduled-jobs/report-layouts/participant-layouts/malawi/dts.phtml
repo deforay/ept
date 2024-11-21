@@ -106,9 +106,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $responseDate = "";
         $shipmentTestDate = "";
+        $distributionDate = "";
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
@@ -225,6 +225,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
+        if (isset($result['distribution_date']) && trim($result['distribution_date']) != "") {
+            $distributionDate = Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+        }
         // PT Co-ordinator header details start
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
@@ -247,52 +250,67 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</p>';
         $labInfo .= '<hr><br>';
         // PT Co-ordinator header details end
-
+        $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
+        $result['email'] = $result['email'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
         $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td><strong>Facility Identification Code</strong> : ' . $result['labName'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>District</strong> : ' . $result['district'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Survey Shipment date</strong> : ' . $result['shipment_date'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Date Received</strong> : ' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Date Tested</strong> : ' . $shipmentTestDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Survey Closing Date</strong> : ' . $distributionDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Report Date</strong> : ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Name of Tester</strong> : ' . $result['first_name'] . " " . $result['last_name'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Tester Id (in case of tester’s enrollment)</strong> : ' . $result['unique_identifier'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Type</strong><br>' . $result['scheme_name'] . '</td>';
+        $labInfo .= '	<td><strong>Cell</strong> : ' . $result['mobile'];
+        $labInfo .= '	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td>';
         $labInfo .= '</tr>';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
-        if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-        }
-        if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
-            $labInfo .= '<br>' . $sampleRehydrationDate;
-        }
-
-        $labInfo .= '</td>';
-        $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
-        $labInfo .= '</tr>';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
-        $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td>';
-        if (isset($attributes['algorithm'])) {
-            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
-            } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
-            } else {
-                $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
+        if (isset($shipmentAttributesSampleTypeDisplay) && !empty($shipmentAttributesSampleTypeDisplay) && $shipmentAttributesSampleTypeDisplay != 'display:none;') {
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
+            if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
+                $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             }
+            if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
+                $labInfo .= ' : ' . $sampleRehydrationDate;
+            }
+            $labInfo .= '</tr>';
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td>';
+            if (isset($attributes['algorithm'])) {
+                if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong> : Myanmar National Algorithm';
+                } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong> : Malawi National Algorithm';
+                } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
+                    $labInfo .= '	<strong>Algorithm</strong> : Ghana National Algorithm';
+                } else {
+                    $labInfo .= '	<strong>Algorithm</strong> : ' . ucwords($attributes['algorithm']);
+                }
+            }
+            $labInfo .= ' </td>';
+            $labInfo .= '</tr>';
         }
-        $labInfo .= ' </td>';
-        $labInfo .= '</tr>';
-
         if ($sampleConditionFields == 'yes') {
             $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
             $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
@@ -300,13 +318,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . $conditionOfPTSamples . '</td>';
-            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . $refridgerator . '</td>';
-            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $roomTemperature . '</td>';
+            $labInfo .= '	<td><strong>Condition of PT Samples</strong> : ' . $conditionOfPTSamples . '</td>';
+            $labInfo .= '</tr>';
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td><strong>Refridgerator</strong> : ' . $refridgerator . '</td>';
+            $labInfo .= '</tr>';
+            $labInfo .= '<tr>';
+            $labInfo .= '	<td><strong>Room Temperature</strong> : ' . $roomTemperature . '</td>';
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . $stopWatch . '</td>';
+            $labInfo .= '	<td><strong>Stop Watch</strong> : ' . $stopWatch . '</td>';
         } else {
             $labInfo .= '<tr>';
         }
@@ -315,38 +337,37 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '	<td>';
         $labInfo .= '<strong>Supervisor Review</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
-            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            $labInfo .= ' : ' . ucwords($result['supervisor_approval']);
         } elseif (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
+            $labInfo .= ' : ' . ucwords($result['supervisor_approval']);
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '</td>
-                                    <td>';
+        $labInfo .= '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '<td>';
         $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
-            $labInfo .= '<br>' . ($result['participant_supervisor']);
+            $labInfo .= ' : ' . ($result['participant_supervisor']);
         } else {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
-        $labInfo .= '</td>
-                    <td>
-            </td>';
+        $labInfo .= '</td>';
+        $labInfo .= '</tr>';
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '</tr>';
             $labInfo .= '<tr>';
             $labInfo .= '	<td>';
             if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
-                $labInfo .= '	<strong>' . $customField1 . '</strong> <br>' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
+                $labInfo .= '	<strong>' . $customField1 . '</strong>  : ' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
             }
-            $labInfo .= ' </td>';
-            $labInfo .= '	<td>';
+            $labInfo .= ' </td></tr>';
+            $labInfo .= '<tr><td>';
             if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField2)) {
-                $labInfo .= '<strong>' . $customField2 . '</strong> <br>' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
+                $labInfo .= '<strong>' . $customField2 . '</strong>  : ' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
             }
             $labInfo .= ' </td>';
-            $labInfo .= ' <td></td>';
             $labInfo .= '</tr>';
         }
         $labInfo .= '</table>';
@@ -529,7 +550,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                         $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }
-                $labRes .= '<td style="text-align:center;">' . $response['referenceResultCode'] . '</td>
+                $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>
                             <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
                 /* $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
 							<td style="text-align:center;">' . $score . '</td>'; */
@@ -573,6 +594,30 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
+
+            //----------------Summary Statistics for this survey  start----------------
+            $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
+            $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+            $ppOverview .= '<table border="1" style="font-size:12px;">';
+            $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '<tr>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '</table><br>';
+            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+            //----------------Summary Statistics for this survey  Ends----------------
             if (!empty($nonMandatorySamples)) {
 
                 $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
