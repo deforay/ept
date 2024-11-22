@@ -108,6 +108,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         $responseDate = "";
         $shipmentTestDate = "";
+        $distributionDate = "";
         $shipmentTestReportDate = "";
         $shipmentScore = 0;
         $documentationScore = 0;
@@ -139,7 +140,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
-
+        if (isset($result['distribution_date']) && trim($result['distribution_date']) != "") {
+            $distributionDate = Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+        }
         // PT Co-ordinator header details start
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
@@ -162,37 +165,63 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</p>';
         $labInfo .= '<hr><br>';
         // PT Co-ordinator header details end
-
-        //Comment Details
+        $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
+        $result['email'] = $result['email'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
         $labInfo .= '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
-        $labInfo .= '	<td><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td><strong>Shipment Code </strong> <br>' . $result['shipment_code'] . '</td>';
+        $labInfo .= '	<td><strong>Facility Identification Code</strong> : ' . $result['labName'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>District</strong> : ' . $result['district'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Survey Shipment date</strong> : ' . $result['shipment_date'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Date Received</strong> : ' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Date Tested</strong> : ' . $shipmentTestDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Survey Closing Date</strong> : ' . $distributionDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Report Date</strong> : ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Name of Tester</strong> : ' . $result['first_name'] . " " . $result['last_name'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Tester Id (in case of tester’s enrollment)</strong> : ' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Results Submitted Date</strong> : ' . $responseDate . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Analyst Name </strong> : ' . $attributes['analyst_name'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Kit Name </strong> : ' . $attributes['kit_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel Tested </strong> <br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . $responseDate . '</td>';
-        $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td><strong>Kit Lot Number </strong> : ' . $attributes['kit_lot_number'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td><strong>Kit Expiry Date </strong> : ' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant Site Name </strong> <br>' . $result['labName'] . '</td>';
-        $labInfo .= '	<td><strong>Analyst Name </strong> <br>' . $attributes['analyst_name'] . '</td>';
-        $labInfo .= '	<td><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
+        $labInfo .= '	<td><strong>Cell</strong> : ' . $result['mobile'];
+        $labInfo .= '	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td>';
         $labInfo .= '</tr>';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Kit Lot Number </strong> <br>' . $attributes['kit_lot_number'] . '</td>';
-        $labInfo .= '	<td><strong>Kit Expiry Date </strong> <br>' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
-        $labInfo .= '</tr>';
-
         $labInfo .= '</table>';
+
+        /* Response result section */
         $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         $passPercentage = $jsonConfig['passingScore'] ?? 100;
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        // Zend_Debug::dump($result['responseResult']);die;
         if (isset($result['responseResult']) && !empty($result['responseResult'])) {
             $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
@@ -203,6 +232,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Evaluation</td>';
             $labRes .= '</tr>';
+
+            $successRate = 0;
             //Sample codes
             foreach ($result['responseResult'] as $key => $response) {
                 $labRes .= '<tr>';
@@ -211,12 +242,15 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
 
-
                 $evaluationScore = $passPercentage / $result['number_of_samples'];
                 $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
                 // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
                 $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
                 $labRes .= '</tr>';
+
+                if ($evaluationResult == 'Acceptable') {
+                    $successRate++;
+                }
             }
 
             $labRes .= '</table>';
@@ -224,16 +258,41 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
+        //----------------Summary Statistics for this survey  start----------------
+        if (isset($resultArray['shipment']['statistics']) && !empty($resultArray['shipment']['statistics'])) {
+            $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
+            $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+            $ppOverview .= '<table border="1" style="font-size:12px;">';
+            $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
+            $ppOverview .= '</tr>';
 
+            $ppOverview .= '<tr>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '</table><br>';
+            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+        }
+        //----------------Summary Statistics for this survey  Ends----------------
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
         } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
             if ($totalScore >= $passPercentage) {
+                $accuracy = (($successRate / count($result['responseResult'])) * 100);
                 // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
-                $wishes = '<p style="font-size:11px;">Total score ' . round($totalScore) . ' out of 100<br>';
-                // $wishes .= 'Accurancy: ' . round($totalScore) . '%.<br>';
-                $wishes .= 'Mean score for all Reporting Providers: ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
+                $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
+                $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
                 $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
             } else {
                 $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
@@ -266,7 +325,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $html = '<br><p>Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
+        $html = '<p style="font-size:11px;">Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }

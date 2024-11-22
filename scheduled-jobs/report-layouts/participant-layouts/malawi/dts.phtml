@@ -488,6 +488,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $allSamples = [];
             $mandatorySampleCount = 0;
             $evaluationResult = "";
+            $successRate = 0;
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
                 if ($response['control'] == 1) {
@@ -501,6 +502,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                     if ($response['calculated_score'] == 'Pass') {
                         $correctSamples[] = $response['sample_label'];
                         $evaluationResult = 'Acceptable';
+                        $successRate++;
                     } elseif ($response['calculated_score'] == 'Fail') {
                         $evaluationResult = 'Unacceptable';
                         $wrongSamples[] = $response['sample_label'];
@@ -596,27 +598,29 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             //----------------Summary Statistics for this survey  start----------------
-            $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
-            $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
-            $ppOverview .= '<table border="1" style="font-size:12px;">';
-            $ppOverview .= '<tr style="background-color:#dbe4ee;">';
-            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
-            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
-            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
-            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
-            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
-            $ppOverview .= '</tr>';
+            if (isset($resultArray['shipment']['statistics']) && !empty($resultArray['shipment']['statistics'])) {
+                $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
+                $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+                $ppOverview .= '<table border="1" style="font-size:12px;">';
+                $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
+                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
+                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
+                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
+                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
+                $ppOverview .= '</tr>';
 
-            $ppOverview .= '<tr>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
-            $ppOverview .= '</tr>';
+                $ppOverview .= '<tr>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
+                $ppOverview .= '</tr>';
 
-            $ppOverview .= '</table><br>';
-            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+                $ppOverview .= '</table><br>';
+                $pdf->writeHTML($ppOverview, true, false, true, false, '');
+            }
             //----------------Summary Statistics for this survey  Ends----------------
             if (!empty($nonMandatorySamples)) {
 
@@ -822,10 +826,12 @@ if (sizeof($resultArray['shipment']) > 0) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
-
-            $wishes = '<p style="font-size:11px;">Total score ' . round($totalScore) . ' out of 100<br>';
-            $wishes .= 'Mean score for all Reporting Providers: ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+        } elseif ($result['is_excluded'] != 'yes') {
+            $accuracy = (($successRate / count($result['responseResult'])) * 100);
+            // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+            $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
+            $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
+            $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
             $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');

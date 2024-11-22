@@ -49,6 +49,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $schemeCode = $params['schemeCode'];
             $config->$sec->evaluation->$schemeCode = [];
             $config->$sec->evaluation->$schemeCode->disableOtherTestkit = $params['disableOtherTestkit'] ?? 'no';
+            $config->$sec->evaluation->$schemeCode->passPercentage = $params['genericConfig']['passingScore'] ?? '80';
             $writer = new Zend_Config_Writer_Ini(array(
                 'config'   => $config,
                 'filename' => $file
@@ -73,6 +74,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $schemeCode = $params['schemeCode'];
             $config->$sec->evaluation->$schemeCode = [];
             $config->$sec->evaluation->$schemeCode->disableOtherTestkit = $params['disableOtherTestkit'] ?? 'no';
+            $config->$sec->evaluation->$schemeCode->passPercentage = $params['genericConfig']['passingScore'] ?? '80';
             $writer = new Zend_Config_Writer_Ini(array(
                 'config'   => $config,
                 'filename' => $file

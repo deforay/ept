@@ -88,16 +88,16 @@ class Application_Service_ApiServices
         }
         $response['dts']['possibleResults'] = $dtsResults;
         // To load possible results for recency RTRI
-        $recencyPossibleResults = $this->schemeService->getPossibleResults('recency', 'participant');
-        $recencyPossibleResults = [];
+        $recencyPossibleResults = $this->schemeService->getPossibleResults('recency');
+        $recencyResults = [];
         foreach ($recencyPossibleResults as $pr) {
             $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
-            $recencyPossibleResults[$pr['scheme_sub_group']][] = [
+            $recencyResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
                 'name' => strtoupper($pr['response'])
             ];
         }
-        $response['dts']['recencyPossibleResults'] = $recencyPossibleResults;
+        $response['dts']['recencyPossibleResults'] = $recencyResults;
         // To load not tested reason for DTS shipment
         $response['dts']['notTestedReason'] = $this->schemeService->getNotTestedReasons("dts");
         /* END DTS (HIV Serology) References */
