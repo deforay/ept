@@ -329,33 +329,13 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             $labInfo .= '<tr>';
             $labInfo .= '	<td><strong>Stop Watch</strong> : ' . $stopWatch . '</td>';
-        } else {
-            $labInfo .= '<tr>';
+            $labInfo .= '</tr>';
         }
-
-
-        $labInfo .= '	<td>';
-        $labInfo .= '<strong>Supervisor Review</strong>';
-        if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
-            $labInfo .= ' : ' . ucwords($result['supervisor_approval']);
-        } elseif (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-            $labInfo .= ' : ' . ucwords($result['supervisor_approval']);
-        } else {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
-        }
-        $labInfo .= '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '<td>';
-        $labInfo .= '	<strong>Supervisor Name</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
-            $labInfo .= ' : ' . ($result['participant_supervisor']);
-        } else {
-            $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
+            $labInfo .= '<tr>';
+            $labInfo .= '<td><strong>Supervisor Name</strong> :' . $result['participant_supervisor'] . '</td>';
+            $labInfo .= '</tr>';
         }
-        $labInfo .= '</td>';
-        $labInfo .= '</tr>';
         if (isset($haveCustom) && $haveCustom == 'yes') {
             $labInfo .= '<tr>';
             $labInfo .= '	<td>';
@@ -598,7 +578,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             //----------------Summary Statistics for this survey  start----------------
-            if (isset($resultArray['shipment']['statistics']) && !empty($resultArray['shipment']['statistics'])) {
+            if (isset($result['statistics']) && !empty($result['statistics'])) {
                 $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
                 $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
                 $ppOverview .= '<table border="1" style="font-size:12px;">';
@@ -611,11 +591,11 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $ppOverview .= '</tr>';
 
                 $ppOverview .= '<tr>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_responded'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providersWith100'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers>80'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers<80'] . '</td>';
+                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_not_responded'] . '</td>';
                 $ppOverview .= '</tr>';
 
                 $ppOverview .= '</table><br>';

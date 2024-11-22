@@ -1578,7 +1578,7 @@ class Application_Service_Evaluation
 				->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
 				->where("s.shipment_id = ?", $shipmentId)
 				->group(array('s.shipment_id'));
-			$shipmentResult['statistics'] = $db->fetchRow($statisticsSql);
+			$shipmentResult[$i]['statistics'] = $db->fetchRow($statisticsSql);
 			//Zend_Debug::dump($shipmentResult);
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);

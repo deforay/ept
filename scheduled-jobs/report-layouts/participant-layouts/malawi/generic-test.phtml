@@ -259,7 +259,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
         //----------------Summary Statistics for this survey  start----------------
-        if (isset($resultArray['shipment']['statistics']) && !empty($resultArray['shipment']['statistics'])) {
+        if (isset($result['statistics']) && !empty($result['statistics'])) {
             $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
             $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
             $ppOverview .= '<table border="1" style="font-size:12px;">';
@@ -272,11 +272,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             $ppOverview .= '</tr>';
 
             $ppOverview .= '<tr>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_responded'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providersWith100'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers>80'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['providers<80'] . '</td>';
-            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $resultArray['shipment']['statistics']['number_not_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providersWith100'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers>80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers<80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_not_responded'] . '</td>';
             $ppOverview .= '</tr>';
 
             $ppOverview .= '</table><br>';
