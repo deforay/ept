@@ -967,7 +967,7 @@ class Application_Model_Dts
 								// In some countries, they allow partial score for algorithms
 								// So even if the participant got the final result wrong,
 								// they still get some points for the Algorithm
-								if ($algoResult != 'Fail') {
+								if ($dtsSchemeType != 'drc' && $algoResult != 'Fail') {
 									$totalScore += $scoreForAlgorithm;
 								}
 

@@ -100,6 +100,7 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
                             <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
                             <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
                             <option value="sierraLeone" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "sierraLeone") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
+                            <option value="drc" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "drc") ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC"); ?></option>
                         </optgroup>
                     </select>
                 </div>
@@ -144,6 +145,7 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
                         <option value="malawiNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("malawiNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi National Algorithm"); ?></option>
                         <option value="ghanaNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana National Algorithm"); ?></option>
                         <option value="sierraLeoneNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("sierraLeoneNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone National Algorithm"); ?></option>
+                        <option value="drcDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("drcDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC National Algorithm"); ?></option>
                     </select>
                 </div>
             </div>
