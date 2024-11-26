@@ -898,7 +898,7 @@ class Application_Service_Schemes
             ->where("scheme_id='$schemeId'")
             ->order('sort_order ASC');
         if (isset($context) && !empty($context)) {
-            $sql = $sql->where("display_context = 'all' OR display_context ='$context'");
+            $sql = $sql->where("display_context IN ('all', '$context')");
         }
         return $db->fetchAll($sql);
     }

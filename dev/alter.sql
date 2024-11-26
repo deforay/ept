@@ -3490,8 +3490,8 @@ ALTER TABLE `participant_feedback_answer` ADD FOREIGN KEY (`participant_id`) REF
 ALTER TABLE `r_testkitname_dts` ADD `testkit_status` VARCHAR(256) NULL DEFAULT NULL AFTER `testkit_3`;
 
 -- Thana 20-Mar-2024
-DELETE FROM r_possibleresult WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';
+DELETE FROM `r_possibleresult` WHERE `r_possibleresult`.`response` = 'INDETERMINATE' AND `r_possibleresult`.`result_code` = 'indeterminate' AND `r_possibleresult`.`scheme_id` = 'tb';
 
 -- Thana 25-Apr-2024
 ALTER TABLE `scheme_list` ADD UNIQUE(`scheme_name`);
-ALTER TABLE `r_possibleresult` ADD `display_context` ENUM('participant','admin','all') NOT NULL DEFAULT 'all' AFTER `result_code`;
+ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('participant','admin','all', 'none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all';

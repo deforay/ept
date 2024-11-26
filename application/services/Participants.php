@@ -624,6 +624,11 @@ class Application_Service_Participants
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->fetchUniqueCountry();
 	}
+	public function fetchFilterValues()
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchFilterValues();
+	}
 
 	public function getUniqueRegion()
 	{
