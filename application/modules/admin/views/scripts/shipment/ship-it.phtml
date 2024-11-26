@@ -6,7 +6,7 @@
 	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
 		<div class="row">
-			<div class="col-lg-4">
+			<!-- <div class="col-lg-4">
 				<div class="form-group">
 					<label class="col-lg-2 control-label" for="labName"><?= $this->translate->_("Lab"); ?></label>
 					<div class="col-lg-10">
@@ -15,7 +15,7 @@
 						</select>
 					</div>
 				</div>
-			</div>
+			</div> -->
 			<div class="col-lg-4">
 				<div class="form-group">
 					<label class="col-lg-2 control-label"><?= $this->translate->_("Country"); ?></label>

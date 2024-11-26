@@ -186,22 +186,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $shipmentService = new Application_Service_Shipments();
             $participantService = new Application_Service_Participants();
-            $sid = (int) $params['sid'];
-            $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
-            $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
-
-            $this->view->participantCity  = $participantService->getUniqueCity();
-            $this->view->participantState  = $participantService->getUniqueState();
             $this->view->participantListsName  = $participantService->getParticipantsListNamesByUniqueId($params['unique']);
-
-            if ($previouslySelected == "" || $previouslySelected == null) {
-                $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
-                $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type']);
-            } else {
-                $this->view->previouslyUnSelected = $participantService->getUnEnrolledByShipmentId($sid);
-            }
         }
     }
 
@@ -482,9 +468,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
 
-                //echo count($previouslySelected);die;
-                if (count($previouslySelected) == 0 || $previouslySelected == "" || $previouslySelected == null) {
-                    //echo"ss";die;
+                if (empty($previouslySelected) || $previouslySelected == "") {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);
                     $this->view->unEnrolledParticipants = $participantService->getUnEnrolled($shipmentDetails['scheme_type'], $params);
                 } else {
@@ -500,7 +484,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('file')) {
             $params = $this->getAllParams();
-            // die(base64_decode($file['file']));
             $file = base64_decode($params['file']);
             if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
                 $shipmentService = new Application_Service_Shipments();
