@@ -2302,13 +2302,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                             $data[$key]['repeat_exp_date_' . $no] = $sample["repeat_exp_date_" . $no] ?? null;
                             $data[$key]['lot_no_' . $no] = $sample["lot_no_" . $no] ?? null;
                             $data[$key]['repeat_lot_no_' . $no] = $sample["repeat_lot_no_" . $no] ?? null;
-                        }
-                    }
-                    if ($schemeType == 'dts') {
-                        foreach (range(1, 3) as $no) {
                             $data[$key]['test_result_' . $no][$sample['sample_id']] = $sample["test_result_" . $no] ?? null;
                             $data[$key]['repeat_test_result_' . $no][$sample['sample_id']] = $sample["repeat_test_result_" . $no] ?? null;
                         }
+                        $data[$key]['controlLine'][$sample['sample_id']] = $sample['dts_rtri_control_line'] ?? null;
+                        $data[$key]['verificationLine'][$sample['sample_id']] = $sample['dts_rtri_diagnosis_line'] ?? null;
+                        $data[$key]['longtermLine'][$sample['sample_id']] = $sample['dts_rtri_longterm_line'] ?? null;
+                        $data[$key]['rtriResult'][$sample['sample_id']] = $sample['dts_rtri_reported_result'] ?? null;
+                        $data[$key]['dtsRtriIsEditable'][$sample['sample_id']] = $sample['dts_rtri_is_editable'] ?? null;
                     }
                     if ($schemeType == 'vl') {
                         $data[$key]['mandatory'][$sample['sample_id']] = $sample['mandatory'] ?? null;
