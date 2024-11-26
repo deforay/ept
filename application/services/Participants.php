@@ -128,25 +128,25 @@ class Application_Service_Participants
 			$pId = explode(',', $params['choosenPid']);
 			$sql = $sql->where("p.participant_id IN (?)", $pId);
 		}
-		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
-			$countryId = explode(',', $params['choosenCountry']);
+		if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
+			$countryId = explode(',', $params['selectedCountries']);
 			$sql = $sql->where("p.country IN (?)", $countryId);
 		}
-		if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
-			$regionId = explode(',', $params['choosenRegion']);
+		if (isset($params['selectedRegions']) && trim($params['selectedRegions']) != '') {
+			$regionId = explode(',', $params['selectedRegions']);
 			$sql = $sql->where("p.region IN (?)", $regionId);
 		}
-		if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
-			$districtId = explode(',', $params['choosenDistrict']);
+		if (isset($params['selectedDistricts']) && trim($params['selectedDistricts']) != '') {
+			$districtId = explode(',', $params['selectedDistricts']);
 			$sql = $sql->where("p.district IN (?)", $districtId);
 		}
-		if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
-			$stateId = explode(',', $params['choosenState']);
+		if (isset($params['selectedStates']) && trim($params['selectedStates']) != '') {
+			$stateId = explode(',', $params['selectedStates']);
 			$sql = $sql->where("p.state IN (?)", $stateId);
 		}
 
-		if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
-			$cityId = explode(',', $params['choosenCity']);
+		if (isset($params['selectedCities']) && trim($params['selectedCities']) != '') {
+			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
 
@@ -195,42 +195,42 @@ class Application_Service_Participants
 		}
 		return $db->fetchCol($sql);
 	}
-	public function getUnEnrolledByShipmentId($shipmentId, $params = '')
+	public function getUnEnrolledByShipmentId($shipmentId, $params = [])
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$subSql = $db->select()->from(array('p' => 'participant'), array('participant_id'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-			->joinLeft(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+		$subSql = $db->select()->from(['p' => 'participant'], ['participant_id'])
+			->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [])
+			->joinLeft(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id', [])
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("p.status='active'");
-		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
+		$sql = $db->select()->from(['p' => 'participant'])->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
 		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
 			$pId = explode(',', $params['choosenPid']);
 			$sql = $sql->where("p.participant_id IN (?)", $pId);
 		}
-		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
-			$countryId = explode(',', $params['choosenCountry']);
+		if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
+			$countryId = explode(',', $params['selectedCountries']);
 			$sql = $sql->where("p.country IN (?)", $countryId);
 		}
-		if (isset($params['choosenRegion']) && trim($params['choosenRegion']) != '') {
-			$regionId = explode(',', $params['choosenRegion']);
+		if (isset($params['selectedRegions']) && trim($params['selectedRegions']) != '') {
+			$regionId = explode(',', $params['selectedRegions']);
 			$sql = $sql->where("p.region IN (?)", $regionId);
 		}
-		if (isset($params['choosenDistrict']) && trim($params['choosenDistrict']) != '') {
-			$districtId = explode(',', $params['choosenDistrict']);
+		if (isset($params['selectedDistricts']) && trim($params['selectedDistricts']) != '') {
+			$districtId = explode(',', $params['selectedDistricts']);
 			$sql = $sql->where("p.district IN (?)", $districtId);
 		}
-		if (isset($params['choosenState']) && trim($params['choosenState']) != '') {
-			$stateId = explode(',', $params['choosenState']);
+		if (isset($params['selectedStates']) && trim($params['selectedStates']) != '') {
+			$stateId = explode(',', $params['selectedStates']);
 			$sql = $sql->where("p.state IN (?)", $stateId);
 		}
 
-		if (isset($params['choosenCity']) && trim($params['choosenCity']) != '') {
-			$cityId = explode(',', $params['choosenCity']);
+		if (isset($params['selectedCities']) && trim($params['selectedCities']) != '') {
+			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
-		// echo $sql;die;
+
 		return $db->fetchAll($sql);
 	}
 

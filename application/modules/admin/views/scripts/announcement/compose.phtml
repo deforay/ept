@@ -251,8 +251,8 @@
 		if ($.trim(stateId) != '' || $.trim(cityId) != '' || $.trim(shipId) != '' || $.trim(scheme) != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
 					sid: shipId,
-					choosenState: stateId,
-					choosenCity: cityId,
+					selectedStates: stateId,
+					selectedCities: cityId,
 					format: "html"
 				},
 				function(data) {

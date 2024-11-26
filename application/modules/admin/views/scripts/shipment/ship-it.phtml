@@ -372,12 +372,12 @@
 		if ($type == 'filter') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
 					sid: shipId,
-					choosenState: stateId,
-					choosenCity: cityId,
+					selectedStates: stateId,
+					selectedCities: cityId,
 					choosenPid: pId,
-					choosenCountry: countryId,
-					choosenRegion: regionId,
-					choosenDistrict: districtId,
+					selectedCountries: countryId,
+					selectedRegions: regionId,
+					selectedDistricts: districtId,
 					format: "html"
 				},
 				function(data) {
@@ -389,11 +389,11 @@
 		} else {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
 					sid: shipId,
-					choosenState: '',
-					choosenCity: '',
-					choosenCountry: '',
-					choosenRegion: '',
-					choosenDistrict: '',
+					selectedStates: '',
+					selectedCities: '',
+					selectedCountries: '',
+					selectedRegions: '',
+					selectedDistricts: '',
 					format: "html"
 				},
 				function(data) {
