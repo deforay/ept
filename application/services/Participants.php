@@ -124,6 +124,10 @@ class Application_Service_Participants
 			->where("participant_id NOT IN ?", $subSql)
 			->where("p.status='active'")
 			->order('first_name');
+		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
+			$pId = explode(',', $params['choosenPid']);
+			$sql = $sql->where("p.participant_id IN (?)", $pId);
+		}
 		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
 			$countryId = explode(',', $params['choosenCountry']);
 			$sql = $sql->where("p.country IN (?)", $countryId);
@@ -201,6 +205,10 @@ class Application_Service_Participants
 			->where("p.status='active'");
 		$sql = $db->select()->from(array('p' => 'participant'))->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
+		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
+			$pId = explode(',', $params['choosenPid']);
+			$sql = $sql->where("p.participant_id IN (?)", $pId);
+		}
 		if (isset($params['choosenCountry']) && trim($params['choosenCountry']) != '') {
 			$countryId = explode(',', $params['choosenCountry']);
 			$sql = $sql->where("p.country IN (?)", $countryId);

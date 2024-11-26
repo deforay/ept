@@ -154,6 +154,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
 
+        if (isset($parameters['pid']) && !empty($parameters['pid'])) {
+            $pid = (is_array($parameters['pid'])) ? implode(",", $parameters['pid']) : $parameters['pid'];
+            $sQuery = $sQuery->where('p.participant_id IN(' . $pid . ')');
+        }
+        if (isset($parameters['country']) && !empty($parameters['country'])) {
+            $cid = (is_array($parameters['country'])) ? implode(",", $parameters['country']) : $parameters['country'];
+            $sQuery = $sQuery->where('p.country IN(' . $cid . ')');
+        }
+        if (isset($parameters['pstatus']) && !empty($parameters['pstatus'])) {
+            $sQuery = $sQuery->where('p.status LIKE"' . $parameters['pstatus'] . '"');
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }

@@ -31,11 +31,11 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $clientsServices = new Application_Service_Participants();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            $clientsServices = new Application_Service_Participants();
             $clientsServices->getAllParticipants($params);
         }
     }
