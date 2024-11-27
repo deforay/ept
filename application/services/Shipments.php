@@ -2234,11 +2234,11 @@ class Application_Service_Shipments
         $returnArray = [];
 
         if ($shipment['scheme_type'] == 'dts') {
-            $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
-                ->join(array('ref' => 'reference_result_dts'), 'ref.shipment_id=s.shipment_id')
+            $reference = $db->fetchAll($db->select()->from(['s' => 'shipment'])
+                ->join(['ref' => 'reference_result_dts'], 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
-            $possibleResults = $schemeService->getPossibleResults('dts');
+            $possibleResults = $schemeService->getPossibleResults('dts', 'admin');
 
             $eia = $db->fetchAll($db->select()->from('reference_dts_eia')->where("shipment_id = ?", $sid));
             $wb = $db->fetchAll($db->select()->from('reference_dts_wb')->where("shipment_id = ?", $sid));

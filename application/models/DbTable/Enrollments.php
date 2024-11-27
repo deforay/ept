@@ -165,6 +165,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     {
 
         if (!empty($params['schemeId'])) {
+
+
+            $enrollmentListId = Pt_Commons_General::generateULID();
             $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
             $where = [];
             $where[] = " list_name='$listName' ";
@@ -175,7 +178,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
             $this->delete(implode(' AND ', $where));
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
-            $enrollmentListId = Pt_Commons_General::generateULID();
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = [
                     'enrollment_id' => $enrollmentListId,

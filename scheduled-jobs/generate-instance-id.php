@@ -6,7 +6,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
 try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-    $phpPath = (!empty($conf->php->path) ? $conf->php->path : PHP_BINARY);
+    $phpPath = !empty($conf->php->path) ? $conf->php->path : PHP_BINARY;
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
     $ulid = Pt_Commons_General::generateULID();

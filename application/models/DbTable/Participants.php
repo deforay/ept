@@ -1419,6 +1419,48 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->group('p.participant_id'));
     }
 
+    public function fetchFilterValues()
+    {
+        $query = $this->getAdapter()->select()
+            ->from(
+                ['p' => $this->_name],
+                [
+                    'country_details' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(con.id, ':', con.iso_name) SEPARATOR ',')"),
+                    'districts'       => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.district SEPARATOR ',')"),
+                    'regions'         => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.region SEPARATOR ',')"),
+                    'states'          => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.state SEPARATOR ',')"),
+                    'cities'          => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.city SEPARATOR ',')")
+                ]
+            )
+            ->joinLeft(['con' => 'countries'], 'con.id = p.country', [])
+            ->where("p.status = 'active'");
+
+        $result = $this->getAdapter()->fetchRow($query);
+
+        // Process country_details into an id => name array
+        $countries = [];
+        if (!empty($result['country_details'])) {
+            $countryPairs = explode(',', $result['country_details']);
+            foreach ($countryPairs as $pair) {
+                list($id, $name) = explode(':', $pair);
+                $countries[$id] = $name;
+            }
+        }
+
+        return [
+            'countries' => $countries,
+            'districts' => $result['districts'] ? explode(',', $result['districts']) : [],
+            'regions'   => $result['regions'] ? explode(',', $result['regions']) : [],
+            'states'    => $result['states'] ? explode(',', $result['states']) : [],
+            'cities'    => $result['cities'] ? explode(',', $result['cities']) : [],
+        ];
+    }
+
+
+
+
+
+
     public function fetchUniqueCountry()
     {
         return $this->getAdapter()->fetchAll($this->getAdapter()->select()->from(array('p' => $this->_name), array('country' => new Zend_Db_Expr(" DISTINCT con.iso_name "), "id" => "con.id"))

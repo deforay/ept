@@ -393,7 +393,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
+            "aaData" => []
         );
 
         $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -437,7 +437,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
                         $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . "/pid/" . $aRow['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
                     } else {
-                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        //$download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                     }
                 }
             }

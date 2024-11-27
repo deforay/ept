@@ -162,3 +162,7 @@ CREATE TABLE `track_api_requests` (
   PRIMARY KEY (`api_track_id`),
   KEY `requested_on` (`requested_on`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Amit 21-Nov-2024
+ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('participant','admin','all', 'none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all';
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_scheme`, `result_type`, `response`, `result_code`, `display_context`, `high_range`, `threshold_range`, `low_range`, `sort_order`) VALUES (NULL, 'dts', 'DTS_FINAL', NULL, NULL, 'NONREACTIVE', 'NR', 'all', NULL, NULL, NULL, NULL)
