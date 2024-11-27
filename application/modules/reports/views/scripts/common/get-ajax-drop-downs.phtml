@@ -1,0 +1,12 @@
+<?php
+$echoResult = [];
+if (count($this->results) > 0) {
+    foreach ($this->results as $row) {
+        $echoResult[] = array("id" => $row[$this->arguments['returnId']], "text" => $row['concat']);
+    }
+} else {
+    $echoResult[] = array("id" => '', 'text' => '');
+}
+
+$result = array("result" => $echoResult);
+echo json_encode($result);

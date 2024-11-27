@@ -1457,4 +1457,30 @@ class Application_Service_Common
 
         return false;
     }
+
+    public function fetchAjaxDropdownList($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if (is_array($params['concat'])) {
+            foreach ($params['concat'] as $row) {
+                $concat[] = " COALESCE($row,'') ";
+            }
+        } else {
+            $concat[] = " COALESCE(" . $params['concat'] . ",'') ";
+        }
+        $sql = $db->select()->from($params['tableName'], (
+            array(
+                $params['returnId'],
+                'concat' => new Zend_Db_Expr("CONCAT( " . implode(",' '", $concat) . " )")
+            )
+        ));
+        if (is_array($params['fieldNames'])) {
+            foreach ($params['fieldNames'] as $key => $field) {
+                $sql = $sql->where("$field LIKE '%" . $params['search'] . "%'");
+            }
+        } else {
+            $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
+        }
+        return $db->fetchAll($sql);
+    }
 }

@@ -161,7 +161,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $sid = (int) base64_decode($this->_getParam('sid'));
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
-
                 $this->view->participantCity  = $participantService->getUniqueCity();
                 $this->view->participantState  = $participantService->getUniqueState();
                 $this->view->participantRegion  = $participantService->getUniqueRegion();

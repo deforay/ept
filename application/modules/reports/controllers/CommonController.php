@@ -11,6 +11,7 @@ class Reports_CommonController extends Zend_Controller_Action
             ->addActionContext('get-shipments-by-date', 'html')
             ->addActionContext('get-options-by-value', 'html')
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
+            ->addActionContext('get-ajax-drop-downs', 'html')
             ->initContext();
     }
 
@@ -91,6 +92,25 @@ class Reports_CommonController extends Zend_Controller_Action
             $length = $commonService->getConfig('participant_login_password_length');
             $passwordCheck = $commonService->validatePassword($password, $name, $email, $length);
             $this->view->result = $passwordCheck;
+        }
+    }
+
+
+
+    public function getAjaxDropDownsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isGet()) {
+            $commonService = new Application_Service_Common();
+            $arguments['tableName'] = $this->_getParam('tableName');
+            $arguments['returnId'] = $this->_getParam('returnId');
+            $arguments['fieldNames'] = $this->_getParam('fieldNames');
+            $arguments['concat'] = $this->_getParam('concat');
+            $arguments['search'] = $this->_getParam('search');
+            $this->view->results = $commonService->fetchAjaxDropdownList($arguments);
+            $this->view->arguments = $arguments;
         }
     }
 }
