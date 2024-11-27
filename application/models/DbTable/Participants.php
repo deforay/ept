@@ -155,8 +155,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['pid']) && !empty($parameters['pid'])) {
-            $pid = (is_array($parameters['pid'])) ? implode(",", $parameters['pid']) : $parameters['pid'];
-            $sQuery = $sQuery->where('p.participant_id IN(' . $pid . ')');
+            $pid = explode(',', $parameters['pid']);
+            $sQuery = $sQuery->where("p.institute_name IN (?)", $pid);
         }
         if (isset($parameters['country']) && !empty($parameters['country'])) {
             $cid = (is_array($parameters['country'])) ? implode(",", $parameters['country']) : $parameters['country'];

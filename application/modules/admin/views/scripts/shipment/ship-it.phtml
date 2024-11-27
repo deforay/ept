@@ -293,6 +293,7 @@
 	});
 
 	function loadFiltersData() {
+		$.blockUI();
 		$('.filter').toggle();
 		if ($('.filter-btn').text() == 'Show advanced filters') {
 			$('.filter-btn').text('Hide advanced filters');
@@ -344,6 +345,7 @@
 				}
 			});
 		});
+		$.unblockUI();
 	}
 
 	function validateNow() {

@@ -16,7 +16,7 @@
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:30%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Lab Name / Participant Name"); ?>
+            <?= $this->translate->_("Facility Name"); ?>
         </td>
         <td style="width:30%;text-align: center;font-weight:bold;">
             <?= $this->translate->_("Country"); ?>
@@ -28,7 +28,7 @@
     </tr>
     <tr>
         <td>
-            <select id="labId" name="labId[]" class="form-control input-sm">
+            <select id="labId" name="labId[]" multiple="multiple" class="form-control input-sm">
                 <option value=""> -- <?= $this->translate->_("Select Lab/Participant Name"); ?> --</option>
             </select>
         </td>
@@ -184,17 +184,24 @@
         });
 
         $("#labId").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more Lab(s)"); ?>",
+            placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
             minimumInputLength: 3,
             width: '100%',
             allowClear: true,
+            id: function(bond) {
+                return bond._id;
+            },
             ajax: {
-                placeholder: "<?= $this->translate->_("Type lab/participant name to search"); ?>",
-                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+                url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
                 dataType: 'json',
                 delay: 250,
                 data: function(params) {
                     return {
+                        tableName: 'participant',
+                        returnId: 'institute_name',
+                        fieldNames: 'institute_name',
+                        concat: 'institute_name',
                         search: params.term, // search term
                         page: params.page
                     };
