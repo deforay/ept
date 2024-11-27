@@ -6,6 +6,7 @@
 	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
 	<form method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "ship-it"), 'default', true); ?>" id="shipForm" role="form" onsubmit="validateNow();return false;" autocomplete="off" enctype="multipart/form-data">
 		<a href="javascript:void(0);" style=" line-height: 1.2; " onclick="loadFiltersData()" class="btn btn-sm btn-primary filter-btn">Show advanced filters</a>
+		<br><br>
 		<div class="filter" style="display: none;">
 			<div class="row">
 				<div class="col-lg-4">
@@ -300,7 +301,7 @@
 		}
 		let _tables = ['participant', 'countries', 'participant', 'participant', 'participant', 'participant'];
 		let _elements = ['labName', 'country', 'region', 'state', 'district', 'city'];
-		let _returnId = ['participant_id', 'id', 'region', 'state', 'district', 'city'];
+		let _returnId = ['institute_name', 'id', 'region', 'state', 'district', 'city'];
 		let _fieldNames = _concat = ['institute_name', 'iso_name', 'region', 'state', 'district', 'city'];
 
 		$(_elements).each(function(i, e) {

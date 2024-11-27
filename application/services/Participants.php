@@ -126,7 +126,7 @@ class Application_Service_Participants
 			->order('first_name');
 		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
 			$pId = explode(',', $params['choosenPid']);
-			$sql = $sql->where("p.participant_id IN (?)", $pId);
+			$sql = $sql->where("p.institute_name IN (?)", $pId);
 		}
 		if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
 			$countryId = explode(',', $params['selectedCountries']);
@@ -207,7 +207,7 @@ class Application_Service_Participants
 			->order('p.first_name');
 		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
 			$pId = explode(',', $params['choosenPid']);
-			$sql = $sql->where("p.participant_id IN (?)", $pId);
+			$sql = $sql->where("p.institute_name IN (?)", $pId);
 		}
 		if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
 			$countryId = explode(',', $params['selectedCountries']);

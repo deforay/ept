@@ -162,13 +162,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->shipment = $shipmentDetails = $shipmentService->getShipment($sid);
                 $this->view->previouslySelected = $previouslySelected = $participantService->getEnrolledByShipmentId($sid);
 
-                $filterValues = $participantService->fetchFilterValues();
-                $this->view->participantCity  = $filterValues['cities'];
-                $this->view->participantState  = $filterValues['states'];
-                $this->view->participantRegion  = $filterValues['regions'];
-                $this->view->participantDistrict  = $filterValues['districts'];
-                $this->view->participantCountry  = $filterValues['countries'];
-
                 $this->view->participantListsName  = $participantService->getParticipantsListNames();
                 if ($previouslySelected == "" || $previouslySelected == null) {
                     $this->view->enrolledParticipants = $participantService->getEnrolledBySchemeCode($shipmentDetails['scheme_type']);

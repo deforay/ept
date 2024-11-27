@@ -1477,9 +1477,11 @@ class Application_Service_Common
         if (is_array($params['fieldNames'])) {
             foreach ($params['fieldNames'] as $key => $field) {
                 $sql = $sql->where("$field LIKE '%" . $params['search'] . "%'");
+                $sql = $sql->group($field);
             }
         } else {
             $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
+            $sql = $sql->group($params['fieldNames']);
         }
         return $db->fetchAll($sql);
     }
