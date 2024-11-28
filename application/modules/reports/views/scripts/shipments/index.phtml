@@ -20,10 +20,10 @@
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
 		<td style="width:33%;text-align: center;font-weight:bold;">
-		<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+			<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
 		</td>
 		<td style="width:33%;text-align: center;font-weight:bold;">
-		<?= $this->translate->_("Select Scheme Type (Optional)"); ?>
+			<?= $this->translate->_("Select Scheme Type (Optional)"); ?>
 		</td>
 		<td style="width:33%;text-align: center;font-weight:bold;"></td>
 	</tr>
@@ -96,7 +96,7 @@
 				autoUpdateInput: true,
 				startDate: moment().subtract(366, 'days'),
 				endDate: moment(),
-				maxDate: moment(),
+				// maxDate: moment(),
 				ranges: {
 					'This Month': [moment().startOf('month'), moment().endOf('month')],
 					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
