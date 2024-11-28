@@ -93,9 +93,9 @@
 				autoApply: true,
 				showDropdowns: true,
 				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(366, 'days'),
-				endDate: moment(),
+				autoUpdateInput: false,
+				// startDate: moment().subtract(366, 'days'),
+				// endDate: moment(),
 				// maxDate: moment(),
 				ranges: {
 					'This Month': [moment().startOf('month'), moment().endOf('month')],
@@ -118,14 +118,14 @@
 	});
 
 	function getDrawable() {
-		if ($("#dateRange").val() == '') {
+		/* if ($("#dateRange").val() == '') {
 			alert("Please select date range");
 			return false;
-		} else {
-			$.blockUI();
-			drawTable();
-			$.unblockUI();
-		}
+		} else { */
+		$.blockUI();
+		drawTable();
+		$.unblockUI();
+		// }
 	}
 
 	function drawTable() {
