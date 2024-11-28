@@ -20,7 +20,7 @@
                     <div class="row">
                         <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Enrollment List Name"); ?></label>
                         <div class="col-lg-8">
-                            <input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the list name" title="Please enter the list name" />
+                            <input type="text" name="listName" id="listName" class="form-control" placeholder="<?= $this->translate->_('Enter the list name'); ?>" title="Please enter the list name" />
                         </div>
                     </div><br>
                     <div class="row">
@@ -43,7 +43,7 @@
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Import Excel" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/enrollments';" tabindex="8" value="Cancel" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/enrollments';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </fieldset>
     </form>

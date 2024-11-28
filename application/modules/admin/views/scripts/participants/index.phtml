@@ -8,9 +8,9 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All PT Participants"); ?></div>
     <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Participant</a>
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-plus"></i>&nbsp;&nbsp;Bulk Import Participants</a>
-        <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-success pull-right" style="margin-right: 12px;"><i class="icon-download"></i>&nbsp; Download as Excel</a>
+        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Participant"); ?></a>
+        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import Participants"); ?></a>
+        <a href="javascript:void(0)" onclick="downloadParticipantDetails();" class="btn btn-success pull-right" style="margin-right: 12px;"><i class="icon-download"></i>&nbsp; <?= $this->translate->_("Download as Excel"); ?></a>
     </div>
 </h4>
 <table style="margin:20px 0;" class="table table-bordered">
@@ -45,7 +45,7 @@
             </select>
         </td>
         <td>
-            <button style=" margin-right: 10px; " class="btn btn-info btn-sm" onclick="getDrawable()"><span>Search</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button>
+            <button style=" margin-right: 10px; " class="btn btn-info btn-sm" onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
         </td>
     </tr>
 </table>

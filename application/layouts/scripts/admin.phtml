@@ -174,14 +174,14 @@ if ($adminSession->privileges != "") {
 		<div class="modal-body">
 			<div class="row">
 				<div>
-					<input autocomplete="off" type="password" placeholder="Enter your Password" title="Please enter the your password" name="removeParticipantPassword" id="removeParticipantPassword" class="form-control" />
+					<input autocomplete="off" type="password" placeholder="<?= $this->translate->_('Enter your Password'); ?>" title="<?= $this->translate->_('Please enter the your password'); ?>" name="removeParticipantPassword" id="removeParticipantPassword" class="form-control" />
 				</div>
 				<small>Note: Please note that this action cannot be undone and will remove the participant and their response (if any) from the system</small>
 			</div>
 		</div>
 		<div style="margin: 0px auto 0px auto; text-align: center;">
-			<button class="btn btn-danger" onclick="removeParticipantConfirmation();">Confirm</button>
-			<button class="btn btn-warning" onclick="hidedefModal();">Cancel</button>
+			<button class="btn btn-danger" onclick="removeParticipantConfirmation();"><?= $this->translate->_("Confirm"); ?></button>
+			<button class="btn btn-warning" onclick="hidedefModal();"><?= $this->translate->_("Cancel"); ?></button>
 		</div>
 	</div>
 
@@ -204,10 +204,10 @@ if ($adminSession->privileges != "") {
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?>><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index'), 'default', true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;Dashboard</a></li>
+					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?>><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index'), 'default', true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;<?= $this->translate->_("Dashboard"); ?></a></li>
 					<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;Configure <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;<?= $this->translate->_("Configure"); ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu" style="overflow-y:scroll;height:500px;">
 								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>"><?= $this->translate->_("PT Managers"); ?></a></li>

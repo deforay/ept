@@ -19,7 +19,7 @@
 				<span class="col-md-6 col-xs-12" style="padding:5px 0;">
 					<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span><?= $this->translate->_("Add participants to this shipment"); ?> - <?php echo $this->shipment['shipment_code']; ?></span></button>
 					<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span><?= $this->translate->_("Close participants this shipment"); ?> - <?php echo $this->shipmentCode; ?></span></button>
-					<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="Add">
+					<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="<?= $this->translate->_("Add"); ?>">
 				</span>
 			<?php } ?>
 			<br /><br />

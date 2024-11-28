@@ -85,8 +85,8 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                 </table>
                 <br>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit" />
-                    <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="Cancel" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
+                    <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/dashboard'" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
 
             </form>

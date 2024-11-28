@@ -45,7 +45,7 @@
                 <input type="hidden" name="notifyId" id="notifyId<?php echo $this->purpose; ?>" value="<?php echo $this->result['id']; ?>" />
                 <input type="hidden" name="purpose" id="purpose<?php echo $this->purpose; ?>" value="<?php echo $this->purpose; ?>" />
                 <a href="javascript:void(0);" class="btn btn-primary" onclick="validateNow('<?php echo $this->purpose; ?>');"><?= $this->translate->_("Update"); ?></a>
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="Cancel" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
     </fieldset>

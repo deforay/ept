@@ -41,7 +41,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <div class="form-group">
                         <label for="dateRange" class="col-lg-4 control-label"><?= $this->translate->_("Date Range"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" onchange="getShipmentCodes();" />
+                            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="<?= $this->translate->_('Click here to pick a Date Range'); ?>" onchange="getShipmentCodes();" />
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                     <div class="form-group">
                         <label for="shipments" class="col-lg-4 control-label"><?= $this->translate->_("Shipment Code"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-8">
-                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select shipments" title="Please select one or more shipments"></select>
+                            <select id="shipments" name="shipments[]" data-live-search="true" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select shipments'); ?>" title="Please select one or more shipments"></select>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="sendMail" class="col-lg-2 control-label"><?= $this->translate->_("To"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="Select option" title="Please select one or more option">
+                    <select id="sendMail" name="sendMail[]" class="form-control" multiple="multiple" data-selected-text-format="count>3" placeholder="<?= $this->translate->_('Select option'); ?>" title="Please select one or more option">
                         <option value="participant">Participants</option>
                         <option value="datamanager">Data Managers</option>
                         <?php if (in_array('tb', $modules)) { ?>
@@ -76,14 +76,14 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div class="form-group">
                 <label for="subject" class="col-lg-2 control-label"><?= $this->translate->_("Subject"); ?></label>
                 <div class="col-lg-10">
-                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="Please enter subject" title="Please enter subject" onchange="getSubjectList(this);">
+                    <input type="text" name="subject" id="subject" class="js-example-basic-multiple form-control" placeholder="<?= $this->translate->_('Please enter subject'); ?>" title="Please enter subject" onchange="getSubjectList(this);">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="message" class="col-lg-2 control-label"><?= $this->translate->_("Mail Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-10">
-                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content">
+                    <div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="<?= $this->translate->_('Enter the Mail Content'); ?>">
                     </div>
                     <textarea style="display:none;" id="message" name="message"></textarea>
                 </div>
@@ -102,7 +102,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
                 <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId; ?>" />
                 <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->shipmentId; ?>" />
                 <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Send" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="Back" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
             </div>
         </fieldset>
     </form>

@@ -27,7 +27,7 @@
 			<br />
 			<div class="col-md-12 col-xs-12" align="center">
 				<input type="button" class="btn btn-primary" onclick="sendEnrollmentForScheme();" value="Enroll Selected" />
-				<input type="button" onclick="window.location.href='<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+				<input type="button" onclick="window.location.href='<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'index'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
 			</div>
 		</form>
 	</fieldset>

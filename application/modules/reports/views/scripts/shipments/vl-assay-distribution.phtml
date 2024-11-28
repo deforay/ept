@@ -35,7 +35,7 @@
                 <option value=''>-- Select Date Range to populate this list --</option>
             </select>
         </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
+        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
     </tr>
 </table>
 <br />
@@ -51,7 +51,7 @@
     </thead>
     <tbody>
         <tr>
-            <td colspan="10" class="dataTables_empty">Loading data from server</td>
+            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>

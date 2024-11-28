@@ -28,7 +28,7 @@
 
 		<div class="form-group">
 			<div class="col-lg-offset-2 col-lg-10">
-				<input type="button" class="btn btn-info" value="Update" onclick="validateNow();return false;">
+				<input type="button" class="btn btn-info" value="<?= $this->translate->_("Update"); ?>" onclick="validateNow();return false;">
 				<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger"><?= $this->translate->_("Cancel"); ?></a>
 			</div>
 		</div>

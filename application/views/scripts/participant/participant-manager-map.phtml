@@ -2,10 +2,10 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <div class="well">
     <fieldset>
-        <legend>Map Participants to Data Managers (Participant Login)</legend>
+        <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?></legend>
         <div class="row">
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a Participant</label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Participant"); ?></label>
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="allparticipant" id="allparticipant" title="Please choose a Participant" onchange="getDataManager(this.value)">
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label">Choose a Data Manager (Participant Login)</label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("test"); ?>Choose a Data Manager (Participant Login)</label>
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="alldatamangers" id="alldatamangers" title="Please choose a PT Login" onchange="getParticipants(this.value)">
@@ -36,9 +36,9 @@
         </div>
         <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
 
-            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Data Manager (Participant Login) to move them between the two sections<br /><br />
+            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Data Manager (Participant Login) to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                    <a href='#' id='select-all-datamanager' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-datamanager' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
                 </div>
             </div>
             <br />
@@ -48,14 +48,14 @@
             <input type="hidden" id='participantId' name='participantId' />
             <div class="col-md-12 col-xs-12" style="" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
         <form name="submitParticipant" id="submitParticipant" method="post" action="<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>" class="hide">
 
-            <div class="text-info" style="text-align:center;padding:10px 0;">Click on the Participant Name to move them between the two sections<br /><br />
+            <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
-                    <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs">Select All&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
+                    <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;Deselect All</a>
                 </div>
             </div>
             <br />
@@ -65,7 +65,7 @@
             <input type="hidden" id='datamanagerId' name='datamanagerId' />
             <div class="col-md-12 col-xs-12" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
 

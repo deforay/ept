@@ -31,7 +31,7 @@
             <br />
             <div class="col-md-12 col-xs-12" align="center">
                 <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'standard-type'), 'default', true); ?>'" class="btn btn-danger" value="Cancel" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform', 'action' => 'standard-type'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
 

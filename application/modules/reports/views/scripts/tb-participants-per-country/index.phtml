@@ -37,10 +37,10 @@
 		</td>
 		<td class="dontPrint">
 			<button class="btn btn-success btn-sm" onclick="drawTable()">
-				<span>Get Report</span>
+				<span><?= $this->translate->_("Get Report"); ?></span>
 			</button>
 			<button class="btn btn-danger btn-sm" onclick="document.location.href = document.location">
-				<span>Reset</span>
+				<span><?= $this->translate->_("Reset"); ?></span>
 			</button>
 			<button class="btn btn-primary btn-sm" onclick="GetPrint()">
 				<span>Print</span>
@@ -60,7 +60,7 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="10" class="dataTables_empty">Loading data from server</td>
+			<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
 		</tr>
 	</tbody>
 </table>

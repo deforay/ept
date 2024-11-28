@@ -55,28 +55,28 @@
     <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
     <legend>
-        <h3>Participant Performance Overview</h3>
+    <h3><?= $this->translate->_("Participant Performance Overview"); ?></h3>
     </legend>
     <table style="margin:20px 0;position: sticky;top: 58px;z-index: 200;padding: 10px;background: aliceblue;" class="table table-bordered">
-        <tr>
-            <td style="width:150px;text-align: center;font-weight:bold;">
-                Pick a Date Range
-            </td>
-            <td style="width:100px;text-align: center;font-weight:bold;">
-                Select Scheme Type
-            </td>
-            <td style="width:200px;text-align: center;font-weight:bold;">
-                Select Shipment
-            </td>
-            <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">Action</td>
-        </tr>
+    <tr>
+        <td style="width:20%;text-align: center;font-weight:bold;">
+        <?= $this->translate->_("Pick a Date Range"); ?>
+        </td>
+        <td style="width:20%;text-align: center;font-weight:bold;">
+        <?= $this->translate->_("Select Scheme Type"); ?>
+        </td>
+        <td style="width:20%;text-align: center;font-weight:bold;">
+        <?= $this->translate->_("Select Shipment"); ?>
+        </td>
+        <td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Action"); ?></td>
+    </tr>
         <tr>
             <td>
                 <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
             </td>
             <td>
                 <select id="scheme" name="scheme" class="form-control input-sm" onchange="getShipmentCodes(this.value)">
-                    <option value=""> -- Select Scheme Type --</option>
+                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                     <?php foreach ($this->schemes as $scheme) { ?>
                         <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
                     <?php } ?>
@@ -84,11 +84,11 @@
             </td>
             <td>
                 <select id="shipmentId" name="shipmentId" class="form-control input-sm">
-                    <option value=''>-- Select Date Range and Scheme to populate this list --</option>
+                <option value=''>-- <?= $this->translate->_("Select Date Range and Scheme to populate this list"); ?> --</option>
                 </select>
             </td>
-            <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i class="icon-download"></i> Excel</button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a> </td>
-        </tr>
+        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> <?= $this->translate->_("PDF"); ?></a> </td>
+       </tr>
     </table>
     <div id="performance">
     </div>

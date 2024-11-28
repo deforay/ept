@@ -5,49 +5,49 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input id="fname" type="text" id="firstName" name="firstName" size="50" maxlength="45" class="isRequired form-control" title="Please enter the first name here" placeholder="Please enter the first name here" /></div>
+                <div class="col-lg-5"><input id="fname" type="text" id="firstName" name="firstName" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->translate->_('Please enter the first name here'); ?>" placeholder="<?= $this->translate->_('Please enter the first name here'); ?>" /></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input id="lname" type="text" id="lastName" name="lastName" size="50" maxlength="45" class="isRequired form-control" title="Please enter the last name here" placeholder="Please enter the last name here" /></div>
+                <div class="col-lg-5"><input id="lname" type="text" id="lastName" name="lastName" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->translate->_('Please enter the last name here'); ?>" placeholder="<?= $this->translate->_('Please enter the last name here'); ?>" /></div>
             </div>
 
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Primary Email"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="Please enter the primary email id here" placeholder="Please enter the primary email id here" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.');checkEmailId()" />
+                    <input type="text" id="primaryEmail" name="primaryEmail" size="50" class="isRequired form-control isEmail" title="<?= $this->translate->_('Please enter the primary email id here'); ?>" placeholder="<?= $this->translate->_('Please enter the primary email id here'); ?>" onblur="checkDuplicate('system_admin', 'primary_email','primaryEmail',null, 'This Email already exists for another Admin. Please try something else.');checkEmailId()" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="password" id="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" name="password" size="50" value="" class="isRequired form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onchange="validatePassword(this)" />
+                    <input type="password" id="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" name="password" size="50" value="" class="isRequired form-control" title="Please enter a valid password with a minimum length of <?= $this->passLength ?? 8; ?>" placeholder="<?= $this->translate->_('Please enter a password'); ?>" onchange="validatePassword(this)" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Confirm Password"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <input type="password" id="confirmPassword" name="password" size="50" value="" class="isRequired form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                    <input type="password" id="confirmPassword" name="password" size="50" value="" class="isRequired form-control confirmPassword" title="<?= $this->translate->_('Please repeat the same password'); ?>" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Cell/Mobile Number"); ?> <span class="mandatory">*</span></label>
 
-                <div class="col-lg-5"><input type="text" id="phone" name="phone" size="50" maxlength="45" class="isRequired form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" /></div>
+                <div class="col-lg-5"><input type="text" id="phone" name="phone" size="50" maxlength="45" class="isRequired form-control isNumeric checkNum" title="<?= $this->translate->_('Please enter mobile/cell number here'); ?>" placeholder="<?= $this->translate->_('Please enter mobile/cell number here'); ?>" /></div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Secondary Email"); ?></label>
                 <div class="col-lg-5">
-                    <input type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45" placeholder="Please enter secondary email here" class="form-control isEmail" onblur="checkEmailId()" />
+                    <input type="text" id="secondaryEmail" name="secondaryEmail" size="50" maxlength="45" placeholder="<?= $this->translate->_('Please enter secondary email here'); ?>" class="form-control isEmail" onblur="checkEmailId()" />
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-5">
-                    <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                    <select type="text" id="status" name="status" class="isRequired form-control" title="<?= $this->translate->_('Please select user status here'); ?>">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" selected="selected"><?= $this->translate->_("Active"); ?></option>
                         <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
@@ -57,7 +57,7 @@
             <div class="form-group">
                 <label for="schemeId" class="col-lg-3 control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here">
+                    <select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="<?= $this->translate->_('Please select scheme here'); ?>">
                         <?php foreach ($this->allSchemes as $schemes) { ?>
                             <option value="<?php echo $schemes["scheme_id"] ?>"><?php echo ucwords($schemes["scheme_name"]); ?></option>
                         <?php } ?>
@@ -84,8 +84,8 @@
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/system-admins';" tabindex="8" value="Cancel" />
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/system-admins';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </fieldset>
     </form>

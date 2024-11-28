@@ -11,12 +11,12 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_($title); ?></div>
     <div style="margin-top:10px;">
         <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-success" style="float:right;"><i class="icon-download"></i>&nbsp;&nbsp;PTCC Mapped Participants</a>
-            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-success" style="float:right;margin-right: 10px;"><i class="icon-download"></i>&nbsp;&nbsp;PTCC</a>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;Bulk Import PTCC</a>
+            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-success" style="float:right;"><i class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
+            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-success" style="float:right;margin-right: 10px;"><i class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PTCC"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import PTCC"); ?></a>
         <?php } else { ?>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Data Manager (Participant Login)</a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
         <?php } ?>
     </div>
 </h4>

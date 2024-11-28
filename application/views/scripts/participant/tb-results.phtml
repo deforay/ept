@@ -16,13 +16,13 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <legend>
-	<h3>Result of PT Panel per Site</h3>
+	<h3><?= $this->translate->_("Result of PT Panel per Site"); ?></h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
-		<td style="width:20%;text-align: center;font-weight:bold;">Pick a Date Range</td>
-		<td style="width:20%;text-align: center;font-weight:bold;">Select Shipment</td>
-		<td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;">Action</td>
+		<td style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Pick a Date Range"); ?></td>
+		<td style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Select Shipment"); ?></td>
+		<td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Action"); ?></td>
 	</tr>
 	<tr>
 		<td>
@@ -30,10 +30,10 @@
 		</td>
 		<td>
 			<select id="shipmentId" name="shipmentId" class="form-control input-sm">
-				<option value=''>-- Select Date Range to populate this list --</option>
+				<option value=''>-- <?= $this->translate->_("Select Date Range to populate this list"); ?> --</option>
 			</select>
 		</td>
-		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
+		<td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
 	</tr>
 </table>
 <div id="resultsChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
@@ -41,16 +41,16 @@
 	<thead>
 		<tr>
 
-			<th style="text-align: center;">Participant</th>
-			<th style="text-align: center;">Country</th>
-			<th style="text-align: center;">Region</th>
-			<th style="text-align: center;">Score</th>
-			<th style="text-align: center;">Status</th>
+			<th style="text-align: center;"><?= $this->translate->_("Participant"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Country"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Region"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Score"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td colspan="5" class="dataTables_empty">Loading data from server</td>
+			<td colspan="5" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
 		</tr>
 	</tbody>
 </table>

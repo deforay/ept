@@ -17,7 +17,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 <legend>
 	<h3>
 		Corrective Actions and Preventive Action for <?php echo $result['shipment_code'];?>
-		<!-- <button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span>Export Report</span></button>  -->
+		<!-- <button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>  -->
 	</h3>
 </legend>
 <table style="margin:20px 0;background-color: aliceblue;" class="table table-bordered">
@@ -82,9 +82,9 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<table>
 		<tr>
 			<td>
-				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span>Submit</span></button> 
+				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button> 
 				<input type="hidden" name="shipmentId" value="<?php echo $result['shipment_id'];?>"/>
-				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Cencel</span></button>
+				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Cencel"); ?></span></button>
 			</td>
 		</tr>
 	</table>

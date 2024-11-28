@@ -12,9 +12,9 @@ $answers = $this->ans;
             <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "feed-back"), null, true) ?>">
                 <table class="display datatable table table-bordered table-hover table-striped">
                     <tr>
-                        <th style="width:5%;">No.</th>
-                        <th style="width:75%;">Question/Statement</th>
-                        <th style="width:20%;">Your Response</th>
+                        <th style="width:5%;"><?= $this->translate->_("No."); ?></th>
+                        <th style="width:75%;"><?= $this->translate->_("Question/Statement"); ?></th>
+                        <th style="width:20%;"><?= $this->translate->_("Your Response"); ?></th>
                     </tr>
                     <?php foreach ($this->questions as $key => $question) { ?>
                         <tr>
@@ -44,8 +44,8 @@ $answers = $this->ans;
                     <input type="hidden" name="shipmentId" value="<?php echo $this->sID; ?>" />
                     <input type="hidden" name="participantId" value="<?php echo $this->pID; ?>" />
                     <input type="hidden" name="mapId" value="<?php echo $this->mID; ?>" />
-                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Submit" />
-                    <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/report'" tabindex="8" value="Cancel" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
+                    <input name="reset" class="btn btn-danger" type="button" onclick="document.location.href='/participant/report'" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
 
             </form>

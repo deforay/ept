@@ -27,7 +27,7 @@ foreach ($this->participantList as $part) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Login (Primary e-mail)"); ?> <span class="mandatory">*</span></label>
                         <div class="col-lg-12">
-                            <input type="text" id="pemail" name="pemail" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="Please enter the primary email id here" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>', 'This primary email already exists for another email. Please try something else.')">
+                            <input type="text" id="pemail" name="pemail" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="<?= $this->translate->_('Please enter the primary email id here'); ?>" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>', 'This primary email already exists for another email. Please try something else.')">
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                             <?php if (isset($this->rsUser['new_email']) && !empty($this->rsUser['new_email'])) { ?>
                                 <!-- <small class="mandatory">Change email request for <strong><?php echo $this->rsUser['new_email']; ?></strong> pending for verfication</small> -->
@@ -39,7 +39,7 @@ foreach ($this->participantList as $part) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Password"); ?></label>
                         <div class="col-lg-12">
-                            <input type="password" id="dmPassword" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" name="dmPassword" size="50" value="" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" onkeyup="" autocomplete="off">
+                            <input type="password" id="dmPassword" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" name="dmPassword" size="50" value="" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="<?= $this->translate->_('Please enter a password'); ?>" onkeyup="" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -49,14 +49,14 @@ foreach ($this->participantList as $part) {
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Confirm Password"); ?></label>
                         <div class="col-lg-12">
-                            <input type="password" id="confirmPassword" name="dmPassword" size="50" value="" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+                            <input type="password" id="confirmPassword" name="dmPassword" size="50" value="" class="form-control confirmPassword" title="Please repeat the same password" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Institute"); ?></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['institute']; ?>" id="institute" name="institute" size="50" maxlength="255" class="form-control" title="Please enter the institute name here" placeholder="Please enter the institute name here" value="<?php echo (isset($this->rsUser['lab'])) ? $this->rsUser['lab'] : "" ?>" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['institute']; ?>" id="institute" name="institute" size="50" maxlength="255" class="form-control" title="Please enter the institute name here" placeholder="<?= $this->translate->_('Please enter the institute name here'); ?>" value="<?php echo (isset($this->rsUser['lab'])) ? $this->rsUser['lab'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -64,13 +64,13 @@ foreach ($this->participantList as $part) {
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("User First Name"); ?> <span class="mandatory">*</span></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['first_name']; ?>" id="fname" name="fname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the first name here" placeholder="Please enter the first name here" value="<?php echo (isset($this->rsUser['first_name'])) ? $this->rsUser['first_name'] : "" ?>" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['first_name']; ?>" id="fname" name="fname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the first name here" placeholder="<?= $this->translate->_('Please enter the first name here'); ?>" value="<?php echo (isset($this->rsUser['first_name'])) ? $this->rsUser['first_name'] : "" ?>" /></div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("User Last Name"); ?></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['last_name']; ?>" id="lname" name="lname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo (isset($this->rsUser['last_name'])) ? $this->rsUser['last_name'] : "" ?>" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['last_name']; ?>" id="lname" name="lname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="<?= $this->translate->_('Please enter the last name here'); ?>" value="<?php echo (isset($this->rsUser['last_name'])) ? $this->rsUser['last_name'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -78,13 +78,13 @@ foreach ($this->participantList as $part) {
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Secondary e-mail Address"); ?> </label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['secondary_email']; ?>" id="semail" name="semail" size="50" maxlength="255" class="isEmail form-control" title="Please enter a secondary email id here" placeholder="Please enter a secondary email id here" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['secondary_email']; ?>" id="semail" name="semail" size="50" maxlength="255" class="isEmail form-control" title="Please enter a secondary email id here" placeholder="<?= $this->translate->_('Please enter a secondary email id here'); ?>" /></div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Cell Phone Number"); ?> </label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['mobile']; ?>" id="phone1" name="phone1" size="50" maxlength="255" class="form-control checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo (isset($this->rsUser['phone'])) ? $this->rsUser['phone'] : "" ?>" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['mobile']; ?>" id="phone1" name="phone1" size="50" maxlength="255" class="form-control checkNum" title="Please enter mobile/cell number here" placeholder="<?= $this->translate->_('Please enter mobile/cell number here'); ?>" value="<?php echo (isset($this->rsUser['phone'])) ? $this->rsUser['phone'] : "" ?>" /></div>
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@ foreach ($this->participantList as $part) {
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label class="control-label"><?= $this->translate->_("Phone Number"); ?></label>
-                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['phone']; ?>" id="phone2" name="phone2" size="50" maxlength="255" placeholder="Please enter phone number here" class="checkNum form-control" /></div>
+                        <div class="col-lg-12"><input type="text" value="<?php echo $this->rsUser['phone']; ?>" id="phone2" name="phone2" size="50" maxlength="255" placeholder="<?= $this->translate->_('Please enter phone number here'); ?>" class="checkNum form-control" /></div>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -193,7 +193,7 @@ foreach ($this->participantList as $part) {
                         <div class="form-group">
                             <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
                             <div class="col-lg-12">
-                                <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
+                                <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="<?= $this->translate->_('Please choose a Participant'); ?>" title="Please choose a Participant">
                                     <option value=""></option>
                                     <?php foreach ($this->participants as $participant) { ?>
                                         <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray)) ? "selected='selected'" : ""; ?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
@@ -212,8 +212,8 @@ foreach ($this->participantList as $part) {
                     <?php } else { ?>
                         <input type="hidden" name="ptcc" id="ptcc" value="no" />
                     <?php } ?>
-                    <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Save" />
-                    <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="Cancel" />
+                    <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Save"); ?>" />
+                    <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
             </div>
         </fieldset>

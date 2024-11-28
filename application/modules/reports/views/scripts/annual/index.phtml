@@ -3,7 +3,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Annual Performance Report</h3>
+	<h3><?= $this->translate->_("Annual Performance Report"); ?></h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 
@@ -26,13 +26,13 @@
 		</td>
 		<td style="width:15%">
 			<select id="reportType" class="form-control input-sm" name="reportType" style="width:100%;">
-				<option value="csv">Annual Report Only</option>
-				<option value="excel">For Certification</option>
+				<option value="csv"><?= $this->translate->_("Annual Report Only"); ?></option>
+				<option value="excel"><?= $this->translate->_("For Certification"); ?></option>
 			</select>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="4" class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span>Reset</span></button></td>
+		<td colspan="4" class="dontPrint" style="width:15%"><button class="btn btn-success btn-sm" onclick="getAnnualReport()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
 	</tr>
 
 </table>

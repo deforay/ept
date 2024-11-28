@@ -175,9 +175,9 @@
                     <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
                         <?php if ($this->isEditable) { ?>
                             <p>
-                                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="Submit" />
+                                <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
                                 &nbsp;&nbsp;&nbsp;
-                                <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="Cancel" onclick="javascript:goto_testers()" />
+                                <input name="reset" class="btn btn-danger" type="button" id="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="javascript:goto_testers()" />
                             </p>
                         <?php }
                         if (!$this->isEditable) { ?>

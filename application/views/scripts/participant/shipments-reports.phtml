@@ -15,15 +15,15 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>Shipment Report</h3>
+	<h3><?= $this->translate->_("Shipment Report"); ?></h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
 		<td style="width:33%;text-align: center;font-weight:bold;">
-			Pick a Date Range (Optional)
+		<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
 		</td>
 		<td style="width:33%;text-align: center;font-weight:bold;">
-			Select Scheme Type (Optional)
+		<?= $this->translate->_("Select Scheme Type (Optional)"); ?>
 		</td>
 		<td style="width:33%;text-align: center;font-weight:bold;"></td>
 	</tr>
@@ -33,14 +33,14 @@
 		</td>
 		<td>
 			<select id="scheme" name="scheme" class="form-control input-lg">
-				<option value=""> -- Select Scheme Type --</option>
+				<option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
 				<?php foreach ($this->schemes as $scheme) { ?>
 					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
 				<?php } ?>
 			</select>
 		</td>
 		<td style="">
-			<button style=" margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span>Get Report</span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span>Reset</span></button>
+			<button style=" margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
 		</td>
 	</tr>
 </table>
@@ -48,24 +48,24 @@
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
 		<thead>
 			<tr>
-				<th style="text-align: center;">PT Survey Code</th>
-				<th style="text-align: center;">PT Survey Date</th>
-				<th style="text-align: center;">Shipment Code</th>
-				<th style="text-align: center;">Result Due Date</th>
-				<th style="text-align: center;">Scheme</th>
-				<th style="text-align: center;">No. of Samples</th>
-				<th style="text-align: center;">No. of Participants</th>
-				<th style="text-align: center;">No. of Responses</th>
-				<th style="text-align: center;">Response %</th>
-				<th style="text-align: center;">Number Passed</th>
-				<th style="text-align: center;">Shipment Status</th>
-				<th style="text-align: center;">Download Summary Report</th>
-				<th style="text-align: center;">Download Excel Report</th>
+				<th style="text-align: center;"><?= $this->translate->_("PT Survey Code"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("PT Survey Date"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Response %"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Download Summary Report"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Download Excel Report"); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td colspan="10" class="dataTables_empty">Loading data from server</td>
+				<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
 			</tr>
 		</tbody>
 	</table>

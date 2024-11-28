@@ -26,7 +26,7 @@
 <span class="col-md-5 col-xs-12" id="btnSpan" style="padding: 10px;margin-top: -50px;display:none;">
     <label><?= $this->translate->_("Click on New Shipment to proceed adding Scheme"); ?></label>
     <button class="btn btn-primary btn-sm" onclick="newShipment();" id="enrollBtn"><span>New Scheme</span></button>
-    <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location;"><span>Reset</span></button>
+    <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location;"><span><?= $this->translate->_("Reset"); ?></span></button>
 </span>
 
 
@@ -146,7 +146,7 @@
             <div style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input name="submitbtn" class="btn btn-primary btn-sm" type="button" onclick="validateNow();
                         return false;" tabindex="7" value="Add Shipment" />
-                <input class="btn btn-danger btn-sm" type="button" onclick="document.location.href = document.location;" tabindex="8" value="Cancel" />
+                <input class="btn btn-danger btn-sm" type="button" onclick="document.location.href = document.location;" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
     </fieldset>

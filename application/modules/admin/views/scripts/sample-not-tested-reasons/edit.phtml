@@ -56,8 +56,8 @@
 
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input type="hidden" name="ntrId" id="ntrId" value="<?php echo base64_encode($this->result['ntr_id']);?>"/>
-				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Add" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/sample-not-tested-reasons';" tabindex="8" value="Cancel" />
+				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/sample-not-tested-reasons';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
 			</div>
 		</fieldset>
 	</form>

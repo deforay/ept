@@ -265,19 +265,19 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					<hr>
 					<table class="table table-bordered table-striped vlResultValuesTable" style="width:100%;margin:10px auto;">
 						<tr>
-							<td colspan="4">ATTESTATION <span class="mandatory vlResultValuesAsterisk">*</span><br>
-								<p>We the undersigned, recognizing that some special handling may be
+							<td colspan="4"><?= $this->translate->_("ATTESTATION"); ?> <span class="mandatory vlResultValuesAsterisk">*</span><br>
+								<p><?= $this->translate->_("We the undersigned, recognizing that some special handling may be
 									required due to the nature of Proﬁciency Test (PT) materials, have as
 									closely as is practical, performed the analyses on these specimens in the
 									same manner as regular patient specimens. We conﬁrm that results were
-									not shared, nor PT specimens referred or tested, outside of our facility.
+									not shared, nor PT specimens referred or tested, outside of our facility."); ?>
 								</p>
 								<br>
 								<div class="form-check" style="margin-left: 10px;">
 									<input type="radio" style="margin-right: 5px;" title="Please select the attestation" class="form-check-input attestation" id="attestation-yes" name="attestation" value="yes" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'yes') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-yes">Yes</label>
 									<input type="radio" title="Please select the attestation" style="margin-right: 5px;margin-left: 5px;" class="form-check-input attestation" id="attestation-no" name="attestation" value="no" <?php echo (isset($this->shipment['attributes']['attestation']) && $this->shipment['attributes']['attestation'] == 'no') ? "checked" : ""; ?>><label class="form-check-label" for="attestation-no">No</label>
 								</div>
-								(Please select one)
+								<?= $this->translate->_("(Please select one)"); ?>
 							</td>
 						</tr>
 						<tr>
@@ -338,12 +338,12 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					if (isset($warnings) && !empty($warnings)) { ?>
 						<table class="table table-bordered" style="width:100%;margin:0 auto;">
 							<tr>
-								<td style="width:25%;vertical-align: middle">Notes</td>
+								<td style="width:25%;vertical-align: middle"><?= $this->translate->_("Notes"); ?></td>
 								<td>
 									<table class='table table-bordered'>
 										<tr>
-											<th>Failure Reasons (or) Warnings</th>
-											<th>Corrective Actions (if any)</th>
+											<th><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+											<th><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
 										</tr>
 										<?php $i = 1;
 										foreach ($warnings as $warning) { ?>
@@ -385,7 +385,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						</tr>
 						<tr>
 							<td style="vertical-align: middle;" colspan="2">
-								<label>Is the above a follow up comment for corrective action? </label>
+								<label><?= $this->translate->_("Is the above a follow up comment for corrective action?"); ?> </label>
 								<input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes" title="Please choose whether this is a follow up comment or not" /> Yes <input type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
 							</td>
 						</tr>
@@ -411,14 +411,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
 						<?php } elseif ($adminAccess) { ?>
-							<input name="submitbtn" class="btn btn-primary" type="submit" value="Submit" />
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="<?= $this->translate->_("Submit"); ?>" />
 						<?php } ?>
 						&nbsp;&nbsp;&nbsp;
-						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Cancel" onclick="javascript:goto_dashboard()" />
+						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="<?= $this->translate->_("Cancel"); ?>" onclick="javascript:goto_dashboard()" />
 					</div>
 				<?php } else { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="Back" onclick="javascript:goto_dashboard()" />
+						<input name="cancel" class="btn btn-danger" type="button" id="reset" value="<?= $this->translate->_("Back"); ?>" onclick="javascript:goto_dashboard()" />
 					</div>
 				<?php } ?>
 			</div>

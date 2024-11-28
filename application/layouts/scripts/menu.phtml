@@ -17,32 +17,32 @@
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->dm_id)) {
         ?>
-            <a href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>" class="button1">logout</a>
+            <a href="<?php echo $this->url(array("controller" => "auth", "action" => "logout"), null, true) ?>" class="button1"><?= $this->translate->_("logout"); ?></a>
         <?php } ?>
 
 
         <div class="inside">
 
             <?php if (empty($authNameSpace->dm_id)) { ?>
-                <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" class="da-button">Participant Login</a>
+                <a href="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" class="da-button"><?= $this->translate->_("Participant Login"); ?></a>
             <?php } ?>
             <nav>
                 <ul class="sf-menu">
                     <li class="m"><a href="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" class="current">&nbsp;</a></li>
                     <?php if (isset($authNameSpace->dm_id)) { ?>
-                        <li><a href="javascript:void(0);">My Account</a>
+                        <li><a href="javascript:void(0);"><?= $this->translate->_("My Account"); ?></a>
                             <ul>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">My Login Information</a></li>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>">PT Participant Info</a></li>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>">Scheme Information</a></li>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>">Change Password</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>"><?= $this->translate->_("My Login Information"); ?></a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "testers"), null, true) ?>"><?= $this->translate->_("PT Participant Info"); ?></a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "scheme"), null, true) ?>"><?= $this->translate->_("Scheme Information"); ?></a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "password"), null, true) ?>"><?= $this->translate->_("Change Password"); ?></a></li>
                             </ul>
                         </li>
-                        <li><a href="javascript:void(0);">My PT</a>
+                        <li><a href="javascript:void(0);"><?= $this->translate->_("My PT"); ?></a>
                             <ul>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">Overview</a></li>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> Individual Report</a></li>
-                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> Summary Report</a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>"><?= $this->translate->_("Overview"); ?></a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "report"), null, true) ?>"> <?= $this->translate->_("Individual Report"); ?></a></li>
+                                <li><a href="<?php echo $this->url(array("controller" => "participant", "action" => "summary-report"), null, true) ?>"> <?= $this->translate->_("Summary Report"); ?></a></li>
 
                             </ul>
                         </li>
