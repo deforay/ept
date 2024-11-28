@@ -84,17 +84,17 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     'repeat_test_result_2'      => $params['repeat_test_result_2'][$key] ?? null,
                     'repeat_test_result_3'      => $params['repeat_test_result_3'][$key] ?? null,
                     'kit_additional_info'       => !empty($params['additionalInfoKit'][$sampleId]) ? json_encode($params['additionalInfoKit'][$sampleId], true) : null,
-                    'reported_result'           => (isset($params['reported_result'][$key])) ? $params['reported_result'][$key] : null,
-                    'syphilis_final'            => (isset($params['syphilis_final'][$key])) ? $params['syphilis_final'][$key] : null,
-                    'is_this_retest'            => (isset($params['is_this_retest'][$key])) ? $params['is_this_retest'][$key] : null
+                    'reported_result'           => (isset($params['reported_result'][$sampleId])) ? $params['reported_result'][$sampleId] : null,
+                    'syphilis_final'            => (isset($params['syphilis_final'][$sampleId])) ? $params['syphilis_final'][$sampleId] : null,
+                    'is_this_retest'            => (isset($params['is_this_retest'][$sampleId])) ? $params['is_this_retest'][$sampleId] : null
                 );
 
                 if (isset($params['enableRtri']) && $params['enableRtri'] == 'yes') {
-                    $data['dts_rtri_control_line'] = (isset($params['controlLine'][$key]) && !empty($params['controlLine'][$key])) ? $params['controlLine'][$key] : null;
-                    $data['dts_rtri_diagnosis_line'] = (isset($params['verificationLine'][$key]) && !empty($params['verificationLine'][$key])) ? $params['verificationLine'][$key] : null;
-                    $data['dts_rtri_longterm_line'] = (isset($params['longtermLine'][$key]) && !empty($params['longtermLine'][$key])) ? $params['longtermLine'][$key] : null;
-                    $data['dts_rtri_reported_result'] = (isset($params['rtriResult'][$key]) && !empty($params['rtriResult'][$key])) ? $params['rtriResult'][$key] : null;
-                    $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable'][$key]) && !empty($params['dtsRtriIsEditable'][$key])) ? $params['dtsRtriIsEditable'][$key] : null;
+                    $data['dts_rtri_control_line'] = (isset($params['controlLine'][$sampleId]) && !empty($params['controlLine'][$sampleId])) ? $params['controlLine'][$sampleId] : null;
+                    $data['dts_rtri_diagnosis_line'] = (isset($params['verificationLine'][$sampleId]) && !empty($params['verificationLine'][$sampleId])) ? $params['verificationLine'][$sampleId] : null;
+                    $data['dts_rtri_longterm_line'] = (isset($params['longtermLine'][$sampleId]) && !empty($params['longtermLine'][$sampleId])) ? $params['longtermLine'][$sampleId] : null;
+                    $data['dts_rtri_reported_result'] = (isset($params['rtriResult'][$sampleId]) && !empty($params['rtriResult'][$sampleId])) ? $params['rtriResult'][$sampleId] : null;
+                    $data['dts_rtri_is_editable'] = (isset($params['dtsRtriIsEditable'][$sampleId]) && !empty($params['dtsRtriIsEditable'][$sampleId])) ? $params['dtsRtriIsEditable'][$sampleId] : null;
                 }
                 $id = 0;
                 if (empty($res)) {

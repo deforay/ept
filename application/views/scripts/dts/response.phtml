@@ -893,7 +893,7 @@ foreach ($this->allTestKits as $kit) {
                                             $count++; ?>
                                             <tr class="light rtrivlResultSection<?php echo $sample['sample_id']; ?>" align="CENTER">
                                                 <th style="white-space: nowrap">
-                                                    <input type="checkbox" id="dtsRtriIsEditable<?= $count; ?>" name="dtsRtriIsEditable[<?= $count; ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?= $count; ?>)" />
+                                                    <input type="checkbox" id="dtsRtriIsEditable<?= $count; ?>" name="dtsRtriIsEditable[<?= $sample['sample_id']; ?>]" value="yes" <?php echo (isset($sample['dts_rtri_is_editable']) && $sample['dts_rtri_is_editable'] == 'yes') ? 'checked' : ''; ?> onchange="dtsRtriIsEditable(this, <?= $count; ?>)" />
                                                 </th>
                                                 <th style="white-space: nowrap">
                                                     <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory recency-mandatory rm-" . $count . "' style='visibility:hidden;'>*</span>"; ?>
@@ -901,28 +901,28 @@ foreach ($this->allTestKits as $kit) {
                                                 </th>
 
                                                 <td>
-                                                    <select name="controlLine[<?= $count; ?>]" id="controlLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
+                                                    <select name="controlLine[<?= $sample['sample_id']; ?>]" id="controlLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose control line" <?php echo $dtsRtriIsEditable; ?>>
                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_control_line']) && $sample['dts_rtri_control_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <select name="verificationLine[<?= $count; ?>]" id="verificationLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
+                                                    <select name="verificationLine[<?= $sample['sample_id']; ?>]" id="verificationLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <select name="longtermLine[<?= $count; ?>]" id="longtermLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
+                                                    <select name="longtermLine[<?= $sample['sample_id']; ?>]" id="longtermLine<?= $count; ?>" class="recency_pt_tested_<?= $count; ?> form-control input-sm" title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Present"); ?></option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
                                                 <td class="dark">
-                                                    <select name="rtriResult[<?= $count; ?>]" id="rtriResult<?= $count; ?>" style="width: 200px" class="recency_pt_tested_<?= $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
+                                                    <select name="rtriResult[<?= $sample['sample_id']; ?>]" id="rtriResult<?= $count; ?>" style="width: 200px" class="recency_pt_tested_<?= $count; ?> form-control vlResultValues" title="Please select the result for <?php echo $sample['sample_label']; ?>" <?php echo $dtsRtriIsEditable; ?>>
                                                         <?php $this->dropdownSelection($rtriFinalPossibleResults, $sample['dts_rtri_reported_result'], true); ?>
                                                     </select>
                                                     <input type="hidden" name="enableRtri" id="enableRtri" value="<?php echo $shipmentAttributes['enableRtri']; ?>" />
