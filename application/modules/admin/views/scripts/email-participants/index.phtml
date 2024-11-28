@@ -101,7 +101,7 @@ $eptDomain = parse_url($conf->domain, PHP_URL_HOST);
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                 <input type="hidden" name="distributionId" id="distributionId" value="<?php echo $this->distributionId; ?>" />
                 <input type="hidden" name="shipmentSlectedId" id="shipmentSlectedId" value="<?php echo $this->shipmentId; ?>" />
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="Send" />
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Send"); ?>" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
             </div>
         </fieldset>
