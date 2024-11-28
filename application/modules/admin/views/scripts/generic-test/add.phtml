@@ -89,13 +89,13 @@
 							<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
 								<tr>
 									<td class="hide firstSubTest" style="width:20%;">
-										<lable for="resultSubGroup1" class="form-label-control">Enter the test name</lable>
+										<lable for="resultSubGroup1" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></lable>
 									</td>
 									<td class="hide firstSubTest" style="width:30%;">
 										<input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for 1st row" />
 									</td>
 									<td style="width:20%;">
-										<lable for="testType1" class="form-label-control">Select Result Type</lable>
+										<lable for="testType1" class="form-label-control"><?= $this->translate->_("Select Result Type"); ?></lable>
 									</td>
 									<td style="width:30%;">
 										<select type="text" name="testType[1]" id="testType1" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, 1)">

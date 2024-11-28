@@ -103,13 +103,13 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 										<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix">
 											<tr>
 												<td class="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? '' : 'hide'; ?> firstSubTest" style="width:20%;">
-													<lable for="resultSubGroup<?php echo $rowCount; ?>" class="form-label-control">Enter the test name</lable>
+													<lable for="resultSubGroup<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></lable>
 												</td>
 												<td class="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? '' : 'hide'; ?> firstSubTest" style="width:30%;">
 													<input type="text" name="resultSubGroup[<?php echo $rowCount; ?>]" id="resultSubGroup<?php echo $rowCount; ?>" value="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? $row['sub_scheme'] : ''; ?>" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for <?php echo $rowCount; ?> row" />
 												</td>
 												<td style="width:20%;">
-													<lable for="testType<?php echo $rowCount; ?>" class="form-label-control">Select Result Type</lable>
+													<lable for="testType<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Select Result Type"); ?></lable>
 												</td>
 												<td style="width:30%;">
 													<select type="text" name="testType[<?php echo $rowCount; ?>]" id="testType<?php echo $rowCount; ?>" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, <?php echo $rowCount; ?>)">
