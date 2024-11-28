@@ -139,14 +139,15 @@ ALTER TABLE `shipment` ADD `pt_co_ordinator_email` VARCHAR(256) NULL DEFAULT NUL
 INSERT INTO `global_config` (`name`, `value`) VALUES ('aggregate_insights_url', '');
 INSERT INTO `system_config` (`config`, `value`, `display_name`) VALUES ('api_version', '2.0', 'API Version');
 -- Thana 24-Oct-2024
-CREATE TABLE `system_metadata` (
+CREATE TABLE IF NOT EXISTS `system_metadata` (
   `metadata_id` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `metadata_value` text COLLATE utf8mb4_general_ci,
   PRIMARY KEY (`metadata_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 INSERT INTO `system_metadata` (`metadata_id`, `metadata_value`) VALUES ('instance-id', null);
 -- Thana 11-Nov-2024
-CREATE TABLE `track_api_requests` (
+CREATE TABLE IF NOT EXISTS `track_api_requests` (
   `api_track_id` int NOT NULL AUTO_INCREMENT,
   `transaction_id` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `requested_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -165,4 +166,4 @@ CREATE TABLE `track_api_requests` (
 
 -- Amit 21-Nov-2024
 ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('participant','admin','all', 'none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all';
-INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_scheme`, `result_type`, `response`, `result_code`, `display_context`, `high_range`, `threshold_range`, `low_range`, `sort_order`) VALUES (NULL, 'dts', 'DTS_FINAL', NULL, NULL, 'NONREACTIVE', 'NR', 'all', NULL, NULL, NULL, NULL)
+INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_scheme`, `result_type`, `response`, `result_code`, `display_context`, `high_range`, `threshold_range`, `low_range`, `sort_order`) VALUES (NULL, 'dts', 'DTS_FINAL', NULL, NULL, 'NONREACTIVE', 'NR', 'all', NULL, NULL, NULL, NULL);
