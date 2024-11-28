@@ -11,7 +11,7 @@
 			<div class="row">
 				<div class="col-lg-4">
 					<div class="form-group">
-						<label class="col-lg-2 control-label" for="labName"><?= $this->translate->_("Facility"); ?></label>
+						<label class="col-lg-2 control-label" for="labName"><?= $this->translate->_("Institute"); ?></label>
 						<div class="col-lg-10">
 							<select id="labName" name="labName[]" multiple="multiple" title="Please enter the facility to filter the participants" class="form-control input-sm">
 								<option value=""> -- <?= $this->translate->_("Select Lab/Participant Name"); ?> --</option>
@@ -24,9 +24,6 @@
 						<label class="col-lg-2 control-label" for="country"><?= $this->translate->_("Country"); ?></label>
 						<div class="col-lg-10">
 							<select class="form-control" style="width:100%" name="country[]" id="country" multiple="multiple" title="Select one or more Country" data-selected-text-format="count>3">
-								<!-- <?php foreach ($this->participantCountry as $partCountry) { ?>
-									<option value="<?php echo $partCountry['id']; ?>"><?php echo $partCountry['country']; ?> </option>
-								<?php } ?> -->
 							</select>
 						</div>
 					</div>
@@ -37,9 +34,6 @@
 						<label class="col-lg-2 control-label" for="region"><?= $this->translate->_("Region"); ?></label>
 						<div class="col-lg-10">
 							<select class="form-control" style="width:100%" name="region[]" id="region" multiple="multiple" title="Select one or more Region" data-selected-text-format="count>3">
-								<!-- <?php foreach ($this->participantRegion as $partRegion) { ?>
-									<option value="<?php echo $partRegion['region']; ?>"><?php echo $partRegion['region']; ?> </option>
-								<?php } ?> -->
 							</select>
 						</div>
 					</div>
@@ -52,9 +46,6 @@
 						<label class="col-lg-2 control-label" for="state"><?= $this->translate->_("State"); ?></label>
 						<div class="col-lg-10">
 							<select class="form-control" style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
-								<!-- <?php foreach ($this->participantState as $partState) { ?>
-									<option value="<?php echo $partState['state']; ?>"><?php echo $partState['state']; ?> </option>
-								<?php } ?> -->
 							</select>
 						</div>
 					</div>
@@ -64,9 +55,6 @@
 						<label class="col-lg-2 control-label" for="district"><?= $this->translate->_("District"); ?></label>
 						<div class="col-lg-10">
 							<select class="form-control" style="width:100%" name="district[]" id="district" multiple="multiple" title="Select one or more District" data-selected-text-format="count>3">
-								<!-- <?php foreach ($this->participantDistrict as $partDistrict) { ?>
-									<option value="<?php echo $partDistrict['district']; ?>"><?php echo $partDistrict['district']; ?> </option>
-								<?php } ?> -->
 							</select>
 						</div>
 					</div>
@@ -76,9 +64,6 @@
 						<label class="col-lg-2 control-label" for="city"><?= $this->translate->_("City"); ?></label>
 						<div class="col-lg-10">
 							<select class="form-control" style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
-								<!-- <?php foreach ($this->participantCity as $partCity) { ?>
-									<option value="<?php echo $partCity['city']; ?>"><?php echo $partCity['city']; ?> </option>
-								<?php } ?> -->
 							</select>
 						</div>
 					</div>
@@ -459,7 +444,5 @@
 		$("#state").trigger("change");
 		$("#city").val("");
 		$("#city").trigger("change");
-		$("#labName").val("");
-		$("#labName").trigger("change");
 	}
 </script>

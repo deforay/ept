@@ -155,7 +155,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['pid']) && !empty($parameters['pid'])) {
-            $pid = explode(',', $parameters['pid']);
+            $pid = (is_array($parameters['pid'])) ? implode(",", $parameters['pid']) : $parameters['pid'];
             $sQuery = $sQuery->where("p.institute_name IN (?)", $pid);
         }
         if (isset($parameters['country']) && !empty($parameters['country'])) {
@@ -2233,5 +2233,45 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("sp.shipment_id = ?", $shipmentId)
             ->group("sp.participant_id");
         return $this->getAdapter()->fetchAll($sQuery);
+    }
+
+    public function fetchParticipantList($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('p' => 'participant'), array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
+            ->where("p.status= ?", 'active');
+        if (isset($params['country']) && $params['country'] != "") {
+            $country = (is_array($params['country'])) ? implode(",", $params['country']) : $params['country'];
+            $sql = $sql->where("country IN (?)", $country);
+        }
+        if (isset($params['state']) && $params['state'] != "") {
+            $state = (is_array($params['state'])) ? implode(",", $params['state']) : $params['state'];
+            $sql = $sql->where("state IN (?)", $state);
+        }
+        if (isset($params['region']) && $params['region'] != "") {
+            $region = (is_array($params['region'])) ? implode(",", $params['region']) : $params['region'];
+            $sql = $sql->where("region IN (?)", $region);
+        }
+        if (isset($params['district']) && $params['district'] != "") {
+            $district = (is_array($params['district'])) ? implode(",", $params['district']) : $params['district'];
+            $sql = $sql->where("district IN (?)", $district);
+        }
+        if (isset($params['city']) && $params['city'] != "") {
+            $city = (is_array($params['city'])) ? implode(",", $params['city']) : $params['city'];
+            $sql = $sql->where("city IN (?)", $city);
+        }
+        if (isset($params['network']) && $params['network'] != "") {
+            $network = (is_array($params['network'])) ? implode(",", $params['network']) : $params['network'];
+            $sql = $sql->where("network_tier IN (?)", $network);
+        }
+        if (isset($params['affiliation']) && $params['affiliation'] != "") {
+            $affiliation = (is_array($params['affiliation'])) ? implode(",", $params['affiliation']) : $params['affiliation'];
+            $sql = $sql->where("affiliation IN (?)", $affiliation);
+        }
+        if (isset($params['institute']) && $params['institute'] != "") {
+            $institute = (is_array($params['institute'])) ? implode(",", $params['institute']) : $params['institute'];
+            $sql = $sql->where("institute_name IN (?)", $institute);
+        }
+        return $db->fetchAll($sql);
     }
 }

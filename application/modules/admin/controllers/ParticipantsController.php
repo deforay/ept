@@ -23,6 +23,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             ->addActionContext('get-datamanager', 'html')
             ->addActionContext('get-datamanager-names', 'html')
             ->addActionContext('get-participant', 'html')
+            ->addActionContext('get-participant-list', 'html')
             ->addActionContext('delete-participant', 'html')
             ->addActionContext('export-participants-map', 'html')
             ->initContext();
@@ -195,6 +196,19 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $params = $request->getPost();
             $this->view->mappedParticipant = $dataManagerService->getDatamanagerParticipantList($params);
             $this->view->participants = $dataManagerService->getParticipantDatamanagerList($params);
+        }
+    }
+
+    public function getParticipantListAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+
+        $this->_helper->layout()->disableLayout();
+        $clientsServices = new Application_Service_Participants();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $this->view->participants = $clientsServices->getParticipantList($params);
         }
     }
 

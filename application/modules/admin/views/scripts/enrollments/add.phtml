@@ -1,8 +1,100 @@
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <div class="well">
 	<fieldset>
 		<legend><?= $this->translate->_("Enroll Participants"); ?></legend>
 		<form name="enroll" id="enroll" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments', 'action' => 'add'), 'default', true); ?>">
+			<a href="javascript:void(0);" style=" line-height: 1.2; " onclick="loadFiltersData()" class="btn btn-sm btn-primary filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
+			<br><br>
+			<div class="filter" style="display: none;">
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="institute"><?= $this->translate->_("Institute"); ?></label>
+							<div class="col-lg-10">
+								<select id="institute" name="institute[]" multiple="multiple" title="Please enter the facility to filter the participants" class="form-control input-sm">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="country"><?= $this->translate->_("Country"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="country[]" id="country" multiple="multiple" title="Select one or more Country" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="region"><?= $this->translate->_("Region"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="region[]" id="region" multiple="multiple" title="Select one or more Region" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="state"><?= $this->translate->_("State"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="district"><?= $this->translate->_("District"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="district[]" id="district" multiple="multiple" title="Select one or more District" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="city"><?= $this->translate->_("City"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="networkTier"><?= $this->translate->_("Network"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="network[]" id="networkTier" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="form-group">
+							<label class="col-lg-2 control-label" for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
+							<div class="col-lg-10">
+								<select class="form-control" style="width:100%" name="affiliation[]" id="affiliation" multiple="multiple" title="Select one or more District" data-selected-text-format="count>3">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4" style="float:right;">
+						<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="<?= $this->translate->_("Filter"); ?>" />
+						<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="<?= $this->translate->_("Reset"); ?>" />
+					</div>
+				</div>
+				<hr><br>
+			</div>
 			<div class="col-md-12 col-xs-12" align="center">
 				<label for="listName" class="control-label"><?= $this->translate->_("Enrollment List Name"); ?></label>
 				<input type="text" name="listName" id="listName" class="form-control" placeholder="Enter the list name" title="Please enter the list name" style="width: 50%;" />
@@ -34,6 +126,9 @@
 
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
 	$(document).ready(function() {
@@ -92,5 +187,127 @@
 		$("#selectedForEnrollment").val(enrolled);
 		$("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES
 		document.getElementById('enroll').submit();
+	}
+
+	function loadFiltersData() {
+		$.blockUI();
+		$('.filter').toggle();
+		if ($('.filter-btn').text() == 'Show advanced filters') {
+			$('.filter-btn').text('Hide advanced filters');
+		} else {
+			$('.filter-btn').text('Show advanced filters');
+		}
+		let _tables = ['participant', 'countries', 'participant', 'participant', 'participant', 'participant', 'participant', 'participant'];
+		let _elements = ['institute', 'country', 'region', 'state', 'district', 'city', 'networkTier', 'affiliation'];
+		let _returnId = ['institute_name', 'id', 'region', 'state', 'district', 'city', 'network_tier', 'affiliation'];
+		let _fieldNames = _concat = ['institute_name', 'iso_name', 'region', 'state', 'district', 'city', 'network_tier', 'affiliation'];
+
+		$(_elements).each(function(i, e) {
+			$("#" + _elements[i]).select2({
+				placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
+				minimumInputLength: 3,
+				width: '100%',
+				allowClear: true,
+				id: function(bond) {
+					return bond._id;
+				},
+				ajax: {
+					placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+					url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
+					dataType: 'json',
+					delay: 250,
+					data: function(params) {
+						return {
+							tableName: _tables[i],
+							returnId: _returnId[i],
+							fieldNames: _fieldNames[i],
+							concat: _concat[i],
+							search: params.term, // search term
+							page: params.page
+						};
+					},
+					processResults: function(data, params) {
+						params.page = params.page || 1;
+						return {
+							results: data.result,
+							pagination: {
+								more: (params.page * 30) < data.total_count
+							}
+						};
+					},
+					//cache: true
+				},
+				escapeMarkup: function(markup) {
+					return markup;
+				}
+			});
+		});
+		$.unblockUI();
+	}
+
+	function fetchParticipants($type) {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant-list')); ?>", {
+				labId: $('#labName').val(),
+				country: $('#country').val(),
+				region: $('#region').val(),
+				district: $('#district').val(),
+				city: $('#city').val(),
+				network: $('#networkTier').val(),
+				affiliation: $('#affiliation').val(),
+				institute: $('#institute').val(),
+				format: "html"
+			},
+			function(data) {
+				$('#participants').html(data);
+				$('#participants').multiSelect("destroy").multiSelect({
+					selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
+					selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
+					selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
+					selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
+					afterInit: function(ms) {
+						var that = this,
+							$selectableSearch = that.$selectableUl.prev(),
+							$selectionSearch = that.$selectionUl.prev(),
+							selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
+							selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+						that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+							.on('keydown', function(e) {
+								if (e.which === 40) {
+									that.$selectableUl.focus();
+									return false;
+								}
+							});
+
+						that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+							.on('keydown', function(e) {
+								if (e.which == 40) {
+									that.$selectionUl.focus();
+									return false;
+								}
+							});
+					},
+					afterSelect: function() {
+						this.qs1.cache();
+						this.qs2.cache();
+					},
+					afterDeselect: function() {
+						this.qs1.cache();
+						this.qs2.cache();
+					}
+				});
+
+
+				$('#select-all-participant').click(function() {
+					$('#participants').multiSelect('select_all');
+					return false;
+				});
+				$('#deselect-all-participant').click(function() {
+					$('#participants').multiSelect('deselect_all');
+					return false;
+				});
+				$.unblockUI();
+			});
 	}
 </script>

@@ -149,8 +149,6 @@ class Application_Service_Participants
 			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
-
-		//echo $sql;die;
 		return $db->fetchAll($sql);
 	}
 	public function getEnrolledBySchemeCode($scheme, $schemeName = "")
@@ -230,7 +228,6 @@ class Application_Service_Participants
 			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
-
 		return $db->fetchAll($sql);
 	}
 
@@ -989,6 +986,12 @@ class Application_Service_Participants
 	{
 		$participantDb = new Application_Model_DbTable_Participants();
 		return $participantDb->exportParticipantMapDetails();
+	}
+
+	public function getParticipantList($params)
+	{
+		$participantDb = new Application_Model_DbTable_Participants();
+		return $participantDb->fetchParticipantList($params);
 	}
 
 	public function excludeParticipantById($params)
