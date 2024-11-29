@@ -81,7 +81,7 @@ class IndividualPDF extends Fpdi
                 if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
-                    $this->Image($image_file, 90, 13, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 90, 24, 15, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
                     $this->Image($image_file, 10, 2, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'vl' && $this->layout == 'myanmar') {
@@ -394,7 +394,7 @@ class SummaryPDF extends Fpdi
             $isSchemeTypeDTS = $this->schemeType == 'dts';
             $isConfigSet = isset($this->config) && $this->config != "";
             if ($isSchemeTypeDTS && $this->layout == 'jamaica') {
-                $this->Image($imagePath, 90, 28, 20, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                $this->Image($imagePath, 90, 10, 15, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
             } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid']) && $this->layout == 'zimbabwe') {
                 $this->Image($imagePath, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
             } elseif ($isConfigSet && $this->layout != 'zimbabwe') {

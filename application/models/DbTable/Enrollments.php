@@ -165,8 +165,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
     {
 
         if (!empty($params['schemeId'])) {
-
-
+            $common = new Application_Service_Common();
             $enrollmentListId = Pt_Commons_General::generateULID();
             $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
             $where = [];
@@ -176,7 +175,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 $where[] = " scheme_id = '{$params['schemeId']}'";
             }
 
-            $this->delete(implode(' AND ', $where));
+            // $this->delete(implode(' AND ', $where));
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
             foreach ($params['selectedForEnrollment'] as $participant) {
                 $data = [
@@ -187,7 +186,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                     'status' => 'enrolled',
                     'enrolled_on' => new Zend_Db_Expr('now()')
                 ];
-                $this->insert($data);
+                $common->insertIgnore($this->_name, $data);
             }
         }
     }
