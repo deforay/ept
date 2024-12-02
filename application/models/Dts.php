@@ -1114,7 +1114,6 @@ class Application_Model_Dts
 			}
 			$docScore = $config->evaluation->dts->documentationScore ?? 0;
 			$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
-
 			// D.1
 			if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
 				$documentationScore += $documentationScorePerItem;
@@ -1138,6 +1137,7 @@ class Application_Model_Dts
 					$correctiveActionList[] = 12;
 				}
 			}
+
 			//D.5
 			if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
 				$documentationScore += $documentationScorePerItem;
@@ -1162,17 +1162,15 @@ class Application_Model_Dts
 					$interval = $sampleRehydrationDate->diff($testedOnDate);
 					$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
 				}
-
-
 				//$rehydrateHours = $sampleRehydrateDays * 24;
-
 				// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
 				if (
-					empty($attributes['sample_rehydration_date'])
-					//  || empty($sampleRehydrateDays)
+					!isset($attributes['sample_rehydration_date']) ||
+					$attributes['sample_rehydration_date'] === null
 					|| $interval->days < $sampleRehydrateDays
 					|| $interval->days > ($sampleRehydrateDays + 1)
 				) {
+					error_log('came');
 					$failureReason[] = [
 						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]
@@ -1182,6 +1180,7 @@ class Application_Model_Dts
 					$documentationScore += $documentationScorePerItem;
 				}
 			}
+
 			//D.8
 			// For Myanmar National Algorithm, they do not want to check for Supervisor Approval
 			if ($dtsSchemeType != 'myanmar' && $attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
@@ -1248,7 +1247,6 @@ class Application_Model_Dts
 				$scoreResult = 'Pass';
 			}
 
-
 			// if we are excluding this result, then let us not give pass/fail
 			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 				$finalResult = '';
@@ -1262,6 +1260,7 @@ class Application_Model_Dts
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
 			} else {
 				$shipment['is_excluded'] = 'no';
+
 				// if any of the results have failed, then the final result is fail
 				if ($algoResult == 'Fail' || $scoreResult == 'Fail' || $lastDateResult == 'Fail' || $mandatoryResult == 'Fail' || $lotResult == 'Fail' || $testKitExpiryResult == 'Fail') {
 					$finalResult = 2;
@@ -1299,10 +1298,10 @@ class Application_Model_Dts
 						}
 
 						$shipmentResult[$counter]['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
-						// Zend_Debug::dump($shipmentResult);die;
 						$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
 					}
 				} else {
+
 					// let us update the total score in DB
 					$nofOfRowsUpdated = $this->db->update(
 						'shipment_participant_map',
