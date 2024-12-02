@@ -33,8 +33,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
 
     public function addTestkitDetails($params)
     {
-        $commonService = new Application_Service_Common();
-        $randomStr = $commonService->getRandomString(13);
+        $randomStr = Application_Service_Common::generateRandomString(13);
         $testkitId = "tk" . $randomStr;
         $tkId = $this->checkTestkitId($testkitId, $params['scheme']);
 
@@ -77,14 +76,14 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
     public function updateTestkitStageDetails($params)
     {
         if (trim($params['testKitStage']) != "") {
-            if(in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])){
+            if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
                 $this->update(array($params['testKitStage'] => '0'), array());
             }
             if (isset($params["testKitData"]) && $params["testKitData"] != '' && count($params["testKitData"]) > 0) {
                 foreach ($params["testKitData"] as $data) {
-                    if(in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])){
+                    if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
                         $this->update(array($params['testKitStage'] => '1'), "TestKitName_ID='" . $data . "'");
-                    }else{
+                    } else {
                         $this->update(array('scheme_type' => $params['testKitStage']), "TestKitName_ID='" . $data . "'");
                     }
                 }
@@ -96,8 +95,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
     {
         $result = $this->fetchRow($this->select()->where("TestKitName_ID='" . $testkitId . "'"));
         if ($result != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testkitId = "tk" . $randomStr;
             $this->checkTestkitId($testkitId, $scheme);
         } else {
@@ -246,7 +244,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
                 $approved = 'Yes';
             }
             $createdDate = explode(" ", $aRow['Created_On']);
-            if(isset($aRow['testkit_status']) && !empty($aRow['testkit_status']) && $aRow['testkit_status'] == 'pending'){
+            if (isset($aRow['testkit_status']) && !empty($aRow['testkit_status']) && $aRow['testkit_status'] == 'pending') {
                 $kitChkbox = '<input type="checkbox" class="checkTablePending" name="subchk[]" id="' . $aRow['TestKitName_ID'] . '"  value="' . $aRow['TestKitName_ID'] . '" onclick="addKit(\'' . $aRow['TestKitName_ID'] . '\',this);"  />';
             }
 
@@ -275,8 +273,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
     {
 
         if (trim($testkitName) != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testkitId = "tk" . $randomStr;
             $tkId = $this->checkTestkitId($testkitId, $scheme);
             $result = $this->fetchRow($this->select()->where("TestKit_Name='" . $testkitName . "'"));
@@ -320,8 +317,7 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
     {
 
         if (trim($testkitName) != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testkitId = "tk" . $randomStr;
             $tkId = $this->checkTestkitId($testkitId, $scheme);
             $result = $this->fetchRow($this->select()->where("TestKit_Name='" . $testkitName . "'"));

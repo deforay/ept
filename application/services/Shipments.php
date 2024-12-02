@@ -715,7 +715,7 @@ class Application_Service_Shipments
                 if ($testkitDb->getDtsTestkitDetails($kit)) {
                     $kitId = $kit;
                 } else {
-                    $randomStr = $commonService->getRandomString(13);
+                    $randomStr = Application_Service_Common::generateRandomString(13);
                     $testkitId = "tk" . $randomStr;
                     $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
                     $testkitDb->insert(array(

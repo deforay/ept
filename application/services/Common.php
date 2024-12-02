@@ -176,17 +176,6 @@ class Application_Service_Common
         return (new DateTimeImmutable())->format($format);
     }
 
-    public static function getRandomString($length = 8)
-    {
-        $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
-        $randStr = "";
-        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-        for ($i = 0; $i < $length; $i++) {
-            $n = rand(0, $alphaLength);
-            $randStr .= $alphabet[$n];
-        }
-        return $randStr; //turn the array into a string
-    }
     public static function getConfig($name)
     {
         $gc = new Application_Model_DbTable_GlobalConfig();

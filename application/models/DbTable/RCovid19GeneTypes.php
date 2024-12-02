@@ -75,8 +75,8 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     {
         $result = $this->fetchRow($this->select()->where("gene_id='" . $genetypeId . "'"));
         if ($result != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $genetypeId = "tt" . $randomStr;
             $this->checkgeneTypeId($genetypeId, $scheme);
         } else {

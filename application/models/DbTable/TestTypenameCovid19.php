@@ -47,8 +47,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 
     public function addTestTypeDetails($params)
     {
-        $commonService = new Application_Service_Common();
-        $randomStr = $commonService->getRandomString(13);
+        $randomStr = Application_Service_Common::generateRandomString(13);
         $testtypeId = "tt" . $randomStr;
         $tkId = $this->checkTestTypeId($testtypeId, $params['scheme']);
 
@@ -102,8 +101,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     {
         $result = $this->fetchRow($this->select()->where("test_type_id='" . $testtypeId . "'"));
         if ($result != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = "tt" . $randomStr;
             $this->checkTestTypeId($testtypeId, $scheme);
         } else {
@@ -271,8 +269,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     {
 
         if (trim($testtypeName) != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = "tt" . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
@@ -307,8 +304,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     {
 
         if (trim($testtypeName) != "") {
-            $commonService = new Application_Service_Common();
-            $randomStr = $commonService->getRandomString(13);
+            $randomStr = Application_Service_Common::generateRandomString(13);
             $testtypeId = "tt" . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
