@@ -4,7 +4,6 @@
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -91,16 +90,12 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-
-
         // ---------------------------------------------------------
-
+        // add a page
+        $pdf->AddPage('P', 'A4');
         // set font
         $pdf->SetFont('helvetica', '', 11);
 
-        // add a page
-        $pdf->AddPage();
 
         // set some text to print
         //$txt = <<<EOD
@@ -226,24 +221,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $distributionDate = Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
         }
 
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
-
-        //Comment Details
-        /* if (isset($reportFormat) && !empty($reportFormat)) {
-        } else {
-            $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:12;">DRIED TUBE SPECIMEN PERFORMANCE REPORT</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        } */
-        $labInfo = '<span style="font-weight: bold;font-size:13px;">Laboratory Results Summary : <br/></span>';
+        $labInfo = '<span style="font-weight: bold;font-size:13px;">Laboratory Results Summary : </span><br/>';
         $labInfo .= '<table cellpadding="3" border="1" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
@@ -268,20 +246,20 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         // print_r($result);die;
         if (!empty($result['responseResult'])) {
-            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : </span><br/>';
             $labRes .= '<table style="font-size:11px;" border="1" cellpadding="3" style="width:100%;border-color: #b7dde7;border-bottom:solid 2px black">';
             $labRes .= '<tr style="background-color:#b7dde7;width:100%;">';
-            $labRes .= '<td style="text-align:center;font-weight:">Sample/Control Label</td>';
+            $labRes .= '<td style="text-align:center;">Sample/Control Label</td>';
             if (!isset($result['reason_code']) || empty($result['reason_code'])) {
-                $labRes .= '<td style="text-align:center;font-weight:">Your Results</td>';
+                $labRes .= '<td style="text-align:center;">Your Results</td>';
             }
             if (isset($result['reason_code']) && !empty($result['reason_code'])) {
-                $labRes .= '<td style="text-align:center;font-weight:">Problem Code</td>';
+                $labRes .= '<td style="text-align:center;">Problem Code</td>';
             }
-            $labRes .= '<td style="text-align:center;font-weight:">Acceptable Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:">Documentation Score (%)</td>';
-            $labRes .= '<td style="text-align:center;font-weight:">Test Score (%)</td>';
-            $labRes .= '<td style="text-align:center;font-weight:">Final Score (%)</td>';
+            $labRes .= '<td style="text-align:center;">Acceptable Results</td>';
+            $labRes .= '<td style="text-align:center;">Documentation Score (%)</td>';
+            $labRes .= '<td style="text-align:center;">Test Score (%)</td>';
+            $labRes .= '<td style="text-align:center;">Final Score (%)</td>';
             $labRes .= '</tr>';
             //Sample codes
             $html = '';
@@ -290,7 +268,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
             foreach ($result['responseResult'] as $key => $response) {
                 $labRes .= '<tr>';
-                $labRes .= '<td style="text-align:center;font-weight:;">' . $response['sample_label'] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $response['sample_label'] . '</td>';
                 if (!isset($result['reason_code']) || empty($result['reason_code'])) {
                     $labRes .= '<td style="text-align:center;">' . $response['labResult'] . '</td>';
                 }
@@ -315,7 +293,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             $labRes .= '</table>';
-
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
@@ -324,11 +301,10 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($result['is_excluded'] == 'yes') {
             $finalScore = "Excluded from Evaluation";
         }
-        $finalInfo = '<span style="font-weight: bold;font-size:13px;">Overall Grade :</span><span> ' . $finalScore . '<br></span>';
+        $finalInfo = '<span style="font-weight: bold;font-size:13px;">Overall Grade :</span><span> ' . $finalScore . '</span><br>';
         if (isset($result['reason_code']) && !empty($result['reason_code'])) {
             $finalInfo .= '<br><span style="font-weight: bold;font-size:11px;">Problem Code ' . $result['reason_code'] . ' : </span><span style="font-size:11px;">' . $result['ntr_reason'] . '</span>';
         }
-
         $pdf->writeHTML($finalInfo, true, false, true, false, '');
 
         $warnings = json_decode($result['failure_reason'], true);
@@ -350,12 +326,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $correctiveActionStuff .= '</table><br/>';
 
             //----------------Participant Corrective Action Overview  Ends----------------
-
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
 
         $pdf->writeHTML($html, true, false, true, false, '');
-
         if (ob_get_contents()) {
             ob_end_clean();
         }

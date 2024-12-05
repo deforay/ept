@@ -576,32 +576,6 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
-
-            //----------------Summary Statistics for this survey  start----------------
-            if (isset($result['statistics']) && !empty($result['statistics'])) {
-                $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
-                $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
-                $ppOverview .= '<table border="1" style="font-size:12px;">';
-                $ppOverview .= '<tr style="background-color:#dbe4ee;">';
-                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
-                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
-                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
-                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
-                $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
-                $ppOverview .= '</tr>';
-
-                $ppOverview .= '<tr>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_responded'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providersWith100'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers>80'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers<80'] . '</td>';
-                $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_not_responded'] . '</td>';
-                $ppOverview .= '</tr>';
-
-                $ppOverview .= '</table><br>';
-                $pdf->writeHTML($ppOverview, true, false, true, false, '');
-            }
-            //----------------Summary Statistics for this survey  Ends----------------
             if (!empty($nonMandatorySamples)) {
 
                 $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
@@ -841,6 +815,32 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $pdf->writeHTML($comment, true, false, true, false, '');
             }
         }
+
+        //----------------Summary Statistics for this survey  start----------------
+        if (isset($result['statistics']) && !empty($result['statistics'])) {
+            $score = (isset($config->evaluation->dts->passPercentage) && !empty($config->evaluation->dts->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->dts->passPercentage : '80';
+            $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+            $ppOverview .= '<table border="1" style="font-size:12px;">';
+            $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '<tr>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providersWith100'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers>80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers<80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_not_responded'] . '</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '</table><br>';
+            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+        }
+        //----------------Summary Statistics for this survey  Ends----------------
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";

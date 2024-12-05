@@ -1170,7 +1170,6 @@ class Application_Model_Dts
 					|| $interval->days < $sampleRehydrateDays
 					|| $interval->days > ($sampleRehydrateDays + 1)
 				) {
-					error_log('came');
 					$failureReason[] = [
 						'warning' => "Testing not done within specified time of rehydration as per SOP.",
 						'correctiveAction' => $correctiveActions[14]
