@@ -30,7 +30,6 @@ foreach ($this->participantList as $part) {
                             <input type="text" id="pemail" name="pemail" size="50" class="isRequired isEmail form-control" title="Please enter the correct primary email id here" placeholder="<?= $this->translate->_('Please enter the primary email id here'); ?>" value="<?php echo (isset($this->rsUser['primary_email'])) ? $this->rsUser['primary_email'] : "" ?>" autocomplete="off" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->rsUser['primary_email']; ?>', 'This primary email already exists for another email. Please try something else.')">
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                             <?php if (isset($this->rsUser['new_email']) && !empty($this->rsUser['new_email'])) { ?>
-                                <!-- <small class="mandatory">Change email request for <strong><?php echo $this->rsUser['new_email']; ?></strong> pending for verfication</small> -->
                             <?php } ?>
                         </div>
                     </div>

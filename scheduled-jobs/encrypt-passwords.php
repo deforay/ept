@@ -52,6 +52,7 @@ try {
         }
     }
 } catch (Exception $e) {
+    echo "An error occurred: " . $e->getMessage() . PHP_EOL;
     error_log($e->getFile() . ":" . $e->getLine() . ":" . $e->getMessage());
     error_log($e->getTraceAsString());
 }

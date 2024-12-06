@@ -342,12 +342,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         if (
             $dmNameSpace->force_profile_check_primary == 'yes' ||
-            (
-                (
-                    isset($params['pemail']) && $params['pemail'] != "" &&
-                    isset($params['oldpemail']) && $params['oldpemail'] != "" &&
-                    $params['oldpemail'] != $params['pemail']
-                )
+            (isset($params['pemail']) && $params['pemail'] != "" &&
+                isset($params['oldpemail']) && $params['oldpemail'] != "" &&
+                $params['oldpemail'] != $params['pemail']
             )
         ) {
             $data['new_email'] = $params['pemail'];
@@ -374,7 +371,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $data['view_only_access'] = $params['viewOnlyAccess'];
         }
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-            $common = new Application_Service_Common();
             $password = Application_Service_Common::passwordHash($params['dmPassword']);
             $data['password'] = $password;
             $data['force_password_reset'] = 1;
@@ -390,68 +386,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $dmId = (int) $params['userSystemId'];
         if ($dmId !== false && $dmId > 0) {
-            $this->update($data, "dm_id = " . $dmId);
+            $this->update($data, "dm_id = $dmId");
             if (isset($params['deleteSystemId']) && count($params['deleteSystemId']) > 0) {
-                $db->delete('participant_manager_map', "dm_id = " . $params['deleteSystemId']);
+                $db->delete('participant_manager_map', "dm_id = {$params['deleteSystemId']}");
                 $db->delete('ptcc_countries_map', "ptcc_id = " . $params['deleteSystemId']);
-                $this->delete("dm_id = " . $params['deleteSystemId']);
+                $this->delete("dm_id = {$params['deleteSystemId']}");
             }
             $params['participantsList'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
-            /* if (!$isPtcc) {
-                $db->delete('participant_manager_map', "dm_id = " . $dmId);
-                $params['allparticipant'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
-                if (!empty($params['allparticipant'])) {
-                    foreach ($params['allparticipant'] as $participant) {
-                        $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
-                    }
-                }
-            } elseif ($isPtcc) {
-
-                $db->delete('participant_manager_map', "dm_id = " . $dmId);
-                $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-
-                $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
-                $params['province'] = isset($params['province']) ? Application_Service_Common::removeEmpty($params['province']) : [];
-                $params['country'] = isset($params['country']) ? Application_Service_Common::removeEmpty($params['country']) : [];
-
-                $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
-                $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-
-                if (!empty($params['district'])) {
-                    $locationWiseSwitch = true;
-                    $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
-                } elseif (!empty($params['province'])) {
-                    $locationWiseSwitch = true;
-                    $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
-                } elseif (!empty($params['country'])) {
-                    $locationWiseSwitch = true;
-                    $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
-                }
-
-                $pmmData = []; // Declare the participant manager mapping variable
-                if ($locationWiseSwitch) { // Check the status activated or not
-                    // Fetch list of participants from location wise
-                    $locationwiseparticipants = $db->fetchAll($sql);
-                    foreach ($locationwiseparticipants as $value) {
-                        $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
-                    }
-                }
-                // Save locatons details
-                $this->mapPtccLocations($params, $dmId);
-                $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-                if (isset($pmmData) && !empty($pmmData)) {
-                    $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
-                }
-            } */
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
             $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            $name = $firstName . " " . $lastName;
+            $name = "$firstName $lastName";
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated data manager $userName", "participants");
@@ -649,17 +596,25 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
         if (!isset($params['userId']) && !isset($params['key'])) {
-            return array('status' => 'fail', 'message' => 'Please enter the login credentials');
+            return [
+                'status' => 'fail',
+                'message' => 'Please enter valid login credentials'
+            ];
         }
 
-        $result = $this->fetchRow("new_email='" . $params['userId'] . "'");
+        $result = $this->fetchRow("new_email != primary_email AND new_email = '{$params['userId']}'");
+
         $passwordVerify = true;
         if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
         if ($result && $passwordVerify) {
             $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($result['new_email'] . '##' . $result['primary_email']);
-            $payload = array('status' => 'fail', 'message' => 'Please verify the change of your primary email from ' . $result['primary_email'] . ' to ' . $result['new_email'] . ' by clicking on verification link sent to <b>' . $result['new_email'] . '</b>', 'data' => $resultData);
+            $payload = [
+                'status' => 'fail',
+                'message' => 'Please verify the change of your primary email from ' . $result['primary_email'] . ' to ' . $result['new_email'] . ' by clicking on verification link sent to <b>' . $result['new_email'] . '</b>',
+                'data' => $resultData
+            ];
             $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
             return $payload;
         }
@@ -670,13 +625,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
         if (!$result || !$passwordVerify) {
-            $payload = array('status' => 'fail', 'message' => 'Your username or password is incorrect');
+            $payload = [
+                'status' => 'fail',
+                'message' => 'Please enter valid login credentials'
+            ];
             $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
             return $payload;
         }
         /* Check the status for data manager */
         if (isset($result['status']) && $result['status'] != "active") {
-            $payload = array('status' => 'fail', 'message' => 'You are not activated or email verification pending. Kindly contact admin');
+            $payload = [
+                'status' => 'fail',
+                'message' => 'Please enter valid login credentials'
+            ];
             $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
             return $payload;
         }
@@ -691,7 +652,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            $payload = array('status' => 'auth-fail', 'message' => 'Please check your credential. Please log in again');
+            $payload = [
+                'status' => 'auth-fail',
+                'message' => 'Please enter valid login credentials'
+            ];
             $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
             return $payload;
         }
@@ -728,15 +692,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         ];
 
         /* Finalizing the response data and return */
-        if (!isset($resultData) && trim($resultData['authToken']) == '') {
-            $payload = array('status' => 'fail', 'message' => 'Something went wrong please try again later');
+        if (empty($resultData) || trim($resultData['authToken']) == '') {
+            $payload = [
+                'status' => 'fail',
+                'message' => 'Something went wrong please try again later'
+            ];
         } else {
             $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
             if (!$row) {
-                $payload = array('status' => 'success', 'data' => $resultData);
+                $payload = [
+                    'status' => 'success',
+                    'data' => $resultData
+                ];
             } else {
                 $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($row['new_email'] . '##' . $row['primary_email']);
-                $payload = array('status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData);
+                $payload = ['status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData];
             }
         }
         $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
