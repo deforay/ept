@@ -669,7 +669,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
         }
-        if (!$result && !$passwordVerify) {
+        if (!$result || !$passwordVerify) {
             $payload = array('status' => 'fail', 'message' => 'Your username or password is incorrect');
             $apiService->addApiTracking($transactionId, $result['dm_id'], 1, 'login', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
             return $payload;
@@ -683,7 +683,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Update the new auth token */
         $params['authToken'] = Application_Service_Common::generateRandomString(6);
         $params['download_link'] = Application_Service_Common::generateRandomString(9);
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'], 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+
+        Zend_Debug::dump($result);
+        die;
+        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
 
         /* Validate new auth token and app-version */
