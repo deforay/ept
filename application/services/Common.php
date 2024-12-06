@@ -871,7 +871,7 @@ class Application_Service_Common
         error_log($output);
     }
 
-    function getAllTestKitBySearch($text)
+    public function getAllTestKitBySearch($text)
     {
         $db = new Application_Model_DbTable_TestkitnameDts();
         $sql = $db->select()->from(array('r_testkitname_dts'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))->where("TESTKIT_NAME LIKE '%" . $text . "%'");
@@ -888,7 +888,7 @@ class Application_Service_Common
         return array("result" => $echoResult);
     }
 
-    function getMappedTestKits($pid, $sid = "")
+    public function getMappedTestKits($pid, $sid = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from('participant_testkit_map', array('testkit_id'))
@@ -1435,7 +1435,7 @@ class Application_Service_Common
         }
 
         $zip = new ZipArchive();
-        $zipPath = $fileName . '.zip';
+        $zipPath = "$fileName.zip";
 
         if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             $zip->addFromString(basename($fileName), $stringData);

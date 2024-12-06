@@ -170,7 +170,7 @@ class AuthController extends Zend_Controller_Action
 				$oldMail = $dataManager->checkOldMail($result['dm_id']);
 				if (isset($oldMail) && $oldMail != "") {
 					$sessionAlert = new Zend_Session_Namespace('alertSpace');
-					$sessionAlert->message = "Please verify your new email " . $oldMail['new_email'] . " that you changed last login";
+					$sessionAlert->message = "Please verify your new email " . $oldMail['new_email'];
 					$sessionAlert->status = "failure";
 					$this->redirect('participant/user-info');
 				}
