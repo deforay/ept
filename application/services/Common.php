@@ -747,7 +747,7 @@ class Application_Service_Common
             ->setMinimumCount(RequirementPasswordGenerator::OPTION_NUMBERS, 2);
 
         $password = $generator->generatePassword();
-        echo $password;
+        return $password;
     }
 
     public function checkAssayInvalid($sid = null, $pid = null, $status = false)

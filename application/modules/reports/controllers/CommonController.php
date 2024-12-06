@@ -12,6 +12,7 @@ class Reports_CommonController extends Zend_Controller_Action
             ->addActionContext('get-options-by-value', 'html')
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
             ->addActionContext('get-ajax-drop-downs', 'html')
+            ->addActionContext('generate-password', 'html')
             ->initContext();
     }
 
@@ -111,6 +112,17 @@ class Reports_CommonController extends Zend_Controller_Action
             $arguments['search'] = $this->_getParam('search');
             $this->view->results = $commonService->fetchAjaxDropdownList($arguments);
             $this->view->arguments = $arguments;
+        }
+    }
+
+    public function generatePasswordAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        if ($request->isPost()) {
+            $commonService = new Application_Service_Common();
+            $this->view->result = $commonService->generatePassword();
         }
     }
 }

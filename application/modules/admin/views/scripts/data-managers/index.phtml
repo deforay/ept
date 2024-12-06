@@ -26,7 +26,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     <thead>
         <tr>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-            <th><?= $this->translate->_("Institute"); ?></th>
+                <th><?= $this->translate->_("Institute"); ?></th>
             <?php } ?>
             <th><?= $this->translate->_("First Name"); ?></th>
             <th><?= $this->translate->_("Last Name"); ?></th>
@@ -51,7 +51,6 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 
 </div><!-- /.modal -->
-<script src="<?php echo $this->baseUrl("js/simple-context-menu.min.js"); ?>"></script>
 <script type="text/javascript" charset="utf-8">
     $('#myModal').on('hidden.bs.modal', function() {
 
@@ -71,12 +70,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
-                <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                {
-                    "sClass": ""
-                },
-                <?php } ?>
-                {
+                <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?> {
+                        "sClass": ""
+                    },
+                <?php } ?> {
                     "sClass": ""
                 },
                 {
