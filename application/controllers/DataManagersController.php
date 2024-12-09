@@ -91,7 +91,12 @@ class DataManagersController extends Zend_Controller_Action
     {
         $this->_helper->layout()->setLayout('modal');
         $userService = new Application_Service_DataManagers();
-        if ($this->hasParam('id')) {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $this->view->result = $userService->resetPasswordFromAdmin($params);
+        } else if ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
@@ -99,15 +104,15 @@ class DataManagersController extends Zend_Controller_Action
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
 
-    public function savePasswordAction()
+    /* public function savePasswordAction()
     {
         $this->_helper->layout()->setLayout('modal');
         $userService = new Application_Service_DataManagers();
-        /** @var Zend_Controller_Request_Http $request */
+        /** @var Zend_Controller_Request_Http $request
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
         }
-    }
+    } */
 }

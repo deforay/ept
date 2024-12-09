@@ -147,7 +147,7 @@ class CommonController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         if ($request->isPost()) {
             $commonService = new Application_Service_Common();
-            $this->view->institutes = $commonService->generatePassword();
+            $this->view->result = $commonService->generatePassword();
         }
     }
 
