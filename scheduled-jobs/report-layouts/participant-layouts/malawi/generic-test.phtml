@@ -1,6 +1,9 @@
 <?php
 
+use mitoteam\jpgraph\MtJpGraph;
 
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+$monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -258,6 +261,25 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
         }
+
+        if ($result['is_excluded'] == 'yes') {
+            $wishes = '<p>Your response was not considered for evaluation</p>';
+        } else {
+            $totalScore = $result['shipment_score'] + $result['documentation_score'];
+            if ($totalScore >= $passPercentage) {
+                $accuracy = (($successRate / count($result['responseResult'])) * 100);
+                // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+                $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
+                $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
+                $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
+            } else {
+                $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+            }
+        }
+        $pdf->SetLeftMargin(15);
+        $pdf->writeHTML($wishes, true, false, true, false, '');
+
         //----------------Summary Statistics for this survey  start----------------
         if (isset($result['statistics']) && !empty($result['statistics'])) {
             $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
@@ -283,23 +305,121 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($ppOverview, true, false, true, false, '');
         }
         //----------------Summary Statistics for this survey  Ends----------------
-        if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
-        } else {
-            $totalScore = $result['shipment_score'] + $result['documentation_score'];
-            if ($totalScore >= $passPercentage) {
-                $accuracy = (($successRate / count($result['responseResult'])) * 100);
-                // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
-                $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
-                $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
-                $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
-                $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
-            } else {
-                $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+        /* if ((isset($result['performance1']) && !empty($result['performance1'])) || (isset($result['performance2']) && !empty($result['performance2']))) {
+            // add a page
+            $pdf->AddPage();
+        } */
+        if (isset($result['performance1']) && !empty($result['performance1']) && false) {
+            // add a page
+            $pdf->AddPage();
+            $dataX = [];
+            $dataY = [];
+            foreach ($result['performance1'] as $key => $val) {
+                $dataX[] = $val['scored'];
+                $dataY[] = $val['distribution_code'];
             }
+
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 300, 'auto');
+            $graph->SetScale("textlin");
+
+            // Enable anti-aliasing
+            $graph->img->SetAntiAliasing();
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+            // ...and add it to the graPH
+            // $b1plot->SetLegend("Number of participants");
+            $graph->Add($gbplot);
+
+            // $graph->legend->SetShadow('gray@0.4',5);
+            // $graph->legend->SetPos(0.5,0.98,'center','bottom');
+            $b1plot->SetColor("white");
+            // $b1plot->SetFillColor("#cc1111");
+            $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
+
+            // Setup the titles
+            $graph->title->Set("Your Performance");
+            $graph->xaxis->title->Set('% Score');
+            $graph->yaxis->title->Set('Number of Participants', 'center');
+
+            $graph->yaxis->SetTitleMargin(30);
+            $graph->xaxis->SetTitleMargin(32);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($image_file);
+            /* $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            } */
         }
-        $pdf->SetLeftMargin(15);
-        $pdf->writeHTML($wishes, true, false, true, false, '');
+        if (isset($result['performance2']) && !empty($result['performance2']) && false) {
+            // add a page
+            $pdf->AddPage();
+            $data1y = $data2y = $label = [];
+            foreach ($result['performance2'] as $row) {
+                $data1y[] = $row['passed'];
+                $data2y[] = $row['failed'];
+                $label[] = $row['distribution_code'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 600, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($label);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($data1y);
+            $b2plot = new BarPlot($data2y);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor("#11cccc");
+
+            $b2plot->SetColor("white");
+            $b2plot->SetFillColor("#cc1111");
+
+            $graph->title->Set("Performance of Surveys");
+
+            // Display the graph
+            $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($performance_of_surveys);
+            /* $pdf->Image($performance_of_surveys, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            } */
+        }
 
         //if(trim($result['distribution_date'])!=""){
         //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);

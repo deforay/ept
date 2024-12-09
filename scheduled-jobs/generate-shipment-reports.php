@@ -1064,7 +1064,7 @@ try {
                                 $participantLayoutFile = $customLayoutFileLocation;
                             }
                         }
-                        // echo $participantLayoutFile;
+                        // error_log($participantLayoutFile);
                         include($participantLayoutFile);
                     }
                 }

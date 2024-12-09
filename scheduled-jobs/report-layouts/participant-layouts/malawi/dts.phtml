@@ -1,6 +1,10 @@
 <?php
 
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
+
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray);die;
@@ -841,6 +845,63 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($ppOverview, true, false, true, false, '');
         }
         //----------------Summary Statistics for this survey  Ends----------------
+        if (isset($result['performance2']) && !empty($result['performance2'])) {
+            $data1y = $data2y = $label = [];
+            foreach ($result['performance2'] as $row) {
+                $data1y[] = $row['passed'];
+                $data2y[] = $row['failed'];
+                $label[] = $row['distribution_code'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(350, 200, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+            $tick1 = 0;
+            $tick2 = 15;
+            foreach (range(0, count($result['performance2'])) as $row) {
+                $tickPosition1[] = $tick1 = ($tick1 + 30);
+                $tickPosition2[] = $tick2 = ($tick2 + 30);
+            }
+            $graph->yaxis->SetTickPositions($tickPosition1, $tickPosition2);
+            $graph->SetBox(false);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($label);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($data1y);
+            $b2plot = new BarPlot($data2y);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor("#cc1111");
+
+            $b2plot->SetColor("white");
+            $b2plot->SetFillColor("#11cccc");
+
+            $graph->title->Set("Performance of Surveys");
+
+            // Display the graph
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($image_file);
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            /* if (file_exists($image_file)) {
+                unlink($image_file);
+            } */
+        }
+
+
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";

@@ -1579,7 +1579,22 @@ class Application_Service_Evaluation
 				->where("s.shipment_id = ?", $shipmentId)
 				->group(array('s.shipment_id'));
 			$shipmentResult[$i]['statistics'] = $db->fetchRow($statisticsSql);
-			//Zend_Debug::dump($shipmentResult);
+			// PT Survey Participant Scored
+			$performance1Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
+				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
+				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("COUNT(spm.participant_id)")))
+				->where("spm.final_result = ?", 1)
+				->group(array('d.distribution_id'))->limit(5);
+			$shipmentResult[$i]['performance1'] = $db->fetchAll($performance1Sql);
+			// PT Survey Participant Pass / Fail
+			$performancePassFaile2Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
+				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
+				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array(
+					'passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)"),
+					'failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)")
+				))
+				->group(array('d.distribution_id'))->limit(5);
+			$shipmentResult[$i]['performance2'] = $db->fetchAll($performancePassFaile2Sql);
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
