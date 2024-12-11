@@ -27,8 +27,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -58,7 +58,7 @@ if ($resultArray['shipment'] != "") {
     //$pdf->AddPage();
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', '', 12);
+    $pdf->SetFont('freesans', '', 12);
     if (count($resultArray['shipment']['referenceResult']) > 0) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -163,7 +163,7 @@ if ($resultArray['shipment'] != "") {
         $graph->Stroke($image_file);
 
         // set font
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('freesans', '', 12);
 
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';
@@ -364,28 +364,28 @@ if ($resultArray['shipment'] != "") {
 
 
         // Some data
-        $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
-        $failed = number_format((($responseResult["number_failed"] / $total) * 100), 2);
-        $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
-        $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
-        $data = array($passed, $failed, $notResponded, $excluded);
+        $passed = number_format(($responseResult["number_passed"] / $total) * 100, 2);
+        $failed = number_format(($responseResult["number_failed"] / $total) * 100, 2);
+        $notResponded = number_format(($responseResult["not_responded"] / $total) * 100, 2);
+        $excluded = number_format(($responseResult["excluded"] / $total) * 100, 2);
+        $data = [$passed, $failed, $notResponded, $excluded];
         // Create the Pie Graph.
         $graph = new PieGraph(700, 400);
         $graph->SetShadow();
 
         // Set A title for the plot
-        $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
+        $graph->title->Set("Shipment Participant Result Report (N=$total)");
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
 
         $p1 = new PiePlot($data);
-        $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
+        $p1->SetLegends(["Passed (N=$passedN)", "Failed (N=$failedN)", "Not Responded (N=$notRespondedN)", "Excluded (N=$excludedN)"]);
         $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
 
 
         $graph->Add($p1);
 
-        $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
+        $p1->SetSliceColors(['forestgreen', 'red', 'gray', 'orange', 'yellow']);
         if ($pass > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
             $performancePiechart = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
             $graph->Stroke($performancePiechart);
