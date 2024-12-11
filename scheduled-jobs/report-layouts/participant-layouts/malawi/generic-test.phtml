@@ -85,7 +85,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetFont('freesans', '', 11);
 
         // add a page
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'A4');
 
         /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
@@ -305,13 +305,13 @@ if (sizeof($resultArray['shipment']) > 0) {
             $pdf->writeHTML($ppOverview, true, false, true, false, '');
         }
         //----------------Summary Statistics for this survey  Ends----------------
-        /* if ((isset($result['performance1']) && !empty($result['performance1'])) || (isset($result['performance2']) && !empty($result['performance2']))) {
-            // add a page
-            $pdf->AddPage();
-        } */
-        if (isset($result['performance1']) && !empty($result['performance1']) && false) {
-            // add a page
-            $pdf->AddPage();
+
+        $performance1 = $performance2 = $performance3 = false;
+        if ((isset($result['performance1']) && !empty($result['performance1'])) || (isset($result['performance2']) && !empty($result['performance2'])) || (isset($result['performance3']) && !empty($result['performance3']))) {
+            $pdf->AddPage('P', 'A4');
+        }
+        if (isset($result['performance1']) && !empty($result['performance1'])) {
+            $performance1 = true;
             $dataX = [];
             $dataY = [];
             foreach ($result['performance1'] as $key => $val) {
@@ -320,9 +320,9 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 300, 'auto');
+            $graph = new Graph(700, 200, 'auto');
             $graph->SetScale("textlin");
-
+            $graph->SetMargin(80, 30, 10, 50);
             // Enable anti-aliasing
             $graph->img->SetAntiAliasing();
 
@@ -349,7 +349,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $graph->legend->SetPos(0.5,0.98,'center','bottom');
             $b1plot->SetColor("white");
             // $b1plot->SetFillColor("#cc1111");
-            $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
+            $b1plot->SetFillColor('#4F81BD');
 
             // Setup the titles
             $graph->title->Set("Your Performance");
@@ -366,22 +366,21 @@ if (sizeof($resultArray['shipment']) > 0) {
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
             $graph->img->SetQuality(100); // Set the highest quality
             $graph->Stroke($image_file);
-            /* $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
             if (file_exists($image_file)) {
                 unlink($image_file);
-            } */
+            }
         }
-        if (isset($result['performance2']) && !empty($result['performance2']) && false) {
-            // add a page
-            $pdf->AddPage();
+        if (isset($result['performance2']) && !empty($result['performance2'])) {
+            $performance2 = true;
             $data1y = $data2y = $label = [];
             foreach ($result['performance2'] as $row) {
                 $data1y[] = $row['passed'];
                 $data2y[] = $row['failed'];
-                $label[] = $row['distribution_code'];
+                $label[] = $row['sample_label'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 600, 'auto');
+            $graph = new Graph(700, 200, 'auto');
             $graph->SetScale("textlin");
 
             $theme_class = new UniversalTheme;
@@ -403,10 +402,62 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
             $b1plot->SetColor("white");
-            $b1plot->SetFillColor("#11cccc");
+            $b1plot->SetFillColor("darkgreen");
 
             $b2plot->SetColor("white");
-            $b2plot->SetFillColor("#cc1111");
+            $b2plot->SetFillColor("red");
+
+            $graph->title->Set("Performance of Current Survey Panels");
+
+            // Display the graph
+            $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($performance_of_current_survey_anels);
+            $addPoint = 0;
+            if ($performance1) {
+                $addPoint = 65;
+            }
+            $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            }
+        }
+        if (isset($result['performance3']) && !empty($result['performance3'])) {
+            $performance3 = true;
+            $data1y = $data2y = $label = [];
+            foreach ($result['performance3'] as $row) {
+                $data1y[] = $row['passed'];
+                $data2y[] = $row['failed'];
+                $label[] = $row['distribution_code'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 200, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($label);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($data1y);
+            $b2plot = new BarPlot($data2y);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor("darkgreen");
+
+            $b2plot->SetColor("white");
+            $b2plot->SetFillColor("red");
 
             $graph->title->Set("Performance of Surveys");
 
@@ -415,10 +466,19 @@ if (sizeof($resultArray['shipment']) > 0) {
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
             $graph->img->SetQuality(100); // Set the highest quality
             $graph->Stroke($performance_of_surveys);
-            /* $pdf->Image($performance_of_surveys, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            $addPoint = 0;
+            if ($performance1) {
+                $addPoint = 65;
+            }
+            if ($performance2 && !$performance1) {
+                $addPoint = 65;
+            } else if ($performance2) {
+                $addPoint = 130;
+            }
+            $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
             if (file_exists($image_file)) {
                 unlink($image_file);
-            } */
+            }
         }
 
         //if(trim($result['distribution_date'])!=""){
@@ -445,7 +505,11 @@ if (sizeof($resultArray['shipment']) > 0) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $html = '<p style="font-size:11px;">Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
+        $br = '';
+        if ($performance1 || $performance2 || $performance3) {
+            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
+        }
+        $html = $br . '<p style="font-size:11px;">Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }

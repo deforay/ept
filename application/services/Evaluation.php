@@ -1586,6 +1586,20 @@ class Application_Service_Evaluation
 				->where("spm.final_result = ?", 1)
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance1'] = $db->fetchAll($performance1Sql);
+
+			$scoreType = ($tableType != 'generic_test') ? "Pass" : 20;
+			$performance2Sql = $db->select()->from(array('rrd' => 'response_result_' . $tableType), array(
+				'passed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score = '$scoreType') THEN 1 ELSE 0 END)"),
+				'failed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score != '$scoreType') THEN 1 ELSE 0 END)")
+			))
+				->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array(''))
+				->join(array('ref' => 'reference_result_' . $tableType), 'ref.shipment_id=spm.shipment_id', array('sample_label'))
+				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
+				->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array(''))
+				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code'))
+				->where("s.shipment_id = ?", $shipmentId)
+				->group(array('ref.sample_id'));
+			$shipmentResult[$i]['performance2'] = $db->fetchAll($performance2Sql);
 			// PT Survey Participant Pass / Fail
 			$performancePassFaile2Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
@@ -1594,7 +1608,7 @@ class Application_Service_Evaluation
 					'failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)")
 				))
 				->group(array('d.distribution_id'))->limit(5);
-			$shipmentResult[$i]['performance2'] = $db->fetchAll($performancePassFaile2Sql);
+			$shipmentResult[$i]['performance3'] = $db->fetchAll($performancePassFaile2Sql);
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);

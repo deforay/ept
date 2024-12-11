@@ -752,10 +752,12 @@ class FPDIReport extends Fpdi
             }
         }
 
-        //Put the watermark
-        $this->SetFont('', 'B', 120);
-        $this->SetTextColor(230, 228, 198);
-        $this->RotatedText(25, 190, $this->watermark, 45);
+        if (isset($this->watermark) && $this->watermark != "") {
+            //Put the watermark
+            $this->SetFont('', 'B', 120);
+            $this->SetTextColor(230, 228, 198);
+            $this->RotatedText(25, 190, $this->watermark, 45);
+        }
     }
 
     public function Rotate($angle, $x = -1, $y = -1)
