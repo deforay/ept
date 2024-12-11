@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Tcpdf;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 ini_set('display_errors', 0);
@@ -63,7 +62,7 @@ class IndividualPDF extends Fpdi
         $this->layout = $layout;
         $this->dateTime = $datetime;
         $this->config = $conf;
-        $this->watermark = $watermark;
+        $this->watermark = $watermark ?? '';
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
@@ -96,7 +95,7 @@ class IndividualPDF extends Fpdi
             $screening = " - " . ucwords($this->dtsPanelType);
         }
         // Set font
-        $this->SetFont('helvetica', '', 10);
+        $this->SetFont('freesans', '', 10, '', true);
         //$this->header = nl2br(trim($this->header));
         //$this->header = preg_replace('/<br>$/', "", $this->header);
 
@@ -123,7 +122,7 @@ class IndividualPDF extends Fpdi
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
             }
         } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
@@ -135,31 +134,31 @@ class IndividualPDF extends Fpdi
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report</span>';
             }
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | INDIVIDUAL FINAL REPORT</span></div>';
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
             $html .= '<br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report ' . $screening . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
             $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
             }
             $html .= '<br><br>Proficiency Testing Report - ' . $this->scheme_name . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             /* if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             } */
         } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
             if ($this->schemeType != 'tb') {
-                $this->SetFont('helvetica', '', 10);
+                $this->SetFont('freesans', '', 10, '', true);
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                 $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
@@ -184,16 +183,16 @@ class IndividualPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
             }
         } elseif ($this->schemeType == 'covid19') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report - SARS-CoV-2</span>';
         } elseif ($this->schemeType == 'generic-test') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  ' . $this->scheme_name . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
         } else {
-            $this->SetFont('helvetica', '', 11);
+            $this->SetFont('freesans', '', 11);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  ' . $this->scheme_name . '</span>';
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
@@ -241,10 +240,13 @@ class IndividualPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
             }
         }
-        //Put the watermark
-        $this->SetFont('', 'B', 120);
-        $this->SetTextColor(230, 228, 198);
-        $this->RotatedText(25, 190, $this->watermark, 45);
+
+        if (isset($this->watermark) && $this->watermark != "") {
+            //Put the watermark
+            $this->SetFont('freesans', 'B', 120);
+            $this->SetTextColor(230, 228, 198);
+            $this->RotatedText(25, 190, $this->watermark, 45);
+        }
     }
 
     public function Rotate($angle, $x = -1, $y = -1)
@@ -300,7 +302,7 @@ class IndividualPDF extends Fpdi
         // Position at 15 mm from bottom
         $this->SetY(-18);
         // Set font
-        $this->SetFont('helvetica', '', 7);
+        $this->SetFont('freesans', '', 7);
         // Page number
         //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
@@ -315,9 +317,9 @@ class IndividualPDF extends Fpdi
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             // $this->Ln();
             $effectiveMonthYear = ($this->schemeType == 'tb') ? "March 2022" : $effectiveDate->format('M Y');
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10);
             if ($this->schemeType == 'tb') {
-                $this->SetFont('helvetica', '', 9);
+                $this->SetFont('freesans', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
                     $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
@@ -338,7 +340,7 @@ class IndividualPDF extends Fpdi
             }
         }
         if ($this->schemeType != 'tb') {
-            $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
     }
 }
@@ -376,7 +378,7 @@ class SummaryPDF extends Fpdi
         $this->layout = $layout;
         $this->dateTime = $datetime;
         $this->config = $conf;
-        $this->watermark = $watermark;
+        $this->watermark = $watermark ?? '';
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
@@ -411,7 +413,7 @@ class SummaryPDF extends Fpdi
         }
 
         // Set font
-        $this->SetFont('helvetica', '', 10);
+        $this->SetFont('freesans', '', 10);
         $screening = "";
         if (isset($this->dtsPanelType) && !empty($this->dtsPanelType)) {
             $screening = " - " . ucwords($this->dtsPanelType);
@@ -456,7 +458,7 @@ class SummaryPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
             }
         } elseif ($this->schemeType == 'eid'  && $this->layout != 'zimbabwe') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
@@ -490,13 +492,13 @@ class SummaryPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 45, "<hr>", 0, 0, 0, true, 'J', true);
             }
         } elseif ($this->schemeType == 'recency'  && $this->layout != 'zimbabwe') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'covid19') {
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
@@ -507,7 +509,7 @@ class SummaryPDF extends Fpdi
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 12, $htmlInAdd, 0, 0, 0, true, 'J', true);
             }
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
@@ -518,7 +520,7 @@ class SummaryPDF extends Fpdi
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 15, $htmlInAdd, 0, 0, 0, true, 'J', true);
             }
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             $this->writeHTMLCell(0, 0, 15, 8, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
@@ -563,7 +565,7 @@ class SummaryPDF extends Fpdi
             }
         } else {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             if ($this->schemeType == 'dts') {
                 if ($this->layout == 'myanmar') {
                     $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Antibody Diagnostics using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Summary Report ' . $screening . '</span>';
@@ -588,7 +590,7 @@ class SummaryPDF extends Fpdi
 
         if (isset($this->watermark) && $this->watermark != "") {
             //Put the watermark
-            $this->SetFont('', 'B', 120);
+            $this->SetFont('freesans', 'B', 120);
             $this->SetTextColor(230, 228, 198);
             $this->RotatedText(25, 190, $this->watermark, 45);
         }
@@ -651,7 +653,7 @@ class SummaryPDF extends Fpdi
         // Position at 15 mm from bottom
         $this->SetY(-18);
         // Set font
-        $this->SetFont('helvetica', '', 7);
+        $this->SetFont('freesans', '', 7, '', true);
         // Page number
         $this->writeHTML("<hr>", true, false, true, false, "");
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
@@ -659,13 +661,13 @@ class SummaryPDF extends Fpdi
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             $effectiveDate = new DateTime($showTime);
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont('freesans', '', 10, '', true);
             $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
             $effectiveDate = new DateTime($showTime);
             $effectiveMonthYear = ($this->schemeType == 'tb') ? "June 2022" : $effectiveDate->format('M Y');
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
-                $this->SetFont('helvetica', '', 9);
+                $this->SetFont('freesans', '', 9, '', true);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
                     $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
@@ -710,7 +712,7 @@ class FPDIReport extends Fpdi
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
         $this->config = $config;
-        $this->watermark = $watermark;
+        $this->watermark = $watermark ?? '';
         $this->reportType = $reportType;
         $this->layout = $layout;
         $this->scheme = $scheme;
@@ -740,7 +742,7 @@ class FPDIReport extends Fpdi
                 $this->SetY(32);
             }
             if ($this->layout != 'malawi') {
-                $this->SetFont('helvetica', 'B', 10);
+                $this->SetFont('freesans', 'B', 10);
                 // $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
             }
         }
@@ -754,7 +756,7 @@ class FPDIReport extends Fpdi
 
         if (isset($this->watermark) && $this->watermark != "") {
             //Put the watermark
-            $this->SetFont('', 'B', 120);
+            $this->SetFont('freesans', 'B', 120);
             $this->SetTextColor(230, 228, 198);
             $this->RotatedText(25, 190, $this->watermark, 45);
         }
@@ -816,7 +818,7 @@ class FPDIReport extends Fpdi
         // Position at 15 mm from bottom
         $this->SetY(-8);
         // Set font
-        $this->SetFont('helvetica', '', 7);
+        $this->SetFont('freesans', '', 7, '', true);
         // Page number
         // $this->writeHTML("<hr>", true, false, true, false, '');
         $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
@@ -874,10 +876,12 @@ class Watermark extends PDF_Rotate
     public function Header()
     {
         global $fullPathToFile;
-        //Put the watermark
-        $this->SetFont('helvetica', 'B', 50);
-        $this->SetTextColor(230, 228, 198);
-        $this->RotatedText(67, 109, $this->waterMarkText, 45);
+        if (isset($this->waterMarkText) && $this->waterMarkText != "") {
+            //Put the watermark
+            $this->SetFont('freesans', 'B', 120);
+            $this->SetTextColor(230, 228, 198);
+            $this->RotatedText(25, 190, $this->waterMarkText, 45);
+        }
 
         if (is_null($this->_tplIdx)) {
             // THIS IS WHERE YOU GET THE NUMBER OF PAGES
@@ -1031,7 +1035,7 @@ try {
                     'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
                 )
             )
-                ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array())
+                ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', [])
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
