@@ -97,7 +97,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // ---------------------------------------------------------
         // set font
-        $pdf->SetFont('helvetica', '', 11);
+        $pdf->SetFont('freesans', '', 11);
 
         // add a page
         $pdf->AddPage();
@@ -847,9 +847,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         //----------------Summary Statistics for this survey  Ends----------------
 
         $performance1 = $performance2 = $performance3 = false;
-        if ((isset($result['performance1']) && !empty($result['performance1'])) || (isset($result['performance2']) && !empty($result['performance2'])) || (isset($result['performance3']) && !empty($result['performance3']))) {
-            $pdf->AddPage('P', 'A4');
-        }
         if (isset($result['performance1']) && !empty($result['performance1'])) {
             $performance1 = true;
             $dataX = [];
@@ -860,7 +857,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             }
 
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(700, 150, 'auto');
             $graph->SetScale("textlin");
             $graph->SetMargin(80, 30, 10, 50);
             // Enable anti-aliasing
@@ -920,7 +917,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $label[] = $row['sample_label'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(700, 150, 'auto');
             $graph->SetScale("textlin");
 
             $theme_class = new UniversalTheme;
@@ -972,7 +969,7 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $label[] = $row['distribution_code'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(700, 150, 'auto');
             $graph->SetScale("textlin");
 
             $theme_class = new UniversalTheme;

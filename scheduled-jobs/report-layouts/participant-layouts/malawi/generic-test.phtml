@@ -307,9 +307,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         //----------------Summary Statistics for this survey  Ends----------------
 
         $performance1 = $performance2 = $performance3 = false;
-        if ((isset($result['performance1']) && !empty($result['performance1'])) || (isset($result['performance2']) && !empty($result['performance2'])) || (isset($result['performance3']) && !empty($result['performance3']))) {
-            $pdf->AddPage('P', 'A4');
-        }
         if (isset($result['performance1']) && !empty($result['performance1'])) {
             $performance1 = true;
             $dataX = [];
@@ -341,14 +338,18 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b1plot = new BarPlot($dataX);
             // Create the grouped bar plot
             $gbplot = new GroupBarPlot(array($b1plot));
+
+            /* $gbplot->value->SetColor('black');
+            $gbplot->value->show();
+            //$gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
+            $gbplot->value->SetAngle(45);
+            $gbplot->value->SetAlign('left', 'bottom');
+            $gbplot->value->SetFormat('%01.0f'); */
             // ...and add it to the graPH
             // $b1plot->SetLegend("Number of participants");
             $graph->Add($gbplot);
 
-            // $graph->legend->SetShadow('gray@0.4',5);
-            // $graph->legend->SetPos(0.5,0.98,'center','bottom');
             $b1plot->SetColor("white");
-            // $b1plot->SetFillColor("#cc1111");
             $b1plot->SetFillColor('#4F81BD');
 
             // Setup the titles
@@ -419,8 +420,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $addPoint = 65;
             }
             $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
-            if (file_exists($image_file)) {
-                unlink($image_file);
+            if (file_exists($performance_of_current_survey_anels)) {
+                unlink($performance_of_current_survey_anels);
             }
         }
         if (isset($result['performance3']) && !empty($result['performance3'])) {
@@ -476,8 +477,8 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $addPoint = 130;
             }
             $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
-            if (file_exists($image_file)) {
-                unlink($image_file);
+            if (file_exists($performance_of_surveys)) {
+                unlink($performance_of_surveys);
             }
         }
 

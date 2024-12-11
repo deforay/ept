@@ -1584,6 +1584,8 @@ class Application_Service_Evaluation
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
 				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("COUNT(spm.participant_id)")))
 				->where("spm.final_result = ?", 1)
+				->where("s.scheme_type = ?", $res['scheme_type'])
+				->order('d.distribution_date DESC')
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance1'] = $db->fetchAll($performance1Sql);
 
@@ -1598,6 +1600,7 @@ class Application_Service_Evaluation
 				->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array(''))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code'))
 				->where("s.shipment_id = ?", $shipmentId)
+				->where("s.scheme_type = ?", $res['scheme_type'])
 				->group(array('ref.sample_id'));
 			$shipmentResult[$i]['performance2'] = $db->fetchAll($performance2Sql);
 			// PT Survey Participant Pass / Fail
@@ -1607,6 +1610,8 @@ class Application_Service_Evaluation
 					'passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)"),
 					'failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)")
 				))
+				->where("s.scheme_type = ?", $res['scheme_type'])
+				->order('d.distribution_date DESC')
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance3'] = $db->fetchAll($performancePassFaile2Sql);
 			$i++;
