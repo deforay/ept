@@ -467,59 +467,6 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
     }
 
-    /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
-        $dataX = [];
-        $dataY = [];
-        $total = 0;
-        foreach ($resultArray['shipment']['pieChart'] as $key => $val) {
-            $dataX[] = $val['testkit1Total'];
-            $dataY[] = $val['TestKit_Name'] . ' (n=' . $val['testkit1Total'] . ')';
-            $total += $val['testkit1Total'];
-        }
-        // Create the graph. These two calls are always required
-        $graph = new Graph(680, 800, 'auto');
-        $graph->SetScale("textlin");
-
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
-        $graph->SetMargin(80, 30, 10, 300);
-
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->xaxis->SetLabelAngle(90);
-        $graph->xaxis->SetLabelMargin(0);
-        $graph->xaxis->SetPos(0.5);
-
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
-
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        $graph->Add($gbplot);
-
-        $b1plot->SetFillColor($monochromaticColors[2]);
-        $b1plot->SetColor("white");
-        $graph->title->Set("Test kits used for PT survey " . $resultArray['shipment']['distribution_code'] . "(N=" . $total . ")");
-        $graph->yaxis->title->Set('Number of Participants');
-        $graph->xaxis->title->Set('Testkit-1 Name');
-        $graph->yaxis->SetTitleMargin(35);
-        $graph->xaxis->SetTitleMargin(280);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'testkit_chart.png';
-        $graph->Stroke($piechart);
-
-        $pdf->Image($piechart, 5, ($pdf->getY() + 200), '', '', '', '', 'C', false, 200);
-        if (file_exists($piechart)) {
-            unlink($piechart);
-        }
-    } */
-
     $pdf->AddPage();
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
@@ -532,11 +479,6 @@ if ($resultArray['shipment'] != "") {
         $notRespondedN = $responseResult["not_responded"];
         $responseResult["excluded"] = abs($responseResult["excluded"] - $responseResult["not_responded"]);
         $excludedN = $responseResult["excluded"];
-        // $late = $responseResult["number_late"];
-        //$total = $passedN + $failedN + $notRespondedN + $excludedN;
-
-
-        // Some data
         $passed = number_format((($responseResult["number_passed"] / $total) * 100), 2);
         $failed = number_format((($responseResult["number_failed"] / $total) * 100), 2);
         $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
@@ -548,7 +490,6 @@ if ($resultArray['shipment'] != "") {
 
         // Set A title for the plot
         $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
-        // $graph->title->SetFont(FF_FONT2,FS_BOLD);
         // Enable anti-aliasing
         $graph->img->SetAntiAliasing();
         $p1 = new PiePlot($data);
@@ -567,6 +508,7 @@ if ($resultArray['shipment'] != "") {
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
             $graph->img->SetQuality(100); // Set the highest quality
             $graph->Stroke($performancePiechart);
+
             $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 600);
             if (file_exists($performancePiechart)) {
                 unlink($performancePiechart);
