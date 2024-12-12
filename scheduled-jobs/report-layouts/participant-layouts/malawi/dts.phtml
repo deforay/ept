@@ -880,6 +880,8 @@ if (sizeof($resultArray['shipment']) > 0) {
             $gbplot = new GroupBarPlot(array($b1plot));
             // ...and add it to the graPH
             $graph->Add($gbplot);
+            $b1plot->value->Show();
+            $b1plot->value->SetColor("black", "darkred");
 
             $b1plot->SetColor("white");
             // $b1plot->SetFillColor("#cc1111");
@@ -916,6 +918,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // Create the graph. These two calls are always required
             $graph = new Graph(700, 200, 'auto');
             $graph->SetScale("textlin");
+
             $theme_class = new UniversalTheme;
             $graph->SetTheme($theme_class);
 
@@ -932,6 +935,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
             // ...and add it to the graPH
             $graph->Add($gbplot);
+            $b1plot->value->Show();
+            $b1plot->value->SetColor("black", "darkred");
+            $b2plot->value->Show();
+            $b2plot->value->SetColor("darkred", "black");
 
 
             $b1plot->SetColor("white");
@@ -941,6 +948,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b2plot->SetFillColor("red");
 
             $graph->title->Set("Performance of Current Survey Panels");
+
             // Display the graph
             $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
@@ -986,7 +994,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
             // ...and add it to the graPH
             $graph->Add($gbplot);
-
+            $b1plot->value->Show();
+            $b1plot->value->SetColor("black", "darkred");
+            $b2plot->value->Show();
+            $b2plot->value->SetColor("darkred", "black");
 
             $b1plot->SetColor("white");
             $b1plot->SetFillColor("darkgreen");
@@ -995,6 +1006,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b2plot->SetFillColor("red");
 
             $graph->title->Set("Performance of Surveys");
+
             // Display the graph
             $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
