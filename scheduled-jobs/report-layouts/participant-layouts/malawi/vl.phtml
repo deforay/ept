@@ -370,19 +370,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
             // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
-            $html = '<hr>';
-            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
-                $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
-            }
-
-            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
-            $eodReportText = "End of report";
-            if ($evalRow['report_type'] == 'finalized') {
-                $eodReportText = "End of final report";
-            }
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-            $pdf->writeHTML($html, true, false, true, false, '');
         } elseif ($methodOfEvaluation == 'standard') {
             if (sizeof($result['responseResult']) > 0) {
 
@@ -509,8 +496,214 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $comment .= '</table>';
                 $pdf->writeHTML($comment, true, false, true, false, '');
             }
+        }
+        //----------------Summary Statistics for this survey  start----------------
+        if (isset($result['statistics']) && !empty($result['statistics'])) {
+            $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
+            $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+            $ppOverview .= '<table border="1" style="font-size:12px;">';
+            $ppOverview .= '<tr style="background-color:#dbe4ee;">';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with 100%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with >= ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers with < ' . $score . '%</td>';
+            $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;">Providers that did not Respond</td>';
+            $ppOverview .= '</tr>';
 
-            $eodReportText = "End of report";
+            $ppOverview .= '<tr>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_responded'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providersWith100'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers>80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['providers<80'] . '</td>';
+            $ppOverview .= '    <td style="text-align:center;font-weight:normal;">' . $result['statistics']['number_not_responded'] . '</td>';
+            $ppOverview .= '</tr>';
+
+            $ppOverview .= '</table><br>';
+            $pdf->writeHTML($ppOverview, true, false, true, false, '');
+        }
+        //----------------Summary Statistics for this survey  Ends----------------
+
+        $performance1 = $performance2 = $performance3 = false;
+        if (isset($result['performance1']) && !empty($result['performance1'])) {
+            $performance1 = true;
+            $dataX = [];
+            $dataY = [];
+            foreach ($result['performance1'] as $key => $val) {
+                $dataX[] = $val['scored'];
+                $dataY[] = $val['distribution_code'];
+            }
+
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 200, 'auto');
+            $graph->SetScale("textlin");
+            $graph->SetMargin(80, 30, 10, 50);
+            // Enable anti-aliasing
+            $graph->img->SetAntiAliasing();
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
+            $graph->SetBox(false);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($dataY);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($dataX);
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot));
+
+            /* $gbplot->value->SetColor('black');
+            $gbplot->value->show();
+            //$gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
+            $gbplot->value->SetAngle(45);
+            $gbplot->value->SetAlign('left', 'bottom');
+            $gbplot->value->SetFormat('%01.0f'); */
+            // ...and add it to the graPH
+            // $b1plot->SetLegend("Number of participants");
+            $graph->Add($gbplot);
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor('#4F81BD');
+
+            // Setup the titles
+            $graph->title->Set("Your Performance");
+            $graph->xaxis->title->Set('% Score');
+            $graph->yaxis->title->Set('Number of Participants', 'center');
+
+            $graph->yaxis->SetTitleMargin(30);
+            $graph->xaxis->SetTitleMargin(32);
+            // Turn the tick mark out from the plot area
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
+
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($image_file);
+            $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+            if (file_exists($image_file)) {
+                unlink($image_file);
+            }
+        }
+        if (isset($result['performance2']) && !empty($result['performance2'])) {
+            $performance2 = true;
+            $data1y = $data2y = $label = [];
+            foreach ($result['performance2'] as $row) {
+                $data1y[] = $row['passed'];
+                $data2y[] = $row['failed'];
+                $label[] = $row['sample_label'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 200, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($label);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($data1y);
+            $b2plot = new BarPlot($data2y);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor("darkgreen");
+
+            $b2plot->SetColor("white");
+            $b2plot->SetFillColor("red");
+
+            $graph->title->Set("Performance of Current Survey Panels");
+
+            // Display the graph
+            $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($performance_of_current_survey_anels);
+            $addPoint = 0;
+            if ($performance1) {
+                $addPoint = 65;
+            }
+            $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
+            if (file_exists($performance_of_current_survey_anels)) {
+                unlink($performance_of_current_survey_anels);
+            }
+        }
+        if (isset($result['performance3']) && !empty($result['performance3'])) {
+            $performance3 = true;
+            $data1y = $data2y = $label = [];
+            foreach ($result['performance3'] as $row) {
+                $data1y[] = $row['passed'];
+                $data2y[] = $row['failed'];
+                $label[] = $row['distribution_code'];
+            }
+            // Create the graph. These two calls are always required
+            $graph = new Graph(700, 200, 'auto');
+            $graph->SetScale("textlin");
+
+            $theme_class = new UniversalTheme;
+            $graph->SetTheme($theme_class);
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($label);
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            // Create the bar plots
+            $b1plot = new BarPlot($data1y);
+            $b2plot = new BarPlot($data2y);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+            // ...and add it to the graPH
+            $graph->Add($gbplot);
+
+
+            $b1plot->SetColor("white");
+            $b1plot->SetFillColor("darkgreen");
+
+            $b2plot->SetColor("white");
+            $b2plot->SetFillColor("red");
+
+            $graph->title->Set("Performance of Surveys");
+
+            // Display the graph
+            $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
+            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+            $graph->img->SetQuality(100); // Set the highest quality
+            $graph->Stroke($performance_of_surveys);
+            $addPoint = 0;
+            if ($performance1) {
+                $addPoint = 65;
+            }
+            if ($performance2 && !$performance1) {
+                $addPoint = 65;
+            } else if ($performance2) {
+                $addPoint = 130;
+            }
+            $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
+            if (file_exists($performance_of_surveys)) {
+                unlink($performance_of_surveys);
+            }
+        }
+        $br = '';
+        if ($performance1 || $performance2 || $performance3) {
+            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
+        }
+        if ($methodOfEvaluation == 'standard') {
+            $eodReportText = $br . "End of report";
             if ($evalRow['report_type'] == 'finalized') {
                 $eodReportText = "End of final report";
             }
@@ -522,6 +715,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
             $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
 
+            $pdf->writeHTML($html, true, false, true, false, '');
+        } else if ($methodOfEvaluation == 'iso17043') {
+            $html = $br . '<hr>';
+            if (isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") {
+                $html .= '<span style="text-align:center;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
+            }
+
+            $html .= '<br/><span style="text-align:center;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $html .= '<br/><span style="text-align:center;"><small>This is a system generated report. No signature required</small></span>';
+            $eodReportText = "End of report";
+            if ($evalRow['report_type'] == 'finalized') {
+                $eodReportText = "End of final report";
+            }
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
         if (ob_get_contents()) {
