@@ -1582,7 +1582,7 @@ class Application_Service_Evaluation
 			// PT Survey Participant Scored
 			$performance1Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
-				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("COUNT(spm.participant_id)")))
+				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
 				->where("spm.final_result = ?", 1)
 				->where("s.scheme_type = ?", $res['scheme_type'])
 				->order('d.distribution_date DESC')

@@ -307,7 +307,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         //----------------Summary Statistics for this survey  Ends----------------
 
         $performance1 = $performance2 = $performance3 = false;
-        $performance1 = $performance2 = $performance3 = false;
         if (isset($result['performance1']) && !empty($result['performance1'])) {
             $performance1 = true;
             $dataX = [];
@@ -317,24 +316,20 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $dataY[] = $val['distribution_code'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(680, 250, 'auto');
             $graph->SetScale("textlin");
 
-            // Enable anti-aliasing
-            $graph->img->SetAntiAliasing();
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
-            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
             $graph->SetBox(false);
+            $graph->SetMargin(80, 30, 10, 50);
 
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($dataY);
             $graph->xaxis->SetPos(0.5);
+
             $graph->yaxis->HideLine(false);
             $graph->yaxis->HideTicks(false, false);
-
+            $graph->yaxis->scale->SetAutoMin(0);
+            $graph->yaxis->scale->SetAutoMax(100);
             // Create the bar plots
             $b1plot = new BarPlot($dataX);
             // Create the grouped bar plot
@@ -344,17 +339,17 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b1plot->value->Show();
             $b1plot->value->SetColor("black", "darkred");
 
-            $b1plot->SetColor("white");
-            // $b1plot->SetFillColor("#cc1111");
             $b1plot->SetFillColor('#4F81BD');
-
-            // Setup the titles
+            $b1plot->SetColor("white");
             $graph->title->Set("Your Performance");
             $graph->xaxis->title->Set('PT Surveys');
-            $graph->yaxis->title->Set('Number of Participants', 'center');
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->yaxis->SetPos('min');
 
-            $graph->yaxis->SetTitleMargin(30);
-            $graph->xaxis->SetTitleMargin(32);
+            $graph->xaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->yaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->yaxis->SetTitleMargin(40);
+            $graph->xaxis->SetTitleMargin(15);
             // Turn the tick mark out from the plot area
             $graph->xaxis->SetTickSide(SIDE_DOWN);
             $graph->yaxis->SetTickSide(SIDE_LEFT);
@@ -377,21 +372,25 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $label[] = $row['sample_label'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(680, 250, 'auto');
             $graph->SetScale("textlin");
 
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
+            $graph->SetBox(false);
+            $graph->SetMargin(80, 30, 10, 50);
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($label);
+
+            $graph->xaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->yaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->xaxis->HideLine(false);
             $graph->yaxis->HideLine(false);
+            $graph->xaxis->HideTicks(false, false);
             $graph->yaxis->HideTicks(false, false);
+            $graph->xaxis->SetPos(0.5);
 
             // Create the bar plots
             $b1plot = new BarPlot($data1y);
             $b2plot = new BarPlot($data2y);
-
             // Create the grouped bar plot
             $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
             // ...and add it to the graPH
@@ -401,15 +400,21 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b2plot->value->Show();
             $b2plot->value->SetColor("darkred", "black");
 
-
-            $b1plot->SetColor("white");
             $b1plot->SetFillColor("darkgreen");
+            $b1plot->SetColor("white");
 
-            $b2plot->SetColor("white");
             $b2plot->SetFillColor("red");
+            $b2plot->SetColor("white");
 
+            $b1plot->SetFillColor('#4F81BD');
+            $b1plot->SetColor("white");
             $graph->title->Set("Performance of Current Survey Panels");
-
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->xaxis->title->Set('Samples');
+            $graph->yaxis->SetTitleMargin(40);
+            $graph->xaxis->SetTitleMargin(15);
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
             // Display the graph
             $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
@@ -433,24 +438,25 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $label[] = $row['distribution_code'];
             }
             // Create the graph. These two calls are always required
-            $graph = new Graph(700, 200, 'auto');
+            $graph = new Graph(680, 250, 'auto');
             $graph->SetScale("textlin");
+
             $graph->SetBox(false);
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
+            $graph->SetMargin(80, 30, 10, 50);
             $graph->ygrid->SetFill(false);
             $graph->xaxis->SetTickLabels($label);
-            $graph->xaxis->SetPos(0.5);
 
+            $graph->xaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->yaxis->title->SetFont(FF_FONT1, FS_BOLD);
+            $graph->xaxis->HideLine(false);
             $graph->yaxis->HideLine(false);
+            $graph->xaxis->HideTicks(false, false);
             $graph->yaxis->HideTicks(false, false);
+            $graph->xaxis->SetPos(0.5);
 
             // Create the bar plots
             $b1plot = new BarPlot($data1y);
             $b2plot = new BarPlot($data2y);
-
             // Create the grouped bar plot
             $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
             // ...and add it to the graPH
@@ -460,13 +466,21 @@ if (sizeof($resultArray['shipment']) > 0) {
             $b2plot->value->Show();
             $b2plot->value->SetColor("darkred", "black");
 
-            $b1plot->SetColor("white");
             $b1plot->SetFillColor("darkgreen");
+            $b1plot->SetColor("white");
 
-            $b2plot->SetColor("white");
             $b2plot->SetFillColor("red");
+            $b2plot->SetColor("white");
 
+            $b1plot->SetFillColor('#4F81BD');
+            $b1plot->SetColor("white");
             $graph->title->Set("Performance of Surveys");
+            $graph->yaxis->title->Set('Number of Participants');
+            $graph->xaxis->title->Set('PT Surveys');
+            $graph->yaxis->SetTitleMargin(40);
+            $graph->xaxis->SetTitleMargin(15);
+            $graph->xaxis->SetTickSide(SIDE_DOWN);
+            $graph->yaxis->SetTickSide(SIDE_LEFT);
 
             // Display the graph
             $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
@@ -514,7 +528,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $br = '';
         if ($performance1 || $performance2 || $performance3) {
-            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
+            $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
         }
         $html = $br . '<p style="font-size:11px;">Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
@@ -538,7 +552,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html = '<br><p style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</p>';
+        $html = '<p style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</p>';
         $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
         if (trim($result['shipment_comment']) != "") {
             $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</p>';
