@@ -1601,7 +1601,8 @@ class Application_Service_Evaluation
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code'))
 				->where("s.shipment_id = ?", $shipmentId)
 				->where("s.scheme_type = ?", $res['scheme_type'])
-				->group(array('ref.sample_id'));
+				->group(array('ref.sample_id'))
+				->order('ref.sample_id ASC');
 			$shipmentResult[$i]['performance2'] = $db->fetchAll($performance2Sql);
 			// PT Survey Participant Pass / Fail
 			$performancePassFaile2Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
