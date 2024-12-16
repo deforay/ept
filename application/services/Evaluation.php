@@ -1580,41 +1580,78 @@ class Application_Service_Evaluation
 				->group(array('s.shipment_id'));
 			$shipmentResult[$i]['statistics'] = $db->fetchRow($statisticsSql);
 			// PT Survey Participant Scored
+
+			/* To get the last 4 PT survey */
+			$noSurveySql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
+				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
+				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
+				->where("spm.participant_id = ?", $res['participant_id'])
+				->where("DATE(d.distribution_date) < ?", $res['distribution_date'])
+				->limit(4);
+			$noSurvey = $db->fetchAll($noSurveySql);
+			$surveysList = [];
+			foreach ($noSurvey as $row) {
+				$surveysList[] = (string)$row['distribution_code'];
+			}
+			$surveysList[] = (string)$res['distribution_code'];
+
+			/* Chart 1 Your Performance for the last 5 surveys */
 			$performance1Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
 				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
-				->where("spm.final_result = ?", 1)
-				->where("s.scheme_type = ?", $res['scheme_type'])
+				->where("spm.participant_id = ?", $res['participant_id'])
+				->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
+				->where("DATE(d.distribution_date) <= ?", $res['distribution_date'])
 				->order('d.distribution_date ASC')
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance1'] = $db->fetchAll($performance1Sql);
 
-			$scoreType = ($tableType != 'generic_test') ? "Pass" : 20;
-			$performance2Sql = $db->select()->from(array('rrd' => 'response_result_' . $tableType), array(
-				'passed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score = '$scoreType') THEN 1 ELSE 0 END)"),
-				'failed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score != '$scoreType') THEN 1 ELSE 0 END)")
-			))
-				->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array(''))
-				->join(array('ref' => 'reference_result_' . $tableType), 'ref.shipment_id=spm.shipment_id', array('sample_label'))
-				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
-				->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array(''))
-				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code'))
-				->where("s.shipment_id = ?", $shipmentId)
-				->where("s.scheme_type = ?", $res['scheme_type'])
-				->group(array('ref.sample_id'))
-				->order('ref.sample_id ASC');
-			$shipmentResult[$i]['performance2'] = $db->fetchAll($performance2Sql);
-			// PT Survey Participant Pass / Fail
+			/* Chart 2 Participants performance for the last 5 surveys */
 			$performancePassFaile2Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
 				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array(
 					'passed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 1) THEN 1 ELSE 0 END)"),
 					'failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)")
 				))
-				->where("s.scheme_type = ?", $res['scheme_type'])
+				->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
+				->where("DATE(d.distribution_date) <= ?", $res['distribution_date'])
 				->order('d.distribution_date ASC')
 				->group(array('d.distribution_id'))->limit(5);
-			$shipmentResult[$i]['performance3'] = $db->fetchAll($performancePassFaile2Sql);
+			$shipmentResult[$i]['performance2'] = $db->fetchAll($performancePassFaile2Sql);
+
+			/* Chart 3 Participants performance for the current survey panels */
+			/* To get the list of samples using map id */
+			$sampleSql = $db->select()->from(array('ref' => 'reference_result_' . $tableType), array('sample_id', 'sample_label'))
+				->where('ref.shipment_id = ?', $res['shipment_id']);
+			$sampleList = $db->fetchAll($sampleSql);
+			$scoreType = ($tableType != 'generic_test') ? "Pass" : 20;
+			$performance3Sql = $db->select()->from(array('rrd' => 'response_result_' . $tableType), array(
+				'passed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score = '$scoreType') THEN 1 ELSE 0 END)"),
+				'failed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score != '$scoreType') THEN 1 ELSE 0 END)"),
+				'sample_id'
+			))
+				->where("rrd.shipment_map_id IN (
+					SELECT shipment_participant_map.map_id 
+					FROM shipment_participant_map 
+					where shipment_participant_map.shipment_id = " . $res['shipment_id'] . ")")
+				->group(array('rrd.sample_id'))
+				->order('rrd.sample_id ASC');
+			$performance3ChartsResults = $db->fetchAll($performance3Sql);
+			$sampleResposne = [];
+			foreach ($sampleList as $samples) {
+				foreach ($performance3ChartsResults as $row) {
+					if ($samples['sample_id'] == $row['sample_id']) {
+						$sampleResposne[] = array(
+							'passed'	=> $row['passed'],
+							'failed'	=> $row['failed'],
+							'samples'	=> $samples['sample_label'],
+							'distribution_code'	=> $res['distribution_code'],
+						);
+					}
+				}
+			}
+			$shipmentResult[$i]['performance3'] = $sampleResposne;
+			// PT Survey Participant Pass / Fail
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
 			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);

@@ -28,7 +28,7 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
     $dataX = [];
     $dataY = [];
     foreach ($result['performance1'] as $key => $val) {
-        $dataX[] = $val['scored'];
+        $dataX[] = ($val['scored'] > 0) ? $val['scored'] : 0;
         $dataY[] = $val['distribution_code'];
     }
     // Create the graph. These two calls are always required
@@ -58,7 +58,7 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
-    $graph->title->Set("Your Performance");
+    $graph->title->Set("Your Performance for the last 5 surveys");
     $graph->subtitle->Set('.');
     $graph->xaxis->title->Set('PT Surveys');
     $graph->yaxis->title->Set('Percentage of Performance');
@@ -85,77 +85,8 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $performance2 = true;
     $data1y = $data2y = $label = [];
     foreach ($result['performance2'] as $row) {
-        $data1y[] = $row['passed'];
-        $data2y[] = $row['failed'];
-        $label[] = $row['sample_label'];
-    }
-    // Create the graph. These two calls are always required
-    $graph = new Graph(680, 200, 'auto');
-    $graph->SetScale("textlin");
-
-    $graph->SetBox(false);
-    $graph->SetMargin(80, 30, 10, 50);
-    $graph->ygrid->SetFill(false);
-    $graph->xaxis->SetTickLabels($label);
-    $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->xaxis->HideLine(false);
-    $graph->yaxis->HideLine(false);
-    $graph->xaxis->HideTicks(false, false);
-    $graph->yaxis->HideTicks(false, false);
-    $graph->xaxis->SetPos(0.5);
-
-    // Create the bar plots
-    $b1plot = new BarPlot($data1y);
-    $b2plot = new BarPlot($data2y);
-    // Create the grouped bar plot
-    $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
-    // ...and add it to the graPH
-    $graph->Add($gbplot);
-    $b1plot->value->Show();
-    $b1plot->value->SetColor("black", "darkred");
-    $b2plot->value->Show();
-    $b2plot->value->SetColor("darkred", "black");
-    $b1plot->value->SetFormat("%d");
-    $b1plot->SetFillColor("darkgreen");
-    $b1plot->SetColor("white");
-
-    $b2plot->SetFillColor("red");
-    $b2plot->SetColor("white");
-
-    $b1plot->SetFillColor('#4F81BD');
-    $b1plot->SetColor("white");
-    $graph->legend->SetShadow('gray@0.4', 5);
-    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
-    $graph->title->Set("Performance of Current Survey Panels");
-    $graph->subtitle->Set('.');
-    $graph->yaxis->title->Set('Number of Participants');
-    $graph->xaxis->title->Set('Samples');
-    $graph->yaxis->SetTitleMargin(40);
-    $graph->xaxis->SetTitleMargin(15);
-    $graph->xaxis->SetTickSide(SIDE_DOWN);
-    $graph->yaxis->SetTickSide(SIDE_LEFT);
-    // Display the graph
-    $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
-    $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-    $graph->img->SetQuality(100); // Set the highest quality
-    $graph->Stroke($performance_of_current_survey_anels);
-    $addPoint = 0;
-    if ($performance1) {
-        $addPoint = 65;
-    }
-    $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
-    if (file_exists($performance_of_current_survey_anels)) {
-        unlink($performance_of_current_survey_anels);
-    }
-}
-if (isset($result['performance3']) && !empty($result['performance3'])) {
-    $performance3 = true;
-    $data1y = $data2y = $label = [];
-    foreach ($result['performance3'] as $row) {
-        $data1y[] = $row['passed'];
-        $data2y[] = $row['failed'];
+        $data1y[] = ($row['passed'] > 0) ? $row['passed'] : 0;
+        $data2y[] = ($row['failed'] > 0) ? $row['failed'] : 0;
         $label[] = $row['distribution_code'];
     }
     // Create the graph. These two calls are always required
@@ -173,7 +104,6 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $graph->yaxis->HideLine(false);
     $graph->xaxis->HideTicks(false, false);
     $graph->yaxis->HideTicks(false, false);
-    $graph->xaxis->SetPos(0.5);
 
     // Create the bar plots
     $b1plot = new BarPlot($data1y);
@@ -187,6 +117,7 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $b2plot->value->Show();
     $b2plot->value->SetColor("darkred", "black");
     $b1plot->value->SetFormat("%d");
+    $b2plot->value->SetFormat("%d");
     $b1plot->SetFillColor("darkgreen");
     $b1plot->SetColor("white");
 
@@ -197,7 +128,7 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $b1plot->SetColor("white");
     $graph->legend->SetShadow('gray@0.4', 5);
     $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
-    $graph->title->Set("Performance of Surveys");
+    $graph->title->Set("Participants performance for the last 5 surveys");
     $graph->subtitle->Set('.');
     $graph->yaxis->title->Set('Number of Participants');
     $graph->xaxis->title->Set('PT Surveys');
@@ -215,14 +146,89 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     if ($performance1) {
         $addPoint = 65;
     }
+    $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', 'C', false, 200);
+    if (file_exists($performance_of_surveys)) {
+        unlink($performance_of_surveys);
+    }
+}
+
+if (isset($result['performance3']) && !empty($result['performance3'])) {
+    $performance3 = true;
+    $surveyNo = "";
+    $data1y = $data2y = $label = [];
+    foreach ($result['performance3'] as $row) {
+        $data1y[] = ($row['passed'] > 0) ? $row['passed'] : 0;
+        $data2y[] = ($row['failed'] > 0) ? $row['failed'] : 0;
+        $label[] = $row['samples'];
+
+        $surveyNo = $row['distribution_code'];
+    }
+    // Create the graph. These two calls are always required
+    $graph = new Graph(680, 200, 'auto');
+    $graph->SetScale("textlin");
+
+    $graph->SetBox(false);
+    $graph->SetMargin(80, 30, 10, 50);
+    $graph->ygrid->SetFill(false);
+    $graph->xaxis->SetTickLabels($label);
+    $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
+    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
+    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
+    $graph->xaxis->HideLine(false);
+    $graph->yaxis->HideLine(false);
+    $graph->xaxis->HideTicks(false, false);
+    $graph->yaxis->HideTicks(false, false);
+    // $graph->xaxis->SetPos(0.5);
+
+    // Create the bar plots
+    $b1plot = new BarPlot($data1y);
+    $b2plot = new BarPlot($data2y);
+    // Create the grouped bar plot
+    $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
+    // ...and add it to the graPH
+    $graph->Add($gbplot);
+    $b1plot->value->Show();
+    $b1plot->value->SetColor("black", "darkred");
+    $b2plot->value->Show();
+    $b2plot->value->SetColor("darkred", "black");
+    $b1plot->value->SetFormat("%d");
+    $b2plot->value->SetFormat("%d");
+    $b1plot->SetFillColor("darkgreen");
+    $b1plot->SetColor("white");
+
+    $b2plot->SetFillColor("red");
+    $b2plot->SetColor("white");
+
+    $b1plot->SetFillColor('#4F81BD');
+    $b1plot->SetColor("white");
+    $graph->legend->SetShadow('gray@0.4', 5);
+    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
+    $graph->title->Set("Participants performance for the current survey panels");
+    $graph->subtitle->Set('Survey No: ' . $surveyNo);
+    $graph->subsubtitle->Set('.');
+    $graph->yaxis->title->Set('Number of Participants');
+    $graph->xaxis->title->Set('Samples');
+    $graph->yaxis->SetTitleMargin(40);
+    $graph->xaxis->SetTitleMargin(15);
+    $graph->xaxis->SetTickSide(SIDE_DOWN);
+    $graph->yaxis->SetTickSide(SIDE_LEFT);
+    // Display the graph
+    $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
+    $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
+    $graph->img->SetQuality(100); // Set the highest quality
+    $graph->Stroke($performance_of_current_survey_anels);
+    $addPoint = 0;
+    if ($performance1) {
+        $addPoint = 65;
+    }
     if ($performance2 && !$performance1) {
         $addPoint = 65;
     } else if ($performance2) {
         $addPoint = 130;
     }
-    $pdf->Image($performance_of_surveys, 5, ($pdf->getY() + $addPoint), '', '', '', '', 'C', false, 200);
-    if (file_exists($performance_of_surveys)) {
-        unlink($performance_of_surveys);
+    $pdf->Image($performance_of_current_survey_anels, 5, ($pdf->getY() + $addPoint), '', '', '', '', '', false, 600);
+    if (file_exists($performance_of_current_survey_anels)) {
+        unlink($performance_of_current_survey_anels);
     }
 }
 //----------------Summary Statistics for this survey  Ends----------------
