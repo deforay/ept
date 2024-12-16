@@ -54,16 +54,18 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
     $graph->Add($gbplot);
     $b1plot->value->Show();
     $b1plot->value->SetColor("black", "darkred");
+    $b1plot->value->SetFormat("%3d%%");
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
     $graph->title->Set("Your Performance");
+    $graph->subtitle->Set('.');
     $graph->xaxis->title->Set('PT Surveys');
     $graph->yaxis->title->Set('Percentage of Performance');
     $graph->yaxis->SetPos('min');
     $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL);
+    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
+    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
     $graph->yaxis->SetTitleMargin(40);
     $graph->xaxis->SetTitleMargin(15);
     // Turn the tick mark out from the plot area
@@ -96,8 +98,8 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $graph->ygrid->SetFill(false);
     $graph->xaxis->SetTickLabels($label);
     $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL);
+    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
+    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
     $graph->xaxis->HideLine(false);
     $graph->yaxis->HideLine(false);
     $graph->xaxis->HideTicks(false, false);
@@ -115,7 +117,7 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $b1plot->value->SetColor("black", "darkred");
     $b2plot->value->Show();
     $b2plot->value->SetColor("darkred", "black");
-
+    $b1plot->value->SetFormat("%d");
     $b1plot->SetFillColor("darkgreen");
     $b1plot->SetColor("white");
 
@@ -124,7 +126,10 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
+    $graph->legend->SetShadow('gray@0.4', 5);
+    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
     $graph->title->Set("Performance of Current Survey Panels");
+    $graph->subtitle->Set('.');
     $graph->yaxis->title->Set('Number of Participants');
     $graph->xaxis->title->Set('Samples');
     $graph->yaxis->SetTitleMargin(40);
@@ -162,8 +167,8 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $graph->ygrid->SetFill(false);
     $graph->xaxis->SetTickLabels($label);
     $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL);
+    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
+    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
     $graph->xaxis->HideLine(false);
     $graph->yaxis->HideLine(false);
     $graph->xaxis->HideTicks(false, false);
@@ -181,7 +186,7 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     $b1plot->value->SetColor("black", "darkred");
     $b2plot->value->Show();
     $b2plot->value->SetColor("darkred", "black");
-
+    $b1plot->value->SetFormat("%d");
     $b1plot->SetFillColor("darkgreen");
     $b1plot->SetColor("white");
 
@@ -190,7 +195,10 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
+    $graph->legend->SetShadow('gray@0.4', 5);
+    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
     $graph->title->Set("Performance of Surveys");
+    $graph->subtitle->Set('.');
     $graph->yaxis->title->Set('Number of Participants');
     $graph->xaxis->title->Set('PT Surveys');
     $graph->yaxis->SetTitleMargin(40);

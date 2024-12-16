@@ -1585,7 +1585,7 @@ class Application_Service_Evaluation
 				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
 				->where("spm.final_result = ?", 1)
 				->where("s.scheme_type = ?", $res['scheme_type'])
-				->order('d.distribution_date DESC')
+				->order('d.distribution_date ASC')
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance1'] = $db->fetchAll($performance1Sql);
 
@@ -1612,7 +1612,7 @@ class Application_Service_Evaluation
 					'failed' => new Zend_Db_Expr("SUM(CASE WHEN (spm.final_result = 2) THEN 1 ELSE 0 END)")
 				))
 				->where("s.scheme_type = ?", $res['scheme_type'])
-				->order('d.distribution_date DESC')
+				->order('d.distribution_date ASC')
 				->group(array('d.distribution_id'))->limit(5);
 			$shipmentResult[$i]['performance3'] = $db->fetchAll($performancePassFaile2Sql);
 			$i++;
