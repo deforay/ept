@@ -1601,7 +1601,7 @@ class Application_Service_Evaluation
 			/* Chart 1 Your Performance for the last 5 surveys */
 			$performance1Sql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
-				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
+				->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('is_excluded', 'scored' => new Zend_Db_Expr("(spm.shipment_score + spm.documentation_score)")))
 				->where("spm.participant_id = ?", $res['participant_id'])
 				->where("d.distribution_code IN('" . implode("','", $surveysList) . "')")
 				->where("DATE(d.distribution_date) <= ?", $res['distribution_date'])

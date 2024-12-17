@@ -85,8 +85,8 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
     $performance2 = true;
     $data1y = $data2y = $label = [];
     foreach ($result['performance2'] as $row) {
-        $data1y[] = ($row['passed'] > 0) ? $row['passed'] : 0;
-        $data2y[] = ($row['failed'] > 0) ? $row['failed'] : 0;
+        $data1y[] = ($row['passed'] > 0) ? $row['passed'] : null;
+        $data2y[] = ($row['failed'] > 0) ? $row['failed'] : null;
         $label[] = $row['distribution_code'];
     }
     // Create the graph. These two calls are always required
