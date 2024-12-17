@@ -1621,36 +1621,24 @@ class Application_Service_Evaluation
 
 			/* Chart 3 Participants performance for the current survey panels */
 			/* To get the list of samples using map id */
-			$sampleSql = $db->select()->from(array('ref' => 'reference_result_' . $tableType), array('sample_id', 'sample_label'))
-				->where('ref.shipment_id = ?', $res['shipment_id']);
-			$sampleList = $db->fetchAll($sampleSql);
+			$unionQuery = $db->select()->from('response_result_' . $tableType, array('sample_id', 'shipment_map_id', 'calculated_score'))
+				->where("shipment_map_id IN (
+				SELECT shipment_participant_map.map_id 
+				FROM shipment_participant_map 
+				where shipment_participant_map.shipment_id = " . $res['shipment_id'] . ")");
+
 			$scoreType = ($tableType != 'generic_test') ? "Pass" : 20;
-			$performance3Sql = $db->select()->from(array('rrd' => 'response_result_' . $tableType), array(
-				'passed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score = '$scoreType') THEN 1 ELSE 0 END)"),
-				'failed' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score != '$scoreType') THEN 1 ELSE 0 END)"),
-				'sample_id'
+			$performance3Sql = $db->select()->from(array('ref' => 'reference_result_' . $tableType), array(
+				'distribution_code' => new Zend_Db_Expr("'" . $res['distribution_code'] . "'"),
+				'ref.sample_label',
+				'rrd.sample_id',
+				'passed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (rrd.calculated_score = '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)"),
+				'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (rrd.calculated_score != '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)")
 			))
-				->where("rrd.shipment_map_id IN (
-					SELECT shipment_participant_map.map_id 
-					FROM shipment_participant_map 
-					where shipment_participant_map.shipment_id = " . $res['shipment_id'] . ")")
-				->group(array('rrd.sample_id'))
+				->join(array('rrd' => $unionQuery), 'rrd.sample_id=ref.sample_id', array(''))
+				->group(array('rrd.sample_id', 'ref.sample_label'))
 				->order('rrd.sample_id ASC');
-			$performance3ChartsResults = $db->fetchAll($performance3Sql);
-			$sampleResposne = [];
-			foreach ($sampleList as $samples) {
-				foreach ($performance3ChartsResults as $row) {
-					if ($samples['sample_id'] == $row['sample_id']) {
-						$sampleResposne[] = array(
-							'passed'	=> $row['passed'],
-							'failed'	=> $row['failed'],
-							'samples'	=> $samples['sample_label'],
-							'distribution_code'	=> $res['distribution_code'],
-						);
-					}
-				}
-			}
-			$shipmentResult[$i]['performance3'] = $sampleResposne;
+			$shipmentResult[$i]['performance3'] = $db->fetchAll($performance3Sql);;
 			// PT Survey Participant Pass / Fail
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);

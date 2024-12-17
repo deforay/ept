@@ -159,7 +159,7 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
     foreach ($result['performance3'] as $row) {
         $data1y[] = ($row['passed'] > 0) ? $row['passed'] : 0;
         $data2y[] = ($row['failed'] > 0) ? $row['failed'] : 0;
-        $label[] = $row['samples'];
+        $label[] = $row['sample_label'];
 
         $surveyNo = $row['distribution_code'];
     }
