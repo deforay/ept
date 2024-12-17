@@ -1408,8 +1408,16 @@ class Application_Service_Evaluation
 		// die($sql);
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 		$meanScore = [];
+		$testType = $shipmentResult[0]['scheme_type'];
+		$tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
+		$score = (isset($config->evaluation->$testType->passPercentage) && !empty($config->evaluation->$testType->passPercentage) && $config->evaluation->$testType->passPercentage > 0) ? $config->evaluation->$testType->passPercentage : '100';
 		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
 			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
+			$q = $db->select()->from(array('spm' => 'shipment_participant_map'), array(
+				'mean_score' => new Zend_Db_Expr("( ( (SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END) )*100)/ COUNT(*) )"),
+			))
+				->where("spm.shipment_id = ?", $shipmentId)
+				->group(array('spm.shipment_id'));
 			$meanScore = $db->fetchRow($q);
 		}
 		$i = 0;
@@ -1563,24 +1571,19 @@ class Application_Service_Evaluation
 				}
 				$shipmentResult[$i]['responseResult'] = $response;
 			}
-			$testType = $res['scheme_type'];
-			$tableType = ($res['is_user_configured'] == 'yes') ? 'generic_test' : $res['scheme_type'];
-			$score = (isset($config->evaluation->$testType->passPercentage) && !empty($config->evaluation->$testType->passPercentage) && $config->evaluation->$testType->passPercentage > 0) ? $config->evaluation->$testType->passPercentage : '80';
-			$statisticsSql = $db->select()->from(array('rrd' => 'response_result_' . $tableType), array(''))
-				->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array(
-					'number_not_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is null OR spm.response_status != 'responded') THEN 1 ELSE 0 END)"),
-					'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
-					'providersWith100' => new Zend_Db_Expr("SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) = 100 THEN 1 ELSE 0 END)"),
-					'providers>80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END)"),
-					'providers<80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) < $score) THEN 1 ELSE 0 END)")
-				))
-				->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array(''))
-				->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
-				->where("s.shipment_id = ?", $shipmentId)
-				->group(array('s.shipment_id'));
-			$shipmentResult[$i]['statistics'] = $db->fetchRow($statisticsSql);
-			// PT Survey Participant Scored
 
+			$statisticsSql = $db->select()->from(array('spm' => 'shipment_participant_map'), array(
+				'number_not_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is null OR spm.response_status != 'responded') THEN 1 ELSE 0 END)"),
+				'number_responded' => new Zend_Db_Expr("SUM(CASE WHEN (spm.response_status is not null and spm.response_status = 'responded') THEN 1 ELSE 0 END)"),
+				'providersWith100' => new Zend_Db_Expr("SUM(CASE WHEN (spm.shipment_score + spm.documentation_score) = 100 THEN 1 ELSE 0 END)"),
+				'providers>80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END)"),
+				'providers<80' => new Zend_Db_Expr("SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) < $score) THEN 1 ELSE 0 END)")
+			))
+				->where("spm.shipment_id = ?", $shipmentId)
+				->group(array('spm.shipment_id'));
+			$shipmentResult[$i]['statistics'] = $db->fetchRow($statisticsSql);
+
+			// PT Survey Participant Scored
 			/* To get the last 4 PT survey */
 			$noSurveySql = $db->select()->from(array('d' => 'distributions'), array('distribution_code'))
 				->join(array('s' => 'shipment'), 'd.distribution_id=s.distribution_id', array(''))
@@ -1636,9 +1639,9 @@ class Application_Service_Evaluation
 				'failed' => new Zend_Db_Expr("COUNT(DISTINCT CASE WHEN (rrd.calculated_score != '" . $scoreType . "') THEN rrd.shipment_map_id ELSE NULL END)")
 			))
 				->join(array('rrd' => $unionQuery), 'rrd.sample_id=ref.sample_id', array(''))
-				->group(array('rrd.sample_id', 'ref.sample_label'))
+				->group(array('rrd.sample_id'))
 				->order('rrd.sample_id ASC');
-			$shipmentResult[$i]['performance3'] = $db->fetchAll($performance3Sql);;
+			$shipmentResult[$i]['performance3'] = $db->fetchAll($performance3Sql);
 			// PT Survey Participant Pass / Fail
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
