@@ -225,6 +225,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         $passPercentage = $jsonConfig['passingScore'] ?? 100;
         $pdf->writeHTML($labInfo, true, false, true, false, '');
+        $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         if (isset($result['responseResult']) && !empty($result['responseResult'])) {
             $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
@@ -232,6 +233,10 @@ if (sizeof($resultArray['shipment']) > 0) {
             $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+            if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
+                $additionalLabel = $userTestConfig['additionalDetailLabel'] ?? 'Additional Detail';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $additionalLabel . '</td>';
+            }
             $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
             $labRes .= '<td style="text-align:center;font-weight:bold;">Evaluation</td>';
             $labRes .= '</tr>';
@@ -243,8 +248,10 @@ if (sizeof($resultArray['shipment']) > 0) {
                 $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
                 $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
+                if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
+                    $labRes .= '<td style="text-align:center;">' . $response['additional_detail'] . '</td>';
+                }
                 $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
-
                 $evaluationScore = $passPercentage / $result['number_of_samples'];
                 $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
                 // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
@@ -310,7 +317,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         if ($performance1 || $performance2 || $performance3) {
             $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
         }
-        $html = $br . '<p style="font-size:11px;">Thank you for participating in HIV-1 Proficiency Testing Program for ' . $panelName . '.</p>';
+        $html = '<p style="font-size:11px;">Thank you for participating in proficiency testing program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }
