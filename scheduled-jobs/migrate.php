@@ -7,6 +7,7 @@ if (php_sapi_name() !== 'cli') {
 }
 
 require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+
 use PhpMyAdmin\SqlParser\Parser;
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -95,7 +96,7 @@ foreach ($versions as $version) {
                 $errorOccurred = true;
                 if (!$quietMode) {
                     if ($canLog) {
-                        error_log('error =>' .$message);
+                        error_log('error =>' . $message);
                     }
                     echo $message;
                 }
@@ -128,7 +129,7 @@ foreach ($versions as $version) {
         //}
 
         //$db->where('name', 'sc_version')->update('system_config', ['value' => $version]);
-        $db->fetchAll("SET FOREIGN_KEY_CHECKS = 1;"); // Re-enable foreign key checks
+        $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Re-enable foreign key checks
         $db->commit();  // Commit the transaction if no error occurred
     }
 

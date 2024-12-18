@@ -262,16 +262,16 @@ class Application_Model_GenericTest
 
         $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getCellByColumnAndRow(2, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'));
+        $cmdCol = 10;
         if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
             $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'));
-
-            $firstSheet->getCellByColumnAndRow(1, 11)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 11)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
+            $cmdCol = 11;
         } else {
-            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
+            $cmdCol = 10;
         }
+        $firstSheet->getCellByColumnAndRow(1, $cmdCol)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCellByColumnAndRow(2, $cmdCol)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
 
         for ($counter = 1; $counter <= 11; $counter++) {
             $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
@@ -287,6 +287,7 @@ class Application_Model_GenericTest
         $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
+            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('sl.user_test_config'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
@@ -361,13 +362,14 @@ class Application_Model_GenericTest
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         // For final Results
+        $additionalDetails = false;
+        $jsonConfig = Zend_Json_Decoder::decode($shipmentResult[0]['user_test_config'], true);
         $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
-        if (isset($shipmentAttributes['additionalDetailLabel']) && !empty($shipmentAttributes['additionalDetailLabel'])) {
-            array_push($reportHeadings, $shipmentAttributes['additionalDetailLabel']);
+        if (isset($jsonConfig['captureAdditionalDetails']) && !empty($jsonConfig['captureAdditionalDetails'])) {
+            $additionalDetails = true;
+            $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         array_push($reportHeadings, 'Comments');
-
-        // Zend_Debug::dump($reportHeadings);die;
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
         $excel->addSheet($sheet, 2);
         $sheet->setTitle('Results Reported', true);
@@ -378,16 +380,32 @@ class Application_Model_GenericTest
         $colNo = 0;
         $currentRow = 2;
         $n = count($reportHeadings);
+        /* To get the first column for label */
+        $additionalColoumn = $n - (($result['number_of_samples'] * 2) + 1);
         $finalResColoumn = $n - ($result['number_of_samples'] + 1);
-        $c = 1;
-        $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
 
+        $c = $additionRow = 1;
+        /* To get the end colum cell */
+        $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
+        $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
+
+        /* Final Result Merge options */
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
+        /* Additional Result Merge options */
+        $additionalFirstCellName = $sheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
+        $additionalSecondCellName = $sheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
+        /* Merge the final result lable cell */
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+        /* Merge the Additional lable cell */
+        $sheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
+        $sheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
+        $sheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
+
 
         foreach ($reportHeadings as $field => $value) {
 
@@ -398,7 +416,17 @@ class Application_Model_GenericTest
 
             $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
-
+            if ($additionalDetails) {
+                if ($colNo >= $additionalColoumn) {
+                    if ($additionRow <= ($n - $result['number_of_samples'] - 1)) {
+                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
+                        $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    }
+                }
+                $additionRow++;
+            }
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
@@ -509,7 +537,11 @@ class Application_Model_GenericTest
                 /* Panel score section */
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-                $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
+
+                $documentScore = (($aRow['documentation_score'] / 10) * 100);
+                if ($config->evaluation->covid19->documentationScore > 0) {
+                    $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
+                }
 
 
                 //<------------ Total score sheet ------------
@@ -526,6 +558,11 @@ class Application_Model_GenericTest
                             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
                         }
                     }
+                    if ($additionalDetails) {
+                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
+                        }
+                    }
 
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
@@ -539,7 +576,10 @@ class Application_Model_GenericTest
 
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult);
 
-                    $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                    $totPer = round((($countCorrectResult / 5) * 100), 2);
+                    if ($aRow['number_of_samples'] > 0) {
+                        $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
+                    }
                     $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer);
 
                     $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult);
