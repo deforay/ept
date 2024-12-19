@@ -701,13 +701,15 @@ class FPDIReport extends Fpdi
     public $scheme = "";
     public $templateTopMargin = "";
     public $schemeType = "";
+    public $approveTxt = "";
+    public $instance = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "")
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $instance = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -717,11 +719,14 @@ class FPDIReport extends Fpdi
         $this->layout = $layout;
         $this->scheme = $scheme;
         $this->schemeType = $schemeType;
+        $this->approveTxt = $approveTxt;
 
         $reportService = new Application_Service_Reports();
+        $commonService = new Application_Service_Common();
         $reportFormat = $reportService->getReportConfigValue('report-format');
         $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
-
+        /* To get the instance layout to modify the PDF */
+        $this->instance = $commonService->getConfig('instance');
         $this->templateTopMargin = $templateTopMargin;
         if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
             $this->template = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat;
@@ -816,11 +821,18 @@ class FPDIReport extends Fpdi
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
-        $this->SetY(-8);
+        $this->SetY(-10);
         // Set font
         $this->SetFont('freesans', '', 7, '', true);
         // Page number
-        // $this->writeHTML("<hr>", true, false, true, false, '');
+        if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {
+            if (isset($this->approveTxt) && !empty($this->approveTxt)) {
+                $text = "This document has been reviewed and validated by EQA officers and authorized personnel of " . $this->approveTxt;
+            } else {
+                $text = "This document has been reviewed and validated by EQA officers.";
+            }
+            $this->writeHTML($text, true, false, true, false, 'C');
+        }
         $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
         $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }

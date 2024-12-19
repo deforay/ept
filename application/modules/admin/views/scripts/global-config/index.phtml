@@ -231,6 +231,22 @@
 					</select>
 				</div>
 			</div>
+			<div class="form-group">
+				<label for="instance" class="col-lg-3 control-label"><?= $this->translate->_("Instance"); ?></label>
+				<div class="col-lg-6">
+					<select class="form-control" id="instance" name="instance" title="Please select the instance">
+						<option value="">-- Select --</option>
+						<option value="drc" <?php echo (isset($this->instance) && $this->instance == 'drc') ? 'selected="selected"' : ""; ?>>DRC</option>
+						<option value="philippines" <?php echo (isset($this->instance) && $this->instance == 'philippines') ? 'selected="selected"' : ""; ?>>Philippines</option>
+						<option value="myanmar" <?php echo (isset($this->instance) && $this->instance == 'myanmar') ? 'selected="selected"' : ""; ?>>Myanmar</option>
+						<option value="zimbabwe" <?php echo (isset($this->instance) && $this->instance == 'zimbabwe') ? 'selected="selected"' : ""; ?>>Zimbabwe</option>
+						<option value="malawi" <?php echo (isset($this->instance) && $this->instance == 'malawi') ? 'selected="selected"' : ""; ?>>Malawi</option>
+						<option value="ghana" <?php echo (isset($this->instance) && $this->instance == 'ghana') ? 'selected="selected"' : ""; ?>>Ghana</option>
+						<option value="mtbept" <?php echo (isset($this->instance) && $this->instance == 'mtbept') ? 'selected="selected"' : ""; ?>>MTBEPT</option>
+						<option value="cdc-ilb-hiv" <?php echo (isset($this->instance) && $this->instance == 'cdc-ilb-hiv') ? 'selected="selected"' : ""; ?>>CDC-ILB-HIV</option>
+					</select>
+				</div>
+			</div>
 			<hr>
 			<div class="form-group">
 				<label for="jobCompletionAlertStatus" class="col-lg-3 control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>

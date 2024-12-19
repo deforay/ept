@@ -37,8 +37,9 @@ if (sizeof($resultArray['shipment']) > 0) {
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
 
         if (isset($reportFormat) && !empty($reportFormat)) {
+            $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName, $approveTxt);
         } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);

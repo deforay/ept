@@ -1773,7 +1773,7 @@ class Application_Service_Evaluation
 				}
 				//die;
 			} elseif ($shipmentResult['scheme_type'] == 'dts') {
-				$pass = $config->evaluation->dts->passPercentage;
+				$pass = $config->evaluation->dts->passPercentage ?? 100;
 				$sql = $db->select()->from(
 					array('refdts' => 'reference_result_dts'),
 					array(
