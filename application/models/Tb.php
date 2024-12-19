@@ -171,6 +171,7 @@ class Application_Model_Tb
                         $result['mtb_detected'] = $this->checkAndSetMTBDetected($result['mtb_detected']);
                         $result['reference_mtb_detected'] = $this->checkAndSetMTBDetected($result['reference_mtb_detected']);
 
+
                         $notAControl = $result['control'] == 0;
                         if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
 
@@ -196,7 +197,7 @@ class Application_Model_Tb
 
                             // matching reported and reference results with rif
                             if (!empty($result['mtb_detected']) && !empty($result['rif_resistance'])) {
-                                $mtbDetectedMatches = ($result['mtb_detected'] == $result['reference_mtb_detected']);
+                                $mtbDetectedMatches = $result['mtb_detected'] == $result['reference_mtb_detected'];
 
                                 // For participants who selected N/A for MTB Detected, we will treat RIF as indeterminate
                                 // if ($result['mtb_detected'] == 'detected' && $result['rif_resistance'] == 'na') {
@@ -218,11 +219,12 @@ class Application_Model_Tb
                                 //     $result['reference_rif_resistance'] = 'not-detected';
                                 // }
 
-                                $rifResistanceMatches = ($result['rif_resistance'] == $result['reference_rif_resistance']);
+                                $rifResistanceMatches = $result['rif_resistance'] == $result['reference_rif_resistance'];
 
                                 // if it is not a control, we can award score
                                 if ($notAControl) {
                                     $calculatedScore = 0;
+
 
                                     // Check for invalid, error, or no-result in mtb_detected
                                     if (in_array($result['mtb_detected'], ['invalid', 'error', 'no-result'])) {
@@ -230,12 +232,15 @@ class Application_Model_Tb
                                     }
                                     // mtb detected matches but rif resistance does not match
                                     elseif ($mtbDetectedMatches && !$rifResistanceMatches) {
+
+
                                         if (
                                             $result['mtb_detected'] == 'detected' &&
                                             (in_array($result['rif_resistance'], ['indeterminate']) ||
                                                 in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))
                                         ) {
                                             $calculatedScore = $result['sample_score'] * 0.5;
+
                                         } elseif ($result['mtb_detected'] == 'not-detected' && $result['rif_resistance'] == 'na') {
                                             $calculatedScore = $result['sample_score'];
                                         }
@@ -244,7 +249,6 @@ class Application_Model_Tb
                                     elseif ($mtbDetectedMatches && $rifResistanceMatches) {
                                         $calculatedScore = $result['sample_score'];
                                     }
-
 
 
 
@@ -388,7 +392,7 @@ class Application_Model_Tb
 
     private function checkAndSetMTBDetected($value)
     {
-        return in_array($value, ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
+        return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
     }
 
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
@@ -397,8 +401,8 @@ class Application_Model_Tb
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
             ->from(
-                array('ref' => 'reference_result_tb'),
-                array(
+                ['ref' => 'reference_result_tb'],
+                [
                     'sample_id',
                     'sample_label',
                     'tb_isolate',
@@ -408,14 +412,14 @@ class Application_Model_Tb
                     'mandatory',
                     'sample_score',
                     'request_attributes'
-                )
+                ]
             )
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id')
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id')
             ->joinLeft(
-                array('res' => 'response_result_tb'),
+                ['res' => 'response_result_tb'],
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
-                array(
+                [
                     'mtb_detected',
                     'rif_resistance',
                     'probe_d',
@@ -438,12 +442,12 @@ class Application_Model_Tb
                     'error_code',
                     'responseDate' => 'res.created_on',
                     'response_attributes'
-                )
+                ]
             )
-            ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id')
+            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("spm.shipment_id = ?", $sId)
             // ->where("spm.participant_id = ?", $pId)
-            ->order(array('ref.sample_id'));
+            ->order(['ref.sample_id']);
         if (!empty($pId)) {
             $sql = $sql->where("spm.participant_id = ?", $pId);
         }
@@ -451,7 +455,7 @@ class Application_Model_Tb
             $sql = $sql->group("ref.sample_id");
         }
         // die($sql);
-        return ($db->fetchAll($sql));
+        return $db->fetchAll($sql);
     }
 
     public function getAllTbAssays()
@@ -982,7 +986,7 @@ class Application_Model_Tb
                     'mtb_detection_consensus_raw' => $mtb['mtb_detection_consensus_raw'],
                     'mtb_occurrences' => $mtb['mtb_occurrences'],
                     'mtb_total_responses' => $mtb['total_responses_mtb'],
-                    'mtb_consensus_percentage' => ($mtb['mtb_occurrences'] / $mtb['total_responses_mtb']) * 100
+                    'mtb_consensus_percentage' => ($mtb['total_responses_mtb'] != 0) ? ($mtb['mtb_occurrences'] / $mtb['total_responses_mtb']) * 100 : 0
                 ];
             }
         }
@@ -1023,7 +1027,7 @@ class Application_Model_Tb
                     'rif_resistance_consensus_raw' => $rif['rif_resistance_consensus_raw'],
                     'rif_occurrences' => $rif['rif_occurrences'],
                     'rif_total_responses' => $rif['total_responses_rif'],
-                    'rif_consensus_percentage' => ($rif['rif_occurrences'] / $rif['total_responses_rif']) * 100
+                    'rif_consensus_percentage' => ($rif['total_responses_rif'] != 0) ? ($rif['rif_occurrences'] / $rif['total_responses_rif']) * 100 : 0
                 ];
             }
         }
