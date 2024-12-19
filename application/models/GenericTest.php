@@ -381,31 +381,39 @@ class Application_Model_GenericTest
         $currentRow = 2;
         $n = count($reportHeadings);
         /* To get the first column for label */
-        $additionalColoumn = $n - (($result['number_of_samples'] * 2) + 1);
-        $finalResColoumn = $n - ($result['number_of_samples'] + 1);
+        if ($additionalDetails) {
+            $finalResColoumn = $n - (($result['number_of_samples'] * 2) + 1);
+            $additionalColoumn = $n - ($result['number_of_samples'] + 1);
+        } else {
+            $finalResColoumn = $n - ($result['number_of_samples'] + 1);
+        }
 
         $c = $additionRow = 1;
         /* To get the end colum cell */
         $endMergeCell = ($finalResColoumn + $result['number_of_samples']) - 1;
-        $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
-
+        if ($additionalDetails) {
+            $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
+        }
         /* Final Result Merge options */
         $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
         $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
-        /* Additional Result Merge options */
-        $additionalFirstCellName = $sheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
-        $additionalSecondCellName = $sheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
+        if ($additionalDetails) {
+            /* Additional Result Merge options */
+            $additionalFirstCellName = $sheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
+            $additionalSecondCellName = $sheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
+        }
         /* Merge the final result lable cell */
         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
-        /* Merge the Additional lable cell */
-        $sheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
-        $sheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
-        $sheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
-
+        if ($additionalDetails) {
+            /* Merge the Additional lable cell */
+            $sheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
+            $sheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $sheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
+        }
 
         foreach ($reportHeadings as $field => $value) {
 
@@ -418,14 +426,14 @@ class Application_Model_GenericTest
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
             if ($additionalDetails) {
                 if ($colNo >= $additionalColoumn) {
-                    if ($additionRow <= ($n - $result['number_of_samples'] - 1)) {
+                    if ($additionRow <= $result['number_of_samples']) {
                         $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
                         $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
                         $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
                         $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
+                    $additionRow++;
                 }
-                $additionRow++;
             }
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
@@ -558,18 +566,17 @@ class Application_Model_GenericTest
                             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
                         }
                     }
-                    if ($additionalDetails) {
-                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
-                        }
-                    }
-
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
                         $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
+                        }
+                    }
+                    if ($additionalDetails) {
+                        for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
+                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
                         }
                     }
                     $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
