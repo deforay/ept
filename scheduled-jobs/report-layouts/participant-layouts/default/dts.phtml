@@ -107,7 +107,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $testTwoHidden = false;
         $screeningTest = false;
         $noTest = 1;
-        $width = 12.5;
+        $noOfCol = 8;
 
         // $dtsResultsMap = array(
         //     'Positive'      => 'P',
@@ -129,7 +129,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         } elseif (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
-            $width = 14.28;
+            $noOfCol = 7;
         }
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
@@ -138,21 +138,20 @@ if (sizeof($resultArray['shipment']) > 0) {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
             $testTwoHidden = true;
-            $width = 16.6;
+            $noOfCol = 6;
         }
 
         if (isset($shipmentAttributes['noOfTestsInPanel']) && $shipmentAttributes['noOfTestsInPanel'] == 2) {
             $testThreeHidden = true;
             $testThreeOptionalDisplay = "display:none;";
-            $testThreeHidden = true;
-            $width = 14.28;
+            $noOfCol = 7;
         }
 
         $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {
-            $width = 11.11;
+            $noOfCol = 9;
             if ($shipmentAttributesScreeningTestDisplay != "" || $testThreeOptionalDisplay != "") {
-                $width = 14.28;
+                $noOfCol = 7;
             }
         }
         /* Addition testkit field */
@@ -162,18 +161,18 @@ if (sizeof($resultArray['shipment']) > 0) {
         }
         $testkit3Colspan = $testkit2Colspan = $testkit1Colspan = 1;
         if (isset($infoJson['test1']) && !empty($infoJson['test1'])) {
-            $width = 11.11;
+            $noOfCol += 1;
             $testkit1Colspan = 2;
         }
         if (isset($infoJson['test2']) && !empty($infoJson['test2'])) {
-            $width = 10;
+            $noOfCol += 1;
             $testkit2Colspan = 2;
         }
         if (isset($infoJson['test3']) && !empty($infoJson['test3'])) {
-            $width = 9.09;
+            $noOfCol += 1;
             $testkit3Colspan = 2;
         }
-        // error_log($width);
+        $width = number_format((100 / $noOfCol), 2);
         if (($testTwoHidden)) {
             $noTest = 1;
         } elseif ($testThreeHidden) {
