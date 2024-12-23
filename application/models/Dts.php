@@ -1502,6 +1502,19 @@ class Application_Model_Dts
 			)
 		);
 
+		$kitQuery = $db->select()
+			->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.number_of_samples', 's.number_of_controls'])
+			->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id = spm.shipment_id', [''])
+			->joinLeft(['rrd' => 'response_result_dts'], 'spm.map_id = rrd.shipment_map_id', ['test_kit_name_1', 'test_kit_name_2', 'test_kit_name_3', 'kit_additional_info'])
+			->joinLeft(['rtd1' => 'r_testkitname_dts'], 'rrd.test_kit_name_1 = rtd1.TestKitName_ID', ['kit1Attributes' => 'rtd1.attributes'])
+			->joinLeft(['rtd2' => 'r_testkitname_dts'], 'rrd.test_kit_name_2 = rtd2.TestKitName_ID', ['kit2Attributes' => 'rtd2.attributes'])
+			->joinLeft(['rtd3' => 'r_testkitname_dts'], 'rrd.test_kit_name_3 = rtd3.TestKitName_ID', ['kit3Attributes' => 'rtd3.attributes'])
+			->where("(JSON_EXTRACT(rtd1.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd2.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd3.attributes, '$.additional_info') = 'yes' OR rrd.kit_additional_info != '')")
+			->where("s.shipment_id = ?", $shipmentId);
+		$kitResult = $db->fetchRow($kitQuery);
+		$kit1Result = (array)json_decode($kitResult['kit1Attributes']);
+		$kit2Result = (array)json_decode($kitResult['kit2Attributes']);
+		$kit3Result = (array)json_decode($kitResult['kit3Attributes']);
 		$query = $db->select()
 			->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'number_of_controls'])
 			->where("shipment_id = ?", $shipmentId);
@@ -1542,30 +1555,51 @@ class Application_Model_Dts
 				unset($participantRow);
 			}
 		}
-
 		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
 			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
 		}
 
-
-
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
+			// To search the kit name postion
+			$index = array_search('QC Expiry Date#1', $reportHeadings);
+			// Insert the value after this index
+			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
+				$reportHeadings[] = $kit1Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
+			}
+		}
 		array_push($reportHeadings, 'Test#2 Kit Name', 'Kit Lot#2', 'Expiry Date#2', 'QC Done#2', 'QC Expiry Date#2');
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
+			// To search the kit name postion
+			$index = array_search('QC Expiry Date#2', $reportHeadings);
+			// Insert the value after this index
+			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
+				$reportHeadings[] = $kit2Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
+			}
+		}
 		if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot#3', 'Expiry Date#3', 'QC Done#3', 'QC Expiry Date#3');
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
+				// To search the kit name postion
+				$index = array_search('QC Expiry Date#3', $reportHeadings);
+				// Insert the value after this index
+				foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
+					$reportHeadings[] = $kit3Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
+				}
+			}
 		}
 		$addWithFinalResultCol = 2;
 		/* Repeat test section */
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$addWithFinalResultCol = 0;
+			// $addWithFinalResultCol = 0;
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				$addWithFinalResultCol = -1;
+				// $addWithFinalResultCol = -1;
 			}
 		}
 		// For final result
@@ -1580,16 +1614,23 @@ class Application_Model_Dts
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 		}
-
+		$finalResultStartCellCount = 0;
 		if (!empty($haveCustom) && $haveCustom == 'yes') {
 			if (isset($customField1) && $customField1 != "") {
+				$finalResultStartCellCount += 1;
 				array_push($reportHeadings, $customField1);
 			}
 			if (isset($customField2) && $customField2 != "") {
+				$finalResultStartCellCount += 1;
 				array_push($reportHeadings, $customField2);
 			}
 		}
 		array_push($reportHeadings, 'Comments');
+		$finalResultStartCellCount += 1;
+		$finalResultStartCellCount += $result['number_of_samples'];
+		if ($result['number_of_controls'] > 0)
+			$finalResultStartCellCount += $result['number_of_controls'];
+
 
 		$common = new Application_Service_Common();
 		$feedbackOption = $common->getConfig('feed_back_option');
@@ -1606,7 +1647,7 @@ class Application_Model_Dts
 		$currentRow = 2;
 		//$n = (count($reportHeadings) - count($questions['question']) + 1);
 		$n = count($reportHeadings);
-		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+		/* if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rCount = 14 + ($result['number_of_samples'] * 2);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
 				$rCount = 17 + ($result['number_of_samples'] * 3);
@@ -1614,13 +1655,14 @@ class Application_Model_Dts
 			$finalResColoumn = $rCount;
 		} else {
 			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + $addWithFinalResultCol);
-		}
+		} */
+		$finalResColoumn = $n - $finalResultStartCellCount;
 
 		$c = 1;
 		$z = 1;
 		$repeatCell = 1;
 		$rtriCell = 1;
-		$endMergeCell = ($finalResColoumn + $result['number_of_samples'] + $result['number_of_controls']) - 2;
+		$endMergeCell = ($finalResColoumn + ($result['number_of_samples'] + $result['number_of_controls']));
 
 
 		$resultsReportedSheet = new Worksheet($excel, 'Results Reported');
@@ -1630,8 +1672,8 @@ class Application_Model_Dts
 		$resultsReportedSheet->getDefaultRowDimension()->setRowHeight(18);
 
 		/* Final result merge section */
-		$firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn);
-		$secondCellName = Coordinate::stringFromColumnIndex($endMergeCell + 1);
+		$firstCellName = Coordinate::stringFromColumnIndex($finalResColoumn + 1);
+		$secondCellName = Coordinate::stringFromColumnIndex($endMergeCell);
 		$resultsReportedSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
 		$resultsReportedSheet->getStyle($firstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 		$resultsReportedSheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
@@ -1717,14 +1759,13 @@ class Application_Model_Dts
 			}
 			if ($colNo >= $finalResColoumn) {
 				if ($c <= ($result['number_of_samples'] + $result['number_of_controls'])) {
-					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Final Results");
-					$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . '1', "Final Results");
+					$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 					$l = $c - 1;
-					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
+					$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . '3', $refResult[$l]['referenceResult']);
 				}
 				$c++;
 			}
-
 			/* RTRI Final Result Section */
 			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 				if ($colNo >= ($endRtriMergeCell + 1)) {
@@ -1980,6 +2021,21 @@ class Application_Model_Dts
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['testResult' . $no];
 						}
+
+						/* Kit Additional Field Value Filling */
+						$kitResultCheck = false;
+						if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label']) && $no == 1) {
+							$kitResultCheck = true;
+						}
+						if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label']) && $no == 2) {
+							$kitResultCheck = true;
+						}
+						if ($kitResultCheck) {
+							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+								$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);
+								$resultReportRow[] = $additionalValue['test' . $no];
+							}
+						}
 					}
 					/* // TEST 1
 					$resultReportRow[] = $participantResponse[0]['testKitName1'];
@@ -1999,7 +2055,13 @@ class Application_Model_Dts
 					// $resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_2']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						$resultReportRow[] = $participantResponse[$k]['testResult2'];
-					} */
+					} 
+					if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
+						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+							$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);
+							$resultReportRow[] = $additionalValue['test2'];
+						}
+					}*/
 
 					// TEST 3
 					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -2010,6 +2072,12 @@ class Application_Model_Dts
 						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_3']);
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['testResult3'];
+						}
+						if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
+							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+								$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);
+								$resultReportRow[] = $additionalValue['test3'];
+							}
 						}
 					}
 
