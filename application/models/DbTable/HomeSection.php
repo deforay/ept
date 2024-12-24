@@ -10,9 +10,33 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     public function saveHomeSectionDetails($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $sectionImage = null;
+        // print_r($_FILES); die;
+        if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_image']['tmp_name'] == '') {
+            $sectionImage = $params['pre_section_image'];
+        }
+        if (isset($_FILES['section_image']['tmp_name']) && file_exists($_FILES['section_image']['tmp_name']) && is_uploaded_file($_FILES['section_image']['tmp_name'])) {
+            $uploadDirectory = realpath(UPLOAD_PATH);
+            $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
+            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_image']['name']);
+            $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
+            $timestamp = date('Ymd_His'); // Current date and time (e.g., 20241219_123456)
+            $imageName = $params['section'] . '-'. $timestamp . "." . $extension;
+            if (in_array($extension, $allowedExtensions)) {
+                if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'section') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'section')) {
+                    mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
+                }
+                if (move_uploaded_file($_FILES["section_image"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
+                    $sectionImage = $imageName;
+                }
+            }
+        }
+        // print_r($sectionImage); die;
         $data = array(
             'section' => $params['section'],
             'link' => $params['link'],
+            'section_image' => $sectionImage,
             'text' => $params['displayText'],
             'icon' => $params['icon'],
             'display_order' => $params['displayOrder'],
@@ -20,7 +44,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'modified_by' => $authNameSpace->admin_id,
             'modified_date_time' => new Zend_Db_Expr('now()')
         );
-        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
+        // print_r($data); die;
+        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {           
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
         } else {
             return $this->insert($data);
@@ -170,7 +195,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $sql = $sql->where("id= ? ", $id);
         return $this->fetchRow($sql);
     }
-    
+
     public function fetchAllHomeSection()
     {
         $sql = $this->select();

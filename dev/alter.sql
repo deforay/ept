@@ -3495,3 +3495,6 @@ DELETE FROM `r_possibleresult` WHERE `r_possibleresult`.`response` = 'INDETERMIN
 -- Thana 25-Apr-2024
 ALTER TABLE `scheme_list` ADD UNIQUE(`scheme_name`);
 ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('participant','admin','all', 'none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all';
+
+-- sakthi 24-Dec-2024
+ALTER TABLE `home_sections` ADD `section_image` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
