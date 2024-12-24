@@ -243,7 +243,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             }
             $participationSvg .= 'font-family:helvetica;font-size:5pt">' . round($resultArray['shipment']['summaryResult']['enrolled'], 1) . '</text>';
             $participationSvg .= '    <text x="55" y="158" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Enrolled Sites</text>';
-            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="90" y="' . (100 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" fill="#4F81BD" />';
+            $participationSvg .= '    <rect width="30" height="' . (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) . '" x="90" y="' . (100 - ($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100 + 50) . '" fill="#4F81BD" />';
             $participationSvg .= '    <text x="105" ';
             if ($resultArray['shipment']['summaryResult']['participated'] < $participationYAxisMultiplier) {
                 $participationSvg .= 'y="' . (98 - (($resultArray['shipment']['summaryResult']['participated'] / ($participationYAxisMultiplier * 10)) * 100) + 50) . '" dominant-baseline="text-top" text-anchor="middle" style="fill:#666666;';

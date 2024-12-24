@@ -669,7 +669,7 @@ class SummaryPDF extends Fpdi
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
                 $this->SetFont('freesans', '', 9, '', true);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
+                    $html = "<table><tr><td><span style=\"text-align:left;\">Form : ILB-500-F29A</span></td><td><span style=\"text-align:center;\">Issuing Authority : {$this->issuingAuthority}</span></td><td><span style=\"text-align:right;\">Effective Date : $effectiveMonthYear</span></td></tr></table>";
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');

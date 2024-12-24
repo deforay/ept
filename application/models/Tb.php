@@ -1209,7 +1209,7 @@ class Application_Model_Tb
         $participantPreviousSixShipments = [];
         if (!empty($previousSixShipments)) {
             $participantPreviousSixShipmentsSql = $this->db->select()
-                ->from(array('spm' => 'shipment_participant_map'), array('shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")))
+                ->from(['spm' => 'shipment_participant_map'], ['shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")])
                 ->where("spm.participant_id = ?", $participantId)
                 ->where("spm.shipment_id IN (" . implode(",", array_column($previousSixShipments, "shipment_id")) . ")");
 
@@ -1330,22 +1330,22 @@ class Application_Model_Tb
 
 
         $mtbRifSummaryQuery = $this->db->select()
-            ->from(array('spm' => 'shipment_participant_map'), array())
+            ->from(['spm' => 'shipment_participant_map'], [])
             ->join(
-                array('ref' => 'reference_result_tb'),
+                ['ref' => 'reference_result_tb'],
                 'ref.shipment_id = spm.shipment_id',
-                array(
+                [
                     'sample_label' => 'ref.sample_label',
                     'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.probe_a ELSE 0 END")
-                )
+                ]
             )
             ->joinLeft(
-                array('res' => 'response_result_tb'),
+                ['res' => 'response_result_tb'],
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 [
                     'average_ct' => new Zend_Db_Expr('AVG(CASE WHEN res.calculated_score IN (10, 20) AND res.probe_a > 0 THEN res.probe_a ELSE NULL END)')
                 ]
-            )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
+            )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.response_status = 'responded'")
             ->where("rta.id = 1")
@@ -1355,17 +1355,17 @@ class Application_Model_Tb
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
 
 
-        $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), array())
+        $mtbRifUltraSummaryQuery = $this->db->select()->from(array('spm' => 'shipment_participant_map'), [])
             ->join(
-                array('ref' => 'reference_result_tb'),
+                ['ref' => 'reference_result_tb'],
                 'ref.shipment_id = spm.shipment_id',
-                array(
+                [
                     'sample_label' => 'ref.sample_label',
                     'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END")
-                )
+                ]
             )
             ->joinLeft(
-                array('res' => 'response_result_tb'),
+                ['res' => 'response_result_tb'],
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 [
                     'average_ct' => new Zend_Db_Expr('
@@ -1389,7 +1389,7 @@ class Application_Model_Tb
                         )
                     ')
                 ]
-            )->joinLeft(array('rta' => 'r_tb_assay'), 'rta.id=`spm`.attributes->>"$.assay_name"', array('assayName' => 'name', 'assayShortName' => 'short_name'))
+            )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.response_status = 'responded'")
             ->where("rta.id = 2")
@@ -1404,12 +1404,12 @@ class Application_Model_Tb
     public function addTbSampleNameInArray($shipmentId, $headings, $heading = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from('reference_result_tb', array('sample_label'))
+        $query = $db->select()->from('reference_result_tb', ['sample_label'])
             ->where("shipment_id = ?", $shipmentId)->order("sample_id");
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
             if ($heading) {
-                $loop = array(
+                $loop = [
                     '(' . $res['sample_label'] . ') - MTBC',
                     '(' . $res['sample_label'] . ') - Rif Resistance',
                     '(' . $res['sample_label'] . ') - Score',
@@ -1429,7 +1429,7 @@ class Application_Model_Tb
                     '(' . $res['sample_label'] . ') - Test Date',
                     '(' . $res['sample_label'] . ') - Tester Name',
                     '(' . $res['sample_label'] . ') - Error Code'
-                );
+                ];
                 $headings = array_merge($headings, $loop);
             } else {
 
@@ -1669,12 +1669,12 @@ class Application_Model_Tb
             $nonParticipatingCountriesQuery .= " LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
                 WHERE spm.shipment_id = ?";
             if (!empty($authNameSpace->dm_id)) {
-                $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
+                $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
             $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, array($params['shipmentId']))->fetchAll();
             $nonParticipatingCountriesExist = false;
-            $nonParticipationReasons = array();
+            $nonParticipationReasons = [];
             foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
                 if (isset($nonParticipantingCountry['not_tested_reason']) && !in_array($nonParticipantingCountry['not_tested_reason'], $nonParticipationReasons)) {
                     $nonParticipatingCountriesExist = true;
@@ -1683,7 +1683,7 @@ class Application_Model_Tb
             }
             sort($nonParticipationReasons);
             if ($nonParticipatingCountriesExist) {
-                $nonParticipatingCountriesMap = array();
+                $nonParticipatingCountriesMap = [];
                 foreach ($nonParticipantingCountries as $nonParticipantingCountry) {
                     if (!array_key_exists($nonParticipantingCountry['country_name'], $nonParticipatingCountriesMap)) {
                         $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']] = array(
