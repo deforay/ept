@@ -160,7 +160,6 @@ if ($resultArray['shipment'] != "") {
         // Display the graph
         $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
         $graph->Stroke($image_file);
-
         // set font
         $pdf->SetFont('helvetica', '', 12);
 

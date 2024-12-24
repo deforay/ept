@@ -1,6 +1,5 @@
 <?php
 if (!empty($this->shipment)) {
-    // Zend_Debug::dump($this->shipment);die;
 ?>
     <div class="well" style="clear: both;">
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
@@ -85,12 +84,11 @@ if (!empty($this->shipment)) {
     <div class="summaryDivTop row" align="center">
 
         <?php
-        $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-        if (file_exists($summaryFilePath)) {
-        ?>
+        $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf");
+        if (file_exists($summaryFilePath)) { ?>
             <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
         <?php }
-        $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . ".zip");
+        $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
         if (file_exists($zipFilePath)) {
         ?>
             <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
