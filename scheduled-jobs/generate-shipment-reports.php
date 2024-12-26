@@ -12,6 +12,7 @@ ini_set('max_execution_time', -1);
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
+$isCli = php_sapi_name() === 'cli';
 
 // Flags for testing
 $options = getopt("sp");
