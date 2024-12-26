@@ -3,6 +3,7 @@ $title = $this->translate->_("Edit Home Section Link");
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link href="<?php echo $this->baseUrl('css/jasny-bootstrap.css'); ?>" rel="stylesheet" />
 <div class="well">
     <form name="editHomeSectionForm" id="editHomeSectionForm" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-section-links", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
         <fieldset>
@@ -26,17 +27,43 @@ $title = $this->translate->_("Edit Home Section Link");
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="link"><?= $this->translate->_("Section Image"); ?></label>
-                <div class="col-lg-5">
-                    <?php
-                    $sectionImage = $this->result['section_image'];
-                    if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(realpath(UPLOAD_PATH). DIRECTORY_SEPARATOR . 'section'. DIRECTORY_SEPARATOR . $sectionImage)) {
-                    ?>
-                       <!-- <img src="<!?php echo realpath(UPLOAD_PATH). DIRECTORY_SEPARATOR . 'section'. DIRECTORY_SEPARATOR . $sectionImage ?>" style="width: 200px; height: 200px;" alt="image image" /> -->
-                       <img src="/uploads/section/<?php echo $sectionImage; ?>" style="width: 200px; height: 200px;" alt="image image" />
-                       <input type="hidden" name="pre_section_image" value="<?php echo $sectionImage;?>">
-                       <?php } ?>
-                    <input name="section_image" type="file" class="form-control-file" id="exampleFormControlFile1">
-                </div>
+                <input type="hidden" name="pre_section_image" value="<?php echo $sectionImage; ?>">
+                <?php
+                $sectionImage = $this->result['section_image'];
+                if ($sectionImage == null) { ?>
+                    <div class="fileinput fileinput-new col-lg-5" data-provides="fileinput">
+                        <div class="fileinput-preview img-thumbnail" data-trigger="fileinput" style="width: 200px; height: 150px;">
+                        </div>
+                        <div>
+                            <span class="btn btn-outline-secondary btn-file">
+                                <span class="fileinput-new">Select image</span>
+                                <span class="fileinput-exists">Change</span>
+                                <input type="file" name="section_image">
+                                <button type="submit" id="upload" class="btn btn-success" style="display:none;">Upload</button>
+                            </span>
+                            <a href="#" class="btn btn-outline-secondary fileinput-exists" data-dismiss="fileinput">Remove</a>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <div class="fileinput fileinput-exists col-lg-5" data-provides="fileinput">
+                        <div class="fileinput-preview img-thumbnail" data-trigger="fileinput" style="width: 200px; height: 150px;">
+                            <?php
+                            if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(realpath(UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $sectionImage)) {
+                            ?>
+                                <img src="/uploads/section/<?php echo $sectionImage; ?>" style="width: 160px; height: 100px;" alt="No image" />
+                            <?php } ?>
+                        </div>
+                        <div>
+                            <span class="btn btn-outline-secondary btn-file">
+                                <span class="fileinput-new">Select image</span>
+                                <span class="fileinput-exists">Change</span>
+                                <input type="file" name="section_image">
+                                <button type="submit" id="upload" class="btn btn-success" style="display:none;">Upload</button>
+                            </span>
+                            <a href="#" class="btn btn-outline-secondary fileinput-exists" data-dismiss="fileinput" onclick="storeHiddenValue()">Remove</a>
+                        </div>
+                    </div>
+                <?php } ?>
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="displayText"><?= $this->translate->_("Display Text"); ?> <span class="mandatory">*</span></label>
@@ -73,6 +100,7 @@ $title = $this->translate->_("Edit Home Section Link");
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jasny-bootstrap.js'); ?>"></script>
 <script type="text/javascript">
     var duplicated = false;
 

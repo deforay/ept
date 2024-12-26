@@ -3,6 +3,7 @@ $title = $this->translate->_("Add New Home Section Link");
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link href="<?php echo $this->baseUrl('css/jasny-bootstrap.css'); ?>" rel="stylesheet" />
 <div class="well">
     <form name="addHomeSectionForm" id="addHomeSectionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-section-links", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();return false;" autocomplete="off">
         <fieldset>
@@ -26,8 +27,21 @@ $title = $this->translate->_("Add New Home Section Link");
             </div>
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="file"><?= $this->translate->_("File"); ?></label>
-                <div class="col-lg-5">
+                <!-- <div class="col-lg-5">
                     <input type="file" id="file" name="section_image" class="form-control" autocomplete="off">
+                </div> -->
+                <div class="fileinput fileinput-new col-lg-5" data-provides="fileinput">
+                    <div class="fileinput-preview img-thumbnail" data-trigger="fileinput" style="width: 200px; height: 150px;">
+                    </div>
+                    <div>
+                        <span class="btn btn-outline-secondary btn-file">
+                            <span class="fileinput-new">Select image</span>
+                            <span class="fileinput-exists">Change</span>
+                            <input type="file" name="section_image">
+                            <button type="submit" id="upload" class="btn btn-success" style="display:none;">Upload</button>
+                        </span>
+                        <a href="#" class="btn btn-outline-secondary fileinput-exists" data-dismiss="fileinput">Remove</a>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -63,8 +77,10 @@ $title = $this->translate->_("Add New Home Section Link");
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jasny-bootstrap.js'); ?>"></script>
 <script type="text/javascript">
     var duplicated = false;
+
     function validateNow() {
         flag = deforayValidator.init({
             formId: 'addHomeSectionForm'

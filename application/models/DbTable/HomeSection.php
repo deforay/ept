@@ -11,7 +11,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $sectionImage = null;
-        // print_r($_FILES); die;
+        // echo "<pre>";print_r($_FILES); die;
         if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_image']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }
@@ -28,7 +28,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                     mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
                 }
                 if (move_uploaded_file($_FILES["section_image"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
-                    $sectionImage = $imageName;
+                   $sectionImage = $imageName;
                 }
             }
         }
