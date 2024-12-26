@@ -103,6 +103,20 @@ class Application_Service_Schemes
             }
         }
     }
+    public function setRecommededCustomTestTypes($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->delete('generic_recommended_test_types', 'scheme_id = "' . $params['schemeCode'] . '"');
+        if (isset($params['customTestkit']) && !empty($params['customTestkit'])) {
+            foreach ($params['customTestkit'] as $kit) {
+                $data = array(
+                    'scheme_id' => $params['schemeCode'],
+                    'testkit' => $kit,
+                );
+                $db->insert('generic_recommended_test_types', $data);
+            }
+        }
+    }
 
     public function getEidExtractionAssay()
     {
