@@ -89,6 +89,18 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label for="testkit1" class="col-lg-4 control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
+					<div class="col-lg-8">
+						<select name="customTestkit[]" id="customTestkit" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
+							<?php foreach ($this->allTestKits as $key => $testkit) { ?>
+								<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->customTestsRecommendedTestkits) && in_array($testkit['TESTKITNAMEID'], $this->customTestsRecommendedTestkits)) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+							<?php } ?>
+						</select>
+					</div>
+				</div>
+			</div>
 			<hr>
 			<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 				<tbody>
@@ -310,6 +322,10 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 	var sampleCounter = <?php echo (isset($this->result['possibleResult']) && sizeof($this->result['possibleResult']) > 0) ? sizeof($this->result['possibleResult']) : 1 ?>;
 
 	$(document).ready(function() {
+		$('.multipleSelect').multiselect({
+			includeSelectAllOption: false
+		});
+
 		$('#captureAdditionalDetails').on("change", function() {
 			if ($(this).val() == 'yes') {
 				$("#additionalDetailLabel").attr("disabled", false);

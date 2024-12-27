@@ -58,6 +58,8 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $schemeService->saveGenericTest($params);
             $this->redirect("/admin/generic-test");
         }
+        $dtsModel = new Application_Model_Dts();
+        $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
     }
 
     public function editAction()
@@ -82,12 +84,16 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $writer->write();
             $config1 = new Zend_Config_Ini($file, APPLICATION_ENV);
             $schemeService->saveGenericTest($params);
+            $schemeService->setRecommededCustomTestTypes($params);
             $this->redirect('admin/generic-test');
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
             $this->view->result = $result =  $schemeService->getGenericTest($id);
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $schemeCode = $result['schemeResult']['scheme_id'];
+            $dtsModel = new Application_Model_Dts();
+            $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
+            $this->view->customTestsRecommendedTestkits = $dtsModel->getRecommededGenericTestkits($schemeCode);
             $this->view->disableOtherTestkit = $config->evaluation->$schemeCode->disableOtherTestkit ?? 'no';
         }
     }

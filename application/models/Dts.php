@@ -1406,7 +1406,22 @@ class Application_Model_Dts
 		return $this->db->fetchAll($sql);
 	}
 
-	public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null)
+	public function getRecommededGenericTestkits($testMode)
+	{
+		$sql = $this->db->select()->from(array('generic_recommended_test_types'));
+
+		if ($testMode != null) {
+			$sql = $sql->where("scheme_id = '$testMode'");
+		}
+		$stmt = $this->db->fetchAll($sql);
+		$retval = [];
+		foreach ($stmt as $t) {
+			$retval[] = $t['testkit'];
+		}
+		return $retval;
+	}
+
+	public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null, $nonDts = false)
 	{
 		$sql = $this->db->select()->from(array('dts_recommended_testkits'));
 
@@ -1421,7 +1436,11 @@ class Application_Model_Dts
 		$stmt = $this->db->fetchAll($sql);
 		$retval = [];
 		foreach ($stmt as $t) {
-			$retval[$t['test_no']][] = $t['testkit'];
+			if ($nonDts) {
+				$retval[] = $t['testkit'];
+			} else {
+				$retval[$t['test_no']][] = $t['testkit'];
+			}
 		}
 		return $retval;
 	}
@@ -1443,7 +1462,10 @@ class Application_Model_Dts
 			)
 			->order("TESTKITNAME ASC");
 		if (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
-			$sql = $sql->where("scheme_type != '" . $stage . "'");
+			if ($stage == 'custom-tests')
+				$sql = $sql->where("scheme_type IS NULL OR scheme_type = ''");
+			else
+				$sql = $sql->where("scheme_type != '" . $stage . "'");
 		} else {
 			$sql = $sql->where("scheme_type = 'dts'");
 		}
