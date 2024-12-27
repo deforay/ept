@@ -340,6 +340,9 @@ $dtFormat =  $genderHelper->getDateFormat();
                                 </li>
                             </ul>
                         </li>
+                        <li class="<?php echo ($activeSubMenu == 'participant-message') ? ' active ' : '';  ?>"><a
+                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-message"), null, true) ?>"><?= $this->translate->_("Participant Message"); ?></a>
+                                </li>
                         <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
                             <li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
                                 <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>

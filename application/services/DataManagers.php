@@ -144,6 +144,7 @@ class Application_Service_DataManagers
         $newPassword = $userDb->resetPasswordForEmail($email);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+    //    echo "<pre>"; print_r($conf); die;
 
 
         $eptDomain = rtrim($conf->domain, "/");

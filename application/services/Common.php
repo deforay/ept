@@ -157,7 +157,24 @@ class Application_Service_Common
                 $systemMail->addBcc($bcc);
             }
         }
-
+        // Attach files if any
+        if (!empty($attachments)) {
+            foreach ($attachments as $filePath) {
+                if (file_exists($filePath)) {
+                    $attachment = file_get_contents($filePath);
+                    $fileName = basename($filePath);
+                    $systemMail->createAttachment(
+                        $attachment,
+                        Zend_Mime::TYPE_OCTETSTREAM,
+                        Zend_Mime::DISPOSITION_ATTACHMENT,
+                        Zend_Mime::ENCODING_BASE64,
+                        $fileName
+                    );
+                } else {
+                    error_log("Attachment file does not exist: " . $filePath);
+                }
+            }
+        }
         try {
             $systemMail->send($smtpTransportObj);
             return true;

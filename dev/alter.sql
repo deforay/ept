@@ -3498,3 +3498,15 @@ ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('
 
 -- sakthi 24-Dec-2024
 ALTER TABLE `home_sections` ADD `section_image` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
+
+--Sakti 27-Dec-2024
+CREATE TABLE participant_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    participant_id VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NULL,
+    attached_file VARCHAR(255) NULL,
+    message TEXT NOT NULL,
+    status ENUM('pending', 'sent', 'failed') DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sent_at DATETIME NULL
+);
