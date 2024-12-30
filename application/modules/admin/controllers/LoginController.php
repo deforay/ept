@@ -1,5 +1,7 @@
 <?php
 
+use Application_Service_SecurityService as SecurityService;
+
 class Admin_LoginController extends Zend_Controller_Action
 {
 
@@ -71,6 +73,7 @@ class Admin_LoginController extends Zend_Controller_Action
 			// logged in as a User as well..
 			// We don't want that
 			Zend_Auth::getInstance()->clearIdentity();
+			SecurityService::rotateCSRF();
 		}
 	}
 
