@@ -10,18 +10,25 @@
 		<div class="box-body">
 			<form name="mailChange" id="mailChange" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("controller" => "participant", "action" => "participant-message"), null, true) ?>">
 				<div id="view-content">
-					
+
 					<table class="table table-striped">
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Subject"); ?></td>
-							<td><input id="subject" type="text" id="subject" name="subject" size="50" maxlength="45" class="isRequired form-control" title="Please enter your subject" placeholder="Please enter subject" /></td>
-
+							<td>
+								<select id="subject" name="subject" class="form-control input-sm isRequired" title="Please Select Subject">
+									<option value=""> -- <?= $this->translate->_("Select Subject"); ?> --</option>
+									<option value="Report an issue on Panels"><?= $this->translate->_("Report an issue on Panels"); ?></option>
+									<option value="Question on using ePT"><?= $this->translate->_("Question on using ePT"); ?></option>
+									<option value="Question on PT Panels"><?= $this->translate->_("Question on PT Panels"); ?></option>
+									<option value="Feedback"><?= $this->translate->_("Feedback"); ?></option>
+									<option value="Other"><?= $this->translate->_("Other"); ?></option>
+								</select>
+							</td>
 						</tr>
 
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Message"); ?></td>
 							<td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="Please enter message" placeholder="Please enter message"></textarea></td>
-					
 						</tr>
 
 						<tr align="left" class="light">
