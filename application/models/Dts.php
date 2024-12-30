@@ -1450,16 +1450,14 @@ class Application_Model_Dts
 
 		$sql = $this->db->select()
 			->from(
-				array('r_testkitname_dts'),
+				array('t' => 'r_testkitnames'),
 				array(
 					'TESTKITNAMEID' => 'TESTKITNAME_ID',
 					'TESTKITNAME' => 'TESTKIT_NAME',
-					'testkit_1',
-					'testkit_2',
-					'testkit_3',
 					'attributes'
 				)
 			)
+			->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
 			->order("TESTKITNAME ASC");
 		if (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
 			if ($stage == 'custom-tests')
@@ -1479,7 +1477,7 @@ class Application_Model_Dts
 
 	public function updateTestKitStatus($params)
 	{
-		return $this->db->update("r_testkitname_dts", array("testkit_status" => $params['status']), "testkit_status = 'pending'");
+		return $this->db->update("r_testkitnames", array("testkit_status" => $params['status']), "testkit_status = 'pending'");
 	}
 
 
@@ -1528,9 +1526,9 @@ class Application_Model_Dts
 			->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.number_of_samples', 's.number_of_controls'])
 			->joinLeft(['spm' => 'shipment_participant_map'], 's.shipment_id = spm.shipment_id', [''])
 			->joinLeft(['rrd' => 'response_result_dts'], 'spm.map_id = rrd.shipment_map_id', ['test_kit_name_1', 'test_kit_name_2', 'test_kit_name_3', 'kit_additional_info'])
-			->joinLeft(['rtd1' => 'r_testkitname_dts'], 'rrd.test_kit_name_1 = rtd1.TestKitName_ID', ['kit1Attributes' => 'rtd1.attributes'])
-			->joinLeft(['rtd2' => 'r_testkitname_dts'], 'rrd.test_kit_name_2 = rtd2.TestKitName_ID', ['kit2Attributes' => 'rtd2.attributes'])
-			->joinLeft(['rtd3' => 'r_testkitname_dts'], 'rrd.test_kit_name_3 = rtd3.TestKitName_ID', ['kit3Attributes' => 'rtd3.attributes'])
+			->joinLeft(['rtd1' => 'r_testkitnames'], 'rrd.test_kit_name_1 = rtd1.TestKitName_ID', ['kit1Attributes' => 'rtd1.attributes'])
+			->joinLeft(['rtd2' => 'r_testkitnames'], 'rrd.test_kit_name_2 = rtd2.TestKitName_ID', ['kit2Attributes' => 'rtd2.attributes'])
+			->joinLeft(['rtd3' => 'r_testkitnames'], 'rrd.test_kit_name_3 = rtd3.TestKitName_ID', ['kit3Attributes' => 'rtd3.attributes'])
 			->where("(JSON_EXTRACT(rtd1.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd2.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd3.attributes, '$.additional_info') = 'yes' OR rrd.kit_additional_info != '')")
 			->where("s.shipment_id = ?", $shipmentId);
 		$kitResult = $db->fetchRow($kitQuery);
@@ -2355,9 +2353,9 @@ class Application_Model_Dts
 	{
 
 		$responseQuery = $this->db->select()->from(array('rrdts' => 'response_result_dts'))
-			->joinLeft(array('tk1' => 'r_testkitname_dts'), 'tk1.TestKitName_ID=rrdts.test_kit_name_1', array('testKitName1' => 'tk1.TestKit_Name'))
-			->joinLeft(array('tk2' => 'r_testkitname_dts'), 'tk2.TestKitName_ID=rrdts.test_kit_name_2', array('testKitName2' => 'tk2.TestKit_Name'))
-			->joinLeft(array('tk3' => 'r_testkitname_dts'), 'tk3.TestKitName_ID=rrdts.test_kit_name_3', array('testKitName3' => 'tk3.TestKit_Name'))
+			->joinLeft(array('tk1' => 'r_testkitnames'), 'tk1.TestKitName_ID=rrdts.test_kit_name_1', array('testKitName1' => 'tk1.TestKit_Name'))
+			->joinLeft(array('tk2' => 'r_testkitnames'), 'tk2.TestKitName_ID=rrdts.test_kit_name_2', array('testKitName2' => 'tk2.TestKit_Name'))
+			->joinLeft(array('tk3' => 'r_testkitnames'), 'tk3.TestKitName_ID=rrdts.test_kit_name_3', array('testKitName3' => 'tk3.TestKit_Name'))
 			->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrdts.test_result_1', array('testResult1' => 'r.response'))
 			->joinLeft(array('rp' => 'r_possibleresult'), 'rp.id=rrdts.test_result_2', array('testResult2' => 'rp.response'))
 			->joinLeft(array('rpr' => 'r_possibleresult'), 'rpr.id=rrdts.test_result_3', array('testResult3' => 'rpr.response'))
@@ -2380,7 +2378,7 @@ class Application_Model_Dts
 			foreach ($refResult as $key => $refRes) {
 				$refDtsQuery = $this->db->select()->from(array('refDts' => 'reference_dts_rapid_hiv'), array('refDts.lot_no', 'refDts.expiry_date', 'refDts.result'))
 					->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refDts.result', array('referenceKitResult' => 'r.response'))
-					->joinLeft(array('tk' => 'r_testkitname_dts'), 'tk.TestKitName_ID=refDts.testkit', array('testKitName' => 'tk.TestKit_Name'))
+					->joinLeft(array('tk' => 'r_testkitnames'), 'tk.TestKitName_ID=refDts.testkit', array('testKitName' => 'tk.TestKit_Name'))
 					->where("refDts.shipment_id = ?", $shipmentId)
 					->where("refDts.sample_id = ?", $refRes['sample_id']);
 				$refResult[$key]['kitReference'] = $this->db->fetchAll($refDtsQuery);

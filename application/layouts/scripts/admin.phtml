@@ -231,7 +231,8 @@ if ($adminSession->privileges != "") {
 									<?php if (isset($configData['feed_back_option']) && $configData['feed_back_option'] == 'yes') { ?>
 										<li id="FeedbackQuestions"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Questions"); ?></a></li>
 										<li id="ShipmentQustionsMap"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Shipment Qustions Map"); ?></a></li>
-									<?php } if (in_array('dts', $adminSession->activeSchemes)) { ?>
+									<?php }
+									if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li id="TestKits"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a></li>
 									<?php } ?>
 									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
@@ -418,7 +419,6 @@ if ($adminSession->privileges != "") {
 		$(function() {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
-			console.log(splitsUrl);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
 				$('#participant-login-map').addClass('active');
 			} else if (splitsUrl[2] == 'system-admins') {
@@ -513,17 +513,17 @@ if ($adminSession->privileges != "") {
 				$('#shipmentsReport').addClass('active');
 			} else if (splitsUrl[2] == 'annual') {
 				$('#AnnualPerformanceReport').addClass('active');
-			}else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'questions') {
+			} else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'questions') {
 				$('#FeedbackQuestions').addClass('active');
-			}else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'shipment-questions') {
+			} else if (splitsUrl[2] == 'feedback-responses' && splitsUrl[3] == 'shipment-questions') {
 				$('#ShipmentQustionsMap').addClass('active');
-			}else if (splitsUrl[2] == 'test-platform') {
+			} else if (splitsUrl[2] == 'test-platform') {
 				$('#SARS-CoV-2TestPlatforms').addClass('active');
-			}else if (splitsUrl[2] == 'covid19-gene-type') {
+			} else if (splitsUrl[2] == 'covid19-gene-type') {
 				$('#SARS-CoV-2GeneTypes').addClass('active');
-			}else if (splitsUrl[2] == 'covid19-settings') {
+			} else if (splitsUrl[2] == 'covid19-settings') {
 				$('#SARS-CoV-2Settings').addClass('active');
-			}else if (splitsUrl[2] == 'recency-settings') {
+			} else if (splitsUrl[2] == 'recency-settings') {
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 

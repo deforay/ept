@@ -1323,16 +1323,16 @@ class Application_Service_Reports
             ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array())
             ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array());
         if (isset($params['kitType']) && $params['kitType'] == "testkit1") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } elseif (isset($params['kitType']) && $params['kitType'] == "testkit2") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_2', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } elseif (isset($params['kitType']) && $params['kitType'] == "testkit3") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } else {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         }
         if (isset($params['reportType']) && $params['reportType'] == "network") {
@@ -1487,16 +1487,16 @@ class Application_Service_Reports
         //  ->group("p.participant_id");
 
         if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_2', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_3', array('tn.TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         } else {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
@@ -3148,13 +3148,13 @@ class Application_Service_Reports
             ->group("p.participant_id");
 
         if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_2', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_3', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
         } else {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
                 ->group('tn.TestKitName_ID');
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
@@ -3255,13 +3255,13 @@ class Application_Service_Reports
                 ->group("p.participant_id");
 
             if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
-                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_1', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
             }
             if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
-                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_2', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_2', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
             }
             if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
-                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitname_dts'), 'tn.TestKitName_ID=res.test_kit_name_3', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
+                $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_3', array())->where("tn.TestKitName_ID = ?", $parameters['testkitId']);
             }
             if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
                 if (isset($parameters['networkValue']) && $parameters['networkValue'] != "") {

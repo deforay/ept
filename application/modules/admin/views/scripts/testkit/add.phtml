@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
 	<form name="addTestkitForm" id="addTestkitForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "testkit", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
@@ -6,7 +8,7 @@
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label"><?= $this->translate->_("Test Kit Name"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitname_dts', 'TestKit_Name', this, null, 'This Testkit Name already exists for another Testkit. Please try something else.')" />
+					<input type="text" id="testKitName" name="testKitName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Testkit Name here" placeholder="Please enter the Testkit Name here" onblur="checkDuplicate('r_testkitnames', 'TestKit_Name', this, null, 'This Testkit Name already exists for another Testkit. Please try something else.')" />
 				</div>
 			</div>
 
@@ -24,14 +26,12 @@
 				</div>
 			</div>
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Scheme"); ?> <span class="mandatory">*</span></label>
-
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<select id="scheme" name="scheme" class="form-control isRequired" title="Please select the Scheme">
-						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
-						<?php foreach ($this->schemeList as $scheme) { ?>
-							<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-						<?php } ?>
+					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="1"><?= $this->translate->_("Yes"); ?></option>
+						<option value="0"><?= $this->translate->_("No"); ?></option>
 					</select>
 				</div>
 			</div>
@@ -49,25 +49,28 @@
 					<input type="text" id="manufacturer" name="manufacturer" size="50" maxlength="255" class="form-control" title="Please enter the testkit manufacturer here" placeholder="Please enter the testkit manufacturer here" />
 				</div>
 			</div>
-
 			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Scheme"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-8">
-					<textarea class="form-control" name="comments" id="comments"></textarea>
-				</div>
-			</div>
-
-			<div class="form-group col-lg-6">
-				<label class="col-lg-4 control-label"><?= $this->translate->_("Country Adapted"); ?> <span class="mandatory">*</span></label>
-				<div class="col-lg-8">
-					<select class="form-control isRequired" name="countryAdapted" id="countryAdapted" title="Please choose the country adapted here">
-						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-						<option value="1"><?= $this->translate->_("Yes"); ?></option>
-						<option value="0"><?= $this->translate->_("No"); ?></option>
+					<select id="scheme" multiple="multiple" name="scheme[]" class="form-control multiselect isRequired" title="Please select the Scheme" onchange="selectStages();">
+						<option value="">--<?= $this->translate->_("Select Scheme"); ?>--</option>
+						<?php foreach ($this->schemeList as $scheme) { ?>
+							<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+						<?php } ?>
 					</select>
 				</div>
 			</div>
-
+			<div class="form-group col-lg-6 testStages hide">
+				<label class="col-lg-4 control-label" for="testStages"><?= $this->translate->_("Choose a Test Number to map test kit"); ?> <span class="mandatory">*</span></label>
+				<div class="col-lg-8">
+					<select class="form-control multiselect" multiple="multiple" name="testStages[]" id="testStages" title="Please choose a test stage" onchange="getTestKit(this.value)">
+						<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
+						<option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
+						<option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
+						<option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+					</select>
+				</div>
+			</div>
 			<div class="form-group col-lg-6">
 				<label class="col-lg-4 control-label" for="additionalInfo"><?= $this->translate->_("Allow Additional Information"); ?></label>
 				<div class="col-lg-8">
@@ -94,6 +97,12 @@
 					</select>
 				</div>
 			</div>
+			<div class="form-group col-lg-6">
+				<label class="col-lg-4 control-label"><?= $this->translate->_("Comments"); ?></label>
+				<div class="col-lg-8">
+					<textarea class="form-control" name="comments" id="comments"></textarea>
+				</div>
+			</div>
 
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
@@ -102,9 +111,17 @@
 		</fieldset>
 	</form>
 </div>
-
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
+
+	$(document).ready(function() {
+		$(".multiselect").select2({
+			placeholder: "<?= $this->translate->_("Choose one or more options"); ?>",
+			width: '100%'
+		});
+	});
 
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
@@ -136,10 +153,24 @@
 	}
 
 	function additionalInfoFun(value) {
-		if (value) {
+		if (value == '1') {
 			$('.additionalInfo').removeClass('hide');
 		} else {
 			$('.additionalInfo').addClass('hide');
 		}
+	}
+
+	function selectStages() {
+		let list = $('[name="scheme[]"]').val();
+		$(list).each(function(i, data) {
+			if (data == 'dts') {
+				console.log(data);
+				$('.testStages').removeClass('hide');
+				$('#testStages').addClass('isRequired');
+			} else {
+				$('#testStages').removeClass('isRequired');
+				$('.testStages').addClass('hide');
+			}
+		});
 	}
 </script>

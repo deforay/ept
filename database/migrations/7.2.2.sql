@@ -170,3 +170,14 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 
 -- Amit 19-Dec-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
+
+-- Amit 30-Dec-2024
+RENAME TABLE `r_testkitname_dts` TO `r_testkitnames`;
+
+CREATE TABLE `scheme_testkit_map` (
+  `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `testkit_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `testkit_1` int NOT NULL DEFAULT '0',
+  `testkit_2` int NOT NULL DEFAULT '0',
+  `testkit_3` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
