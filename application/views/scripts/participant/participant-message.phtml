@@ -1,0 +1,64 @@
+<?php $authNameSpace = new Zend_Session_Namespace('datamanagers'); ?>
+<section class="content-header">
+	<h1>
+		<?= $this->translate->_("Mail content"); ?>
+	</h1>
+</section>
+
+<section class="content">
+	<div class="box">
+		<div class="box-body">
+			<form name="mailChange" id="mailChange" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("controller" => "participant", "action" => "participant-message"), null, true) ?>">
+				<div id="view-content">
+
+					<table class="table table-striped">
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("Subject"); ?></td>
+							<td>
+								<select id="subject" name="subject" class="form-control input-sm isRequired" title="Please Select Subject">
+									<option value=""> -- <?= $this->translate->_("Select Subject"); ?> --</option>
+									<option value="Report an issue on Panels"><?= $this->translate->_("Report an issue on Panels"); ?></option>
+									<option value="Question on using ePT"><?= $this->translate->_("Question on using ePT"); ?></option>
+									<option value="Question on PT Panels"><?= $this->translate->_("Question on PT Panels"); ?></option>
+									<option value="Feedback"><?= $this->translate->_("Feedback"); ?></option>
+									<option value="Other"><?= $this->translate->_("Other"); ?></option>
+								</select>
+							</td>
+						</tr>
+
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("Message"); ?></td>
+							<td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="Please enter message" placeholder="Please enter message"></textarea></td>
+						</tr>
+
+						<tr align="left" class="light">
+							<td><?= $this->translate->_("Attachment"); ?></td>
+							<td><input id="attachment" type="file" id="attachment" name="attachment" size="50" class=" form-control" /></td>
+
+						</tr>
+					</table>
+
+					<br>
+					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+						<p>
+							<input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" onclick="validateNow();return false;" />
+							&nbsp;&nbsp;&nbsp;
+							<input name="reset" class="btn btn-warning" type="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="" />
+						</p>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+<script>
+	function validateNow() {
+		flag = deforayValidator.init({
+			formId: 'mailChange'
+		});
+		if (flag) {
+			$.blockUI();
+			document.getElementById('mailChange').submit();
+		}
+	}
+</script>

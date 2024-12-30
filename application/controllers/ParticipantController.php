@@ -184,7 +184,6 @@ class ParticipantController extends Zend_Controller_Action
     public function changePrimaryEmailAction()
     {
         $this->_helper->layout()->activeSubMenu = 'change-primary-email';
-
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
@@ -193,6 +192,29 @@ class ParticipantController extends Zend_Controller_Action
             $response = $user->confirmPrimaryMail($params, true);
             if ($response) {
                 $this->redirect('/participant/current-schemes');
+            }
+        }
+    }
+
+    public function participantMessageAction()
+    {
+        $this->_helper->layout()->activeSubMenu = 'participant-message';
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $this->getAllParams();
+            $pmService = new Application_Service_ParticipantMessages();
+            $response = $pmService->addParticipantMessage($params);
+            $sessionAlert = new Zend_Session_Namespace('alertSpace');
+            if ($response['status'] === 'success') {
+                $sessionAlert->message = "Mail set successfully";
+                $sessionAlert->status = "success";
+                return true;
+            } else {
+                $sessionAlert->message = "Sorry, we could not process this message. Please try again";
+                $sessionAlert->status = "failure";
+                return false;
             }
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+use Application_Service_SecurityService as SecurityService;
+
 class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 {
 
@@ -8,13 +10,13 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 
         $layout = Zend_Layout::getMvcInstance();
 
-        /** @var \Laminas\Http\Request $request */
 
+        /** @var Zend_Controller_Request_Http $request */
         if ($request->getControllerName() == 'error') {
             return;
         }
 
-        $csrfCheck = self::checkCSRF($request);
+        $csrfCheck = SecurityService::checkCSRF($request);
 
         if (!$csrfCheck) {
             $translate = Zend_Registry::get('translate');
@@ -90,66 +92,4 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
         }
     }
 
-
-    private static function generateCSRF()
-    {
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (empty($csrfNamespace->token)) {
-            $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
-        }
-
-        $csrfNamespace->tokenTime = time();
-    }
-    private static function invalidateCSRF()
-    {
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (isset($csrfNamespace->token)) {
-            unset($csrfNamespace->token);
-            unset($csrfNamespace->tokenTime);
-        }
-    }
-    private static function rotateCSRF(): void
-    {
-        self::invalidateCSRF();
-        self::generateCSRF();
-    }
-
-    private static function checkCSRF($request, $invalidate = false): bool
-    {
-
-        $method = strtoupper($request->getMethod());
-
-        // Check if method is one of the modifying methods
-        $modifyingMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
-
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-
-        if (
-            php_sapi_name() === 'cli' ||
-            $request->getModuleName() === 'api' ||
-            $request->getControllerName() === 'error' ||
-            !in_array($method, $modifyingMethods) ||
-            !isset($csrfNamespace->token)
-        ) {
-            return true;
-        } else {
-
-            $csrfToken = $request->getHeader('X-CSRF-Token') ?: $request->getPost('csrf_token');
-
-            // Validate token
-            if (
-                empty($csrfToken) ||
-                !hash_equals($csrfNamespace->token, $csrfToken)
-            ) {
-                return false;
-            }
-
-            // Optionally invalidate and generate a new token
-            if ($request->isXmlHttpRequest() !== true && $invalidate) {
-                self::rotateCSRF();
-            }
-
-            return true;
-        }
-    }
 }

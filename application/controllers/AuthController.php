@@ -95,6 +95,11 @@ class AuthController extends Zend_Controller_Action
 
 			$passwordVerify = true;
 			if (isset($result) && !empty($result)) {
+				$loggedUser = new Zend_Session_Namespace('loggedUser');
+				$loggedUser->partcipant_id = $result['dm_id'];
+				$loggedUser->primary_email = $result['primary_email'];
+				$loggedUser->first_name = $result['first_name'];
+				$loggedUser->last_name = $result['last_name'];
 				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
 			}
 
