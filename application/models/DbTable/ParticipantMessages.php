@@ -10,6 +10,11 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $common = new Application_Service_Common();
         $attachedFile = null;
+        $loggedUser = new Zend_Session_Namespace('loggedUser');
+        $partcipant_id = $loggedUser->partcipant_id;
+        $fromMail = $loggedUser->primary_email;
+        $fromName = $loggedUser->first_name . $loggedUser->last_name;
+
         if (isset($params['subject']) && $params['subject'] != "") {
             $attachedFile = null;
             if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'])) {
@@ -23,10 +28,11 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 $fileName =   $common->generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES['attachment']["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                     $attachedFile = $fileName;
-                    $attachedFilePath = $pathPrefix . DIRECTORY_SEPARATOR . $fileName; // Full file path
+                    $attachedFilePath = array($pathPrefix . DIRECTORY_SEPARATOR . $fileName); // Full file path
                 }
             }
             $data =  [
+                "participant_id" => $partcipant_id,
                 "subject" => $params['subject'],
                 "message" => $params['message'],
                 "status" => 'pending',
@@ -40,28 +46,8 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $subject = $params['subject'];
             $toMail = Application_Service_Common::getConfig('admin_email');
             $attachedFile = $attachedFilePath;
-            //$fromName = Application_Service_Common::getConfig('admin-name');
-            // Send email with the attachment
-            $emailSent = $common->sendMail($toMail, null, null, $subject, $message, null, "ePT Admin", [$attachedFilePath]);
-
-            // If the email was sent successfully, update the status in the database
-            if ($emailSent) {
-                $db->update(
-                    'participant_messages',
-                    ['status' => 'sent'],  // Update status to 'sent'
-                    ['id = ?' => $insertId]  // Only update the record with the last inserted ID
-                );
-                $response['status'] = 'success';
-            } else {
-                // If the email failed, you can update the status to 'failed' or leave it as 'pending'
-                $db->update(
-                    'participant_messages',
-                    ['status' => 'failed'],  // Update status to 'failed' if email sending failed
-                    ['id = ?' => $insertId]  // Only update the record with the last inserted ID
-                );
-                $response['status'] = 'failure';
-            }
-
+            $common->insertTempMail($toMail, null, null, $subject, $message, $fromMail, $fromName, $attachedFilePath);
+            $response['status'] = 'success';
             return $response;
         }
     }

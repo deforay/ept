@@ -61,7 +61,30 @@ if (!empty($mailResult)) {
                     }
                 }
             }
-
+            $attachments = json_decode($result['attachment'], true);
+            if (!empty($attachments)) {
+                foreach ($attachments as $filePath) {
+                    if (file_exists($filePath)) {
+                        try {
+                            $attachmentContent = file_get_contents($filePath);
+                            $fileName = basename($filePath);
+                            $alertMail->createAttachment(
+                                $attachmentContent,
+                                Zend_Mime::TYPE_OCTETSTREAM, // General binary file
+                                Zend_Mime::DISPOSITION_ATTACHMENT,
+                                Zend_Mime::ENCODING_BASE64,
+                                $fileName
+                            );
+                        } catch (Exception $e) {
+                            error_log("Error processing attachment $filePath: " . $e->getMessage());
+                        }
+                    } else {
+                        error_log("Attachment file does not exist: $filePath");
+                    }
+                }
+            }
+            
+            
             $alertMail->setSubject($subject);
             $sendResult = $alertMail->send($smtpTransportObj);
             //var_dump($sendResult);

@@ -3510,3 +3510,6 @@ CREATE TABLE participant_messages (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     sent_at DATETIME NULL
 );
+
+--Sakti 30-Dec-2024
+ALTER TABLE `temp_mail` ADD `attachment` VARCHAR(255) NULL AFTER `from_full_name`;
