@@ -1,12 +1,5 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-
 class Application_Service_ParticipantMessages
 {
     protected $tempUploadDirectory;
@@ -20,4 +13,20 @@ class Application_Service_ParticipantMessages
         $userDb = new Application_Model_DbTable_ParticipantMessages();
         return $userDb->addParticipantMessage($params);
     }
+
+    public function getParticipantMessage($params)
+    {
+        $userDb = new Application_Model_DbTable_ParticipantMessages();
+        return $userDb->getParticipantMessage($params);
+    }
+
+    public function getParticipantMessageById($pmId)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$sql = $db->select()->from(array('pm' => 'participant_messages'))
+			->where("id = ?", $pmId);
+		$res = $db->fetchAll($sql);
+        // echo '<pre>'; print_r($res); die;
+        return $res[0];
+	}
 }

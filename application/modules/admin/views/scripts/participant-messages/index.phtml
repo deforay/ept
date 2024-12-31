@@ -1,0 +1,83 @@
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of"); ?> <?= isset($this->searchData) ? $status[$this->searchData] : "Participant Messaegs"; ?></div>
+</h4>
+
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="participantMessageTable">
+    <thead>
+        <tr>
+            <th><?= $this->translate->_("Partcipant"); ?></th>
+            <th><?= $this->translate->_("Subject"); ?></th>
+            <th><?= $this->translate->_("Message"); ?></th>
+            <th><?= $this->translate->_("Created At"); ?></th>
+            <th><?= $this->translate->_("Action"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="4" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div><!-- /.modal -->
+
+<script type="text/javascript" charset="utf-8">
+    $('#myModal').on('hidden.bs.modal', function() {
+        $(this).removeData('bs.modal');
+    });
+    /* Table initialisation */
+    var oTable = null;
+    $(document).ready(function() {
+
+        oTable = $('#participantMessageTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [{
+                    "sClass": "center",
+                    "bSortable": false
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                }
+            ],
+            "aaSorting": [
+                [2, "desc"]
+            ],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participant-messages', 'action' => 'index', 'format' => 'html')); ?>",
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                console.log("Data Sent:", aoData);
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback,
+                    "error": function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                    }
+                });
+            }
+        });
+    });
+</script>
