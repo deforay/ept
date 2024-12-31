@@ -1550,7 +1550,7 @@ class Application_Service_Evaluation
 					->join(
 						array('spm' => 'shipment_participant_map'),
 						'spm.map_id=reseid.shipment_map_id',
-						array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date')
+						array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date', 'spm.failure_reason')
 					)
 					->join(
 						array('refeid' => 'reference_result_generic_test'),

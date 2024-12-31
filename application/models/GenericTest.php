@@ -22,7 +22,9 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach ($shipmentResult as $shipment) {
+            $correctiveActions = $this->getDtsCorrectiveActions();
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
+
             $attributes = json_decode($shipment['attributes'], true);
             $testKitDb = new Application_Model_DbTable_Testkitnames();
             $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
@@ -79,7 +81,10 @@ class Application_Model_GenericTest
             if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
                 if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
                     $totalScore = 0;
-                    $failureReason[]['warning'] = "Testing is not performed with country approved test kit.";
+                    $failureReason[] = array(
+                        'warning' => "Testing is not performed with country approved test kit.",
+                        'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
+                    );
                 }
             }
             if ($maxScore > 0 && $totalScore > 0) {
@@ -107,7 +112,10 @@ class Application_Model_GenericTest
                     $scoreResult = 'Pass';
                 } else {
                     $scoreResult = 'Fail';
-                    $failureReason[]['warning'] = "Participant did not meet the score criteria (Participant Score - <strong>$totalScore</strong> and Required Score - <strong>$passingScore</strong>)";
+                    $failureReason[] = array(
+                        'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($totalScore) . "</strong> and Required Score is <strong>" . round($passingScore) . "</strong>)",
+                        'correctiveAction' => "Review all testing procedures prior to performing client testing and contact your supervisor for improvement"
+                    );
                 }
 
                 // if any of the results have failed, then the final result is fail
@@ -781,5 +789,15 @@ class Application_Model_GenericTest
             $retval[] = $t['testkit'];
         }
         return $retval;
+    }
+
+    public function getDtsCorrectiveActions()
+    {
+        $res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
+        $response = [];
+        foreach ($res as $row) {
+            $response[$row['action_id']] = $row['corrective_action'];
+        }
+        return $response;
     }
 }
