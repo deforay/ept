@@ -1459,9 +1459,9 @@ class Application_Service_Evaluation
 					->joinLeft(array('respr' => 'r_possibleresult'), 'respr.id=resdts.reported_result', array('labResult' => 'respr.response'))
 					->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdts.shipment_map_id', array('sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
 					->joinLeft(array('refdts' => 'reference_result_dts'), 'refdts.shipment_id=sp.shipment_id and refdts.sample_id=resdts.sample_id', array('refdts.reference_result', 'refdts.sample_label', 'refdts.mandatory', 'refdts.sample_score', 'refdts.control', 'dts_rtri_reference_result'))
-					->joinLeft(array('dtstk1' => 'r_testkitname_dts'), 'dtstk1.TestKitName_ID=resdts.test_kit_name_1', array('testkit1' => 'dtstk1.TestKit_Name'))
-					->joinLeft(array('dtstk2' => 'r_testkitname_dts'), 'dtstk2.TestKitName_ID=resdts.test_kit_name_2', array('testkit2' => 'dtstk2.TestKit_Name'))
-					->joinLeft(array('dtstk3' => 'r_testkitname_dts'), 'dtstk3.TestKitName_ID=resdts.test_kit_name_3', array('testkit3' => 'dtstk3.TestKit_Name'))
+					->joinLeft(array('dtstk1' => 'r_testkitnames'), 'dtstk1.TestKitName_ID=resdts.test_kit_name_1', array('testkit1' => 'dtstk1.TestKit_Name'))
+					->joinLeft(array('dtstk2' => 'r_testkitnames'), 'dtstk2.TestKitName_ID=resdts.test_kit_name_2', array('testkit2' => 'dtstk2.TestKit_Name'))
+					->joinLeft(array('dtstk3' => 'r_testkitnames'), 'dtstk3.TestKitName_ID=resdts.test_kit_name_3', array('testkit3' => 'dtstk3.TestKit_Name'))
 					->joinLeft(array('refpr' => 'r_possibleresult'), 'refpr.id=refdts.reference_result', array('referenceResult' => 'refpr.response', 'referenceResultCode' => 'refpr.result_code'))
 					->joinLeft(array('refSypPR' => 'r_possibleresult'), 'refSypPR.id=refdts.syphilis_reference_result', array('referenceSyphilisResult' => 'refSypPR.response', 'referenceSyphilisResultCode' => 'refSypPR.result_code'))
 					->joinLeft(array('refRtriPr' => 'r_possibleresult'), 'refRtriPr.id=resdts.dts_rtri_reported_result', array('dtsRtriReportedResult' => 'refSypPR.response', 'dtsRtriReportedResultCode' => 'refSypPR.result_code'))
@@ -1820,7 +1820,7 @@ class Application_Service_Evaluation
 					$testkitjoin = 'rtd.TestKitName_ID = rrd.test_kit_name_1 OR rtd.TestKitName_ID = rrd.repeat_test_kit_name_1';
 				}
 				/* Test Kit Report for summary pdf */
-				$tksql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), $tests)
+				$tksql = $db->select()->from(array('rtd' => 'r_testkitnames'), $tests)
 					->join(array('rrd' => 'response_result_dts'), $testkitjoin, array(''))
 					->join(array('spm' => 'shipment_participant_map'), 'rrd.shipment_map_id=spm.map_id', array())
 					->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_code'))
@@ -1837,7 +1837,7 @@ class Application_Service_Evaluation
 				$shipmentResult['testKitByTestNumber'] = $db->fetchAll($tksql);
 
 				// testkit chart
-				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitname_dts'), array(
+				$tkcsql = $db->select()->from(array('rtd' => 'r_testkitnames'), array(
 					'testkitid' => 'TestKitName_ID',
 					'testkitname' => 'TestKit_Name',
 					'Pass' => new Zend_Db_Expr("SUM(CASE WHEN (rrd.calculated_score like 'Pass') THEN 1 ELSE 0 END)"),
@@ -1922,9 +1922,6 @@ class Application_Service_Evaluation
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
-					$kitNameRes = $db->fetchAll($db->select()->from(array('rtdts' => 'r_testkitname_dts'))
-						->where("scheme_type='dts'"));
-
 					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array(''))
 						->join(
 							array('resdts' => 'response_result_dts'),
@@ -1933,7 +1930,7 @@ class Application_Service_Evaluation
 								'testkit1Total' => new Zend_Db_Expr('COUNT(DISTINCT(CONCAT(resdts.test_kit_name_1,resdts.shipment_map_id)))')
 							)
 						)
-						->join(array('rtdts' => 'r_testkitname_dts'), 'rtdts.TestKitName_ID=resdts.test_kit_name_1', array('TestKit_Name'))
+						->join(array('rtdts' => 'r_testkitnames'), 'rtdts.TestKitName_ID=resdts.test_kit_name_1', array('TestKit_Name'))
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
 						->where("spm.is_excluded!='yes'")
@@ -1955,7 +1952,7 @@ class Application_Service_Evaluation
 							)
 						)
 						->join(
-							array('rtdts' => 'r_testkitname_dts'),
+							array('rtdts' => 'r_testkitnames'),
 							'rtdts.TestKitName_ID=resdts.test_kit_name_2',
 							array('TestKit_Name')
 						)
@@ -1980,7 +1977,7 @@ class Application_Service_Evaluation
 							)
 						)
 						->join(
-							array('rtdts' => 'r_testkitname_dts'),
+							array('rtdts' => 'r_testkitnames'),
 							'rtdts.TestKitName_ID=resdts.test_kit_name_3',
 							array('TestKit_Name')
 						)

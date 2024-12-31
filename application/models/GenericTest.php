@@ -21,8 +21,12 @@ class Application_Model_GenericTest
         $passingScore = 100;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
         foreach ($shipmentResult as $shipment) {
+            $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
+            $attributes = json_decode($shipment['attributes'], true);
+            $testKitDb = new Application_Model_DbTable_Testkitnames();
+            $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
+
             $jsonConfig = Zend_Json_Decoder::decode($shipment['user_test_config'], true);
             $passingScore = $jsonConfig['passingScore'] ?? 100;
 
@@ -71,6 +75,12 @@ class Application_Model_GenericTest
                 }
 
                 $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+            }
+            if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
+                if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
+                    $totalScore = 0;
+                    $failureReason[]['warning'] = "Testing is not performed with country approved test kit.";
+                }
             }
             if ($maxScore > 0 && $totalScore > 0) {
                 $totalScore = ($totalScore / $maxScore) * 100;
@@ -736,16 +746,14 @@ class Application_Model_GenericTest
 
         $sql = $this->db->select()
             ->from(
-                array('r_testkitname_dts'),
+                array('r_testkitnames'),
                 array(
                     'TESTKITNAMEID' => 'TESTKITNAME_ID',
                     'TESTKITNAME' => 'TESTKIT_NAME',
-                    'testkit_1',
-                    'testkit_2',
-                    'testkit_3',
                     'attributes'
                 )
             )
+            ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->order("TESTKITNAME ASC");
         if (isset($scheme) && !empty($scheme)) {
             $sql = $sql->where("scheme_type = '" . $scheme . "'");
@@ -758,5 +766,20 @@ class Application_Model_GenericTest
         $stmt = $this->db->fetchAll($sql);
 
         return $stmt;
+    }
+
+    public function getRecommededGenericTestkits($testMode)
+    {
+        $sql = $this->db->select()->from(array('generic_recommended_test_types'));
+
+        if ($testMode != null) {
+            $sql = $sql->where("scheme_id = '$testMode'");
+        }
+        $stmt = $this->db->fetchAll($sql);
+        $retval = [];
+        foreach ($stmt as $t) {
+            $retval[] = $t['testkit'];
+        }
+        return $retval;
     }
 }

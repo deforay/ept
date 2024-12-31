@@ -17,8 +17,8 @@ try {
     // echo($sQuery);die;
     $result = $db->fetchAll($sQuery);
     if (!empty($result)) {
+        $dm = new Application_Model_DbTable_DataManagers();
         foreach ($result as $key => $value) {
-            $dm = new Application_Model_DbTable_DataManagers();
             $dm->dmParticipantMap($value, $value['dm_id'], true);
 
             /* $locationwiseparticipants = [];

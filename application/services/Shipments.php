@@ -709,7 +709,7 @@ class Application_Service_Shipments
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
-            $testkitDb = new Application_Model_DbTable_TestkitnameDts();
+            $testkitDb = new Application_Model_DbTable_Testkitnames();
             foreach ($params['avilableTestKit'] as $kit) {
                 $kitId = "";
                 if ($testkitDb->getDtsTestkitDetails($kit)) {
@@ -1401,7 +1401,7 @@ class Application_Service_Shipments
             if ((isset($params['kitNameOther']) && !empty($params['kitNameOther']))) {
                 $params['kitName'] = $params['kitNameOther'];
                 /* Add other testkit name as testkit table */
-                $testKitDb = new Application_Model_DbTable_TestkitnameDts();
+                $testKitDb = new Application_Model_DbTable_Testkitnames();
                 $testKitDb->addTestkitInParticipant("", $params['kitNameOther'], $params['schemeName']);
             }
 
