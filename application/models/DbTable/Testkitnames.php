@@ -1,6 +1,6 @@
 <?php
 
-class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
+class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'r_testkitnames';
@@ -9,6 +9,11 @@ class Application_Model_DbTable_TestkitnameDts extends Zend_Db_Table_Abstract
     public function getTestKitNameById($testKitId)
     {
         return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_testkitnames', 'TestKit_Name')->where("TestKitName_ID = '$testKitId'"));
+    }
+
+    public function getTestKitIdByName($testKitName)
+    {
+        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from('r_testkitnames', 'TestKitName_ID')->where("TestKit_Name = '$testKitName'"));
     }
 
     public function getActiveTestKitsNamesForScheme($scheme, $countryAdapted = false)

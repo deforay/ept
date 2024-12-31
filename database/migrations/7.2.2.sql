@@ -172,6 +172,11 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
 -- Amit 30-Dec-2024
+CREATE TABLE `generic_recommended_test_types` (
+  `scheme_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
+  `testkit` varchar(256) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 RENAME TABLE `r_testkitname_dts` TO `r_testkitnames`;
 
 CREATE TABLE `scheme_testkit_map` (

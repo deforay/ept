@@ -17,7 +17,7 @@ class Application_Service_Schemes
     public function getAllDtsTestKit($countryAdapted = false)
     {
 
-        $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+        $testkitsDb = new Application_Model_DbTable_Testkitnames();
         return $testkitsDb->getActiveTestKitsNamesForScheme('dts', $countryAdapted);
     }
 
@@ -937,7 +937,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            $testkitsDb = new Application_Model_DbTable_Testkitnames();
             $testkitsDb->addTestkitDetails($params);
             $db->commit();
         } catch (Exception $e) {
@@ -951,7 +951,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            $testkitsDb = new Application_Model_DbTable_Testkitnames();
             $testkitsDb->updateTestkitDetails($params);
             $db->commit();
         } catch (Exception $e) {
@@ -992,7 +992,7 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
-            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            $testkitsDb = new Application_Model_DbTable_Testkitnames();
             $testkitsDb->updateTestkitStageDetails($params);
             $db->commit();
         } catch (Exception $e) {
@@ -1017,7 +1017,7 @@ class Application_Service_Schemes
 
     public function getAllDtsTestKitInGrid($parameters)
     {
-        $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+        $testkitsDb = new Application_Model_DbTable_Testkitnames();
         return $testkitsDb->getAllTestKitsForAllSchemes($parameters);
     }
 
@@ -1047,7 +1047,7 @@ class Application_Service_Schemes
 
     public function getDtsTestkit($testkitId)
     {
-        $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+        $testkitsDb = new Application_Model_DbTable_Testkitnames();
         return $testkitsDb->getDtsTestkitDetails($testkitId);
     }
 

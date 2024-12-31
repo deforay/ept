@@ -15,7 +15,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
                 $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
                 $authNameSpace = new Zend_Session_Namespace('datamanagers');
-                $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+                $testkitsDb = new Application_Model_DbTable_Testkitnames();
                 if (isset($params['test_kit_name_1']) && trim($params['test_kit_name_1']) == 'other') {
                     $otherTestkitId1 = $testkitsDb->addTestkitInParticipant($params['test_kit_other_name_update_1'], $params['test_kit_other_name_1'], 'dts', 1);
                     $params['test_kit_name_1'] = $otherTestkitId1;
@@ -177,7 +177,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             foreach ($sampleIds as $key => $sampleId) {
                 $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
 
-                $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+                $testkitsDb = new Application_Model_DbTable_Testkitnames();
                 if (isset($params['dtsData']->Section3->data->kitValue[0]) && trim($params['dtsData']->Section3->data->kitValue[0]) == 'other') {
                     $otherTestkitId1 = $testkitsDb->addTestkitInParticipantByAPI($allSamples[0]["test_kit_name_1"], $params['dtsData']->Section3->data->kitOther[0], 'dts', 1);
                     $params['test_kit_name_1'] = $otherTestkitId1;
@@ -291,7 +291,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
         $sampleIds = $params['sample_id'];
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
-            $testkitsDb = new Application_Model_DbTable_TestkitnameDts();
+            $testkitsDb = new Application_Model_DbTable_Testkitnames();
             if (isset($params['test_kit_name_1']) && trim($params['test_kit_name_1']) == 'other') {
                 $otherTestkitId1 = $testkitsDb->addTestkitInParticipant(null, $params['test_kit_other_name_1'], 'dts', 1);
                 $params['test_kit_name_1'] = $otherTestkitId1;

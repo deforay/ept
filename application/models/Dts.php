@@ -161,7 +161,7 @@ class Application_Model_Dts
 
 			// Getting Test Kit Names
 
-			$testKitDb = new Application_Model_DbTable_TestkitnameDts();
+			$testKitDb = new Application_Model_DbTable_Testkitnames();
 			$testKit1 = "";
 
 			$testKitName = $testKitDb->getTestKitNameById($results[0]['test_kit_name_1']);
@@ -1404,21 +1404,6 @@ class Application_Model_Dts
 		}
 
 		return $this->db->fetchAll($sql);
-	}
-
-	public function getRecommededGenericTestkits($testMode)
-	{
-		$sql = $this->db->select()->from(array('generic_recommended_test_types'));
-
-		if ($testMode != null) {
-			$sql = $sql->where("scheme_id = '$testMode'");
-		}
-		$stmt = $this->db->fetchAll($sql);
-		$retval = [];
-		foreach ($stmt as $t) {
-			$retval[] = $t['testkit'];
-		}
-		return $retval;
 	}
 
 	public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null, $nonDts = false)

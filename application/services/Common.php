@@ -890,7 +890,7 @@ class Application_Service_Common
 
     public function getAllTestKitBySearch($text)
     {
-        $db = new Application_Model_DbTable_TestkitnameDts();
+        $db = new Application_Model_DbTable_Testkitnames();
         $sql = $db->select()->from(array('r_testkitnames'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))->where("TESTKIT_NAME LIKE '%" . $text . "%'");
         $cResult = $db->fetchAll($sql);
         $echoResult = [];
