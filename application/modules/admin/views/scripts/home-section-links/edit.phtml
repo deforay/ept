@@ -39,14 +39,13 @@ $title = $this->translate->_("Edit Home Section Link");
 
             <div class="form-group file-group" style="display: none;">
                 <label class="col-lg-3 control-label" for="section_image"><?= $this->translate->_("File"); ?></label>
-                <input type="hidden" name="pre_section_image" value="<?php echo $sectionImage; ?>">
+                <input type="hidden" name="pre_section_image" id="pre-file" value="<?php echo $sectionImage; ?>">
                 <div class="col-lg-5">
                     <?php
-                    $sectionImage = $this->result['section_image'];?>
+                    $sectionImage = $this->result['section_image']; ?>
                     <input type="file" id="file" name="section_image" class="form-control" />
-                   	<?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $sectionImage)) { ?>
+                    <?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $sectionImage)) { ?>
                         <a href="/uploads/section/<?php echo $sectionImage; ?>" target="_blank">Click here to view file</a>
-                      <input type="text" id="file" name="section_image" value="<?php echo $sectionImage; ?>" class="form-control" />
                     <?php } ?>
                 </div>
             </div>
@@ -102,10 +101,10 @@ $title = $this->translate->_("Edit Home Section Link");
     function toggleInputFields() {
         var type = document.getElementById('type').value; // Get the selected type
         var linkInput = document.getElementById('link');
+        var preFile = document.getElementById('pre-file').value;
         var fileInput = document.querySelector('[name="section_image"]'); // File input field
         var linkGroup = document.querySelector('.link-group');
         var fileGroup = document.querySelector('.file-group');
-
         if (type === 'link') {
             // Show link input, hide file input
             linkGroup.style.display = 'block';
@@ -116,7 +115,10 @@ $title = $this->translate->_("Edit Home Section Link");
             // Show file input, hide link input
             linkGroup.style.display = 'none';
             fileGroup.style.display = 'block';
-            if (fileInput) fileInput.classList.add('isRequired');
+            if (fileInput && (preFile != '' && preFile != null)) {
+                fileInput.classList.add('isRequired');
+            }
+
             if (linkInput) linkInput.classList.remove('isRequired');
         } else {
             // Hide both if type is empty or null
