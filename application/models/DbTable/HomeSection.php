@@ -11,13 +11,18 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $sectionImage = null;
-        // echo "<pre>";print_r($_FILES); die;
+        $link = null;
+        if(isset($params['link']) && $params['link'] != '') {
+            $link = $params['link'];
+        }
+
+            // echo "<pre>";print_r($_FILES); die;
         if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_image']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }
         if (isset($_FILES['section_image']['tmp_name']) && file_exists($_FILES['section_image']['tmp_name']) && is_uploaded_file($_FILES['section_image']['tmp_name'])) {
             $uploadDirectory = realpath(UPLOAD_PATH);
-            $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
+            $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx','xls');
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_image']['name']);
             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
             $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
@@ -35,7 +40,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         // print_r($sectionImage); die;
         $data = array(
             'section' => $params['section'],
-            'link' => $params['link'],
+            'type' => $params['type'],
+            'link' => $link,
             'section_image' => $sectionImage,
             'text' => $params['displayText'],
             'icon' => $params['icon'],
