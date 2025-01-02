@@ -212,7 +212,9 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $response[$d['section']][] = array(
                 'link' => $d['link'],
                 'icon' => $d['icon'],
-                'text' => $d['text']
+                'text' => $d['text'],
+                'type' => $d['type'],
+                'section_image' => $d['section_image']
             );
         }
         return $response;
