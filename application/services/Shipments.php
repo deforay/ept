@@ -1297,10 +1297,6 @@ class Application_Service_Shipments
                 "response_status" => $responseStatus,
             );
 
-            /* echo "<pre>";
-            print_r($params);
-            print_r($data);
-            die; */
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
                 $data["updated_on_user"] = new Zend_Db_Expr('now()');
@@ -2014,7 +2010,9 @@ class Application_Service_Shipments
                             'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
                             'tb_isolate' => $params['tbIsolate'][$i],
                             'mtb_detected' => $params['mtbDetected'][$i],
+                            'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i],
                             'rif_resistance' => $params['rifResistance'][$i],
+                            'rif_resistance_ultra' => $params['rifResistanceUltra'][$i],
                             'probe_d' => $params['probeD'][$i],
                             'probe_c' => $params['probeC'][$i],
                             'probe_e' => $params['probeE'][$i],
@@ -2310,7 +2308,6 @@ class Application_Service_Shipments
 
     public function updateShipment($params)
     {
-        // Zend_Debug::dump($params);die;
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
@@ -2402,7 +2399,9 @@ class Application_Service_Shipments
                         'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
                         'tb_isolate' => $params['tbIsolate'][$i] ?? null,
                         'mtb_detected' => $params['mtbDetected'][$i] ?? null,
+                        'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i] ?? null,
                         'rif_resistance' => $params['rifResistance'][$i] ?? null,
+                        'rif_resistance_ultra' => $params['rifResistanceUltra'][$i] ?? null,
                         'probe_d' => $params['probeD'][$i] ?? null,
                         'probe_c' => $params['probeC'][$i] ?? null,
                         'probe_e' => $params['probeE'][$i] ?? null,

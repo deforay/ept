@@ -9,10 +9,10 @@ $answers = $this->ans;
 <section class="content">
     <div class="box">
         <div class="box-body">
-            <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "feed-back"), null, true) ?>">
+            <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(["controller" => "participant", "action" => "feed-back"], null, true) ?>">
                 <table class="display datatable table table-bordered table-hover table-striped">
                     <tr>
-                        <th style="width:5%;"><?= $this->translate->_("No."); ?></th>
+                        <th style="width:5%;"><?= $this->translate->_("Number"); ?></th>
                         <th style="width:75%;"><?= $this->translate->_("Question/Statement"); ?></th>
                         <th style="width:20%;"><?= $this->translate->_("Your Response"); ?></th>
                     </tr>

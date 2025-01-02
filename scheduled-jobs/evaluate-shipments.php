@@ -1,8 +1,9 @@
 <?php
 
 ini_set('memory_limit', '-1');
+ini_set('max_execution_time', 0);
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
 $cliOptions = getopt("s:");
 $shipmentsToEvaluate = $cliOptions['s'];
@@ -16,7 +17,7 @@ if (empty($shipmentsToEvaluate)) {
 if (is_array($shipmentsToEvaluate)) {
 	$shipmentsToEvaluate = implode(",", $shipmentsToEvaluate);
 } else {
-	$shipmentsToEvaluate = array($shipmentsToEvaluate);
+	$shipmentsToEvaluate = [$shipmentsToEvaluate];
 }
 
 
@@ -57,7 +58,6 @@ try {
 		}
 	}
 } catch (Exception $e) {
-	error_log($e->getMessage());
+	error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
-	error_log('whoops! Something went wrong in scheduled-jobs/evaluate-shipments.php');
 }

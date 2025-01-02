@@ -14,6 +14,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 <style type="text/css">
 	.modal-scrollable {
 		z-index: 1000 !important;
+
 	}
 
 	.modal-backdrop {
@@ -2670,7 +2671,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 											<input type="text" name="sampleName[]" class="isRequired microscopyfield input-sm form-control" value="<?php echo $reference['sample_label']; ?>" />
 										</td>
 										<td>
-											<input type="text" name="samplePreparationDate[]" value="<?php echo $reference['sample_preparation_date']; ?>" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+											<input type="text" name="samplePreparationDate[]" value="<?php echo $reference['sample_preparation_date']; ?>" readonly="readonly" class="isRequired microscopyfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
 										<td>
 											<select name="mtbDetected[]" class="isRequired microscopyfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
@@ -2768,12 +2769,12 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													</tr>
 													<tr>
 														<td>
-															<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+															<select name="mtbDetected[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 																<?php $this->dropdownSelection($possibleResults, $reference['mtb_detected'], true); ?>
 															</select>
 														</td>
 														<td>
-															<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+															<select name="rifResistance[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 																<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 																<option value="na" <?php echo ($reference['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
 																<option value="detected" <?php echo ($reference['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
@@ -2783,27 +2784,27 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 															</select>
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['probe_d']; ?>" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
+															<input type="text" value="<?php echo $reference['probe_d']; ?>" name="probeD[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['probe_c']; ?>" name="probeC[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
+															<input type="text" value="<?php echo $reference['probe_c']; ?>" name="probeC[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['probe_e']; ?>" name="probeE[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
+															<input type="text" value="<?php echo $reference['probe_e']; ?>" name="probeE[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['probe_b']; ?>" name="probeB[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
+															<input type="text" value="<?php echo $reference['probe_b']; ?>" name="probeB[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['spc_xpert']; ?>" name="spcXpert[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
+															<input type="text" value="<?php echo $reference['spc_xpert']; ?>" name="spcXpert[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['probe_a']; ?>" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
+															<input type="text" value="<?php echo $reference['probe_a']; ?>" name="probeA[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
 														</td>
 														<td style="border-left: solid 1px gray;">
-															<input type="text" value="<?php echo $reference['sample_preparation_date']; ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+															<input type="text" value="<?php echo $reference['sample_preparation_date']; ?>" name="sample1PreparationDate[<?php echo $reference['sample_id']; ?>]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 														</td>
-														<td><input type="text" value="<?php echo $reference['tb_isolate']; ?>" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
+														<td><input type="text" value="<?php echo $reference['tb_isolate']; ?>" name="tbIsolate[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 													</tr>
 													<tr>
 														<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>
@@ -2820,47 +2821,47 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													</tr>
 													<tr>
 														<td>
-															<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
-																<?php $this->dropdownSelection($possibleResults, $reference['mtb_detected'], true); ?>
+															<select name="mtbDetectedUltra[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+																<?php $this->dropdownSelection($possibleResults, $reference['mtb_detected_ultra'], true); ?>
 															</select>
 														</td>
 														<td>
-															<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+															<select name="rifResistanceUltra[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 																<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-																<option value="na" <?php echo ($reference['rif_resistance'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
-																<option value="detected" <?php echo ($reference['rif_resistance'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
-																<option value="not-detected" <?php echo ($reference['rif_resistance'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
-																<option value="indeterminate" <?php echo ($reference['rif_resistance'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
-																<option value="testing-not-performed" <?php echo ($reference['rif_resistance'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
+																<option value="na" <?php echo ($reference['rif_resistance_ultra'] == 'na' ? "selected='selected'" : ""); ?>>N/A</option>
+																<option value="detected" <?php echo ($reference['rif_resistance_ultra'] == 'detected' ? "selected='selected'" : ""); ?>>Detected</option>
+																<option value="not-detected" <?php echo ($reference['rif_resistance_ultra'] == 'not-detected' ? "selected='selected'" : ""); ?>>Not Detected</option>
+																<option value="indeterminate" <?php echo ($reference['rif_resistance_ultra'] == 'indeterminate' ? "selected='selected'" : ""); ?>>Indeterminate</option>
+																<option value="testing-not-performed" <?php echo ($reference['rif_resistance_ultra'] == 'testing-not-performed' ? "selected='selected'" : ""); ?>>Testing NOT Performed</option>
 															</select>
 														</td>
 														<td>
-															<input type="number" value="<?php echo $reference['is1081_is6110']; ?>" step="0.01" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
+															<input type="number" value="<?php echo $reference['is1081_is6110']; ?>" step="0.01" name="ISI[<?php echo $reference['sample_id']; ?>]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
 														</td>
 														<td>
-															<input type="number" value="<?php echo $reference['rpo_b1']; ?>" step="0.01" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />
+															<input type="number" value="<?php echo $reference['rpo_b1']; ?>" step="0.01" name="rpoB1[<?php echo $reference['sample_id']; ?>]" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />
 														</td>
 														<td>
-															<input type="number" value="<?php echo $reference['rpo_b2']; ?>" step="0.01" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />
+															<input type="number" value="<?php echo $reference['rpo_b2']; ?>" step="0.01" name="rpoB2[<?php echo $reference['sample_id']; ?>]" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />
 														</td>
 														<td>
-															<input type="number" value="<?php echo $reference['rpo_b3']; ?>" step="0.01" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />
+															<input type="number" value="<?php echo $reference['rpo_b3']; ?>" step="0.01" name="rpoB3[<?php echo $reference['sample_id']; ?>]" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />
 														</td>
 														<td>
-															<input type="number" value="<?php echo $reference['rpo_b4']; ?>" step="0.01" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />
+															<input type="number" value="<?php echo $reference['rpo_b4']; ?>" step="0.01" name="rpoB4[<?php echo $reference['sample_id']; ?>]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />
 														</td>
 														<td>
-															<input type="text" value="<?php echo $reference['spc_xpert_ultra']; ?>" name="spcXpertUltra[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+															<input type="text" value="<?php echo $reference['spc_xpert_ultra']; ?>" name="spcXpertUltra[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
 														</td>
 														<td style=" border-left: solid 1px gray; ">
-															<select name="control[]" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+															<select name="control[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
 																<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 																<option value="1" <?php echo ($reference['control'] == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 																<option value="0" <?php echo ($reference['control'] == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 															</select>
 														</td>
 														<td>
-															<select name="mandatory[]" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
+															<select name="mandatory[<?php echo $reference['sample_id']; ?>]" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
 																<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 																<option value="1" <?php echo ($reference['mandatory'] == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 																<option value="0" <?php echo ($reference['mandatory'] == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
@@ -2949,12 +2950,12 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 												</tr>
 												<tr>
 													<td>
-														<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+														<select name="mtbDetectedUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 															<?php $this->dropdownSelection($possibleResults, null, true); ?>
 														</select>
 													</td>
 													<td>
-														<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+														<select name="rifResistanceUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 															<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 															<option value="na">N/A</option>
 															<option value="detected">Detected</option>
@@ -3170,12 +3171,12 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 										</tr>\
 										<tr>\
 											<td>\
-												<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
+												<select name="mtbDetectedUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
 												<?php $this->dropdownSelection($possibleResults, null, true); ?>\
 												</select>\
 											</td>\
 											<td>\
-												<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
+												<select name="rifResistanceUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
 													<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 													<option value="na">N/A</option>\
 													<option value="detected">Detected</option>\

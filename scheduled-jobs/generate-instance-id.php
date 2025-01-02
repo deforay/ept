@@ -15,7 +15,6 @@ try {
         echo "Created ULID: " . $ulid . PHP_EOL;
     }
 } catch (Exception $e) {
-    error_log($e->getMessage());
+    error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());
-    error_log('whoops! Something went wrong in scheduled-jobs/generate-instance-id.php');
 }

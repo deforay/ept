@@ -168,10 +168,10 @@ CREATE TABLE IF NOT EXISTS `track_api_requests` (
 ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('participant','admin','all', 'none') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'all';
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_scheme`, `result_type`, `response`, `result_code`, `display_context`, `high_range`, `threshold_range`, `low_range`, `sort_order`) VALUES (NULL, 'dts', 'DTS_FINAL', NULL, NULL, 'NONREACTIVE', 'NR', 'all', NULL, NULL, NULL, NULL);
 
--- Amit 19-Dec-2024
+-- Thana 19-Dec-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
--- Amit 30-Dec-2024
+-- Thana 30-Dec-2024
 CREATE TABLE `generic_recommended_test_types` (
   `scheme_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `testkit` varchar(256) COLLATE utf8mb4_general_ci NOT NULL
@@ -179,10 +179,46 @@ CREATE TABLE `generic_recommended_test_types` (
 
 RENAME TABLE `r_testkitname_dts` TO `r_testkitnames`;
 
-CREATE TABLE `scheme_testkit_map` (
-  `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `testkit_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `testkit_1` int NOT NULL DEFAULT '0',
-  `testkit_2` int NOT NULL DEFAULT '0',
-  `testkit_3` int NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- Amit 31-Dec-2024
+UPDATE response_result_tb
+SET probe_d = NULL WHERE probe_d = '';
+UPDATE response_result_tb
+SET probe_c = NULL WHERE probe_c = '';
+UPDATE response_result_tb
+SET probe_e = NULL WHERE probe_e = '';
+UPDATE response_result_tb
+SET probe_b = NULL WHERE probe_b = '';
+UPDATE response_result_tb
+SET spc_xpert = NULL WHERE spc_xpert = '';
+UPDATE response_result_tb
+SET spc_xpert_ultra = NULL WHERE spc_xpert_ultra = '';
+UPDATE response_result_tb
+SET probe_a = NULL WHERE probe_a = '';
+UPDATE response_result_tb
+SET is1081_is6110 = NULL WHERE is1081_is6110 = '';
+UPDATE response_result_tb
+SET rpo_b1 = NULL WHERE rpo_b1 = '';
+UPDATE response_result_tb
+SET rpo_b2 = NULL WHERE rpo_b2 = '';
+UPDATE response_result_tb
+SET rpo_b3 = NULL WHERE rpo_b3 = '';
+UPDATE response_result_tb
+SET rpo_b4 = NULL WHERE rpo_b4 = '';
+
+ALTER TABLE response_result_tb
+MODIFY COLUMN probe_d DECIMAL(10,4),
+MODIFY COLUMN probe_c DECIMAL(10,4),
+MODIFY COLUMN probe_e DECIMAL(10,4),
+MODIFY COLUMN probe_b DECIMAL(10,4),
+MODIFY COLUMN spc_xpert DECIMAL(10,4),
+MODIFY COLUMN spc_xpert_ultra DECIMAL(10,4),
+MODIFY COLUMN probe_a DECIMAL(10,4),
+MODIFY COLUMN is1081_is6110 DECIMAL(10,4),
+MODIFY COLUMN rpo_b1 DECIMAL(10,4),
+MODIFY COLUMN rpo_b2 DECIMAL(10,4),
+MODIFY COLUMN rpo_b3 DECIMAL(10,4),
+MODIFY COLUMN rpo_b4 DECIMAL(10,4);
+
+-- Thana 02-Jan-2025
+ALTER TABLE `reference_result_tb` ADD `mtb_detected_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `mtb_detected`;
+ALTER TABLE `reference_result_tb` ADD `rif_resistance_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `rif_resistance`;
