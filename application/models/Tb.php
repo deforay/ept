@@ -240,7 +240,6 @@ class Application_Model_Tb
                                                 in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))
                                         ) {
                                             $calculatedScore = $result['sample_score'] * 0.5;
-
                                         } elseif ($result['mtb_detected'] == 'not-detected' && $result['rif_resistance'] == 'na') {
                                             $calculatedScore = $result['sample_score'];
                                         }

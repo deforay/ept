@@ -831,14 +831,14 @@ if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin'
                     <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[<?php echo $sample['sample_id']; ?>]" value="<?php echo $sample['sample_id']; ?>" />
                 </th>
                 <td>
-                    <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the Rif Resistance for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
-                        <?php
+                    <select name="mtbcDetected[<?php echo $sample['sample_id']; ?>]" class="<?php echo ($sample['mandatory'] == 1) ? " isRequired" : ""; ?> form-control input-sm mtbcDetected" title="Please choose one" placeholder="Please enter the MTBC for this sample" onchange="rifDetectionChange(this, <?php echo $sample['sample_id']; ?>)">
+                        <?php $mtbResults = [];
                         if (isset($this->type) && $this->type == "microscopy") {
-                            $this->dropdownSelection($possibleMicrosopeResults, $sample['mtb_detected'], true);
+                            $mtbResults = $possibleMicrosopeResults;
                         } else {
-                            $this->dropdownSelection($possibleResults, $sample['mtb_detected'], true);
+                            $mtbResults = $possibleResults;
                         }
-                        ?>
+                        $this->dropdownSelection($mtbResults, $sample['mtb_detected'], true); ?>
                     </select>
                 </td>
                 <?php if (isset($this->reqFrom) && !empty($this->reqFrom) && $this->reqFrom == 'admin') { ?>

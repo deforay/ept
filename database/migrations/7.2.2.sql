@@ -218,3 +218,7 @@ MODIFY COLUMN rpo_b1 DECIMAL(10,4),
 MODIFY COLUMN rpo_b2 DECIMAL(10,4),
 MODIFY COLUMN rpo_b3 DECIMAL(10,4),
 MODIFY COLUMN rpo_b4 DECIMAL(10,4);
+
+-- Thana 02-Jan-2025
+ALTER TABLE `reference_result_tb` ADD `mtb_detected_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `mtb_detected`;
+ALTER TABLE `reference_result_tb` ADD `rif_resistance_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `rif_resistance`;
