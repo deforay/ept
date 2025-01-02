@@ -308,7 +308,7 @@ class Application_Model_Tb
                 // $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
                 $shipmentResult[$counter]['is_excluded'] = 'yes';
-                $failureReason[] = array('warning' => 'Excluded from Evaluation');
+                $failureReason[] = ['warning' => 'Excluded from Evaluation'];
                 $finalResult = 3;
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             } else {
@@ -335,8 +335,8 @@ class Application_Model_Tb
 
 
                 $fRes = $db->fetchCol($db->select()
-                    ->from('r_results', array('result_name'))
-                    ->where('result_id = ' . $finalResult));
+                    ->from('r_results', ['result_name'])
+                    ->where("result_id = $finalResult"));
 
                 // $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
@@ -354,16 +354,16 @@ class Application_Model_Tb
                         $shipmentOverall['final_result'] = 2;
                     }
                     $fRes = $db->fetchCol($db->select()
-                        ->from('r_results', array('result_name'))
+                        ->from('r_results', ['result_name'])
                         ->where('result_id =  ?', $shipmentOverall['final_result']));
                     // $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $nofOfRowsUpdated = $db->update(
                         'shipment_participant_map',
-                        array(
+                        [
                             'shipment_score' => $shipmentOverall['shipment_score'],
                             'documentation_score' => $shipmentOverall['documentation_score'],
                             'final_result' => $shipmentOverall['final_result']
-                        ),
+                        ],
                         "map_id = " . $shipment['map_id']
                     );
                 }
@@ -371,21 +371,21 @@ class Application_Model_Tb
                 // let us update the total score in DB
                 $db->update(
                     'shipment_participant_map',
-                    array(
+                    [
                         'shipment_score' => $totalScore,
                         'final_result' => $finalResult,
                         'failure_reason' => $failureReason
-                    ),
+                    ],
                     "map_id = " . $shipment['map_id']
                 );
             }
             $counter++;
         }
 
-        $db->update('shipment', array(
+        $db->update('shipment', [
             'max_score' => $maxScore,
             'status' => 'evaluated'
-        ), "shipment_id = " . $shipmentId);
+        ], "shipment_id = $shipmentId");
         return $shipmentResult;
     }
 
@@ -490,13 +490,13 @@ class Application_Model_Tb
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $excel = new Spreadsheet();
 
-            $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'))
+            $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'])
                 ->where("shipment_id = ?", $shipmentId);
             $result = $db->fetchRow($query);
 
             if ($result['scheme_type'] == 'tb') {
 
-                $refQuery = $db->select()->from(array('refRes' => 'reference_result_tb'))
+                $refQuery = $db->select()->from(['refRes' => 'reference_result_tb'])
                     ->where("refRes.shipment_id = ?", $shipmentId);
                 $refResult = $db->fetchAll($refQuery);
             }
@@ -504,7 +504,7 @@ class Application_Model_Tb
 
             //<------------ Participant List Details Start -----
 
-            $headings = array(
+            $headings = [
                 'Participant Code',
                 'Participant Name',
                 'Institute Name',
@@ -518,14 +518,14 @@ class Application_Model_Tb
                 'Email',
                 'Report PDF Downloaded On',
                 'Summary PDF Downloaded On'
-            );
+            ];
 
             $participantSheet = new Worksheet($excel, 'Participant List');
             $excel->addSheet($participantSheet, 0);
             $participantSheet->setTitle('Participant List', true);
 
-            $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array(
+            $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
+                ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', [
                     'spm.map_id',
                     'spm.participant_id',
                     'spm.attributes',
@@ -552,21 +552,21 @@ class Application_Model_Tb
                     END
                     "),
                     'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END")
-                ))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-                ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
-                ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-                ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-                ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-                ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-                ->joinLeft(array('rtb' => 'r_tb_assay'), 'spm.attributes->>"$.assay_name" =rtb.id', array('short_name', 'assayName' => 'name'))
-                ->joinLeft(array('ntr' => 'r_response_vl_not_tested_reason'), 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', array('ntTestedReason' => 'vl_not_tested_reason'))
+                ])
+                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
+                ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
+                ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmp.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
+                ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['iso_name'])
+                ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
+                ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
+                ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id', ['short_name', 'assayName' => 'name'])
+                ->joinLeft(['ntr' => 'r_response_vl_not_tested_reason'], 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', ['ntTestedReason' => 'vl_not_tested_reason'])
                 ->where("s.shipment_id = ?", $shipmentId)
-                ->group(array('spm.map_id'));
+                ->group(['spm.map_id']);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $sql = $sql
-                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
                     ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             $shipmentResult = $db->fetchAll($sql);
@@ -688,7 +688,7 @@ class Application_Model_Tb
             $panelScoreSheet = new Worksheet($excel, 'Panel Score');
             $excel->addSheet($panelScoreSheet, 2);
             $panelScoreSheet->setTitle('Panel Score', true);
-            $panelScoreHeadings = array('Participant Code', 'Participant Name');
+            $panelScoreHeadings = ['Participant Code', 'Participant Name'];
             $panelScoreHeadings = $this->addTbSampleNameInArray($shipmentId, $panelScoreHeadings);
             array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
             $sheetThreeRow = 1;
@@ -860,7 +860,7 @@ class Application_Model_Tb
                             ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
                         $warning = (isset($aRow['failure_reason']) && !empty($aRow['failure_reason'])) ? json_decode($aRow['failure_reason'], true) : '';
-                        $warning = (isset($warning) && !empty($warning)) ? str_replace(array('<strong>', '</strong>'), array('', ''), $warning[0]['warning']) : '';
+                        $warning = (isset($warning) && !empty($warning)) ? str_replace(['<strong>', '</strong>'], ['', ''], $warning[0]['warning']) : '';
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($warning)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($warning);

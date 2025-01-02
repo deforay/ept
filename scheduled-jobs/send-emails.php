@@ -83,8 +83,8 @@ if (!empty($mailResult)) {
                     }
                 }
             }
-            
-            
+
+
             $alertMail->setSubject($subject);
             $sendResult = $alertMail->send($smtpTransportObj);
             //var_dump($sendResult);
@@ -93,9 +93,8 @@ if (!empty($mailResult)) {
             }
         } catch (Exception $e) {
             $db->update('temp_mail', ['status' => 'not-sent'], 'temp_id=' . $result['temp_id']);
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
-            error_log('whoops! Something went wrong in scheduled-jobs/send-emails.php  - ' . $result['to_email']);
             continue;
         }
     }
