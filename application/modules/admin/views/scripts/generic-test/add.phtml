@@ -121,10 +121,10 @@
 													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
 												<td>
-													<input type="text" name="qualitative[resultCode][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
+													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
 												</td>
 												<td>
-													<select id="resultType11" name="qualitative[resultType][1][1]" class="form-control isRequired qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(1, 1)">
+													<select id="resultType11" name="qualitative[resultType][1][1]" class="form-control qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(1, 1)">
 														<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 														<option value="test-result"><?= $this->translate->_("Test Result"); ?></option>
 														<option value="final-interpretation"><?= $this->translate->_("Final Interpretation"); ?></option>
@@ -153,9 +153,12 @@
 									<td colspan="4">
 										<table style="width:100%;">
 											<tr>
-												<th>High Range</th>
-												<th>Threshold Range</th>
-												<th>Low Range</th>
+												<th><?= $this->translate->_("High Range"); ?></th>
+												<th><?= $this->translate->_("Threshold Range"); ?></th>
+												<th><?= $this->translate->_("Low Range"); ?></th>
+												<th><?= $this->translate->_("SD Scaling Factor"); ?></th>
+												<th><?= $this->translate->_("Uncertainty Scaling Factor"); ?></th>
+												<th><?= $this->translate->_("Uncertainty Threshold"); ?></th>
 											</tr>
 											<tr>
 												<td>
@@ -166,6 +169,15 @@
 												</td>
 												<td>
 													<input type="text" name="quantitative[lowValue][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the low value" title="Please enter the low value" />
+												</td>
+												<td>
+													<input type="text" name="quantitative[SDScalingFactor][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the SD scaling factor" title="Please enter the SD scaling factor" />
+												</td>
+												<td>
+													<input type="text" name="quantitative[uncertainyScalingFactor][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the uncertainy scaling factor" title="Please enter the uncertainy scaling factor" />
+												</td>
+												<td>
+													<input type="text" name="quantitative[uncertainyThreshold][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" />
 												</td>
 											</tr>
 										</table>
@@ -304,10 +316,10 @@
 											<input type="text" name="qualitative[expectedResult][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
+											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
 										</td>\
 										<td>\
-											<select name="qualitative[resultType][' + sampleCounter + '][1]" id="resultType' + sampleCounter + '1" class="form-control isRequired qualitative-input-' + sampleCounter + '1 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(' + sampleCounter + ', 1)">\
+											<select name="qualitative[resultType][' + sampleCounter + '][1]" id="resultType' + sampleCounter + '1" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(' + sampleCounter + ', 1)">\
 												<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 												<option value="test-result"><?= $this->translate->_("Test Result"); ?></option>\
 												<option value="final-interpretation"><?= $this->translate->_("Final Interpretation"); ?></option>\
@@ -335,9 +347,12 @@
 							<td colspan="4">\
 								<table style="width:100%;">\
 									<tr>\
-										<th>High Range</th>\
-										<th>Threshold Range</th>\
-										<th>Low Range</th>\
+										<th><?= $this->translate->_("High Range"); ?></th>\
+										<th><?= $this->translate->_("Threshold Range"); ?></th>\
+										<th><?= $this->translate->_("Low Range"); ?></th>\
+										<th><?= $this->translate->_("SD Scaling Factor"); ?></th>\
+										<th><?= $this->translate->_("Uncertainty Scaling Factor"); ?></th>\
+										<th><?= $this->translate->_("Uncertainty Threshold"); ?></th>\
 									</tr>\
 									<tr>\
 										<td>\
@@ -348,6 +363,15 @@
 										</td>\
 										<td>\
 											<input type="text" name="quantitative[lowValue][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the low value" title="Please enter the low value" />\
+										</td>\
+										<td>\
+											<input type="text" name="quantitative[SDScalingFactor][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the SD scaling factor" title="Please enter the SD scaling factor" />\
+										</td>\
+										<td>\
+											<input type="text" name="quantitative[uncertainyScalingFactor][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the uncertainy scaling factor" title="Please enter the uncertainy scaling factor" />\
+										</td>\
+										<td>\
+											<input type="text" name="quantitative[uncertainyThreshold][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" />\
 										</td>\
 									</tr>\
 								</table>\

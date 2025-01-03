@@ -233,6 +233,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         'high_range'        => $params[$test]['highValue'][$key],
                         'threshold_range'   => $params[$test]['thresholdValue'][$key],
                         'low_range'         => $params[$test]['lowValue'][$key],
+                        'sd_scaling_factor'         => $params[$test]['SDScalingFactor'][$key],
+                        'uncertainy_scaling_factor' => $params[$test]['uncertainyScalingFactor'][$key],
+                        'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
                         'sort_order'        => $sortOrder,
                     ));
                 }
