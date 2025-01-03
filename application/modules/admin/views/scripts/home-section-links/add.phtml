@@ -3,11 +3,15 @@ $title = $this->translate->_("Add New Home Section Link");
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<link href="<?php echo $this->baseUrl('css/jasny-bootstrap.css'); ?>" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <div class="well">
     <form name="addHomeSectionForm" id="addHomeSectionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-section-links", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();return false;" autocomplete="off">
         <fieldset>
             <legend><?= $title; ?></legend>
+
+
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Section"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
@@ -48,9 +52,22 @@ $title = $this->translate->_("Add New Home Section Link");
                 <div class="col-lg-5"><input type="text" id="displayText" name="displayText" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display text here" placeholder="Enter the display text here" /></div>
             </div>
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="icon"><?= $this->translate->_("Icon"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-5"><input type="text" id="icon" name="icon" size="50" maxlength="255" class="isRequired form-control" title="Please enter the icon" placeholder="Enter the icon" /></div>
+                <label class="col-lg-3 control-label" for="icon">
+                    <?= $this->translate->_("Icon"); ?> <span class="mandatory">*</span>
+                </label>
+                <div class="col-lg-5">
+                    <select name="icon" id="icon" class="form-control isRequired" title="Please choose the Icon">
+                        <option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
+                        <option value="bx bx-file" data-icon="fa fa-file"><?= $this->translate->_("Document"); ?></option>
+                        <option value="bx bx-download" data-icon="fa fa-download"><?= $this->translate->_("Download"); ?></option>
+                        <option value="bx bx-link-external" data-icon="fa fa-external-link-alt"><?= $this->translate->_("External Link"); ?></option>
+                        <option value="bx bx-image" data-icon="fa fa-image"><?= $this->translate->_("Image"); ?></option>
+                        <option value="bx bx-video" data-icon="fa fa-video"><?= $this->translate->_("Video"); ?></option>
+                    </select>
+                </div>
             </div>
+
+
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="displayOrder"><?= $this->translate->_("Display Order"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5"><input type="text" id="displayOrder" name="displayOrder" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display order here" placeholder="Please enter the display order here" /></div>
@@ -114,4 +131,19 @@ $title = $this->translate->_("Add New Home Section Link");
             fileInput.classList.remove('isRequired');
         }
     }
+
+    $(document).ready(function() {
+        $('#icon').select2({
+            templateResult: formatOption,
+            templateSelection: formatOption,
+        });
+
+        function formatOption(option) {
+            if (!option.id) {
+                return option.text; // Show placeholder text without icon
+            }
+            const iconClass = $(option.element).data('icon');
+            return $(`<span><i class="${iconClass}" style="margin-right: 8px;"></i>${option.text}</span>`);
+        }
+    });
 </script>
