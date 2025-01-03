@@ -51,11 +51,11 @@ class Application_Model_GenericTest
             $mandatoryResult = "";
             $scoreResult = "";
             if ($createdOn >= $lastDate) {
-                $failureReason[] = array(
+                $failureReason[] = [
                     'warning' => "Response was submitted after the last response date."
-                );
+                ];
                 $shipment['is_excluded'] = 'yes';
-                $failureReason = array('warning' => "Response was submitted after the last response date.");
+                $failureReason = ['warning' => "Response was submitted after the last response date."];
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
@@ -81,10 +81,10 @@ class Application_Model_GenericTest
             if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
                 if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
                     $totalScore = 0;
-                    $failureReason[] = array(
+                    $failureReason[] = [
                         'warning' => "Testing is not performed with country approved test kit.",
                         'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
-                    );
+                    ];
                 }
             }
             if ($maxScore > 0 && $totalScore > 0) {
@@ -100,7 +100,7 @@ class Application_Model_GenericTest
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
                 $shipmentResult[$counter]['is_excluded'] = 'yes';
-                $failureReason[] = array('warning' => 'Excluded from Evaluation');
+                $failureReason[] = ['warning' => 'Excluded from Evaluation'];
                 $finalResult = 3;
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             } else {
@@ -112,10 +112,10 @@ class Application_Model_GenericTest
                     $scoreResult = 'Pass';
                 } else {
                     $scoreResult = 'Fail';
-                    $failureReason[] = array(
+                    $failureReason[] = [
                         'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($totalScore) . "</strong> and Required Score is <strong>" . round($passingScore) . "</strong>)",
                         'correctiveAction' => "Review all testing procedures prior to performing client testing and contact your supervisor for improvement"
-                    );
+                    ];
                 }
 
                 // if any of the results have failed, then the final result is fail

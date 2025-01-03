@@ -197,7 +197,14 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section1'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_image']) && trim($section['section_image']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $section['section_image'])) { ?>
+                                                            <a href="/uploads/section/<?php echo htmlspecialchars($section['section_image']); ?>" target="_blank">
+                                                                <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
+                                                                <?php echo htmlspecialchars($section['text']); ?>
+                                                            </a>
+                                                        <?php } else { ?>
+                                                            <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php } ?>
                                                     </li>
                                                 <?php } ?>
                                             </ul>
@@ -216,7 +223,14 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section2'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_image']) && trim($section['section_image']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $section['section_image'])) { ?>
+                                                            <a href="/uploads/section/<?php echo htmlspecialchars($section['section_image']); ?>" target="_blank">
+                                                                <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
+                                                                <?php echo htmlspecialchars($section['text']); ?>
+                                                            </a>
+                                                        <?php } else { ?>
+                                                            <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php } ?>
                                                     </li>
                                                 <?php } ?>
                                             </ul>
@@ -235,7 +249,14 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section3'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_image']) && trim($section['section_image']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $section['section_image'])) { ?>
+                                                            <a href="/uploads/section/<?php echo htmlspecialchars($section['section_image']); ?>" target="_blank">
+                                                                <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
+                                                                <?php echo htmlspecialchars($section['text']); ?>
+                                                            </a>
+                                                        <?php } else { ?>
+                                                            <a href="<?php echo $section['link']; ?>" target="_blank"><i class='<?php echo $section['icon']; ?>' style="font-weight:bold;color:#555;"></i> <?php echo $section['text']; ?></a>
+                                                        <?php } ?>
                                                     </li>
                                                 <?php } ?>
                                             </ul>

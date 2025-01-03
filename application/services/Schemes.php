@@ -1,5 +1,7 @@
 <?php
 
+use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
+
 class Application_Service_Schemes
 {
 
@@ -589,7 +591,7 @@ class Application_Service_Schemes
 
         $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$sId");
 
-        $sql = $db->select()->from(array('ref' => 'reference_result_vl'), ['shipment_id', 'sample_id'])
+        $sql = $db->select()->from(['ref' => 'reference_result_vl'], ['shipment_id', 'sample_id'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
@@ -667,17 +669,18 @@ class Application_Service_Schemes
 
                     if ('standard' == $method) {
                         sort($inputArray);
-                        $q1 = $this->getQuartile($inputArray, 0.25);
-                        $q3 = $this->getQuartile($inputArray, 0.75);
+                        $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
+                        $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
                         $iqr = $q3 - $q1;
-                        $quartileLowLimit = $q1 - ($iqr * 1.5);
-                        $quartileHighLimit = $q3 + ($iqr * 1.5);
+                        $iqrMultiplier = $iqr * 1.5;
+                        $quartileLowLimit = $q1 - $iqrMultiplier;
+                        $quartileHighLimit = $q3 + $iqrMultiplier;
 
-                        $newArray = [];
+                        $newDataSet = [];
                         $removeArray = [];
                         foreach ($inputArray as $a) {
                             if ($a >= round($quartileLowLimit, 2) && $a <= round($quartileHighLimit, 2)) {
-                                $newArray[] = $a;
+                                $newDataSet[] = $a;
                             } else {
                                 $removeArray[] = $a;
                             }
@@ -686,24 +689,20 @@ class Application_Service_Schemes
                         //Zend_Debug::dump("Under Assay $vlAssayId-Sample $sample - COUNT AFTER REMOVING OUTLIERS: ".count($newArray) . " FOLLOWING ARE OUTLIERS");
                         //Zend_Debug::dump($removeArray);
 
-                        $avg = $this->getAverage($newArray);
-                        $sd = $this->getStdDeviation($newArray);
+                        $avg = QuantitativeCalculations::calculateMean($newDataSet);
+                        $sd = QuantitativeCalculations::calculateStandardDeviation($newDataSet);
 
-                        if ($avg == 0) {
-                            $cv = 0;
-                        } else {
-                            $cv = $sd / $avg;
-                        }
-
-                        $finalLow = $avg - (3 * $sd);
-                        $finalHigh = $avg + (3 * $sd);
+                        $cv = QuantitativeCalculations::calculateCoefficientOfVariation($newDataSet, $avg, $sd);
+                        $threeTimesSd = $sd * 3;
+                        $finalLow = $avg - $threeTimesSd;
+                        $finalHigh = $avg + $threeTimesSd;
                     } elseif ('iso17043' == $method) {
                         sort($inputArray);
-                        $median = $this->getMedian($inputArray);
-                        $finalLow = $quartileLowLimit = $q1 = $this->getQuartile($inputArray, 0.25);
-                        $finalHigh = $quartileHighLimit = $q3 = $this->getQuartile($inputArray, 0.75);
-
-                        $sd = 0.7413 * ($q3 - $q1);
+                        $median = QuantitativeCalculations::calculateMedian($inputArray);
+                        $finalLow = $quartileLowLimit = $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
+                        $finalHigh = $quartileHighLimit = $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
+                        $iqr = $q3 - $q1;
+                        $sd = 0.7413 * $iqr;
                         if (!empty($inputArray)) {
                             $standardUncertainty = (1.25 * $sd) / sqrt(count($inputArray));
                         }
@@ -717,7 +716,7 @@ class Application_Service_Schemes
                     }
 
 
-                    $data = array(
+                    $data = [
                         'shipment_id' => $sId,
                         'vl_assay' => $vlAssayId,
                         'no_of_responses' => count($inputArray),
@@ -735,8 +734,8 @@ class Application_Service_Schemes
                         'cv' => $cv ?? 0,
                         'low_limit' => $finalLow,
                         'high_limit' => $finalHigh,
-                        "calculated_on" => new Zend_Db_Expr('now()'),
-                    );
+                        'calculated_on' => new Zend_Db_Expr('now()'),
+                    ];
 
                     if (isset($oldSetVlRange[$vlAssayId][$sample]) && !empty($oldSetVlRange[$vlAssayId][$sample]) && $oldSetVlRange[$vlAssayId][$sample]['use_range'] == 'manual') {
                         $data['manual_q1'] = $oldSetVlRange[$vlAssayId][$sample]['manual_q1'] ?? null;
@@ -823,59 +822,6 @@ class Application_Service_Schemes
                 $db->insert('reference_vl_calculation', $row);
             }
         }
-    }
-
-    public function getQuartile($inputArray, $quartile)
-    {
-        // Check if all values are null or 0
-        if (empty(array_filter($inputArray))) {
-            return 0;
-        }
-        $position = (count($inputArray) - 1) * $quartile;
-
-        $base = floor($position);
-
-        if (isset($inputArray[$base + 1])) {
-            $rest = $position - $base;
-            return $inputArray[$base] + $rest * ($inputArray[$base + 1] - $inputArray[$base]);
-        } else {
-            return $inputArray[$base];
-        }
-    }
-
-    public function getMedian($arr = [])
-    {
-        $count = count($arr); //total numbers in array
-        $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
-        if ($count % 2) { // odd number, middle is the median
-            $median = $arr[$middleval];
-        } else { // even number, calculate avg of 2 medians
-            $low = $arr[$middleval];
-            $high = $arr[$middleval + 1];
-            $median = (($low + $high) / 2);
-        }
-        return $median;
-    }
-
-    public function getAverage($inputArray)
-    {
-        return array_sum($inputArray) / count($inputArray);
-    }
-
-    public function getStdDeviation($inputArray)
-    {
-        if (count($inputArray) < 2) {
-            return;
-        }
-
-        $avg = $this->getAverage($inputArray);
-
-        $sum = 0;
-        foreach ($inputArray as $value) {
-            $sum += pow($value - $avg, 2);
-        }
-
-        return sqrt((1 / (count($inputArray) - 1)) * $sum);
     }
 
     public function getShipmentData($sId, $pId)
