@@ -32,7 +32,7 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -47,7 +47,7 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
         }
         return $this->getAdapter()->fetchRow($sql);
     }
-    
+
     public function fetchAllHtmlHomePage(){
         $sql = $this->getAdapter()->select()->from(array('hs' => $this->_name), array('title'))->group('title')->order('title ASC');
         return $this->getAdapter()->fetchRow($sql);

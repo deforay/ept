@@ -93,8 +93,9 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
             if ($sid == 'vl') {
                 $scheme = new Application_Service_Schemes();
+                $vlModel       = new Application_Model_Vl();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
-                $this->view->vlAssay = $scheme->getVlAssay();
+                $this->view->vlAssay = $vlModel->getVlAssay();
             } elseif ($sid == 'eid') {
                 $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
@@ -228,8 +229,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
                 } elseif ($response['shipment']['scheme_type'] == 'vl') {
-
-                    $this->view->vlAssay = $schemeService->getVlAssay();
+                    $vlModel       = new Application_Model_Vl();
+                    $this->view->vlAssay = $vlModel->getVlAssay();
                 } elseif ($response['shipment']['scheme_type'] == 'recency') {
                     $scheme = new Application_Service_Schemes();
                     $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');

@@ -254,7 +254,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                    ->from('participant', ['participant_id']) // Fetch participant_id
                                    ->where('unique_identifier = ?', $pID)
                             );
-                            
+
                             if ($participantData) {
                                 // Generate a unique enrollment ID
                                 $enrollmentListId = Pt_Commons_General::generateULID();
@@ -267,14 +267,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                 //     'enrolled_on' => new Zend_Db_Expr('now()')
                                 // ];
                                 // $this->insert($enrolledData);
-                            
+
                                 // Prepare raw SQL query for insertion with ON DUPLICATE KEY UPDATE
                                 $query = "INSERT INTO `enrollments` (`enrollment_id`, `list_name`, `participant_id`, `status`, `enrolled_on`)
                                           VALUES (:enrollment_id, :list_name, :participant_id, :status, NOW())
-                                          ON DUPLICATE KEY UPDATE 
-                                              `status` = VALUES(`status`), 
+                                          ON DUPLICATE KEY UPDATE
+                                              `status` = VALUES(`status`),
                                               `enrolled_on` = VALUES(`enrolled_on`)";
-                            
+
                                 // Bind the data
                                 $bind = [
                                     'enrollment_id' => $enrollmentListId,
@@ -282,14 +282,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                     'participant_id'=> $participantData['participant_id'],
                                     'status'        => 'enrolled'
                                 ];
-                            
+
                                 // Execute the query
                                 $db->query($query, $bind);
                             } else {
                                 // Handle missing participant case
                                 throw new Exception("Participant with unique identifier '$pID' does not exist.");
                             }
-                            
+
                         }
                         $auditDb = new Application_Model_DbTable_AuditLog();
                         $auditDb->addNewAuditLog("Bulk imported enrollment", "enrollment");
@@ -306,7 +306,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }

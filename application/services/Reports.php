@@ -3919,8 +3919,8 @@ class Application_Service_Reports
     {
 
         $schemeService = new Application_Service_Schemes();
-
-        $vlAssayArray = $schemeService->getVlAssay();
+        $vlModel       = new Application_Model_Vl();
+        $vlAssayArray = $vlModel->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
         $headings = array('Participant ID', 'Participant Name', 'Institute Name', 'Department', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email', 'Scheme Type');
@@ -4046,7 +4046,8 @@ class Application_Service_Reports
     public function generateAnnualReportCSV($shipmentCodeArray, $participants)
     {
         $schemeService = new Application_Service_Schemes();
-        $vlAssayArray = $schemeService->getVlAssay();
+        $vlModel       = new Application_Model_Vl();
+        $vlAssayArray = $vlModel->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
         $headings = ['Participant ID', 'Participant Name', 'Institute Name', 'Department', 'Address', 'City', 'District', 'State', 'Country', 'Email', 'Additional Email', 'Scheme Type', 'Shipment Code', 'Number of Samples', 'Shipment Date', 'Result Due Date', 'Responded On', 'Assay/Platform/Kit', 'Score', 'Final Result', 'Warning/Errors', 'Corrective Actions'];

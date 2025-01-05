@@ -109,7 +109,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 }
             }
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -276,7 +276,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             }
             return true;
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
             return false;
         }

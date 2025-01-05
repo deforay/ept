@@ -93,7 +93,7 @@ if (!empty($mailResult)) {
             }
         } catch (Exception $e) {
             $db->update('temp_mail', ['status' => 'not-sent'], 'temp_id=' . $result['temp_id']);
-            error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
             continue;
         }

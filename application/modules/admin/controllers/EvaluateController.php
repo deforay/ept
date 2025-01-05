@@ -142,6 +142,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
                 $schemeService = new Application_Service_Schemes();
 
+                $vlModel = new Application_Model_Vl();
+
                 $commonService = new Application_Service_Common();
                 $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
                 $participantService = new Application_Service_Participants();
@@ -155,8 +157,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
                 } elseif ($scheme == 'vl') {
-                    $this->view->vlRange = $schemeService->getVlRange($sid);
-                    $this->view->vlAssay = $schemeService->getVlAssay();
+                    $this->view->vlRange = $vlModel->getVlRange($sid);
+                    $this->view->vlAssay = $vlModel->getVlAssay();
                 } elseif ($scheme == 'recency') {
                     $this->view->recencyAssay = $schemeService->getRecencyAssay();
                 } elseif ($scheme == 'covid19') {
@@ -260,12 +262,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function vlRangeAction()
     {
+        $vlModel       = new Application_Model_Vl();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($this->hasParam('manualRange')) {
             $params = $request->getPost();
             $schemeService = new Application_Service_Schemes();
-            $schemeService->updateVlInformation($params);
+            $vlModel->updateVlInformation($params);
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
             $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         }
@@ -273,7 +276,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             if ($request->isPost()) {
                 $shipmentId = (int)base64_decode($this->_getParam('sid'));
                 $schemeService = new Application_Service_Schemes();
-                $this->view->result = $schemeService->getVlRangeInformation($shipmentId);
+                $this->view->result = $vlModel->getVlRangeInformation($shipmentId);
                 $this->view->shipmentId = $shipmentId;
             }
         } else {
@@ -287,8 +290,8 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($this->hasParam('sid')) {
             $shipmentId = (int)($this->_getParam('sid'));
             $methodOfEvaluation = ($this->_getParam('method'));
-            $schemeService = new Application_Service_Schemes();
-            $this->view->result = $schemeService->setVlRange($shipmentId);
+            $vlModel = new Application_Model_Vl();
+            $this->view->result = $vlModel->setVlRange($shipmentId);
             $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
         } else {
             $this->redirect("/admin/evaluate/");
@@ -300,15 +303,16 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $shipmentId = $this->_getParam('shipment');
         $sampleId = $this->_getParam('sample');
 
-        $schemeService = new Application_Service_Schemes();
-        //$this->view->sampleVldata = $schemeService->getVlRangeInformation($shipmentId,$sampleId);
-        $this->view->vlRange = $schemeService->getVlRange($shipmentId, $sampleId);
+        $vlModel = new Application_Model_Vl();
+        //$this->view->sampleVldata = $vlModel->getVlRangeInformation($shipmentId,$sampleId);
+        $this->view->vlRange = $vlModel->getVlRange($shipmentId, $sampleId);
         $this->view->shipmentId = $shipmentId;
         $this->view->sampleId = $sampleId;
     }
 
     public function addManualLimitsAction()
     {
+        $vlModel       = new Application_Model_Vl();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
@@ -320,11 +324,11 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $shipmentId = (int)$expStr[0];
             $sampleId = (int)$expStr[1];
             $vlAssay = (int)$expStr[2];
-            $this->view->result = $schemeService->getVlManualValue($shipmentId, $sampleId, $vlAssay);
+            $this->view->result = $vlModel->getVlManualValue($shipmentId, $sampleId, $vlAssay);
         }
         if ($request->isPost()) {
             $params = $request->getPost();
-            $updatedResult = $schemeService->updateVlManualValue($params);
+            $updatedResult = $vlModel->updateVlManualValue($params);
             $this->view->updatedResult = $updatedResult;
             $this->view->sampleId = base64_decode($params['sampleId']);
             $this->view->vlAssay = base64_decode($params['vlAssay']);
