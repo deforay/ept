@@ -59,7 +59,7 @@ class Application_Model_GenericTest
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
             foreach ($results as $result) {
-                if ((!isset($result['test_type']) || empty($result['test_type'])) && $result['test_type'] == 'qualitative') {
+                if (true) {
                     if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
                         if ($result['reference_result'] == $result['reported_result']) {
                             if (0 == $result['control']) {
@@ -168,7 +168,7 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id', 'sample_label', 'test_type', 'reference_result', 'control', 'mandatory', 'sample_score'])
+            ->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result', 'repeat_result', 'reported_result', 'additional_detail', 'comments'])
