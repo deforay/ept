@@ -10,6 +10,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     public function saveHomeSectionDetails($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $common = new Application_Service_Common();
         $sectionImage = null;
         $link = null;
         if(isset($params['link']) && $params['link'] != '') {
@@ -20,23 +21,53 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }
+        // if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
+        //     $uploadDirectory = realpath(UPLOAD_PATH);
+        //     $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx','xls');
+        //     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
+        //     $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+        //     $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
+        //     $imageName = $common->generateRandomString(4) . '.' . $extension;
+        //     if (in_array($extension, $allowedExtensions)) {
+        //         if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'section') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'section')) {
+        //             mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
+        //         }
+        //         if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
+        //            $sectionImage = $imageName;
+        //         }
+        //     }
+        // }
         if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
             $uploadDirectory = realpath(UPLOAD_PATH);
-            $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx','xls');
+            $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx', 'xls');
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
-            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-            $timestamp = date('Ymd_His'); // Current date and time (e.g., 20241219_123456)
-            $imageName = $params['section'] . '-'. $timestamp . "." . $extension;
+            $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
+            $imageName = $common->generateRandomString(4) . '.' . $extension;
+        
             if (in_array($extension, $allowedExtensions)) {
-                if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'section') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'section')) {
-                    mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
+                // Determine the section folder based on $params['section']
+                if($params['section'] == 'section1') {
+                    $section = 1;
+                } else if($params['section'] == 'section2') {
+                    $section = 2;
+                }  else {
+                    $section = 3;
                 }
-                if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
-                   $sectionImage = $imageName;
+                $sectionFolder = "home" . DIRECTORY_SEPARATOR . "section" . $section;
+                // Create the section directory if it doesn't exist
+                $targetDirectory = $uploadDirectory . DIRECTORY_SEPARATOR . $sectionFolder;
+                if (!file_exists($targetDirectory) && !is_dir($targetDirectory)) {
+                    mkdir($targetDirectory, 0777, true); // Recursive directory creation
+                }
+        
+                // Move the uploaded file to the target directory
+                if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $targetDirectory . DIRECTORY_SEPARATOR . $imageName)) {
+                    $sectionImage = $imageName;
                 }
             }
         }
+        
         $data = array(
             'section' => $params['section'],
             'type' => $params['type'],
