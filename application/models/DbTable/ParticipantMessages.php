@@ -17,36 +17,55 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
 
         if (isset($params['subject']) && $params['subject'] != "") {
             $attachedFile = null;
-            if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'])) {
-                $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['attachment']['name']);
-                $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+            // if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'])) {
+            //     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['attachment']['name']);
+            //     $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+            //     $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'mail-attachments';
+            //     if (!is_dir($pathPrefix)) {
+            //         mkdir($pathPrefix, 0777, true);
+            //     }
+            //     $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
+            //     $fileName =   $common->generateRandomString(4) . '.' . $extension;
+            //     if (move_uploaded_file($_FILES['attachment']["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
+            //         $attachedFile = $fileName;
+            //         $attachedFilePath = array($pathPrefix . DIRECTORY_SEPARATOR . $fileName); // Full file path
+            //     }
+            // }
+            if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'][0])) {
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'mail-attachments';
                 if (!is_dir($pathPrefix)) {
                     mkdir($pathPrefix, 0777, true);
                 }
-                $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                $fileName =   $common->generateRandomString(4) . '.' . $extension;
-                if (move_uploaded_file($_FILES['attachment']["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                    $attachedFile = $fileName;
-                    $attachedFilePath = array($pathPrefix . DIRECTORY_SEPARATOR . $fileName); // Full file path
+    
+                foreach ($_FILES['attachment']['name'] as $key => $fileName) {
+                    $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
+                    $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                    $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
+                    $uniqueFileName = $common->generateRandomString(4) . '.' . $extension;
+    
+                    if (move_uploaded_file($_FILES['attachment']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $uniqueFileName)) {
+                        $files[] = $uniqueFileName; // Add file path to array
+                        $attachedFiles[] = $pathPrefix . DIRECTORY_SEPARATOR . $uniqueFileName; // Add file path to array
+                    }
                 }
             }
+            
             $data =  [
                 "participant_id" => $partcipant_id,
                 "subject" => $params['subject'],
                 "message" => $params['message'],
                 "status" => 'pending',
-                "attached_file" => $attachedFile,
-                "created_at" => new Zend_Db_Expr('now()')
+                "attached_file" => (!empty($files)) ? json_encode($files) : null,
+            "created_at" => new Zend_Db_Expr('now()')
             ];
+            // echo '<pre>'; print_r($data); die;
 
             $db->insert('participant_messages', $data);
             $insertId = $db->lastInsertId();
             $message = $params['message'];
             $subject = $params['subject'];
             $toMail = Application_Service_Common::getConfig('admin_email');
-            $attachedFile = $attachedFilePath;
-            $common->insertTempMail($toMail, null, null, $subject, $message, $fromMail, $fromName, $attachedFilePath);
+            $common->insertTempMail($toMail, null, null, $subject, $message, $fromMail, $fromName, $attachedFiles);
             $response['status'] = 'success';
             return $response;
         }
