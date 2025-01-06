@@ -17,13 +17,13 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         }
 
             // echo "<pre>";print_r($_FILES); die;
-        if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_image']['tmp_name'] == '') {
+        if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }
-        if (isset($_FILES['section_image']['tmp_name']) && file_exists($_FILES['section_image']['tmp_name']) && is_uploaded_file($_FILES['section_image']['tmp_name'])) {
+        if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
             $uploadDirectory = realpath(UPLOAD_PATH);
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx','xls');
-            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_image']['name']);
+            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
             $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
             $timestamp = date('Ymd_His'); // Current date and time (e.g., 20241219_123456)
@@ -32,7 +32,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'section') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'section')) {
                     mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
                 }
-                if (move_uploaded_file($_FILES["section_image"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
+                if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
                    $sectionImage = $imageName;
                 }
             }
@@ -42,7 +42,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'section' => $params['section'],
             'type' => $params['type'],
             'link' => $link,
-            'section_image' => $sectionImage,
+            'section_file' => $sectionImage,
             'text' => $params['displayText'],
             'icon' => $params['icon'],
             'display_order' => $params['displayOrder'],
@@ -51,7 +51,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'modified_date_time' => new Zend_Db_Expr('now()')
         );
         // print_r($data); die;
-        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {           
+        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
         } else {
             return $this->insert($data);
@@ -214,7 +214,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 'icon' => $d['icon'],
                 'text' => $d['text'],
                 'type' => $d['type'],
-                'section_image' => $d['section_image']
+                'section_file' => $d['section_file']
             );
         }
         return $response;

@@ -172,9 +172,9 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
 -- sakthi 24-Dec-2024
-ALTER TABLE `home_sections` ADD `section_image` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
+ALTER TABLE `home_sections` ADD `section_file` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
 
---Sakti 27-Dec-2024
+-- Sakti 27-Dec-2024
 CREATE TABLE participant_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     participant_id VARCHAR(255) NOT NULL,
@@ -186,11 +186,11 @@ CREATE TABLE participant_messages (
     sent_at DATETIME NULL
 );
 
---Sakti 30-Dec-2024
+-- Sakti 30-Dec-2024
 ALTER TABLE `temp_mail` ADD `attachment` VARCHAR(255) NULL AFTER `from_full_name`;
 
 -- Thana 30-Dec-2024
-CREATE TABLE `generic_recommended_test_types` (
+CREATE TABLE IF NOT EXISTS `generic_recommended_test_types` (
   `scheme_id` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `testkit` varchar(256) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -241,7 +241,7 @@ MODIFY COLUMN rpo_b4 DECIMAL(10,4);
 ALTER TABLE `reference_result_tb` ADD `mtb_detected_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `mtb_detected`;
 ALTER TABLE `reference_result_tb` ADD `rif_resistance_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `rif_resistance`;
 
---Thana 03-Jan-2024
+-- Thana 03-Jan-2024
 CREATE TABLE `scheme_testkit_map` (
   `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `testkit_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -250,5 +250,5 @@ CREATE TABLE `scheme_testkit_map` (
   `testkit_3` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---Thana 03-Jan-2024
+-- Thana 03-Jan-2024
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
