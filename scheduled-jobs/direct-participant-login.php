@@ -102,8 +102,6 @@ try {
         echo '_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*' . PHP_EOL;
     }
 } catch (Exception $e) {
-    error_log('_*__*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*');
-    error_log('ERROR ON direct-participant-login.php CRON FILE (' . $error . ')');
-    error_log($e->getMessage());
+    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());
 }

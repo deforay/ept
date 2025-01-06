@@ -1,11 +1,6 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Service_Shipments
 {
@@ -78,7 +73,7 @@ class Application_Service_Shipments
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
-                if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
+                if (isset($parameters["bSearchable_$i"]) && $parameters["bSearchable_$i"] == "true" && $parameters["sSearch_$i"] != '') {
                     if ($sWhere == "") {
                         $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                     } else {
@@ -88,10 +83,6 @@ class Application_Service_Shipments
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
@@ -460,7 +451,7 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -595,7 +586,7 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -754,7 +745,7 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator. \\n\\nReason: " . $e->getMessage();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -865,7 +856,7 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -909,7 +900,8 @@ class Application_Service_Shipments
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -957,7 +949,8 @@ class Application_Service_Shipments
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -998,7 +991,8 @@ class Application_Service_Shipments
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1039,7 +1033,8 @@ class Application_Service_Shipments
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->removeShipmentResults($mapId);
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1083,7 +1078,8 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1126,7 +1122,8 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1170,7 +1167,8 @@ class Application_Service_Shipments
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete("shipment_map_id=$mapId");
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -1246,7 +1244,7 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -1373,7 +1371,7 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -1458,7 +1456,7 @@ class Application_Service_Shipments
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -1629,7 +1627,8 @@ class Application_Service_Shipments
             // Thus all changes are committed together, or none are.
             $db->rollBack();
             $alertMsg->message = "Sorry we could not record your result. Please try again or contact the PT adminstrator";
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
         }
     }
 
@@ -2130,7 +2129,8 @@ class Application_Service_Shipments
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
                             'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                            'reference_result' => $params['finalResult'][$i],
+                            'test_type' => $params['testType'][$i],
+                            'reference_result' => $params['finalResult'][$params['testType'][$i]][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
                             'sample_score' => ($params['mandatory'][$i] == 1) ? $score : 0
@@ -2144,7 +2144,8 @@ class Application_Service_Shipments
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
         }
     }
 
@@ -2190,7 +2191,8 @@ class Application_Service_Shipments
 
             return "Shipment deleted.";
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             //return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -2700,7 +2702,8 @@ class Application_Service_Shipments
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
                         'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                        'reference_result' => $params['finalResult'][$i],
+                        'test_type' => $params['testType'][$i],
+                        'reference_result' => $params['finalResult'][$params['testType'][$i]][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0
@@ -2891,7 +2894,8 @@ class Application_Service_Shipments
             return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
             $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Enable foreign key checks
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
             return "Unable to delete. Please try again later or contact system admin for help";
         }
     }
@@ -3091,7 +3095,7 @@ class Application_Service_Shipments
             }
         } catch (Exception $e) {
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -3749,7 +3753,7 @@ class Application_Service_Shipments
             }
             $alertMsg->message = "Saved successfully";
         } catch (Exception $e) {
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -3986,7 +3990,7 @@ class Application_Service_Shipments
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -4021,7 +4025,7 @@ class Application_Service_Shipments
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }

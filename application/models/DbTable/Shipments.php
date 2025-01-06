@@ -2353,6 +2353,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         // Service / Model Calling
         $participantDb  = new Application_Model_DbTable_Participants();
         $schemeService  = new Application_Service_Schemes();
+        $vlModel       = new Application_Model_Vl();
         $commonService = new Application_Service_Common();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
         $date = new Zend_Date();
@@ -3328,7 +3329,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // Section1 end // Section2 start
             $section2 = [];
             $vlAssayArr = [];
-            $vlAssay = $schemeService->getVlAssay();
+            $vlAssay = $vlModel->getVlAssay();
             if (isset($shipment) && count($shipment) > 0) {
                 foreach ($vlAssay as $id => $name) {
                     $vlAssayArr[] = array(
@@ -5051,7 +5052,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
 
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
             $db->rollBack();
             return false;

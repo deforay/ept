@@ -66,7 +66,8 @@ $common = new Application_Service_Common();
 $participantsDb = new Application_Model_DbTable_Participants();
 $dataManagerDb = new Application_Model_DbTable_DataManagers();
 $schemesService = new Application_Service_Schemes();
-$vlAssayArray = $schemesService->getVlAssay();
+$vlModel       = new Application_Model_Vl();
+$vlAssayArray = $vlModel->getVlAssay();
 $generalModel = new Pt_Commons_General();
 
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
@@ -234,6 +235,6 @@ try {
 		}
 	}
 } catch (Exception $e) {
-	error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
+	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
 }

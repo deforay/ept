@@ -13,6 +13,7 @@ class VlController extends Zend_Controller_Action
 	public function responseAction()
 	{
 
+		$vlModel       = new Application_Model_Vl();
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 
@@ -73,7 +74,7 @@ class VlController extends Zend_Controller_Action
 			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
 				$evalService = new Application_Service_Evaluation();
-				$this->view->vlRange = $schemeService->getVlRange($sID);
+				$this->view->vlRange = $vlModel->getVlRange($sID);
 				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
 				$this->_helper->layout()->setLayout('admin');
 			}

@@ -62,8 +62,8 @@ class Application_Service_Distribution
 			return "PT Event shipped!";
 		} catch (Exception $e) {
 			$db->rollBack();
-			error_log($e->getMessage());
-			error_log($e->getTraceAsString());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+            error_log($e->getTraceAsString());
 			return "Unable to ship. Please try again later or contact system admin for help";
 		}
 	}

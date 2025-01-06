@@ -118,7 +118,7 @@ foreach ($this->tbPossibleResults as $pr) {
 			<td>
 				<table>
 					<tr>
-						<th colspan="13"><input type="text" name="sampleName[]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>
+						<th colspan="13"><input type="text" id="sampleName1" name="sampleName[]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>
 					</tr>
 					<tr>
 						<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>
@@ -135,12 +135,12 @@ foreach ($this->tbPossibleResults as $pr) {
 					</tr>
 					<tr>
 						<td>
-							<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+							<select name="mtbDetected[]" id="mtbDetected1" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 								<?php $this->dropdownSelection($possibleResults, null, true); ?>
 							</select>
 						</td>
 						<td>
-							<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+							<select name="rifResistance[]" id="rifResistance1" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 								<option value="na">N/A</option>
 								<option value="detected">Detected</option>
@@ -150,25 +150,25 @@ foreach ($this->tbPossibleResults as $pr) {
 							</select>
 						</td>
 						<td>
-							<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
+							<input type="text" name="probeD[]" id="probeD1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
 						</td>
 						<td>
-							<input type="text" name="probeC[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
+							<input type="text" name="probeC[]" id="probeC1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
 						</td>
 						<td>
-							<input type="text" name="probeE[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
+							<input type="text" name="probeE[]" id="probeE1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
 						</td>
 						<td>
-							<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
+							<input type="text" name="probeB[]" id="probeB1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
 						</td>
 						<td>
-							<input type="text" name="spcXpert[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
+							<input type="text" name="spcXpert[]" id="spcXpert1" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
 						</td>
 						<td>
-							<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
+							<input type="text" name="probeA[]" id="probeA1" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
 						</td>
-						<td style=" border-left: solid 1px gray; "><input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>
-						<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
+						<td style=" border-left: solid 1px gray; "><input type="text" name="samplePreparationDate[]" id="samplePreparationDate1" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>
+						<td><input type="text" name="tbIsolate[]" id="tbIsolate1" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 					</tr>
 					<tr>
 						<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>
@@ -185,12 +185,12 @@ foreach ($this->tbPossibleResults as $pr) {
 					</tr>
 					<tr>
 						<td>
-							<select name="mtbDetectedUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+							<select name="mtbDetectedUltra[]" id="mtbDetectedUltra1" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
 								<?php $this->dropdownSelection($possibleResults, null, true); ?>
 							</select>
 						</td>
 						<td>
-							<select name="rifResistanceUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+							<select name="rifResistanceUltra[]" id="rifResistanceUltra1" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 								<option value="na">N/A</option>
 								<option value="detected">Detected</option>
@@ -200,32 +200,32 @@ foreach ($this->tbPossibleResults as $pr) {
 							</select>
 						</td>
 						<td>
-							<input type="number" step="0.01" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
+							<input type="number" step="0.01" name="ISI[]" id="ISI1" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
 						</td>
 						<td>
-							<input type="number" step="0.01" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />
+							<input type="number" step="0.01" name="rpoB1[]" id="rpoB11" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />
 						</td>
 						<td>
-							<input type="number" step="0.01" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />
+							<input type="number" step="0.01" name="rpoB2[]" id="rpoB21" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />
 						</td>
 						<td>
-							<input type="number" step="0.01" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />
+							<input type="number" step="0.01" name="rpoB3[]" id="rpoB31" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />
 						</td>
 						<td>
-							<input type="number" step="0.01" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />
+							<input type="number" step="0.01" name="rpoB4[]" id="rpoB41" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />
 						</td>
 						<td>
-							<input type="text" name="spcXpertUltra[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+							<input type="text" name="spcXpertUltra[]" id="spcXpertUltra1" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
 						</td>
 						<td style=" border-left: solid 1px gray; ">
-							<select name="control[]" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+							<select name="control[]" id="control1" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 								<option value="1"><?= $this->translate->_("Yes"); ?></option>
 								<option value="0"><?= $this->translate->_("No"); ?></option>
 							</select>
 						</td>
 						<td>
-							<select name="mandatory[]" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
+							<select name="mandatory[]" id="mandatory1" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 								<option value="1"><?= $this->translate->_("Yes"); ?></option>
 								<option value="0"><?= $this->translate->_("No"); ?></option>
@@ -264,25 +264,25 @@ foreach ($this->tbPossibleResults as $pr) {
 		if (type == 'microscopy') {
 			var html = '<tr> \
 				<th> \
-					<input type="text" name="sampleName[]" value="" class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
+					<input type="text" name="sampleName[]" id="sampleName' + sampleCounter + '" value="" class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
 				</th> \
 				<td>\
-					<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired microscopyfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
+					<input type="text" id="samplePreparationDate' + sampleCounter + '" name="samplePreparationDate[]" readonly="readonly" class="isRequired microscopyfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
 				</td>\
 				<td> \
-					<select name="mtbDetected[]" class="isRequired form-control microscopyfield input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
+					<select name="mtbDetected[]" id="mtbDetected' + sampleCounter + '" class="isRequired form-control microscopyfield input-sm"  title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample"> \
 					<?php $this->dropdownSelection($possibleMicrosopeResults, null, true); ?>\
 					</select> \
 				</td> \
 				<td> \
-					<select name="control[]" class="isRequired controlOrNot microscopyfield form-control input-sm" title="Please choose whether this sample is a control"> \
+					<select name="control[]" id="control' + sampleCounter + '" class="isRequired controlOrNot microscopyfield form-control input-sm" title="Please choose whether this sample is a control"> \
 						<option value="">--Select--</option> \
 						<option value="1">Yes</option> \
 						<option value="0">No</option> \
 					</select> \
 				</td> \
 				<td> \
-					<select name="mandatory[]" class="isRequired form-control microscopyfield input-sm" title="Please choose whether this sample/control is mandatory"> \
+					<select name="mandatory[]" id="mandatory' + sampleCounter + '" class="isRequired form-control microscopyfield input-sm" title="Please choose whether this sample/control is mandatory"> \
 						<option value="">--Select--</option> \
 						<option value="1">Yes</option> \
 						<option value="0">No</option> \
@@ -296,7 +296,7 @@ foreach ($this->tbPossibleResults as $pr) {
 			<td>\
 				<table>\
 					<tr>\
-						<th colspan="13"><input type="text" name="sampleName[]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>\
+						<th colspan="13"><input type="text" name="sampleName[]" id="sampleName' + sampleCounter + '" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>\
 					</tr>\
 					<tr>\
 						<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>\
@@ -313,12 +313,12 @@ foreach ($this->tbPossibleResults as $pr) {
 					</tr>\
 					<tr>\
 						<td>\
-							<select name="mtbDetected[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
+							<select name="mtbDetected[]" id="mtbDetected' + sampleCounter + '" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
 							<?php $this->dropdownSelection($possibleResults, null, true); ?>\
 							</select>\
 						</td>\
 						<td>\
-							<select name="rifResistance[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
+							<select name="rifResistance[]" id="rifResistance' + sampleCounter + '" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 								<option value="na">N/A</option>\
 								<option value="detected">Detected</option>\
@@ -328,25 +328,25 @@ foreach ($this->tbPossibleResults as $pr) {
 							</select>\
 						</td>\
 						<td>\
-							<input type="text" name="probeD[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />\
+							<input type="text" name="probeD[]" id="probeD' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />\
 						</td>\
 						<td>\
-							<input type="text" name="probeC[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />\
+							<input type="text" name="probeC[]" id="probeC' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />\
 						</td>\
 						<td>\
-							<input type="text" name="probeE[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />\
+							<input type="text" name="probeE[]" id="probeE' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />\
 						</td>\
 						<td>\
-							<input type="text" name="probeB[]" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />\
+							<input type="text" name="probeB[]" id="probeB' + sampleCounter + '" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />\
 						</td>\
 						<td>\
-							<input type="text" name="spcXpert[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />\
+							<input type="text" name="spcXpert[]" id="spcXpert' + sampleCounter + '" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />\
 						</td>\
 						<td>\
-							<input type="text" name="probeA[]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />\
+							<input type="text" name="probeA[]" id="probeA' + sampleCounter + '" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />\
 						</td>\
-						<td style=" border-left: solid 1px gray; "><input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>\
-						<td><input type="text" name="tbIsolate[]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>\
+						<td style=" border-left: solid 1px gray; "><input type="text" id="samplePreparationDate' + sampleCounter + '" name="samplePreparationDate[]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>\
+						<td><input type="text" name="tbIsolate[]" id="tbIsolate' + sampleCounter + '" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>\
 					</tr>\
 					<tr>\
 						<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>\
@@ -363,12 +363,12 @@ foreach ($this->tbPossibleResults as $pr) {
 					</tr>\
 					<tr>\
 						<td>\
-							<select name="mtbDetectedUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
+							<select name="mtbDetectedUltra[]" id="mtbDetectedUltra' + sampleCounter + '" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">\
 							<?php $this->dropdownSelection($possibleResults, null, true); ?>\
 							</select>\
 						</td>\
 						<td>\
-							<select name="rifResistanceUltra[]" class="isRequired molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
+							<select name="rifResistanceUltra[]" id="rifResistanceUltra' + sampleCounter + '" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">\
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 								<option value="na">N/A</option>\
 								<option value="detected">Detected</option>\
@@ -378,32 +378,32 @@ foreach ($this->tbPossibleResults as $pr) {
 							</select>\
 						</td>\
 						<td>\
-							<input type="number" step="0.01" name="ISI[]" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />\
+							<input type="number" step="0.01" name="ISI[]" id="ISI' + sampleCounter + '" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />\
 						</td>\
 						<td>\
-							<input type="number" step="0.01" name="rpoB1[]" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />\
+							<input type="number" step="0.01" name="rpoB1[]" id="rpoB1' + sampleCounter + '" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />\
 						</td>\
 						<td>\
-							<input type="number" step="0.01" name="rpoB2[]" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />\
+							<input type="number" step="0.01" name="rpoB2[]" id="rpoB2' + sampleCounter + '" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />\
 						</td>\
 						<td>\
-							<input type="number" step="0.01" name="rpoB3[]" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />\
+							<input type="number" step="0.01" name="rpoB3[]" id="rpoB3' + sampleCounter + '" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />\
 						</td>\
 						<td>\
-							<input type="number" step="0.01" name="rpoB4[]" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />\
+							<input type="number" step="0.01" name="rpoB4[]" id="rpoB4' + sampleCounter + '" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />\
 						</td>\
 						<td>\
-							<input type="text" name="spcXpertUltra[]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />\
+							<input type="text" name="spcXpertUltra[]" id="spcXpertUltra' + sampleCounter + '" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />\
 						</td>\
 						<td style=" border-left: solid 1px gray; ">\
-							<select name="control[]" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">\
+							<select name="control[]" id="control' + sampleCounter + '" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">\
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 								<option value="1"><?= $this->translate->_("Yes"); ?></option>\
 								<option value="0"><?= $this->translate->_("No"); ?></option>\
 							</select>\
 						</td>\
 						<td>\
-							<select name="mandatory[]" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">\
+							<select name="mandatory[]" id="mandatory' + sampleCounter + '" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">\
 								<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
 								<option value="1"><?= $this->translate->_("Yes"); ?></option>\
 								<option value="0"><?= $this->translate->_("No"); ?></option>\
@@ -419,11 +419,36 @@ foreach ($this->tbPossibleResults as $pr) {
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
 		});
+		$('.molecularfieldChange').change(function() {
+			// Dynamically get row number
+			const _name = $(this).attr('name');
+			const _id = this.id;
+			const unmatched = [..._id].filter(char => !_name.includes(char));
+			let uniqueId = unmatched.join("");
+			if (_name == 'mtbDetected[]' && this.value != '') {
+				$('#mtbDetectedUltra' + uniqueId).val(this.value);
+			} else if (this.value) {
+				$('#rifResistanceUltra' + uniqueId).val(this.value);
+			}
+		});
 	}
 
 	$(document).ready(function() {
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
+		});
+
+		$('.molecularfieldChange').change(function() {
+			// Dynamically get row number
+			const _name = $(this).attr('name');
+			const _id = this.id;
+			const unmatched = [..._id].filter(char => !_name.includes(char));
+			let uniqueId = unmatched.join("");
+			if (_name == 'mtbDetected[]' && this.value != '') {
+				$('#mtbDetectedUltra' + uniqueId).val(this.value);
+			} else if (this.value) {
+				$('#rifResistanceUltra' + uniqueId).val(this.value);
+			}
 		});
 	});
 
