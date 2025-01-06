@@ -49,6 +49,6 @@ try {
     }
   }
 } catch (Exception $e) {
-  error_log("ERROR : {$e->getFile()} on line {$e->getLine()} : {$e->getMessage()}");
+  error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
   error_log($e->getTraceAsString());
 }

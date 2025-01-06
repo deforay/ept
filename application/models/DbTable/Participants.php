@@ -1842,7 +1842,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     // changes made in the transaction, even those that succeeded.
                     // Thus all changes are committed together, or none are.
                     $db->rollBack();
-                    error_log($e->getMessage());
+                    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
                     error_log($e->getTraceAsString());
                     continue;
                 }
@@ -1857,7 +1857,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     // changes made in the transaction, even those that succeeded.
                     // Thus all changes are committed together, or none are.
                     $db->rollBack();
-                    error_log($e->getMessage());
+                    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
                     error_log($e->getTraceAsString());
                     continue;
                 }
@@ -1933,8 +1933,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 return ($id);
             }
         } catch (Exception $e) {
-            error_log($e->getMessage());
             echo ($e->getMessage()) . PHP_EOL;
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }

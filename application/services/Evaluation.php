@@ -1405,6 +1405,8 @@ class Application_Service_Evaluation
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
+		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		// die($sql);
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 		$meanScore = [];
@@ -1626,8 +1628,8 @@ class Application_Service_Evaluation
 			/* To get the list of samples using map id */
 			$unionQuery = $db->select()->from('response_result_' . $tableType, array('sample_id', 'shipment_map_id', 'calculated_score'))
 				->where("shipment_map_id IN (
-				SELECT shipment_participant_map.map_id 
-				FROM shipment_participant_map 
+				SELECT shipment_participant_map.map_id
+				FROM shipment_participant_map
 				where shipment_participant_map.shipment_id = " . $res['shipment_id'] . ")");
 
 			$scoreType = ($tableType != 'generic_test') ? "Pass" : 20;

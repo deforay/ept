@@ -1,6 +1,6 @@
 <?php
 
-class Config_QuantitativeTestConfig
+class Pt_Config_QuantitativeTestConfig
 {
     public float $sdScalingFactor;
     public float $uncertaintyScalingFactor;

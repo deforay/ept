@@ -159,7 +159,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }
@@ -393,7 +393,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }

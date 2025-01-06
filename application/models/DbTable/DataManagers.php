@@ -1324,7 +1324,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
         $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1529,7 +1529,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
         }
     }

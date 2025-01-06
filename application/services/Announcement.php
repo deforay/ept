@@ -72,7 +72,7 @@ class Application_Service_Announcement
             // changes made in the transaction, even those that succeeded.
             // Thus all changes are committed together, or none are.
             $db->rollBack();
-            error_log($e->getMessage());
+            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
             $alertMsg->message = "Something went wrong. Please try again later.";
             return null;
