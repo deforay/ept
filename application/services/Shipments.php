@@ -2130,7 +2130,8 @@ class Application_Service_Shipments
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
                             'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                            'reference_result' => $params['finalResult'][$i],
+                            'test_type' => $params['testType'][$i],
+                            'reference_result' => $params['finalResult'][$params['testType'][$i]][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
                             'sample_score' => ($params['mandatory'][$i] == 1) ? $score : 0
@@ -2700,7 +2701,8 @@ class Application_Service_Shipments
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
                         'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                        'reference_result' => $params['finalResult'][$i],
+                        'test_type' => $params['testType'][$i],
+                        'reference_result' => $params['finalResult'][$params['testType'][$i]][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
                         'sample_score' => ($params['mandatory'][$i] == 1) ? 20 : 0

@@ -252,3 +252,6 @@ CREATE TABLE `scheme_testkit_map` (
 
 --Thana 03-Jan-2024
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
+
+--Thana 06-Jan-2024
+ALTER TABLE `reference_result_generic_test` ADD `test_type` VARCHAR(50) NULL DEFAULT NULL AFTER `sample_preparation_date`;
