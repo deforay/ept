@@ -37,7 +37,6 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 }
             }
         }
-        // print_r($sectionImage); die;
         $data = array(
             'section' => $params['section'],
             'type' => $params['type'],
@@ -50,8 +49,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'modified_by' => $authNameSpace->admin_id,
             'modified_date_time' => new Zend_Db_Expr('now()')
         );
-        // print_r($data); die;
-        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
+    
+        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {  
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
         } else {
             return $this->insert($data);

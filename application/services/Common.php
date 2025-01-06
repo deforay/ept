@@ -1493,4 +1493,27 @@ class Application_Service_Common
         }
         return $db->fetchAll($sql);
     }
+
+    public static function isValidEmail(string $email, array $excludedDomains = []): bool
+    {
+        // Check email syntax
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        // Extract domain
+        $domain = substr(strrchr($email, "@"), 1);
+
+        // Check if the domain is in the excluded list
+        if (in_array(strtolower($domain), array_map('strtolower', $excludedDomains), true)) {
+            return false;
+        }
+
+        // Check DNS records for the domain
+        if (!checkdnsrr($domain, 'MX')) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -40,10 +40,9 @@ $title = $this->translate->_("Edit Home Section Link");
 
             <div class="form-group file-group" style="display: none;">
                 <label class="col-lg-3 control-label" for="section_file"><?= $this->translate->_("File"); ?></label>
+                <?php $sectionImage = $this->result['section_file']; ?>
                 <input type="hidden" name="pre_section_image" id="pre-file" value="<?php echo $sectionImage; ?>">
                 <div class="col-lg-5">
-                    <?php
-                    $sectionImage = $this->result['section_file']; ?>
                     <input type="file" id="file" name="section_file" class="form-control" />
                     <?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $sectionImage)) { ?>
                         <a href="/uploads/section/<?php echo $sectionImage; ?>" target="_blank">Click here to view file</a>

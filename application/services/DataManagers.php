@@ -141,23 +141,51 @@ class Application_Service_DataManagers
     public function resetPassword($email)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
-        $newPassword = $userDb->resetPasswordForEmail($email);
+        $participant = $userDb->resetPasswordForEmail($email);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-    //    echo "<pre>"; print_r($conf); die;
+        //    echo "<pre>"; print_r($conf); die;
 
 
         $eptDomain = rtrim($conf->domain, "/");
 
-        if ($newPassword != false) {
+        if ($participant != false) {
+
+
+
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
-            $fromMail = Application_Service_Common::getConfig('admin_email');
-            $fromName = Application_Service_Common::getConfig('admin-name');
-            //$common->sendMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
-            $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Your password has been reset. Please check your registered email id for the instructions.";
-            $sessionAlert->status = "success";
+            $participantName = $participant->first_name . $participant->last_name;
+            $participantMail = $participant->primary_email;
+            $adminName = Application_Service_Common::getConfig('admin-name');
+            $adminMail = Application_Service_Common::getConfig('admin_email');
+            $excludedDomains = [
+                "spam.com",
+                "example.org",
+                "example.com",
+                "10minutemail.com",
+                "guerrillamail.com",
+                "tempmail.com",
+                "mailinator.com",
+                "yopmail.com",
+                "throwawaymail.com",
+                "fakeinbox.com",
+                "test.com",
+                "invalid.com",
+                "noreply.com"
+            ];
+
+            $validMail = $common->isValidEmail($participantMail, $excludedDomains);
+            if ($validMail == 1) {
+                $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
+                $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $adminMail, $adminName);
+                $sessionAlert->message = "Your password has been reset. Please check your registered email id for the instructions.";
+                $sessionAlert->status = "success";
+            } else {
+                $message = "Dear " . $adminName . ",<br/><br/> Participant " . $participantName . " has requested to reset their password<br/><br/>";
+                $common->insertTempMail($adminMail, null, null, "Password Reset - e-PT", $message);
+                $sessionAlert->message = "Ept admin will contact you shortly!.";
+                $sessionAlert->status = "success";
+            }
         } else {
             $sessionAlert->message = "Sorry, we could not reset your password. Please make sure that you entered your registered primary email";
             $sessionAlert->status = "failure";
