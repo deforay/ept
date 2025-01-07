@@ -329,27 +329,27 @@ class Application_Model_GenericTest
                 $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
                 $participantRow = [];
-				$participantRow[] = $aRow['unique_identifier'];
-				$participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
-				$participantRow[] = $aRow['institute_name'];
-				$participantRow[] = $aRow['department_name'];
-				$participantRow[] = $aRow['iso_name'];
-				$participantRow[] = $aRow['address'];
-				$participantRow[] = $aRow['province'];
-				$participantRow[] = $aRow['district'];
-				$participantRow[] = $aRow['city'];
-				$participantRow[] = $aRow['mobile'];
-				$participantRow[] = $aRow['email'];
+                $participantRow[] = $aRow['unique_identifier'];
+                $participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+                $participantRow[] = $aRow['institute_name'];
+                $participantRow[] = $aRow['department_name'];
+                $participantRow[] = $aRow['iso_name'];
+                $participantRow[] = $aRow['address'];
+                $participantRow[] = $aRow['province'];
+                $participantRow[] = $aRow['district'];
+                $participantRow[] = $aRow['city'];
+                $participantRow[] = $aRow['mobile'];
+                $participantRow[] = $aRow['email'];
 
                 $participantListSheetData[] = $participantRow;
-				unset($participantRow);
+                unset($participantRow);
 
                 $shipmentCode = $aRow['shipment_code'];
             }
         }
 
         $participantListSheet->fromArray($participantListHeadings, null, "A1");
-		$participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($borderStyle);
+        $participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($borderStyle);
         $participantListSheet->fromArray($participantListSheetData, null, 'A2');
 
         //------------- Participant List Details End ------>
@@ -728,7 +728,7 @@ class Application_Model_GenericTest
     {
         $sql = $this->db->select()
             ->from(
-                ['r_testkitnames'],
+                ['t' => 'r_testkitnames'],
                 [
                     'TESTKITNAMEID' => 'TESTKITNAME_ID',
                     'TESTKITNAME' => 'TESTKIT_NAME',
