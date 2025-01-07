@@ -1001,7 +1001,6 @@ class Application_Model_GenericTest
 
             $response[$sampleId]['sample_id'] = $row['sample_id'];
             $response[$sampleId]['no_of_responses'] = $row['no_of_responses'];
-            $response[$sampleId]['assay_name'] = $row['assay_name'];
             $response[$sampleId]['sample_label'] = $row['sample_label'];
             $response[$sampleId]['use_range'] = $row['use_range'] ?? 'calculated';
 
