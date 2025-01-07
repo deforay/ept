@@ -187,6 +187,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function saveGenericTestDetails($params)
     {
+        if (isset($params['testType']) && !empty($params['testType'])) {
+            $params['genericConfig']['testType'] = reset($params['testType']);
+        }
         $data = array(
             'scheme_id' => $params['schemeCode'],
             'scheme_name' => $params['schemeName'],

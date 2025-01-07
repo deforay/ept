@@ -58,27 +58,30 @@ class Application_Model_GenericTest
                 $failureReason = ['warning' => "Response was submitted after the last response date."];
                 $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
             }
-            foreach ($results as $result) {
-                if (true) {
-                    if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
-                        if ($result['reference_result'] == $result['reported_result']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
-                            }
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+            if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
+            } else {
+                foreach ($results as $result) {
+                    if (true) {
+                        if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
+                            if ($result['reference_result'] == $result['reported_result']) {
+                                if (0 == $result['control']) {
+                                    $totalScore += $result['sample_score'];
+                                    $calculatedScore = $result['sample_score'];
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
                             }
                         }
+                        if (0 == $result['control']) {
+                            $maxScore += $result['sample_score'];
+                        }
+                    } else {
                     }
-                    if (0 == $result['control']) {
-                        $maxScore += $result['sample_score'];
-                    }
-                } else {
-                }
 
-                $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                }
             }
             if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
                 if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
