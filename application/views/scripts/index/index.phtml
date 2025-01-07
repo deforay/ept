@@ -197,8 +197,11 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section1'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home' . DIRECTORY_SEPARATOR . 'section1' . DIRECTORY_SEPARATOR . $section['section_file'])) { ?>
-                                                            <a href="/uploads/home/section1/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
+                                                        <?php
+                                                        $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $section['section_file'];
+                                                        ?>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists($filePath)) { ?>
+                                                            <a href="/uploads/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
                                                                 <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
                                                                 <?php echo htmlspecialchars($section['text']); ?>
                                                             </a>
@@ -223,8 +226,11 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section2'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home' . DIRECTORY_SEPARATOR . 'section2' . DIRECTORY_SEPARATOR . $section['section_file'])) { ?>
-                                                            <a href="/uploads/home/section2/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
+                                                        <?php
+                                                        $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $section['section_file'];
+                                                        ?>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists($filePath)) { ?>
+                                                            <a href="/uploads/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
                                                                 <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
                                                                 <?php echo htmlspecialchars($section['text']); ?>
                                                             </a>
@@ -249,8 +255,11 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                             <ul class="list-group list-group-flush">
                                                 <?php foreach ($this->homeSection['section3'] as $section) { ?>
                                                     <li class="list-group-item">
-                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home' . DIRECTORY_SEPARATOR . 'section3' . DIRECTORY_SEPARATOR . $section['section_file'])) { ?>
-                                                            <a href="/uploads/home/section3/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
+                                                        <?php
+                                                        $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $section['section_file'];
+                                                        ?>
+                                                        <?php if ($section['type'] == 'file' && isset($section['section_file']) && trim($section['section_file']) != '' && file_exists($filePath)) { ?>
+                                                            <a href="/uploads/<?php echo htmlspecialchars($section['section_file']); ?>" target="_blank">
                                                                 <i class='<?php echo htmlspecialchars($section['icon']); ?>' style="font-weight:bold;color:#555;"></i>
                                                                 <?php echo htmlspecialchars($section['text']); ?>
                                                             </a>

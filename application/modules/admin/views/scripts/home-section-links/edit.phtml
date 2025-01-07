@@ -12,7 +12,7 @@ $title = $this->translate->_("Edit Home Section Link");
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Section"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select name="section" id="section" class="form-control isRequired" title="Please choose the section" style="width:285px;">
+                    <select name="section" id="section" class="form-control isRequired" title="Please choose the section" onchange="getDisplayOrderNo()" style="width:285px;">
                         <option value="">--<?= $this->translate->_("Select Section"); ?>--</option>
                         <option value="section1" <?php echo ($this->result['section'] == 'section1') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Section1"); ?></option>
                         <option value="section2" <?php echo ($this->result['section'] == 'section2') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Section2"); ?></option>
@@ -40,15 +40,19 @@ $title = $this->translate->_("Edit Home Section Link");
 
             <div class="form-group file-group" style="display: none;">
                 <label class="col-lg-3 control-label" for="section_file"><?= $this->translate->_("File"); ?></label>
-                <?php $sectionImage = $this->result['section_file']; ?>
+                <?php
+                $sectionImage = $this->result['section_file'];
+                $filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . $sectionImage;
+                ?>
                 <input type="hidden" name="pre_section_image" id="pre-file" value="<?php echo $sectionImage; ?>">
                 <div class="col-lg-5">
                     <input type="file" id="file" name="section_file" class="form-control" />
-                    <?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'section' . DIRECTORY_SEPARATOR . $sectionImage)) { ?>
-                        <a href="/uploads/section/<?php echo $sectionImage; ?>" target="_blank">Click here to view file</a>
+                    <?php if (isset($sectionImage) && trim($sectionImage) != '' && file_exists($filePath)) { ?>
+                        <a href="/uploads/<?php echo $sectionImage; ?>" target="_blank">Click here to view file</a>
                     <?php } ?>
                 </div>
             </div>
+
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="displayText"><?= $this->translate->_("Display Text"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5"><input type="text" value="<?php echo $this->result['text']; ?>" id="displayText" name="displayText" size="50" maxlength="255" class="isRequired form-control" title="Please enter the display text here" placeholder="Enter the display text here" /></div>
@@ -161,4 +165,38 @@ $title = $this->translate->_("Edit Home Section Link");
             return $(`<span><i class="${iconClass}" style="margin-right: 8px;"></i>${option.text}</span>`);
         }
     });
+
+    function getDisplayOrderNo() {
+        const selectedValue = document.getElementById("section").value;
+
+        if (selectedValue) {
+            // Perform an AJAX request to fetch the display order
+            $.ajax({
+                url: "<?= $this->url(['module' => 'admin', 'controller' => 'home-section-links', 'action' => 'get-display-order']); ?>",
+                type: "POST",
+                data: {
+                    section: selectedValue
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response && response.maxSortOrder !== undefined) {
+                        // Set the display order to maxSortOrder + 1
+                        document.getElementById("displayOrder").value = parseInt(response.maxSortOrder, 10) + 1;
+                        document.getElementById("displayOrder").setAttribute("readonly", "readonly");
+                    } else {
+                        alert("Error: Could not fetch the display order.");
+                        document.getElementById("displayOrder").value = "";
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                    alert("Error fetching display order. Please try again.");
+                    document.getElementById("displayOrder").value = "";
+                }
+            });
+        } else {
+            // Clear the displayOrder field if no section is selected
+            document.getElementById("displayOrder").value = "";
+        }
+    }
 </script>

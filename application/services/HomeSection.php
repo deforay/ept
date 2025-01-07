@@ -37,4 +37,9 @@ class Application_Service_HomeSection
         $customPageDb = new Application_Model_DbTable_CustomPageContent();
         return $customPageDb->saveHomePageContent($params);
     }
+
+    public function getDisplayOrder($params){
+        $homeSectionDb = new Application_Model_DbTable_HomeSection();
+        return $homeSectionDb->getMaxSortOrder($params); 
+    }
 }

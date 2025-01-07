@@ -61,4 +61,18 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $this->view->result = $homeSectionService->getHomeSectionById($id);
         }
     }
+
+    public function getDisplayOrderAction()
+    {
+        $request = $this->getRequest();
+        $homeSectionService = new Application_Service_HomeSection();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $maxSortOrder = $homeSectionService->getDisplayOrder($params);
+            // Send the response as JSON
+            $this->_helper->json([
+                'maxSortOrder' => $maxSortOrder
+            ]);
+        }
+    }
 }
