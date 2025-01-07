@@ -1435,12 +1435,12 @@ class Application_Model_Dts
 
 		$sql = $this->db->select()
 			->from(
-				array('t' => 'r_testkitnames'),
-				array(
+				['t' => 'r_testkitnames'],
+				[
 					'TESTKITNAMEID' => 'TESTKITNAME_ID',
 					'TESTKITNAME' => 'TESTKIT_NAME',
 					'attributes'
-				)
+				]
 			)
 			->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
 			->order("TESTKITNAME ASC");
@@ -1448,7 +1448,7 @@ class Application_Model_Dts
 			if ($stage == 'custom-tests')
 				$sql = $sql->where("scheme_type IS NULL OR scheme_type = ''");
 			else
-				$sql = $sql->where("scheme_type != '" . $stage . "'");
+				$sql = $sql->where("scheme_type != '$stage'");
 		} else {
 			$sql = $sql->where("scheme_type = 'dts'");
 		}
@@ -2060,7 +2060,7 @@ class Application_Model_Dts
 					// $resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['qc_date_2']);
 					for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 						$resultReportRow[] = $participantResponse[$k]['testResult2'];
-					} 
+					}
 					if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);

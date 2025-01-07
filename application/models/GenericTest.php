@@ -759,17 +759,17 @@ class Application_Model_GenericTest
 
         $sql = $this->db->select()
             ->from(
-                array('r_testkitnames'),
-                array(
+                ['r_testkitnames'],
+                [
                     'TESTKITNAMEID' => 'TESTKITNAME_ID',
                     'TESTKITNAME' => 'TESTKIT_NAME',
                     'attributes'
-                )
+                ]
             )
             ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->order("TESTKITNAME ASC");
         if (isset($scheme) && !empty($scheme)) {
-            $sql = $sql->where("scheme_type = '" . $scheme . "'");
+            $sql = $sql->where("scheme_type = '$scheme'");
         } else {
             $sql = $sql->where("scheme_type = 'dts'");
         }
