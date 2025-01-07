@@ -62,7 +62,9 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                     $common = new Application_Service_Common();
                     foreach ($link as $key => $l) {
                         if (isset($_FILES['fileLink']['name'][$key]['file']) && !empty($_FILES['fileLink']['name'][$key]['file'])) {
-                            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['fileLink']['name'][$key]['file'], PATHINFO_EXTENSION));
+                            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileLink']['name'][$key]['file']);
+                            $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                             $random = $common->generateRandomString(6);
                             $fileName = $random . "." . $extension;
 
@@ -87,13 +89,12 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 $config->$section->home->content->homeSectionHeading1 = $request->getPost('homeSectionHeading1') ?? null;
                 $config->$section->home->content->homeSectionHeading2 = $request->getPost('homeSectionHeading2') ?? null;
                 $config->$section->home->content->homeSectionHeading3 = $request->getPost('homeSectionHeading3') ?? null;
-                $config->$section->home->content->homeSectionIcon1 = $request->getPost('homeSectionIcon1') ?? null;
-                $config->$section->home->content->homeSectionIcon2 = $request->getPost('homeSectionIcon2') ?? null;
-                $config->$section->home->content->homeSectionIcon3 = $request->getPost('homeSectionIcon3') ?? null;
+                $config->$section->home->content->homeSectionIcon2 = ($request->getPost('homeSectionIcon1') !== null && $request->getPost('homeSectionIcon1') !== '') ? $request->getPost('homeSectionIcon1') : "bx bx-file";
+                $config->$section->home->content->homeSectionIcon2 = ($request->getPost('homeSectionIcon2') !== null && $request->getPost('homeSectionIcon2') !== '') ? $request->getPost('homeSectionIcon2') : "bx bx-file";
+                $config->$section->home->content->homeSectionIcon2 = ($request->getPost('homeSectionIcon3') !== null && $request->getPost('homeSectionIcon3') !== '') ? $request->getPost('homeSectionIcon3') : "bx bx-file";
                 $config->$section->home->content->video = $request->getPost('video') ?? null;
                 $config->$section->home->content->additionalLink = $request->getPost('additionalLink') ?? null;
                 $config->$section->home->content->additionalLinkText = $request->getPost('additionalLinkText') ?? null;
-
                 $customHomePage = $request->getPost('customHomePage') ?? null;
                 $config->$section->home->content->customHomePage = $customHomePage;
                 if (isset($customHomePage) && $customHomePage == 'yes') {

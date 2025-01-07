@@ -13,45 +13,30 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $sectionImage = null;
         $link = null;
-        if(isset($params['link']) && $params['link'] != '') {
+        if (isset($params['link']) && $params['link'] != '') {
             $link = $params['link'];
         }
 
-            // echo "<pre>";print_r($_FILES); die;
-        if(isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
+        // echo "<pre>";print_r($_FILES); die;
+        if (isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }
-        // if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
-        //     $uploadDirectory = realpath(UPLOAD_PATH);
-        //     $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx','xls');
-        //     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
-        //     $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
-        //     $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-        //     $imageName = $common->generateRandomString(4) . '.' . $extension;
-        //     if (in_array($extension, $allowedExtensions)) {
-        //         if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'section') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'section')) {
-        //             mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'section');
-        //         }
-        //         if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "section" . DIRECTORY_SEPARATOR . $imageName)) {
-        //            $sectionImage = $imageName;
-        //         }
-        //     }
-        // }
         if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
+          
             $uploadDirectory = realpath(UPLOAD_PATH);
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx', 'xls');
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
             $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
             $imageName = $common->generateRandomString(4) . '.' . $extension;
-        
+
             if (in_array($extension, $allowedExtensions)) {
                 // Determine the section folder based on $params['section']
-                if($params['section'] == 'section1') {
+                if ($params['section'] == 'section1') {
                     $section = 1;
-                } else if($params['section'] == 'section2') {
+                } else if ($params['section'] == 'section2') {
                     $section = 2;
-                }  else {
+                } else {
                     $section = 3;
                 }
                 $sectionFolder = "home" . DIRECTORY_SEPARATOR . "section" . $section;
@@ -60,14 +45,14 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 if (!file_exists($targetDirectory) && !is_dir($targetDirectory)) {
                     mkdir($targetDirectory, 0777, true); // Recursive directory creation
                 }
-        
+
                 // Move the uploaded file to the target directory
                 if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $targetDirectory . DIRECTORY_SEPARATOR . $imageName)) {
-                    $sectionImage = $imageName;
+                    $sectionImage = $sectionFolder . '/' . $imageName;
                 }
             }
         }
-        
+
         $data = array(
             'section' => $params['section'],
             'type' => $params['type'],
@@ -80,8 +65,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'modified_by' => $authNameSpace->admin_id,
             'modified_date_time' => new Zend_Db_Expr('now()')
         );
-    
-        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {  
+
+        if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
         } else {
             return $this->insert($data);
@@ -235,7 +220,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     public function fetchAllHomeSection()
     {
         $sql = $this->select();
-        $sql = $sql->where("status= ? ", 'active');
+        $sql = $sql->where("status= ? ", 'active')
+            ->order("display_order ASC");
         $row =  $this->fetchAll($sql);
         $response = array();
         foreach ($row as $d) {
@@ -248,5 +234,18 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             );
         }
         return $response;
+    }
+
+    public function getMaxSortOrder($params)
+    {
+        $section = $params['section'];
+        $status = 'active'; // Hardcoded or passed as a parameter
+
+        // Updated SQL query with additional status condition
+        $sql = "SELECT MAX(display_order) AS max_display_order FROM home_sections WHERE section = :section AND status = :status";
+
+        // Execute the query and fetch all rows as an array
+        $results = $this->getAdapter()->query($sql, ['section' => $section, 'status' => $status])->fetchAll();
+        return  !empty($results) && isset($results[0]['max_display_order']) ? (int)$results[0]['max_display_order'] : 0;
     }
 }
