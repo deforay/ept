@@ -21,8 +21,8 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
-        $db->update('shipment_participant_map', array('is_excluded' => 'no'), "shipment_id = $shipmentId");
-        $db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
+        $db->update('shipment_participant_map', ['is_excluded' => 'no'], "shipment_id = $shipmentId");
+        $db->update('shipment_participant_map', ['is_excluded' => 'yes'], "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
 
 
 
@@ -34,14 +34,14 @@ class Application_Model_Vl
             //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
             // when re-evaluating we will set the reset the range
             $this->setVlRange($shipmentId);
-            $vlRange = $this->getVlRange($shipmentId);
+            $quantRange = $this->getVlRange($shipmentId);
             // if (isset($beforeSetVlRange) && !empty($beforeSetVlRange)) {
             //     foreach ($beforeSetVlRange as $row) {
             //         $db->update('reference_vl_calculation', $row, "shipment_id = " . $shipmentId . " and sample_id = " . $row['sample_id'] . " and " . " vl_assay = " . $row['vl_assay']);
             //     }
             // }
         } else {
-            $vlRange = $this->getVlRange($shipmentId);
+            $quantRange = $this->getVlRange($shipmentId);
         }
 
 
@@ -87,11 +87,11 @@ class Application_Model_Vl
                     //     sort($meganda[$responseAssay]);
                     // }
 
-                    if (isset($vlRange[$responseAssay])) {
+                    if (isset($quantRange[$responseAssay])) {
                         if ($methodOfEvaluation == 'standard') {
                             // matching reported and low/high limits
                             if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-                                if (isset($vlRange[$responseAssay][$result['sample_id']]) && $vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+                                if (isset($quantRange[$responseAssay][$result['sample_id']]) && $quantRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $quantRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
                                     $totalScore += $result['sample_score'];
                                     $calcResult = "pass";
                                 } else {
@@ -110,10 +110,10 @@ class Application_Model_Vl
                                 $calcResult = "fail";
                                 $zScore = null;
                             } elseif (!empty($result['reported_viral_load'])) {
-                                if (isset($vlRange[$responseAssay][$result['sample_id']])) {
+                                if (isset($quantRange[$responseAssay][$result['sample_id']])) {
                                     $zScore = 0;
-                                    $sd = (float) $vlRange[$responseAssay][$result['sample_id']]['sd'];
-                                    $median = (float) $vlRange[$responseAssay][$result['sample_id']]['median'];
+                                    $sd = (float) $quantRange[$responseAssay][$result['sample_id']]['sd'];
+                                    $median = (float) $quantRange[$responseAssay][$result['sample_id']]['median'];
                                     if ($sd > 0) {
                                         $zScore = (float) (($result['reported_viral_load'] - $median) / $sd);
                                     }
@@ -263,11 +263,11 @@ class Application_Model_Vl
                 $failureReason = array('warning' => "Response was submitted after the last response date.");
                 $shipment['is_excluded'] = 'yes';
 
-                $db->update('shipment_participant_map', array('is_excluded' => 'yes', 'failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', ['is_excluded' => 'yes', 'failure_reason' => json_encode($failureReason)], "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }
-        $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
 
 
         return $shipmentResult;

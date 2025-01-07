@@ -203,7 +203,6 @@ class Application_Service_Evaluation
 		if (!empty($override)) {
 			$sql = $sql->where("sp.manual_override = ?", $override);
 		}
-		// die($sql);
 		$shipmentResult = $db->fetchAll($sql);
 
 		$schemeService = new Application_Service_Schemes();

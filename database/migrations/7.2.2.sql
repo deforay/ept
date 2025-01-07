@@ -172,10 +172,10 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
 -- sakthi 24-Dec-2024
-ALTER TABLE `home_sections` ADD `section_file` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
+
 
 -- Sakti 27-Dec-2024
-CREATE TABLE participant_messages (
+CREATE TABLE IF NOT EXISTS participant_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     participant_id VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NULL,
@@ -252,3 +252,55 @@ CREATE TABLE `scheme_testkit_map` (
 
 -- Thana 03-Jan-2024
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
+
+-- Amit 07-Jan-2025
+INSERT INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
+    SELECT r_testkitnames.scheme_type, r_testkitnames.TestKitName_ID, r_testkitnames.testkit_1, r_testkitnames.testkit_2, r_testkitnames.testkit_3 FROM r_testkitnames;
+
+ALTER TABLE `r_testkitnames`
+  DROP `scheme_type`,
+  DROP `testkit_1`,
+  DROP `testkit_2`,
+  DROP `testkit_3`;
+
+-- Thana 07-Jan-2025
+CREATE TABLE `reference_generic_test_calculations` (
+  `shipment_id` int NOT NULL,
+  `sample_id` int NOT NULL,
+  `no_of_responses` int DEFAULT NULL,
+  `q1` double(20,10) DEFAULT NULL,
+  `q3` double(20,10) DEFAULT NULL,
+  `iqr` double(20,10) DEFAULT NULL,
+  `quartile_low` double(20,10) DEFAULT NULL,
+  `quartile_high` double(20,10) DEFAULT NULL,
+  `mean` double(20,10) DEFAULT NULL,
+  `median` double(20,10) DEFAULT NULL,
+  `sd` double(20,10) DEFAULT NULL,
+  `standard_uncertainty` double(20,10) DEFAULT NULL,
+  `is_uncertainty_acceptable` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cv` double(20,10) DEFAULT NULL,
+  `low_limit` double(20,10) DEFAULT NULL,
+  `high_limit` double(20,10) DEFAULT NULL,
+  `calculated_on` datetime DEFAULT NULL,
+  `manual_mean` double(20,10) DEFAULT NULL,
+  `manual_median` double(20,10) DEFAULT NULL,
+  `manual_sd` double(20,10) DEFAULT NULL,
+  `manual_standard_uncertainty` double(20,10) DEFAULT NULL,
+  `manual_is_uncertainty_acceptable` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `manual_cv` double(20,10) DEFAULT NULL,
+  `manual_q1` double(20,10) DEFAULT NULL,
+  `manual_q3` double(20,10) DEFAULT NULL,
+  `manual_iqr` double(20,10) DEFAULT NULL,
+  `manual_quartile_low` double(20,10) DEFAULT NULL,
+  `manual_quartile_high` double(20,10) DEFAULT NULL,
+  `manual_low_limit` double(20,10) DEFAULT NULL,
+  `manual_high_limit` double(20,10) DEFAULT NULL,
+  `z_score` double(20,10) NOT NULL,
+  `is_result_invalid` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
+  `error_code` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `comment` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
+  `updated_on` datetime DEFAULT NULL,
+  `updated_by` int DEFAULT NULL,
+  `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'calculated',
+  PRIMARY KEY (`shipment_id`,`sample_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
