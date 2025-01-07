@@ -22,7 +22,7 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach ($shipmentResult as $shipment) {
-            $correctiveActions = $this->getDtsCorrectiveActions();
+            $correctiveActions = $this->getCorrectiveActions();
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
 
             $attributes = json_decode($shipment['attributes'], true);
@@ -61,23 +61,20 @@ class Application_Model_GenericTest
             if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
             } else {
                 foreach ($results as $result) {
-                    if (true) {
-                        if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
-                            if ($result['reference_result'] == $result['reported_result']) {
-                                if (0 == $result['control']) {
-                                    $totalScore += $result['sample_score'];
-                                    $calculatedScore = $result['sample_score'];
-                                }
-                            } else {
-                                if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                                }
+                    if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
+                        if ($result['reference_result'] == $result['reported_result']) {
+                            if (0 == $result['control']) {
+                                $totalScore += $result['sample_score'];
+                                $calculatedScore = $result['sample_score'];
+                            }
+                        } else {
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                             }
                         }
-                        if (0 == $result['control']) {
-                            $maxScore += $result['sample_score'];
-                        }
-                    } else {
+                    }
+                    if (0 == $result['control']) {
+                        $maxScore += $result['sample_score'];
                     }
 
                     $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
@@ -754,9 +751,8 @@ class Application_Model_GenericTest
         return $shipmentResult;
     }
 
-    public function getAllDtsTestKitList($countryAdapted = false, $scheme = null)
+    public function getAllTestKitList($countryAdapted = false, $scheme = null)
     {
-
         $sql = $this->db->select()
             ->from(
                 array('r_testkitnames'),
@@ -770,8 +766,6 @@ class Application_Model_GenericTest
             ->order("TESTKITNAME ASC");
         if (isset($scheme) && !empty($scheme)) {
             $sql = $sql->where("scheme_type = '" . $scheme . "'");
-        } else {
-            $sql = $sql->where("scheme_type = 'dts'");
         }
         if ($countryAdapted) {
             $sql = $sql->where('COUNTRYADAPTED = 1');
@@ -796,7 +790,7 @@ class Application_Model_GenericTest
         return $retval;
     }
 
-    public function getDtsCorrectiveActions()
+    public function getCorrectiveActions()
     {
         $res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
         $response = [];

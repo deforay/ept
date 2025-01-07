@@ -62,7 +62,7 @@ class GenericTestController extends Zend_Controller_Action
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-            $this->view->allTestKits = $model->getAllDtsTestKitList(false, $shipment['scheme_type']);
+            $this->view->allTestKits = $model->getAllTestKitList(false, $shipment['scheme_type']);
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
