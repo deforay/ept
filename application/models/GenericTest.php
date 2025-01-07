@@ -776,7 +776,7 @@ class Application_Model_GenericTest
 
     public function getRecommededGenericTestkits($testMode)
     {
-        $sql = $this->db->select()->from(array('generic_recommended_test_types'));
+        $sql = $this->db->select()->from(['generic_recommended_test_types']);
 
         if ($testMode != null) {
             $sql = $sql->where("scheme_id = '$testMode'");
