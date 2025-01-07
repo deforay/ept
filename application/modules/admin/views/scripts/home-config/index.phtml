@@ -15,6 +15,8 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <div class="well">
 	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
@@ -80,7 +82,16 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				<div class="form-group">
 					<label for="homeSectionIcon1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Icon"); ?></label>
 					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionIcon1" name="homeSectionIcon1" placeholder="Enter home section icon 1" title="Please enter home section icon 1" value="<?php echo $this->config->home->content->homeSectionIcon1; ?>" />
+						<select name="homeSectionIcon1" id="homeSectionIcon1" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+						</select>
+						<!-- <input type="text" class="form-control" id="homeSectionIcon1" name="homeSectionIcon1" placeholder="Enter home section icon 1" title="Please enter home section icon 1" value="<?php echo $this->config->home->content->homeSectionIcon1; ?>" /> -->
 					</div>
 				</div>
 				<div class="form-group">
@@ -92,7 +103,16 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				<div class="form-group">
 					<label for="homeSectionIcon2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Icon"); ?></label>
 					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionIcon2" name="homeSectionIcon2" placeholder="Enter home section icon 2" title="Please enter home section icon 2" value="<?php echo $this->config->home->content->homeSectionIcon2; ?>" />
+						<select name="homeSectionIcon2" id="homeSectionIcon2" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+						</select>
+						<!-- <input type="text" class="form-control" id="homeSectionIcon2" name="homeSectionIcon2" placeholder="Enter home section icon 2" title="Please enter home section icon 2" value="<?php echo $this->config->home->content->homeSectionIcon2; ?>" /> -->
 					</div>
 				</div>
 				<div class="form-group">
@@ -104,7 +124,16 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				<div class="form-group">
 					<label for="homeSectionIcon3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Icon"); ?></label>
 					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" />
+						<!-- <input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" /> -->
+						<select name="homeSectionIcon3" id="homeSectionIcon3" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -400,4 +429,19 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				}
 			});
 	}
+
+	$(document).ready(function() {
+		$('.homeSectionIcon').select2({
+			templateResult: formatOption,
+			templateSelection: formatOption,
+		});
+
+		function formatOption(option) {
+			if (!option.id) {
+				return option.text; // Show placeholder text without icon
+			}
+			const iconClass = $(option.element).data('icon');
+			return $(`<span>${option.text} <i class="${iconClass}" style="margin-right: 8px;"></i></span>`);
+		}
+	});
 </script>
