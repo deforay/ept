@@ -22,7 +22,6 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach ($shipmentResult as $shipment) {
-            $correctiveActions = $this->getCorrectiveActions();
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
 
             $attributes = json_decode($shipment['attributes'], true);
@@ -788,15 +787,5 @@ class Application_Model_GenericTest
             $retval[] = $t['testkit'];
         }
         return $retval;
-    }
-
-    public function getCorrectiveActions()
-    {
-        $res = $this->db->fetchAll($this->db->select()->from('r_dts_corrective_actions'));
-        $response = [];
-        foreach ($res as $row) {
-            $response[$row['action_id']] = $row['corrective_action'];
-        }
-        return $response;
     }
 }
