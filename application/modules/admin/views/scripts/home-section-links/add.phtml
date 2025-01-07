@@ -149,7 +149,6 @@ $title = $this->translate->_("Add New Home Section Link");
                     if (response && response.maxSortOrder !== undefined) {
                         // Set the display order to maxSortOrder + 1
                         document.getElementById("displayOrder").value = parseInt(response.maxSortOrder, 10) + 1;
-                        document.getElementById("displayOrder").setAttribute("readonly", "readonly");
                     } else {
                         alert("Error: Could not fetch the display order.");
                         document.getElementById("displayOrder").value = "";
@@ -178,7 +177,7 @@ $title = $this->translate->_("Add New Home Section Link");
                 return option.text; // Show placeholder text without icon
             }
             const iconClass = $(option.element).data('icon');
-            return $(`<span><i class="${iconClass}" style="margin-right: 8px;"></i>${option.text}</span>`);
+            return $(`<span>${option.text} <i class="${iconClass}" style="margin-right: 8px;"></i></span>`);
         }
     });
 </script>
