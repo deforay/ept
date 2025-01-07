@@ -596,6 +596,12 @@ class Application_Service_Schemes
         return $schemeDb->fetchGenericTest($id);
     }
 
+    public function getSchemeById($id)
+    {
+        $schemeDb = new Application_Model_DbTable_SchemeList();
+        return $schemeDb->fetchSchemeById($id);
+    }
+
     public function getAllCovid19TestTypeInGrid($parameters)
     {
         $testPlatformsDb = new Application_Model_DbTable_TestTypenameCovid19();

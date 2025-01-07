@@ -267,4 +267,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('scheme_id', 'scheme_name'))->where('is_user_configured = "yes"')->group('scheme_id');
         return $this->getAdapter()->fetchAll($sql);
     }
+
+    public function fetchSchemeById($id)
+    {
+        return $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
+    }
 }

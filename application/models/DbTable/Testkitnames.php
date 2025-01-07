@@ -21,7 +21,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
 
         $sql = $this->getAdapter()->select()
-            ->from(array('r_testkitnames'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
+            ->from(array('t' => 'r_testkitnames'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
+            ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {

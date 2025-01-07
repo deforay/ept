@@ -35,9 +35,9 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			</div>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?> <span class="mandatory">*</span></label>
+					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
 					<div class="col-lg-8">
-						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control isRequired" title="Please select the no of tests">
+						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the no of tests">
 							<option value="">--<?= $this->translate->_("Select Number of test"); ?>--</option>
 							<option value="1" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 1) ? 'selected="selected"' : null; ?>>1</option>
 							<option value="2" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 2) ? 'selected="selected"' : null; ?>>2</option>
@@ -124,7 +124,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 													<lable for="testType<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Select Result Type"); ?></lable>
 												</td>
 												<td style="width:30%;">
-													<select type="text" name="testType[<?php echo $rowCount; ?>]" id="testType<?php echo $rowCount; ?>" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, <?php echo $rowCount; ?>)">
+													<select type="text" name="testType[<?php echo $rowCount; ?>]" id="testType<?php echo $rowCount; ?>" class="form-control test-type input-sm" title="Please select the type of result" onchange="setResultType(this.value, <?php echo $rowCount; ?>)">
 														<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 														<option value="qualitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'qualitative') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Qualitative"); ?></option>
 														<option value="quantitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'quantitative') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Quantitative"); ?></option>
@@ -239,7 +239,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 						<lable for="testType1" class="form-label-control">Select Result Type</lable>
 					</td>
 					<td style="width:30%;">
-						<select type="text" name="testType[1]" id="testType1" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, 1)">
+						<select type="text" name="testType[1]" id="testType1" class="form-control test-type input-sm" title="Please select the type of result" onchange="setResultType(this.value, 1)">
 							<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 							<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>
 							<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>
@@ -345,23 +345,6 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 	var duplicated = false;
 	var sampleCounter = <?php echo (isset($this->result['possibleResult']) && sizeof($this->result['possibleResult']) > 0) ? sizeof($this->result['possibleResult']) : 1 ?>;
 
-	$(document).ready(function() {
-		$('.multipleSelect').multiselect({
-			includeSelectAllOption: false
-		});
-
-		$('#captureAdditionalDetails').on("change", function() {
-			if ($(this).val() == 'yes') {
-				$("#additionalDetailLabel").attr("disabled", false);
-				$("#additionalDetailLabel").addClass("isRequired");
-			} else {
-				$("#additionalDetailLabel").attr("disabled", true);
-				$("#additionalDetailLabel").removeClass("isRequired");
-			}
-
-		});
-	});
-
 	function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
 				tableName: tableName,
@@ -438,7 +421,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 							</td>\
 							<td style="width:20%;"><lable for="testType' + sampleCounter + '" class="form-label-control">Select Result Type</lable></td>\
 							<td style="width:30%;">\
-								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control isRequired input-sm" title="Please select the type of result" onchange="setResultType(this.value, ' + sampleCounter + ')">\
+								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control test-type isRequired input-sm" title="Please select the type of result" onchange="setResultType(this.value, ' + sampleCounter + ')">\
 									<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 									<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>\
 									<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>\
@@ -535,11 +518,28 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 	}
 
 	$(document).ready(function() {
+		$('.multipleSelect').multiselect({
+			includeSelectAllOption: false
+		});
+
+		$('#captureAdditionalDetails').on("change", function() {
+			if ($(this).val() == 'yes') {
+				$("#additionalDetailLabel").attr("disabled", false);
+				$("#additionalDetailLabel").addClass("isRequired");
+			} else {
+				$("#additionalDetailLabel").attr("disabled", true);
+				$("#additionalDetailLabel").removeClass("isRequired");
+			}
+
+		});
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
 		});
 		$('.resultCodeInput').on('input', function() {
 			$(this).val($(this).val().replace(/[^a-z0-9-]/gi, ''));
+		});
+		$('.test-type').each(function(index, element) {
+			setResultType($(this).val(), (index + 1));
 		});
 	});
 

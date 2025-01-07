@@ -87,17 +87,16 @@ class Admin_ShipmentController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-
+            $scheme = new Application_Service_Schemes();
             $this->view->scheme = $sid = strtolower($this->_getParam('sid'));
+            $this->view->schemeDetails = $scheme->getSchemeById($sid);
             $this->view->userconfig = $userconfig = strtolower($this->_getParam('userconfig'));
 
             if ($sid == 'vl') {
-                $scheme = new Application_Service_Schemes();
                 $vlModel       = new Application_Model_Vl();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
                 $this->view->vlAssay = $vlModel->getVlAssay();
             } elseif ($sid == 'eid') {
-                $scheme = new Application_Service_Schemes();
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } elseif ($sid == 'dts') {
@@ -105,7 +104,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-                $scheme = new Application_Service_Schemes();
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
@@ -120,29 +118,24 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } elseif ($sid == 'dbs') {
-                $scheme = new Application_Service_Schemes();
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dbs', 'admin');
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } elseif ($sid == 'recency') {
-                $scheme = new Application_Service_Schemes();
                 $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 $this->view->recencyAssay = $scheme->getRecencyAssay();
             } elseif ($sid == 'covid19') {
-                $scheme = new Application_Service_Schemes();
                 $this->view->covid19PossibleResults = $scheme->getPossibleResults('covid19', 'admin');
                 $this->view->allTestKits = $scheme->getAllCovid19TestType();
 
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } elseif ($sid == 'tb') {
-                $schemeService = new Application_Service_Schemes();
-                $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
+                $this->view->tbPossibleResults = $scheme->getPossibleResults('tb', 'admin');
                 $tbModel = new Application_Model_Tb();
                 $this->view->assay = $tbModel->getAllTbAssays();
             } elseif ($userconfig == 'yes') {
-                $schemeService = new Application_Service_Schemes();
-                $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($sid, 'admin');
+                $this->view->otherTestsPossibleResults = $scheme->getPossibleResults($sid, 'admin');
             }
         }
     }
@@ -216,7 +209,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-                $schemeService = new Application_Service_Schemes();
+                $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
@@ -232,14 +225,12 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $vlModel       = new Application_Model_Vl();
                     $this->view->vlAssay = $vlModel->getVlAssay();
                 } elseif ($response['shipment']['scheme_type'] == 'recency') {
-                    $scheme = new Application_Service_Schemes();
-                    $this->view->recencyPossibleResults = $scheme->getPossibleResults('recency', 'admin');
-                    $this->view->recencyAssay = $scheme->getRecencyAssay();
+                    $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
+                    $this->view->recencyAssay = $schemeService->getRecencyAssay();
                 } elseif ($response['shipment']['scheme_type'] == 'tb') {
                     $tbModel = new Application_Model_Tb();
                     $this->view->assay = $tbModel->getAllTbAssays();
                 } elseif ($userConfig == 'yes') {
-                    $scheme = new Application_Service_Schemes();
                     $this->view->otherTestsPossibleResults = $schemeService->getPossibleResults($response['shipment']['scheme_type'], 'admin');
                 }
                 $common = new Application_Service_Common();
