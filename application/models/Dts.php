@@ -2239,7 +2239,7 @@ class Application_Model_Dts
 		$participantListSheet->getDefaultRowDimension()->setRowHeight(18);
 		$excel->addSheet($participantListSheet, 0);
 		$participantListSheet->setTitle('Participant List', true);
-		$participantListHeadings = ['Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
+		$participantListHeadings = ['Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Telephone', 'Email'];
 		$participantListSheet->fromArray($participantListHeadings, null, "A1");
 		$participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($styleArray);
 
