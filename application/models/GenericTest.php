@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 
 
 class Application_Model_GenericTest
@@ -13,7 +14,7 @@ class Application_Model_GenericTest
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
-    public function evaluate($shipmentResult, $shipmentId)
+    public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
     {
         $counter = 0;
         $maxScore = 0;
@@ -49,114 +50,189 @@ class Application_Model_GenericTest
             $failureReason = [];
             $mandatoryResult = "";
             $scoreResult = "";
-            if ($createdOn >= $lastDate) {
+            if (!empty($createdOn) && $createdOn <= $lastDate) {
+                if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
+
+                    if ($reEvaluate) {
+                        // when re-evaluating we will set the reset the range
+                        $this->setQuantRange($shipmentId);
+                        $quantRange = $this->getQuantRange($shipmentId);
+                    } else {
+                        $quantRange = $this->getQuantRange($shipmentId);
+                    }
+
+                    foreach ($results as $result) {
+                        if ($result['control'] == 1) {
+                            continue;
+                        }
+                        $calcResult = "";
+
+                        // matching reported and low/high limits
+                        if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
+                            if ($result['sample_score'] > 0) {
+                                $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            }
+                            $calcResult = "fail";
+                            $zScore = null;
+                        } elseif (!empty($result['reported_result'])) {
+                            if (isset($quantRange[$result['sample_id']])) {
+                                $zScore = 0;
+                                $sd = (float) $quantRange[$result['sample_id']]['sd'];
+                                $median = (float) $quantRange[$result['sample_id']]['median'];
+                                if ($sd > 0) {
+                                    $zScore = (float) (($result['reported_result'] - $median) / $sd);
+                                }
+
+                                if (0 == $sd) {
+                                    // If SD is 0 and there is a detectable result reported, then it is treated as fail
+                                    if (0 == $result['reported_result']) {
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } elseif ($result['reported_result'] > 0) {
+                                        //failed
+                                        if ($result['sample_score'] > 0) {
+                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        }
+                                        $calcResult = "fail";
+                                    }
+                                } else {
+                                    $absZScore = abs($zScore);
+                                    if ($absZScore <= 2) {
+                                        //passed
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } elseif ($absZScore > 2 && $absZScore <= 3) {
+                                        //passed but with a warning
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "warn";
+                                    } elseif ($absZScore > 3) {
+                                        //failed
+                                        if ($result['sample_score'] > 0) {
+                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        }
+                                        $calcResult = "fail";
+                                    }
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                                $calcResult = "fail";
+                            }
+                        }
+
+                        $maxScore += $result['sample_score'];
+
+                        $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    }
+                } else {
+                    foreach ($results as $result) {
+                        if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
+                            if ($result['reference_result'] == $result['reported_result']) {
+                                if (0 == $result['control']) {
+                                    $totalScore += $result['sample_score'];
+                                    $calculatedScore = $result['sample_score'];
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                            }
+                        }
+                        if (0 == $result['control']) {
+                            $maxScore += $result['sample_score'];
+                        }
+
+                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    }
+                }
+                if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
+                    if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
+                        $totalScore = 0;
+                        $failureReason[] = [
+                            'warning' => "Testing is not performed with country approved test kit.",
+                            'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
+                        ];
+                    }
+                }
+
+                if ($maxScore > 100) {
+                    $maxScore = 100;
+                }
+                if ($maxScore > 0 && $totalScore > 0) {
+                    $totalScore = ($totalScore / $maxScore) * 100;
+                }
+                // if we are excluding this result, then let us not give pass/fail
+                if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
+                    $finalResult = '';
+                    $totalScore = 0;
+                    $responseScore = 0;
+                    $shipmentResult[$counter]['shipment_score'] = $responseScore;
+                    $shipmentResult[$counter]['documentation_score'] = 0;
+                    $shipmentResult[$counter]['display_result'] = '';
+                    $shipmentResult[$counter]['is_followup'] = 'yes';
+                    $shipmentResult[$counter]['is_excluded'] = 'yes';
+                    $failureReason[] = ['warning' => 'Excluded from Evaluation'];
+                    $finalResult = 3;
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+                } else {
+                    $shipment['is_excluded'] = 'no';
+
+                    // checking if total score >= passing score
+                    if ($totalScore >= $passingScore) {
+                        $scoreResult = 'Pass';
+                    } else {
+                        $scoreResult = 'Fail';
+                        $failureReason[] = [
+                            'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($totalScore) . "</strong> and Required Score is <strong>" . round($passingScore) . "</strong>)",
+                            'correctiveAction' => "Review all testing procedures prior to performing client testing and contact your supervisor for improvement"
+                        ];
+                    }
+
+                    // if any of the results have failed, then the final result is fail
+                    if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
+                        $finalResult = 2;
+                    } else {
+                        $finalResult = 1;
+                    }
+                    $shipmentResult[$counter]['shipment_score'] = $totalScore = round($totalScore, 2);
+                    $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
+                    $shipmentResult[$counter]['final_result'] = $finalResult;
+
+
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where("result_id = $finalResult"));
+
+                    $shipmentResult[$counter]['display_result'] = $fRes[0];
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+                }
+                /* Manual result override changes */
+                if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
+                    $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                    $shipmentOverall = $db->fetchRow($sql);
+                    if (!empty($shipmentOverall)) {
+                        $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
+                        $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                            $shipmentOverall['final_result'] = 2;
+                        }
+                        $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                        $shipmentResult[$counter]['display_result'] = $fRes[0];
+                        $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                    }
+                } else {
+                    // let us update the total score in DB
+                    $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                }
+            } else {
                 $failureReason[] = [
                     'warning' => "Response was submitted after the last response date."
                 ];
                 $shipment['is_excluded'] = 'yes';
                 $failureReason = ['warning' => "Response was submitted after the last response date."];
-                $db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], "map_id = " . $shipment['map_id']);
             }
-            if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
-            } else {
-                foreach ($results as $result) {
-                    if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
-                        if ($result['reference_result'] == $result['reported_result']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
-                            }
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                            }
-                        }
-                    }
-                    if (0 == $result['control']) {
-                        $maxScore += $result['sample_score'];
-                    }
 
-                    $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-                }
-            }
-            if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
-                if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
-                    $totalScore = 0;
-                    $failureReason[] = [
-                        'warning' => "Testing is not performed with country approved test kit.",
-                        'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
-                    ];
-                }
-            }
-            if ($maxScore > 0 && $totalScore > 0) {
-                $totalScore = ($totalScore / $maxScore) * 100;
-            }
-            // if we are excluding this result, then let us not give pass/fail
-            if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
-                $finalResult = '';
-                $totalScore = 0;
-                $responseScore = 0;
-                $shipmentResult[$counter]['shipment_score'] = $responseScore;
-                $shipmentResult[$counter]['documentation_score'] = 0;
-                $shipmentResult[$counter]['display_result'] = '';
-                $shipmentResult[$counter]['is_followup'] = 'yes';
-                $shipmentResult[$counter]['is_excluded'] = 'yes';
-                $failureReason[] = ['warning' => 'Excluded from Evaluation'];
-                $finalResult = 3;
-                $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-            } else {
-                $shipment['is_excluded'] = 'no';
-
-
-                // checking if total score >= passing score
-                if ($totalScore >= $passingScore) {
-                    $scoreResult = 'Pass';
-                } else {
-                    $scoreResult = 'Fail';
-                    $failureReason[] = [
-                        'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($totalScore) . "</strong> and Required Score is <strong>" . round($passingScore) . "</strong>)",
-                        'correctiveAction' => "Review all testing procedures prior to performing client testing and contact your supervisor for improvement"
-                    ];
-                }
-
-                // if any of the results have failed, then the final result is fail
-                if ($scoreResult == 'Fail' || $mandatoryResult == 'Fail') {
-                    $finalResult = 2;
-                } else {
-                    $finalResult = 1;
-                }
-                $shipmentResult[$counter]['shipment_score'] = $totalScore = round($totalScore, 2);
-                $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
-                $shipmentResult[$counter]['final_result'] = $finalResult;
-
-
-                $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
-
-                $shipmentResult[$counter]['display_result'] = $fRes[0];
-                $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
-            }
-            /* Manual result override changes */
-            if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
-                $shipmentOverall = $db->fetchRow($sql);
-                if (!empty($shipmentOverall)) {
-                    $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
-                    $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
-                        $shipmentOverall['final_result'] = 2;
-                    }
-                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
-                    $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
-                }
-            } else {
-                // let us update the total score in DB
-                $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
-            }
             $counter++;
-        }
-        if ($maxScore > 100) {
-            $maxScore = 100;
         }
         $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
         return $shipmentResult;
@@ -769,5 +845,191 @@ class Application_Model_GenericTest
             $retval[] = $t['testkit'];
         }
         return $retval;
+    }
+
+    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 18)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+
+        $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
+            ->where("shipment_id = $shipmentId"));
+        $oldSetQuantRange = [];
+        foreach ($beforeSetQuantRangeData as $beforeSetQuantRangeRow) {
+            $oldSetQuantRange[$beforeSetQuantRangeRow['sample_id']] = $beforeSetQuantRangeRow;
+        }
+
+        $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
+
+        $sql = $db->select()->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id'])
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
+            ->where('sp.shipment_id = ? ', $shipmentId)
+            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
+            ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
+
+        $response = $db->fetchAll($sql);
+
+        $sampleWise = [];
+        foreach ($response as $row) {
+            $invalidValues = ['invalid', 'error'];
+
+            if (!empty($row['is_result_invalid']) && in_array($row['is_result_invalid'], $invalidValues)) {
+                $row['reported_result'] = null;
+            }
+
+            $sampleWise[$row['sample_id']][] = $row['reported_result'];
+        }
+
+        $responseCounter = [];
+
+        foreach ($sampleWise as $sample => $reportedResult) {
+
+            if (!empty($reportedResult) && count($reportedResult) > $minimumRequiredSamples) {
+                $responseCounter[$sample] = count($reportedResult);
+
+                $inputArray = $reportedResult;
+
+                $finalHigh = null;
+                $finalLow = null;
+                $quartileHighLimit = null;
+                $quartileLowLimit = null;
+                $iqr = null;
+                $cv = null;
+                $finalLow = null;
+                $finalHigh = null;
+                $avg = null;
+                $median = null;
+                $standardUncertainty = null;
+                $isUncertaintyAcceptable = null;
+                $q1 = $q3 = 0;
+
+                // removing all null values
+                $inputArray = array_filter(
+                    $inputArray,
+                    function ($value) {
+                        return !is_null($value);
+                    }
+                );
+
+                sort($inputArray);
+                $median = QuantitativeCalculations::calculateMedian($inputArray);
+                $finalLow = $quartileLowLimit = $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
+                $finalHigh = $quartileHighLimit = $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
+                $iqr = $q3 - $q1;
+                $sd = $sdScalingFactor * $iqr;
+                if (!empty($inputArray)) {
+                    $standardUncertainty = ($uncertaintyScalingFactor * $sd) / sqrt(count($inputArray));
+                }
+                if ($median == 0) {
+                    $isUncertaintyAcceptable = 'NA';
+                } elseif ($standardUncertainty < ($uncertaintyThreshold * $sd)) {
+                    $isUncertaintyAcceptable = 'yes';
+                } else {
+                    $isUncertaintyAcceptable = 'no';
+                }
+
+
+                $data = [
+                    'shipment_id' => $shipmentId,
+                    'no_of_responses' => count($inputArray),
+                    'sample_id' => $sample,
+                    'q1' => $q1,
+                    'q3' => $q3,
+                    'iqr' => $iqr ?? 0,
+                    'quartile_low' => $quartileLowLimit,
+                    'quartile_high' => $quartileHighLimit,
+                    'mean' => $avg ?? 0,
+                    'median' => $median ?? 0,
+                    'sd' => $sd ?? 0,
+                    'standard_uncertainty' => $standardUncertainty ?? 0,
+                    'is_uncertainty_acceptable' => $isUncertaintyAcceptable ?? 'NA',
+                    'cv' => $cv ?? 0,
+                    'low_limit' => $finalLow,
+                    'high_limit' => $finalHigh,
+                    'calculated_on' => new Zend_Db_Expr('now()'),
+                ];
+
+                if (isset($oldSetQuantRange[$sample]) && !empty($oldSetQuantRange[$sample]) && $oldSetQuantRange[$sample]['use_range'] == 'manual') {
+                    $data['manual_q1'] = $oldSetQuantRange[$sample]['manual_q1'] ?? null;
+                    $data['manual_q3'] = $oldSetQuantRange[$sample]['manual_q3'] ?? null;
+                    $data['manual_cv'] = $oldSetQuantRange[$sample]['manual_cv'] ?? null;
+                    $data['manual_iqr'] = $oldSetQuantRange[$sample]['manual_iqr'] ?? null;
+                    $data['manual_quartile_high'] = $oldSetQuantRange[$sample]['manual_quartile_high'] ?? null;
+                    $data['manual_quartile_low'] = $oldSetQuantRange[$sample]['manual_quartile_low'] ?? null;
+                    $data['manual_low_limit'] = $oldSetQuantRange[$sample]['manual_low_limit'] ?? null;
+                    $data['manual_high_limit'] = $oldSetQuantRange[$sample]['manual_high_limit'] ?? null;
+                    $data['manual_mean'] = $oldSetQuantRange[$sample]['manual_mean'] ?? null;
+                    $data['manual_median'] = $oldSetQuantRange[$sample]['manual_median'] ?? null;
+                    $data['manual_sd'] = $oldSetQuantRange[$sample]['manual_sd'] ?? null;
+                    $data['manual_standard_uncertainty'] = $oldSetQuantRange[$sample]['manual_standard_uncertainty'] ?? null;
+                    $data['manual_is_uncertainty_acceptable'] = $oldSetQuantRange[$sample]['manual_is_uncertainty_acceptable'] ?? null;
+                    $data['updated_on'] = $oldSetQuantRange[$sample]['updated_on'] ?? null;
+                    $data['use_range'] = $oldSetQuantRange[$sample]['use_range'] ?? 'calculated';
+                }
+
+                $db->delete('reference_generic_test_calculations', "sample_id=$sample AND shipment_id=$shipmentId");
+
+                $db->insert('reference_generic_test_calculations', $data);
+            } else {
+                if (isset($oldSetQuantRange[$sample]) && !empty($oldSetQuantRange[$sample]) && $oldSetQuantRange[$sample]['use_range'] != 'manual') {
+                    $db->delete('reference_generic_test_calculations', "shipment_id = $shipmentId");
+                }
+            }
+        }
+    }
+
+    public function getQuantRange($shipmentId, $sampleId = null)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(['calc' => 'reference_generic_test_calculations'])
+            ->join(['ref' => 'reference_result_generic_tests'], 'calc.sample_id = ref.sample_id', ['sample_label'])
+            ->where('calc.shipment_id = ?', $shipmentId);
+
+        if ($sampleId != null) {
+            $sql = $sql->where('calc.sample_id = ?', $sampleId);
+        }
+
+        $res = $db->fetchAll($sql);
+        $response = [];
+        foreach ($res as $row) {
+
+            $sampleId = $row['sample_id'];
+
+            $response[$sampleId]['sample_id'] = $row['sample_id'];
+            $response[$sampleId]['no_of_responses'] = $row['no_of_responses'];
+            $response[$sampleId]['sample_label'] = $row['sample_label'];
+            $response[$sampleId]['use_range'] = $row['use_range'] ?? 'calculated';
+
+            if (!empty($row['use_range']) && $row['use_range'] == 'manual') {
+                $response[$sampleId]['q1'] = $row['manual_q1'];
+                $response[$sampleId]['q3'] = $row['manual_q3'];
+                $response[$sampleId]['quartile_low'] = $row['manual_quartile_low'];
+                $response[$sampleId]['quartile_high'] = $row['manual_quartile_high'];
+                $response[$sampleId]['low'] = $row['manual_low_limit'];
+                $response[$sampleId]['high'] = $row['manual_high_limit'];
+                $response[$sampleId]['mean'] = $row['manual_mean'];
+                $response[$sampleId]['median'] = $row['manual_median'];
+                $response[$sampleId]['sd'] = $row['manual_sd'];
+                $response[$sampleId]['standard_uncertainty'] = $row['manual_standard_uncertainty'];
+                $response[$sampleId]['is_uncertainty_acceptable'] = $row['manual_is_uncertainty_acceptable'];
+            } else {
+                $response[$sampleId]['q1'] = $row['q1'];
+                $response[$sampleId]['q3'] = $row['q3'];
+                $response[$sampleId]['quartile_low'] = $row['quartile_low'];
+                $response[$sampleId]['quartile_high'] = $row['quartile_high'];
+                $response[$sampleId]['low'] = $row['low_limit'];
+                $response[$sampleId]['high'] = $row['high_limit'];
+                $response[$sampleId]['mean'] = $row['mean'];
+                $response[$sampleId]['median'] = $row['median'];
+                $response[$sampleId]['sd'] = $row['sd'];
+                $response[$sampleId]['standard_uncertainty'] = $row['standard_uncertainty'];
+                $response[$sampleId]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
+            }
+        }
+        return $response;
     }
 }
