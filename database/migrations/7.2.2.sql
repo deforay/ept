@@ -172,10 +172,10 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
 -- sakthi 24-Dec-2024
-ALTER TABLE `home_sections` ADD `section_file` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
+
 
 -- Sakti 27-Dec-2024
-CREATE TABLE participant_messages (
+CREATE TABLE IF NOT EXISTS participant_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     participant_id VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NULL,
@@ -252,3 +252,13 @@ CREATE TABLE `scheme_testkit_map` (
 
 -- Thana 03-Jan-2024
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
+
+-- Amit 07-Jan-2025
+INSERT INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
+    SELECT r_testkitnames.scheme_type, r_testkitnames.TestKitName_ID, r_testkitnames.testkit_1, r_testkitnames.testkit_2, r_testkitnames.testkit_3 FROM r_testkitnames;
+
+ALTER TABLE `r_testkitnames`
+  DROP `scheme_type`,
+  DROP `testkit_1`,
+  DROP `testkit_2`,
+  DROP `testkit_3`;
