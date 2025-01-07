@@ -82,7 +82,7 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				<div class="form-group">
 					<label for="homeSectionIcon1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Icon"); ?></label>
 					<div class="col-lg-6">
-						<select name="homeSectionIcon1" id="homeSectionIcon1" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+						<select name="homeSectionIcon1" id="homeSectionIcon1" class="form-control homeSectionIcon">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
@@ -103,7 +103,7 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				<div class="form-group">
 					<label for="homeSectionIcon2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Icon"); ?></label>
 					<div class="col-lg-6">
-						<select name="homeSectionIcon2" id="homeSectionIcon2" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+						<select name="homeSectionIcon2" id="homeSectionIcon2" class="form-control homeSectionIcon">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
@@ -125,7 +125,7 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 					<label for="homeSectionIcon3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Icon"); ?></label>
 					<div class="col-lg-6">
 						<!-- <input type="text" class="form-control" id="homeSectionIcon3" name="homeSectionIcon3" placeholder="Enter home section icon 3" title="Please enter home section icon 3" value="<?php echo $this->config->home->content->homeSectionIcon3; ?>" /> -->
-						<select name="homeSectionIcon3" id="homeSectionIcon3" class="form-control isRequired homeSectionIcon" title="Please choose the Icon">
+						<select name="homeSectionIcon3" id="homeSectionIcon3" class="form-control homeSectionIcon">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
