@@ -1,6 +1,8 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 
@@ -285,83 +287,6 @@ class Application_Model_GenericTest
             ->where("shipment_id = ?", $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
-        $firstSheet = new Worksheet($excel, 'Instructions');
-        $excel->addSheet($firstSheet, 0);
-        $firstSheet->setTitle('Instructions', true);
-        $firstSheetHeading = array('Tab Name', 'Description');
-        $firstSheetColNo = 0;
-        $firstSheetRow = 1;
-
-        $firstSheetStyle = array(
-            'alignment' => array(
-                //'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
-                    'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
-
-        foreach ($firstSheetHeading as $value) {
-            $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
-            $cellName = $firstSheet->getCellByColumnAndRow($firstSheetColNo + 1, $firstSheetRow)->getColumn();
-            $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
-            $firstSheetColNo++;
-        }
-
-        $firstSheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode("Includes dropdown lists for the following: region, department, position, RT, ELISA, received logbook", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getDefaultRowDimension()->setRowHeight(10);
-        $firstSheet->getColumnDimensionByColumn(0)->setWidth(20);
-        $firstSheet->getDefaultRowDimension()->setRowHeight(70);
-        $firstSheet->getColumnDimensionByColumn(1)->setWidth(100);
-
-        $firstSheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode("Results Reported", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode("This tab should include no commentary from PT Admin staff.  All fields should only reflect results or comments reported on the results form.  If no report was submitted, highlight site data cells in red.  Explanation of missing results should only be comments that the site made, not PT staff.  All dates should be formatted as DD/MM/YY.  Dropdown menu legend is as followed: negative (NEG), positive (POS), invalid (INV), indeterminate (IND), not entered or reported (NE), not tested (NT) and should be used according to the way the site reported it.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode("Panel Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode("This tab is automatically populated.  Panel score calculated 6/6.  If a panel member must be omitted from the calculation (ie, loss of sample, etc) you must revise the equation manually by changing the number 6 to 5,4,etc. accordingly. Example seen for Akai House Clinic.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode("Documentation Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 5)->setValueExplicit(html_entity_decode("The points breakdown for this tab are listed in the row above the sites for each column.  Data should be entered in manually by PT staff.  A site scores 1.5/3 if they used the wrong test kits got a 100% panel score.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode("Total Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 6)->setValueExplicit(html_entity_decode("Columns C-F are populated automatically.  Columns G, H and I must be selected from the dropdown menu for each site based on the criteria listed in the 'Decision Tree' tab.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 7)->setValueExplicit(html_entity_decode("Follow-up Calls", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 7)->setValueExplicit(html_entity_decode("Final comments or outcomes should be updated continuously with receipt dates included.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 8)->setValueExplicit(html_entity_decode("Dropdown Lists", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 8)->setValueExplicit(html_entity_decode("This tab contains all of the dropdown lists included in the rest of the database, any modifications should be performed with caution.", ENT_QUOTES, 'UTF-8'));
-
-        $firstSheet->getCellByColumnAndRow(1, 9)->setValueExplicit(html_entity_decode("Decision Tree", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, 9)->setValueExplicit(html_entity_decode("Lists all of the appropriate corrective actions and scoring critieria.", ENT_QUOTES, 'UTF-8'));
-        $cmdCol = 10;
-        if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-            $firstSheet->getCellByColumnAndRow(1, 10)->setValueExplicit(html_entity_decode("Feedback Report", ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, 10)->setValueExplicit(html_entity_decode("This tab is populated automatically and used to export data into the Feedback Reports generated in MS Word.", ENT_QUOTES, 'UTF-8'));
-            $cmdCol = 11;
-        } else {
-            $cmdCol = 10;
-        }
-        $firstSheet->getCellByColumnAndRow(1, $cmdCol)->setValueExplicit(html_entity_decode("Comments", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getCellByColumnAndRow(2, $cmdCol)->setValueExplicit(html_entity_decode("This tab lists all of the more detailed comments that will be given to the sites during site visits and phone calls.", ENT_QUOTES, 'UTF-8'));
-
-        for ($counter = 1; $counter <= 11; $counter++) {
-            $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
-            $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
-            $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
-        }
-        //<------------ Participant List Details Start -----
-
-        $headings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
-
-        $sheet = new Worksheet($excel, 'Participant List');
-        $excel->addSheet($sheet, 1);
-        $sheet->setTitle('Participant List', true);
 
         $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('sl.user_test_config'))
@@ -373,63 +298,64 @@ class Application_Model_GenericTest
             ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
             ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
             ->where("s.shipment_id = ?", $shipmentId)
-            ->group(array('sp.map_id'));
+            ->group(['sp.map_id']);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sql = $sql
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
-        // echo $sql;die;
+
         $shipmentResult = $db->fetchAll($sql);
-        //die;
-        $colNo = 0;
-        $currentRow = 1;
-        $sheet->getDefaultColumnDimension()->setWidth(24);
-        $sheet->getDefaultRowDimension()->setRowHeight(18);
 
-        foreach ($headings as $field => $value) {
-            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-            $colNo++;
-        }
 
+        //<------------ Participant List Details Start -----
+
+        $participantListHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Telephone', 'Email'];
+
+        $participantListSheet = new Worksheet($excel, 'Participant List');
+        $excel->addSheet($participantListSheet, 0);
+        $participantListSheet->setTitle('Participant List', true);
+
+        $participantListSheet->getDefaultColumnDimension()->setWidth(24);
+        $participantListSheet->getDefaultRowDimension()->setRowHeight(18);
+
+        $participantListSheetData = [];
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
-            $currentRow += 1;
+
             foreach ($shipmentResult as $key => $aRow) {
                 $resQuery = $db->select()->from('response_result_generic_test')
                     ->where("shipment_map_id = ?", $aRow['map_id']);
                 $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
+                $participantRow = [];
+				$participantRow[] = $aRow['unique_identifier'];
+				$participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
+				$participantRow[] = $aRow['institute_name'];
+				$participantRow[] = $aRow['department_name'];
+				$participantRow[] = $aRow['iso_name'];
+				$participantRow[] = $aRow['address'];
+				$participantRow[] = $aRow['province'];
+				$participantRow[] = $aRow['district'];
+				$participantRow[] = $aRow['city'];
+				$participantRow[] = $aRow['mobile'];
+				$participantRow[] = $aRow['email'];
 
-                $sheet->getCellByColumnAndRow(1, $currentRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $sheet->getCellByColumnAndRow(2, $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-                $sheet->getCellByColumnAndRow(3, $currentRow)->setValueExplicit($aRow['institute_name']);
-                $sheet->getCellByColumnAndRow(4, $currentRow)->setValueExplicit($aRow['department_name']);
-                $sheet->getCellByColumnAndRow(5, $currentRow)->setValueExplicit($aRow['iso_name']);
-                $sheet->getCellByColumnAndRow(6, $currentRow)->setValueExplicit($aRow['address']);
-                $sheet->getCellByColumnAndRow(7, $currentRow)->setValueExplicit($aRow['province']);
-                $sheet->getCellByColumnAndRow(8, $currentRow)->setValueExplicit($aRow['district']);
-                $sheet->getCellByColumnAndRow(9, $currentRow)->setValueExplicit($aRow['city']);
-                $sheet->getCellByColumnAndRow(10, $currentRow)->setValueExplicit($aRow['mobile']);
-                $sheet->getCellByColumnAndRow(11, $currentRow)->setValueExplicit(strtolower($aRow['email']));
+                $participantListSheetData[] = $participantRow;
+				unset($participantRow);
 
-                for ($i = 0; $i <= 11; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-                }
-
-                $currentRow++;
                 $shipmentCode = $aRow['shipment_code'];
             }
         }
 
+        $participantListSheet->fromArray($participantListHeadings, null, "A1");
+		$participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($borderStyle);
+        $participantListSheet->fromArray($participantListSheetData, null, 'A2');
+
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date');
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date'];
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         // Zend_Debug::dump($shipmentAttributes);die;
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
@@ -447,11 +373,11 @@ class Application_Model_GenericTest
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
         }
         array_push($reportHeadings, 'Comments');
-        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Results Reported');
-        $excel->addSheet($sheet, 2);
-        $sheet->setTitle('Results Reported', true);
-        $sheet->getDefaultColumnDimension()->setWidth(24);
-        $sheet->getDefaultRowDimension()->setRowHeight(18);
+        $resultReportSheet = new Worksheet($excel, 'Results Reported');
+        $excel->addSheet($resultReportSheet, 1);
+        $resultReportSheet->setTitle('Results Reported', true);
+        $resultReportSheet->getDefaultColumnDimension()->setWidth(24);
+        $resultReportSheet->getDefaultRowDimension()->setRowHeight(18);
 
 
         $colNo = 0;
@@ -472,42 +398,42 @@ class Application_Model_GenericTest
             $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
         }
         /* Final Result Merge options */
-        $firstCellName = $sheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
-        $secondCellName = $sheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
+        $firstCellName = $resultReportSheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
+        $secondCellName = $resultReportSheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
         if ($additionalDetails) {
             /* Additional Result Merge options */
-            $additionalFirstCellName = $sheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
-            $additionalSecondCellName = $sheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
+            $additionalFirstCellName = $resultReportSheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
+            $additionalSecondCellName = $resultReportSheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
         }
         /* Merge the final result lable cell */
-        $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
-        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+        $resultReportSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
+        $resultReportSheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
+        $resultReportSheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
         if ($additionalDetails) {
             /* Merge the Additional lable cell */
-            $sheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
-            $sheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-            $sheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
-            $sheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
+            $resultReportSheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
+            $resultReportSheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $resultReportSheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
+            $resultReportSheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
         }
 
         foreach ($reportHeadings as $field => $value) {
 
-            $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
-            $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
+            $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $resultReportSheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $resultReportSheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $sheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
-            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
+            $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $resultReportSheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
             if ($additionalDetails) {
                 if ($colNo >= $additionalColoumn) {
                     if ($additionRow <= $result['number_of_samples']) {
-                        $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
-                        $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                        $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
-                        $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $resultReportSheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
+                        $resultReportSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                        $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
                     $additionRow++;
                 }
@@ -515,34 +441,34 @@ class Application_Model_GenericTest
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
-                    $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                    $cellName = $sheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                    $resultReportSheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                    $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $sheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
                 }
                 $c++;
             }
-            $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
-            $sheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
+            $resultReportSheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
+            $resultReportSheet->getStyle($cellName . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("E2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle("E2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-        $cellName = $sheet->getCellByColumnAndRow($n + 1, 3)->getColumn();
+
         //<-------- Sheet three heading -------
-        $sheetThree = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Panel Score');
-        $excel->addSheet($sheetThree, 3);
-        $sheetThree->setTitle('Panel Score', true);
-        $sheetThree->getDefaultColumnDimension()->setWidth(20);
-        $sheetThree->getDefaultRowDimension()->setRowHeight(18);
+        $panelScoreSheet = new Worksheet($excel, 'Panel Score');
+        $excel->addSheet($panelScoreSheet, 2);
+        $panelScoreSheet->setTitle('Panel Score', true);
+        $panelScoreSheet->getDefaultColumnDimension()->setWidth(20);
+        $panelScoreSheet->getDefaultRowDimension()->setRowHeight(18);
         $panelScoreHeadings = array('Participant Code', 'Participant Name');
         $panelScoreHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $panelScoreHeadings);
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
@@ -551,14 +477,14 @@ class Application_Model_GenericTest
         $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
-            $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
-            $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
+            $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $panelScoreSheet->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $cellName = $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $panelScoreSheet->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $sheetThree->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
-                $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                $cellName = $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $panelScoreSheet->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
             $sheetThreeColNo++;
@@ -566,8 +492,8 @@ class Application_Model_GenericTest
         //---------- Sheet Three heading ------->
 
         //<-------- Total Score Sheet Heading (Sheet Four)-------
-        $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
-        $excel->addSheet($totalScoreSheet, 4);
+        $totalScoreSheet = new Worksheet($excel, 'Total Score');
+        $excel->addSheet($totalScoreSheet, 3);
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
@@ -602,12 +528,12 @@ class Application_Model_GenericTest
                 $totScoreCol = 1;
                 $countCorrectResult = 0;
 
-                $colCellObj = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow);
+                $colCellObj = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $cellName = $colCellObj->getColumn();
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
-                // $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                // $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
                 $shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
@@ -617,11 +543,11 @@ class Application_Model_GenericTest
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
                 /* Panel score section */
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 $documentScore = (($aRow['documentation_score'] / 10) * 100);
                 if ($config->evaluation->covid19->documentationScore > 0) {
@@ -636,35 +562,35 @@ class Application_Model_GenericTest
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['result']])));
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['result']])));
                     }
                     if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
+                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
                         }
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
-                        $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
+                        $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
                     }
                     if ($additionalDetails) {
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
+                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['response'][$k]['additional_detail']);
                         }
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
 
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult);
+                    $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult);
 
                     $totPer = round((($countCorrectResult / 5) * 100), 2);
                     if ($aRow['number_of_samples'] > 0) {
                         $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     }
-                    $sheetThree->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer);
+                    $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer);
 
                     $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult);
                     $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer);
@@ -677,20 +603,10 @@ class Application_Model_GenericTest
                 $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
                 $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell);
 
-                for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
-                    $cellName = $sheetThree->getCellByColumnAndRow($i + 1, $sheetThreeRow)->getColumn();
-                    $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
-                }
 
-                for ($i = 0; $i < $n; $i++) {
-                    $cellName = $sheet->getCellByColumnAndRow($i + 1, $currentRow)->getColumn();
-                    $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
-                }
-
-                for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
-                    $cellName = $totalScoreSheet->getCellByColumnAndRow($i + 1, $totScoreRow)->getColumn();
-                    $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
-                }
+                $panelScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
+                $resultReportSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
+                $totalScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
 
                 $currentRow++;
 
@@ -704,7 +620,7 @@ class Application_Model_GenericTest
 
         $excel->setActiveSheetIndex(0);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+        $writer = IOFactory::createWriter($excel, 'Xlsx');
         $filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
