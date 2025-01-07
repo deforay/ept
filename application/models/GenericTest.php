@@ -799,4 +799,8 @@ class Application_Model_GenericTest
         }
         return $response;
     }
+
+    public function setQuantitaiveRange($shipmentId){
+
+    }
 }
