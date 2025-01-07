@@ -176,24 +176,6 @@ class Application_Model_GenericTest
         return $db->fetchAll($sql);
     }
 
-    public function getAllTbAssays()
-    {
-        $tbAssayDb = new Application_Model_DbTable_TbAssay();
-        return $tbAssayDb->fetchAllTbAssay();
-    }
-
-    public function getTbAssayName($assayId)
-    {
-        $tbAssayDb = new Application_Model_DbTable_TbAssay();
-        return $tbAssayDb->getTbAssayName($assayId);
-    }
-
-    public function getTbAssayDrugResistanceStatus($assayId)
-    {
-        $tbAssayDb = new Application_Model_DbTable_TbAssay();
-        return $tbAssayDb->fetchTbAssayDrugResistanceStatus($assayId);
-    }
-
     public function generateGenericTestExcelReport($shipmentId, $schemeType = 'generic-test')
     {
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
