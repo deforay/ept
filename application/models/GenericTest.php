@@ -55,7 +55,7 @@ class Application_Model_GenericTest
 
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
-                        $this->setQuantitaiveRange($shipmentId);
+                        $this->setQuantRange($shipmentId);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
@@ -847,7 +847,7 @@ class Application_Model_GenericTest
         return $retval;
     }
 
-    public function setQuantitaiveRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 18)
+    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 18)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
