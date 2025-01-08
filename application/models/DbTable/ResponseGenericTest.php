@@ -8,8 +8,8 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
 
     public function updateResults($params)
     {
-        $sampleIds = $params['sampleId'];
 
+        $sampleIds = $params['sampleId'];
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -18,12 +18,12 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
                 'sample_id' => $sampleId,
                 'result' => (isset($params['result'][$key]) && !empty($params['result'][$key])) ? $params['result'][$key] : '',
                 'repeat_result' => (isset($params['repeatResult'][$key]) && !empty($params['repeatResult'][$key])) ? $params['repeatResult'][$key] : '',
-                'reported_result' => (isset($params['finalResult'][$key]) && !empty($params['finalResult'][$key])) ? $params['finalResult'][$key] : '',
+                'reported_result' => $params['finalResult'][$key] ?? null,
+                'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
+                'error_code' => $params['errorCode'][$key] ?? null,
                 'additional_detail' => (isset($params['additionalDetail'][$key]) && !empty($params['additionalDetail'][$key])) ? $params['additionalDetail'][$key] : '',
                 'comments' => (isset($params['comments'][$key]) && !empty($params['comments'][$key])) ? $params['comments'][$key] : ''
             );
-            /* echo "<pre>";
-            print_r($data);die; */
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr('now()');

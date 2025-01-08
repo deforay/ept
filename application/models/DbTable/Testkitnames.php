@@ -313,24 +313,24 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
                     'TestKitName_ID' => $tkId,
-                    'scheme_type'   => $scheme,
                     'TestKit_Name'  => trim($testkitName),
                     'COUNTRYADAPTED' => '1',
                     'Approval'      => '0',
                     'Created_On'    => new Zend_Db_Expr('now()')
                 );
-                if ($testkit != "") {
-                    if ($testkit == 1) {
-                        $data['testkit_1'] = 1;
-                    }
-                    if ($testkit == 2) {
-                        $data['testkit_2'] = 1;
-                    }
-                    if ($testkit == 3) {
-                        $data['testkit_3'] = 1;
-                    }
+                $this->insert($data);
+                if (isset($scheme) && !empty($scheme)) {
+                    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                    $db->delete('scheme_testkit_map', 'scheme_type = "' . $scheme . '" AND testkit_id = "' . $tkId . '"');
+                    $mapData = [
+                        'scheme_type' => $scheme,
+                        'testkit_id' => $tkId,
+                        'testkit_1' => ($testkit == 1) ? '1' : '0',
+                        'testkit_2' => ($testkit == 2) ? '1' : '0',
+                        'testkit_3' => ($testkit == 3) ? '1' : '0'
+                    ];
+                    $db->insert('scheme_testkit_map', $mapData);
                 }
-                $saveId = $this->insert($data);
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("TestKit_Name='" . $oldName . "'"));
@@ -357,31 +357,46 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
                     'TestKitName_ID' => $tkId,
-                    'scheme_type'   => $scheme,
                     'TestKit_Name'  => trim($testkitName),
                     'Approval'      => '0',
                     'COUNTRYADAPTED' => '1',
-                    'testkit_1'     => ($kit == 1) ? '1' : '0',
-                    'testkit_2'     => ($kit == 2) ? '1' : '0',
-                    'testkit_3'     => ($kit == 3) ? '1' : '0',
                     'Created_On'    => new Zend_Db_Expr('now()')
                 );
-                // Zend_Debug::dump($data);die;
-                $saveId = $this->insert($data);
+                $this->insert($data);
+                if (isset($scheme) && !empty($scheme)) {
+                    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                    $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $scheme) . '") AND testkit_id = "' . $tkId . '"');
+                    $mapData = [
+                        'scheme_type' => $scheme,
+                        'testkit_id' => $tkId,
+                        'testkit_1' => ($kit == 1) ? '1' : '0',
+                        'testkit_2' => ($kit == 2) ? '1' : '0',
+                        'testkit_3' => ($kit == 3) ? '1' : '0'
+                    ];
+                    $db->insert('scheme_testkit_map', $mapData);
+                }
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("TestKit_Name='" . $oldName . "'"));
                 if ($result != "") {
                     $data = array(
                         'TestKit_Name' => trim($testkitName),
-                        'scheme_type'   => $scheme,
                         'TestKit_Name'  => trim($testkitName),
-                        'COUNTRYADAPTED' => '1',
-                        'testkit_1'     => ($kit == 1) ? '1' : '0',
-                        'testkit_2'     => ($kit == 2) ? '1' : '0',
-                        'testkit_3'     => ($kit == 3) ? '1' : '0'
+                        'COUNTRYADAPTED' => '1'
                     );
-                    $saveId = $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
+                    $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");
+                    if (isset($scheme) && !empty($scheme)) {
+                        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+                        $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $scheme) . '") AND testkit_id = "' . $result['TestKitName_ID'] . '"');
+                        $mapData = [
+                            'scheme_type' => $scheme,
+                            'testkit_id' => $result['TestKitName_ID'],
+                            'testkit_1' => ($kit == 1) ? '1' : '0',
+                            'testkit_2' => ($kit == 2) ? '1' : '0',
+                            'testkit_3' => ($kit == 3) ? '1' : '0'
+                        ];
+                        $db->insert('scheme_testkit_map', $mapData);
+                    }
                     return $result['TestKitName_ID'];
                 }
             }

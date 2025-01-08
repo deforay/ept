@@ -304,3 +304,6 @@ CREATE TABLE `reference_generic_test_calculations` (
   `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'calculated',
   PRIMARY KEY (`shipment_id`,`sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 08-Jan-2025
+ALTER TABLE `response_result_generic_test` ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `additional_detail`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;

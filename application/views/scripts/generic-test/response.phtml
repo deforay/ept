@@ -198,10 +198,9 @@ foreach ($this->otherTestsPossibleResults as $row) {
 								<tr>
 									<th><?= $this->translate->_("Control/Sample"); ?></th>
 									<?php if (true) { ?>
-										<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Result"); ?><br>(log<sub>10</sub> <?= $this->translate->_("copies/ml"); ?>)</th>
-										<th style="width: 10%;font-size: 1.2em;"><?= $this->translate->_("TND (Target Not Detected)"); ?></th>
-										<th class="invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?></th>
-										<th class="invalidVlResult " style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
+										<th style="width: 15%;"><?= $this->translate->_("Result"); ?></th>
+										<th style="width: 15%;"><?= $this->translate->_("Invalid/Error"); ?></th>
+										<th style="width: 15%;"><?= $this->translate->_("Error Code"); ?></th>
 									<?php } else { ?>
 										<th scope="col">Test 1 Result<span class='mandatory'>*</span></th>
 										<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
@@ -226,24 +225,20 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							foreach ($this->allSamples as $key => $sample) {
 								$count++;
 								if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') { ?>
-									<tr class="light vlResultSection" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
+									<tr class="light" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 										<td style="text-align:left;font-size:1.1em;font-weight:bold;">
-											<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
+											<?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory ' style='visibility:hidden;'>*</span>"; ?>
 											<input type="hidden" id="sample<?php echo $count; ?>" class="sampleIds" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
 											<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
 										</td>
 										<td style="text-align:center;">
-											<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="vlResult[]" id="vlResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal vlResultValues" value="<?php echo $sample['reported_result']; ?>" placeholder="Enter the result" title="Please enter the result for <?php echo $sample['sample_label']; ?>" />
-										</td>
-										<td style="text-align:center;">
-											<input type="hidden" name="tndReference[]" id="tndReference<?php echo $count; ?>" />
-											<input type="checkbox" name="tnd[]" <?php echo $disabledAInvalid; ?> id="tnd<?php echo $count; ?>" class="tnd" value="<?php echo $count; ?>" <?php echo ($sample['is_tnd'] == 'yes') ? 'checked="checked"' : ''; ?> />
+											<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="finalResult[]" id="finalResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal" value="<?php echo $sample['reported_result']; ?>" placeholder="Enter the result" title="Please enter the result for <?php echo $sample['sample_label']; ?>" />
 										</td>
 										<td>
 											<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="invalidVlResult assayInvalidFields form-control" onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
 												<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-												<option value="invalid"><?= $this->translate->_("Invalid"); ?></option>
-												<option value="error"><?= $this->translate->_("Error"); ?></option>
+												<option value="invalid" <?php echo ($sample['is_result_invalid'] == 'invalid') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Invalid"); ?></option>
+												<option value="error" <?php echo ($sample['is_result_invalid'] == 'error') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Error"); ?></option>
 											</select>
 										</td>
 										<td>
@@ -543,7 +538,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 			$('.vlResultValues').val('');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
-			$('.vlResultMandatory').css('visibility', 'hidden');
+			$('.').css('visibility', 'hidden');
 			$('.vlResultValues').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
 			$('#ptNotTestedComments').addClass('isRequired');
@@ -552,7 +547,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 		} else {
 			$('.vlResultSection').show();
 			$('.ptNotPerformedSection').hide();
-			$('.vlResultMandatory').css('visibility', 'visible');
+			$('.').css('visibility', 'visible');
 			$('.vlResultValues').addClass('isRequired');
 			$('#vlNotTestedReason').removeClass('isRequired');
 			$('#ptNotTestedComments').removeClass('isRequired');
