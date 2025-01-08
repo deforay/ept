@@ -11,7 +11,7 @@ $kitExpiryDate = "";
 if (isset($this->shipment['attributes']['kit_expiry_date']) && $this->shipment['attributes']['kit_expiry_date'] != "") {
 	$kitExpiryDate = $this->dateFormat($this->shipment['attributes']['kit_expiry_date']);
 }
-$shipmentAttributes = json_decode($this->shipment['shipment_attributes'], true);
+$shipmentAttributes = Zend_Json_Decoder::decode($this->shipment['shipment_attributes'], true);
 $adminAccess = false;
 $resultText = 'Final Result';
 if ($this->reqFrom == "admin") {
@@ -352,7 +352,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							</td>
 						</tr>
 					</table>
-					<?php $warnings = json_decode($this->shipment['failure_reason'], true);
+					<?php $warnings = Zend_Json_Decoder::decode($this->shipment['failure_reason'], true);
 					if (isset($warnings) && !empty($warnings)) { ?>
 						<table class="table table-bordered" style="width:100%;margin:0 auto;">
 							<tr>

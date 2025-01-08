@@ -306,4 +306,4 @@ CREATE TABLE `reference_generic_test_calculations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Thana 08-Jan-2025
-ALTER TABLE `response_result_generic_test` ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `additional_detail`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;
+ALTER TABLE `response_result_generic_test` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `additional_detail`, ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `z_score`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;

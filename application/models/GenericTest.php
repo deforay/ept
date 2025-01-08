@@ -26,10 +26,17 @@ class Application_Model_GenericTest
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach ($shipmentResult as $shipment) {
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
-
-            $attributes = json_decode($shipment['attributes'], true);
+            if (isset($shipment['attributes']) && !empty($shipment['attributes'])) {
+                $attributes = Zend_Json_Decoder::decode($shipment['attributes'], true);
+            } else {
+                $attributes = null;
+            }
             $testKitDb = new Application_Model_DbTable_Testkitnames();
-            $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
+            if (isset($attributes['kit_name']) && !empty($attributes['kit_name'])) {
+                $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
+            } else {
+                $updatedTestKitId = false;
+            }
 
             $jsonConfig = Zend_Json_Decoder::decode($shipment['user_test_config'], true);
             $passingScore = $jsonConfig['passingScore'] ?? 100;
@@ -54,7 +61,7 @@ class Application_Model_GenericTest
             $scoreResult = "";
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
-
+                    $zScore = null;
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
                         $this->setQuantRange($shipmentId);
@@ -355,7 +362,7 @@ class Application_Model_GenericTest
 
         //<-------- Second sheet start
         $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date'];
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = Zend_Json_Decoder::decode($result['shipment_attributes'], true);
         // Zend_Debug::dump($shipmentAttributes);die;
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
@@ -901,7 +908,7 @@ class Application_Model_GenericTest
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['calc' => 'reference_generic_test_calculations'])
-            ->join(['ref' => 'reference_result_generic_tests'], 'calc.sample_id = ref.sample_id', ['sample_label'])
+            ->join(['ref' => 'reference_result_generic_test'], 'calc.sample_id = ref.sample_id', ['sample_label'])
             ->where('calc.shipment_id = ?', $shipmentId);
 
         if ($sampleId != null) {
