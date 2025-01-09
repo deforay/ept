@@ -60,106 +60,106 @@ class Application_Model_GenericTest
             $mandatoryResult = "";
             $scoreResult = "";
             if (!empty($createdOn) && $createdOn <= $lastDate) {
-                // if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
-                //     $zScore = null;
-                //     if ($reEvaluate) {
-                //         // when re-evaluating we will set the reset the range
-                //         $this->setQuantRange($shipmentId);
-                //         $quantRange = $this->getQuantRange($shipmentId);
-                //     } else {
-                //         $quantRange = $this->getQuantRange($shipmentId);
-                //     }
+                if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
+                    $zScore = null;
+                    if ($reEvaluate) {
+                        // when re-evaluating we will set the reset the range
+                        $this->setQuantRange($shipmentId);
+                        $quantRange = $this->getQuantRange($shipmentId);
+                    } else {
+                        $quantRange = $this->getQuantRange($shipmentId);
+                    }
 
-                //     foreach ($results as $result) {
-                //         if ($result['control'] == 1) {
-                //             continue;
-                //         }
-                //         $calcResult = "";
+                    foreach ($results as $result) {
+                        if ($result['control'] == 1) {
+                            continue;
+                        }
+                        $calcResult = "";
 
-                //         // matching reported and low/high limits
-                //         if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
-                //             error_log('error');
-                //             if ($result['sample_score'] > 0) {
-                //                 $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                //             }
-                //             $calcResult = "fail";
-                //             $zScore = null;
-                //         } elseif (!empty($result['reported_result'])) {
-                //             if (isset($quantRange[$result['sample_id']])) {
-                //                 $zScore = 0;
-                //                 $sd = (float) $quantRange[$result['sample_id']]['sd'];
-                //                 $median = (float) $quantRange[$result['sample_id']]['median'];
-                //                 if ($sd > 0) {
-                //                     $zScore = (float) (($result['reported_result'] - $median) / $sd);
-                //                 }
-
-                //                 if (0 == $sd) {
-                //                     // If SD is 0 and there is a detectable result reported, then it is treated as fail
-                //                     if (0 == $result['reported_result']) {
-                //                         $totalScore += $result['sample_score'];
-                //                         $calcResult = "pass";
-                //                     } elseif ($result['reported_result'] > 0) {
-                //                         //failed
-                //                         if ($result['sample_score'] > 0) {
-                //                             error_log('empty sample score');
-                //                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                //                         }
-                //                         $calcResult = "fail";
-                //                     }
-                //                 } else {
-                //                     $absZScore = abs($zScore);
-                //                     if ($absZScore <= 2) {
-                //                         //passed
-                //                         $totalScore += $result['sample_score'];
-                //                         $calcResult = "pass";
-                //                     } elseif ($absZScore > 2 && $absZScore <= 3) {
-                //                         //passed but with a warning
-                //                         $totalScore += $result['sample_score'];
-                //                         $calcResult = "warn";
-                //                     } elseif ($absZScore > 3) {
-                //                         //failed
-                //                         if ($result['sample_score'] > 0) {
-                //                             error_log('empty sample score 2');
-                //                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                //                         }
-                //                         $calcResult = "fail";
-                //                     }
-                //                 }
-                //             } else {
-                //                 if ($result['sample_score'] > 0) {
-                //                     error_log('empty sample score else part');
-                //                     $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
-                //                 }
-                //                 $calcResult = "fail";
-                //             }
-                //         }
-                //         /* Zend_Debug::dump($quantRange);
-                //         Zend_Debug::dump($failureReason); */
-                //         $maxScore += $result['sample_score'];
-
-                //         $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-                //     }
-                // } else {
-                foreach ($results as $result) {
-                    if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
-                        if ($result['reference_result'] == $result['reported_result']) {
-                            if (0 == $result['control']) {
-                                $totalScore += $result['sample_score'];
-                                $calculatedScore = $result['sample_score'];
-                            }
-                        } else {
+                        // matching reported and low/high limits
+                        if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
+                            error_log('error');
                             if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            }
+                            $calcResult = "fail";
+                            $zScore = null;
+                        } elseif (!empty($result['reported_result'])) {
+                            if (isset($quantRange[$result['sample_id']])) {
+                                $zScore = 0;
+                                $sd = (float) $quantRange[$result['sample_id']]['sd'];
+                                $median = (float) $quantRange[$result['sample_id']]['median'];
+                                if ($sd > 0) {
+                                    $zScore = (float) (($result['reported_result'] - $median) / $sd);
+                                }
+
+                                if (0 == $sd) {
+                                    // If SD is 0 and there is a detectable result reported, then it is treated as fail
+                                    if (0 == $result['reported_result']) {
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } elseif ($result['reported_result'] > 0) {
+                                        //failed
+                                        if ($result['sample_score'] > 0) {
+                                            error_log('empty sample score');
+                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        }
+                                        $calcResult = "fail";
+                                    }
+                                } else {
+                                    $absZScore = abs($zScore);
+                                    if ($absZScore <= 2) {
+                                        //passed
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "pass";
+                                    } elseif ($absZScore > 2 && $absZScore <= 3) {
+                                        //passed but with a warning
+                                        $totalScore += $result['sample_score'];
+                                        $calcResult = "warn";
+                                    } elseif ($absZScore > 3) {
+                                        //failed
+                                        if ($result['sample_score'] > 0) {
+                                            error_log('empty sample score 2');
+                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        }
+                                        $calcResult = "fail";
+                                    }
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    error_log('empty sample score else part');
+                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                                $calcResult = "fail";
                             }
                         }
-                    }
-                    if (0 == $result['control']) {
+                        /* Zend_Debug::dump($quantRange);
+                        Zend_Debug::dump($failureReason); */
                         $maxScore += $result['sample_score'];
-                    }
 
-                    $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    }
+                } else {
+                    foreach ($results as $result) {
+                        if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
+                            if ($result['reference_result'] == $result['reported_result']) {
+                                if (0 == $result['control']) {
+                                    $totalScore += $result['sample_score'];
+                                    $calculatedScore = $result['sample_score'];
+                                }
+                            } else {
+                                if ($result['sample_score'] > 0) {
+                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                }
+                            }
+                        }
+                        if (0 == $result['control']) {
+                            $maxScore += $result['sample_score'];
+                        }
+
+                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    }
                 }
-                // }
                 if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
                     if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
                         $totalScore = 0;
