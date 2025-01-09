@@ -432,7 +432,7 @@ class Application_Service_Evaluation
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
 				$genericTestModel = new Application_Model_GenericTest();
-				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId);
+				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		}
 		return $shipmentResult;

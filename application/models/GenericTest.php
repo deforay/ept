@@ -78,6 +78,7 @@ class Application_Model_GenericTest
 
                         // matching reported and low/high limits
                         if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
+                            error_log('error');
                             if ($result['sample_score'] > 0) {
                                 $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                             }
@@ -100,6 +101,7 @@ class Application_Model_GenericTest
                                     } elseif ($result['reported_result'] > 0) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
+                                            error_log('empty sample score');
                                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                         }
                                         $calcResult = "fail";
@@ -117,6 +119,7 @@ class Application_Model_GenericTest
                                     } elseif ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
+                                            error_log('empty sample score 2');
                                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                         }
                                         $calcResult = "fail";
@@ -124,12 +127,14 @@ class Application_Model_GenericTest
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
+                                    error_log('empty sample score else part');
                                     $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                 }
                                 $calcResult = "fail";
                             }
                         }
-
+                        /* Zend_Debug::dump($quantRange);
+                        Zend_Debug::dump($failureReason); */
                         $maxScore += $result['sample_score'];
 
                         $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
@@ -769,9 +774,8 @@ class Application_Model_GenericTest
         return $retval;
     }
 
-    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 18)
+    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 4)
     {
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 
@@ -792,7 +796,6 @@ class Application_Model_GenericTest
             ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
-
         $response = $db->fetchAll($sql);
 
         $sampleWise = [];
@@ -807,12 +810,11 @@ class Application_Model_GenericTest
         }
 
         $responseCounter = [];
-
         foreach ($sampleWise as $sample => $reportedResult) {
-
-            if (!empty($reportedResult) && count($reportedResult) > $minimumRequiredSamples) {
+            if (!empty($reportedResult)
+                //  && (count($reportedResult) > $minimumRequiredSamples)
+            ) {
                 $responseCounter[$sample] = count($reportedResult);
-
                 $inputArray = $reportedResult;
 
                 $finalHigh = null;
