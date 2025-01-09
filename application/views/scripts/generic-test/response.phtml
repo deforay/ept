@@ -197,7 +197,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							<thead>
 								<tr>
 									<th><?= $this->translate->_("Control/Sample"); ?></th>
-									<?php if (true) { ?>
+									<?php if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') { ?>
 										<th style="width: 15%;"><?= $this->translate->_("Result"); ?></th>
 										<th style="width: 15%;"><?= $this->translate->_("Invalid/Error"); ?></th>
 										<th style="width: 15%;"><?= $this->translate->_("Error Code"); ?></th>
