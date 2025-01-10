@@ -242,7 +242,7 @@ ALTER TABLE `reference_result_tb` ADD `mtb_detected_ultra` VARCHAR(256) NULL DEF
 ALTER TABLE `reference_result_tb` ADD `rif_resistance_ultra` VARCHAR(256) NULL DEFAULT NULL AFTER `rif_resistance`;
 
 -- Thana 03-Jan-2024
-CREATE TABLE `scheme_testkit_map` (
+CREATE TABLE IF NOT EXISTS `scheme_testkit_map` (
   `scheme_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `testkit_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `testkit_1` int NOT NULL DEFAULT '0',
@@ -304,6 +304,11 @@ CREATE TABLE `reference_generic_test_calculations` (
   `use_range` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'calculated',
   PRIMARY KEY (`shipment_id`,`sample_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- Amit 08-Jan-2025
+ALTER TABLE `scheme_testkit_map` ADD PRIMARY KEY(`scheme_type`, `testkit_id`);
+
 
 -- Thana 08-Jan-2025
 ALTER TABLE `response_result_generic_test` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `additional_detail`, ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `z_score`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;

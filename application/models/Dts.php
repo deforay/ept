@@ -1437,8 +1437,8 @@ class Application_Model_Dts
 			->from(
 				['t' => 'r_testkitnames'],
 				[
-					'TESTKITNAMEID' => 'TESTKITNAME_ID',
-					'TESTKITNAME' => 'TESTKIT_NAME',
+					'TESTKITNAMEID' => 'TestKitName_ID',
+					'TESTKITNAME' => 'TestKit_Name',
 					'attributes'
 				]
 			)

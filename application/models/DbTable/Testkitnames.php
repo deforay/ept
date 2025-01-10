@@ -220,8 +220,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
-            ->join(['stm' => 'scheme_testkit_map'], "a.TestKitName_ID=stm.testkit_id", '')
-            ->join(['s' => 'scheme_list'], "stm.scheme_type=s.scheme_id", 'scheme_name');
+            ->join(array('stm' => 'scheme_testkit_map'), "a.TestKitName_ID=stm.testkit_id", '')
+            ->join(array('s' => 'scheme_list'), "stm.scheme_type=s.scheme_id", 'scheme_name');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
