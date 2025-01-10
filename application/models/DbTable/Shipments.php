@@ -2203,6 +2203,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamples =   $dtsModel->getDtsSamples($row['shipment_id'], $row['participant_id']);
             }
             if ($schemeType == 'vl') {
+                $data[$key]['lab_director_name'] = $row['lab_director_name'];
+                $data[$key]['lab_director_email'] = $row['lab_director_email'];
+                $data[$key]['contact_person_name'] = $row['contact_person_name'];
+                $data[$key]['contact_person_email'] = $row['contact_person_email'];
+                $data[$key]['contact_person_telephone'] = $row['contact_person_telephone'];
                 $allSamples =   $schemeService->getVlSamples($row['shipment_id'], $row['participant_id']);
             }
             if ($schemeType == 'eid') {
