@@ -190,6 +190,9 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         if (isset($params['testType']) && !empty($params['testType'])) {
             $params['genericConfig']['testType'] = reset($params['testType']);
         }
+        if (isset($params['quantitative']['minNumberOfResponse']) && !empty($params['quantitative']['minNumberOfResponse'])) {
+            $params['genericConfig']['minNumberOfResponse'] = reset($params['quantitative']['minNumberOfResponse']);
+        }
         $data = array(
             'scheme_id' => $params['schemeCode'],
             'scheme_name' => $params['schemeName'],
@@ -239,6 +242,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         'sd_scaling_factor'         => $params[$test]['SDScalingFactor'][$key],
                         'uncertainy_scaling_factor' => $params[$test]['uncertainyScalingFactor'][$key],
                         'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
+                        'minimum_number_of_response' => $params[$test]['minNumberOfResponse'][$key],
                         'sort_order'        => $sortOrder,
                     ));
                 }

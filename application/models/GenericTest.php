@@ -64,7 +64,7 @@ class Application_Model_GenericTest
                     $zScore = null;
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
-                        $this->setQuantRange($shipmentId);
+                        $this->setQuantRange($shipmentId, 0.7413, 1.25, 0.3, $jsonConfig['minNumberOfResponse']);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
@@ -78,7 +78,6 @@ class Application_Model_GenericTest
 
                         // matching reported and low/high limits
                         if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
-                            error_log('error');
                             if ($result['sample_score'] > 0) {
                                 $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                             }
@@ -101,7 +100,6 @@ class Application_Model_GenericTest
                                     } elseif ($result['reported_result'] > 0) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            error_log('empty sample score');
                                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                         }
                                         $calcResult = "fail";
@@ -119,7 +117,6 @@ class Application_Model_GenericTest
                                     } elseif ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            error_log('empty sample score 2');
                                             $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                         }
                                         $calcResult = "fail";
@@ -127,7 +124,6 @@ class Application_Model_GenericTest
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    error_log('empty sample score else part');
                                     $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                 }
                                 $calcResult = "fail";
@@ -811,8 +807,9 @@ class Application_Model_GenericTest
 
         $responseCounter = [];
         foreach ($sampleWise as $sample => $reportedResult) {
-            if (!empty($reportedResult)
-                //  && (count($reportedResult) > $minimumRequiredSamples)
+            if (
+                !empty($reportedResult)
+                && (count($reportedResult) > $minimumRequiredSamples)
             ) {
                 $responseCounter[$sample] = count($reportedResult);
                 $inputArray = $reportedResult;
