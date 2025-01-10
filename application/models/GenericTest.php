@@ -37,7 +37,8 @@ class Application_Model_GenericTest
             } else {
                 $updatedTestKitId = false;
             }
-
+            $schemeService = new Application_Service_Schemes();
+            $possibleResults = $schemeService->getPossibleResults($shipment['scheme_type'])[0];
             $jsonConfig = Zend_Json_Decoder::decode($shipment['user_test_config'], true);
             $passingScore = (isset($jsonConfig['passingScore']) && !empty($jsonConfig['passingScore']) && $jsonConfig['passingScore'] > 0) ? $jsonConfig['passingScore'] : 100;
 
@@ -64,7 +65,7 @@ class Application_Model_GenericTest
                     $zScore = null;
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
-                        $this->setQuantRange($shipmentId, 0.7413, 1.25, 0.3, $jsonConfig['minNumberOfResponse']);
+                        $this->setQuantRange($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponse']);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
