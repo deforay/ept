@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `scheme_testkit_map` (
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
 
 -- Amit 07-Jan-2025
-INSERT INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
+INSERT IGNORE INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
     SELECT r_testkitnames.scheme_type, r_testkitnames.TestKitName_ID, r_testkitnames.testkit_1, r_testkitnames.testkit_2, r_testkitnames.testkit_3 FROM r_testkitnames;
 
 ALTER TABLE `r_testkitnames`

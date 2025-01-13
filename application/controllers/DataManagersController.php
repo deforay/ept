@@ -5,7 +5,7 @@ class DataManagersController extends Zend_Controller_Action
 
     public function init()
     {
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-participants-names', 'html')

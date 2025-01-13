@@ -1399,12 +1399,12 @@ class Application_Service_Shipments
                 $testKitDb->addTestkitInParticipant("", $params['kitNameOther'], $params['schemeName']);
             }
 
-            $attributes = array(
+            $attributes = [
                 "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
                 "kit_name" => $params['kitName'] ?? null,
                 "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
                 "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
-            );
+            ];
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";

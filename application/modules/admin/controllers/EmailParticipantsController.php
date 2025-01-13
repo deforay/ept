@@ -7,11 +7,10 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
     {
 
         /** @var Zend_Controller_Request_Http $request */
-
         $request = $this->getRequest();
 
         $this->_helper->layout()->pageName = 'configMenu';
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext
             ->addActionContext('get-mail-template', 'html')
@@ -32,6 +31,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
     public function indexAction()
     {
         $participantService = new Application_Service_Participants();
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $data = $request->getPost();
@@ -55,6 +55,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
 
     function getMailTemplateAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $purpose = $request->getParam('mailPurpose');
@@ -65,9 +66,10 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
 
     function getMailTemplateBySubjectAction()
     {
+        /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $subject = $request->getParam('subject');
+            $subject = preg_replace('/[^a-zA-Z0-9]/', '', $request->getParam('subject'));
             $common = new Application_Service_Common();
             $this->view->result = $common->getEmailTemplateBySubject($subject);
         }

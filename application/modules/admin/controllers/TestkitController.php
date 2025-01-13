@@ -18,7 +18,7 @@ class Admin_TestkitController extends Zend_Controller_Action
                 $this->redirect('/admin');
             }
         }
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-testkit', 'html')

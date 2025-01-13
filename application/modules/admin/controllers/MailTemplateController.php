@@ -18,7 +18,7 @@ class Admin_MailTemplateController extends Zend_Controller_Action
         }
         /* Initialize action controller here */
         $this->_helper->layout()->pageName = 'configMenu';
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-mail-template', 'html')
             ->addActionContext('index', 'html')

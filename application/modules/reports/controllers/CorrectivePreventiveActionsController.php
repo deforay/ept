@@ -16,7 +16,7 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
                 $this->redirect('/admin');
             }
         }
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('capa-export', 'html')
