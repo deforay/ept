@@ -810,7 +810,7 @@ class Application_Model_GenericTest
         foreach ($sampleWise as $sample => $reportedResult) {
             if (
                 !empty($reportedResult)
-                && (count($reportedResult) > $minimumRequiredSamples)
+                && (count($reportedResult) >= $minimumRequiredSamples)
             ) {
                 $responseCounter[$sample] = count($reportedResult);
                 $inputArray = $reportedResult;
