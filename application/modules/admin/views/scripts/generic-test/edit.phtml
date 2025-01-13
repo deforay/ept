@@ -214,7 +214,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 													<input type="text" value="<?php echo $row['uncertainy_threshold'] ?? null; ?>" name="quantitative[uncertainyThreshold][<?php echo $rowCount; ?>]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" />
 												</td>
 												<td>
-													<input type="text" value="<?php echo $row['minimum_number_of_response'] ?? null; ?>" name="quantitative[minNumberOfResponse][<?php echo $rowCount; ?>]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />
+													<input type="text" value="<?php echo $row['minimum_number_of_responses'] ?? null; ?>" name="quantitative[minNumberOfResponses][<?php echo $rowCount; ?>]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />
 												</td>
 											</tr>
 										</table>
@@ -325,7 +325,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 									<input type="text" name="quantitative[uncertainyThreshold][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" />
 								</td>
 								<td>
-									<input type="text" name="quantitative[minNumberOfResponse][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />
+									<input type="text" name="quantitative[minNumberOfResponses][1]" class="form-control quantitative-input-11 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />
 								</td>
 							</tr>
 						</table>
@@ -511,7 +511,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 											<input type="text" name="quantitative[uncertainyThreshold][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the uncertainty threshold" title="Please enter the uncertainty threshold" />\
 										</td>\
 										<td>\
-											<input type="text" name="quantitative[minNumberOfResponse][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />\
+											<input type="text" name="quantitative[minNumberOfResponses][' + sampleCounter + ']" class="form-control quantitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the minimum number of response" title="Please enter the minimum number of response" />\
 										</td>\
 									</tr>\
 								</table>\
