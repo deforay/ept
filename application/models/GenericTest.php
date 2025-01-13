@@ -65,7 +65,7 @@ class Application_Model_GenericTest
                     $zScore = null;
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
-                        $this->setQuantRange($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponse']);
+                        $this->setQuantRange($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponses']);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
@@ -660,9 +660,9 @@ class Application_Model_GenericTest
             )
         )
             ->joinLeft(
-                array('res' => 'r_results'),
+                ['res' => 'r_results'],
                 'res.result_id=spm.final_result',
-                array('result_name')
+                ['result_name']
             )
             ->where("spm.shipment_id = ?", $shipmentId)
             ->group('spm.shipment_id');
@@ -671,9 +671,9 @@ class Application_Model_GenericTest
             $shipmentResult['participant_count'] = $totParticipantsRes['participant_count'];
         }
 
-        $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
+        $sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'])
             //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
-            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', array('result_name'))
+            ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', ['result_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
             //->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
@@ -687,10 +687,10 @@ class Application_Model_GenericTest
             $shipmentResult['summaryResult'][] = $sQueryRes;
         }
 
-        $cQuery = $db->select()->from(array('refGenTest' => 'reference_result_generic_test'), array('refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=refGenTest.shipment_id', array('s.shipment_id'))
-            ->join(array('spm' => 'shipment_participant_map'), 's.shipment_id=spm.shipment_id', array('spm.map_id', 'spm.attributes', 'spm.shipment_score'))
-            ->joinLeft(array('resGenTest' => 'response_result_generic_test'), 'resGenTest.shipment_map_id = spm.map_id and resGenTest.sample_id = refGenTest.sample_id', array('reported_result'))
+        $cQuery = $db->select()->from(['refGenTest' => 'reference_result_generic_test'], ['refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'])
+            ->join(['s' => 'shipment'], 's.shipment_id=refGenTest.shipment_id', ['s.shipment_id'])
+            ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id', ['spm.map_id', 'spm.attributes', 'spm.shipment_score'])
+            ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.shipment_map_id = spm.map_id and resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
             ->where('spm.shipment_id = ? ', $shipmentId)
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.is_excluded!='yes'")
@@ -732,7 +732,7 @@ class Application_Model_GenericTest
         return $shipmentResult;
     }
 
-    public function getAllTestKitList($countryAdapted = false, $scheme = null)
+    public function getAllTestKitList($scheme = null, $countryAdapted = false)
     {
         $sql = $this->db->select()
             ->from(
@@ -746,7 +746,7 @@ class Application_Model_GenericTest
             ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->order("TESTKITNAME ASC");
         if (isset($scheme) && !empty($scheme)) {
-            $sql = $sql->where("scheme_type = '" . $scheme . "'");
+            $sql = $sql->where("scheme_type = '$scheme'");
         }
         if ($countryAdapted) {
             $sql = $sql->where('COUNTRYADAPTED = 1');
@@ -771,7 +771,7 @@ class Application_Model_GenericTest
         return $retval;
     }
 
-    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredSamples = 4)
+    public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredResponses = 4)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
@@ -808,9 +808,8 @@ class Application_Model_GenericTest
 
         $responseCounter = [];
         foreach ($sampleWise as $sample => $reportedResult) {
-            if (
-                !empty($reportedResult)
-                && (count($reportedResult) >= $minimumRequiredSamples)
+            if (!empty($reportedResult)
+                    && (count($reportedResult) > $minimumRequiredResponses)
             ) {
                 $responseCounter[$sample] = count($reportedResult);
                 $inputArray = $reportedResult;
@@ -821,8 +820,6 @@ class Application_Model_GenericTest
                 $quartileLowLimit = null;
                 $iqr = null;
                 $cv = null;
-                $finalLow = null;
-                $finalHigh = null;
                 $avg = null;
                 $median = null;
                 $standardUncertainty = null;
@@ -833,7 +830,7 @@ class Application_Model_GenericTest
                 $inputArray = array_filter(
                     $inputArray,
                     function ($value) {
-                        return !is_null($value);
+                        return $value !== null;
                     }
                 );
 
@@ -953,5 +950,216 @@ class Application_Model_GenericTest
             }
         }
         return $response;
+    }
+
+    public function setQuantRangeTestKitWise($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredResponses = 18)
+    {
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+
+        $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
+            ->where("shipment_id = $shipmentId"));
+        $oldQuantRange = [];
+        foreach ($beforeSetQuantRangeData as $beforeSetQuantRangeRow) {
+            $oldQuantRange[$beforeSetQuantRangeRow['testkit_id']][$beforeSetQuantRangeRow['sample_id']] = $beforeSetQuantRangeRow;
+        }
+
+
+        $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
+
+        $sql = $db->select()->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'kit_name' => new Zend_Db_Expr('sp.attributes->>"$.kit_name"')])
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
+            ->where('sp.shipment_id = ? ', $shipmentId)
+            ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
+            //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
+            ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
+
+        $response = $db->fetchAll($sql);
+
+        $sampleWise = [];
+        foreach ($response as $row) {
+            $invalidValues = ['invalid', 'error'];
+
+            if (!empty($row['is_result_invalid']) && in_array($row['is_result_invalid'], $invalidValues)) {
+                $row['reported_result'] = null;
+            }
+
+            $sampleWise[$row['kit_name']][$row['sample_id']][] = $row['reported_result'];
+        }
+
+
+        $kitArray = $this->getAllTestKitList();
+
+        $skippedTestKits = [];
+
+        $responseCounter = [];
+
+        foreach ($kitArray as $testKitId => $testKName) {
+
+
+            if (!isset($sampleWise[$testKitId])) {
+                continue;
+            }
+
+            // IMPORTANT: If the reported samples for an test kit are < $minimumRequiredResponses
+            // then we use the ranges of the Assay with maximum responses
+
+            foreach ($sampleWise[$testKitId] as $sample => $reportedResult) {
+
+                if ($testKitId != 6  && !empty($reportedResult) && count($reportedResult) > $minimumRequiredResponses) {
+                    $responseCounter[$testKitId] = count($reportedResult);
+
+                    $inputArray = $reportedResult;
+
+                    $finalHigh = null;
+                    $finalLow = null;
+                    $quartileHighLimit = null;
+                    $quartileLowLimit = null;
+                    $iqr = null;
+                    $cv = null;
+                    $finalLow = null;
+                    $finalHigh = null;
+                    $avg = null;
+                    $median = null;
+                    $standardUncertainty = null;
+                    $isUncertaintyAcceptable = null;
+                    $q1 = $q3 = 0;
+
+                    // removing all null values
+                    $inputArray = array_filter(
+                        $inputArray,
+                        function ($value) {
+                            return $value !== null;
+                        }
+                    );
+
+
+                    sort($inputArray);
+                    $median = QuantitativeCalculations::calculateMedian($inputArray);
+                    $finalLow = $quartileLowLimit = $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
+                    $finalHigh = $quartileHighLimit = $q3 = QuantitativeCalculations::calculateQuantile($inputArray, 0.75);
+                    $iqr = $q3 - $q1;
+                    $sd = $sdScalingFactor * $iqr;
+                    if (!empty($inputArray)) {
+                        $standardUncertainty = ($uncertaintyScalingFactor * $sd) / sqrt(count($inputArray));
+                    }
+                    if ($median == 0) {
+                        $isUncertaintyAcceptable = 'NA';
+                    } elseif ($standardUncertainty < ($uncertaintyThreshold * $sd)) {
+                        $isUncertaintyAcceptable = 'yes';
+                    } else {
+                        $isUncertaintyAcceptable = 'no';
+                    }
+
+
+
+                    $data = [
+                        'shipment_id' => $shipmentId,
+                        'testkit_id' => $testKitId,
+                        'no_of_responses' => count($inputArray),
+                        'sample_id' => $sample,
+                        'q1' => $q1,
+                        'q3' => $q3,
+                        'iqr' => $iqr ?? 0,
+                        'quartile_low' => $quartileLowLimit,
+                        'quartile_high' => $quartileHighLimit,
+                        'mean' => $avg ?? 0,
+                        'median' => $median ?? 0,
+                        'sd' => $sd ?? 0,
+                        'standard_uncertainty' => $standardUncertainty ?? 0,
+                        'is_uncertainty_acceptable' => $isUncertaintyAcceptable ?? 'NA',
+                        'cv' => $cv ?? 0,
+                        'low_limit' => $finalLow,
+                        'high_limit' => $finalHigh,
+                        'calculated_on' => new Zend_Db_Expr('now()'),
+                    ];
+
+                    if (isset($oldQuantRange[$testKitId][$sample]) && !empty($oldQuantRange[$testKitId][$sample]) && $oldQuantRange[$testKitId][$sample]['use_range'] == 'manual') {
+                        $data['manual_q1'] = $oldQuantRange[$testKitId][$sample]['manual_q1'] ?? null;
+                        $data['manual_q3'] = $oldQuantRange[$testKitId][$sample]['manual_q3'] ?? null;
+                        $data['manual_cv'] = $oldQuantRange[$testKitId][$sample]['manual_cv'] ?? null;
+                        $data['manual_iqr'] = $oldQuantRange[$testKitId][$sample]['manual_iqr'] ?? null;
+                        $data['manual_quartile_high'] = $oldQuantRange[$testKitId][$sample]['manual_quartile_high'] ?? null;
+                        $data['manual_quartile_low'] = $oldQuantRange[$testKitId][$sample]['manual_quartile_low'] ?? null;
+                        $data['manual_low_limit'] = $oldQuantRange[$testKitId][$sample]['manual_low_limit'] ?? null;
+                        $data['manual_high_limit'] = $oldQuantRange[$testKitId][$sample]['manual_high_limit'] ?? null;
+                        $data['manual_mean'] = $oldQuantRange[$testKitId][$sample]['manual_mean'] ?? null;
+                        $data['manual_median'] = $oldQuantRange[$testKitId][$sample]['manual_median'] ?? null;
+                        $data['manual_sd'] = $oldQuantRange[$testKitId][$sample]['manual_sd'] ?? null;
+                        $data['manual_standard_uncertainty'] = $oldQuantRange[$testKitId][$sample]['manual_standard_uncertainty'] ?? null;
+                        $data['manual_is_uncertainty_acceptable'] = $oldQuantRange[$testKitId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
+                        $data['updated_on'] = $oldQuantRange[$testKitId][$sample]['updated_on'] ?? null;
+                        $data['use_range'] = $oldQuantRange[$testKitId][$sample]['use_range'] ?? 'calculated';
+                    }
+
+                    $db->delete('reference_generic_test_calculations', "testkit_id = $testKitId AND sample_id=$sample AND shipment_id=$shipmentId");
+
+                    $db->insert('reference_generic_test_calculations', $data);
+                } else {
+
+                    if (isset($oldQuantRange[$testKitId][$sample]) && !empty($oldQuantRange[$testKitId][$sample]) && $oldQuantRange[$testKitId][$sample]['use_range'] != 'manual') {
+                        $db->delete('reference_generic_test_calculations', "testkit_id = $testKitId AND shipment_id = $shipmentId");
+                    }
+
+                    $skippedTestKits[] = $testKitId;
+                    $skippedResponseCounter[$testKitId] = count($reportedResult);
+                }
+            }
+        }
+
+        // Okay now we are going to take the test kit with maximum responses and use its range for test kits having < $minimumRequiredResponses
+
+        $skippedTestKits = array_unique($skippedTestKits);
+        arsort($responseCounter);
+        reset($responseCounter);
+        $maxResponsesTestKit = key($responseCounter);
+
+        $sql = $db->select()->from(['calc' => 'reference_generic_test_calculations'])
+            // ->where('calc.testkit_id = ?', $maxAssay)
+            ->where('calc.shipment_id = ?', $shipmentId);
+
+        if (isset($maxResponsesTestKit) && $maxResponsesTestKit != "") {
+            $sql->where('calc.testkit_id = ?', $maxResponsesTestKit);
+        }
+        $res = $db->fetchAll($sql);
+
+        foreach ($skippedTestKits as $testKitId) {
+            foreach ($res as $row) {
+
+                $sample = $row['sample_id'];
+                $row['testkit_id'] = $testKitId;
+                $row['no_of_responses'] = $skippedResponseCounter[$testKitId];
+
+                $db->delete('reference_generic_test_calculations', "testkit_id = " . $row['testkit_id'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
+
+                // if there are no responses then continue
+                if (empty($row['no_of_responses'])) {
+                    continue;
+                }
+
+                if (isset($oldQuantRange[$testKitId][$sample]) && !empty($oldQuantRange[$testKitId][$sample]) && $oldQuantRange[$testKitId][$sample]['use_range'] == 'manual') {
+                    $row['manual_q1'] = $oldQuantRange[$testKitId][$sample]['manual_q1'] ?? null;
+                    $row['manual_q3'] = $oldQuantRange[$testKitId][$sample]['manual_q3'] ?? null;
+                    $row['manual_cv'] = $oldQuantRange[$testKitId][$sample]['manual_cv'] ?? null;
+                    $row['manual_iqr'] = $oldQuantRange[$testKitId][$sample]['manual_iqr'] ?? null;
+                    $row['manual_quartile_high'] = $oldQuantRange[$testKitId][$sample]['manual_quartile_high'] ?? null;
+                    $row['manual_quartile_low'] = $oldQuantRange[$testKitId][$sample]['manual_quartile_low'] ?? null;
+                    $row['manual_low_limit'] = $oldQuantRange[$testKitId][$sample]['manual_low_limit'] ?? null;
+                    $row['manual_high_limit'] = $oldQuantRange[$testKitId][$sample]['manual_high_limit'] ?? null;
+                    $row['manual_mean'] = $oldQuantRange[$testKitId][$sample]['manual_mean'] ?? null;
+                    $row['manual_median'] = $oldQuantRange[$testKitId][$sample]['manual_median'] ?? null;
+                    $row['manual_sd'] = $oldQuantRange[$testKitId][$sample]['manual_sd'] ?? null;
+                    $row['manual_standard_uncertainty'] = $oldQuantRange[$testKitId][$sample]['manual_standard_uncertainty'] ?? null;
+                    $row['manual_is_uncertainty_acceptable'] = $oldQuantRange[$testKitId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
+                    $row['updated_on'] = $oldQuantRange[$testKitId][$sample]['updated_on'] ?? null;
+                    $row['use_range'] = $oldQuantRange[$testKitId][$sample]['use_range'] ?? 'calculated';
+                }
+
+                $db->insert('reference_generic_test_calculations', $row);
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ class Admin_ParticipantMessagesController extends Zend_Controller_Action
                 $this->redirect('/admin');
             }
         }
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-shipment', 'html')
@@ -27,7 +27,7 @@ class Admin_ParticipantMessagesController extends Zend_Controller_Action
     }
 
     public function indexAction()
-    { 
+    {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {

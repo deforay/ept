@@ -6,7 +6,7 @@ class Reports_ShipmentResponseController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('shipments-export-pdf', 'html')

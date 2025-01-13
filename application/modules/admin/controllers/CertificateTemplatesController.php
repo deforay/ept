@@ -7,7 +7,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
     {
 
         $adminSession = new Zend_Session_Namespace('administrators');
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
             ->initContext();

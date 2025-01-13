@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS `scheme_testkit_map` (
 ALTER TABLE `r_possibleresult` ADD `sd_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `low_range`, ADD `uncertainy_scaling_factor` VARCHAR(256) NULL DEFAULT NULL AFTER `sd_scaling_factor`, ADD `uncertainy_threshold` VARCHAR(256) NULL DEFAULT NULL AFTER `uncertainy_scaling_factor`;
 
 -- Amit 07-Jan-2025
-INSERT INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
+INSERT IGNORE INTO `scheme_testkit_map`(`scheme_type`, `testkit_id`, `testkit_1`, `testkit_2`, `testkit_3`)
     SELECT r_testkitnames.scheme_type, r_testkitnames.TestKitName_ID, r_testkitnames.testkit_1, r_testkitnames.testkit_2, r_testkitnames.testkit_3 FROM r_testkitnames;
 
 ALTER TABLE `r_testkitnames`
@@ -313,4 +313,4 @@ ALTER TABLE `scheme_testkit_map` ADD PRIMARY KEY(`scheme_type`, `testkit_id`);
 ALTER TABLE `response_result_generic_test` ADD `z_score` DOUBLE(20,10) NULL DEFAULT NULL AFTER `additional_detail`, ADD `is_result_invalid` VARCHAR(256) NULL DEFAULT NULL AFTER `z_score`, ADD `error_code` VARCHAR(256) NULL DEFAULT NULL AFTER `is_result_invalid`;
 
 -- Thana 10-Jan-2025
-ALTER TABLE `r_possibleresult` ADD `minimum_number_of_response` INT NULL DEFAULT NULL AFTER `uncertainy_threshold`;
+ALTER TABLE `r_possibleresult` ADD `minimum_number_of_responses` INT NULL DEFAULT NULL AFTER `uncertainy_threshold`;

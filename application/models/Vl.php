@@ -1233,20 +1233,20 @@ class Application_Model_Vl
         }
     }
 
-    public function setVlRange($sId)
+    public function setVlRange($shipmentId)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['s' => 'shipment'])
-            ->where('shipment_id = ? ', $sId);
+            ->where('shipment_id = ? ', $shipmentId);
         $shipment = $db->fetchRow($sql);
 
 
         $beforeSetVlRangeData = $db->fetchAll($db->select()->from('reference_vl_calculation', ['*'])
-            ->where("shipment_id = $sId"));
-        $oldSetVlRange = [];
+            ->where("shipment_id = $shipmentId"));
+        $oldQuantRange = [];
         foreach ($beforeSetVlRangeData as $beforeSetVlRangeRow) {
-            $oldSetVlRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
+            $oldQuantRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
         }
 
 
@@ -1254,13 +1254,13 @@ class Application_Model_Vl
 
         $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-        $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$sId");
+        $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
 
         $sql = $db->select()->from(['ref' => 'reference_result_vl'], ['shipment_id', 'sample_id'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'assay' => new Zend_Db_Expr('sp.attributes->>"$.vl_assay"')])
             ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'z_score', 'is_result_invalid'])
-            ->where('sp.shipment_id = ? ', $sId)
+            ->where('sp.shipment_id = ? ', $shipmentId)
             ->where('DATE(sp.shipment_test_report_date) <= s.lastdate_response')
             //->where("(sp.is_excluded LIKE 'yes') IS NOT TRUE")
             ->where("(sp.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE");
@@ -1286,6 +1286,11 @@ class Application_Model_Vl
 
         $responseCounter = [];
 
+        if ('standard' == $method) {
+            $minimumRequiredResponses = 6;
+        } elseif ('iso17043' == $method) {
+            $minimumRequiredResponses = 18;
+        }
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
 
@@ -1294,18 +1299,12 @@ class Application_Model_Vl
                 continue;
             }
 
-            if ('standard' == $method) {
-                $minimumRequiredSamples = 6;
-            } elseif ('iso17043' == $method) {
-                $minimumRequiredSamples = 18;
-            }
-
-            // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredSamples
+            // IMPORTANT: If the reported samples for an Assay are < $minimumRequiredResponses
             // then we use the ranges of the Assay with maximum responses
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                if ($vlAssayId != 6  && !empty($reportedVl) && count($reportedVl) > $minimumRequiredSamples) {
+                if ($vlAssayId != 6  && !empty($reportedVl) && count($reportedVl) > $minimumRequiredResponses) {
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $inputArray = $reportedVl;
@@ -1382,7 +1381,7 @@ class Application_Model_Vl
 
 
                     $data = [
-                        'shipment_id' => $sId,
+                        'shipment_id' => $shipmentId,
                         'vl_assay' => $vlAssayId,
                         'no_of_responses' => count($inputArray),
                         'sample_id' => $sample,
@@ -1402,31 +1401,31 @@ class Application_Model_Vl
                         'calculated_on' => new Zend_Db_Expr('now()'),
                     ];
 
-                    if (isset($oldSetVlRange[$vlAssayId][$sample]) && !empty($oldSetVlRange[$vlAssayId][$sample]) && $oldSetVlRange[$vlAssayId][$sample]['use_range'] == 'manual') {
-                        $data['manual_q1'] = $oldSetVlRange[$vlAssayId][$sample]['manual_q1'] ?? null;
-                        $data['manual_q3'] = $oldSetVlRange[$vlAssayId][$sample]['manual_q3'] ?? null;
-                        $data['manual_cv'] = $oldSetVlRange[$vlAssayId][$sample]['manual_cv'] ?? null;
-                        $data['manual_iqr'] = $oldSetVlRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
-                        $data['manual_quartile_high'] = $oldSetVlRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
-                        $data['manual_quartile_low'] = $oldSetVlRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
-                        $data['manual_low_limit'] = $oldSetVlRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
-                        $data['manual_high_limit'] = $oldSetVlRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
-                        $data['manual_mean'] = $oldSetVlRange[$vlAssayId][$sample]['manual_mean'] ?? null;
-                        $data['manual_median'] = $oldSetVlRange[$vlAssayId][$sample]['manual_median'] ?? null;
-                        $data['manual_sd'] = $oldSetVlRange[$vlAssayId][$sample]['manual_sd'] ?? null;
-                        $data['manual_standard_uncertainty'] = $oldSetVlRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
-                        $data['manual_is_uncertainty_acceptable'] = $oldSetVlRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
-                        $data['updated_on'] = $oldSetVlRange[$vlAssayId][$sample]['updated_on'] ?? null;
-                        $data['use_range'] = $oldSetVlRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
+                    if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] == 'manual') {
+                        $data['manual_q1'] = $oldQuantRange[$vlAssayId][$sample]['manual_q1'] ?? null;
+                        $data['manual_q3'] = $oldQuantRange[$vlAssayId][$sample]['manual_q3'] ?? null;
+                        $data['manual_cv'] = $oldQuantRange[$vlAssayId][$sample]['manual_cv'] ?? null;
+                        $data['manual_iqr'] = $oldQuantRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
+                        $data['manual_quartile_high'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
+                        $data['manual_quartile_low'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
+                        $data['manual_low_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
+                        $data['manual_high_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
+                        $data['manual_mean'] = $oldQuantRange[$vlAssayId][$sample]['manual_mean'] ?? null;
+                        $data['manual_median'] = $oldQuantRange[$vlAssayId][$sample]['manual_median'] ?? null;
+                        $data['manual_sd'] = $oldQuantRange[$vlAssayId][$sample]['manual_sd'] ?? null;
+                        $data['manual_standard_uncertainty'] = $oldQuantRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
+                        $data['manual_is_uncertainty_acceptable'] = $oldQuantRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
+                        $data['updated_on'] = $oldQuantRange[$vlAssayId][$sample]['updated_on'] ?? null;
+                        $data['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
                     }
 
-                    $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND sample_id=$sample AND shipment_id=$sId");
+                    $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND sample_id=$sample AND shipment_id=$shipmentId");
 
                     $db->insert('reference_vl_calculation', $data);
                 } else {
 
-                    if (isset($oldSetVlRange[$vlAssayId][$sample]) && !empty($oldSetVlRange[$vlAssayId][$sample]) && $oldSetVlRange[$vlAssayId][$sample]['use_range'] != 'manual') {
-                        $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND shipment_id = $sId");
+                    if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] != 'manual') {
+                        $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND shipment_id = $shipmentId");
                     }
 
                     $skippedAssays[] = $vlAssayId;
@@ -1435,19 +1434,19 @@ class Application_Model_Vl
             }
         }
 
-        // Okay now we are going to take the assay with maximum responses and use its range for assays having < $minimumRequiredSamples
+        // Okay now we are going to take the assay with maximum responses and use its range for assays having < $minimumRequiredResponses
 
         $skippedAssays = array_unique($skippedAssays);
         arsort($responseCounter);
         reset($responseCounter);
-        $maxAssay = key($responseCounter);
+        $maxResponsesAssay = key($responseCounter);
 
         $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'])
             // ->where('rvc.vl_assay = ?', $maxAssay)
-            ->where('rvc.shipment_id = ?', $sId);
+            ->where('rvc.shipment_id = ?', $shipmentId);
 
-        if (isset($maxAssay) && $maxAssay != "") {
-            $sql->where('rvc.vl_assay = ?', $maxAssay);
+        if (isset($maxResponsesAssay) && $maxResponsesAssay != "") {
+            $sql->where('rvc.vl_assay = ?', $maxResponsesAssay);
         }
         $res = $db->fetchAll($sql);
 
@@ -1465,22 +1464,22 @@ class Application_Model_Vl
                     continue;
                 }
 
-                if (isset($oldSetVlRange[$vlAssayId][$sample]) && !empty($oldSetVlRange[$vlAssayId][$sample]) && $oldSetVlRange[$vlAssayId][$sample]['use_range'] == 'manual') {
-                    $row['manual_q1'] = $oldSetVlRange[$vlAssayId][$sample]['manual_q1'] ?? null;
-                    $row['manual_q3'] = $oldSetVlRange[$vlAssayId][$sample]['manual_q3'] ?? null;
-                    $row['manual_cv'] = $oldSetVlRange[$vlAssayId][$sample]['manual_cv'] ?? null;
-                    $row['manual_iqr'] = $oldSetVlRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
-                    $row['manual_quartile_high'] = $oldSetVlRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
-                    $row['manual_quartile_low'] = $oldSetVlRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
-                    $row['manual_low_limit'] = $oldSetVlRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
-                    $row['manual_high_limit'] = $oldSetVlRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
-                    $row['manual_mean'] = $oldSetVlRange[$vlAssayId][$sample]['manual_mean'] ?? null;
-                    $row['manual_median'] = $oldSetVlRange[$vlAssayId][$sample]['manual_median'] ?? null;
-                    $row['manual_sd'] = $oldSetVlRange[$vlAssayId][$sample]['manual_sd'] ?? null;
-                    $row['manual_standard_uncertainty'] = $oldSetVlRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
-                    $row['manual_is_uncertainty_acceptable'] = $oldSetVlRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
-                    $row['updated_on'] = $oldSetVlRange[$vlAssayId][$sample]['updated_on'] ?? null;
-                    $row['use_range'] = $oldSetVlRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
+                if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] == 'manual') {
+                    $row['manual_q1'] = $oldQuantRange[$vlAssayId][$sample]['manual_q1'] ?? null;
+                    $row['manual_q3'] = $oldQuantRange[$vlAssayId][$sample]['manual_q3'] ?? null;
+                    $row['manual_cv'] = $oldQuantRange[$vlAssayId][$sample]['manual_cv'] ?? null;
+                    $row['manual_iqr'] = $oldQuantRange[$vlAssayId][$sample]['manual_iqr'] ?? null;
+                    $row['manual_quartile_high'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_high'] ?? null;
+                    $row['manual_quartile_low'] = $oldQuantRange[$vlAssayId][$sample]['manual_quartile_low'] ?? null;
+                    $row['manual_low_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_low_limit'] ?? null;
+                    $row['manual_high_limit'] = $oldQuantRange[$vlAssayId][$sample]['manual_high_limit'] ?? null;
+                    $row['manual_mean'] = $oldQuantRange[$vlAssayId][$sample]['manual_mean'] ?? null;
+                    $row['manual_median'] = $oldQuantRange[$vlAssayId][$sample]['manual_median'] ?? null;
+                    $row['manual_sd'] = $oldQuantRange[$vlAssayId][$sample]['manual_sd'] ?? null;
+                    $row['manual_standard_uncertainty'] = $oldQuantRange[$vlAssayId][$sample]['manual_standard_uncertainty'] ?? null;
+                    $row['manual_is_uncertainty_acceptable'] = $oldQuantRange[$vlAssayId][$sample]['manual_is_uncertainty_acceptable'] ?? null;
+                    $row['updated_on'] = $oldQuantRange[$vlAssayId][$sample]['updated_on'] ?? null;
+                    $row['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
                 }
 
                 $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);

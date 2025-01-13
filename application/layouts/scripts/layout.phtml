@@ -343,8 +343,8 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </ul>
                         </li>
                         <li class="<?php echo ($activeSubMenu == 'participant-message') ? ' active ' : '';  ?>"><a
-                                        href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-message"), null, true) ?>"><?= $this->translate->_("Participant Message"); ?></a>
-                                </li>
+                                href="<?php echo $this->url(array("controller" => "participant", "action" => "participant-message"), null, true) ?>"><?= $this->translate->_("Participant Message"); ?></a>
+                        </li>
                         <?php if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) { ?>
                             <li class="treeview <?php echo ($activeMenu == 'ptcc-reports') ? ' active ' : '';  ?>">
                                 <a href="#" class="" aria-haspopup="true" aria-expanded="false"><i class="icon icon-edit"></i>
@@ -450,7 +450,7 @@ $dtFormat =  $genderHelper->getDateFormat();
             if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
                 $footerText = $configData['footer_text'];
             } ?>
-            <span><?= $this->translate->_($footerText . " This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?></span>
+            <span><?= "$footerText |" . $this->translate->_("This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?></span>
         </footer>
 
         <div class="control-sidebar-bg"></div>

@@ -6,7 +6,7 @@ class Admin_IndexController extends Zend_Controller_Action
     public function init()
     {
         $this->_helper->layout()->pageName = 'dashboard';
-        /** @var $ajaxContext Zend_Controller_Action_Helper_AjaxContext  */
+        /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-scheme-participants', 'html')
             ->addActionContext('load-charts', 'html')

@@ -190,16 +190,16 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         if (isset($params['testType']) && !empty($params['testType'])) {
             $params['genericConfig']['testType'] = reset($params['testType']);
         }
-        if (isset($params['quantitative']['minNumberOfResponse']) && !empty($params['quantitative']['minNumberOfResponse'])) {
-            $params['genericConfig']['minNumberOfResponse'] = reset($params['quantitative']['minNumberOfResponse']);
+        if (isset($params['quantitative']['minNumberOfResponses']) && !empty($params['quantitative']['minNumberOfResponses'])) {
+            $params['genericConfig']['minNumberOfResponses'] = reset($params['quantitative']['minNumberOfResponses']);
         }
-        $data = array(
+        $data = [
             'scheme_id' => $params['schemeCode'],
             'scheme_name' => $params['schemeName'],
             'is_user_configured' => 'yes',
             'user_test_config' => Zend_Json_Encoder::encode($params['genericConfig']),
             'status' => $params['status'],
-        );
+        ];
         if (isset($params['schemeId']) && !empty($params['schemeId'])) {
             $this->update($data, 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
             $this->getAdapter()->delete('r_possibleresult', 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
@@ -242,7 +242,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         'sd_scaling_factor'         => $params[$test]['SDScalingFactor'][$key],
                         'uncertainy_scaling_factor' => $params[$test]['uncertainyScalingFactor'][$key],
                         'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
-                        'minimum_number_of_response' => $params[$test]['minNumberOfResponse'][$key],
+                        'minimum_number_of_responses' => $params[$test]['minNumberOfResponses'][$key],
                         'sort_order'        => $sortOrder,
                     ));
                 }
