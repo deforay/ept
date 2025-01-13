@@ -1383,7 +1383,8 @@ class Application_Service_Evaluation
 									)
 								)
 							END
-						")
+						"),
+					'noOfParticipants' => new Zend_Db_Expr("COUNT(*)")
 				]
 			)
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
@@ -1546,17 +1547,22 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(
 					['reseid' => 'response_result_generic_test'],
-					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score', 'additional_detail']
+					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score', 'additional_detail', 'z_score']
 				)
 					->join(
-						array('spm' => 'shipment_participant_map'),
+						['spm' => 'shipment_participant_map'],
 						'spm.map_id=reseid.shipment_map_id',
-						array('spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date', 'spm.failure_reason')
+						['spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date', 'spm.failure_reason']
 					)
 					->join(
-						array('refeid' => 'reference_result_generic_test'),
+						['refeid' => 'reference_result_generic_test'],
 						'refeid.shipment_id=spm.shipment_id and refeid.sample_id=reseid.sample_id',
-						array('refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory')
+						['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory']
+					)
+					->join(
+						['rgtc' => 'reference_generic_test_calculations'],
+						'spm.shipment_id=rgtc.shipment_id and reseid.sample_id=rgtc.sample_id',
+						['median', 'sd']
 					)
 					->where("refeid.control = 0")
 					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'  OR spm.is_excluded = '' "))

@@ -1,6 +1,4 @@
 <?php
-
-
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
@@ -145,7 +143,6 @@ if (sizeof($resultArray['shipment']) > 0) {
 
 
         // Samples without response need not be generated
-        // Zend_Debug::dump($result);die;
 
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
@@ -172,62 +169,119 @@ if (sizeof($resultArray['shipment']) > 0) {
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
-        $jsonConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
-        $passPercentage = $jsonConfig['passingScore'] ?? 100;
-        $pdf->writeHTML($labInfo, true, false, true, false, '');
         $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
-        if (isset($result['responseResult']) && !empty($result['responseResult'])) {
-            $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
-            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
-            $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
-            if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
-                $additionalLabel = $userTestConfig['additionalDetailLabel'] ?? 'Additional Detail';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $additionalLabel . '</td>';
-            }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Evaluation</td>';
-            $labRes .= '</tr>';
-            //Sample codes
-            if (isset($result['responseResult']) && !empty($result['responseResult'])) {
-                foreach ($result['responseResult'] as $key => $response) {
-                    $labRes .= '<tr>';
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
-                    $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
-                    if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
-                        $labRes .= '<td style="text-align:center;">' . $response['additional_detail'] . '</td>';
-                    }
-                    $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+        $passPercentage = $userTestConfig['passingScore'] ?? 100;
+        $pdf->writeHTML($labInfo, true, false, true, false, '');
 
-                    $evaluationScore = $passPercentage / $result['number_of_samples'];
-                    $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
-                    // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
-                    $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
+        if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') {
+            if ($result['noOfParticipants'] > 0) {
+                $rowspan = count($result['responseResult']);
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+                $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                                <tr>
+                                    <td style="background-color:white;" colspan="2"></td>
+                                    <td style="background-color:#8ECF64;" colspan="3">All Participants Results <br/>Summary</td>
+                                    <td style="background-color:#8ECF64;" colspan="3"><br>Your Laboratory Performance</td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color:#8ECF64;"><br><br>Specimen ID </td>
+                                    <td style="background-color:#8ECF64;"><br><br>Your Results<br/></td>
+                                    <td style="background-color:#8ECF64;"><br>Number of <br/>Participants</td>
+                                    <td style="background-color:#8ECF64;"><br><br>Median</td>
+                                    <td style="background-color:#8ECF64;"><br>Robust <br/>Standard <br/>Deviation</td>
+                                    <td style="background-color:#8ECF64;"><br><br>z Score</td>
+                                    <td style="background-color:#8ECF64;"><br><br>Your Grade</td>
+                                    <td style="background-color:#8ECF64;"><br><br>Score</td>
+                                </tr>';
+                foreach ($result['responseResult'] as $key => $response) {
+                    $yrResult = '';
+                    if (isset($response['is_result_invalid']) && !empty($response['is_result_invalid'])) {
+                        $yrResult = (isset($response['is_result_invalid']) && !empty($response['is_result_invalid']) && !empty($response['error_code'])) ? ucwords($response['is_result_invalid']) . ', ' . $response['error_code'] : ucwords($response['is_result_invalid']);
+                    } else {
+                        $yrResult = $response['reported_result'] ?? null;
+                    }
+                    $color = (isset($passPercentage) && ($passPercentage <= $result['shipment_score'])) ? "black" : "red";
+                    $txtcolor = (isset($response['calculated_score']) && $response['calculated_score'] == 'pass') ? "black" : "red";
+
+
+                    if ($result['is_excluded'] == 'yes') {
+                        $response['calculated_score'] = "Not Evaluated";
+                        $result['shipment_score'] = " N.A.";
+                    } else {
+                        $result['shipment_score'] = round($result['shipment_score'], 2) . "%";
+                    }
+                    $labRes .= '<tr>
+                            <td style="text-align:center;">' . $response['sample_label'] . '</td>
+                            <td>' . $yrResult . '</td>
+                            <td>' . $result['noOfParticipants'] . '</td>
+                            <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                            <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                            <td>' . (!is_null($response['z_score']) ? number_format(round($response['z_score'], 2), 2, '.', '') : '-') . '</td>
+                            <td style="color:' . $txtcolor . ';">' . ucwords($response['calculated_score']) . '</td>';
+                    if ($key == 0) {
+                        $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $result['shipment_score'] . '</td>';
+                    }
                     $labRes .= '</tr>';
                 }
+                $labRes .= '</table>';
             }
-
-            $labRes .= '</table>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
-        }
-        if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
-            $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
-            $failRes .= '<table border="1" style="font-size:11px;">';
-            $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
-            $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
-            foreach ($warnings as $warning) {
-                $failRes .= '<tr>';
-                $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
-                $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
-                $failRes .= '</tr>';
+        } else {
+            if (isset($result['responseResult']) && !empty($result['responseResult'])) {
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+                $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">';
+                $labRes .= '<tr style="background-color:#dbe4ee;width:100%;">';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Your Results</td>';
+                if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
+                    $additionalLabel = $userTestConfig['additionalDetailLabel'] ?? 'Additional Detail';
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">' . $additionalLabel . '</td>';
+                }
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Evaluation</td>';
+                $labRes .= '</tr>';
+                //Sample codes
+                if (isset($result['responseResult']) && !empty($result['responseResult'])) {
+                    foreach ($result['responseResult'] as $key => $response) {
+                        $labRes .= '<tr>';
+                        $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
+                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>';
+                        if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
+                            $labRes .= '<td style="text-align:center;">' . $response['additional_detail'] . '</td>';
+                        }
+                        $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+
+                        $evaluationScore = $passPercentage / $result['number_of_samples'];
+                        $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
+                        // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';
+                        $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
+                        $labRes .= '</tr>';
+                    }
+                }
+
+                $labRes .= '</table>';
+
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($labRes, true, false, true, false, '');
             }
-            $failRes .= '</table>';
-            $pdf->writeHTML($failRes, true, false, true, false, '');
+            if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
+                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes .= '<table border="1" style="font-size:11px;">';
+                $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
+                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                foreach ($warnings as $warning) {
+                    $failRes .= '<tr>';
+                    $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
+                    $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
+                    $failRes .= '</tr>';
+                }
+                $failRes .= '</table>';
+                $pdf->writeHTML($failRes, true, false, true, false, '');
+            }
         }
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
