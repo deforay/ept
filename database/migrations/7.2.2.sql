@@ -169,7 +169,7 @@ ALTER TABLE `r_possibleresult` CHANGE `display_context` `display_context` ENUM('
 INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_scheme`, `result_type`, `response`, `result_code`, `display_context`, `high_range`, `threshold_range`, `low_range`, `sort_order`) VALUES (NULL, 'dts', 'DTS_FINAL', NULL, NULL, 'NONREACTIVE', 'NR', 'all', NULL, NULL, NULL, NULL);
 
 -- Thana 19-Dec-2024
-INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
+INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', '');
 
 
 -- sakthi 24-Dec-2024
