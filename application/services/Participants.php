@@ -123,7 +123,8 @@ class Application_Service_Participants
 		$sql = $db->select()->from(array('p' => 'participant'))
 			->where("participant_id NOT IN ?", $subSql)
 			->where("p.status='active'")
-			->order('first_name');
+			->order('first_name')
+			->group('p.participant_id');
 		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
 			$pId = explode(',', $params['choosenPid']);
 			$sql = $sql->where("p.institute_name IN (?)", $pId);
@@ -158,7 +159,8 @@ class Application_Service_Participants
 			->joinLeft(['p' => 'participant'], "p.participant_id=e.participant_id")
 			->where("scheme_id = ?", $scheme)
 			->where("p.status='active'")
-			->order('first_name');
+			->order('first_name')
+			->group('p.participant_id');
 		if (isset($schemeName) && !empty($schemeName)) {
 			$sql = $sql->where("IFNULL(list_name, 'default') = ?", $schemeName);
 		}
@@ -173,7 +175,8 @@ class Application_Service_Participants
 			->joinLeft(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("p.status='active'")
-			->order('p.first_name');
+			->order('p.first_name')
+			->group('p.participant_id');
 
 		return $db->fetchAll($sql);
 	}
@@ -200,7 +203,8 @@ class Application_Service_Participants
 			->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [])
 			->joinLeft(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id', [])
 			->where("s.shipment_id = ?", $shipmentId)
-			->where("p.status='active'");
+			->where("p.status='active'")
+			->group('p.participant_id');
 		$sql = $db->select()->from(['p' => 'participant'])->where("participant_id NOT IN ?", $subSql)
 			->order('p.first_name');
 		if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
