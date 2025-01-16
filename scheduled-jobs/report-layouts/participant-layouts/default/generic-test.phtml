@@ -146,26 +146,26 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
-        $labInfo .= '	<td><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td><strong>Shipment Code </strong> <br>' . $result['shipment_code'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;""><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Shipment Code </strong> <br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>PT Panel Tested </strong> <br>' . $shipmentTestDate . '</td>';
-        $labInfo .= '	<td><strong>Results Submitted Date</strong> <br>' . $responseDate . '</td>';
-        $labInfo .= '	<td><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>PT Panel Tested </strong> <br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Results Submitted Date</strong> <br>' . $responseDate . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Lab ID</strong> <br>' . $result['unique_identifier'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant Site Name </strong> <br>' . $result['labName'] . '</td>';
-        $labInfo .= '	<td><strong>Analyst Name </strong> <br>' . $attributes['analyst_name'] . '</td>';
-        $labInfo .= '	<td><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Participant Site Name </strong> <br>' . $result['labName'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Analyst Name </strong> <br>' . $attributes['analyst_name'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Kit Expiry Date </strong> <br>' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Kit Lot Number </strong> <br>' . $attributes['kit_lot_number'] . '</td>';
-        $labInfo .= '	<td><strong>Kit Expiry Date </strong> <br>' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>Kit Lot Number </strong> <br>' . $attributes['kit_lot_number'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';

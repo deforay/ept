@@ -1554,12 +1554,12 @@ class Application_Service_Evaluation
 						'spm.map_id=reseid.shipment_map_id',
 						['spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date', 'spm.failure_reason']
 					)
-					->join(
+					->joinLeft(
 						['refeid' => 'reference_result_generic_test'],
 						'refeid.shipment_id=spm.shipment_id and refeid.sample_id=reseid.sample_id',
 						['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory']
 					)
-					->join(
+					->joinLeft(
 						['rgtc' => 'reference_generic_test_calculations'],
 						'spm.shipment_id=rgtc.shipment_id and reseid.sample_id=rgtc.sample_id',
 						['median', 'sd']

@@ -645,8 +645,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $params['authToken'] = Application_Service_Common::generateRandomString(6);
         $params['download_link'] = Application_Service_Common::generateRandomString(9);
 
-        Zend_Debug::dump($result);
-        die;
         $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
 
