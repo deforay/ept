@@ -2166,13 +2166,12 @@ class Application_Model_Dts
 						/* -- RTRI SECTION END -- */
 					}
 
-					$customFields = ['custom_field_1', 'custom_field_2'];
-
 					if (!empty($haveCustom) && $haveCustom == 'yes') {
-						foreach ($customFields as $field) {
-							if (!empty(${$field})) {
-								$resultReportRow[] = $row[$field];
-							}
+						if (isset($customField1) && $customField1 != "") {
+							$resultReportRow[] = $aRow['custom_field_1'];
+						}
+						if (isset($customField2) && $customField2 != "") {
+							$resultReportRow[] = $aRow['custom_field_2'];
 						}
 					}
 

@@ -803,7 +803,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
-            if ($totalScore >= $passPercentage) {
+            if ($totalScore >= $passPercentage && $instance != 'philippines') {
                 $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
             } elseif ($totalScore == 0 || $totalScore == '') {
                 $wishes = '<p style="font-size:14px;">Your response was not evaluated</p>';

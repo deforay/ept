@@ -497,7 +497,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
-        if ($totalScore >= $passPercentage) {
+        if ($totalScore >= $passPercentage && $instance != 'philippines') {
             $wishes = '<p style="font-size:12px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
         } else {
             $wishes = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';

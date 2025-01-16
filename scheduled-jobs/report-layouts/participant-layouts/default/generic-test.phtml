@@ -287,7 +287,7 @@ if (!empty($resultArray['shipment'])) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
         } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
-            if ($totalScore >= $passPercentage) {
+            if ($totalScore >= $passPercentage && $instance != 'philippines') {
                 $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
             } else {
                 $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';

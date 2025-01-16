@@ -967,7 +967,7 @@ try {
         $logoRight = $reportService->getReportConfigValue('logo-right');
         $layout = $reportService->getReportConfigValue('report-layout');
         $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
-
+        $instance = $commonService->getConfig('instance');
         $passPercentage = $commonService->getConfig('pass_percentage');
         $trainingInstance = $commonService->getConfig('training_instance');
         $watermark = null;
