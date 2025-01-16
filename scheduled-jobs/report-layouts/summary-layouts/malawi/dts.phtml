@@ -29,8 +29,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -51,9 +51,10 @@ if ($resultArray['shipment'] != "") {
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     // add a page
     //$pdf->AddPage();
+    //
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', '', 12);
+    $pdf->SetFont('freesans', '', 12);
     // PT Co-ordinator header details start
     $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
@@ -76,7 +77,7 @@ if ($resultArray['shipment'] != "") {
     $headerInfo .= '<hr><br>';
     $pdf->writeHTML($headerInfo, true, false, true, false, '');
     // PT Co-ordinator header details end
-    if (count($resultArray['shipment']['referenceResult']) > 0) {
+    if(!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -127,7 +128,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         // set font
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('freesans', '', 12);
 
         $psoringTxt = ($config->evaluation->dts->passPercentage == 100) ? ' = "100"' : '>= "' . $config->evaluation->dts->passPercentage . '"';
         $overview = '<table border="1" style="font-size:13px;"><tr>';
@@ -248,6 +249,8 @@ if ($resultArray['shipment'] != "") {
         }
         if ((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))) {
             $pdf->AddPage();
+
+
             $testkit = '';
             $testKitResult = [];
             $testKitCheck = [];
@@ -468,6 +471,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->AddPage();
+
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;

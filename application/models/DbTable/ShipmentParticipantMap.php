@@ -17,9 +17,12 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             // To fetch Already mapped participants
             $participantList = $this->fetchParticipantListByShipmentId($params['shipmentId']);
             $alreadyMappedParticipant = explode(",", $participantList['participantId']);
+            $alreadyMappedParticipant = array_unique($alreadyMappedParticipant);
             $alreadyMappedId = explode(",", $participantList['mapId']);
+            $alreadyMappedId = array_unique($alreadyMappedId);
             // To fetch newly enrolment list
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
+            $params['selectedForEnrollment'] = array_unique($params['selectedForEnrollment']);
             // To get the unmapped participants list
             $deleteParticipant = array_diff($alreadyMappedParticipant, $params['selectedForEnrollment']);
             if (isset($deleteParticipant) && !empty($deleteParticipant)) {
@@ -28,13 +31,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 }
             }
             foreach ($params['selectedForEnrollment'] as $participant) {
-                $data = array(
+                $data = [
                     'shipment_id' => $params['shipmentId'],
                     'participant_id' => $participant,
                     'evaluation_status' => '19901190',
                     'created_by_admin' => $authNameSpace->admin_id,
                     "created_on_admin" => new Zend_Db_Expr('now()')
-                );
+                ];
                 $commonServices->insertIgnore($this->_name, $data);
                 // $this->insert($data);
 

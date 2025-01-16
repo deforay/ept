@@ -2,4 +2,5 @@
 foreach ($this->participantListsName as $names) {
     $participants[] = $names['participant_id'];
 }
+$participants = array_unique($participants);
 echo implode(",", $participants);

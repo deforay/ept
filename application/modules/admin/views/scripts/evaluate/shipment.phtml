@@ -386,7 +386,7 @@ $overrideStatus = "no";
 		}
 
 		function mailNonParticipants(sid) {
-			if (window.confirm("Are you sure you to send email reminder to participants not yet responded ?")) {
+			if (window.confirm("Are you sure you want to send an email reminder to participants who have not yet responded?")) {
 				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {
 						sid: sid,
 						format: "html"

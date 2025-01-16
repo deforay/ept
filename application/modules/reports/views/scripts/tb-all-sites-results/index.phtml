@@ -1,7 +1,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3>PT Testing All Sites' Results</h3>
+	<h3><?= $this->translate->_("All Sites' TB Results"); ?></h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
@@ -12,8 +12,8 @@
 	</tr>
 	<tr>
 		<td>
-			<select id="shipmentId" name="shipmentId" class="select2 form-control input-sm">
-				<option value=''>-- Select Panel --</option>
+			<select id="shipmentId" name="shipmentId" class="select2 form-control input-lg">
+				<option value=''>-- <?= $this->translate->_("Select Panel"); ?> --</option>
 			</select>
 		</td>
 		<td class="dontPrint">

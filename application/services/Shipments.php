@@ -1409,7 +1409,7 @@ class Application_Service_Shipments
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
 
-            $data = array(
+            $data = [
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
                 "attributes" => $attributes,
@@ -1417,7 +1417,7 @@ class Application_Service_Shipments
                 "participant_supervisor" => $params['participantSupervisor'],
                 "user_comment" => $params['userComments'],
                 "response_status" => $responseStatus,
-            );
+            ];
 
 
             if (!empty($authNameSpace->dm_id)) {
@@ -2880,7 +2880,7 @@ class Application_Service_Shipments
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
             $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
             foreach ($responseTable as $response) {
-                $sql = $db->select()->from($response, array('shipment_map_id'))->where('shipment_map_id =?', $mapId);
+                $sql = $db->select()->from($response, ['shipment_map_id'])->where('shipment_map_id =?', $mapId);
                 if (isset($sId) && !empty($sId)) {
                     $sql = $sql->where('sample_id =?', $sId);
                 }

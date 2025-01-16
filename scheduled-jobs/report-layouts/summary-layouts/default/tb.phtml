@@ -30,8 +30,8 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-    $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+    $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -299,6 +299,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $aggregateCountsContent = '';
     if (isset($resultArray['shipment']['aggregateCounts']) && !empty($resultArray['shipment']['aggregateCounts'])) {
         $pdf->AddPage();
+
         // set font
         $pdf->SetFont('helvetica', '', 10);
         $aggregateCountsContent .= '<div style="">';
@@ -406,6 +407,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         if ($assayName && $tbTestType != 'microscopy') {
             $pdf->AddPage();
 
+
             $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance</strong></p>', true, false, true, false, '');
         }
         $panelPerformanceMtbRifSvg = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -484,6 +486,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && !empty($resultArray['shipment']['mtbRifUltraReportSummary'])) {
         if ($assayName && $tbTestType != 'microscopy') {
             $pdf->AddPage();
+
             $pdf->writeHTML('<p style="font-size:10pt;"><strong style="font-size:10pt;">Panel Performance (continued)</strong></p>', true, false, true, false, '');
         }
         $panelPerformanceMtbUltraSvg = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -552,6 +555,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     }
     if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
         $pdf->AddPage();
+
     }
 
     $authorised = "_____________________";

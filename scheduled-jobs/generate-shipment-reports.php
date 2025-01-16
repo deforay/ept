@@ -243,10 +243,11 @@ class IndividualPDF extends Fpdi
         }
 
         if (isset($this->watermark) && $this->watermark != "") {
-            //Put the watermark
-            $this->SetFont('freesans', 'B', 120);
-            $this->SetTextColor(230, 228, 198);
+            $this->SetAlpha(0.2); // Set transparency
+            $this->SetFont('freesans', 'B', 120, '', false);
+            $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
+            $this->SetAlpha(1); // Reset transparency
         }
     }
 
@@ -590,10 +591,11 @@ class SummaryPDF extends Fpdi
         }
 
         if (isset($this->watermark) && $this->watermark != "") {
-            //Put the watermark
-            $this->SetFont('freesans', 'B', 120);
-            $this->SetTextColor(230, 228, 198);
+            $this->SetAlpha(0.2); // Set transparency
+            $this->SetFont('freesans', 'B', 120, '', false);
+            $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
+            $this->SetAlpha(1); // Reset transparency
         }
     }
 
@@ -761,10 +763,11 @@ class FPDIReport extends Fpdi
         }
 
         if (isset($this->watermark) && $this->watermark != "") {
-            //Put the watermark
-            $this->SetFont('freesans', 'B', 120);
-            $this->SetTextColor(230, 228, 198);
+            $this->SetAlpha(0.2); // Set transparency
+            $this->SetFont('freesans', 'B', 120, '', false);
+            $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
+            $this->SetAlpha(1); // Reset transparency
         }
     }
 
@@ -891,7 +894,7 @@ class Watermark extends PDF_Rotate
         global $fullPathToFile;
         if (isset($this->waterMarkText) && $this->waterMarkText != "") {
             //Put the watermark
-            $this->SetFont('freesans', 'B', 120);
+            $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(230, 228, 198);
             $this->RotatedText(25, 190, $this->waterMarkText, 45);
         }

@@ -37,8 +37,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -59,6 +59,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     // add a page
     //$pdf->AddPage();
+    //
     // ---------------------------------------------------------
 
     $pdf->AddPage('P', 'A4');
@@ -281,7 +282,7 @@ if ($resultArray['shipment'] != "") {
         $pdf->writeHTML($note, true, false, true, false, '');
 
         //$pdf->AddPage();
-
+        //
         /* JPGraph start */
 
         $allParticipantChartLabels = $assayName;
@@ -473,6 +474,7 @@ if ($resultArray['shipment'] != "") {
         }
 
         //$pdf->AddPage();
+        //
         /* JPGraph end */
 
         $note = '<h4>Information with respect to compliance with standards ISO 13528:2015(E) </h4>';

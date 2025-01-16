@@ -30,8 +30,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -50,12 +50,11 @@ if ($resultArray['shipment'] != "") {
 
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    // add a page
-    //$pdf->AddPage();
+
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', '', 12);
-    if (count($resultArray['shipment']['referenceResult']) > 0) {
+    $pdf->SetFont('freesans', '', 12);
+    if(!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -110,7 +109,7 @@ if ($resultArray['shipment'] != "") {
 
 
         // set font
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('freesans', '', 12);
 
         $psoringTxt = ($config->evaluation->dts->passPercentage == 100) ? ' = "100"' : '>= "' . $config->evaluation->dts->passPercentage . '"';
         $overview = '<table border="1" style="font-size:13px;"><tr>';
@@ -208,7 +207,7 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($ppOverview, true, false, true, false, '');
 
-        if (count($correctivenessArray) > 0) {
+        if (!empty($correctivenessArray)) {
             //----------------Participant Corrective Action Overview  start----------------
             $correctiveActionStuff = '<span style="font-size:14px;font-weight:bold;">Corrective Action Overview </span><br/>
             <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
@@ -230,7 +229,9 @@ if ($resultArray['shipment'] != "") {
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
         if ((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))) {
+
             $pdf->AddPage();
+
             $testkit = '';
             $testKitResult = [];
             $testKitCheck = [];
@@ -296,7 +297,7 @@ if ($resultArray['shipment'] != "") {
                     $testkit .= '   <td style="width:30%;">' . $row['name'] . '</td>';
                     $testkit .= '   <td style="width:' . $w . '%;">' . $row['total'] . '</td>';
                     foreach ($kitTnTests as $test) {
-                        $testkit .= '   <td style="width:' . $w . '%;">' . $row[$test] . '</td>';
+                        $testkit .= '   <td style="width:' . $w . '%;">' . $row[$test] ?? '' . '</td>';
                     }
                     $testkit .= '</tr>';
                 }

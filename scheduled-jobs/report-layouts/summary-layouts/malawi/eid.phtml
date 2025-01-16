@@ -29,8 +29,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,10 +56,11 @@ if ($resultArray['shipment'] != "") {
 
     // add a page
     //$pdf->AddPage();
+    //
     // ---------------------------------------------------------
     // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', '', 11);
+    $pdf->SetFont('freesans', '', 11);
     // PT Co-ordinator header details start
     $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
     $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
@@ -295,12 +296,13 @@ if ($resultArray['shipment'] != "") {
                     $pdf->writeHTML($avgAssay, true, false, true, false, '');
                     if ($pdf->getY() >= 250) {
                         $pdf->AddPage();
+
                     }
                 }
             }
         } elseif ($methodOfEvaluation == 'iso17043') {
             // set font
-            $pdf->SetFont('helvetica', '', 10);
+            $pdf->SetFont('freesans', '', 10);
             $overAllCorrectRes = '<div style="border:1px solid #333;">';
             // $overAllCorrectRes .= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
             $overAllCorrectRes .= '<table border="1" cellpadding="3">';
@@ -447,6 +449,7 @@ if ($resultArray['shipment'] != "") {
                     $pdf->writeHTML($avgAssay, true, false, true, false, '');
                     if ($pdf->getY() >= 250) {
                         $pdf->AddPage();
+
                     }
                     $assay = implode(",", $assayResult['eidAssayWithCount']);
                     $assayCount = $assayResult['participantCount'];
