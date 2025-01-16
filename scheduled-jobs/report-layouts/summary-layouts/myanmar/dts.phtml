@@ -27,8 +27,8 @@ if (!empty($resultArray['shipment'])) {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -58,13 +58,13 @@ if (!empty($resultArray['shipment'])) {
     $pdf->AddPage('P', 'A4');
 
     /* Set Font */
-    $pdf->SetFont('helvetica', '', 12);
+    $pdf->SetFont('freesans', '', 12);
     $shipmentAttributes = isset($resultArray['shipment']['shipment_attributes']) ? json_decode($resultArray['shipment']['shipment_attributes'], true) : array();
 
     $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-    if (count($resultArray['shipment']['referenceResult']) > 0) {
+    if(!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<br><br><table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -161,7 +161,7 @@ if (!empty($resultArray['shipment'])) {
         $graph->Stroke($image_file);
 
         // set font
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('freesans', '', 12);
 
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';

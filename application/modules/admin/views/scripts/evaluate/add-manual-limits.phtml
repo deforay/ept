@@ -105,6 +105,7 @@ $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipme
     <input type="submit" value="<?= $this->translate->_("Submit"); ?>" class="btn btn-primary">
     <input type="button" value="Close" class="btn btn-danger" onclick="window.parent.closeLayoutModal()">
 </form>
+<?php require_once WEB_ROOT . '/js/main.js.php'; ?>
 <script type="text/javascript">
     function validateNow() {
         flag = deforayValidator.init({

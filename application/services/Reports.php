@@ -1669,9 +1669,9 @@ class Application_Service_Reports
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+        $sQuery = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',])
             ->where("s.scheme_type = ?", $schemeType)
-            ->order("s.shipment_id");
+            ->order("s.shipment_date DESC");
         if (isset($startDate) && !empty($startDate) && isset($endDate) && !empty($endDate)) {
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($startDate));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($endDate));

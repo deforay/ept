@@ -56,10 +56,11 @@ if ($resultArray['shipment'] != "") {
     }
     // add a page
     //$pdf->AddPage();
+    //
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', '', 12);
-    if (count($resultArray['shipment']['referenceResult']) > 0) {
+    if(!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -348,6 +349,7 @@ if ($resultArray['shipment'] != "") {
     }
 
     $pdf->AddPage();
+
 
     if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
         $y = $pdf->getY() + 5;

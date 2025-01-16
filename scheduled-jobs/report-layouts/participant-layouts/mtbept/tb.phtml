@@ -36,8 +36,8 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
         // set header and footer fonts
-        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
-        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+        $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -64,6 +64,7 @@ if (!empty($resultArray['shipment'])) {
 
         // add a page
         $pdf->AddPage();
+
 
         // ---------------------------------------------------------
 
@@ -214,6 +215,7 @@ if (!empty($resultArray['shipment'])) {
         // }
         // add a page
         $pdf->AddPage();
+
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . $panelName . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
@@ -347,6 +349,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $pdf->AddPage();
+
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';

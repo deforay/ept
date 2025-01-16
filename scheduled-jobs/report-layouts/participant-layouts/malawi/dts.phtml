@@ -32,7 +32,7 @@ foreach ($possibleRecencyResults as $pr) {
 }
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
     $j = 1;
@@ -74,8 +74,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
         // set header and footer fonts
-        $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -101,6 +101,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // add a page
         $pdf->AddPage();
+
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
@@ -359,7 +360,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
-        if (sizeof($result['responseResult']) > 0) {
+        if (!empty($result['responseResult'])) {
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>
             <table border="1" style="font-size:12px;">';
             $labRes .= '<tr style="background-color:#dbe4ee;">

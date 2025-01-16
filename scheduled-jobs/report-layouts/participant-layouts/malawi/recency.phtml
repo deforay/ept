@@ -17,7 +17,7 @@ foreach ($recencyPossibleResults as $pr) {
     $recencyResults[$pr['id']] = ucfirst(strtolower($pr['response']));
 }
 
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
     $j = 1;
@@ -60,8 +60,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
         // set header and footer fonts
-        $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);

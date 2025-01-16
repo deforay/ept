@@ -83,7 +83,7 @@ class Application_Service_Participants
 		if (isset($id) && trim($id) != "") {
 
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$sql = $db->select()->from(array('eln' => 'enrollments'), array('*'))
+			$sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
 				->where("eln.list_name IN (?)", base64_decode($id));
 			return $db->fetchAll($sql);
 		}

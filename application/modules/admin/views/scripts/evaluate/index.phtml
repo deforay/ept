@@ -100,7 +100,7 @@
 
         $("#distroTable tr td").removeClass("highliter");
         $("#dist" + currentHighlighted + " td").addClass("highliter");
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments')); ?>", {
+        $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments']); ?>", {
                 did: did,
                 userConfig: userConfiguration,
                 format: "html"
@@ -110,7 +110,7 @@
                 <?php
                 if (isset($this->scheme) && isset($this->showcalc)  && $this->scheme == 'vl') {
                 ?>
-                    getVLReferenceScores('<?php echo ($this->showcalc); ?>');
+                    getVLReferenceScores('<?= $this->showcalc; ?>');
                 <?php
                 }
                 ?>
@@ -119,8 +119,8 @@
     }
 
     function mailNonParticipants(sid) {
-        if (window.confirm("Are you sure you to send email reminder to participants not yet responded ?")) {
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {
+        if (window.confirm("Are you sure you want to send an email reminder to participants who have not yet responded?")) {
+            $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail']); ?>", {
                     sid: sid,
                     format: "html"
                 },
@@ -137,7 +137,7 @@
     function closeVlModal(sId, sampleId, vlAssay, mLowLimit, mHighLimit) {
         if (sId != '') {
             closeLayoutModal();
-            alert("Vl manual value updated successfully");
+            alert("Manual Ranges for selected sample updated successfully");
             $("#manualRange" + vlAssay.toString() + sampleId.toString()).val(mHighLimit);
             $("#mLowLimitCol" + vlAssay.toString() + sampleId.toString()).html(mLowLimit);
             $("#mHighLimitCol" + vlAssay.toString() + sampleId.toString()).html(mHighLimit);

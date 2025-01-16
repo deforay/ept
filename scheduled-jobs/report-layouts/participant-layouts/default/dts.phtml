@@ -1,12 +1,9 @@
 <?php
 
-
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// $pdfNew = new Zend_Pdf();
-// $extractor = new Zend_Pdf_Resource_Extractor();
-// $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
+
 $shipmentCode = '';
 
 $rtriResultsMap = $dtsResultsMap = $dtsResults = [];
@@ -29,7 +26,7 @@ foreach ($possibleRecencyResults as $pr) {
 }
 
 
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
 
@@ -84,11 +81,11 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-        // set font
-        $pdf->SetFont('freesans', '', 11);
 
         // add a page
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'A4');
+        $pdf->SetFont('freesans', '', 12);
+
 
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
@@ -351,7 +348,7 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
-        if (sizeof($result['responseResult']) > 0) {
+        if (!empty($result['responseResult'])) {
             $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->panelScore . ')</span><br/></span>
             <table border="1" style="font-size:12px;">';
 
@@ -877,15 +874,6 @@ if (sizeof($resultArray['shipment']) > 0) {
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
-        //$pdf->Output($fileName, 'I');
-
-        // $loadpdf = Zend_Pdf::load($filePath);
-
-        // foreach ($loadpdf->pages as $page) {
-        //     $pdfExtract = $extractor->clonePage($page);
-        //     $pdfExtract->setFont($font, 8)->drawText('Page ' . $j . ' / ' . $totalPages, 280, 50);
-        //     $pdfNew->pages[] = $pdfExtract;
-        // }
         $shipmentCode = $result['shipment_code'];
         $j++;
     }

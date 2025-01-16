@@ -6,7 +6,7 @@ $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $shipmentCode = '';
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-if (sizeof($resultArray['shipment']) > 0) {
+if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
     $j = 1;
@@ -54,8 +54,8 @@ if (sizeof($resultArray['shipment']) > 0) {
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
         // set header and footer fonts
-        $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -180,7 +180,7 @@ if (sizeof($resultArray['shipment']) > 0) {
 
         if ($methodOfEvaluation == 'iso17043') {
 
-            if (sizeof($result['responseResult']) > 0) {
+            if (!empty($result['responseResult'])) {
                 $labRes = "";
                 $rowspan = count($result['responseResult']);
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
@@ -382,7 +382,7 @@ if (sizeof($resultArray['shipment']) > 0) {
             // $html = '<p>Thank you for participating in the HIV Viral Load Proficiency Testing Program.</p>';
             // $html .= '<br><small>Note: A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than 6 participants on this PT round.</small>';
         } elseif ($methodOfEvaluation == 'standard') {
-            if (sizeof($result['responseResult']) > 0) {
+            if (!empty($result['responseResult'])) {
 
                 //Vl report
                 //var_dump($attributes);die;

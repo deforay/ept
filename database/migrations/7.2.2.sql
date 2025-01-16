@@ -171,8 +171,10 @@ INSERT INTO `r_possibleresult` (`id`, `scheme_id`, `scheme_sub_group`, `sub_sche
 -- Thana 19-Dec-2024
 INSERT INTO `global_config` (`name`, `value`) VALUES ('instance', null);
 
--- sakthi 24-Dec-2024
 
+-- sakthi 24-Dec-2024
+ALTER TABLE `home_sections` ADD `section_file` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
+ALTER TABLE `home_sections` ADD `type` VARCHAR(255) NULL DEFAULT NULL AFTER `link`;
 
 -- Sakti 27-Dec-2024
 CREATE TABLE IF NOT EXISTS participant_messages (

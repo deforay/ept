@@ -409,15 +409,15 @@
 
 	function getEnrollmentParticipantsList(obj) {
 		$.blockUI();
-		var shipId = $("#shipmentId").val();
+		let shipId = $("#shipmentId").val();
 		if (obj.value != "") {
-			var text = $(obj).find('option:selected').text();
+			let text = $(obj).find('option:selected').text();
 			$("#listName").val(text);
 		} else {
 			$("#listName").val('');
 		}
 		if ($.trim(obj.value) != '' || $.trim(shipId) != '') {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'), 'default', true); ?>", {
+			$.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'], 'default', true); ?>", {
 					sid: shipId,
 					unique: obj.value,
 					format: "html"
