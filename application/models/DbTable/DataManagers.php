@@ -645,7 +645,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $params['authToken'] = Application_Service_Common::generateRandomString(6);
         $params['download_link'] = Application_Service_Common::generateRandomString(9);
 
-        $this->update(array('auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+        $this->update(['auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
 
         /* Validate new auth token and app-version */
@@ -759,8 +759,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         ];
 
         /* Finalizing the response data and return */
-        if (!isset($resultData) && trim($resultData['authToken']) == '') {
-            return array('status' => 'fail', 'message' => 'Something went wrong please try again later');
+        if (!isset($resultData) || trim($resultData['authToken']) == '') {
+            return ['status' => 'fail', 'message' => 'Something went wrong please try again later'];
         } else {
             $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
             if (!$row) {
