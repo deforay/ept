@@ -5,7 +5,6 @@ class Application_Service_ApiServices
     protected $db;
     protected $common;
     protected $dataManagerDb;
-    protected $configDb;
     protected $schemeService;
     protected $shipmentService;
     protected $mapDb;
@@ -15,7 +14,6 @@ class Application_Service_ApiServices
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $this->common = new Application_Service_Common();
         $this->dataManagerDb = new Application_Model_DbTable_DataManagers();
-        $this->configDb = new Application_Model_DbTable_SystemConfig();
         $this->schemeService = new Application_Service_Schemes();
         $this->shipmentService = new Application_Service_Shipments();
         $this->mapDb = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -26,15 +24,7 @@ class Application_Service_ApiServices
         if (!isset($params['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
-        /* Check the app versions */
-        /* if (!isset($params['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        } */
-        $appVersion = $this->configDb->getValue($params['appVersion']);
-        /* Check the app versions */
-        /* if (!$appVersion) {
-            return array('status' => 'version-failed', 'message' => 'app-version-failed');
-        } */
+
         $aResult = $this->dataManagerDb->fetchAuthToken($params);
         /* Validate new auth token and app-version */
         if (!$aResult) {
@@ -209,15 +199,7 @@ class Application_Service_ApiServices
         if (!isset($parameters['authToken'])) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
-        /* Check the app versions */
-        /* if (!isset($parameters['appVersion'])) {
-            return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
-        $appVersion = $this->configDb->getValue($parameters['appVersion']); */
-        /* Check the app versions */
-        /* if (!$appVersion) {
-            return array('status' => 'version-failed', 'message' => 'app-version-failed');
-        } */
+
         $aResult = $this->dataManagerDb->fetchAuthToken($parameters);
         /* Validate new auth token and app-version */
         if (!$aResult) {
