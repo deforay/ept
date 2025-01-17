@@ -30,7 +30,7 @@ class Application_Service_ApiServices
         /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
-        $appVersion = $this->configDb->getValue($params['appVersion']);
+        // $appVersion = $this->configDb->getValue($params['appVersion']);
         /* Check the app versions */
         /* if (!$appVersion) {
             return array('status' => 'version-failed', 'message' => 'app-version-failed');
