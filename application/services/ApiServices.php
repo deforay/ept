@@ -206,187 +206,192 @@ class Application_Service_ApiServices
 
     public function saveShipmentDetailsFromAPI($parameters)
     {
-        if (!isset($parameters['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
-        }
-        /* Check the app versions */
-        /* if (!isset($parameters['appVersion'])) {
+        try {
+            if (!isset($parameters['authToken'])) {
+                return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+            }
+            /* Check the app versions */
+            /* if (!isset($parameters['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
-        }
-        $appVersion = $this->configDb->getValue($parameters['appVersion']); */
-        /* Check the app versions */
-        /* if (!$appVersion) {
-            return array('status' => 'version-failed', 'message' => 'app-version-failed');
-        } */
-        $aResult = $this->dataManagerDb->fetchAuthToken($parameters);
-        /* Validate new auth token and app-version */
-        if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
-        }
-        $response = [];
-        $schemeType = "";
-        foreach ($parameters['data'] as $key => $param) {
-            $param = (array)$param;
-            $schemeType = $param['schemeType'];
-            if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
-                return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
             }
-            $mandatoryFields = array('shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm');
-
-            $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
-            if (count($mandatoryCheckErrors) > 0) {
-                return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
+            $appVersion = $this->configDb->getValue($parameters['appVersion']); */
+            /* Check the app versions */
+            /* if (!$appVersion) {
+                return array('status' => 'version-failed', 'message' => 'app-version-failed');
+            } */
+            $aResult = $this->dataManagerDb->fetchAuthToken($parameters);
+            /* Validate new auth token and app-version */
+            if (!$aResult) {
+                return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
             }
-            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($param['sampleRehydrationDate'] ?? '');
-            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'dts') {
-                $attributes["algorithm"] = $param['algorithm'];
-                if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
-                    $attributes["condition_pt_samples"] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
-                    $attributes["refridgerator"] = (isset($param['refridgerator']) && !empty($param['refridgerator'])) ? $param['refridgerator'] : '';
-                    $attributes["room_temperature"] = (isset($param['roomTemperature']) && !empty($param['roomTemperature'])) ? $param['roomTemperature'] : '';
-                    $attributes["stop_watch"] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
+            $response = [];
+            $schemeType = "";
+            foreach ($parameters['data'] as $key => $param) {
+                $param = (array)$param;
+                $schemeType = $param['schemeType'];
+                if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
+                    return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
                 }
-                $attributes["dts_test_panel_type"] = $param['dtsTestPanelType'] ?? null;
-            }
-            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
-                $attributes["vl_assay"] = $param['vlAssay'] ?? null;
-                $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
-                $attributes["assay_expiration_date"] = Pt_Commons_General::isoDateFormat($param['assayExpirationDate'] ?? null);
-                $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
-                $attributes["date_of_xpert_instrument_calibration"] = $param['geneXpertInstrument'] ?? null;
-                $attributes["instrument_sn"] = $param['instrumentSn'] ?? null;
-                $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
-                $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] :  null;
-                $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] :  null;
-            }
-            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'eid') {
-                $attributes["extraction_assay"] = $param['extractionAssay'] ?? null;
-                $attributes["extraction_assay_lot_no"] = $param['extractionAssayLotNo'] ?? null;
-                $attributes["extraction_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
-                $attributes["detection_assay"] = $param['detectionAssay'] ?? null;
-                $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
-                $attributes["detection_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
-            }
-            if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
-                $attributes = array(
-                    "analyst_name" => $param['analystName'] ?? null,
-                    "kit_name" => $param['kitName'] ?? null,
-                    "kit_lot_number" => $param['kitLot'] ?? null,
-                    "kit_expiry_date" => Pt_Commons_General::isoDateFormat($param['expiryDate'] ?? null),
-                );
-            }
-            $attributes = json_encode($attributes);
-            $responseStatus = "responded";
-            if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == "yes") {
-                $responseStatus = "nottested";
-            }
-            $data = [
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($param['shipmentReceiptDate']),
-                "shipment_test_date" => $param['testingDate'],
-                "attributes" => $attributes,
-                "received_pt_panel" => $param['receivedPtPanel'],
-                "supervisor_approval" => $param['supervisorReview'],
-                "participant_supervisor" => $param['supervisorName'],
-                "user_comment" => $param['comments'],
-                "mode_id" => $param['modeOfReceipt'] ?? null,
-                "response_status" => $responseStatus,
-            ];
+                $mandatoryFields = array('shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm');
 
-            if (!empty($aResult['dm_id'])) {
-                $data["updated_by_user"] = $aResult['dm_id'] ?? null;
-                $data["updated_on_user"] = new Zend_Db_Expr('now()');
-            }
+                $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
+                if (count($mandatoryCheckErrors) > 0) {
+                    return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
+                }
+                $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($param['sampleRehydrationDate'] ?? '');
+                if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'dts') {
+                    $attributes["algorithm"] = $param['algorithm'];
+                    if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
+                        $attributes["condition_pt_samples"] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
+                        $attributes["refridgerator"] = (isset($param['refridgerator']) && !empty($param['refridgerator'])) ? $param['refridgerator'] : '';
+                        $attributes["room_temperature"] = (isset($param['roomTemperature']) && !empty($param['roomTemperature'])) ? $param['roomTemperature'] : '';
+                        $attributes["stop_watch"] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
+                    }
+                    $attributes["dts_test_panel_type"] = $param['dtsTestPanelType'] ?? null;
+                }
+                if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
+                    $attributes["vl_assay"] = $param['vlAssay'] ?? null;
+                    $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
+                    $attributes["assay_expiration_date"] = Pt_Commons_General::isoDateFormat($param['assayExpirationDate'] ?? null);
+                    $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
+                    $attributes["date_of_xpert_instrument_calibration"] = $param['geneXpertInstrument'] ?? null;
+                    $attributes["instrument_sn"] = $param['instrumentSn'] ?? null;
+                    $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
+                    $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] :  null;
+                    $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] :  null;
+                }
+                if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'eid') {
+                    $attributes["extraction_assay"] = $param['extractionAssay'] ?? null;
+                    $attributes["extraction_assay_lot_no"] = $param['extractionAssayLotNo'] ?? null;
+                    $attributes["extraction_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
+                    $attributes["detection_assay"] = $param['detectionAssay'] ?? null;
+                    $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
+                    $attributes["detection_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
+                }
+                if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
+                    $attributes = array(
+                        "analyst_name" => $param['analystName'] ?? null,
+                        "kit_name" => $param['kitName'] ?? null,
+                        "kit_lot_number" => $param['kitLot'] ?? null,
+                        "kit_expiry_date" => Pt_Commons_General::isoDateFormat($param['expiryDate'] ?? null),
+                    );
+                }
+                $attributes = json_encode($attributes);
+                $responseStatus = "responded";
+                if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == "yes") {
+                    $responseStatus = "nottested";
+                }
+                $data = [
+                    "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($param['shipmentReceiptDate']),
+                    "shipment_test_date" => Pt_Commons_General::isoDateFormat($param['testingDate']),
+                    "attributes" => $attributes,
+                    "received_pt_panel" => $param['receivedPtPanel'],
+                    "supervisor_approval" => $param['supervisorReview'],
+                    "participant_supervisor" => $param['supervisorName'],
+                    "user_comment" => $param['comments'],
+                    "mode_id" => $param['modeOfReceipt'] ?? null,
+                    "response_status" => $responseStatus,
+                ];
 
-            if (isset($param['responseDate']) && trim($param['responseDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($param['responseDate']);
-            } else {
-                $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
-            }
+                if (!empty($aResult['dm_id'])) {
+                    $data["updated_by_user"] = $aResult['dm_id'] ?? null;
+                    $data["updated_on_user"] = new Zend_Db_Expr('now()');
+                }
 
-            if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
-                $data['qc_done'] = $param['qcDone'];
-                if (isset($param['qcDone']) && trim($param['qcDone']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($param['qcDate']);
-                    $data['qc_done_by'] = trim($param['qcDoneBy']);
-                    $data['qc_created_on'] = new Zend_Db_Expr('now()');
+                if (isset($param['responseDate']) && trim($param['responseDate']) != '') {
+                    $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($param['responseDate']);
                 } else {
-                    $data['qc_date'] = null;
-                    $data['qc_done_by'] = null;
-                    $data['qc_created_on'] = null;
+                    $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
+                }
+
+                if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
+                    $data['qc_done'] = $param['qcDone'];
+                    if (isset($param['qcDone']) && trim($param['qcDone']) == "yes") {
+                        $data['qc_date'] = Pt_Commons_General::isoDateFormat($param['qcDate']);
+                        $data['qc_done_by'] = trim($param['qcDoneBy']);
+                        $data['qc_created_on'] = new Zend_Db_Expr('now()');
+                    } else {
+                        $data['qc_date'] = null;
+                        $data['qc_done_by'] = null;
+                        $data['qc_created_on'] = null;
+                    }
+                }
+
+                if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == 'yes') {
+                    $data['is_pt_test_not_performed'] = 'yes';
+                    $data['shipment_test_date'] = null;
+                    $data['vl_not_tested_reason'] = $param['notTestedReason'];
+                    $data['pt_test_not_performed_comments'] = $param['ptNotTestedComments'];
+                    $data['pt_support_comments'] = $param['ptSupportComment'];
+                } else {
+                    $data['is_pt_test_not_performed'] = 'no';
+                    $data['vl_not_tested_reason'] = null;
+                    $data['pt_test_not_performed_comments'] = null;
+                    $data['pt_support_comments'] = null;
+                }
+
+                if (isset($param['custom_field_1']) && !empty(trim($param['custom_field_1']))) {
+                    $data['custom_field_1'] = trim($param['custom_field_1']);
+                }
+
+                if (isset($param['custom_field_2']) && !empty(trim($param['custom_field_2']))) {
+                    $data['custom_field_2'] = trim($param['custom_field_2']);
+                }
+
+                if (isset($param['labDirectorName']) && $param['labDirectorName'] != "") {
+                    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                    /* Shipment Participant table updation */
+                    $dbAdapter->update(
+                        'shipment_participant_map',
+                        array(
+                            'lab_director_name'         => $param['labDirectorName'],
+                            'lab_director_email'        => $param['labDirectorEmail'],
+                            'contact_person_name'       => $param['contactPersonName'],
+                            'contact_person_email'      => $param['contactPersonEmail'],
+                            'contact_person_telephone'  => $param['contactPersonTelephone']
+                        ),
+                        'map_id = ' . $param['mapId']
+                    );
+                    /* Participant table updation */
+                    $dbAdapter->update(
+                        'participant',
+                        array(
+                            'lab_director_name'         => $param['labDirectorName'],
+                            'lab_director_email'        => $param['labDirectorEmail'],
+                            'contact_person_name'       => $param['contactPersonName'],
+                            'contact_person_email'      => $param['contactPersonEmail'],
+                            'contact_person_telephone'  => $param['contactPersonTelephone']
+                        ),
+                        'participant_id = ' . $param['participantId']
+                    );
+                }
+                $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
+                $resultUpdate = $this->updateResults($param);
+                if ($shipmentUpdate || $resultUpdate) {
+                    $response[$key]['status'] = 'success';
+                } else {
+                    $response[$key]['status'] = 'fail';
                 }
             }
-
-            if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = null;
-                $data['vl_not_tested_reason'] = $param['notTestedReason'];
-                $data['pt_test_not_performed_comments'] = $param['ptNotTestedComments'];
-                $data['pt_support_comments'] = $param['ptSupportComment'];
-            } else {
-                $data['is_pt_test_not_performed'] = 'no';
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
-            }
-
-            if (isset($param['custom_field_1']) && !empty(trim($param['custom_field_1']))) {
-                $data['custom_field_1'] = trim($param['custom_field_1']);
-            }
-
-            if (isset($param['custom_field_2']) && !empty(trim($param['custom_field_2']))) {
-                $data['custom_field_2'] = trim($param['custom_field_2']);
-            }
-
-            if (isset($param['labDirectorName']) && $param['labDirectorName'] != "") {
-                $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-                /* Shipment Participant table updation */
-                $dbAdapter->update(
-                    'shipment_participant_map',
-                    array(
-                        'lab_director_name'         => $param['labDirectorName'],
-                        'lab_director_email'        => $param['labDirectorEmail'],
-                        'contact_person_name'       => $param['contactPersonName'],
-                        'contact_person_email'      => $param['contactPersonEmail'],
-                        'contact_person_telephone'  => $param['contactPersonTelephone']
-                    ),
-                    'map_id = ' . $param['mapId']
+            if (isset($response) && !empty($response)) {
+                $payload = array(
+                    'status'  => 'success',
+                    'data'    => $response,
+                    'message' => 'Shipment form saved successfully.'
                 );
-                /* Participant table updation */
-                $dbAdapter->update(
-                    'participant',
-                    array(
-                        'lab_director_name'         => $param['labDirectorName'],
-                        'lab_director_email'        => $param['labDirectorEmail'],
-                        'contact_person_name'       => $param['contactPersonName'],
-                        'contact_person_email'      => $param['contactPersonEmail'],
-                        'contact_person_telephone'  => $param['contactPersonTelephone']
-                    ),
-                    'participant_id = ' . $param['participantId']
+            } else {
+                $payload = array(
+                    'status'  => 'fail',
+                    'message' => 'Shipment form not saved. Please re-sync again'
                 );
             }
-            $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
-            $resultUpdate = $this->updateResults($param);
-            if ($shipmentUpdate || $resultUpdate) {
-                $response[$key]['status'] = 'success';
-            } else {
-                $response[$key]['status'] = 'fail';
-            }
+            $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
+            self::addApiTracking($transactionId, $aResult['dm_id'], count($parameters['data']), 'save-shipments', $schemeType, $_SERVER['REQUEST_URI'], $parameters, $payload, 'json');
+            return $payload;
+        } catch (Throwable $exc) {
+            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+            return 0;
         }
-        if (isset($response) && !empty($response)) {
-            $payload = array(
-                'status'  => 'success',
-                'data'    => $response,
-                'message' => 'Shipment form saved successfully.'
-            );
-        } else {
-            $payload = array(
-                'status'  => 'fail',
-                'message' => 'Shipment form not saved. Please re-sync again'
-            );
-        }
-        $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
-        self::addApiTracking($transactionId, $aResult['dm_id'], count($parameters['data']), 'save-shipments', $schemeType, $_SERVER['REQUEST_URI'], $parameters, $payload, 'json');
-        return $payload;
     }
 
     public function updateResults($params)

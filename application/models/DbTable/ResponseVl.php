@@ -88,39 +88,43 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
 
     public function updateResultsByAPIV2($params)
     {
-        $id = 0;
-        $sampleIds = $params['sample_id'];
-        foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = '" . $sampleId . "'");
-            //Set tnd value if Yes
-            $tnd = null;
-            if ($params['isPtTestNotPerformed'] == 'yes') {
-                $params['vlResult']->$key = '';
-            } elseif ($params['tnd']->$key == 'yes') {
-                $tnd = 'yes';
-                $params["vlResult"]->$key = '0.00';
+        try {
+            $id = 0;
+            $sampleIds = $params['sample_id'];
+            foreach ($sampleIds as $key => $sampleId) {
+                $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = '" . $sampleId . "'");
+                //Set tnd value if Yes
+                if ($params['isPtTestNotPerformed'] == 'yes') {
+                    $params['vlResult']->$key = '';
+                } elseif ($params['tnd']->$key == 'yes') {
+                    $params["vlResult"]->$key = '0.00';
+                }
+                $data = [
+                    'shipment_map_id' => $params['mapId'],
+                    'vl_assay' => $params['vlAssay'] ?? null,
+                    'sample_id' => $sampleId,
+                    'reported_viral_load' => $params['vlResult']->$key ?? null,
+                    'is_tnd' => $params['tnd']->$key ?? null,
+                    'is_result_invalid' => $params['invalidVlResult']->$key ?? null,
+                    'error_code' => $params['errorCode']->$key ?? null,
+                    'module_number' => $params['moduleNumber']->$key ?? null,
+                    'comment' => $params['comment']->$key ?? null
+                ];
+                if ($res == null || $res === false) {
+                    $data['created_by'] = $params['dmId'];
+                    $data['created_on'] = new Zend_Db_Expr('now()');
+                    $id = $this->insert($data);
+                } else {
+                    $data['updated_by'] = $params['dmId'];
+                    $data['updated_on'] = new Zend_Db_Expr('now()');
+                    $id = $this->update($data, "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
+                }
             }
-            $data = [
-                'shipment_map_id' => $params['mapId'],
-                'vl_assay' => $params['vlAssay'] ?? null,
-                'sample_id' => $sampleId,
-                'reported_viral_load' => $params['vlResult']->$key ?? null,
-                'is_tnd' => $tnd ?? null,
-                'is_result_invalid' => $params['invalidVlResult']->$key ?? null,
-                'error_code' => $params['errorCode']->$key ?? null,
-                'module_number' => $params['moduleNumber']->$key ?? null,
-                'comment' => $params['comment']->$key ?? null
-            ];
-            if ($res == null || $res === false) {
-                $data['created_by'] = $params['dmId'];
-                $data['created_on'] = new Zend_Db_Expr('now()');
-                $id = $this->insert($data);
-            } else {
-                $data['updated_by'] = $params['dmId'];
-                $data['updated_on'] = new Zend_Db_Expr('now()');
-                $id = $this->update($data, "shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
-            }
+            return $id;
+        } catch (Throwable $exc) {
+            error_log($exc->getMessage());
+            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+            return 0;
         }
-        return $id;
     }
 }
