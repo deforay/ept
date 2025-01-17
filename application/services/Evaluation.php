@@ -198,7 +198,6 @@ class Application_Service_Evaluation
 			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
-			->where("p.unique_identifier = ?", 'SLH10078')
 			->where("s.shipment_id = ?", $shipmentId);
 		//->where("substring(sp.evaluation_status,4,1) != '0'");
 		if (!empty($override)) {
