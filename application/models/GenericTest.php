@@ -363,7 +363,7 @@ class Application_Model_GenericTest
         //------------- Participant List Details End ------>
 
         //<-------- Second sheet start
-        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date'];
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date', 'Kit Name', 'Kit Lot Number', 'Kit Expiry Date'];
         $shipmentAttributes = Zend_Json_Decoder::decode($result['shipment_attributes'], true);
         // Zend_Debug::dump($shipmentAttributes);die;
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
@@ -482,7 +482,6 @@ class Application_Model_GenericTest
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
         $sheetThreeColNo = 0;
         $sheetThreeRow = 1;
-        $panelScoreHeadingCount = count($panelScoreHeadings);
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
             $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
@@ -530,19 +529,18 @@ class Application_Model_GenericTest
             foreach ($shipmentResult as $aRow) {
                 $r = 1;
                 $k = 0;
-                $rehydrationDate = "";
                 $shipmentTestDate = "";
                 $sheetThreeCol = 1;
                 $totScoreCol = 1;
                 $countCorrectResult = 0;
-
+                $attributes = json_decode($aRow['attributes'], true);
                 $colCellObj = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow);
                 $colCellObj->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $cellName = $colCellObj->getColumn();
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 // $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
-                $shipmentReceiptDate = "";
+                $kitExpiryDate = $shipmentReceiptDate = "";
                 if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
@@ -551,8 +549,15 @@ class Application_Model_GenericTest
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
+                if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != "" && trim($attributes['kit_expiry_date']) != "0000-00-00") {
+                    $kitExpiryDate = Pt_Commons_General::excelDateFormat($attributes['kit_expiry_date']);
+                }
+
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_name']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($kitExpiryDate);
                 /* Panel score section */
                 $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
@@ -808,8 +813,9 @@ class Application_Model_GenericTest
 
         $responseCounter = [];
         foreach ($sampleWise as $sample => $reportedResult) {
-            if (!empty($reportedResult)
-                    && (count($reportedResult) > $minimumRequiredResponses)
+            if (
+                !empty($reportedResult)
+                && (count($reportedResult) > $minimumRequiredResponses)
             ) {
                 $responseCounter[$sample] = count($reportedResult);
                 $inputArray = $reportedResult;
