@@ -1248,7 +1248,6 @@ class Application_Model_Dts
 
 			// if we are excluding this result, then let us not give pass/fail
 			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
-				$finalResult = '';
 				$shipment['is_excluded'] = 'yes';
 				$shipment['is_followup'] = 'yes';
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
@@ -1282,9 +1281,24 @@ class Application_Model_Dts
 
 			$shipmentResult[$counter]['max_score'] = $maxScore;
 			$shipmentResult[$counter]['final_result'] = $finalResult;
-
-			if ($shipment['is_excluded'] != 'yes' && $shipment['is_pt_test_not_performed'] != 'yes') {
-
+			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
+				$failureReason = [array('warning' => 'Excluded from Evaluation')];
+				$failureReasonStr = json_encode($failureReason);
+				// let us update the total score in DB
+				$this->db->update(
+					'shipment_participant_map',
+					array(
+						'shipment_score' => 0,
+						'documentation_score' => 0,
+						'final_result' => 3,
+						'is_followup' => 'yes',
+						'is_excluded' => 'yes',
+						'failure_reason' => $failureReasonStr,
+						'is_response_late' => $shipment['is_response_late']
+					),
+					'map_id = ' . $shipment['map_id']
+				);
+			} else {
 				/* Manual result override changes */
 				if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 					$sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
@@ -1297,12 +1311,12 @@ class Application_Model_Dts
 						}
 
 						$shipmentResult[$counter]['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
-						$nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+						$this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
 					}
 				} else {
 
 					// let us update the total score in DB
-					$nofOfRowsUpdated = $this->db->update(
+					$this->db->update(
 						'shipment_participant_map',
 						array(
 							'shipment_score' => $responseScore,
