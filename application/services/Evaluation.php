@@ -1401,13 +1401,13 @@ class Application_Service_Evaluation
 			->where("s.shipment_id = ?", $shipmentId)
 			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 			// ->where("sp.is_excluded not like 'yes'")
-			->where("sp.response_status is not null AND sp.response_status like 'responded'");
+			->where("sp.response_status is not null AND sp.response_status like 'responded'")
+			->group('p.participant_id');
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		// die($sql);
 		$sRes = $shipmentResult = $db->fetchAll($sql);
 		$meanScore = [];
 		$testType = $shipmentResult[0]['scheme_type'];
@@ -1549,7 +1549,7 @@ class Application_Service_Evaluation
 					['reseid' => 'response_result_generic_test'],
 					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score', 'additional_detail', 'z_score']
 				)
-					->join(
+					->joinLeft(
 						['spm' => 'shipment_participant_map'],
 						'spm.map_id=reseid.shipment_map_id',
 						['spm.shipment_id', 'spm.participant_id', 'spm.shipment_receipt_date', 'spm.shipment_test_date', 'spm.attributes', 'responseDate' => 'spm.shipment_test_report_date', 'spm.failure_reason']
@@ -1564,7 +1564,7 @@ class Application_Service_Evaluation
 						'spm.shipment_id=rgtc.shipment_id and reseid.sample_id=rgtc.sample_id',
 						['median', 'sd']
 					)
-					->where("refeid.control = 0")
+					// ->where("refeid.control = 0")
 					->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'  OR spm.is_excluded = '' "))
 					->where("reseid.shipment_map_id = ?", $res['map_id'])
 					->order(array('refeid.sample_id'));

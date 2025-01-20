@@ -142,7 +142,6 @@ if (!empty($resultArray['shipment'])) {
 
 
         // Samples without response need not be generated
-
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
         $labInfo .= '	<td style="width: 33.33%;""><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
@@ -168,10 +167,10 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
+        $pdf->SetLeftMargin(15);
+        $pdf->writeHTML($labInfo, true, false, true, false, '');
         $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         $passPercentage = $userTestConfig['passingScore'] ?? 100;
-        $pdf->writeHTML($labInfo, true, false, true, false, '');
-
         if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') {
             if ($result['noOfParticipants'] > 0) {
                 $rowspan = count($result['responseResult']);
@@ -358,7 +357,6 @@ if (!empty($resultArray['shipment'])) {
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
-        $pdf->Output($fileName, 'I');
 
         $loadpdf = Zend_Pdf::load($filePath);
 
