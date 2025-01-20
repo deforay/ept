@@ -5,7 +5,6 @@ $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $shipmentCode = '';
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
@@ -359,7 +358,7 @@ if (!empty($resultArray['shipment'])) {
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
-        // $pdf->Output($fileName, 'I');
+        $pdf->Output($fileName, 'I');
 
         $loadpdf = Zend_Pdf::load($filePath);
 

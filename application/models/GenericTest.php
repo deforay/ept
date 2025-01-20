@@ -130,14 +130,13 @@ class Application_Model_GenericTest
                                 $calcResult = "fail";
                             }
                         }
-                        /* Zend_Debug::dump($quantRange);
-                        Zend_Debug::dump($failureReason); */
                         $maxScore += $result['sample_score'];
 
                         $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                     }
                 } else {
                     foreach ($results as $result) {
+                        $calculatedScore = 0;
                         if (isset($result['reference_result']) && !empty($result['reference_result']) && isset($result['reported_result']) && !empty($result['reported_result'])) {
                             if ($result['reference_result'] == $result['reported_result']) {
                                 if (0 == $result['control']) {
@@ -146,14 +145,16 @@ class Application_Model_GenericTest
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    $failureReason[] = [
+                                        'warning' => "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly",
+                                        'correctiveAction' => "Review and refer to National HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result."
+                                    ];
                                 }
                             }
                         }
                         if (0 == $result['control']) {
                             $maxScore += $result['sample_score'];
                         }
-
                         $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                     }
                 }
