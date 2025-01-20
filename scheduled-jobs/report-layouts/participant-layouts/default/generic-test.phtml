@@ -144,7 +144,7 @@ if (!empty($resultArray['shipment'])) {
         // Samples without response need not be generated
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="width: 33.33%;""><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td style="width: 33.33%;"><strong>PT Panel Name and Date</strong> <br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>';
         $labInfo .= '	<td style="width: 33.33%;"><strong>PT Panel Received</strong> <br>' . $shipmentReceiptDate . '</td>';
         $labInfo .= '	<td style="width: 33.33%;"><strong>Shipment Code </strong> <br>' . $result['shipment_code'] . '</td>';
         $labInfo .= '</tr>';
@@ -167,7 +167,6 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
-        $pdf->SetLeftMargin(15);
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         $passPercentage = $userTestConfig['passingScore'] ?? 100;
