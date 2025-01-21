@@ -2322,6 +2322,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data[$key]['is_tnd'][$sample['sample_id']] = $sample['is_tnd'] ?? null;
                         $data[$key]['is_result_invalid'][$sample['sample_id']] = $sample['is_result_invalid'] ?? null;
                         $data[$key]['reported_viral_load'][$sample['sample_id']] = $sample["reported_viral_load"] ?? null;
+                        $data[$key]['error_code'][$sample['sample_id']] = $sample["error_code"] ?? null;
+                        $data[$key]['module_number'][$sample['sample_id']] = $sample["module_number"] ?? null;
                         $data[$key]['comment'][$sample['sample_id']] = $sample["comment"] ?? null;
                     }
                     if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
