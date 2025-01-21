@@ -1383,8 +1383,7 @@ class Application_Service_Evaluation
 									)
 								)
 							END
-						"),
-					'noOfParticipants' => new Zend_Db_Expr("COUNT(*)")
+						")
 				]
 			)
 			//->joinLeft(array('rst' => 'r_site_type'), 'p.site_type=rst.r_stid', array('siteType' => 'rst.site_type'))
@@ -1401,14 +1400,14 @@ class Application_Service_Evaluation
 			->where("s.shipment_id = ?", $shipmentId)
 			// ->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
 			// ->where("sp.is_excluded not like 'yes'")
-			->where("sp.response_status is not null AND sp.response_status like 'responded'")
-			->group('p.participant_id');
+			->where("sp.response_status is not null AND sp.response_status like 'responded'");
 		if (isset($sLimit) && isset($sOffset)) {
 			$sql = $sql->limit($sLimit, $sOffset);
 		}
+		$sRes = $shipmentResult = $db->fetchAll($sql);
+
 		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		$sRes = $shipmentResult = $db->fetchAll($sql);
 		$meanScore = [];
 		$testType = $shipmentResult[0]['scheme_type'];
 		$tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];

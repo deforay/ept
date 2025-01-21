@@ -80,16 +80,18 @@
 		</div>
 		<p><?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
 		<div class="row">
-			<div class="col-lg-5">
+			<div class="col-lg-7">
 				<div class="form-group">
-					<label class="col-lg-4 control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
-					<div class="col-lg-6">
-						<select name="participantList" class="form-control" id="participantList" title="Please choose the list to autoselect the participants" onchange="getEnrollmentParticipantsList(this)">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<div class="col-lg-10">
+						<label class="control-label"><?= $this->translate->_("Preset Participant List"); ?></label>
+						<select name="participantList[]" class="form-control" multiple="multiple" id="participantList" title="Please choose the list to autoselect the participants">
 							<?php foreach ($this->participantListsName as $names) { ?>
 								<option value="<?php echo base64_encode($names['list_name']); ?>"><?php echo ucwords($names['list_name']); ?></option>
 							<?php } ?>
 						</select>
+					</div>
+					<div class="col-lg-2" style=" top: 28px; vertical-align: middle; ">
+						<a class="btn btn-warning btn-sm" onclick="getEnrollmentParticipantsList()">Search</a>
 					</div>
 				</div>
 			</div>
@@ -177,7 +179,7 @@
 			else
 				$("#listNameField").hide();
 		});
-
+		$('#participantList').selectpicker();
 		$("#city").select2({
 			placeholder: "<?= $this->translate->_("Select one or more cities"); ?>",
 			allowClear: true
@@ -407,19 +409,20 @@
 
 	}
 
-	function getEnrollmentParticipantsList(obj) {
+	function getEnrollmentParticipantsList() {
 		$.blockUI();
 		let shipId = $("#shipmentId").val();
-		if (obj.value != "") {
-			let text = $(obj).find('option:selected').text();
+		let presetList = $('#participantList').val();
+		if (presetList != "") {
+			let text = $('#participantList').find('option:selected').text();
 			$("#listName").val(text);
 		} else {
 			$("#listName").val('');
 		}
-		if ($.trim(obj.value) != '' || $.trim(shipId) != '') {
+		if ($.trim(presetList) != '' || $.trim(shipId) != '') {
 			$.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'get-enrollment-list'], 'default', true); ?>", {
 					sid: shipId,
-					unique: obj.value,
+					unique: presetList,
 					format: "html"
 				},
 				function(data) {

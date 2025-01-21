@@ -80,11 +80,14 @@ class Application_Service_Participants
 
 	public function getParticipantsListNamesByUniqueId($id)
 	{
-		if (isset($id) && trim($id) != "") {
-
+		if (isset($id) && sizeof($id) > 0) {
+			$ids = [];
+			foreach ($id as $d) {
+				$ids[] = base64_decode($d);
+			}
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$sql = $db->select()->from(['eln' => 'enrollments'], ['*'])
-				->where("eln.list_name IN (?)", base64_decode($id));
+				->where("eln.list_name IN ('" . implode("', '", $ids) . "')");
 			return $db->fetchAll($sql);
 		}
 	}
