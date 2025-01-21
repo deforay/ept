@@ -4,7 +4,7 @@ require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
 
 $cliOptions = getopt("s:c:");
 $shipmentsToGenerate = $cliOptions['s'];
-$certificateName = (!empty($cliOptions['c']) ? $cliOptions['c'] : date('Y'));
+$certificateName = !empty($cliOptions['c']) ? $cliOptions['c'] : date('Y');
 
 if (is_array($shipmentsToGenerate)) {
 	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
@@ -62,7 +62,7 @@ if (!file_exists($participationCertPath)) {
 
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$common = new Application_Service_Common();
+
 $participantsDb = new Application_Model_DbTable_Participants();
 $dataManagerDb = new Application_Model_DbTable_DataManagers();
 $schemesService = new Application_Service_Schemes();
@@ -71,6 +71,41 @@ $vlAssayArray = $vlModel->getVlAssay();
 $generalModel = new Pt_Commons_General();
 
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
+function generateCertificate($shipmentType, $certificateType, $fields, $outputFile)
+{
+	$templates = [
+		'excellence' => [
+			'dts' => __DIR__ . "/certificate-templates/dts-e.pdf",
+			'eid' => __DIR__ . "/certificate-templates/eid-e.pdf",
+			'vl'  => __DIR__ . "/certificate-templates/vl-e.pdf",
+		],
+		'participation' => [
+			'dts' => __DIR__ . "/certificate-templates/dts-p.pdf",
+			'eid' => __DIR__ . "/certificate-templates/eid-p.pdf",
+			'vl'  => __DIR__ . "/certificate-templates/vl-p.pdf",
+		],
+	];
+
+	$templateFile = $templates[$certificateType][$shipmentType] ?? null;
+
+	if (!$templateFile || !file_exists($templateFile)) {
+		throw new Exception("$certificateType template file not found for $shipmentType");
+	}
+
+	createCertificateFile($templateFile, $fields, $outputFile);
+}
+
+function sendNotification($emailConfig, $shipmentsList)
+{
+    if (!empty($emailConfig) && !empty($shipmentsList) && $emailConfig->status == "yes" && !empty($emailConfig->mails)) {
+		$common = new Application_Service_Common();
+        $emailSubject = "ePT | Certificates Generated";
+        $emailContent = "Certificates for Shipment " . implode(", ", $shipmentsList) . " have been generated.";
+        $emailContent .= "<br><br><br><small>This is a system generated email</small>";
+        $common->insertTempMail($emailConfig->mails, null, null, $emailSubject, $emailContent);
+    }
+}
+
 
 try {
 
@@ -143,20 +178,11 @@ try {
 						$assayName = $eidAssayArray[$arrayVal[$shipmentType][$shipmentCode]['attributes']['extraction_assay']];
 					}
 
-					$firstSheetRow[] = $assayName;
 					if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] != 3) {
-
-						$firstSheetRow[] = $arrayVal[$shipmentType][$shipmentCode]['score'];
-
 						if ($arrayVal[$shipmentType][$shipmentCode]['result'] != 1) {
 							$certificate = false;
 						}
 					} else {
-						if (!empty($arrayVal[$shipmentType][$shipmentCode]['result']) && $arrayVal[$shipmentType][$shipmentCode]['result'] == 3) {
-							$firstSheetRow[] = 'Excluded';
-						} else {
-							$firstSheetRow[] = '-';
-						}
 						//$participated = false;
 						$certificate = false;
 					}
@@ -176,61 +202,32 @@ try {
 
 				$attribs = $arrayVal['attribs'];
 
+				if ($shipmentType == 'vl') {
+					if ($attribs["vl_assay"] == 6) {
+						if (isset($attribs["other_assay"])) {
+							$assay = $attribs["other_assay"];
+						} else {
+							$assay = "Other";
+						}
+					} else {
+						$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
+					}
+					$fields['assay'] = $assay ?? '';
+				}
+
 				if ($certificate && $participated) {
 
 					$outputFile = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".pdf";
 
-					if ($shipmentType == 'dts') {
-						$templateFile = __DIR__ . "/certificate-templates/dts-e.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					} elseif ($shipmentType == 'eid') {
-						$templateFile = __DIR__ . "/certificate-templates/eid-e.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					} elseif ($shipmentType == 'vl') {
-
-
-						$fields['assay'] = $assay ?? '';
-						$templateFile = __DIR__ . "/certificate-templates/vl-e.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					}
+					generateCertificate($shipmentType, 'excellence', $fields, $outputFile);
 				} elseif ($participated) {
 
 					$outputFile = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName . ".pdf";
 
-
-					if ($shipmentType == 'dts') {
-						$templateFile = __DIR__ . "/certificate-templates/dts-p.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					} elseif ($shipmentType == 'eid') {
-						$templateFile = __DIR__ . "/certificate-templates/eid-p.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					} elseif ($shipmentType == 'vl') {
-						if ($attribs["vl_assay"] == 6) {
-							if (isset($attribs["other_assay"])) {
-								$assay = $attribs["other_assay"];
-							} else {
-								$assay = "Other";
-							}
-						} else {
-							$assay = (isset($attribs["vl_assay"]) && isset($vlAssayArray[$attribs["vl_assay"]])) ? $vlAssayArray[$attribs["vl_assay"]] : " Other ";
-						}
-						$fields['assay'] = $assay ?? '';
-						$templateFile = __DIR__ . "/certificate-templates/vl-p.pdf";
-						createCertificateFile($templateFile, $fields, $outputFile);
-					}
+					generateCertificate($shipmentType, 'participation', $fields, $outputFile);
 				}
 				/* Send admin notification emails */
-				if (
-					isset($customConfig->jobCompletionAlert->status)
-					&& $customConfig->jobCompletionAlert->status == "yes"
-					&& isset($customConfig->jobCompletionAlert->mails)
-					&& !empty($customConfig->jobCompletionAlert->mails)
-				) {
-					$emailSubject = "ePT | Certificates Generated";
-					$emailContent = "Certificates for Shipment " . $shipmentsList . " have been generated.";
-					$emailContent .= "<br><br><br><small>This is a system generated email</small>";
-					$common->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
-				}
+				sendNotification($customConfig->email->certificates ?? null, $shipmentsList ?? null);
 			}
 		}
 	}

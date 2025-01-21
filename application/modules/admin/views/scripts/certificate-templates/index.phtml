@@ -23,14 +23,14 @@ $ct = $this->certificateTemplates;
                 $showEFile = "block";
                 $pfilePath = "javascript:void(0);";
                 $efilePath = "javascript:void(0);";
-                if (isset($ct[$scheme['scheme_id']]['participation_certificate']) && $ct[$scheme['scheme_id']]['participation_certificate'] != "" && file_exists(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'])) {
+                if (isset($ct[$scheme['scheme_id']]['participation_certificate']) && $ct[$scheme['scheme_id']]['participation_certificate'] != "" && file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'])) {
                     // $pfilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['participation_certificate'];
                     $showPInput = "none";
                 } else {
                     $showPFile = "none";
                 }
 
-                if (isset($ct[$scheme['scheme_id']]['excellence_certificate']) && $ct[$scheme['scheme_id']]['excellence_certificate'] != "" && file_exists(APPLICATION_PATH . '/../scheduled-jobs' . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'])) {
+                if (isset($ct[$scheme['scheme_id']]['excellence_certificate']) && $ct[$scheme['scheme_id']]['excellence_certificate'] != "" && file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'])) {
                     // $efilePath = DIRECTORY_SEPARATOR . "uplaods/certificate-template" . DIRECTORY_SEPARATOR . $ct[$scheme['scheme_id']]['excellence_certificate'];
                     $showEInput = "none";
                 } else {
