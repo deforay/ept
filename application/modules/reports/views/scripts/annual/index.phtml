@@ -174,7 +174,7 @@
 			$.blockUI();
 			scheme = $("#scheme").select2("val");
 			shipmentId = $("#shipmentId").select2("val");
-			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'), 'default', true); ?>", {
+			$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'save-scheduled-jobs'], 'default', true); ?>", {
 					startDate: startDate,
 					endDate: endDate,
 					scheme: scheme,
@@ -183,6 +183,7 @@
 					format: "html"
 				},
 				function(data) {
+					$.unblockUI();
 					if (data == 9999999) {
 						alert("Please ensure the template files for the selected scheme(s) are available and readable");
 					} else if (data > 0) {
@@ -191,7 +192,7 @@
 					} else {
 						alert("No matched shipment for selected date range.");
 					}
-					$.unblockUI();
+
 				});
 		} else {
 			alert("Please enter the certificate name to proceed")

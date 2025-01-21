@@ -1,9 +1,5 @@
 <?php
 
-// Define path to application directory
-defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
-
 // Define application environment
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', 'production');
@@ -12,35 +8,28 @@ defined('APPLICATION_ENV')
 defined('CRON_PATH')
     || define('CRON_PATH', realpath(dirname(__FILE__)));
 
-// Define path to u directory
+
 defined('ROOT_PATH')
-    || define('ROOT_PATH', dirname(__DIR__, 1) . '/public');
+    || define('ROOT_PATH', dirname(__DIR__, 1));
 
-// Define path to u directory
-defined('UPLOAD_PATH')
-    || define('UPLOAD_PATH', realpath(dirname(__FILE__) . '/../public/uploads'));
-// Define path to u directory
-defined('TEMP_UPLOAD_PATH')
-    || define('TEMP_UPLOAD_PATH', realpath(dirname(__FILE__) . '/../public/temporary'));
-
-defined('DB_PATH')
-    || define('DB_PATH', realpath(dirname(__FILE__) . '/../database'));
-
-defined('DOWNLOADS_FOLDER')
-    || define('DOWNLOADS_FOLDER', realpath(dirname(__FILE__) . '/../downloads'));
-
-defined('PARTICIPANT_REPORTS_LAYOUT')
-    || define('PARTICIPANT_REPORTS_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/participant-layouts'));
-defined('SUMMARY_REPORT_LAYOUT')
-    || define('SUMMARY_REPORT_LAYOUT', realpath(dirname(__FILE__) . '/../scheduled-jobs/report-layouts/summary-layouts'));
+const WEB_ROOT = ROOT_PATH . DIRECTORY_SEPARATOR . 'public';
+const UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'uploads';
+const TEMP_UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'temporary';
+const DB_PATH = ROOT_PATH . DIRECTORY_SEPARATOR . 'database';
+const APPLICATION_PATH = ROOT_PATH . DIRECTORY_SEPARATOR . 'application';
+const DOWNLOADS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'downloads';
+const SCHEDULED_JOBS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs';
+const PARTICIPANT_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/participant-layouts';
+const SUMMARY_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/summary-layouts';
 
 
 // Ensure library/ is on include_path
-set_include_path(implode(PATH_SEPARATOR, array(
-    realpath(APPLICATION_PATH . '/../library'),
-    realpath(APPLICATION_PATH . '/../vendor'),
+
+set_include_path(implode(PATH_SEPARATOR, [
+    realpath(ROOT_PATH . '/vendor'),
+    realpath(ROOT_PATH . '/library'),
     get_include_path(),
-)));
+]));
 
 require_once(APPLICATION_PATH . '/../vendor/autoload.php');
 
