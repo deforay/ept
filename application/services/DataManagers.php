@@ -405,11 +405,11 @@ class Application_Service_DataManagers
     public function checkSystemDuplicate($params) // This function created for checking ptcc and actual dm replacement using primary email
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm_id', 'ptcc'))
+        $sql = $db->select()->from(['dm' => 'data_manager'], ['dm_id', 'data_manager_type'])
             ->where("dm.primary_email = ?", strtolower($params["value"]));
         $result = $db->fetchRow($sql);
         if (isset($result['dm_id']) && !empty($result['dm_id'])) {
-            if (isset($result['ptcc']) && $result['ptcc'] != 'yes') {
+            if (isset($result['data_manager_type']) && $result['data_manager_type'] != 'ptcc') {
                 return $result['dm_id'];
             } else {
                 return false;

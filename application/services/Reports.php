@@ -206,11 +206,7 @@ class Application_Service_Reports
             // $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
             $row[] = $aRow['reported_count'] ?? 0;
-            // if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            //     $row[] = '<a href="/participant/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
-            // } else {
             $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
-            //}
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
 

@@ -33,8 +33,6 @@ const SCHEDULED_JOBS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs'
 const PARTICIPANT_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/participant-layouts';
 const SUMMARY_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/summary-layouts';
 
-
-
 //if (APPLICATION_ENV == 'production') {
 // Suppress deprecation warnings, notices, and warnings
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
@@ -48,7 +46,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 )));
 
 /** Zend_Application */
-require_once APPLICATION_PATH . '/../vendor/autoload.php';
+require_once ROOT_PATH . '/vendor/autoload.php';
 require_once 'Zend/Application.php';
 
 // Create application, bootstrap, and run

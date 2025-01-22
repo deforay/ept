@@ -149,7 +149,7 @@ class AuthController extends Zend_Controller_Action
 					$authNameSpace->force_profile_updation = 1;
 					$authNameSpace->profile_updation_pid = $profileUpdate[0]['participant_id'];
 				}
-				if (isset($result['ptcc']) && !empty($result['ptcc']) && $result['ptcc'] == 'yes') {
+				if (isset($result['data_manager_type']) && !empty($result['data_manager_type']) && $result['data_manager_type'] == 'ptcc') {
 					$authNameSpace->ptcc = 1;
 				}
 

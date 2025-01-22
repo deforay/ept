@@ -31,7 +31,7 @@ set_include_path(implode(PATH_SEPARATOR, [
     get_include_path(),
 ]));
 
-require_once(APPLICATION_PATH . '/../vendor/autoload.php');
+require_once ROOT_PATH . '/vendor/autoload.php';
 
 /** Zend_Application */
 require_once 'Zend/Application.php';
