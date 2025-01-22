@@ -518,13 +518,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()
-            ->from(array('u' => $this->_name));
+            ->from(['u' => $this->_name]);
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sql =  $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array('pmm.dm_id'))
+            $sql =  $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', ['pmm.dm_id'])
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         } else {
             $sql =  $sql->where("data_manager_type != 'ptcc'");
@@ -535,7 +535,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function saveNewPassword($params)
     {
-        $common = new Application_Service_Common();
         $password = Application_Service_Common::passwordHash($params['password']);
         $noOfRows = $this->update(['password' => $password], "primary_email = '{$params['registeredEmail']}'");
         return $noOfRows === 1;
@@ -864,7 +863,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'fail', 'message' => 'Your old password is incorrect', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Update the new password to the server */
-        $common = new Application_Service_Common();
         $newpassword = Application_Service_Common::passwordHash($params['password']);
         $update = $this->update(array('password' => $newpassword), array('dm_id = ?' => (int) $aResult['dm_id']));
         if ($update < 1) {
@@ -1040,7 +1038,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function addQuickDm($params, $participantId)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $common = new Application_Service_Common();
         $password = Application_Service_Common::passwordHash($params['dmPassword']);
         $newDmId =  $this->insert([
             'primary_email' => $params['pemail'],
