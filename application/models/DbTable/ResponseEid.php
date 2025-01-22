@@ -17,8 +17,7 @@ class Application_Model_DbTable_ResponseEid extends Zend_Db_Table_Abstract
                 $params['hivCtOd'][$key] = '';
                 $params['icQs'][$key] = '';
             }
-            $count = (isset($res) && $res != "") ? count($res) : 0;
-            if ($res == null || $count == 0) {
+            if ($res == null || $res === 0) {
                 $this->insert(array(
                     'shipment_map_id' => $params['smid'],
                     'sample_id' => $sampleId,

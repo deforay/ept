@@ -19,8 +19,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
                 $params['longtermLine'][$key] = '';
                 $params['result'][$key] = '';
             }
-            $count = (isset($res) && $res != "")?count($res):0;
-            if ($res == null || $count == 0) {
+            if ($res == null || $res === 0) {
                 $this->insert(array(
                     'shipment_map_id' => $params['smid'],
                     'sample_id' => $sampleId,
@@ -50,7 +49,7 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
         $sampleIds = $params['recencyData']->Section3->data->samples->id;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
-            
+
             if ($res == null || count($res) == 0) {
                 $this->insert(array(
                     'shipment_map_id'   => $params['mapId'],
