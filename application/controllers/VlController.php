@@ -60,8 +60,11 @@ class VlController extends Zend_Controller_Action
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
 			} elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
 				$this->redirect("/participant/" . $data['comingFrom']);
-			} else {
+			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
 				$this->redirect("/participant/current-schemes");
+			} else {
+				$_SESSION['confirmForm'] = "yes";
+				$this->redirect("/vl/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
 			}
 
 			//die;
@@ -128,7 +131,8 @@ class VlController extends Zend_Controller_Action
 		$this->view->shipment = $shipment;
 	}
 
-	public function deleteAction() {
+	public function deleteAction()
+	{
 		/** Need to do this function later */
 	}
 }

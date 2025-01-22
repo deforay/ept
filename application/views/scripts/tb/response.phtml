@@ -404,10 +404,16 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 				<?php }
 				if ($this->isEditable || $adminAccess) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
+						<?php $submitText = "Complete and Submit";
+						if (isset($_SESSION['confirmForm']) && !empty($_SESSION['confirmForm']) && $_SESSION['confirmForm'] == 'yes') {
+							$submitText = "Confirm Response";
+							$_SESSION['confirmForm'] = "" ?>
+							<input type="hidden" name="confirmForm" value="yes" />
+						<?php } ?>
 						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
 						<input type="hidden" name="requiredFields" id="requiredFields" />
 						<?php if (!$adminAccess) { ?>
-							<input name="submitbtn" class="btn btn-primary" type="submit" value="Complete and Submit" />
+							<input name="submitbtn" class="btn btn-primary" type="submit" value="<?= $this->translate->_($submitText); ?>" />
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
 						<?php } elseif ($adminAccess) { ?>

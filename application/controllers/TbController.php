@@ -30,8 +30,11 @@ class TbController extends Zend_Controller_Action
             $shipmentService->updateTbResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
                 $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-            } else {
+            } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
                 $this->redirect("/participant/current-schemes");
+            } else {
+                $_SESSION['confirmForm'] = "yes";
+                $this->redirect("/tb/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
             }
         } else {
             $sID = $request->getParam('sid');

@@ -105,7 +105,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $data['updated_by'] = $authNameSpace->dm_id;
                     $data['updated_on'] = new Zend_Db_Expr('now()');
                     $id = $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
-                    echo "updated => " . $id;
                 }
             }
         } catch (Exception $e) {

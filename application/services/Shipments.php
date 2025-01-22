@@ -735,8 +735,10 @@ class Application_Service_Shipments
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1361,8 +1363,10 @@ class Application_Service_Shipments
                 $alertMessage = "Draft saved successfully. Please ensure to complete and submit your response before due date.\\n\\n\\nOnly fully submitted responses will be considered for evaluation";
             } elseif (!empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMessage = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMessage = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMessage = "Confirm your response";
             }
             $alertMsg->message = $alertMessage;
         } catch (Exception $e) {
@@ -1447,8 +1451,10 @@ class Application_Service_Shipments
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1617,8 +1623,10 @@ class Application_Service_Shipments
 
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,

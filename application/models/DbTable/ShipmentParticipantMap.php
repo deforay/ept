@@ -44,10 +44,14 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 if (isset($params['listName']) && $params['listName'] != "") {
                     $db = Zend_Db_Table_Abstract::getAdapter();
                     if (isset($params['participantList']) && $params['participantList'] != "") {
-                        $exist = $db->fetchRow($db->select()->from(array('eln' => 'enrollments'))
-                            ->where('list_name = "' . base64_decode($params['participantList']) . '" AND participant_id = ' . $participant));
-                        if (isset($exist['list_name']) && $exist['list_name']) {
-                            $db->delete('enrollments', 'list_name = "' . base64_decode($params['participantList']) . '" AND participant_id IN(' . implode(",", $params['selectedForEnrollment']) . ')');
+                        $ids = [];
+                        foreach ($params['participantList'] as $d) {
+                            $ids[] = base64_decode($d);
+                        }
+                        $exist = $db->fetchAll($db->select()->from(array('eln' => 'enrollments'))
+                            ->where('list_name IN ("' . implode('", "', $ids) . '") AND participant_id = ' . $participant));
+                        if (isset($exist[0]['list_name']) && $exist[0]['list_name']) {
+                            $db->delete('enrollments', 'list_name IN ("' . implode('", "', $ids) . '") AND participant_id IN(' . implode(",", $params['selectedForEnrollment']) . ')');
                         }
                         $db->insert('enrollments', array(
                             'list_name'      => $params['listName'],

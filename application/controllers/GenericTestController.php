@@ -31,8 +31,11 @@ class GenericTestController extends Zend_Controller_Action
             $shipmentService->updateGenericTestResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
                 $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-            } else {
+            } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
                 $this->redirect("/participant/current-schemes");
+            } else {
+                $_SESSION['confirmForm'] = "yes";
+                $this->redirect("/generic-test/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/yes");
             }
         } else {
             $sID = $request->getParam('sid');
@@ -62,7 +65,7 @@ class GenericTestController extends Zend_Controller_Action
             $commonService = new Application_Service_Common();
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
-            $this->view->allTestKits = $model->getAllTestKitList( $shipment['scheme_type']);
+            $this->view->allTestKits = $model->getAllTestKitList($shipment['scheme_type']);
             $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
