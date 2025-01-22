@@ -474,7 +474,13 @@ if ($this->reqFrom == "admin") {
 		if ($this->isEditable || $adminAccess) { ?>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 				<p>
-					<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
+					<?php $submitText = "Submit";
+					if (isset($_SESSION['confirmForm']) && !empty($_SESSION['confirmForm']) && $_SESSION['confirmForm'] == 'yes') {
+						$submitText = "Confirm Response";
+						$_SESSION['confirmForm'] = "" ?>
+						<input type="hidden" name="confirmForm" value="yes" />
+					<?php } ?>
+					<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_($submitText); ?>" />
 					&nbsp;&nbsp;&nbsp;
 					<input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="javascript:goto_dashboard()" />
 				</p>

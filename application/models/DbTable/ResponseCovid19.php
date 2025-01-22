@@ -63,7 +63,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
             );
 
             // Zend_Debug::dump($params);die;
-            if ($res == null || count($res) == 0) {
+            if ($res == null || $res === 0) {
                 $data['shipment_map_id'] = $params['smid'];
                 $data['sample_id'] = $sampleId;
                 $data['created_by'] = $authNameSpace->dm_id;

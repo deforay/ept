@@ -441,8 +441,10 @@ class Application_Service_Shipments
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -576,8 +578,10 @@ class Application_Service_Shipments
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -848,8 +852,10 @@ class Application_Service_Shipments
             $db->commit();
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
-            } else {
+            } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
                 $alertMsg->message = "Thank you for submitting your result. We have received it and the PT Results will be published on or after the due date";
+            } else {
+                $alertMsg->message = "Confirm your response";
             }
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
@@ -1235,7 +1241,7 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
-            $noOfRowsAffected = $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
+            $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
 
             $dbsResponseDb = new Application_Model_DbTable_ResponseDbs();
             $dbsResponseDb->updateResults($params);

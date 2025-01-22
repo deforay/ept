@@ -55,8 +55,11 @@ class RecencyController extends Zend_Controller_Action
 			$shipmentService->updateRecencyResults($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else {
+			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
 				$this->redirect("/participant/current-schemes");
+			} else {
+				$_SESSION['confirmForm'] = "yes";
+				$this->redirect("/recency/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
 			}
 			//die;
 		} else {

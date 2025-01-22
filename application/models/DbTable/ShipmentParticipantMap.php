@@ -41,7 +41,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $commonServices->insertIgnore($this->_name, $data);
                 // $this->insert($data);
 
-                if (isset($params['listName']) && $params['listName'] != "") {
+                if (isset($params['listName']) && $params['listName'] != "" && (isset($params['showName']) && !empty($params['showName']) && $params['showName'] == 'yes')) {
                     $db = Zend_Db_Table_Abstract::getAdapter();
                     if (isset($params['participantList']) && $params['participantList'] != "") {
                         $ids = [];

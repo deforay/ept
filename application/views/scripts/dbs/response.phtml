@@ -98,7 +98,7 @@ if ($this->reqFrom == "admin") {
                             ?>
                                 <td><label><?= $this->translate->_("Mode of Receipt"); ?></label></td>
                                 <td>
-                                    <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" class="" title="Please choose the mode of receipt">
+                                    <select class="form-control" name="modeOfReceipt" id="modeOfReceipt" title="Please choose the mode of receipt">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php
                                         foreach ($this->modeOfReceipt as $receipt) {
@@ -182,40 +182,40 @@ if ($this->reqFrom == "admin") {
                             <tr align="CENTER" class="light">
                                 <th><?= $this->translate->_("Test Method Code"); ?></th>
                                 <td colspan="2" class="dark">
-                                    <select name="eia_1" id="eia_1" style="width: 200px" class="isRequired" title="Please Choose EIA 1">
+                                    <select name="eia_1" id="eia_1" class="form-control" style="width: 200px" class="isRequired" title="Please Choose EIA 1">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_1"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="2">
-                                    <select name="eia_2" id="eia_2" style="width: 200px" class="" title="Please Choose EIA 2">
+                                    <select name="eia_2" id="eia_2" class="form-control" style="width: 200px" title="Please Choose EIA 2">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_2"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="2">
-                                    <select name="eia_3" id="eia_3" style="width: 200px" class="" title="Please Choose EIA 3">
+                                    <select name="eia_3" id="eia_3" class="form-control" style="width: 200px" title="Please Choose EIA 3">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_3"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="10">
-                                    <select name="wb" id="wb" style="width: 200px" class="" title="Please Choose Western Blot">
+                                    <select name="wb" id="wb" class="form-control" style="width: 200px" title="Please Choose Western Blot">
                                         <?php $this->dropdownSelection($this->wb, $this->allSamples[0]["wb"], true); ?>
                                     </select>
                                 </td>
                             </tr>
                             <tr align="CENTER" class="dark">
                                 <th><?= $this->translate->_("Lot No."); ?></th>
-                                <td colspan="2"><input type="text" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($this->allSamples[0]["lot_no_1"]); ?>" style="width: 90%" class="isRequired" title="Please enter Lot No. 1" placeholder="Please enter Lot No. 1" /></td>
-                                <td colspan="2"><input type="text" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($this->allSamples[0]["lot_no_2"]); ?>" style="width: 90%" class="" title="Please enter Lot No. 2" placeholder="Please enter Lot No. 2" /></td>
-                                <td colspan="2"><input type="text" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($this->allSamples[0]["lot_no_3"]); ?>" style="width: 90%" class="" title="Please enter Lot No. 3" placeholder="Please enter Lot No. 3" /></td>
-                                <td colspan="10"><input type="text" size="40" maxlength="40" name="wb_lot" id="wb_lot" value="<?php echo ($this->allSamples[0]["wb_lot"]); ?>" style="width:40%" class="" title="Please enter Western Blot Lot" placeholder="Please enter Western Blot Lot" /></td>
+                                <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40" name="lot_no_1" id="lot_no_1" value="<?php echo ($this->allSamples[0]["lot_no_1"]); ?>" style="width: 90%" class="isRequired" title="Please enter Lot No. 1" placeholder="Please enter Lot No. 1" /></td>
+                                <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40" name="lot_no_2" id="lot_no_2" value="<?php echo ($this->allSamples[0]["lot_no_2"]); ?>" style="width: 90%" title="Please enter Lot No. 2" placeholder="Please enter Lot No. 2" /></td>
+                                <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40" name="lot_no_3" id="lot_no_3" value="<?php echo ($this->allSamples[0]["lot_no_3"]); ?>" style="width: 90%" title="Please enter Lot No. 3" placeholder="Please enter Lot No. 3" /></td>
+                                <td colspan="10"><input type="text" class="form-control" size="40" maxlength="40" name="wb_lot" id="wb_lot" value="<?php echo ($this->allSamples[0]["wb_lot"]); ?>" style="width:40%" title="Please enter Western Blot Lot" placeholder="Please enter Western Blot Lot" /></td>
                             </tr>
 
                             <tr align="CENTER" class="light">
                                 <th><?= $this->translate->_("Expiry Date"); ?></th>
-                                <td colspan="2"><input id="exp_date1" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
-                                <td colspan="2"><input id="exp_date2" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
-                                <td colspan="2"><input id="exp_date3" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
-                                <td colspan="10"><input id="wb_exp_date" type="text" id="wb_exp_date" name="wb_exp_date" value="<?php echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>" style="width:30%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+                                <td colspan="2"><input id="exp_date1" class="form-control" type="text" id="exp_date1" name="exp_date_1" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+                                <td colspan="2"><input id="exp_date2" class="form-control" type="text" id="exp_date2" name="exp_date_2" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+                                <td colspan="2"><input id="exp_date3" class="form-control" type="text" id="exp_date3" name="exp_date_3" value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>" style="width: 90%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
+                                <td colspan="10"><input id="wb_exp_date" class="form-control" type="text" id="wb_exp_date" name="wb_exp_date" value="<?php echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>" style="width:30%" class="expDatepicker" readonly="readonly" placeholder="Select a date" /></td>
                             </tr>
                             <thead>
                                 <tr align="CENTER" class="dark">
@@ -253,78 +253,78 @@ if ($this->reqFrom == "admin") {
                                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]" value="<?php echo $sample['sample_id']; ?>" />
                                     </th>
 
-                                    <td><input type="text" size="5" name="od_1[]" id="od_1" value="<?php echo $sample['od_1']; ?>" /></td>
-                                    <td><input type="text" size="5" name="cutoff_1[]" id="cutoff_1" value="<?php echo $sample['cutoff_1']; ?>" /></td>
-                                    <td><input type="text" size="5" name="od_2[]" id="od_2" value="<?php echo $sample['od_2']; ?>" /></td>
-                                    <td><input type="text" size="5" name="cutoff_2[]" id="cutoff_2" value="<?php echo $sample['cutoff_2']; ?>" /></td>
-                                    <td><input type="text" size="5" name="od_3[]" id="od_3" value="<?php echo $sample['od_3']; ?>" /></td>
-                                    <td><input type="text" size="5" name="cutoff_3[]" id="cutoff_3" value="<?php echo $sample['cutoff_3']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="od_1[]" id="od_1" value="<?php echo $sample['od_1']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="cutoff_1[]" id="cutoff_1" value="<?php echo $sample['cutoff_1']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="od_2[]" id="od_2" value="<?php echo $sample['od_2']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="cutoff_2[]" id="cutoff_2" value="<?php echo $sample['cutoff_2']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="od_3[]" id="od_3" value="<?php echo $sample['od_3']; ?>" /></td>
+                                    <td><input type="text" class="form-control" size="5" name="cutoff_3[]" id="cutoff_3" value="<?php echo $sample['cutoff_3']; ?>" /></td>
 
                                     <td>
-                                        <select name="wb_160[]" id="wb_160" style="width:42px;font-weight:bold;">
+                                        <select name="wb_160[]" id="wb_160" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_160']) && $sample['wb_160'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_160']) && $sample['wb_160'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_120[]" id="wb_120" style="width:42px;font-weight:bold;">
+                                        <select name="wb_120[]" id="wb_120" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_120']) && $sample['wb_120'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_120']) && $sample['wb_120'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_66[]" id="wb_66" style="width:42px;font-weight:bold;">
+                                        <select name="wb_66[]" id="wb_66" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_66']) && $sample['wb_66'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_66']) && $sample['wb_66'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_55[]" id="wb_55" style="width:42px;font-weight:bold;">
+                                        <select name="wb_55[]" id="wb_55" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_55']) && $sample['wb_55'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_55']) && $sample['wb_55'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_51[]" id="wb_51" style="width:42px;font-weight:bold;">
+                                        <select name="wb_51[]" id="wb_51" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_51']) && $sample['wb_51'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_51']) && $sample['wb_51'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_41[]" id="wb_41" style="width:42px;font-weight:bold;">
+                                        <select name="wb_41[]" id="wb_41" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_41']) && $sample['wb_41'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_41']) && $sample['wb_41'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_31[]" id="wb_31" style="width:42px;font-weight:bold;">
+                                        <select name="wb_31[]" id="wb_31" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_31']) && $sample['wb_31'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_31']) && $sample['wb_31'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_24[]" id="wb_24" style="width:42px;font-weight:bold;">
+                                        <select name="wb_24[]" id="wb_24" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_24']) && $sample['wb_24'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_24']) && $sample['wb_24'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="wb_17[]" id="wb_17" style="width:42px;font-weight:bold;">
+                                        <select name="wb_17[]" id="wb_17" class="form-control" style="width:42px;font-weight:bold;">
                                             <option value=""></option>
                                             <option value="1" <?php echo (isset($sample['wb_17']) && $sample['wb_17'] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                             <option value="0" <?php echo (isset($sample['wb_17']) && $sample['wb_17'] == 0) ? "selected='selected'" : ""; ?>>-</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result">
+                                        <select class="form-control" name="reported_result[]" id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?> title="Please enter the result">
                                             <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                                         </select>
                                     </td>
@@ -460,9 +460,14 @@ if ($this->reqFrom == "admin") {
                     if ($this->isEditable || $adminAccess) { ?>
                         <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
                             <p>
-
+                                <?php $submitText = "Submit";
+                                if (isset($_SESSION['confirmForm']) && !empty($_SESSION['confirmForm']) && $_SESSION['confirmForm'] == 'yes') {
+                                    $submitText = "Confirm Response";
+                                    $_SESSION['confirmForm'] = "" ?>
+                                    <input type="hidden" name="confirmForm" value="yes" />
+                                <?php } ?>
                                 <input name="submitbtn" class="btn btn-primary" type="submit" onclick="validateNow();
-                            return false;" tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
+                            return false;" tabindex="7" value="<?= $this->translate->_($submitText); ?>" />
                                 &nbsp;&nbsp;&nbsp;
                                 <input name="cancel" class="btn btn-danger" type="button" id="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="javascript:goto_dashboard()" />
 

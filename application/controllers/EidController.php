@@ -28,7 +28,7 @@ class EidController extends Zend_Controller_Action
 				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
 				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
 				$filename = basename($_FILES['uploadedFile']['name']);
-				
+
 				if ($_FILES["uploadedFile"]["size"] < 5000000) {
 					$dirpath = "dts-early-infant-diagnosis" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
 					$uploadFolder = realpath(UPLOAD_PATH);
@@ -57,8 +57,11 @@ class EidController extends Zend_Controller_Action
 			$shipmentService->updateEidResults($data);
 			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
 				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} else {
+			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
 				$this->redirect("/participant/current-schemes");
+			} else {
+				$_SESSION['confirmForm'] = "yes";
+				$this->redirect("/eid/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
 			}
 		} else {
 			$sID = $request->getParam('sid');
