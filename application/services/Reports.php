@@ -206,11 +206,7 @@ class Application_Service_Reports
             // $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
             $row[] = $aRow['reported_count'] ?? 0;
-            // if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            //     $row[] = '<a href="/participant/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
-            // } else {
             $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
-            //}
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
 
@@ -926,10 +922,10 @@ class Application_Service_Reports
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1 && !empty($authNameSpace->ptccMappedCountries)) {
-            $sQuery = $sQuery->where("p.country IN(" . $authNameSpace->ptccMappedCountries . ")");
+            $sQuery = $sQuery->where("p.country IN({$authNameSpace->ptccMappedCountries})");
         } elseif (isset($authNameSpace->mappedParticipants) && !empty($authNameSpace->mappedParticipants)) {
             $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {

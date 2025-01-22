@@ -75,14 +75,14 @@ function generateCertificate($shipmentType, $certificateType, $fields, $outputFi
 {
 	$templates = [
 		'excellence' => [
-			'dts' => __DIR__ . "/certificate-templates/dts-e.pdf",
-			'eid' => __DIR__ . "/certificate-templates/eid-e.pdf",
-			'vl'  => __DIR__ . "/certificate-templates/vl-e.pdf",
+			'dts' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
+			'eid' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
+			'vl'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
 		],
 		'participation' => [
-			'dts' => __DIR__ . "/certificate-templates/dts-p.pdf",
-			'eid' => __DIR__ . "/certificate-templates/eid-p.pdf",
-			'vl'  => __DIR__ . "/certificate-templates/vl-p.pdf",
+			'dts' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
+			'eid' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
+			'vl'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
 		],
 	];
 

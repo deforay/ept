@@ -197,7 +197,9 @@ CREATE TABLE IF NOT EXISTS `generic_recommended_test_types` (
   `testkit` varchar(256) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-RENAME TABLE `r_testkitname_dts` TO `r_testkitnames`;
+CREATE TABLE r_testkitnames AS SELECT * FROM r_testkitname_dts;
+
+-- RENAME TABLE `r_testkitname_dts` TO `r_testkitnames`;
 
 -- Amit 31-Dec-2024
 UPDATE response_result_tb

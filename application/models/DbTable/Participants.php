@@ -346,20 +346,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $params['participantsList'][] = $params['participantId'];
             $dmDb->dmParticipantMap($params, $params['dataManager'], false, true);
         }
-        /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-        foreach ($params['dataManager'] as $dataManager) {
-            $db->insert('participant_manager_map', array('dm_id' => $dataManager, 'participant_id' => $params['participantId']));
-        } */
-        /* if (isset($params['country']) && !empty($params['country'])) {
-        $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$params['participantId']]);
 
-        $dmDb = new Application_Model_DbTable_DataManagers();
-        $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
-        if (isset($params['dataManager']) && !empty($params['dataManager'])) {
-            $result = array_merge($params['dataManager'], $result);
-        }
-        $dmDb->mapDataManagerToParticipants($result, $params['participantId'], array($params['country'], $params['state'], $params['district']));
-        } */
         if (isset($params['scheme']) && $params['scheme'] != "") {
             $enrollDb = new Application_Model_DbTable_Enrollments();
             $enrollDb->enrollParticipantToSchemes($params['participantId'], $params['scheme']);
@@ -466,16 +453,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /* if (isset($params['country']) && !empty($params['country'])) {
-            $db->query("DELETE FROM participant_manager_map WHERE participant_id = ? AND dm_id in (select dm_id from data_manager where IFNULL(`ptcc`, 'no') like 'yes')", [$participantId]);
-
-            $dmDb = new Application_Model_DbTable_DataManagers();
-            $result = $dmDb->fetchRelaventPtcc(array('country_id', 'state', 'district'), array($params['country'], $params['state'], $params['district']));
-            if (isset($params['dataManager']) && !empty($params['dataManager'])) {
-                $result = array_merge($params['dataManager'], $result);
-            }
-            $dmDb->mapDataManagerToParticipants($result, $participantId, array($params['country'], $params['state'], $params['district']));
-        } */
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             foreach ($params['enrolledProgram'] as $epId) {
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
@@ -867,7 +844,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $dataForStatistics = [];
             if (isset($_FILES['bulkMap']['tmp_name']) && !empty($_FILES['bulkMap']['tmp_name'])) {
                 $common = new Application_Service_Common();
-                $allowedExtensions = array('xls', 'xlsx', 'csv');
+                $allowedExtensions = ['xls', 'xlsx', 'csv'];
                 $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['bulkMap']['name']);
                 $fileName = str_replace(" ", "-", $fileName);
                 $random = $common->generateRandomString(6);
@@ -919,7 +896,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                         'password'          => $this->_defaultPasswordHash,
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
-                                        'ptcc' => 'no',
+                                        'data_manager_type' => 'manager',
                                         'created_by'        => $authNameSpace->admin_id,
                                         'created_on'        => new Zend_Db_Expr('now()'),
                                         'status'            => 'active'
@@ -1867,10 +1844,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if ($dmId2 > 0) {
                     $db->delete(
                         'participant_manager_map',
-                        'participant_id = ' . $lastInsertedId . ' AND
-                        dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(ptcc, "no") like "yes")'
+                        "participant_id = $lastInsertedId AND dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(data_manager_type, 'manager') like 'ptcc')"
                     );
-                    $db->insert('participant_manager_map', array('dm_id' => $dmId2, 'participant_id' => $lastInsertedId));
+                    $db->insert('participant_manager_map', ['dm_id' => $dmId2, 'participant_id' => $lastInsertedId]);
                 }
                 if ($dmId != null && $dmId > 0) {
 
@@ -2140,7 +2116,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $pQuery = $this->getAdapter()->select()
                 ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr("CASE WHEN (lab_name IS NOT NULL AND lab_name NOT LIKE '') THEN lab_name ELSE first_name END"), 'pmobile' => 'mobile', 'email'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
-                ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE ptcc like 'no' or ptcc = '' or ptcc is null))")
+                ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE data_manager_type like 'manager' or data_manager_type = '' or data_manager_type is null))")
                 ->group(array('p.participant_id'));
             $totalResult = $db->fetchAll($pQuery);
 

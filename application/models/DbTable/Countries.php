@@ -31,12 +31,12 @@ class Application_Model_DbTable_Countries extends Zend_Db_Table_Abstract
 	public function fetchParticipantCountriesList()
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->distinct()->from(array("c" => $this->_name), array('id', 'iso_name'))
-			->join(array('p' => 'participant'), 'c.id=p.country', array(''))
+		$sql = $db->select()->distinct()->from(["c" => $this->_name], ['id', 'iso_name'])
+			->join(['p' => 'participant'], 'c.id=p.country', [])
 			->order('iso_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
-			$sql = $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+			$sql = $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
