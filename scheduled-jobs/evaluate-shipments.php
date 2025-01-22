@@ -2,7 +2,6 @@
 
 ini_set('memory_limit', '-1');
 ini_set('max_execution_time', 0);
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
 $cliOptions = getopt("s:");
@@ -36,7 +35,7 @@ try {
 	foreach ($shipmentsToEvaluate as $shipmentId) {
 		$timeStart = microtime(true);
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
-		$timeEnd = microtime(true);
+$timeEnd = microtime(true);
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
 		$db->insert('notify', [
@@ -44,7 +43,6 @@ try {
 			'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins',
 			'link' => $link
 		]);
-
 		if (
 			isset($customConfig->jobCompletionAlert->status)
 			&& $customConfig->jobCompletionAlert->status == "yes"

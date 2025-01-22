@@ -196,7 +196,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->group('u.dm_id');
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-            $sQuery = $sQuery->where("data_manager_type = 'ptcc");
+            $sQuery = $sQuery->where("data_manager_type = 'ptcc'");
         } else {
             $sQuery = $sQuery->where("(data_manager_type like 'manager')");
         }
@@ -231,7 +231,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-
         /* Data set length after filtering */
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
@@ -244,7 +243,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             "iTotalDisplayRecords" => $iFilteredTotal,
             "aaData" => array()
         );
-
         foreach ($rResult as $aRow) {
             $row = [];
             //if(isset($aRow['participant_id'])&& $aRow['participant_id']!=''){
@@ -283,7 +281,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             $output['aaData'][] = $row;
         }
-
+    
         echo json_encode($output);
     }
 
@@ -1266,7 +1264,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $params['province'] = $sheetData[$i]['K'];
                         $params['country'] = $countryId;
                         $this->dmParticipantMap($params, $lastInsertedId, true);
-
                     }
                 }
                 $db->commit();
@@ -1400,6 +1397,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function dmParticipantMap($params, $dmId, bool $isPtcc = false, bool $participantSide = false)
     {
+        // echo '<pre>'; print_r($params); die;
+
         try {
             $db = Zend_Db_Table_Abstract::getAdapter();
             if (!isset($dmId) || empty($dmId)) {
@@ -1452,7 +1451,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if ($locationWiseSwitch) { // Check the status activated or not
                     // Fetch list of participants from location wise
                     $locationwiseparticipants = $db->fetchAll($sql);
-
+                  
                     foreach ($locationwiseparticipants as $value) {
                         $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                         $params['participantsList'][] = $value['participant_id'];
