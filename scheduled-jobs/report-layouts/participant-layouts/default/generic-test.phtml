@@ -282,6 +282,14 @@ if (!empty($resultArray['shipment'])) {
                 $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
             }
         }
+        // Check testkit approved or not
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
+        error_log($kitResult['Approval']);
+        if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
+            $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
+        }
+
         $pdf->SetLeftMargin(15);
         $pdf->writeHTML($wishes, true, false, true, false, '');
 

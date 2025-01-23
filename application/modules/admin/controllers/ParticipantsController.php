@@ -248,4 +248,12 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             return false;
         }
     }
+
+    public function filesAction()
+    {
+        $downloadDirectory = scandir(DOWNLOADS_FOLDER, true);
+        $reportLayouts = array_diff(array_unique($downloadDirectory), ['.', '..', 'reports', 'index.php']);
+        Zend_Debug::dump($reportLayouts);
+        die;
+    }
 }
