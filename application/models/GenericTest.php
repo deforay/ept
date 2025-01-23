@@ -33,8 +33,10 @@ class Application_Model_GenericTest
             }
             $testKitDb = new Application_Model_DbTable_Testkitnames();
             if (isset($attributes['kit_name']) && !empty($attributes['kit_name'])) {
+                $kitResult = $testKitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
                 $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
             } else {
+                $kitResult = false;
                 $updatedTestKitId = false;
             }
             $schemeService = new Application_Service_Schemes();
@@ -60,6 +62,7 @@ class Application_Model_GenericTest
             $failureReason = [];
             $mandatoryResult = "";
             $scoreResult = "";
+            $jsonConfig['minNumberOfResponses'] = $jsonConfig['minNumberOfResponses'] ?? 5;
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
                     $zScore = null;
@@ -130,6 +133,7 @@ class Application_Model_GenericTest
                                 $calcResult = "fail";
                             }
                         }
+
                         $maxScore += $result['sample_score'];
 
                         $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
@@ -166,6 +170,14 @@ class Application_Model_GenericTest
                             'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
                         ];
                     }
+                }
+
+                if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0) {
+                    $maxScore = $totalScore = 0;
+                    $failureReason[] = [
+                        'warning' => "Testing is not performed with country approved test kit.",
+                        'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample(s) as per National HIV Testing algorithm. Review and refer to SOP for testing"
+                    ];
                 }
 
                 if ($maxScore > 100) {

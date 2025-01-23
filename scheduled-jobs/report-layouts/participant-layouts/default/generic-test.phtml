@@ -272,22 +272,22 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
-        if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
-        } else {
-            $totalScore = $result['shipment_score'] + $result['documentation_score'];
-            if ($totalScore >= $passPercentage && $instance != 'philippines') {
-                $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
-            } else {
-                $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
-            }
-        }
         // Check testkit approved or not
         $kitDb = new Application_Model_DbTable_Testkitnames();
         $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
-        error_log($kitResult['Approval']);
         if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
             $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
+        } else {
+            if ($result['is_excluded'] == 'yes') {
+                $wishes = '<p>Your response was not considered for evaluation</p>';
+            } else {
+                $totalScore = $result['shipment_score'] + $result['documentation_score'];
+                if ($totalScore >= $passPercentage && $instance != 'philippines') {
+                    $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+                } else {
+                    $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+                }
+            }
         }
 
         $pdf->SetLeftMargin(15);
