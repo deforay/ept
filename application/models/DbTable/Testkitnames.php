@@ -402,4 +402,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             }
         }
     }
+
+    public function fetchGivenKitApprovalStatus($kit)
+    {
+        return $this->fetchRow('TestKit_Name = "' . $kit . '" OR ' . $this->_primary . ' = "' . $kit . '"');
+    }
 }
