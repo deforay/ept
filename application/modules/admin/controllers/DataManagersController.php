@@ -100,6 +100,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->countriesList = $commonService->getcountriesList();
                 $this->view->provinceList = $commonService->getParticipantsProvinceList();
                 $this->view->districtList = $commonService->getParticipantsDistrictList();
+// echo '<pre>'; print_r($commonService->getcountriesList()); die;
+
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }

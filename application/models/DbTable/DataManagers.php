@@ -11,6 +11,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function addUser($params)
     {
+        // echo '<pre>'; print_r($params); die;
         $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
@@ -18,7 +19,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'last_name' => $params['lname'],
             'institute' => $params['institute'],
             'data_manager_type' => (isset($params['ptcc']) && !empty($params['ptcc']) && $params['ptcc'] == 'yes') ? 'ptcc' : 'manager',
-            'country_id' => $params['countryId'],
+            'country_id' => $params['countryId'], // for datamanaer add
+            // 'country_id' => $params['country'][0],
             'phone' => $params['phone2'],
             'mobile' => $params['phone1'],
             'secondary_email' => $params['semail'],
@@ -37,6 +39,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $data['password'] = $password;
         }
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
+
         $dmId = $this->insert($data);
         if ($dmId === false || $dmId === 0) {
             return 0;
@@ -281,7 +284,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             $output['aaData'][] = $row;
         }
-    
+
         echo json_encode($output);
     }
 
@@ -1149,7 +1152,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $common = new Application_Service_Common();
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $objPHPExcel = IOFactory::load($fileName);
-
             $db->beginTransaction();
 
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
@@ -1224,7 +1226,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'first_name'        => ($sheetData[$i]['C']),
                     'last_name'         => ($sheetData[$i]['D']),
                     'institute'         => ($sheetData[$i]['E']),
-                    'mobile'            => ($sheetData[$i]['G']),
+                    'mobile'            => ($sheetData[$i]['H']),
                     'secondary_email'   => ($sheetData[$i]['F']),
                     'view_only_access'  => ($sheetData[$i]['I']),
                     'country_id'        => $countryId,
@@ -1236,6 +1238,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'status'            => 'active'
                 ];
                 /* To check the duplication in data manager table */
+                // echo '<pre>'; print_r($dataManagerData); die;
                 $dmsql = $db->select()->from('data_manager')
                     ->where("primary_email LIKE ?", $originalEmail);
                 $dmresult = $db->fetchRow($dmsql);
@@ -1433,6 +1436,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $params['country'] = isset($params['country']) ? $common->removeEmpty((array)$params['country']) : [];
                 $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
                 $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
                     $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
@@ -1451,7 +1455,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if ($locationWiseSwitch) { // Check the status activated or not
                     // Fetch list of participants from location wise
                     $locationwiseparticipants = $db->fetchAll($sql);
-                  
                     foreach ($locationwiseparticipants as $value) {
                         $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
                         $params['participantsList'][] = $value['participant_id'];
@@ -1460,16 +1463,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         ->from(['pmm' => 'participant_manager_map'], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')])
                         ->where("dm_id = ?", $dmId);
                     if ($db->fetchRow($ptccQuery)) {
-                        $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
-                        if (isset($params['province'][0]) && !empty($params['province'][0])) {
-                            $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+                        if (!empty($params['participantsList'])) {
+                            $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
                         }
+                        // if (isset($params['province'][0]) && !empty($params['province'][0])) {
+                        //     $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+                        // }
                     }
-
                     // Save locatons details
-                    if (isset($params['province'][0]) && !empty($params['province'][0])) {
-                        $this->mapPtccLocations($params, $dmId);
-                    }
+                    // if (isset($params['province'][0]) && !empty($params['province'][0])) {
+                    $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
+                    $this->mapPtccLocations($params, $dmId);
+                    // }
                     $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
                     if (isset($pmmData) && !empty($pmmData)) {
                         $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
