@@ -9,12 +9,7 @@
             <div class="row singleMap">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <select class="select2" style="width:60%;" name="allparticipant" id="allparticipant" placeholder="Please choose a participant" title="Please choose a participant">
-                        <option value=""></option>
-                        <?php foreach ($this->participants as $participant) { ?>
-                            <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                        <?php } ?>
-                    </select>
+                    <select class="select2" style="width:60%;" name="allparticipant" id="allparticipant" placeholder="Please choose a participant" title="Please choose a participant" onchange="getParticipantDirectories();"></select>
                 </div>
             </div>
         </div>
@@ -81,6 +76,42 @@
     }
 
     $(document).ready(function() {
-        $("#allparticipant").selectpicker();
+        $("#allparticipant").select2({
+            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
+                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
     });
+
+    function getParticipantDirectories() {
+        if ($('#allparticipant').val() != '') {
+            console.log($('#allparticipant').val());
+        }
+    }
 </script>

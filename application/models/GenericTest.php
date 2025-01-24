@@ -73,7 +73,6 @@ class Application_Model_GenericTest
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
                     }
-
                     foreach ($results as $result) {
                         if ($result['control'] == 1) {
                             continue;
