@@ -1,0 +1,117 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<div class="well">
+    <fieldset>
+        <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?>
+        </legend>
+        <div class="row form-group col-lg-12">
+            <div class="row singleMap">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
+                <div class="col-lg-8">
+                    <select class="select2" style="width:60%;" name="allparticipant" id="allparticipant" placeholder="Please choose a participant" title="Please choose a participant" onchange="getParticipantDirectories();"></select>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<form name="submitParticipantMap" id="submitParticipantMap" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>" enctype="multipart/form-data">
+    <div id="mapForm" class="hide singleMap">
+        <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?><br /><br />
+            <div style="width:500px;margin:0 auto;clear:both;">
+                <a href='#' id='select-all-participant' style="float:left" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a> <a href='#' id='deselect-all-participant' style="float:right" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+            </div>
+        </div>
+        <br />
+        <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
+        </select>
+        <br />
+        <input type="hidden" id='datamanagerId' name='datamanagerId' />
+        <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
+        <div class="col-md-12 col-xs-12" align="center">
+            <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+            <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
+        </div>
+    </div>
+
+    <div id="bulkForm" class="row bulkForm" style="display:none;">
+        <label class="col-lg-3 control-label" style="height: 40px;"><?= $this->translate->_("Upload Bulk Importing Map File"); ?></label>
+        <div class="col-lg-6">
+            <input class="form-control" style="width:100%;" name="bulkMap" id="bulkMap" type="file" placeholder="Upload mapping file" title="Please choose a file to upload" />
+        </div>
+        <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Upload"); ?>" />
+        <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
+    </div>
+</form>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+<script>
+    function validateNow() {
+        if ($('#bulkForm').is(":visible") == true) {
+            if ($('#bulkMap').val() != "") {
+                document.getElementById('submitParticipantMap').submit();
+                return false;
+            } else {
+                alert("Please upload the file to process.");
+                return false;
+            }
+        }
+        if ($('#alldatamangers').val() == "") {
+            alert("Please select PT Login to map the participants");
+            return false;
+        }
+
+        flag = deforayValidator.init({
+            formId: 'submitParticipantMap'
+        });
+        if (flag) {
+            $.blockUI();
+            let selectedParticipants = JSON.stringify($("#participants").val());
+            $("#selectedForMapping").val(selectedParticipants);
+            $("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES
+            document.getElementById('submitParticipantMap').submit();
+        }
+    }
+
+    $(document).ready(function() {
+        $("#allparticipant").select2({
+            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
+                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        search: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.result,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                //cache: true
+            },
+            escapeMarkup: function(markup) {
+                return markup;
+            }
+        });
+    });
+
+    function getParticipantDirectories() {
+        if ($('#allparticipant').val() != '') {
+            console.log($('#allparticipant').val());
+        }
+    }
+</script>

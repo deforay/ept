@@ -54,7 +54,7 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', '', 12);
-    if(!empty($resultArray['shipment']['referenceResult'])) {
+    if (!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -415,25 +415,26 @@ if ($resultArray['shipment'] != "") {
 
         // Create the bar plots
         $b1plot = new BarPlot($dataX);
+        $b1plot->SetLegend("Number of participants");
+        $graph->legend->SetPos(0.5, 0.99, 'center', 'bottom');
+        $graph->legend->SetColumns(3);
         // Create the grouped bar plot
         $gbplot = new GroupBarPlot(array($b1plot));
         // ...and add it to the graPH
-        // $b1plot->SetLegend("Number of participants");
         $graph->Add($gbplot);
 
         // $graph->legend->SetShadow('gray@0.4',5);
         // $graph->legend->SetPos(0.5,0.98,'center','bottom');
         $b1plot->SetColor("white");
         // $b1plot->SetFillColor("#cc1111");
-        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
-
+        $b1plot->SetFillColor($monochromaticColors[2]);
         // Setup the titles
         $graph->title->Set("Comparison of test performance between participating laboratories");
         $graph->xaxis->title->Set('% Score');
         $graph->yaxis->title->Set('Number of Participants', 'center');
 
         $graph->yaxis->SetTitleMargin(30);
-        $graph->xaxis->SetTitleMargin(32);
+        $graph->xaxis->SetTitleMargin(30);
         // Turn the tick mark out from the plot area
         $graph->xaxis->SetTickSide(SIDE_DOWN);
         $graph->yaxis->SetTickSide(SIDE_LEFT);

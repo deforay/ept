@@ -253,7 +253,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
     {
         $downloadDirectory = scandir(DOWNLOADS_FOLDER, true);
         $reportLayouts = array_diff(array_unique($downloadDirectory), ['.', '..', 'reports', 'index.php']);
-        Zend_Debug::dump($reportLayouts);
-        die;
+        $participantService = new Application_Service_Participants();
+        $this->view->participants = $participantService->getAllActiveParticipants();
     }
 }
