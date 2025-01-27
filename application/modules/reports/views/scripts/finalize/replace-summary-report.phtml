@@ -66,11 +66,15 @@ $shipment = $this->shipment[0];
                     shipmentCode: '<?php echo $this->shipment[0]['shipment_code']; ?>'
                 },
                 function(data) {
-                    if (data) {
+                    if (data && data == 'permission-issue') {
+                        alert('Incorrect folder permissions. Please reach out to technical support.')
+                    } else if (data && data == 'format-wrong') {
+                        alert('Incorrect file format. Please upload PDF')
+                    } else if (data) {
                         alert("Successfully accept the summary report for shipment (<?php echo $this->shipment[0]['shipment_code']; ?>)");
                         window.location.reload();
                     } else {
-                        alert('File not accepted due to the some technical issues. Please try again later')
+                        alert('Unable to upload file. Please try again later.')
                     }
                 })
         }

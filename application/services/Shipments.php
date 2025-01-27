@@ -3991,11 +3991,15 @@ class Application_Service_Shipments
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {
                     if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
-                        mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report');
+                        if (mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
+                            return 'permission-issue';
+                        }
                     }
                     if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], $tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
                         return true;
                     }
+                } else {
+                    return 'format-wrong';
                 }
             }
         } catch (Exception $e) {
