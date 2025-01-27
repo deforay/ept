@@ -13,6 +13,8 @@ foreach ($this->participantList as $part) {
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <style>
     .control-label {
         margin-left: 20px;
@@ -192,7 +194,7 @@ foreach ($this->participantList as $part) {
                         <div class="form-group">
                             <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
                             <div class="col-lg-12">
-                                <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="<?= $this->translate->_('Please choose a Participant'); ?>" title="Please choose a Participant">
+                                <select multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="<?= $this->translate->_('Please choose a Participant'); ?>" title="Please choose a Participant">
                                     <option value=""></option>
                                     <?php foreach ($this->participants as $participant) { ?>
                                         <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray)) ? "selected='selected'" : ""; ?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
@@ -211,7 +213,9 @@ foreach ($this->participantList as $part) {
                     <?php } else { ?>
                         <input type="hidden" name="ptcc" id="ptcc" value="no" />
                     <?php } ?>
-                    <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Save"); ?>" />
+                    <input type="hidden" name="btnName" id="btnName" value="">
+                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Add"); ?>" onclick="setActionAndSubmit('add');" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Save and Map Participants"); ?>" onclick="setActionAndSubmit('save_and_map');" />
                     <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
             </div>
@@ -220,6 +224,8 @@ foreach ($this->participantList as $part) {
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js" integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script type="text/javascript">
     var duplicated = false;
     $(document).ready(function() {
@@ -260,37 +266,87 @@ foreach ($this->participantList as $part) {
             }
         });
 
-        $("#allparticipant").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-            minimumInputLength: 3,
-            width: '100%',
-            allowClear: true,
-            ajax: {
-                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
-                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term, // search term
-                        page: params.page
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.result,
-                        pagination: {
-                            more: (params.page * 30) < data.total_count
-                        }
-                    };
-                },
-                //cache: true
+        // $("#allparticipant").select2({
+        //     placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+        //     minimumInputLength: 3,
+        //     width: '100%',
+        //     allowClear: true,
+        //     ajax: {
+        //         placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
+        //         url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+        //         dataType: 'json',
+        //         delay: 250,
+        //         data: function(params) {
+        //             return {
+        //                 search: params.term, // search term
+        //                 page: params.page
+        //             };
+        //         },
+        //         processResults: function(data, params) {
+        //             params.page = params.page || 1;
+        //             return {
+        //                 results: data.result,
+        //                 pagination: {
+        //                     more: (params.page * 30) < data.total_count
+        //                 }
+        //             };
+        //         },
+        //         //cache: true
+        //     },
+        //     escapeMarkup: function(markup) {
+        //         return markup;
+        //     }
+        // });
+        $("#allparticipant").selectize({
+    placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+    maxItems: null, // Allow multiple selections
+    valueField: 'id', // The field in the AJAX response representing the value
+    labelField: 'text', // The field in the AJAX response representing the label
+    searchField: ['text', 'first_name', 'last_name', 'unique_identifier'], // Allow search on multiple fields
+    width: '100%',
+    allowClear: true,
+    create: false, // Prevent creating new options (select only from results)
+    load: function(query, callback) {
+        if (query.length < 3) {
+            return callback(); // Don't trigger the AJAX if input length is less than 3
+        }
+
+        $.ajax({
+            url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+            dataType: 'json',
+            data: {
+                search: query, // The search term
+                page: query.page || 1 // Pagination support
             },
-            escapeMarkup: function(markup) {
-                return markup;
+            success: function(data) {
+                callback(data.result); // Return the data
+            },
+            error: function() {
+                callback([]); // Return empty array in case of error
             }
         });
+    },
+    render: {
+        item: function(data, escape) {
+            return '<div>' + escape(data.text) + '</div>';
+        },
+        option: function(data, escape) {
+            return '<div>' + escape(data.text) + ' (' + escape(data.unique_identifier) + ')</div>';
+        }
+    },
+    onInitialize: function() {
+        var selectize = this;
+        var selectedValues = <?= json_encode($participantArray ?? []); ?>;
+        selectedValues.forEach(function(value) {
+            selectize.addItem(value); // Add pre-selected items
+        });
+    },
+    // Disable the remove button from selected items
+    onItemRemove: function(value) {
+        return false; // Prevent the removal of selected items
+    }
+});
+
         <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
             getStates();
         <?php } ?>
@@ -414,5 +470,10 @@ foreach ($this->participantList as $part) {
         } else {
             validateNow();
         }
+    }
+
+    function setActionAndSubmit(action) {
+        document.getElementById('btnName').value = action; // Set hidden input value
+        validPassword(); // Call validPassword for validation and submission
     }
 </script>

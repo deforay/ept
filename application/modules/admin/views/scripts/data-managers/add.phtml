@@ -8,13 +8,14 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
     .control-label {
         margin-left: 20px;
     }
 </style>
 <div class="well">
-    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
+    <form name="addUserForm" id="addUserForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "data-managers", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form"  onsubmit="return validPassword();" autocomplete="off">
         <fieldset>
             <legend><?= $title; ?></legend>
             <div class="row">
@@ -170,18 +171,23 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
+                            <label class="control-label">
+                                <?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span>
+                            </label>
                             <div class="col-lg-12">
-                                <select style="width:100%;" class="isRequired form-control" multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="Please choose a Participant" title="Please choose a Participant">
+                                <select
+                                    multiple="multiple"
+                                    name="allparticipant[]"
+                                    id="allparticipant"
+                                    placeholder="Please choose a Participant"
+                                    title="Please choose a Participant">
                                     <option value=""></option>
-                                    <?php foreach ($this->participants as $participant) { ?>
-                                        <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                                    <?php } ?>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
+
             <?php } ?>
             <br>
             <div class="row">
@@ -191,7 +197,9 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                     <?php } else { ?>
                         <input type="hidden" name="ptcc" id="ptcc" value="no" />
                     <?php } ?>
-                    <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
+                    <input type="hidden" name="btnName" id="btnName" value="">
+                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Add"); ?>" onclick="setActionAndSubmit('add');" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Save and Map Participants"); ?>" onclick="setActionAndSubmit('save_and_map');" />
                     <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
             </div>
@@ -200,6 +208,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js" integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     var duplicated = false;
     $(document).ready(function() {
@@ -262,35 +271,81 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             }
         });
 
-        $("#allparticipant").select2({
-            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-            minimumInputLength: 3,
-            width: '100%',
-            allowClear: true,
-            ajax: {
-                placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
-                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term, // search term
-                        page: params.page
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.result,
-                        pagination: {
-                            more: (params.page * 30) < data.total_count
-                        }
-                    };
-                },
-                //cache: true
+        // $("#allparticipant").select2({
+        //     placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+        //     minimumInputLength: 3,
+        //     width: '100%',
+        //     allowClear: true,
+        //     ajax: {
+        //         placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
+        //         url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+        //         dataType: 'json',
+        //         delay: 250,
+        //         data: function(params) {
+        //             return {
+        //                 search: params.term, // search term
+        //                 page: params.page
+        //             };
+        //         },
+        //         processResults: function(data, params) {
+        //             params.page = params.page || 1;
+        //             return {
+        //                 results: data.result,
+        //                 pagination: {
+        //                     more: (params.page * 30) < data.total_count
+        //                 }
+        //             };
+        //         },
+        //         //cache: true
+        //     },
+        //     escapeMarkup: function(markup) {
+        //         return markup;
+        //     }
+        // });
+
+        $('#allparticipant').selectize({
+            placeholder: "<?= $this->translate->_('Choose one or more Participant(s)'); ?>",
+            create: false,
+            maxItems: null, // Allow multiple selections
+            valueField: 'id', // This should match the 'id' in your AJAX response
+            labelField: 'text', // This should match the 'text' in your AJAX response
+            searchField: 'text', // This will allow searching by 'text'
+            options: [], // Initial empty options; will be populated dynamically
+            onInitialize: function() {
+                // Add the 'isRequired' class to the generated input
+                // this.$control.addClass('isRequired');
             },
-            escapeMarkup: function(markup) {
-                return markup;
+            load: function(query, callback) {
+                if (query.length < 3) return callback(); // Don't send an empty query
+                $.ajax({
+                    url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        search: query,
+                        page: 1 // Adjust as needed
+                    },
+                    success: function(response) {
+                        console.log("AJAX response received:", response); // Log the response
+                        if (response && response.result) {
+                            callback(
+                                response.result.map(function(item) {
+                                    return {
+                                        id: item.id, // Matches 'valueField'
+                                        text: item.text // Matches 'labelField'
+                                    };
+                                })
+                            );
+                        } else {
+                            console.error("Unexpected response format:", response);
+                            callback();
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("AJAX error:", textStatus, errorThrown); // Log errors
+                        callback();
+                    }
+                });
             }
         });
     });
@@ -408,5 +463,10 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
         } else {
             validateNow();
         }
+    }
+
+    function setActionAndSubmit(action) {
+        document.getElementById('btnName').value = action; // Set hidden input value
+        validPassword(); // Call validPassword for validation and submission
     }
 </script>
