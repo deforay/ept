@@ -64,7 +64,7 @@ if (!empty($resultArray['shipment'])) {
     $htmlTitle = '<span style="font-weight: bold; font-size:10;text-align:center;">Summary Report</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-    if(!empty($resultArray['shipment']['referenceResult'])) {
+    if (!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<br><br><table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
