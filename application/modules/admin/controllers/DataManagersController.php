@@ -55,6 +55,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $result = $userService->addUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
+            } else if(isset($params['btnName']) && $params['btnName'] == 'save_and_map'){
+                $this->redirect("/admin/participants/participant-manager-map");
             }
             $this->redirect("/admin/data-managers");
         } else {
@@ -84,6 +86,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $userService->updateUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
+            } else if(isset($params['btnName']) && $params['btnName'] == 'save_and_map'){
+                $this->redirect("/admin/participants/participant-manager-map");
             } else {
                 $this->redirect("/admin/data-managers");
             }
