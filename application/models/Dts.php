@@ -117,10 +117,10 @@ class Application_Model_Dts
 			$lastDate = new DateTime($shipment['lastdate_response']);
 			if ($shipmentTestReportDate > $lastDate) {
 				$lastDateResult = 'Fail';
-				$failureReason[] = array(
+				$failureReason[] = [
 					'warning' => "Response was submitted after the last response date.",
 					'correctiveAction' => $correctiveActions[1]
-				);
+				];
 				$correctiveActionList[] = 1;
 				$shipment['is_excluded'] = 'yes';
 				$shipment['is_response_late'] = 'yes';
