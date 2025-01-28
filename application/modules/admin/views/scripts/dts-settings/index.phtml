@@ -9,7 +9,7 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend><?= $this->translate->_("HIV Serology Settings"); ?>
-                <a href="javascript:void(0);" onclick="exportConfig();" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a>
+                <!-- <a href="javascript:void(0);" onclick="exportConfig('dtsSettingsForm', 'dts');" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
             </legend>
 
             <div class="form-group">
@@ -313,19 +313,6 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
         }
     }
 
-    function exportConfig() {
-        let formData = $('#dtsSettingsForm').serialize();
-        $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
-                formPost: formData
-            },
-            function(data) {
-                if (data) {
-                    window.open('/d/' + data, '_blank');
-                }
-                $.unblockUI();
-            });
-    }
     $(document).ready(function() {
 
 
