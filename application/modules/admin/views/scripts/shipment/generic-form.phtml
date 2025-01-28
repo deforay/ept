@@ -45,7 +45,7 @@ $possibleResults .= "</select>";
             <td>
                 <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
             </td>
-            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?>
+            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?>
                 <td>
                     <?php echo $possibleResults; ?>
                 </td>
@@ -82,7 +82,7 @@ $possibleResults .= "</select>";
 			<td>\
 				<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
 			</td>\
-            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?> \
+            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?> \
                 <td><?php echo $possibleResults; ?></td> \
             <?php } ?> \
             <td> \

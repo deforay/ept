@@ -3288,7 +3288,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 							<tr>
 								<th style="width:25%;">Sample ID</th>
 								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-								<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?>
+								<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?>
 									<th style="width:20%;">Final Result <span class='mandatory'>*</span></th>
 								<?php } ?>
 								<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
@@ -3317,7 +3317,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 										<td>
 											<input type="text" value="<?php echo $this->dateFormat($reference['sample_preparation_date']); ?>" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 										</td>
-										<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?>
+										<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?>
 											<td><?= $localPossibleResults; ?></td>
 										<?php } ?>
 										<td>
@@ -3352,7 +3352,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 									<td>
 										<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 									</td>
-									<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?>
+									<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?>
 										<td><?php echo $possibleResults; ?></td>
 									<?php } ?>
 									<td>
@@ -3392,7 +3392,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 								<td>\
 									<input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
 								</td>\
-								<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?> \
+								<?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?> \
 									<td><?php echo $possibleResults; ?></td>\
 								<?php } ?> \
 								<td> \
