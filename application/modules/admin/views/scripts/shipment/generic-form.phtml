@@ -29,7 +29,7 @@ $possibleResults .= "</select>";
         <tr align="center">
             <th style="width:20%;">Sample ID</th>
             <th style="width:20%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) && $jsonConfig['testType'] != 'quantitative') { ?>
+            <?php if ((!isset($jsonConfig['testType']) || empty($jsonConfig['testType'])) || $jsonConfig['testType'] != 'quantitative') { ?>
                 <th style="width:20%;"><?= $this->translate->_("Final Result"); ?> <span class='mandatory'>*</span></th>
             <?php } ?>
             <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>

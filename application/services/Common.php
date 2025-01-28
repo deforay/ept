@@ -1516,4 +1516,34 @@ class Application_Service_Common
 
         return true;
     }
+
+    public function exportConfig($data)
+    {
+        $responseData = $this->unserializeForm($data);
+        /* unset the csrf token that was not needed for config export */
+        unset($responseData['csrf_token']);
+        $output = [
+            'timestamp' => time(),
+            'data'  => $responseData
+        ];
+        /* File name creation */
+        $fileName = Pt_Commons_General::generateRandomString(12) . time() . '.json';
+        $filePath  = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
+        $fp = fopen(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName, 'w');
+        fwrite($fp, json_encode($output));
+        fclose($fp);
+        $gzdata = gzencode(file_get_contents($filePath));
+        file_put_contents(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName . ".gz", $gzdata);
+        return TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName . ".gz";
+    }
+
+    function unserializeForm($str)
+    {
+        $strArray = explode("&", $str['formPost']);
+        foreach ($strArray as $item) {
+            $array = explode("=", $item);
+            $returndata[str_replace('[]', '', urldecode($array[0]))][] = $array[1];
+        }
+        return $returndata;
+    }
 }
