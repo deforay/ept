@@ -34,7 +34,7 @@ class Application_Model_GenericTest
             $testKitDb = new Application_Model_DbTable_Testkitnames();
             if (isset($attributes['kit_name']) && !empty($attributes['kit_name'])) {
                 $kitResult = $testKitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
-                $updatedTestKitId = $testKitDb->getTestKitIdByName($attributes['kit_name']);
+                $updatedTestKitId = $testKitDb->getTestKitNameById($attributes['kit_name']);
             } else {
                 $kitResult = false;
                 $updatedTestKitId = false;
@@ -66,9 +66,9 @@ class Application_Model_GenericTest
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
                     $zScore = null;
+                    $this->setQuantRangeTestKitWise($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponses']);
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
-                        $this->setQuantRange($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponses']);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
@@ -536,6 +536,7 @@ class Application_Model_GenericTest
         $sheetThreeRow = 2;
         $docScoreRow = 3;
         $totScoreRow = 2;
+        $kitDb = new Application_Model_DbTable_Testkitnames();
         if (isset($shipmentResult) && count($shipmentResult) > 0) {
 
             foreach ($shipmentResult as $aRow) {
@@ -564,10 +565,10 @@ class Application_Model_GenericTest
                 if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != "" && trim($attributes['kit_expiry_date']) != "0000-00-00") {
                     $kitExpiryDate = Pt_Commons_General::excelDateFormat($attributes['kit_expiry_date']);
                 }
-
+                $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentReceiptDate);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
-                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_name']);
+                $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($testKits);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($kitExpiryDate);
                 /* Panel score section */
@@ -747,30 +748,6 @@ class Application_Model_GenericTest
         }
 
         return $shipmentResult;
-    }
-
-    public function getAllTestKitList($scheme = null, $countryAdapted = false)
-    {
-        $sql = $this->db->select()
-            ->from(
-                ['t' => 'r_testkitnames'],
-                [
-                    'TESTKITNAMEID' => 'TESTKITNAME_ID',
-                    'TESTKITNAME' => 'TESTKIT_NAME',
-                    'attributes'
-                ]
-            )
-            ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
-            ->order("TESTKITNAME ASC");
-        if (isset($scheme) && !empty($scheme)) {
-            $sql = $sql->where("scheme_type = '$scheme'");
-        }
-        if ($countryAdapted) {
-            $sql = $sql->where('COUNTRYADAPTED = 1');
-        }
-        $stmt = $this->db->fetchAll($sql);
-
-        return $stmt;
     }
 
     public function getRecommededGenericTestkits($testMode)
@@ -987,7 +964,7 @@ class Application_Model_GenericTest
         $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
 
         $sql = $db->select()->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id'])
-            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', ['scheme_type'])
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['participant_id', 'kit_name' => new Zend_Db_Expr('sp.attributes->>"$.kit_name"')])
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'z_score', 'is_result_invalid'])
             ->where('sp.shipment_id = ? ', $shipmentId)
@@ -1007,16 +984,11 @@ class Application_Model_GenericTest
 
             $sampleWise[$row['kit_name']][$row['sample_id']][] = $row['reported_result'];
         }
-
-
-        $kitArray = $this->getAllTestKitList();
-
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        $kitArray = $kitDb->getAllTestKitList($response[0]['scheme_type'], false, true);
         $skippedTestKits = [];
-
         $responseCounter = [];
-
-        foreach ($kitArray as $testKitId => $testKName) {
-
+        foreach ($kitArray as $testKitId => $testKitRow) {
 
             if (!isset($sampleWise[$testKitId])) {
                 continue;
@@ -1026,7 +998,6 @@ class Application_Model_GenericTest
             // then we use the ranges of the Assay with maximum responses
 
             foreach ($sampleWise[$testKitId] as $sample => $reportedResult) {
-
                 if ($testKitId != 6  && !empty($reportedResult) && count($reportedResult) > $minimumRequiredResponses) {
                     $responseCounter[$testKitId] = count($reportedResult);
 
@@ -1113,13 +1084,13 @@ class Application_Model_GenericTest
                         $data['use_range'] = $oldQuantRange[$testKitId][$sample]['use_range'] ?? 'calculated';
                     }
 
-                    $db->delete('reference_generic_test_calculations', "testkit_id = $testKitId AND sample_id=$sample AND shipment_id=$shipmentId");
+                    $db->delete('reference_generic_test_calculations', "testkit_id = '$testKitId' AND sample_id=$sample AND shipment_id=$shipmentId");
 
                     $db->insert('reference_generic_test_calculations', $data);
                 } else {
 
                     if (isset($oldQuantRange[$testKitId][$sample]) && !empty($oldQuantRange[$testKitId][$sample]) && $oldQuantRange[$testKitId][$sample]['use_range'] != 'manual') {
-                        $db->delete('reference_generic_test_calculations', "testkit_id = $testKitId AND shipment_id = $shipmentId");
+                        $db->delete('reference_generic_test_calculations', "testkit_id = '$testKitId' AND shipment_id = $shipmentId");
                     }
 
                     $skippedTestKits[] = $testKitId;
@@ -1151,7 +1122,7 @@ class Application_Model_GenericTest
                 $row['testkit_id'] = $testKitId;
                 $row['no_of_responses'] = $skippedResponseCounter[$testKitId];
 
-                $db->delete('reference_generic_test_calculations', "testkit_id = " . $row['testkit_id'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
+                $db->delete('reference_generic_test_calculations', "testkit_id = '" . $row['testkit_id'] . "' AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
 
                 // if there are no responses then continue
                 if (empty($row['no_of_responses'])) {

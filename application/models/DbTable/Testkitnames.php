@@ -11,11 +11,6 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         return $this->getAdapter()->fetchCol($this->getAdapter()->select()->from('r_testkitnames', 'TestKit_Name')->where("TestKitName_ID = '$testKitId'"));
     }
 
-    public function getTestKitIdByName($testKitName)
-    {
-        return $this->getAdapter()->fetchRow($this->getAdapter()->select()->from('r_testkitnames', 'TestKitName_ID')->where("TestKit_Name = '$testKitName'"));
-    }
-
     public function getActiveTestKitsNamesForScheme($scheme, $countryAdapted = false)
     {
 
@@ -405,6 +400,40 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
     public function fetchGivenKitApprovalStatus($kit)
     {
-        return $this->fetchRow('TestKit_Name = "' . $kit . '" OR ' . $this->_primary . ' = "' . $kit . '"');
+        return $this->fetchRow('TestKitName_ID = "' . $kit . '" OR ' . $this->_primary . ' = "' . $kit . '"');
+    }
+
+    public function getAllTestKitList($scheme = null, $countryAdapted = false, $isArray = false)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()
+            ->from(
+                ['t' => 'r_testkitnames'],
+                [
+                    'TESTKITNAMEID' => 'TESTKITNAME_ID',
+                    'TESTKITNAME' => 'TESTKIT_NAME',
+                    'attributes'
+                ]
+            )
+            ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
+            ->order("TESTKITNAME ASC");
+        if (isset($scheme) && !empty($scheme)) {
+            $sql = $sql->where("scheme_type = '$scheme'");
+        }
+        if ($countryAdapted) {
+            $sql = $sql->where('COUNTRYADAPTED = 1');
+        }
+        $stmt = $db->fetchAll($sql);
+        $response = [];
+        if ($isArray) {
+            $retval = [];
+            foreach ($stmt as $kitName) {
+                $retval[$kitName['TESTKITNAMEID']] = $kitName['TESTKITNAME'];
+            }
+            $response = $retval;
+        } else {
+            $response = $stmt;
+        }
+        return $response;
     }
 }
