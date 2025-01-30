@@ -77,6 +77,12 @@ class Application_Model_GenericTest
                         if ($result['control'] == 1) {
                             continue;
                         }
+                        if (isset($result['attributes']) && !empty($result['attributes'])) {
+                            $attributes = (array)json_decode($result['attributes']);
+                            $testkitId = $attributes['kit_name'] ?? '';
+                        } else {
+                            $testkitId = '';
+                        }
                         $calcResult = "";
 
                         // matching reported and low/high limits
@@ -87,10 +93,13 @@ class Application_Model_GenericTest
                             $calcResult = "fail";
                             $zScore = null;
                         } elseif (!empty($result['reported_result'])) {
-                            if (isset($quantRange[$result['sample_id']])) {
+                            if (!isset($quantRange[$testkitId][$result['sample_id']])) {
+                                continue;
+                            }
+                            if (isset($quantRange[$testkitId][$result['sample_id']])) {
                                 $zScore = 0;
-                                $sd = (float) $quantRange[$result['sample_id']]['sd'];
-                                $median = (float) $quantRange[$result['sample_id']]['median'];
+                                $sd = (float) $quantRange[$testkitId][$result['sample_id']]['sd'];
+                                $median = (float) $quantRange[$testkitId][$result['sample_id']]['median'];
                                 if ($sd > 0) {
                                     $zScore = (float) (($result['reported_result'] - $median) / $sd);
                                 }
@@ -900,6 +909,8 @@ class Application_Model_GenericTest
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['calc' => 'reference_generic_test_calculations'])
             ->join(['ref' => 'reference_result_generic_test'], 'calc.sample_id = ref.sample_id', ['sample_label'])
+            ->join(['res' => 'response_result_generic_test'], 'calc.sample_id = res.sample_id', ['shipment_map_id'])
+            ->join(['sp' => 'shipment_participant_map'], 'res.shipment_map_id=sp.map_id', ['participant_id', 'kit_name' => new Zend_Db_Expr('sp.attributes->>"$.kit_name"')])
             ->where('calc.shipment_id = ?', $shipmentId);
 
         if ($sampleId != null) {
@@ -911,36 +922,37 @@ class Application_Model_GenericTest
         foreach ($res as $row) {
 
             $sampleId = $row['sample_id'];
+            $testkitId = $row['kit_name'];
 
-            $response[$sampleId]['sample_id'] = $row['sample_id'];
-            $response[$sampleId]['no_of_responses'] = $row['no_of_responses'];
-            $response[$sampleId]['sample_label'] = $row['sample_label'];
-            $response[$sampleId]['use_range'] = $row['use_range'] ?? 'calculated';
+            $response[$testkitId][$sampleId]['sample_id'] = $row['sample_id'];
+            $response[$testkitId][$sampleId]['no_of_responses'] = $row['no_of_responses'];
+            $response[$testkitId][$sampleId]['sample_label'] = $row['sample_label'];
+            $response[$testkitId][$sampleId]['use_range'] = $row['use_range'] ?? 'calculated';
 
             if (!empty($row['use_range']) && $row['use_range'] == 'manual') {
-                $response[$sampleId]['q1'] = $row['manual_q1'];
-                $response[$sampleId]['q3'] = $row['manual_q3'];
-                $response[$sampleId]['quartile_low'] = $row['manual_quartile_low'];
-                $response[$sampleId]['quartile_high'] = $row['manual_quartile_high'];
-                $response[$sampleId]['low'] = $row['manual_low_limit'];
-                $response[$sampleId]['high'] = $row['manual_high_limit'];
-                $response[$sampleId]['mean'] = $row['manual_mean'];
-                $response[$sampleId]['median'] = $row['manual_median'];
-                $response[$sampleId]['sd'] = $row['manual_sd'];
-                $response[$sampleId]['standard_uncertainty'] = $row['manual_standard_uncertainty'];
-                $response[$sampleId]['is_uncertainty_acceptable'] = $row['manual_is_uncertainty_acceptable'];
+                $response[$testkitId][$sampleId]['q1'] = $row['manual_q1'];
+                $response[$testkitId][$sampleId]['q3'] = $row['manual_q3'];
+                $response[$testkitId][$sampleId]['quartile_low'] = $row['manual_quartile_low'];
+                $response[$testkitId][$sampleId]['quartile_high'] = $row['manual_quartile_high'];
+                $response[$testkitId][$sampleId]['low'] = $row['manual_low_limit'];
+                $response[$testkitId][$sampleId]['high'] = $row['manual_high_limit'];
+                $response[$testkitId][$sampleId]['mean'] = $row['manual_mean'];
+                $response[$testkitId][$sampleId]['median'] = $row['manual_median'];
+                $response[$testkitId][$sampleId]['sd'] = $row['manual_sd'];
+                $response[$testkitId][$sampleId]['standard_uncertainty'] = $row['manual_standard_uncertainty'];
+                $response[$testkitId][$sampleId]['is_uncertainty_acceptable'] = $row['manual_is_uncertainty_acceptable'];
             } else {
-                $response[$sampleId]['q1'] = $row['q1'];
-                $response[$sampleId]['q3'] = $row['q3'];
-                $response[$sampleId]['quartile_low'] = $row['quartile_low'];
-                $response[$sampleId]['quartile_high'] = $row['quartile_high'];
-                $response[$sampleId]['low'] = $row['low_limit'];
-                $response[$sampleId]['high'] = $row['high_limit'];
-                $response[$sampleId]['mean'] = $row['mean'];
-                $response[$sampleId]['median'] = $row['median'];
-                $response[$sampleId]['sd'] = $row['sd'];
-                $response[$sampleId]['standard_uncertainty'] = $row['standard_uncertainty'];
-                $response[$sampleId]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
+                $response[$testkitId][$sampleId]['q1'] = $row['q1'];
+                $response[$testkitId][$sampleId]['q3'] = $row['q3'];
+                $response[$testkitId][$sampleId]['quartile_low'] = $row['quartile_low'];
+                $response[$testkitId][$sampleId]['quartile_high'] = $row['quartile_high'];
+                $response[$testkitId][$sampleId]['low'] = $row['low_limit'];
+                $response[$testkitId][$sampleId]['high'] = $row['high_limit'];
+                $response[$testkitId][$sampleId]['mean'] = $row['mean'];
+                $response[$testkitId][$sampleId]['median'] = $row['median'];
+                $response[$testkitId][$sampleId]['sd'] = $row['sd'];
+                $response[$testkitId][$sampleId]['standard_uncertainty'] = $row['standard_uncertainty'];
+                $response[$testkitId][$sampleId]['is_uncertainty_acceptable'] = $row['is_uncertainty_acceptable'];
             }
         }
         return $response;
