@@ -682,13 +682,14 @@ class Application_Service_Shipments
 
             if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = null;
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
             } else {
                 $data['is_pt_test_not_performed'] = null;
                 $data['vl_not_tested_reason'] = null;
+                $data['shipment_test_date'] = null;
                 $data['pt_test_not_performed_comments'] = null;
                 $data['pt_support_comments'] = null;
             }
@@ -700,7 +701,7 @@ class Application_Service_Shipments
             if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
                 $data['custom_field_2'] = trim($params['customField2']);
             }
-
+         
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
