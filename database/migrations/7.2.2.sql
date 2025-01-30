@@ -321,3 +321,7 @@ ALTER TABLE `r_possibleresult` ADD `minimum_number_of_responses` INT NULL DEFAUL
 -- Thana 29-Jan-2025
 ALTER TABLE `reference_generic_test_calculations` ADD `testkit_id` VARCHAR(256) NULL DEFAULT NULL AFTER `shipment_id`;
 UPDATE shipment_participant_map AS spm JOIN r_testkitnames AS rtk ON JSON_EXTRACT(spm.attributes, "$.kit_name") = rtk.TestKit_Name SET spm.attributes = JSON_SET(spm.attributes, '$.kit_name', rtk.TestKitName_ID);
+-- Thana 30-Jan-2025
+ALTER TABLE `reference_generic_test_calculations` DROP PRIMARY KEY;
+ALTER TABLE `reference_generic_test_calculations` ADD PRIMARY KEY(`shipment_id`, `testkit_id`, `sample_id`);
+

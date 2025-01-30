@@ -66,9 +66,9 @@ class Application_Model_GenericTest
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 if (isset($jsonConfig['testType']) && !empty($jsonConfig['testType']) && $jsonConfig['testType'] == 'quantitative') {
                     $zScore = null;
-                    $this->setQuantRangeTestKitWise($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponses']);
                     if ($reEvaluate) {
                         // when re-evaluating we will set the reset the range
+                        $this->setQuantRangeTestKitWise($shipmentId, $possibleResults['sd_scaling_factor'], $possibleResults['uncertainy_scaling_factor'], $possibleResults['uncertainy_threshold'], $jsonConfig['minNumberOfResponses']);
                         $quantRange = $this->getQuantRange($shipmentId);
                     } else {
                         $quantRange = $this->getQuantRange($shipmentId);
@@ -240,7 +240,7 @@ class Application_Model_GenericTest
                         }
                         $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                        $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                     }
                 } else {
                     // let us update the total score in DB
@@ -254,7 +254,6 @@ class Application_Model_GenericTest
                 $failureReason = ['warning' => "Response was submitted after the last response date."];
                 $db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], "map_id = " . $shipment['map_id']);
             }
-
             $counter++;
         }
         $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
@@ -952,14 +951,12 @@ class Application_Model_GenericTest
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-
         $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
             ->where("shipment_id = $shipmentId"));
         $oldQuantRange = [];
         foreach ($beforeSetQuantRangeData as $beforeSetQuantRangeRow) {
             $oldQuantRange[$beforeSetQuantRangeRow['testkit_id']][$beforeSetQuantRangeRow['sample_id']] = $beforeSetQuantRangeRow;
         }
-
 
         $db->delete('reference_generic_test_calculations', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
 
@@ -1083,7 +1080,6 @@ class Application_Model_GenericTest
                         $data['updated_on'] = $oldQuantRange[$testKitId][$sample]['updated_on'] ?? null;
                         $data['use_range'] = $oldQuantRange[$testKitId][$sample]['use_range'] ?? 'calculated';
                     }
-
                     $db->delete('reference_generic_test_calculations', "testkit_id = '$testKitId' AND sample_id=$sample AND shipment_id=$shipmentId");
 
                     $db->insert('reference_generic_test_calculations', $data);

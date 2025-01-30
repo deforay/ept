@@ -161,8 +161,11 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '	<td style="width: 35%;"><strong>Kit Expiry Date </strong> <br>' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
         $labInfo .= '</tr>';
 
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
+
         $labInfo .= '<tr>';
-        $labInfo .= '	<td style="width: 35%;"><strong>Kit Name </strong> <br>' . $attributes['kit_name'] . '</td>';
+        $labInfo .= '	<td style="width: 35%;"><strong>Kit Name </strong> <br>' . $testKits . '</td>';
         $labInfo .= '	<td style="width: 25%;"><strong>Kit Lot Number </strong> <br>' . $attributes['kit_lot_number'] . '</td>';
         $labInfo .= '</tr>';
 
@@ -273,7 +276,6 @@ if (!empty($resultArray['shipment'])) {
             }
         }
         // Check testkit approved or not
-        $kitDb = new Application_Model_DbTable_Testkitnames();
         $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
         if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
             $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
