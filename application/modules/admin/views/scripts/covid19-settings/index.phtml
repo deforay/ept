@@ -1,7 +1,9 @@
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend style=" margin-bottom: 0px; " class="title"><?= $this->translate->_("SARS-CoV-2 Settings"); ?></legend>
+            <legend style=" margin-bottom: 0px; " class="title"><?= $this->translate->_("SARS-CoV-2 Settings"); ?>
+                <!-- <a href="javascript:void(0);" onclick="exportConfig('covid19SettingsForm', 'covid19');" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
+            </legend>
             <div class="alert alert-success" style="display: none;"><?= $this->translate->_("some text"); ?></div>
             <div class="form-group">
                 <label for="covid19PassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Percentage"); ?> <span class="mandatory">*</span></label>

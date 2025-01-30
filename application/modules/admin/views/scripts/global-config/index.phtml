@@ -1,7 +1,9 @@
 <div class="well">
 	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
-			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
+			<legend><?= $this->translate->_("ePT Global Settings"); ?>
+				<a href="javascript:void(0);" onclick="exportConfigFile();" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a>
+			</legend>
 			<div class="form-group">
 				<label for="locale" class="col-lg-3 control-label"><?= $this->translate->_("Language"); ?></label>
 				<div class="col-lg-6">
@@ -385,5 +387,18 @@
 			$('#temporary_login_ban_time').removeClass('isRequired');
 			$('.banTimer').addClass('hide');
 		}
+	}
+
+	function exportConfigFile() {
+		$.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
+				file: 'config'
+			},
+			function(data) {
+				if (data) {
+					window.open('/d/' + data, '_blank');
+				}
+				$.unblockUI();
+			});
 	}
 </script>

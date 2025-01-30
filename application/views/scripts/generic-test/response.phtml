@@ -162,7 +162,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 								<select name="kitName" id="kitName" class="form-control" title="Please choose test kit" onchange="testKitChanged(this.value);">
 									<option value=""> ---<?= $this->translate->_("Select Kit"); ?>---</option>
 									<?php foreach ($this->allTestKits as $key => $testkit) { ?>
-										<option value="<?php echo $testkit['TESTKITNAME'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAME'])) ? 'selected="selected"' : ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+										<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->shipment['attributes']['kit_name']) && !empty($this->shipment['attributes']['kit_name']) && strtolower($this->shipment['attributes']['kit_name']) == strtolower($testkit['TESTKITNAMEID'])) ? 'selected="selected"' : ""; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
 									<?php }
 									if ((!isset($this->disableOtherTestkit) || empty($this->disableOtherTestkit)) || $this->disableOtherTestkit != 'yes') { ?>
 										<option value="other"><?= $this->translate->_("Other"); ?></option>

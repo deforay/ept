@@ -636,6 +636,22 @@ if ($adminSession->privileges != "") {
 			str = str.toString();
 			return str.length < max ? pad("0" + str, max) : str;
 		}
+
+		function exportConfig(formId, schemeId) {
+			let formData = $('#' + formId).serialize();
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
+					formPost: formData,
+					scheme: schemeId,
+					file: schemeId
+				},
+				function(data) {
+					if (data) {
+						window.open('/d/' + data, '_blank');
+					}
+					$.unblockUI();
+				});
+		}
 	</script>
 	<img src="/images/loading.gif" alt="Loading..." style="display:none;" />
 

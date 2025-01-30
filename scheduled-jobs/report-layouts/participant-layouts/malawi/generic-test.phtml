@@ -204,8 +204,10 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Analyst Name </strong> : ' . $attributes['analyst_name'] . '</td>';
         $labInfo .= '</tr>';
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Kit Name </strong> : ' . $attributes['kit_name'] . '</td>';
+        $labInfo .= '	<td><strong>Kit Name </strong> : ' . $testKits . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';

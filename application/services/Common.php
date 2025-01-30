@@ -1516,4 +1516,48 @@ class Application_Service_Common
 
         return true;
     }
+
+    public function exportConfig($data)
+    {
+        if (isset($data['file']) && !empty($data['file']) && $data['file'] == 'config') {
+            $filePath = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+
+            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $eptDomain = rtrim($conf->domain, "/");
+            $eptDomain = parse_url($eptDomain, PHP_URL_HOST);
+
+            $gzdata = gzencode(file_get_contents($filePath));
+            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_General::getDateTime()) . ".ini.gz";
+            file_put_contents($gipPath, $gzdata);
+
+            return $gipPath;
+        } else {
+            $responseData = $this->unserializeForm($data);
+            /* unset the csrf token that was not needed for config export */
+            unset($responseData['csrf_token']);
+            $output = [
+                'timestamp' => time(),
+                'data'  => $responseData
+            ];
+            /* File name creation */
+            $fileName = Pt_Commons_General::generateRandomString(12) . time() . '-' . $data['scheme'] . '.json';
+            $filePath  = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
+            $fp = fopen(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName, 'w');
+            fwrite($fp, json_encode($output));
+            fclose($fp);
+            $gzdata = gzencode(file_get_contents($filePath));
+            file_put_contents($filePath . ".gz", $gzdata);
+            return $filePath . ".gz";
+        }
+    }
+
+    function unserializeForm($str)
+    {
+        $strArray = explode("&", $str['formPost']);
+        foreach ($strArray as $item) {
+            $array = explode("=", $item);
+            $returndata[str_replace('[]', '', urldecode($array[0]))][] = $array[1];
+        }
+        return $returndata;
+    }
 }

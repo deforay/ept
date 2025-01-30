@@ -8,7 +8,9 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
-            <legend><?= $this->translate->_("HIV Serology Settings"); ?></legend>
+            <legend><?= $this->translate->_("HIV Serology Settings"); ?>
+                <!-- <a href="javascript:void(0);" onclick="exportConfig('dtsSettingsForm', 'dts');" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
+            </legend>
 
             <div class="form-group">
                 <label for="dtsPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
@@ -301,7 +303,6 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
 
 <script type="text/javascript">
     function validateNow() {
-
         //checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
         flag = deforayValidator.init({
             formId: 'dtsSettingsForm'
@@ -311,6 +312,7 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
             document.getElementById('dtsSettingsForm').submit();
         }
     }
+
     $(document).ready(function() {
 
 

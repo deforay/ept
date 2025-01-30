@@ -7,11 +7,9 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
     {
 
         /** @var Zend_Controller_Request_Http $request */
-
         $request = $this->getRequest();
 
         $this->_helper->layout()->pageName = 'configMenu';
-
         $adminSession = new Zend_Session_Namespace('administrators');
         $privileges = explode(',', $adminSession->privileges);
         if (!in_array('config-ept', $privileges)) {
