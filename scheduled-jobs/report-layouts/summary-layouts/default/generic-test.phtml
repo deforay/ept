@@ -1,4 +1,8 @@
 <?php
+
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'scatter'], true);
 require_once(CRON_PATH . '/Common.php');
 $general = new Common();
 
@@ -64,13 +68,9 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
     $referenceRes .= '</tr>';
     $referenceRes .= '</table>';
-
-
     $pdf->writeHTML($referenceRes, true, false, true, false, '');
 
-
     $participantCount = '';
-
     if (isset($resultArray['shipment']['participant_count'])) {
         $participantCount = $resultArray['shipment']['participant_count'];
     }
@@ -153,31 +153,344 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
             $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
         }
-        if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
-            $html = "";
-            if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
-                $html .= '<hr>';
-                if ($layout == 'zimbabwe') {
-                    $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
-                }
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
-            }
+    }
+    $sample = [];
+    $assayNameTxt = "";
+    $noOfPaResponseTxt = "";
+    $maninAssay = "";
+    $mainNoOfPaResponseTxt = "";
+    foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
+        if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
+            $t = 0;
 
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-            $eodReportText = "End of report";
-            if ($evalRow['report_type'] == 'finalized') {
-                $eodReportText = "End of final report";
+            foreach ($vlCal as $k => $val) {
+                if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
+                    $val['low_limit'] = $val['manual_low'];
+                    $val['high_limit'] = $val['manual_high'];
+                    $val['median'] = $val['manual_median'];
+                    $val['sd'] = $val['manual_sd'];
+                }
+                if (isset($val['median'])) {
+                    $sample[$k]['response']       += $val['no_of_responses'];
+                    $sample[$k]['median']         = $val['median'];
+                    $sample[$k]['lowLimit']       = $val['low_limit'];
+                    $sample[$k]['highLimit']      = $val['high_limit'];
+                    $sample[$k]['sd']             = $val['sd'];
+                    $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                    $sample[$t]['label']          = $val['sample_label'];
+                    $t++;
+                }
             }
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-            $pdf->writeHTML($html, true, false, true, false, '');
+            // $responseTxt = $val['no_of_responses'];
+            if ($vlCal['vlAssay'] == "Other") {
+                foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
+                    $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
+                }
+            } else {
+                $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
+            }
+        } else {
+            $maninAssay = $vlCal['vlAssay'];
+            $calRes = '<table border="1" style="font-weight:bold;width:100%;font-size:10;">
+                            <tr>
+                                <th colspan="8" cellpadding="8" style="font-size:10;padding-top:5px;padding-bottom:5px;"><span style="font-weight:bold;">' . $vlCal['vlAssay'] . '</span></th>
+                            </tr>
+                            <tr>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Specimen ID </th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Number of Participants </th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;">Assigned Value *<br/>(log<sub>10</sub> copies/mL)</th>';
+            /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
+            $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                            </tr>';
+            foreach ($vlCal as $key => $val) {
+                if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
+                    $val['low_limit'] = $val['manual_low'];
+                    $val['high_limit'] = $val['manual_high'];
+                    $val['median'] = $val['manual_median'];
+                    $val['sd'] = $val['manual_sd'];
+                }
+                if (isset($val['median'])) {
+                    $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
+
+                    $calRes .= '<tr>';
+                    $calRes .= '
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $val['sample_label'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $val['no_of_responses'] . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($val['median'], 2), 2, '.', '') . '</td>';
+                    /* $calRes .= '                                    <td style="font-weight:normal;text-align:center;">' . number_format(round($val['low_limit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($val['high_limit'], 2), 2, '.', '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($val['sd'], 2), 2, '.', '') . '</td>'; */
+                    $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $val['NumberPassed'] . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
+                        </tr>';
+                    /*  $chart[$vlCal['vlAssay']]['response'] =  $val['no_of_responses'];
+                    $chart[$vlCal['vlAssay']]['NumberPassed'] =  $score;
+                    $chart[$vlCal['vlAssay']]['score'] =  $score;
+                    $chart[$vlCal['vlAssay']]['avg'] =  round($val['NumberPassed'] / $val['no_of_responses'], 2); */
+                }
+                if (isset($val['NumberPassed']) && ($mainNoOfPaResponseTxt < $val['NumberPassed'] || $mainNoOfPaResponseTxt == "")) {
+                    $mainNoOfPaResponseTxt = (int)$val['NumberPassed'];
+                }
+            }
+            $assayName[] = $vlCal['vlAssay'];
+            $calRes .= '</table>
+            <small><span style="text-align:justify;font-size:10;font-weight:bolt;color:gray;"><em>* Assigned Value : Peer-Comparison of ' . $vlCal['vlAssay'] . '</em></span></small>';
+            $pdf->writeHTML($calRes, true, false, true, false, '');
         }
     }
 
+    if (isset($sample) && count($sample) > 0) {
+        $platform = 'VL platforms with < 18 participants';
+        $calRes = '<br><table border="1" style="font-weight:bold;width:100%;font-size:10;">
+                            <tr>
+                                <th colspan="8" cellpadding="8" style="font-size:10;font-weight:normal;padding-top:5px;padding-bottom:5px;font-weight:bold;">Other platforms</th>
+                            </tr>
+                            <tr>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Specimen ID </th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Number of Participants </th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;width:20%;"><br/><br/>Median</th>';
+        /* $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Lower limit <br/>(Q1)</th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Upper limit <br/>(Q3)</th>
+                                <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
+        $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
+                            </tr>';
+        foreach ($sample as $point => $label) {
+            $score = round((($label['NumberPassed'] / $label['response']) * 100));
+            $calRes .= '<tr>';
+            $calRes .= '
+                    <td style="font-weight:normal;text-align:center;width:20%;">' . $label['label'] . '</td>
+                    <td style="font-weight:normal;text-align:center;width:20%;">' . $label['response'] . '</td>
+                    <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>';
+            // $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
+            // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
+            // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
+            $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $label['NumberPassed'] . '</td>
+                    <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
+                </tr>';
+            $noOfPaResponseTxt = $label['response'];
+            /* $chart[$platform]['response'] =  $label['response'];
+            $chart[$platform]['NumberPassed'] =  $score;
+            $chart[$platform]['score'] =  $score;
+            $chart[$platform]['avg'] =  round($label['NumberPassed'] / $label['response'], 2); */
+        }
+        $assayName[] = 'VL platforms with < 18 participants';
+        $calRes .= '</table>';
+        // $calRes .= '<small><span style="text-align:justify;font-size:10;font-weight:bolt;color:gray;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) <br>Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
+        $pdf->writeHTML($calRes, true, false, true, false, '');
+    }
+    if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
+        // $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each platform (Total ):</span><br><span style="font-weight: normal;text-align:left;font-size:10;">' . $maninAssay . '(n=' . $mainNoOfPaResponseTxt . '),</span>';
+        $note .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Other platforms: ' . $assayNameTxt . '</span>';
+
+        $pdf->writeHTML($note, true, false, true, false, '');
+    }
+    /* JPGraph start */
+    $allParticipantChartLabels = $assayName;
+
+    $noOfPaResponse = [];
+    $participantScore = [];
+    $scoreBelow = [];
+    $avg = [];
+
+    if (isset($resultArray['vlAssayRes']) && count($resultArray['vlAssayRes']) > 0) {
+        $key18Last = array_key_last($allParticipantChartLabels);
+        $i = 0;
+        foreach ($resultArray['vlAssayRes'] as $key => $data) {
+            if ($methodOfEvaluation == 'iso17043') {
+                if ($data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
+                    $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
+                    $participantScore[$key18Last] += (int)$data['numberPassed'];
+                    $scoreBelow[$key18Last] += (int)$data['numberFailed'];
+                    $avg[$key18Last] = round(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100);
+                    //$came = (int)1 + $came;
+                } else {
+                    $noOfPaResponse[$i] = (int)$data['no_of_responses'];
+                    $participantScore[$i] = (int)$data['numberPassed'];
+                    $scoreBelow[$i] = (int)$data['numberFailed'];
+                    $avg[$i] = round(($data['numberPassed'] / $data['no_of_responses']) * 100);
+                    $i++;
+                }
+            }
+        }
+    } else {
+        $noOfPaResponse = array(0);
+        $participantScore = array(0);
+        $scoreBelow = array(0);
+        $avg = array(0, 0, 0);
+    }
+
+    // Now let us create the last part of the barchart with totals
+    $allParticipantChartLabels[] = 'All Participants Scores';
+    $totalBarResponses = array_sum($noOfPaResponse);
+    $totalBarPassed = array_sum($participantScore);
+    $totalBarFailed = array_sum($scoreBelow);
+    $totalBarAvg = 0;
+    if ($totalBarResponses > 0) {
+        $totalBarAvg = round(($totalBarPassed / $totalBarResponses) * 100);
+    }
+
+    $noOfPaResponse[] = $totalBarResponses;
+    $participantScore[] = $totalBarPassed;
+    $scoreBelow[] = $totalBarFailed;
+    $avg[] = $totalBarAvg;
+
+    if (count($noOfPaResponse) > 0 && ($totalBarPassed) > 0) {
+        /* JPGraph start */
+        // Create the graph and specify the scale for both Y-axis
+        $graph = new Graph(900, 400, 'auto');
+        //$graph->graph_theme = null;
+        $graph->SetScale("textlin");
+        $graph->SetY2Scale("lin", 0, 100);
+        $graph->SetY2OrderBack(false);
+
+        $graph->img->SetMargin(70, 70, 90, 140);
+        $graph->SetFrame(false);
+
+        // Create the two linear plot
+        $percentPlot = new LinePlot($avg);
+        $graph->AddY2($percentPlot);
+
+        $percentPlot->SetBarCenter(true);
+
+        $percentPlot->SetWeight(0);
+        $percentPlot->SetLineWeight(0);
+
+        $percentPlot->mark->SetType(MARK_FILLEDCIRCLE, '', 4.0);
+        $percentPlot->mark->SetWeight(10);
+        $percentPlot->mark->SetWidth(14);
+        $percentPlot->mark->setColor("red");
+        $percentPlot->mark->setFillColor("red");
+        $percentPlot->mark->SetSize(5);
+        $percentPlot->value->SetFormat("%d%%");
+        $percentPlot->value->SetMargin(14);
+
+        $percentPlot->value->Show();
+        $percentPlot->value->SetFont(FF_DEFAULT, FS_NORMAL, 10);
+        $percentPlot->value->SetColor("black");
+        //$percentPlot->value->SetMargin(5);
+
+        $percentPlot->SetLegend('% of Participants scoring "100%"');
+
+        $graph->title->Set("All Participants Results Summary");
+        $graph->title->SetMargin(10);
+        $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 15);
+
+        $graph->yaxis->title->Set('Number of Participants', 'center');
+        $graph->yaxis->title->SetMargin(20);
+        $graph->yaxis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
+        //$graph->yscale->SetAutoMax(250);
+        $graph->yscale->SetAutoMin(0);
+
+        $graph->yaxis->HideLine(false);
+        $graph->yaxis->HideTicks(false, false);
+
+        $graph->y2axis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
+        $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
+        $graph->y2axis->title->SetMargin(30);
+        $graph->y2axis->SetLabelFormat('%d%%');
+
+        $graph->y2axis->HideLine(false);
+        $graph->y2axis->HideTicks(false, false);
+
+        $graph->y2scale->SetAutoMax(100);
+        $graph->y2scale->SetAutoMin(0);
+
+        // Add the plot to the graph
+
+        $graph->ygrid->SetFill(false);
+        $graph->xaxis->SetTickLabels($allParticipantChartLabels);
+        $graph->xaxis->SetTextLabelInterval(1);
+        $graph->xaxis->HideLine(false);
+        $graph->xaxis->HideTicks(false, false);
+
+        // $graph->xaxis->SetTextLabelInterval(sizeof($allParticipantChartLabels) + 2);
+        $graph->xaxis->SetLabelAlign('center');
+        $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 11);
+        // $graph->xaxis->scale->ticks->SetTextLabelStart(0.2);
+        //$graph->xaxis->scale->ticks->SupressFirst();
+        if (sizeof($allParticipantChartLabels) >= 4) {
+            $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 9);
+            $graph->xaxis->SetLabelAngle(10);
+        }
+
+        // Create the bar plots
+        $b1plot = new BarPlot($noOfPaResponse);
+        $b2plot = new BarPlot($participantScore);
+        $b3plot = new BarPlot($scoreBelow);
+
+        // Create the grouped bar plot
+        $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
+        $b1plot->SetAlign('center');
+        $b1plot->SetLegend("Number of Participants Submitted Results");
+
+        $b1plot->SetAlign('center');
+        $b2plot->SetLegend('Number of Participants Scoring "100%"');
+
+        $b1plot->SetAlign('center');
+        $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
+
+        $gbplot->SetWidth(0.5);
 
 
 
+        $graph->Add($gbplot);
 
+        $b1plot->SetAbsWidth(33);
+        $b2plot->SetAbsWidth(33);
+        $b3plot->SetAbsWidth(33);
+
+        $b1plot->SetColor("#1471c1");
+        $b2plot->SetColor("#92d14f");
+        $b3plot->SetColor("#fbda66");
+
+        $b1plot->SetFillColor("#1471c1");
+        $b2plot->SetFillColor("#92d14f");
+        $b3plot->SetFillColor("#fbda66");
+
+        $graph->legend->SetFrameWeight(1);
+        $graph->legend->SetColumns(2);
+        $graph->legend->SetVColMargin(12);
+        $graph->legend->SetFont(FF_DEFAULT, FS_BOLD, 10);
+        $graph->legend->SetPos(0.15, 0.85);
+
+        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'all-participants-chart.png';
+        $graph->Stroke($image_file);
+
+        //$pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
+
+        if (file_exists($image_file)) {
+            $graphImage = new \SplFileObject($image_file, 'r');
+            $graphImageContents = base64_encode($graphImage->fread($graphImage->getSize()));
+            $graphImageExtension = $graphImage->getExtension();
+
+            $src = 'data:image/' . $graphImageExtension . ';base64,' . $graphImageContents;
+            $img = '<img src="@' . preg_replace('#^data:image/[^;]+;base64,#', '', $src) . '">';
+            $pdf->writeHTML($img, true, false, true, false, '');
+
+            unlink($image_file);
+        }
+    }
+    if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
+        $html = "";
+        if (isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") {
+            $html .= '<hr>';
+            if ($layout == 'zimbabwe') {
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+            }
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment']['pt_co_ordinator_name'] . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        }
+
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $eodReportText = "End of report";
+        if ($evalRow['report_type'] == 'finalized') {
+            $eodReportText = "End of final report";
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+        $pdf->writeHTML($html, true, false, true, false, '');
+    }
 
     //Close and output PDF document
     $fileName = $resultArray['shipment']['shipment_code'] . "-summary.pdf";

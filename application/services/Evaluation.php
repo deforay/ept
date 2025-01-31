@@ -2584,8 +2584,8 @@ class Application_Service_Evaluation
 				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			} elseif ($shipmentResult['scheme_type'] == 'generic-test' || $shipmentResult['is_user_configured'] == 'yes') {
-				$tbModel = new Application_Model_GenericTest();
-				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
+				$genericModel = new Application_Model_GenericTest();
+				$summaryPDFData = $genericModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}
 		}

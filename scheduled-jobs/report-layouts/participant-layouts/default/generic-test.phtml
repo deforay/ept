@@ -217,9 +217,40 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '</tr>';
                 }
                 $labRes .= '</table>';
+
+                $labRes .= '<br><br><span style="text-align:justify;font-size:9;font-weight:bolt;color:gray;">z Score = (x - μ) / σ<br><span style="text-align:justify;font-size:9;font-weight:bolt;color:gray;">where : x = Your reported ' . $panelName . ' result (log10 copies/mL), μ = Assigned Value (log10 copies/mL) and σ = Robust Standard Deviation</span></span><br>';
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
             }
+
+            $zscorehtml = '<br><h4 style="text-align:center;">Results Interpretation and Recommended Actions</h4>';
+            $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>z Score</strong></th>';
+            $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>Results Interpretation</strong></th>';
+            $zscorehtml .= '<th style="background-color:#8ECF64;"><strong>Recommended Action</strong></th>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>z ≤ ±2.0</td>';
+            $zscorehtml .= '<td>Acceptable</td>';
+            $zscorehtml .= '<td>No action required</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>± 2.0 > z < ± 3.0</td>';
+            $zscorehtml .= '<td>Warning</td>';
+            $zscorehtml .= '<td>Closely monitor performance</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>z ≥ ± 3.0</td>';
+            $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
+            $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '</table>';
+            $pdf->writeHTML($zscorehtml, true, false, true, false, '');
         } else {
             if (isset($result['responseResult']) && !empty($result['responseResult'])) {
                 $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
