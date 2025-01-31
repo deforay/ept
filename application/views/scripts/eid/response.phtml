@@ -393,8 +393,8 @@ if ($this->reqFrom == "admin") {
 							<td colspan="2"><label><?= $this->translate->_("Received the PT Panel?"); ?> </label> <span class="mandatory">*</span>
 								<select id="receivedPtPanel" name="receivedPtPanel" class="form-control" title="Please select if you received the PT Panel">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-									<option value="yes"><?= $this->translate->_("Yes"); ?></option>
-									<option value="no"><?= $this->translate->_("No"); ?></option>
+									<option value="yes" <?= ($this->shipment['received_pt_panel'] == 'yes') ? 'selected' : ''; ?> ><?= $this->translate->_("Yes"); ?></option>
+									<option value="no" <?= ($this->shipment['received_pt_panel'] == 'no') ? 'selected' : ''; ?> ><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
 						</tr>
