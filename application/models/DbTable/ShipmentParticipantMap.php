@@ -394,7 +394,8 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $data['synced'] = 'yes';
             $data['synced_on'] = new Zend_Db_Expr('now()');
             $data['mode_of_response'] = 'app';
-            return $this->update($data, "map_id = " . $params['mapId']);
+                // echo '<pre>'; print_r($data); die;
+                return $this->update($data, "map_id = " . $params['mapId']);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
