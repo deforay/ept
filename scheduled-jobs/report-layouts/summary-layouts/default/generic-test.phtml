@@ -93,8 +93,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
         // set font
         $pdf->SetFont('helvetica', '', 10);
-        $overAllCorrectRes = '<div style="border:1px solid #333;">';
-        $overAllCorrectRes .= '<h3>&nbsp;Summary of All Participants Scores*</h3>';
+        $overAllCorrectRes = '<h3>&nbsp;Summary of All Participants Scores*</h3>';
         $overAllCorrectRes .= '<table border="1" cellpadding="3">';
         $overAllCorrectRes .= '<tr style="background-color:#D9E0F2;">';
         $overAllCorrectRes .= '<td style="text-align:center;">Total number of participants</td>';
@@ -149,7 +148,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $overAllCorrectRes .= '     <td style="text-align:center;">' . round(($avg / $n), 2) . '%</td>';
             $overAllCorrectRes .= ' </tr>';
             $overAllCorrectRes .= '</table>';
-            $overAllCorrectRes .= '<br></div>';
+            $overAllCorrectRes .= '<br>';
 
             $pdf->writeHTML($overAllCorrectRes, true, false, true, false, '');
         }

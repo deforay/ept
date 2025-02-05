@@ -42,11 +42,6 @@ if (!empty($resultArray['shipment'])) {
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
 
-        // set document information
-        //$pdf->SetCreator(PDF_CREATOR);
-        //$pdf->SetAuthor('ePT');
-        //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-
         // set default header data
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
@@ -74,27 +69,13 @@ if (!empty($resultArray['shipment'])) {
 
         // ---------------------------------------------------------
 
-        // set font
-        $pdf->SetFont('freesans', '', 11);
-
-        // add a page
-        $pdf->AddPage();
-
-
-        /* $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Proficiency Testing Program for ' . $panelName . '</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, ''); */
-
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+        // $pdf->SetFont('freesans', '', 11);
 
         // ---------------------------------------------------------
+        // add a page
+        $pdf->AddPage();
+        // set font
+        $pdf->SetFont('helvetica', '', 11);
 
         if (trim($result['shipment_date'] ?? '') != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
@@ -137,10 +118,7 @@ if (!empty($resultArray['shipment'])) {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
-
         //Comment Details
-
-
         // Samples without response need not be generated
         $labInfo = '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
