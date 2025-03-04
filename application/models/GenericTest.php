@@ -426,12 +426,12 @@ class Application_Model_GenericTest
             $endAdditionalMergeCell = ($additionalColoumn + $result['number_of_samples']) - 1;
         }
         /* Final Result Merge options */
-        $firstCellName = $resultReportSheet->getCellByColumnAndRow($finalResColoumn + 1, 1)->getColumn();
-        $secondCellName = $resultReportSheet->getCellByColumnAndRow($endMergeCell + 1, 1)->getColumn();
+        $firstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($finalResColoumn + 1) . 1)->getColumn();
+        $secondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endMergeCell + 1) . 1)->getColumn();
         if ($additionalDetails) {
             /* Additional Result Merge options */
-            $additionalFirstCellName = $resultReportSheet->getCellByColumnAndRow($additionalColoumn + 1, 1)->getColumn();
-            $additionalSecondCellName = $resultReportSheet->getCellByColumnAndRow($endAdditionalMergeCell + 1, 1)->getColumn();
+            $additionalFirstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($additionalColoumn + 1). 1)->getColumn();
+            $additionalSecondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endAdditionalMergeCell + 1). 1)->getColumn();
         }
         /* Merge the final result lable cell */
         $resultReportSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
@@ -448,19 +448,19 @@ class Application_Model_GenericTest
 
         foreach ($reportHeadings as $field => $value) {
 
-            $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $resultReportSheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
-            $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
+            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)->getColumn();
             $resultReportSheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, 3)->getColumn();
+            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  3)->getColumn();
             $resultReportSheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
             if ($additionalDetails) {
                 if ($colNo >= $additionalColoumn) {
                     if ($additionRow <= $result['number_of_samples']) {
-                        $resultReportSheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
-                        $resultReportSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                        $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
+                        $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1). 1)->getFont()->setBold(true);
+                        $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                         $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
                     $additionRow++;
@@ -469,12 +469,12 @@ class Application_Model_GenericTest
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $resultReportSheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
-                    $resultReportSheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
-                    $cellName = $resultReportSheet->getCellByColumnAndRow($colNo + 1, $currentRow)->getColumn();
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1). 1)->getFont()->setBold(true);
+                    $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)->getColumn();
                     $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $resultReportSheet->getCellByColumnAndRow($colNo + 1, 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
                 }
                 $c++;
             }
