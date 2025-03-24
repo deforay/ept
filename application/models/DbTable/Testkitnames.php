@@ -101,14 +101,12 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
     public function updateTestkitStageDetails($params)
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if (trim($params['testKitStage']) != "") {
-            if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
-                $this->update(array($params['testKitStage'] => '0'), array());
-            }
             if (isset($params["testKitData"]) && $params["testKitData"] != '' && count($params["testKitData"]) > 0) {
                 foreach ($params["testKitData"] as $data) {
                     if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
-                        $this->update(array($params['testKitStage'] => '1'), "TestKitName_ID='" . $data . "'");
+                        $db->update('scheme_testkit_map', array($params['testKitStage'] => '1'), "testkit_id='" . $data . "'");
                     } else {
                         $this->update(array('scheme_type' => $params['testKitStage']), "TestKitName_ID='" . $data . "'");
                     }
@@ -216,7 +214,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
             ->join(array('stm' => 'scheme_testkit_map'), "a.TestKitName_ID=stm.testkit_id", '')
-            ->join(array('s' => 'scheme_list'), "stm.scheme_type=s.scheme_id", 'scheme_name');
+            ->join(array('s' => 'scheme_list'), "stm.scheme_type=s.scheme_id", 'scheme_name')
+            ->group('a.TestKitName_ID');
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

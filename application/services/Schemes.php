@@ -545,11 +545,14 @@ class Application_Service_Schemes
 
     public function updateTestkitStage($params)
     {
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->beginTransaction();
         try {
             $testkitsDb = new Application_Model_DbTable_Testkitnames();
             $testkitsDb->updateTestkitStageDetails($params);
+            $sessionAlert->message = "Mapped Successfully";
+            $sessionAlert->status = "success";
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
