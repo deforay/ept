@@ -180,13 +180,13 @@ class Application_Model_GenericTest
                     }
                 }
 
-                if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0) {
+                /* if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0) {
                     $maxScore = $totalScore = 0;
                     $failureReason[] = [
                         'warning' => "Testing is not performed with country approved test kit.",
                         'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample(s) as per National HIV Testing algorithm. Review and refer to SOP for testing"
                     ];
-                }
+                } */
 
                 if ($maxScore > 100) {
                     $maxScore = 100;
@@ -430,8 +430,8 @@ class Application_Model_GenericTest
         $secondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endMergeCell + 1) . 1)->getColumn();
         if ($additionalDetails) {
             /* Additional Result Merge options */
-            $additionalFirstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($additionalColoumn + 1). 1)->getColumn();
-            $additionalSecondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endAdditionalMergeCell + 1). 1)->getColumn();
+            $additionalFirstCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($additionalColoumn + 1) . 1)->getColumn();
+            $additionalSecondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endAdditionalMergeCell + 1) . 1)->getColumn();
         }
         /* Merge the final result lable cell */
         $resultReportSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
@@ -459,7 +459,7 @@ class Application_Model_GenericTest
                 if ($colNo >= $additionalColoumn) {
                     if ($additionRow <= $result['number_of_samples']) {
                         $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode($jsonConfig['additionalDetailLabel'], ENT_QUOTES, 'UTF-8'));
-                        $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1). 1)->getFont()->setBold(true);
+                        $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
                         $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                         $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     }
@@ -470,7 +470,7 @@ class Application_Model_GenericTest
                 if ($c <= $result['number_of_samples']) {
 
                     $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
-                    $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1). 1)->getFont()->setBold(true);
+                    $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
                     $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)->getColumn();
                     $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
