@@ -11,14 +11,14 @@
             <br>
             <div class="form-group col-lg-6">
 
-                <label class="col-lg-12 control-label"><?= $this->translate->_("Choose a Test Number to map test kit"); ?>
+                <label class="col-lg-12 control-label"><?= $this->translate->_("Choose a Test to map test kit"); ?>
 
                     <div class="">
                         <select class="form-control isRequired" name="testStages" id="testStages" title="Please choose a test stage" onchange="getTestKit(this.value)">
                             <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
-                            <option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
-                            <option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
-                            <option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+                            <option value="testkit_1"><?= $this->translate->_("HIV Serology - Test 1"); ?></option>
+                            <option value="testkit_2"><?= $this->translate->_("HIV Serology - Test 2"); ?></option>
+                            <option value="testkit_3"><?= $this->translate->_("HIV Serology - Test 3"); ?></option>
                             <?php if(isset($this->schemeList) && !empty($this->schemeList)) {
                                 foreach($this->schemeList as $row){ ?>
                                     <option value="<?php echo $row['scheme_id'];?>"><?php echo ucwords($row['scheme_name']);?></option>
