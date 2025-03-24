@@ -1458,11 +1458,9 @@ class Application_Model_Dts
 			)
 			->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
 			->order("TESTKITNAME ASC");
-		if (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
-			if ($stage == 'custom-tests')
-				$sql = $sql->where("scheme_type IS NULL OR scheme_type = ''");
-			else
-				$sql = $sql->where("scheme_type != '$stage'");
+		if ($stage == 'custom-tests') {
+		} elseif (isset($stage) && !empty($stage) && !in_array($stage, ['testkit_1', 'testkit_2', 'testkit_3'])) {
+			$sql = $sql->where("scheme_type != '$stage'");
 		} else {
 			$sql = $sql->where("scheme_type = 'dts'");
 		}

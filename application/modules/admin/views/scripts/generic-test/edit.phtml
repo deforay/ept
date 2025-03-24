@@ -4,7 +4,6 @@ $qualitativeRows = [];
 foreach ($this->result['possibleResult'] as $key => $row) {
 	$qualitativeRows[$row['sub_scheme']][] = $row;
 }
-// Zend_Debug::dump($this->result);die;
 ?>
 <style>
 	.result-type {
@@ -14,6 +13,9 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 		width: 100%;
 	}
 </style>
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
 	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
@@ -93,7 +95,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<div class="form-group col-lg-6">
 					<label for="testkit1" class="col-lg-4 control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
 					<div class="col-lg-8">
-						<select name="customTestkit[]" id="customTestkit" class="multipleSelect form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
+						<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
 							<?php foreach ($this->allTestKits as $key => $testkit) { ?>
 								<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->customTestsRecommendedTestkits) && in_array($testkit['TESTKITNAMEID'], $this->customTestsRecommendedTestkits)) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
 							<?php } ?>
@@ -348,7 +350,9 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 		</fieldset>
 	</form>
 </div>
-
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
 <script type="text/javascript">
 	var duplicated = false;
 	var sampleCounter = <?php echo (isset($this->result['possibleResult']) && sizeof($this->result['possibleResult']) > 0) ? sizeof($this->result['possibleResult']) : 1 ?>;
@@ -591,4 +595,41 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			$('#displayContext' + rrow + srow).val('participant');
 		}
 	}
+
+	$(function() {
+		$("#customTestkit").select2({
+			placeholder: 'Please Choose Test Kit',
+			minimumInputLength: 0,
+			width: '100%',
+			allowClear: true,
+			id: function(bond) {
+				return bond._id;
+			},
+			ajax: {
+				placeholder: "Type one or more character to search",
+				url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'testkit-list'), 'default', true); ?>",
+				dataType: 'json',
+				delay: 250,
+				data: function(params) {
+					return {
+						q: params.term, // search term
+						page: params.page
+					};
+				},
+				processResults: function(data, params) {
+					params.page = params.page || 1;
+					return {
+						results: data.result,
+						pagination: {
+							more: (params.page * 30) < data.total_count
+						}
+					};
+				},
+				//cache: true
+			},
+			escapeMarkup: function(markup) {
+				return markup;
+			}
+		});
+	});
 </script>

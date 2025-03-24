@@ -13,6 +13,7 @@ class Reports_CommonController extends Zend_Controller_Action
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
             ->addActionContext('get-ajax-drop-downs', 'html')
             ->addActionContext('generate-password', 'html')
+            ->addActionContext('testkit-list', 'html')
             ->addActionContext('export-config', 'html')
             ->initContext();
     }
@@ -136,6 +137,17 @@ class Reports_CommonController extends Zend_Controller_Action
             $params = $request->getPost();
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->exportConfig($params);
+        }
+    }
+
+    public function testkitListAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isGet()) {
+            $commonService = new Application_Service_Common();
+            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam("q"));
         }
     }
 }

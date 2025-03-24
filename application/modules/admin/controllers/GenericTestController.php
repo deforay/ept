@@ -56,6 +56,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
             ));
             $writer->write();
             $schemeService->saveGenericTest($params);
+            $schemeService->setRecommededCustomTestTypes($params);
             $this->redirect("/admin/generic-test");
         }
         $dtsModel = new Application_Model_Dts();
