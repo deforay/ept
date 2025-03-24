@@ -271,7 +271,7 @@ ALTER TABLE `r_testkitnames`
   DROP `testkit_3`;
 
 -- Thana 07-Jan-2025
-CREATE TABLE `reference_generic_test_calculations` (
+CREATE TABLE IF NOT EXISTS `reference_generic_test_calculations` (
   `shipment_id` int NOT NULL,
   `sample_id` int NOT NULL,
   `no_of_responses` int DEFAULT NULL,

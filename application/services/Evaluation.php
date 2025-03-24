@@ -430,7 +430,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				$db->update('shipment', ['status' => "processing"], "shipment_id = $shipmentId");
 				$genericTestModel = new Application_Model_GenericTest();
 				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}

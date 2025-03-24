@@ -13,10 +13,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
     public function getActiveTestKitsNamesForScheme($scheme, $countryAdapted = false)
     {
-
-
         $sql = $this->getAdapter()->select()
-            ->from(array('t' => 'r_testkitnames'), array('TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'))
+            ->from(['t' => 'r_testkitnames'], ['TESTKITNAMEID' => 'TESTKITNAME_ID', 'TESTKITNAME' => 'TESTKIT_NAME'])
             ->joinLeft(['stm' => 'scheme_testkit_map'], 't.TestKitName_ID = stm.testkit_id', ['scheme_type', 'testkit_1', 'testkit_2', 'testkit_3'])
             ->where("scheme_type = '$scheme'");
 
@@ -35,9 +33,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
     public function addTestkitDetails($params)
     {
         $randomStr = Application_Service_Common::generateRandomString(13);
-        $testkitId = "tk" . $randomStr;
+        $testkitId = "tk$randomStr";
         $tkId = $this->checkTestkitId($testkitId, $params['scheme']);
-        $data = array(
+        $data = [
             'TestKitName_ID' => $tkId,
             'TestKit_Name' => $params['testKitName'],
             'TestKit_Name_Short' => $params['shortTestKitName'],
@@ -49,7 +47,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             'attributes' => json_encode($params['attributes'], true),
             'Approval' => '1',
             'Created_On' => new Zend_Db_Expr('now()')
-        );
+        ];
         if (isset($params['scheme']) && !empty($params['scheme'])) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $params['scheme']) . '") AND testkit_id = "' . $params['testkitId'] . '"');
@@ -57,9 +55,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 $mapData = [
                     'scheme_type' => $scheme,
                     'testkit_id' => $tkId,
-                    'testkit_1' => ((isset($params['testStages'])) && in_array('testkit_1', $params['testStages'])) ? 1 : 0,
-                    'testkit_2' => ((isset($params['testStages'])) && in_array('testkit_2', $params['testStages'])) ? 1 : 0,
-                    'testkit_3' => ((isset($params['testStages'])) && in_array('testkit_3', $params['testStages'])) ? 1 : 0,
+                    'testkit_1' => (isset($params['testStages']) && in_array('testkit_1', $params['testStages'])) ? 1 : 0,
+                    'testkit_2' => (isset($params['testStages']) && in_array('testkit_2', $params['testStages'])) ? 1 : 0,
+                    'testkit_3' => (isset($params['testStages']) && in_array('testkit_3', $params['testStages'])) ? 1 : 0,
                 ];
                 $db->insert('scheme_testkit_map', $mapData);
             }
@@ -70,7 +68,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
     public function updateTestkitDetails($params)
     {
         if (trim($params['testkitId']) != "") {
-            $data = array(
+            $data = [
                 'TestKit_Name' => $params['testKitName'],
                 'TestKit_Name_Short' => $params['shortTestKitName'],
                 'TestKit_Comments' => $params['comments'],
@@ -80,7 +78,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 'CountryAdapted' => $params['countryAdapted'],
                 'attributes' => json_encode($params['attributes'], true),
                 'Approval' => $params['approved']
-            );
+            ];
             if (isset($params['scheme']) && !empty($params['scheme'])) {
                 $db = Zend_Db_Table_Abstract::getDefaultAdapter();
                 $db->delete('scheme_testkit_map', 'scheme_type IN ("' . implode('", "', $params['scheme']) . '") AND testkit_id = "' . $params['testkitId'] . '"');
@@ -88,9 +86,9 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                     $mapData = [
                         'scheme_type' => $scheme,
                         'testkit_id' => $params['testkitId'],
-                        'testkit_1' => ((isset($params['testStages'])) && in_array('testkit_1', $params['testStages'])) ? 1 : 0,
-                        'testkit_2' => ((isset($params['testStages'])) && in_array('testkit_2', $params['testStages'])) ? 1 : 0,
-                        'testkit_3' => ((isset($params['testStages'])) && in_array('testkit_3', $params['testStages'])) ? 1 : 0,
+                        'testkit_1' => (isset($params['testStages']) && in_array('testkit_1', $params['testStages'])) ? 1 : 0,
+                        'testkit_2' => (isset($params['testStages']) && in_array('testkit_2', $params['testStages'])) ? 1 : 0,
+                        'testkit_3' => (isset($params['testStages']) && in_array('testkit_3', $params['testStages'])) ? 1 : 0,
                     ];
                     $db->insert('scheme_testkit_map', $mapData);
                 }
@@ -117,10 +115,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
     public function checkTestkitId($testkitId, $scheme)
     {
-        $result = $this->fetchRow($this->select()->where("TestKitName_ID='" . $testkitId . "'"));
+        $result = $this->fetchRow($this->select()->where("TestKitName_ID='$testkitId'"));
         if ($result != "") {
             $randomStr = Application_Service_Common::generateRandomString(13);
-            $testkitId = "tk" . $randomStr;
+            $testkitId = "tk$randomStr";
             $this->checkTestkitId($testkitId, $scheme);
         } else {
             return $testkitId;
@@ -134,7 +132,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")');
+        $aColumns = ['TestKit_Name', 'scheme_name', 'TestKit_Manufacturer', 'TestKit_ApprovalAgency', 'Approval', 'DATE_FORMAT(Created_On,"%d-%b-%Y %T")'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
@@ -213,8 +211,8 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
          */
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
-            ->join(array('stm' => 'scheme_testkit_map'), "a.TestKitName_ID=stm.testkit_id", '')
-            ->join(array('s' => 'scheme_list'), "stm.scheme_type=s.scheme_id", 'scheme_name')
+            ->joinLeft(array('stm' => 'scheme_testkit_map'), "a.TestKitName_ID=stm.testkit_id", '')
+            ->joinLeft(array('s' => 'scheme_list'), "stm.scheme_type=s.scheme_id", 'scheme_name')
             ->group('a.TestKitName_ID');
 
         if (isset($sWhere) && $sWhere != "") {

@@ -22,7 +22,7 @@ function createFDF($data)
 
 	foreach ($data as $key => $value) {
 		// Replace line breaks with a carriage return
-		$value = str_replace(["\r\n", "\r", "\n"], "\r", $value);
+		$value = str_replace(["\r\n", "\r", "\n"], "\r", $value ?? '');
 		// Escape special characters
 		$fdf .= '    << /T (' . addcslashes($key, "\n\r\t\\()") . ') /V (' . addcslashes($value, "\n\r\t\\()") . ') >>' . "\n";
 	}
@@ -97,13 +97,13 @@ function generateCertificate($shipmentType, $certificateType, $fields, $outputFi
 
 function sendNotification($emailConfig, $shipmentsList)
 {
-    if (!empty($emailConfig) && !empty($shipmentsList) && $emailConfig->status == "yes" && !empty($emailConfig->mails)) {
+	if (!empty($emailConfig) && !empty($shipmentsList) && $emailConfig->status == "yes" && !empty($emailConfig->mails)) {
 		$common = new Application_Service_Common();
-        $emailSubject = "ePT | Certificates Generated";
-        $emailContent = "Certificates for Shipment " . implode(", ", $shipmentsList) . " have been generated.";
-        $emailContent .= "<br><br><br><small>This is a system generated email</small>";
-        $common->insertTempMail($emailConfig->mails, null, null, $emailSubject, $emailContent);
-    }
+		$emailSubject = "ePT | Certificates Generated";
+		$emailContent = "Certificates for Shipment " . implode(", ", $shipmentsList) . " have been generated.";
+		$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+		$common->insertTempMail($emailConfig->mails, null, null, $emailSubject, $emailContent);
+	}
 }
 
 
@@ -143,13 +143,13 @@ try {
 
 	foreach ($shipmentParticipantResult as $shipment) {
 
-		//$assay = $vlAssayArray[$attribs]
-		//Zend_Debug::dump($shipment);die;
-		//echo count($participants);
-		$participantName['first_name'] = mb_convert_encoding($shipment['first_name'], "UTF-8");
-		$participantName['last_name'] = mb_convert_encoding($shipment['last_name'], "UTF-8");
+		$participantName = Pt_Commons_MiscUtility::toUtf8([
+			'first_name' => $shipment['first_name'] ?? '',
+			'last_name' => $shipment['last_name'] ?? '',
+		]);
 
-		$participants[$shipment['unique_identifier']]['labName'] = implode(" ", $participantName);
+		$fullNameParts = array_filter($participantName); // remove empty strings
+		$participants[$shipment['unique_identifier']]['labName'] = implode(' ', $fullNameParts);
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
 		$participants[$shipment['unique_identifier']]['country'] = $shipment['country'];
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
@@ -157,7 +157,7 @@ try {
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['lastdate_response'] = $shipment['lastdate_response'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['shipment_test_report_date'] = $shipment['shipment_test_report_date'];
-		$participants[$shipment['unique_identifier']]['attribs'] = json_decode($shipment['attributes'], true);
+		$participants[$shipment['unique_identifier']]['attribs'] = json_decode($shipment['attributes'] ?? '', true);
 		//$participants[$shipment['unique_identifier']][$shipment['shipment_code']]=$shipment['shipment_score'];
 
 	}

@@ -67,7 +67,7 @@ class Application_Service_Common
         }
     }
 
-    public function getDateTime($returnFormat = 'Y-m-d H:i:s')
+    public static function getDateTime($returnFormat = 'Y-m-d H:i:s')
     {
         $date = new \DateTime(date('Y-m-d H:i:s'));
         return $date->format($returnFormat);
@@ -95,18 +95,18 @@ class Application_Service_Common
         return $result;
     }
 
-    private function sanitizeInput($input)
+    public static function sanitizeInput($input)
     {
         return strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $input));
     }
-    public function generateFakeEmailId($uniqueId, $participantName)
+    public static function generateFakeEmailId($uniqueId, $participantName)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
-        $sanitizedUniqueId = $this->sanitizeInput($uniqueId);
-        $sanitizedParticipantName = $this->sanitizeInput($participantName);
+        $sanitizedUniqueId = self::sanitizeInput($uniqueId);
+        $sanitizedParticipantName = self::sanitizeInput($participantName);
         $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
-        return $sanitizedUniqueId . "_" . $sanitizedParticipantName . "@" . $host;
+        return "{$sanitizedUniqueId}_$sanitizedParticipantName@$host";
     }
 
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())

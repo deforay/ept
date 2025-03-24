@@ -1,8 +1,10 @@
 <?php
 
-use Symfony\Component\Uid\Ulid;
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Application_Service_Common as Common;
+use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 {
@@ -15,7 +17,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function __construct()
     {
         parent::__construct();
-        $this->_defaultPasswordHash = Application_Service_Common::passwordHash($this->_defaultPassword);
+        $this->_defaultPasswordHash = Common::passwordHash($this->_defaultPassword);
     }
 
     public function getParticipantsByUserSystemId($userSystemId)
@@ -847,9 +849,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $allowedExtensions = ['xls', 'xlsx', 'csv'];
                 $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['bulkMap']['name']);
                 $fileName = str_replace(" ", "-", $fileName);
-                $random = $common->generateRandomString(6);
+                $random = Common::generateRandomString(6);
                 $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-                $fileName = $random . "-" . $fileName;
+                $fileName = "$random-$fileName";
                 if (in_array($extension, $allowedExtensions)) {
                     $tempDirectory = realpath(TEMP_UPLOAD_PATH);
                     if (!file_exists($tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
@@ -864,8 +866,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                             foreach ($sheetData as $row) {
 
-                                $row['D'] = filter_var(trim($row['D']), FILTER_SANITIZE_EMAIL);
-                                $row['E'] = filter_var(trim($row['E']), FILTER_SANITIZE_EMAIL);
+                                $row['D'] = MiscUtility::sanitizeAndValidateEmail(trim($row['D']));
+                                $row['E'] = MiscUtility::sanitizeAndValidateEmail(trim($row['E']));
 
                                 if (empty($row['B']) || empty($row['D'])) {
                                     continue;
@@ -1599,9 +1601,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $uploadDirectory = realpath(UPLOAD_PATH);
         // Path to the template Excel file
-        $templateFilePath = $uploadDirectory . '/../files/Participant-Bulk-Import-Excel-Format-v2.xlsx';
+        $templateFilePath = realpath(WEB_ROOT) . "/files/Participant-Bulk-Import-Excel-Format-v2.xlsx";
 
         if (!$this->validateUploadedFile($fileName, $templateFilePath)) {
             $alertMsg->message = 'The uploaded file does not match the expected format.';
@@ -1626,34 +1627,26 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             $lastInsertedId = 0;
 
-            if (
-                empty($sheetData[$i]['A']) &&
-                empty($sheetData[$i]['C']) &&
-                empty($sheetData[$i]['D'])
-            ) {
+            if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
                 continue;
             }
 
-            $sheetData[$i]['R'] = filter_var(trim($sheetData[$i]['R']), FILTER_SANITIZE_EMAIL);
-            $sheetData[$i]['T'] = filter_var(trim($sheetData[$i]['T']), FILTER_SANITIZE_EMAIL);
+            $sheetData[$i]['R'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
+            $sheetData[$i]['T'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['T']);
 
-
-            $sheetData[$i]['B'] = preg_replace("/[^a-zA-Z0-9-]/", "-", $sheetData[$i]['B']);
+            $sheetData[$i]['B'] = preg_replace("/[^a-zA-Z0-9-]/", "-", trim($sheetData[$i]['B']));
 
             // if the unique_identifier is blank, we generate a new one
             if (empty($sheetData[$i]['B'])) {
-                $sheetData[$i]['B'] = "PT-" . strtoupper($common->generateRandomString(5));
+                $sheetData[$i]['B'] = "PT-" . strtoupper(Common::generateRandomString(5));
             }
 
 
-            $originalEmail = null;
-            if (!empty($sheetData[$i]['R']) && filter_var($sheetData[$i]['R'], FILTER_VALIDATE_EMAIL)) {
-                $originalEmail = $sheetData[$i]['R'];
-            }
+            $originalEmail = $sheetData[$i]['R'] ?? null;
 
             // if the email is blank, we generate a new one
             if (empty($originalEmail) || $allFakeEmail) {
-                $originalEmail = $sheetData[$i]['R'] = $common->generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                $originalEmail = $sheetData[$i]['R'] = Common::generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
             }
 
             // Duplications check
@@ -1686,23 +1679,23 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $dataForStatistics = [
                 's_no'                  => $sheetData[$i]['A'],
                 'participant_id'        => $sheetData[$i]['B'],
-                'individual'            => $sheetData[$i]['C'],
+                'individual'            => $sheetData[$i]['C'] ?? 'no',
                 'participant_lab_name'  => $sheetData[$i]['D'],
                 'participant_last_name' => $sheetData[$i]['E'],
-                'institute_name'        => $sheetData[$i]['F'],
-                'department'            => $sheetData[$i]['G'],
-                'address'               => $sheetData[$i]['H'],
-                'district'              => $sheetData[$i]['J'],
+                'institute_name'        => $sheetData[$i]['F'] ?? null,
+                'department'            => $sheetData[$i]['G'] ?? null,
+                'address'               => $sheetData[$i]['H'] ?? null,
+                'district'              => $sheetData[$i]['J'] ?? null,
                 'country'               => $sheetData[$i]['M'],
-                'zip'                   => $sheetData[$i]['N'],
-                'longitude'             => $sheetData[$i]['O'],
-                'latitude'              => $sheetData[$i]['P'],
-                'mobile_number'         => $sheetData[$i]['Q'],
+                'zip'                   => $sheetData[$i]['N'] ?? null,
+                'longitude'             => $sheetData[$i]['O'] ?? null,
+                'latitude'              => $sheetData[$i]['P'] ?? null,
+                'mobile_number'         => $sheetData[$i]['Q'] ?? null,
                 'participant_email'     => $originalEmail,
                 'participant_password'  => $sheetData[$i]['S'],
-                'additional_email'      => $sheetData[$i]['T'],
+                'additional_email'      => $sheetData[$i]['T'] ?? null,
                 'filename'              => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
-                'updated_datetime'      => $common->getDateTime()
+                'updated_datetime'      => Common::getDateTime()
             ];
 
             $dmId = 0;
@@ -1729,24 +1722,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
 
             $participantData = [
-                'unique_identifier' => ($sheetData[$i]['B']),
+                'unique_identifier' => $sheetData[$i]['B'],
                 'individual'        => $isIndividual,
-                'first_name'        => ($sheetData[$i]['D']),
-                'last_name'         => ($sheetData[$i]['E']),
-                'institute_name'    => ($sheetData[$i]['F']),
-                'department_name'   => ($sheetData[$i]['G']),
-                'address'           => ($sheetData[$i]['H']),
-                'shipping_address'  => ($sheetData[$i]['I']) ?? null,
-                'district'          => $sheetData[$i]['J'],
-                'state'             => ($sheetData[$i]['K']),
-                'region'            => ($sheetData[$i]['L']),
+                'first_name'        => $sheetData[$i]['D'],
+                'last_name'         => $sheetData[$i]['E'] ?? null,
+                'institute_name'    => $sheetData[$i]['F'] ?? null,
+                'department_name'   => $sheetData[$i]['G'] ?? null,
+                'address'           => $sheetData[$i]['H'] ?? null,
+                'shipping_address'  => $sheetData[$i]['I'] ?? null,
+                'district'          => $sheetData[$i]['J'] ?? null,
+                'state'             => $sheetData[$i]['K'] ?? null,
+                'region'            => $sheetData[$i]['L'] ?? null,
                 'country'           => $countryId,
-                'zip'               => ($sheetData[$i]['N']),
-                'long'              => ($sheetData[$i]['O']),
-                'lat'               => ($sheetData[$i]['P']),
-                'mobile'            => ($sheetData[$i]['Q']),
+                'zip'               => $sheetData[$i]['N'] ?? null,
+                'long'              => $sheetData[$i]['O'] ?? null,
+                'lat'               => $sheetData[$i]['P'] ?? null,
+                'mobile'            => $sheetData[$i]['Q'] ?? null,
                 'email'             => $originalEmail,
-                'additional_email'  => ($sheetData[$i]['T']),
+                'additional_email'  => $sheetData[$i]['T'] ?? null,
                 'force_profile_updation' => 0,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
@@ -2003,9 +1996,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Common::isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Common::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {

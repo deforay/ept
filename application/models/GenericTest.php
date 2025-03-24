@@ -862,12 +862,12 @@ class Application_Model_GenericTest
         return $shipmentResult;
     }
 
-    public function getRecommededGenericTestkits($testMode)
+    public function getRecommededGenericTestkits($schemeId)
     {
         $sql = $this->db->select()->from(['generic_recommended_test_types']);
 
-        if ($testMode != null) {
-            $sql = $sql->where("scheme_id = '$testMode'");
+        if ($schemeId != null) {
+            $sql = $sql->where("scheme_id = '$schemeId'");
         }
         $stmt = $this->db->fetchAll($sql);
         $retval = [];

@@ -17,17 +17,63 @@ final class Pt_Commons_MiscUtility
         return preg_replace($regex, $replace, $filename);
     }
 
-    public static function generateRandomString(int $length = 32): string
+    /**
+     * Recursively convert input to valid UTF-8 and remove invisible characters.
+     *
+     * @param array|string|null $input
+     * @return array|string|null
+     */
+    public static function toUtf8(array|string|null $input): array|string|null
     {
-        $bytes = ceil($length * 3 / 4);
+        if (is_array($input)) {
+            return array_map([self::class, 'toUtf8'], $input);
+        }
+
+        if (is_string($input)) {
+            // Normalize encoding
+            $input = trim($input);
+            if (!mb_check_encoding($input, 'UTF-8')) {
+                $encoding = mb_detect_encoding($input, mb_detect_order(), true) ?? 'UTF-8';
+                $input = mb_convert_encoding($input, 'UTF-8', $encoding);
+            }
+
+            // Remove BOM, zero-width spaces, non-breaking space, etc.
+            $input = preg_replace(
+                '/[\x{200B}-\x{200D}\x{FEFF}\x{00A0}]/u',
+                '',
+                $input
+            );
+        }
+
+        return $input;
+    }
+
+    public static function sanitizeAndValidateEmail($email)
+    {
+        $sanitized = filter_var(trim($email ?? ''), FILTER_SANITIZE_EMAIL);
+        return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: '';
+    }
+
+
+    public static function generateRandomString(int $length = 32)
+    {
         try {
-            $randomBytes = random_bytes($bytes);
-            $base64String = base64_encode($randomBytes);
-            // Replace base64 characters with some alphanumeric characters
-            $customBase64String = strtr($base64String, '+/=', 'ABC');
-            return substr($customBase64String, 0, $length);
+            $bytes = random_bytes($length);
+            $result = '';
+
+            // Create a character set of alphanumeric characters
+            $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            $charSetLength = strlen($charSet);
+
+            // Convert random bytes to characters from our character set
+            for ($i = 0; $i < $length; $i++) {
+                $result .= $charSet[ord($bytes[$i]) % $charSetLength];
+            }
+
+            return $result;
         } catch (Throwable $e) {
             Pt_Commons_LoggerUtility::log('Failed to generate random string: ', $e->getMessage());
+            throw $e;
         }
     }
 
