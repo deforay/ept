@@ -2,11 +2,11 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <div class="well">
     <fieldset>
-        <legend><?= $this->translate->_("Map test kits to respective tests"); ?></legend>
+        <legend><?= $this->translate->_("Map Test kits to specific tests"); ?></legend>
 
         <div class="row">
             <p class="col-lg-12">
-                <?= $this->translate->_("This page is used to select one or more test kits for specific test number."); ?> <br><br> <?= $this->translate->_("For e.g., if you select X, Y and Z test kits for Test 1, then only those 3 test kits appear in dropdown in the Participant response form for Test 1."); ?>
+                <?= $this->translate->_("This page is used to select one or more test kits for specific test."); ?> <br><br> <?= $this->translate->_("For e.g., if you select X, Y and Z test kits for HIV Serology - Test 1, then only those 3 test kits appear in dropdown in the Participant response form for HIV Serology - Test 1."); ?>
             </p>
             <br>
             <div class="form-group col-lg-6">
@@ -21,7 +21,7 @@
                             <option value="testkit_3"><?= $this->translate->_("HIV Serology - Test 3"); ?></option>
                             <?php if(isset($this->schemeList) && !empty($this->schemeList)) {
                                 foreach($this->schemeList as $row){ ?>
-                                    <option value="<?php echo $row['scheme_id'];?>"><?php echo ucwords($row['scheme_name']);?></option>
+                                    <option value="<?php echo $row['scheme_id'];?>"><?= $row['scheme_name'];?></option>
                                 <?php }
                             } ?>
                         </select>
@@ -29,7 +29,7 @@
                 </label>
             </div>
         </div>
-        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>" class="hide">
+        <form name="submitdatamanager" id="submitdatamanager" method="post" action="<?= $this->url(['module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'], 'default', true); ?>" class="hide">
 
             <div class="text-info" style="text-align:center;padding:10px 0;"><?= $this->translate->_("Click on the Test kit Name to move them between the two sections"); ?><br /><br />
                 <div style="width:500px;margin:0 auto;clear:both;">
@@ -42,8 +42,8 @@
             <input type="hidden" name="testKitStage" id="testKitStage" value="">
             <br />
             <div class="col-md-12 col-xs-12" align="center">
-                <input type="submit" class="btn btn-primary" value="Save Selected" />
-                <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
+                <input type="submit" class="btn btn-primary" value="<?= $this->translate->_("Save Selected"); ?>" />
+                <input type="button" onclick="window.location.href = '<?php echo $this->url(['module' => 'admin', 'controller' => 'testkit', 'action' => 'standard-kit'], 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </form>
 

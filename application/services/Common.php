@@ -1429,7 +1429,7 @@ class Application_Service_Common
         $cleanFileName = preg_replace('/[^a-zA-Z0-9-_]/', '', $fileNameWithoutExtension);
 
         // Reconstruct the file name with its extension
-        return $cleanFileName . ($extension ? '.' . $extension : '');
+        return $cleanFileName . ($extension ? ".$extension" : '');
     }
 
     public function stringToCamelCase($string, $character = ' ')
@@ -1476,12 +1476,10 @@ class Application_Service_Common
         } else {
             $concat[] = " COALESCE(" . $params['concat'] . ",'') ";
         }
-        $sql = $db->select()->from($params['tableName'], (
-            array(
-                $params['returnId'],
-                'concat' => new Zend_Db_Expr("CONCAT( " . implode(",' '", $concat) . " )")
-            )
-        ));
+        $sql = $db->select()->from($params['tableName'], [
+            $params['returnId'],
+            'concat' => new Zend_Db_Expr("CONCAT( " . implode(",' '", $concat) . " )")
+        ]);
         if (is_array($params['fieldNames'])) {
             foreach ($params['fieldNames'] as $key => $field) {
                 $sql = $sql->where("$field LIKE '%" . $params['search'] . "%'");
@@ -1542,7 +1540,7 @@ class Application_Service_Common
             /* File name creation */
             $fileName = Pt_Commons_General::generateRandomString(12) . time() . '-' . $data['scheme'] . '.json';
             $filePath  = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
-            $fp = fopen(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName, 'w');
+            $fp = fopen($filePath, 'w');
             fwrite($fp, json_encode($output));
             fclose($fp);
             $gzdata = gzencode(file_get_contents($filePath));
@@ -1551,7 +1549,7 @@ class Application_Service_Common
         }
     }
 
-    function unserializeForm($str)
+    public function unserializeForm($str)
     {
         $strArray = explode("&", $str['formPost']);
         foreach ($strArray as $item) {
