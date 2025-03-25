@@ -378,17 +378,18 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
+            } else {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -546,17 +547,18 @@ class Application_Service_Shipments
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
+            } else {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
@@ -680,18 +682,18 @@ class Application_Service_Shipments
                 }
             }
 
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
-                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
-                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
-                $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
-                $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
                 $data['is_pt_test_not_performed'] = null;
                 $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
                 $data['pt_test_not_performed_comments'] = null;
                 $data['pt_support_comments'] = null;
+            } else {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+                $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
+                $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
+                $data['pt_support_comments'] = $params['ptSupportComments'];
             }
 
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
@@ -701,7 +703,7 @@ class Application_Service_Shipments
             if (isset($params['customField2']) && !empty(trim($params['customField2']))) {
                 $data['custom_field_2'] = trim($params['customField2']);
             }
-         
+
             $shipmentParticipantDb->updateShipment($data, $params['smid'], $params['hdLastDate']);
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->updateResults($params);
@@ -821,18 +823,18 @@ class Application_Service_Shipments
                     $data['qc_created_on'] = null;
                 }
             }
-
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
+            } else {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
             }
 
             if (isset($params['customField1']) && !empty(trim($params['customField1']))) {
@@ -1311,17 +1313,18 @@ class Application_Service_Shipments
                 $data["updated_by_admin"] = $adminAuthNameSpace->admin_id ?? null;
                 $data["updated_on_admin"] = new Zend_Db_Expr('now()');
             }
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
-                $data['is_pt_test_not_performed'] = 'yes';
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
+            } else {
+                $data['is_pt_test_not_performed'] = 'yes';
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
             }
 
             if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
@@ -1568,18 +1571,18 @@ class Application_Service_Shipments
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
-
-            if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+                $data['is_pt_test_not_performed'] = null;
+                $data['vl_not_tested_reason'] = null;
+                $data['shipment_test_date'] = null;
+                $data['pt_test_not_performed_comments'] = null;
+                $data['pt_support_comments'] = null;
+            } else {
                 $data['is_pt_test_not_performed'] = 'yes';
-                // $data['shipment_test_date'] = null;
+                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
                 $data['vl_not_tested_reason'] = $params['vlNotTestedReason'];
                 $data['pt_test_not_performed_comments'] = $params['ptNotTestedComments'];
                 $data['pt_support_comments'] = $params['ptSupportComments'];
-            } else {
-                $data['is_pt_test_not_performed'] = null;
-                $data['vl_not_tested_reason'] = null;
-                $data['pt_test_not_performed_comments'] = null;
-                $data['pt_support_comments'] = null;
             }
 
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
