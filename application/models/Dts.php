@@ -208,13 +208,13 @@ class Application_Model_Dts
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
-				if (isset($recommendedTestkits[1]) && count($recommendedTestkits[1]) > 0) {
+				if (isset($recommendedTestkits[1]) && !empty($recommendedTestkits[1])) {
 					if (!in_array($results[0]['test_kit_name_1'], $recommendedTestkits[1])) {
 						$tk1RecommendedUsed = false;
-						$failureReason[] = array(
-							'warning' => "For Test 1, testing is not performed with country approved test kit.",
+						$failureReason[] = [
+							'warning' => "For Test 1, testing is not performed with country approved test kit.--- ".$results[0]['test_kit_name_1'],
 							'correctiveAction' => $correctiveActions[17]
-						);
+						];
 					} else {
 						$tk1RecommendedUsed = true;
 					}
@@ -245,7 +245,7 @@ class Application_Model_Dts
 					$shipment['is_excluded'] = 'yes';
 				}
 
-				if (isset($recommendedTestkits[2]) && count($recommendedTestkits[2]) > 0) {
+				if (isset($recommendedTestkits[2]) && !empty($recommendedTestkits[2])) {
 					if (!in_array($results[0]['test_kit_name_2'], $recommendedTestkits[2])) {
 						$tk2RecommendedUsed = false;
 						$failureReason[] = array(
@@ -282,7 +282,7 @@ class Application_Model_Dts
 					$shipment['is_excluded'] = 'yes';
 				}
 
-				if (isset($recommendedTestkits[3]) && count($recommendedTestkits[3]) > 0) {
+				if (isset($recommendedTestkits[3]) && !empty($recommendedTestkits[3])) {
 					if (!in_array($results[0]['test_kit_name_3'], $recommendedTestkits[3])) {
 						$tk3RecommendedUsed = false;
 						$failureReason[] = array(
@@ -1275,7 +1275,7 @@ class Application_Model_Dts
 
 
 				$shipmentResult[$counter]['display_result'] = $finalResultArray[$finalResult];
-				$shipmentResult[$counter]['failure_reason'] = $failureReason = (isset($failureReason) && count($failureReason) > 0) ? json_encode($failureReason) : "";
+				$shipmentResult[$counter]['failure_reason'] = $failureReason = (isset($failureReason) && !empty($failureReason)) ? json_encode($failureReason) : "";
 				//$shipmentResult[$counter]['corrective_actions'] = implode(",",$correctiveActionList);
 			}
 
@@ -1422,7 +1422,7 @@ class Application_Model_Dts
 
 	public function getRecommededDtsTestkits($testMode = 'dts', $testNumber = null, $nonDts = false)
 	{
-		$sql = $this->db->select()->from(array('dts_recommended_testkits'));
+		$sql = $this->db->select()->from(['dts_recommended_testkits']);
 
 		if ($testNumber != null && (int) $testNumber > 0 && (int) $testNumber <= 3) {
 			$sql = $sql->where('test_no = ' . (int) $testNumber);

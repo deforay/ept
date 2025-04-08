@@ -587,13 +587,15 @@ class Application_Service_Participants
 					if (!isset($value)) {
 						$value = "";
 					}
-					$sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 					$rRowCount = $rowNo + 5;
-					$cellName = $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 5)->getColumn();
+					$cellName = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
+->getColumn();
 					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
 					$sheet->getDefaultRowDimension()->setRowHeight(18);
 					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-					$sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
+					$sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
 					$colNo++;
 				}
 			}

@@ -325,3 +325,21 @@ UPDATE shipment_participant_map AS spm JOIN r_testkitnames AS rtk ON JSON_EXTRAC
 ALTER TABLE `reference_generic_test_calculations` DROP PRIMARY KEY;
 ALTER TABLE `reference_generic_test_calculations` ADD PRIMARY KEY(`shipment_id`, `testkit_id`, `sample_id`);
 
+-- Amit 08-Apr-2025
+ALTER TABLE reference_result_vl
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+ALTER TABLE reference_result_eid
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+ALTER TABLE reference_result_dts
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+ALTER TABLE reference_result_covid19
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+ALTER TABLE reference_result_generic_test
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
+
+ALTER TABLE reference_result_tb
+MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;

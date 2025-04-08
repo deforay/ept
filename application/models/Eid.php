@@ -270,28 +270,34 @@ class Application_Model_Eid
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
         $colNameCount = 11;
-        $cellName1 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
+        $cellName1 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
+->getColumn();
 
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)
+->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
-        $cellName2 = $firstSheet->getCellByColumnAndRow($colNameCount, '1')->getColumn();
+        $cellName2 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
+->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
         $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
-        $cellName3 = $firstSheet->getCellByColumnAndRow($colNameCount + 1, '1')->getColumn();
+        $cellName3 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
+->getColumn();
         $colNumberforReference = $colNameCount + 1;
         foreach ($refResult as $refRow) {
-            $firstSheet->getCellByColumnAndRow($colNameCount + 1, 2)->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getStyleByColumnAndRow($colNameCount + 1, 2, null, null)->applyFromArray($borderStyle, true);
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)
+->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount + 1) . 2, null, null)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
-        $cellName4 = $firstSheet->getCellByColumnAndRow($colNameCount, '1')->getColumn();
+        $cellName4 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
+->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
         $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
@@ -336,35 +342,51 @@ class Application_Model_Eid
             // $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";
 
 
-            $firstSheet->getCellByColumnAndRow(1, $row)->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(2, $row)->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(3, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(4, $row)->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(5, $row)->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow(6, $row)->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
-            // $firstSheet->getCellByColumnAndRow(7, $row)->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . $row)
+->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $row)
+->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(3) . $row)
+->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(4) . $row)
+->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . $row)
+->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(6) . $row)
+->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
+            // $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(7) . $row)
+->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'));
 
             $col = 7;
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'));
-            // $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'));
+            // $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'));
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'));
+                $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'));
             } elseif ((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "")) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
+                $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
             } else {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'));
+                $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'));
             }
 
-            $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'));
+            $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($rowOverAll['shipment_score'], ENT_QUOTES, 'UTF-8'));
 
             foreach ($resultResponse as $responseRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $row)->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
+                $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
+->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
             }
         }
 
@@ -376,7 +398,8 @@ class Application_Model_Eid
         for ($i = 3; $i < $row; $i++) {
             $col = $colNumberforReference;
             foreach ($referenceresult as $referenceRow) {
-                $firstSheet->getCellByColumnAndRow($col++, $nRow)->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'));
+                $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $nRow)
+->setValueExplicit(html_entity_decode($referenceRow['response'], ENT_QUOTES, 'UTF-8'));
             }
             $nRow++;
         }

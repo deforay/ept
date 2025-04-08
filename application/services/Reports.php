@@ -1947,21 +1947,27 @@ class Application_Service_Reports
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -1989,10 +1995,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2040,16 +2047,21 @@ class Application_Service_Reports
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
 
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $totalQuery = $db->select()->from(array('s' => 'shipment'), array("average_score"))
@@ -2080,21 +2092,26 @@ class Application_Service_Reports
             $avgScore = round($totalResult['average_score'], 2) . '%';
 
             $sheet->mergeCells('A4:B4');
-            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A5:B5');
-            $sheet->getCellByColumnAndRow(1, 5)->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow(1, 5, null, null)->getFont()->setBold(true);
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 5)
+->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 5, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A6:B6');
-            $sheet->getCellByColumnAndRow(1, 6)->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow(1, 6, null, null)->getFont()->setBold(true);
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 6)
+->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 6, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A7:B7');
-            //$sheet->getCellByColumnAndRow(0, 7)->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'));
-            //$sheet->getStyleByColumnAndRow(0, 7)->getFont()->setBold(true);
+            //$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(0) . 7)
+->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'));
+            //$sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(0) . 7)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 9)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 9, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 9)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 9, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2121,10 +2138,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 10)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2173,21 +2191,27 @@ class Application_Service_Reports
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
 
-            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2216,10 +2240,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2891,25 +2916,33 @@ class Application_Service_Reports
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 4)
+->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 6, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2934,10 +2967,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2984,25 +3018,33 @@ class Application_Service_Reports
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 2)->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 2)->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 3)->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 3)->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCellByColumnAndRow(1, 4)->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCellByColumnAndRow(2, 4)->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 4)
+->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyleByColumnAndRow(1, 4, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 6, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -3027,10 +3069,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 7)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -4799,11 +4842,13 @@ echo '<pre>'; print_r($aRow); die;
             array_push($headings, 'Average Score');
             $colNo = 0;
             $sheet->mergeCells('A1:B1');
-            $sheet->getCellByColumnAndRow(1, 1)->setValueExplicit(html_entity_decode('Participant Performance Report', ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow(1, 1, null, null)->getFont()->setBold(true);
+            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+->setValueExplicit(html_entity_decode('Participant Performance Report', ENT_QUOTES, 'UTF-8'));
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 5)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 5, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -4827,10 +4872,11 @@ echo '<pre>'; print_r($aRow); die;
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 6)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }

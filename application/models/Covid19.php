@@ -572,7 +572,7 @@ class Application_Model_Covid19
 
         foreach ($firstSheetHeading as $value) {
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($firstSheetColNo + 1), $firstSheetRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getStyleByColumnAndRow($firstSheetColNo + 1, $firstSheetRow, null, null)->getFont()->setBold(true);
+            $firstSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($firstSheetColNo + 1) . $firstSheetRow, null, null)->getFont()->setBold(true);
             $cellName = $firstSheet->getCell(Coordinate::stringFromColumnIndex($firstSheetColNo + 1), $firstSheetRow)->getColumn();
             $firstSheet->getStyle($cellName . $firstSheetRow)->applyFromArray($firstSheetStyle, true);
             $firstSheetColNo++;
@@ -619,7 +619,7 @@ class Application_Model_Covid19
 
 
         for ($counter = 1; $counter <= 11; $counter++) {
-            $firstSheet->getStyleByColumnAndRow(2, $counter, null, null)->getAlignment()->setWrapText(true);
+            $firstSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $counter, null, null)->getAlignment()->setWrapText(true);
             $firstSheet->getStyle("A$counter")->applyFromArray($firstSheetStyle, true);
             $firstSheet->getStyle("B$counter")->applyFromArray($firstSheetStyle, true);
         }
@@ -652,13 +652,13 @@ class Application_Model_Covid19
         $colNo = 0;
         $currentRow = 1;
         //$sheet->getCell(Coordinate::stringFromColumnIndex(0), 1)->setValueExplicit(html_entity_decode("Participant List", ENT_QUOTES, 'UTF-8'), $type);
-        //$sheet->getStyleByColumnAndRow(0,1)->getFont()->setBold(true);
+        //$sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(0) . 1)->getFont()->setBold(true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
 
         foreach ($headings as $field => $value) {
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
@@ -746,7 +746,7 @@ class Application_Model_Covid19
         foreach ($reportHeadings as $field => $value) {
 
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyleByColumnAndRow($colNo + 1, $currentRow, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1), $currentRow)->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
@@ -797,7 +797,7 @@ class Application_Model_Covid19
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
             $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1), $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $sheetThree->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $sheetThree->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow, null, null)->getFont()->setBold(true);
             $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1), $sheetThreeRow)->getColumn();
             $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
@@ -839,16 +839,16 @@ class Application_Model_Covid19
         $docScoreHeadingsCount = count($docScoreHeadings);
         foreach ($docScoreHeadings as $sheetThreeHK => $value) {
             $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol), $docScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getFont()->setBold(true);
+            $docScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($docScoreSheetCol) . $docScoreRow)->getFont()->setBold(true);
             $cellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol), $docScoreRow)->getColumn();
             $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
-            $docScoreSheet->getStyleByColumnAndRow($docScoreSheetCol, $docScoreRow)->getAlignment()->setWrapText(true);
+            $docScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($docScoreSheetCol) . $docScoreRow)->getAlignment()->setWrapText(true);
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
         $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(1), $docScoreRow);
         $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
-        $docScoreSheet->getStyleByColumnAndRow(1, $docScoreRow)->getFont()->setBold(true);
+        $docScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . $docScoreRow)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
 
@@ -858,7 +858,7 @@ class Application_Model_Covid19
             if ($r != 7) {
                 $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
             }
-            $docScoreSheet->getStyleByColumnAndRow($r, $docScoreRow)->getFont()->setBold(true);
+            $docScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($r) . $docScoreRow)->getFont()->setBold(true);
             $cellName = $secondRowcellName->getColumn();
             $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle);
         } */
@@ -879,10 +879,10 @@ class Application_Model_Covid19
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1), $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
+            $totalScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow, null, null)->getFont()->setBold(true);
             $cellName = $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreSheetCol + 1), $totScoreRow)->getColumn();
             $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
+            $totalScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
         }
 

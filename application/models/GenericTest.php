@@ -16,6 +16,53 @@ class Application_Model_GenericTest
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
+    private function updateEqualSampleScores($shipmentId)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Step 1: Set sample_score = 0 for all mandatory = 0 samples
+        $db->update(
+            'reference_result_generic_test',
+            ['sample_score' => 0],
+            ['shipment_id = ?' => $shipmentId, 'mandatory = ?' => 0]
+        );
+
+        // Step 2: Get all mandatory = 1 samples
+        $mandatorySamples = $db->fetchAll(
+            "SELECT sample_id FROM reference_result_generic_test
+                    WHERE shipment_id = ? AND mandatory = 1
+                    ORDER BY sample_id ASC", // predictable order for adjustment
+            [$shipmentId]
+        );
+
+        $count = count($mandatorySamples);
+
+        if ($count === 0) {
+            // No mandatory samples — we're done
+            return;
+        }
+
+        // Step 3: Calculate base score and distribute
+        $baseScore = floor((100 / $count) * 1000000) / 1000000; // higher precision
+        $scores = array_fill(0, $count, $baseScore);
+
+        // Step 4: Adjust last score to ensure total is exactly 100
+        $total = array_sum($scores);
+        $diff = 100 - $total;
+        $scores[$count - 1] += $diff;
+
+        // Step 5: Update each mandatory sample with the score
+        foreach ($mandatorySamples as $index => $row) {
+            $db->update(
+                'reference_result_generic_test',
+                ['sample_score' => $scores[$index]],
+                ['shipment_id = ?' => $shipmentId, 'sample_id = ?' => $row['sample_id']]
+            );
+        }
+    }
+
+
+
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
     {
         $counter = 0;
@@ -24,6 +71,9 @@ class Application_Model_GenericTest
         $passingScore = 100;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $this->updateEqualSampleScores($shipmentId);
+
         foreach ($shipmentResult as $shipment) {
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
             if (isset($shipment['attributes']) && !empty($shipment['attributes'])) {
@@ -198,8 +248,7 @@ class Application_Model_GenericTest
                 if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
                     $finalResult = '';
                     $totalScore = 0;
-                    $responseScore = 0;
-                    $shipmentResult[$counter]['shipment_score'] = $responseScore;
+                    $shipmentResult[$counter]['shipment_score'] = 0;
                     $shipmentResult[$counter]['documentation_score'] = 0;
                     $shipmentResult[$counter]['display_result'] = '';
                     $shipmentResult[$counter]['is_followup'] = 'yes';
@@ -307,7 +356,7 @@ class Application_Model_GenericTest
             ]
         ];
 
-        $query = $db->select()->from('shipment', array('shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'))
+        $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'])
             ->where("shipment_id = ?", $shipmentId);
         $result = $db->fetchRow($query);
 
@@ -504,13 +553,13 @@ class Application_Model_GenericTest
         $sheetThreeRow = 1;
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
-            $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $panelScoreSheet->getStyleByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow, null, null)->getFont()->setBold(true);
-            $cellName = $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+            $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $panelScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow, null, null)->getFont()->setBold(true);
+            $cellName = $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)->getColumn();
             $panelScoreSheet->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
-                $cellName = $panelScoreSheet->getCellByColumnAndRow($sheetThreeColNo + 1, $sheetThreeRow)->getColumn();
+                $cellName = $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)->getColumn();
                 $panelScoreSheet->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
@@ -530,11 +579,11 @@ class Application_Model_GenericTest
         $totScoreRow = 1;
         $totScoreHeadingsCount = count($totalScoreHeadings);
         foreach ($totalScoreHeadings as $sheetThreeHK => $value) {
-            $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getFont()->setBold(true);
-            $cellName = $totalScoreSheet->getCellByColumnAndRow($totScoreSheetCol + 1, $totScoreRow)->getColumn();
+            $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+            $totalScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow, null, null)->getFont()->setBold(true);
+            $cellName = $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow)->getColumn();
             $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
-            $totalScoreSheet->getStyleByColumnAndRow($totScoreSheetCol + 1, $totScoreRow, null, null)->getAlignment()->setWrapText(true);
+            $totalScoreSheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreSheetCol + 1) . $totScoreRow, null, null)->getAlignment()->setWrapText(true);
             $totScoreSheetCol++;
         }
 
@@ -580,8 +629,8 @@ class Application_Model_GenericTest
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($attributes['kit_lot_number']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($kitExpiryDate);
                 /* Panel score section */
-                $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 $documentScore = (($aRow['documentation_score'] / 10) * 100);
                 if ($config->evaluation->covid19->documentationScore > 0) {
@@ -590,8 +639,8 @@ class Application_Model_GenericTest
 
 
                 //<------------ Total score sheet ------------
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
@@ -606,7 +655,7 @@ class Application_Model_GenericTest
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
-                        $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
+                        $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
@@ -618,24 +667,24 @@ class Application_Model_GenericTest
                     }
                     $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
 
-                    $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($countCorrectResult);
+                    $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($countCorrectResult);
 
                     $totPer = round((($countCorrectResult / 5) * 100), 2);
                     if ($aRow['number_of_samples'] > 0) {
                         $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     }
-                    $panelScoreSheet->getCellByColumnAndRow($sheetThreeCol++, $sheetThreeRow)->setValueExplicit($totPer);
+                    $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($countCorrectResult);
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($totPer);
+                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
+                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($totPer * 0.9));
+                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($totPer * 0.9));
                 }
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($documentScore);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($aRow['documentation_score']);
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($documentScore);
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['documentation_score']);
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
                 $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
-                $totalScoreSheet->getCellByColumnAndRow($totScoreCol++, $totScoreRow)->setValueExplicit($finalResultCell);
+                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($finalResultCell);
 
 
                 $panelScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);

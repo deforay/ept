@@ -1336,8 +1336,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $totalResult = $db->fetchAll($ptccQuery);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCellByColumnAndRow($colNo + 1, 1)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyleByColumnAndRow($colNo + 1, 1, null, null)->getFont()->setBold(true);
+                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
             if (isset($totalResult) && !empty($totalResult)) {
@@ -1370,10 +1371,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCellByColumnAndRow($colNo + 1, $rowNo + 2)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
+->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyleByColumnAndRow($colNo + 1, $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
