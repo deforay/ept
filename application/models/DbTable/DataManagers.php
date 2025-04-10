@@ -1,5 +1,6 @@
 <?php
 
+use Pt_Commons_MiscUtility as MiscUtility;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -1199,7 +1200,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
                 // if the email is blank, we generate a new one
                 if (empty($originalEmail) || $allFakeEmail) {
-                    $originalEmail = $sheetData[$i]['B'] = $common->generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                    $originalEmail = $sheetData[$i]['B'] = MiscUtility::generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
                 }
 
                 $originalEmail = $originalEmail ?? $sheetData[$i]['B'];

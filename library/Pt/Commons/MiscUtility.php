@@ -54,6 +54,16 @@ final class Pt_Commons_MiscUtility
         return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: '';
     }
 
+    public static function slugify(string $input): string
+    {
+        // Replace non-alphanumeric (excluding hyphen) with hyphen
+        $slug = preg_replace("/[^a-zA-Z0-9-]/", "-", trim($input));
+        // Collapse multiple hyphens into one
+        $slug = preg_replace("/-+/", "-", $slug);
+        // Trim leading and trailing hyphens
+        return trim($slug, "-");
+    }
+
 
     public static function generateRandomString(int $length = 32)
     {
@@ -84,6 +94,21 @@ final class Pt_Commons_MiscUtility
             $result .= random_int(0, 9);
         }
         return $result;
+    }
+
+    public static function sanitizeInput($input)
+    {
+        return strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $input));
+    }
+
+    public static function generateFakeEmailId($uniqueId, $participantName)
+    {
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+        $sanitizedUniqueId = self::sanitizeInput($uniqueId);
+        $sanitizedParticipantName = self::sanitizeInput($participantName);
+        $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
+        return "{$sanitizedUniqueId}_$sanitizedParticipantName@$host";
     }
 
     public static function randomHexColor(): string

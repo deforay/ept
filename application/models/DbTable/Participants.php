@@ -1634,7 +1634,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sheetData[$i]['R'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
             $sheetData[$i]['T'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['T']);
 
-            $sheetData[$i]['B'] = preg_replace("/[^a-zA-Z0-9-]/", "-", trim($sheetData[$i]['B']));
+            $sheetData[$i]['B'] = MiscUtility::slugify($sheetData[$i]['B']);
 
             // if the unique_identifier is blank, we generate a new one
             if (empty($sheetData[$i]['B'])) {
@@ -1646,7 +1646,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             // if the email is blank, we generate a new one
             if (empty($originalEmail) || $allFakeEmail) {
-                $originalEmail = $sheetData[$i]['R'] = Common::generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                $originalEmail = $sheetData[$i]['R'] = MiscUtility::generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
             }
 
             // Duplications check
