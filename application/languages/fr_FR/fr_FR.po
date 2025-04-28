@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-04-28 15:26+0530\n"
-"PO-Revision-Date: 2025-04-28 15:26+0530\n"
+"POT-Creation-Date: 2025-04-28 15:30+0530\n"
+"PO-Revision-Date: 2025-04-28 15:30+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -607,7 +607,7 @@ msgid "Downloads"
 msgstr "Téléchargements"
 
 #: application/layouts/scripts/layout.phtml:451
-#: application/modules/admin/views/scripts/login/index.phtml:158
+#: application/modules/admin/views/scripts/login/index.phtml:164
 msgid ""
 "This project is supported by the U.S. President's Emergency Plan for AIDS "
 "Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention "
@@ -1949,7 +1949,7 @@ msgstr "Veuillez saisir l'adresse e-mail principale ici"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:32
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
-#: application/modules/admin/views/scripts/login/index.phtml:132
+#: application/modules/admin/views/scripts/login/index.phtml:138
 #: application/modules/admin/views/scripts/participants/add.phtml:157
 #: application/modules/admin/views/scripts/participants/edit.phtml:165
 #: application/modules/admin/views/scripts/system-admins/add.phtml:24
@@ -4574,6 +4574,10 @@ msgid "PT Administrator"
 msgstr "Administrateur PT"
 
 #: application/modules/admin/views/scripts/login/index.phtml:128
+msgid "TRAINING INSTANCE"
+msgstr "INSTANCE DE FORMATION"
+
+#: application/modules/admin/views/scripts/login/index.phtml:134
 #: application/modules/admin/views/scripts/participants/index.phtml:64
 #: application/modules/admin/views/scripts/participants/pending.phtml:17
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:12
@@ -4587,7 +4591,7 @@ msgstr "Administrateur PT"
 msgid "Email"
 msgstr "Courriel"
 
-#: application/modules/admin/views/scripts/login/index.phtml:144
+#: application/modules/admin/views/scripts/login/index.phtml:150
 #: application/views/scripts/auth/login.phtml:81
 #: application/views/scripts/auth/new-password.phtml:59
 #: application/views/scripts/auth/reset-password.phtml:68
@@ -4597,14 +4601,14 @@ msgstr "Courriel"
 msgid "Get New Image"
 msgstr "Obtenir une nouvelle image"
 
-#: application/modules/admin/views/scripts/login/index.phtml:194
+#: application/modules/admin/views/scripts/login/index.phtml:200
 #: application/views/scripts/contact-us/index.phtml:137
 #: application/views/scripts/index/index.phtml:422
 msgid "Text you entered from the image is incorrect. Please try again"
 msgstr ""
 "Le texte que vous avez saisi dans l'image est incorrect. Veuillez réessayer"
 
-#: application/modules/admin/views/scripts/login/index.phtml:204
+#: application/modules/admin/views/scripts/login/index.phtml:210
 #: application/views/scripts/contact-us/index.phtml:167
 #: application/views/scripts/index/index.phtml:451
 msgid "Please enter the text from the image to proceed."

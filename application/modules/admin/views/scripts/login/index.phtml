@@ -121,7 +121,13 @@ $eptLogo = implode('', $logos);
 
 		<div style="text-align:center;">
 			<h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br><br><?= $this->translate->_("PT Administrator"); ?></h3>
+			<?php if ($isTrainingInstance) { ?>
+
+				<h5 class="form-signin-heading"><span><?= $this->translate->_("TRAINING INSTANCE"); ?></h5>
+
+			<?php } ?>
 		</div>
+
 
 
 		<div class="form-group">

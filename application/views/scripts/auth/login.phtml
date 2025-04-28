@@ -1,5 +1,5 @@
 <?php
-
+$configData = $this->getGlobalConfig();
 $isTrainingInstance = isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes';
 $loginButtonText = $this->translate->_("Sign in");
 if ($isTrainingInstance) {
@@ -29,6 +29,7 @@ if ($isTrainingInstance) {
 		padding: 15px;
 		margin: auto;
 		margin-top: 10em;
+		margin-bottom: 5em;
 	}
 
 	.form-signin .checkbox {
@@ -52,11 +53,17 @@ if ($isTrainingInstance) {
 	}
 </style>
 <main class="form-signin">
-	<form name="loginForm" id="loginForm" class="form-vertical" method="post" action="<?php echo $this->url(array("controller" => "auth", "action" => "login"), null, true) ?>" onsubmit="validateLogin();return false;" autocomplete="off">
+	<form name="loginForm" id="loginForm" class="form-vertical" method="post" action="<?php echo $this->url(["controller" => "auth", "action" => "login"], null, true) ?>" onsubmit="validateLogin();return false;" autocomplete="off">
 		<div class="card mb-6">
 			<div class="card-header bg-transparent" style="text-align:center;">
-				<a href="javascript:void(0);" class="login-logo"><span> <?= $this->translate->_("ePT Participant Login"); ?></span></a>
+				<div class="login-logo"><span> <?= $this->translate->_("ePT Participant Login"); ?></span></div>
+				<?php if ($isTrainingInstance) { ?>
+
+					<h5 class=""><span><span><?= $this->translate->_("TRAINING INSTANCE"); ?></h5>
+
+				<?php } ?>
 			</div>
+
 			<div class="card-body">
 				<div class="form-floating">
 					<input id="username" name="username" class="isRequired form-control" title="Please enter your email or username" type="text" placeholder="myusername or mymail@mail.com" />
