@@ -18,7 +18,7 @@ try {
   $output = [];
 
   $query = $db->select()
-    ->from(array('p' => 'participant'), array('unique_identifier'))
+    ->from(['p' => 'participant'], ['unique_identifier'])
     ->where("status like 'active'");
   // ->where("shipment_id IN (13,14,15,16)")
   // ->order("s.scheme_type");
