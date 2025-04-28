@@ -2,6 +2,14 @@
 
 $configData = $this->getGlobalConfig();
 
+$isTrainingInstance = isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes';
+$trainingText = '';
+$loginButtonText = $this->translate->_("Sign in");
+if ($isTrainingInstance) {
+	$trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
+	$loginButtonText = $this->translate->_("Sign in to Training Instance");
+}
+
 $logos = [];
 
 if (isset($configData['home_left_logo']) && !empty($configData['home_left_logo']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $configData['home_left_logo'])) {
@@ -79,6 +87,7 @@ $eptLogo = implode('', $logos);
 
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery_ui_min.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/admin.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/common.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font-awesome-ie7.min.css"); ?>" type="text/css" media="all">
@@ -88,6 +97,11 @@ $eptLogo = implode('', $logos);
 
 <!-- Fixed navbar -->
 <div class="navbar navbar-default navbar-fixed-top" style="vertical-align: middle;">
+	<?php if ($isTrainingInstance) { ?>
+		<div class="marquee">
+			<p><?= $trainingText; ?></p>
+		</div>
+	<?php } ?>
 	<div class="container" style="vertical-align: middle;">
 		<div class="navbar-header" style="vertical-align: middle;">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -103,7 +117,7 @@ $eptLogo = implode('', $logos);
 
 <div class="container">
 	<?php $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV); ?>
-	<form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "login", "action" => "index"), null, true) ?>">
+	<form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(["module" => "admin", "controller" => "login", "action" => "index"], null, true) ?>">
 
 		<div style="text-align:center;">
 			<h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br><br><?= $this->translate->_("PT Administrator"); ?></h3>
@@ -136,7 +150,7 @@ $eptLogo = implode('', $logos);
 			</tbody>
 		</table>
 		<br>
-		<button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;"><?= $this->translate->_("Sign in"); ?></button>
+		<button type class="btn btn-lg btn-primary btn-block" onclick="validateLogin();return false;"><?= $loginButtonText; ?></button>
 	</form>
 
 </div> <!-- /container -->

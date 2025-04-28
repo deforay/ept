@@ -10,24 +10,29 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     {
         $res = $this->getAdapter()->fetchCol($this->select()
             ->from($this->_name, array('value'))
-            ->where("name='" . $name . "'"));
+            ->where("name='$name'"));
         return !empty($res[0]) ? $res[0] : null;
     }
 
-    public function getGlobalConfig()
+    public function getGlobalConfig(?string $configName = null)
     {
+        if ($configName !== null) {
+            $row = $this->fetchRow(['name = ?' => $configName]);
+            return $row ? $row->value : null;
+        }
+
         $configValues = $this->fetchAll()->toArray();
 
-        $size = sizeof($configValues);
         $arr = [];
-        // now we create an associative array so that we can easily create view variables
-        for ($i = 0; $i < $size; $i++) {
-            $arr[$configValues[$i]["name"]] = $configValues[$i]["value"];
+        foreach ($configValues as $config) {
+            $arr[$config['name']] = $config['value'];
         }
-        // using assign to automatically create view variables
-        // the column names will now become view variables
+
         return $arr;
     }
+
+
+
 
     public function updateConfigDetails($params)
     {
@@ -47,8 +52,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         }
         foreach (array("home_left_logo", "home_right_logo") as $field) {
             if (isset($_FILES[$field]) && !empty($_FILES[$field]['name'])) {
+                $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES[$field]['name']);
+                $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
-                $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $_FILES[$field]['name'], PATHINFO_EXTENSION));
+                $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName =   $common->generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(array("value" => $fileName), "name = '" . $field . "'");

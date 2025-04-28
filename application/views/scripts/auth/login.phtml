@@ -1,3 +1,12 @@
+<?php
+
+$isTrainingInstance = isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes';
+$loginButtonText = $this->translate->_("Sign in");
+if ($isTrainingInstance) {
+	$loginButtonText = $this->translate->_("Sign in to Training Instance");
+}
+
+?>
 <style>
 	td {
 		padding: 5px !important;
@@ -80,8 +89,8 @@
 			</div>
 			<div class="card-footer bg-transparent">
 				<div class="form-group subBtn" style="text-align: center">
-					<!-- <input type="submit" class="btn btn-lg btn-primary" value="Sign in" /> -->
-					<button class="w-100 btn btn-lg btn-get-started signIn" type="submit"><?= $this->translate->_("Sign in"); ?></button>
+
+					<button class="w-100 btn btn-lg btn-get-started signIn" type="submit"><?= $loginButtonText; ?></button>
 
 					<a href="/auth/reset-password" style="font-size:0.8em;color:red;"><?= $this->translate->_("Forgot Password?"); ?></a>
 					<br /><br />

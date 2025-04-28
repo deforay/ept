@@ -5,9 +5,6 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 /* Notification Section Start */
 $notifyData = $this->getNotification();
 $configData = $this->getGlobalConfig();
-// $activeSchemes = $this->getActiveSchemes();
-// Zend_Debug::dump($configData['training_instance']);
-// Zend_Debug::dump($configData['training_instance_text']);die;
 
 $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 
@@ -192,7 +189,7 @@ if ($adminSession->privileges != "") {
 	<div class="navbar navbar-default navbar-fixed-top">
 		<?php if (isset($configData['training_instance']) && trim($configData['training_instance']) == 'yes') { ?>
 			<div class="marquee">
-				<p><?= ($trainingText); ?></p>
+				<p><?= $trainingText; ?></p>
 			</div>
 		<?php } ?>
 		<div class="container">
