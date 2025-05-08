@@ -214,7 +214,7 @@ foreach ($this->participantList as $part) {
                         <input type="hidden" name="ptcc" id="ptcc" value="no" />
                     <?php } ?>
                     <input type="hidden" name="btnName" id="btnName" value="">
-                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Add"); ?>" onclick="setActionAndSubmit('add');" />
+                    <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Save"); ?>" onclick="setActionAndSubmit('add');" />
                     <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Save and Map Participants"); ?>" onclick="setActionAndSubmit('save_and_map');" />
                     <input class="btn btn-danger" type="button" onclick="window.history.go(-1)" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
                 </div>
@@ -298,54 +298,54 @@ foreach ($this->participantList as $part) {
         //     }
         // });
         $("#allparticipant").selectize({
-    placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-    maxItems: null, // Allow multiple selections
-    valueField: 'id', // The field in the AJAX response representing the value
-    labelField: 'text', // The field in the AJAX response representing the label
-    searchField: ['text', 'first_name', 'last_name', 'unique_identifier'], // Allow search on multiple fields
-    width: '100%',
-    allowClear: true,
-    create: false, // Prevent creating new options (select only from results)
-    load: function(query, callback) {
-        if (query.length < 3) {
-            return callback(); // Don't trigger the AJAX if input length is less than 3
-        }
+            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
+            maxItems: null, // Allow multiple selections
+            valueField: 'id', // The field in the AJAX response representing the value
+            labelField: 'text', // The field in the AJAX response representing the label
+            searchField: ['text', 'first_name', 'last_name', 'unique_identifier'], // Allow search on multiple fields
+            width: '100%',
+            allowClear: true,
+            create: false, // Prevent creating new options (select only from results)
+            load: function(query, callback) {
+                if (query.length < 3) {
+                    return callback(); // Don't trigger the AJAX if input length is less than 3
+                }
 
-        $.ajax({
-            url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-            dataType: 'json',
-            data: {
-                search: query, // The search term
-                page: query.page || 1 // Pagination support
+                $.ajax({
+                    url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
+                    dataType: 'json',
+                    data: {
+                        search: query, // The search term
+                        page: query.page || 1 // Pagination support
+                    },
+                    success: function(data) {
+                        callback(data.result); // Return the data
+                    },
+                    error: function() {
+                        callback([]); // Return empty array in case of error
+                    }
+                });
             },
-            success: function(data) {
-                callback(data.result); // Return the data
+            render: {
+                item: function(data, escape) {
+                    return '<div>' + escape(data.text) + '</div>';
+                },
+                option: function(data, escape) {
+                    return '<div>' + escape(data.text) + ' (' + escape(data.unique_identifier) + ')</div>';
+                }
             },
-            error: function() {
-                callback([]); // Return empty array in case of error
+            onInitialize: function() {
+                var selectize = this;
+                var selectedValues = <?= json_encode($participantArray ?? []); ?>;
+                selectedValues.forEach(function(value) {
+                    selectize.addItem(value); // Add pre-selected items
+                });
+            },
+            // Disable the remove button from selected items
+            onItemRemove: function(value) {
+                return false; // Prevent the removal of selected items
             }
         });
-    },
-    render: {
-        item: function(data, escape) {
-            return '<div>' + escape(data.text) + '</div>';
-        },
-        option: function(data, escape) {
-            return '<div>' + escape(data.text) + ' (' + escape(data.unique_identifier) + ')</div>';
-        }
-    },
-    onInitialize: function() {
-        var selectize = this;
-        var selectedValues = <?= json_encode($participantArray ?? []); ?>;
-        selectedValues.forEach(function(value) {
-            selectize.addItem(value); // Add pre-selected items
-        });
-    },
-    // Disable the remove button from selected items
-    onItemRemove: function(value) {
-        return false; // Prevent the removal of selected items
-    }
-});
 
         <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
             getStates();
