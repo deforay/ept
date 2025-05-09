@@ -3620,10 +3620,7 @@ class Application_Service_Shipments
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $db->select()->from(
             array('spm' => 'shipment_participant_map'),

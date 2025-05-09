@@ -85,10 +85,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
             ->join(['c' => 'countries'], 'c.id=p.country')

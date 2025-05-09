@@ -1427,7 +1427,7 @@ class Application_Service_Evaluation
 		foreach ($sRes as $res) {
 			// Zend_Debug::dump($res['shipment_test_report_date']);die;
 			$dmResult = $db->fetchAll($db->select()->from(array('pmm' => 'participant_manager_map'))
-				->join(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('institute'))
+				->join(['dm' => 'data_manager'], 'dm.dm_id=pmm.dm_id', ['institute'])
 				->where("pmm.participant_id=" . $res['participant_id']));
 			if (isset($res['last_name']) && trim($res['last_name']) != "") {
 				$res['last_name'] = "_" . $res['last_name'];

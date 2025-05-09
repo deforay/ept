@@ -205,10 +205,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name))
             ->joinLeft(array('stm' => 'scheme_testkit_map'), "a.TestKitName_ID=stm.testkit_id", '')

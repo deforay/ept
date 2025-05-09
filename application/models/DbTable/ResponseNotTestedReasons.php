@@ -87,10 +87,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
 

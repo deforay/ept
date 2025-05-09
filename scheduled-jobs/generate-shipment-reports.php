@@ -979,7 +979,7 @@ try {
         $customField2 = $commonService->getConfig('custom_field_2');
         $haveCustom = $commonService->getConfig('custom_field_needed');
         $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
-        $feedbackOption = $commonService->getConfig('feed_back_option');
+        $feedbackOption = $commonService->getConfig('participant_feedback');
         $recencyAssay = $schemeService->getRecencyAssay();
         $downloadDirectory = realpath(DOWNLOADS_FOLDER);
         $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
@@ -1075,7 +1075,7 @@ try {
                         $endValue = $totParticipantsRes['reported_count'];
                     }
 
-                    $bulkfileNameVal = $offset . '-' . $endValue;
+                    $bulkfileNameVal = "$offset-$endValue";
                     if (!empty($resultArray)) {
                         // this is the default layout
                         $participantLayoutFile = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';

@@ -537,10 +537,7 @@ class Application_Service_ApiServices
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()->from(array('tar' => 'track_api_requests'))
             ->joinLeft(['dm' => 'data_manager'], 'tar.requested_by = dm.dm_id', ['name' => new Zend_Db_Expr("CONCAT( COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''), '(', COALESCE(dm.primary_email,''), ')' )")]);

@@ -22,7 +22,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $sectionImage = $params['pre_section_image'];
         }
         if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
-          
+
             $uploadDirectory = realpath(UPLOAD_PATH);
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx', 'xls');
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
@@ -153,10 +153,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 

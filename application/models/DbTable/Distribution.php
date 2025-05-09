@@ -91,10 +91,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name))
             ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
@@ -321,10 +318,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))

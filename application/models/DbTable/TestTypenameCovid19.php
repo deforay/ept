@@ -189,10 +189,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('t' => $this->_name))
             ->join(array('s' => 'scheme_list'), "t.scheme_type=s.scheme_id", 'scheme_name');

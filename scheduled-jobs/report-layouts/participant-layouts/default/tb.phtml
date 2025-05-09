@@ -8,6 +8,13 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
+
+$isCli = php_sapi_name() === 'cli';
+
+if($isCli) {
+    echo "Running in CLI mode\n";
+}
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
 
@@ -15,6 +22,10 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
 
     foreach ($resultArray['shipment'] as $result) {
+
+        if($isCli) {
+            echo "Processing shipment:". $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
+        }
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {

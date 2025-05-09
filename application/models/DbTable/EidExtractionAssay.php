@@ -94,10 +94,7 @@ class Application_Model_DbTable_EidExtractionAssay extends Zend_Db_Table_Abstrac
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('eid_ex_asay' => $this->_name));
 

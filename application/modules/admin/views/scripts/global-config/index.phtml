@@ -140,11 +140,11 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
-						<label for="feed_back_option" class="col-lg-6 control-label"><?= $this->translate->_("Feedback options"); ?></label>
+						<label for="participant_feedback" class="col-lg-6 control-label"><?= $this->translate->_("Participant Feedback"); ?></label>
 						<div class="col-lg-6">
 							<br>
-							<input type="radio" class="" name="feed_back_option" id="feed_back_option_yes" <?php echo (isset($this->feed_back_option) && $this->feed_back_option == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("Enable"); ?>
-							&nbsp;<input type="radio" class="isRequired" name="feed_back_option" id="feed_back_option_no" <?php echo (isset($this->feed_back_option) && $this->feed_back_option == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("Disable"); ?>
+							<input type="radio" class="" name="participant_feedback" id="particpant_feedback_yes" <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("Enable"); ?>
+							&nbsp;<input type="radio" class="isRequired" name="participant_feedback" id="particpant_feedback_no" <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose participant can edit name" onchange="participantLoginBan()" /> <?= $this->translate->_("Disable"); ?>
 						</div>
 					</div>
 				</div>

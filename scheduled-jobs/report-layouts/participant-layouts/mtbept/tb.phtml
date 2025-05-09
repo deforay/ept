@@ -6,6 +6,7 @@ $schemeType = 'tb';
 $shipmentCode = '';
 $flatten = false;
 
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
 
@@ -13,6 +14,7 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
 
     foreach ($resultArray['shipment'] as $result) {
+
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {

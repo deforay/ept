@@ -12,10 +12,14 @@ class Application_Service_Reports
     protected $common;
     protected $tempUploadDirectory;
 
+    /** @var Zend_Translate */
+    protected $translator;
+
     public function __construct()
     {
         $this->common = new Application_Service_Common();
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+        $this->translator = Zend_Registry::get('translate');
     }
 
     public function getAllShipments($parameters)
@@ -99,10 +103,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name', 'is_user_configured'))
@@ -182,16 +183,16 @@ class Application_Service_Reports
         //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
         //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
         foreach ($rResult as $aRow) {
-            $download = ' No Download Available ';
-            $zipFileDownload = "";
+            $summaryDownload = $this->translator->_('Unavailable');
+            $allReportsDownload = "";
             if (isset($aRow['status']) && $aRow['status'] == 'finalized') {
                 if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf")) {
                     $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
-                    $download = '<a href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> Summary</a>';
+                    $summaryDownload = '<a href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> ' . $this->translator->_('Summary Report') . '</a>';
                 }
-                $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip");
+                $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip";
                 if (file_exists($zipFilePath)) {
-                    $zipFileDownload =  "<br><a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-download'></i> &nbsp All Reports</a><br>";
+                    $allReportsDownload =  "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 5px; '><i class='icon-download'></i> &nbsp  " . $this->translator->_("All Reports") . "</a><br>";
                 }
             }
             //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
@@ -200,7 +201,7 @@ class Application_Service_Reports
             $row = [];
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = "<a href='javascript:void(0);' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>" . $aRow['shipment_code'] . "</a>";
+            $row[] = $aRow['shipment_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['scheme_name'];
             // $row[] = $aRow['number_of_samples'];
@@ -210,12 +211,15 @@ class Application_Service_Reports
             $row[] = $aRow['number_passed'];
             $row[] = ucwords($aRow['status']);
 
-            $row[] = $download . $zipFileDownload;
+            $row[] = trim("$summaryDownload $allReportsDownload");
             if ($aRow['status'] != "pending") {
-                $row[] = "
-            <a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'>Export Report</a>
-            <a href='javascript:void(0);' class='btn btn-danger btn-xs' onclick='exportNotRespondedShipment(\"" . $aRow['shipment_code'] . "\",\"" . $aRow['shipment_date'] . "\")'><i class='icon icon-download'></i> Pending Sites</a>
-            ";
+
+                $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_("Overview Report") . "</a>";
+                if ($aRow['status'] != 'finalized') {
+                    $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' onclick='exportNotRespondedShipment(\"" . $aRow['shipment_code'] . "\",\"" . $aRow['shipment_date'] . "\")'><i class='icon icon-download'></i> " . $this->translator->_("No Response Sites") . "</a>";
+                }
+
+                $row[] = "$exportReport $notResponded";
             } else {
                 $row[] = "";
             }
@@ -415,10 +419,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         //////////////
@@ -652,10 +653,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -898,10 +896,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1174,10 +1169,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $refTable = "reference_result_" . $parameters['scheme'];
             $resTable = "response_result_" . $parameters['scheme'];
@@ -1472,59 +1464,56 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('res' => 'response_result_dts'), array('totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
-            ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array())
-            ->joinLeft(array('p' => 'participant'), 'sp.participant_id=p.participant_id', array('p.lab_name', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array());
+        $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], ['totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")])
+            ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
+            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.lab_name', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+            ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', []);
         //  ->group("p.participant_id");
 
         if (isset($parameters['kitType']) && $parameters['kitType'] == "testkit1") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1', ['tn.TestKit_Name', 'TestKitName_ID'])
                 ->group('tn.TestKitName_ID');
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit2") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_2', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_2', ['tn.TestKit_Name', 'TestKitName_ID'])
                 ->group('tn.TestKitName_ID');
         } elseif (isset($parameters['kitType']) && $parameters['kitType'] == "testkit3") {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_3', array('tn.TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_3', ['tn.TestKit_Name', 'TestKitName_ID'])
                 ->group('tn.TestKitName_ID');
         } else {
-            $sQuery = $sQuery->joinLeft(array('tn' => 'r_testkitnames'), 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', array('TestKit_Name', 'TestKitName_ID'))
+            $sQuery = $sQuery->joinLeft(['tn' => 'r_testkitnames'], 'tn.TestKitName_ID=res.test_kit_name_1 or tn.TestKitName_ID=res.test_kit_name_2 or tn.TestKitName_ID=res.test_kit_name_3', ['TestKit_Name', 'TestKitName_ID'])
                 ->group('tn.TestKitName_ID');
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             if (isset($parameters['networkValue']) && $parameters['networkValue'] != "") {
                 $sQuery = $sQuery->where("p.network_tier = ?", $parameters['networkValue']);
             } else {
-                $sQuery = $sQuery->joinLeft(array('n' => 'r_network_tiers'), 'p.network_tier=n.network_id', array());
+                $sQuery = $sQuery->joinLeft(['n' => 'r_network_tiers'], 'p.network_tier=n.network_id', []);
             }
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             if (isset($parameters['affiliateValue']) && $parameters['affiliateValue'] != "") {
-                $iQuery = $dbAdapter->select()->from(array('rpa' => 'r_participant_affiliates'))
+                $iQuery = $dbAdapter->select()->from(['rpa' => 'r_participant_affiliates'])
                     ->where('rpa.aff_id=?', $parameters['affiliateValue']);
                 $iResult = $dbAdapter->fetchRow($iQuery);
                 $appliate = $iResult['affiliate'];
                 $sQuery = $sQuery->where('p.affiliation="' . $appliate . '" OR p.affiliation=' . $parameters['affiliateValue']);
             } else {
-                $sQuery = $sQuery->joinLeft(array('pa' => 'r_participant_affiliates'), 'p.affiliation=pa.affiliate', array());
+                $sQuery = $sQuery->joinLeft(['pa' => 'r_participant_affiliates'], 'p.affiliation=pa.affiliate', []);
             }
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             if (isset($parameters['enrolledProgramsValue']) && $parameters['enrolledProgramsValue'] != "") {
-                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
-                    ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'))
+                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
+                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs'])
                     ->where("rep.r_epid= ?", $parameters['enrolledProgramsValue']);
             } else {
-                $sQuery = $sQuery->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
-                    ->joinLeft(array('rep' => 'r_enrolled_programs'), 'rep.r_epid=pe.ep_id', array('rep.enrolled_programs'));
+                $sQuery = $sQuery->joinLeft(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id=p.participant_id', [])
+                    ->joinLeft(['rep' => 'r_enrolled_programs'], 'rep.r_epid=pe.ep_id', ['rep.enrolled_programs']);
             }
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
@@ -1599,8 +1588,8 @@ class Application_Service_Reports
         $initialStartDate = $date;
         for ($i = $step; $i <= $maxDays; $i += $step) {
 
-            $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array(''))
-                ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")))
+            $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], [''])
+                ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")])
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group('s.shipment_id');
             $date = new DateTime($date);
@@ -1609,7 +1598,7 @@ class Application_Service_Reports
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $sQuery = $sQuery
-                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array())
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
                     ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             if (isset($date) && $date != "" && $endDate != '' && $i < $maxDays) {
@@ -1762,10 +1751,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1925,49 +1911,35 @@ class Application_Service_Reports
 
         $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
 
-            // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Participant Performance Overview Report', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
                     ->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
                     ->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
                 ->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
                 ->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -1995,11 +1967,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2030,38 +2002,24 @@ class Application_Service_Reports
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Participant Corrective Action Overview', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
                     ->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
                     ->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
                 ->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
                 ->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
 
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $totalQuery = $db->select()->from(array('s' => 'shipment'), array("average_score"))
@@ -2092,26 +2050,26 @@ class Application_Service_Reports
             $avgScore = round($totalResult['average_score'], 2) . '%';
 
             $sheet->mergeCells('A4:B4');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
                 ->setValueExplicit(html_entity_decode('Total shipped :' . $totalShipped, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A5:B5');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 5)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 5)
                 ->setValueExplicit(html_entity_decode('Total number of responses :' . $totalResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 5, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A6:B6');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 6)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 6)
                 ->setValueExplicit(html_entity_decode('Total number of valid responses :' . $validResp, ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 6, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6, null, null)->getFont()->setBold(true);
             $sheet->mergeCells('A7:B7');
-            //$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(0) . 7)
+            //$sheet->getCell(Coordinate::stringFromColumnIndex(0) . 7)
             //->setValueExplicit(html_entity_decode('Average score :' . $avgScore, ENT_QUOTES, 'UTF-8'));
-            //$sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(0) . 7)->getFont()->setBold(true);
+            //$sheet->getStyle(Coordinate::stringFromColumnIndex(0) . 7)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 9)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 9)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 9, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 9, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2138,11 +2096,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 10, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2174,44 +2132,30 @@ class Application_Service_Reports
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
 
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Shipment Response Overview', ENT_QUOTES, 'UTF-8'));
             if (isset($params['shipmentName']) && trim($params['shipmentName']) != "") {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
                     ->setValueExplicit(html_entity_decode('Shipment', ENT_QUOTES, 'UTF-8'));
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+                $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
                     ->setValueExplicit(html_entity_decode($params['shipmentName'], ENT_QUOTES, 'UTF-8'));
             }
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
                 ->setValueExplicit(html_entity_decode('Selected Date Range', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
                 ->setValueExplicit(html_entity_decode($params['dateRange'], ENT_QUOTES, 'UTF-8'));
 
 
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2240,11 +2184,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2419,10 +2363,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -2643,10 +2584,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -2895,54 +2833,39 @@ class Application_Service_Reports
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
-
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
                 ->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
                 ->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
                 ->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
                 ->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
                 ->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 4)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 4)
                 ->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 6)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -2967,11 +2890,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -2997,54 +2920,39 @@ class Application_Service_Reports
     {
         $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
         try {
-            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $excel = new Spreadsheet();
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
-
             $colNo = 0;
             $sheet->mergeCells('A1:I1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Region Wise Participant Performance Report ', ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 2)
                 ->setValueExplicit(html_entity_decode('Scheme', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 2)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 2)
                 ->setValueExplicit(html_entity_decode($params['selectedScheme'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 3)
                 ->setValueExplicit(html_entity_decode('Shipment Date', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 3)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 3)
                 ->setValueExplicit(html_entity_decode($params['selectedDate'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 4)
                 ->setValueExplicit(html_entity_decode('Shipment Code', ENT_QUOTES, 'UTF-8'));
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 4)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(2) . 4)
                 ->setValueExplicit(html_entity_decode($params['selectedCode'], ENT_QUOTES, 'UTF-8'));
 
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->getFont()->setBold(true);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 6)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 6, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -3069,11 +2977,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 7, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -3179,10 +3087,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('res' => 'response_result_dts'), array())
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array())
@@ -3461,10 +3366,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -3890,10 +3792,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -4268,10 +4167,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -4488,10 +4384,7 @@ class Application_Service_Reports
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -4669,20 +4562,6 @@ class Application_Service_Reports
                 $sheet = $excel->getActiveSheet();
                 $colNo = 0;
 
-                $styleArray = array(
-                    'font' => array(
-                        'bold' => true,
-                    ),
-                    'alignment' => array(
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical' => Alignment::VERTICAL_CENTER,
-                    ),
-                    'borders' => array(
-                        'outline' => array(
-                            'style' => Border::BORDER_THIN,
-                        ),
-                    )
-                );
 
                 $sheet->getCell('A1')->setValue(html_entity_decode("Scheme", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('B1')->setValue(html_entity_decode("Shipment Code", ENT_QUOTES, 'UTF-8'));
@@ -4701,7 +4580,7 @@ class Application_Service_Reports
                 $sheet->getCell('O1')->setValue(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('P1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
                 $sheet->getCell('Q1')->setValue(html_entity_decode("Response Date", ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle('A1:Q1')->applyFromArray($styleArray, true);
+                $sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A1');
 
                 foreach ($resultSet as $aRow) {
                     $row = [];
@@ -4810,20 +4689,7 @@ class Application_Service_Reports
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
-                ],
-                'borders' => array(
-                    'outline' => array(
-                        'style' => Border::BORDER_THIN,
-                    ),
-                )
-            );
+
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuerySession = new Zend_Session_Namespace('ParticipantTrendsExcel');
             $sQuerySession = new Zend_Session_Namespace('ParticipantPerformanceExcel');
@@ -4844,13 +4710,13 @@ class Application_Service_Reports
             array_push($headings, 'Average Score');
             $colNo = 0;
             $sheet->mergeCells('A1:B1');
-            $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1)
+            $sheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
                 ->setValueExplicit(html_entity_decode('Participant Performance Report', ENT_QUOTES, 'UTF-8'));
-            $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
+            $sheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 5)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 5, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
 
@@ -4874,11 +4740,11 @@ class Application_Service_Reports
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(150);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 6, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }

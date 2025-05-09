@@ -92,10 +92,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('al' => $this->_name))
             ->joinLeft(array('sa' => 'system_admin'), 'al.created_by=sa.primary_email', array('name' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name, ' - ', sa.primary_email)")));

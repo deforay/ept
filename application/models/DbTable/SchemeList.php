@@ -127,10 +127,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('s' => $this->_name))
             ->where('is_user_configured = "yes"')->group('scheme_id');

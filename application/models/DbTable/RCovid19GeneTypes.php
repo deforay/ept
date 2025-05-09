@@ -169,10 +169,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('t' => $this->_name))
             ->join(array('s' => 'scheme_list'), "t.scheme_type=s.scheme_id", 'scheme_name')

@@ -344,7 +344,7 @@ class Application_Model_GenericTest
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
         $common = new Application_Service_Common();
-        $feedbackOption = $common->getConfig('feed_back_option');
+        $feedbackOption = $common->getConfig('participant_feedback');
         $borderStyle = [
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,

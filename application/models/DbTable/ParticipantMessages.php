@@ -22,20 +22,20 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 if (!is_dir($pathPrefix)) {
                     mkdir($pathPrefix, 0777, true);
                 }
-    
+
                 foreach ($_FILES['attachment']['name'] as $key => $fileName) {
                     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
                     $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                     $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
                     $uniqueFileName = $common->generateRandomString(4) . '.' . $extension;
-    
+
                     if (move_uploaded_file($_FILES['attachment']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $uniqueFileName)) {
                         $files[] = $uniqueFileName; // Add file path to array
                         $attachedFiles[] = $pathPrefix . DIRECTORY_SEPARATOR . $uniqueFileName; // Add file path to array
                     }
                 }
             }
-            
+
             $data =  [
                 "participant_id" => $partcipant_id,
                 "subject" => $params['subject'],
@@ -141,10 +141,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()
             ->from(array('pm' => $this->_name)) // Main table

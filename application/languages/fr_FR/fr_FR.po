@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-04-28 15:30+0530\n"
-"PO-Revision-Date: 2025-04-28 15:30+0530\n"
+"POT-Creation-Date: 2025-05-09 13:13+0530\n"
+"PO-Revision-Date: 2025-05-09 13:14+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -19,24 +19,24 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: library\n"
 "X-Poedit-SearchPathExcluded-2: public\n"
 
-#: application/models/DbTable/Shipments.php:1160
-#: application/models/DbTable/Shipments.php:1507
+#: application/models/DbTable/Shipments.php:1145
+#: application/models/DbTable/Shipments.php:1486
 msgid "Not Available"
 msgstr "Non disponible"
 
-#: application/models/DbTable/Shipments.php:1167
+#: application/models/DbTable/Shipments.php:1152
 msgid "Participant unable to test"
 msgstr "Participant incapable de tester"
 
-#: application/models/DbTable/Shipments.php:1169
+#: application/models/DbTable/Shipments.php:1154
 msgid "Satisfactory"
 msgstr "Satisfait"
 
-#: application/models/DbTable/Shipments.php:1171
+#: application/models/DbTable/Shipments.php:1156
 msgid "Unsatisfactory"
 msgstr "Insatisfaisant"
 
-#: application/models/DbTable/Shipments.php:1173
+#: application/models/DbTable/Shipments.php:1158
 msgid "Excluded from evaluation"
 msgstr "Exclus de l'évaluation"
 
@@ -57,6 +57,26 @@ msgstr "Le mot de passe ne doit contenir aucune partie de votre nom."
 msgid "Password must not contain any part of your email."
 msgstr ""
 "Le mot de passe ne doit contenir aucune partie de votre adresse électronique."
+
+#: application/services/Reports.php:186
+msgid "Unavailable"
+msgstr "Indisponible"
+
+#: application/services/Reports.php:191
+msgid "Summary Report"
+msgstr "Synthèse"
+
+#: application/services/Reports.php:195
+msgid "All Reports"
+msgstr "Tous les rapports"
+
+#: application/services/Reports.php:217
+msgid "Overview Report"
+msgstr "Rapport d’aperçu"
+
+#: application/services/Reports.php:219
+msgid "No Response Sites"
+msgstr "Sites sans réponse"
 
 #: application/layouts/scripts/admin.phtml:9
 #: application/layouts/scripts/home.phtml:10
@@ -216,12 +236,12 @@ msgid "Not Tested Reasons"
 msgstr "Non testé Raisons"
 
 #: application/layouts/scripts/admin.phtml:231
-msgid "Feedback Questions"
-msgstr "Questions sur le retour d'information"
+msgid "Configure Feedback"
+msgstr "Configurer le retour d'information"
 
 #: application/layouts/scripts/admin.phtml:232
-msgid "Shipment Qustions Map"
-msgstr "Carte des Qustions d'expédition"
+msgid "Enable Feedback"
+msgstr "Activer les commentaires"
 
 #: application/layouts/scripts/admin.phtml:235
 msgid "Test Kits"
@@ -507,11 +527,6 @@ msgstr "Voir le résultat du PT"
 #: application/layouts/scripts/menu.phtml:44
 msgid "Individual Report"
 msgstr "Rapport individuel"
-
-#: application/layouts/scripts/layout.phtml:286
-#: application/layouts/scripts/menu.phtml:45
-msgid "Summary Report"
-msgstr "Synthèse"
 
 #: application/layouts/scripts/layout.phtml:293
 #: application/views/scripts/capa/capa.phtml:67
@@ -1099,6 +1114,7 @@ msgstr "Certificat d'excellence"
 
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:59
 #: application/modules/admin/views/scripts/custom-fields/index.phtml:34
+#: application/modules/admin/views/scripts/data-managers/edit.phtml:217
 #: application/views/scripts/auth/new-password.phtml:68
 msgid "Save"
 msgstr "Sauvegarder"
@@ -1497,7 +1513,6 @@ msgstr "Inactif"
 
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:39
 #: application/modules/admin/views/scripts/data-managers/add.phtml:201
-#: application/modules/admin/views/scripts/data-managers/edit.phtml:217
 #: application/modules/admin/views/scripts/distributions/add.phtml:34
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:23
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:58
@@ -4107,8 +4122,8 @@ msgid "Participant Can Edit Name"
 msgstr "Le participant peut modifier son nom"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:143
-msgid "Feedback options"
-msgstr "Options de retour d'information"
+msgid "Participant Feedback"
+msgstr "Rétroaction des participants"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:146
 msgid "Enable"
@@ -4294,7 +4309,7 @@ msgstr "Document"
 #: application/modules/admin/views/scripts/home-config/index.phtml:128
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:62
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:66
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:257
+#: application/modules/reports/views/scripts/distribution/finalize.phtml:258
 #: application/views/scripts/participant/file-downloads.phtml:18
 msgid "Download"
 msgstr "Télécharger"
@@ -4573,7 +4588,8 @@ msgstr "ePT - Connexion administrateur"
 msgid "PT Administrator"
 msgstr "Administrateur PT"
 
-#: application/modules/admin/views/scripts/login/index.phtml:128
+#: application/modules/admin/views/scripts/login/index.phtml:126
+#: application/views/scripts/auth/login.phtml:62
 msgid "TRAINING INSTANCE"
 msgstr "INSTANCE DE FORMATION"
 
@@ -4592,7 +4608,7 @@ msgid "Email"
 msgstr "Courriel"
 
 #: application/modules/admin/views/scripts/login/index.phtml:150
-#: application/views/scripts/auth/login.phtml:81
+#: application/views/scripts/auth/login.phtml:88
 #: application/views/scripts/auth/new-password.phtml:59
 #: application/views/scripts/auth/reset-password.phtml:68
 #: application/views/scripts/auth/verify-email.phtml:68
@@ -6925,14 +6941,12 @@ msgid "Shipment Report"
 msgstr "Rapport d'expédition"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:61
-#: application/views/scripts/participant/shipments-reports.phtml:62
-msgid "Download Summary Report"
-msgstr "Télécharger le rapport de synthèse"
+msgid "Download Participant Reports"
+msgstr "Télécharger les rapports des participants"
 
 #: application/modules/reports/views/scripts/shipments/index.phtml:62
-#: application/views/scripts/participant/shipments-reports.phtml:63
-msgid "Download Excel Report"
-msgstr "Télécharger le rapport Excel"
+msgid "Download Excel"
+msgstr "Télécharger Excel"
 
 #: application/modules/reports/views/scripts/tb-all-sites-results/index.phtml:4
 #: application/views/scripts/participant/tb-all-sites-results.phtml:4
@@ -6999,32 +7013,32 @@ msgstr "Nombre de tests"
 msgid "About Us"
 msgstr "À propos de nous"
 
-#: application/views/scripts/auth/login.phtml:58
+#: application/views/scripts/auth/login.phtml:59
 msgid "ePT Participant Login"
 msgstr "connexion des participants à l'ePT"
 
-#: application/views/scripts/auth/login.phtml:63
+#: application/views/scripts/auth/login.phtml:70
 msgid "Your email or username"
 msgstr "Votre adresse électronique ou votre nom d'utilisateur"
 
-#: application/views/scripts/auth/login.phtml:67
+#: application/views/scripts/auth/login.phtml:74
 msgid "Your password"
 msgstr "Votre mot de passe"
 
-#: application/views/scripts/auth/login.phtml:80
+#: application/views/scripts/auth/login.phtml:87
 #: application/views/scripts/auth/reset-password.phtml:67
 msgid "Enter text from image"
 msgstr "Saisir un texte à partir d'une image"
 
-#: application/views/scripts/auth/login.phtml:86
+#: application/views/scripts/auth/login.phtml:93
 msgid "You can login after"
 msgstr "Vous pouvez vous connecter après"
 
-#: application/views/scripts/auth/login.phtml:95
+#: application/views/scripts/auth/login.phtml:102
 msgid "Forgot Password?"
 msgstr "Mot de passe oublié ?"
 
-#: application/views/scripts/auth/login.phtml:97
+#: application/views/scripts/auth/login.phtml:104
 msgid "Don't have a login ? Click here to contact us"
 msgstr "Vous n'avez pas de login ? Cliquez ici pour nous contacter"
 
@@ -8561,6 +8575,14 @@ msgstr "Laboratoire/testeur inscrit(e)"
 msgid "Response %"
 msgstr "Réponse %"
 
+#: application/views/scripts/participant/shipments-reports.phtml:62
+msgid "Download Summary Report"
+msgstr "Télécharger le rapport de synthèse"
+
+#: application/views/scripts/participant/shipments-reports.phtml:63
+msgid "Download Excel Report"
+msgstr "Télécharger le rapport Excel"
+
 #: application/views/scripts/participant/summary-report.phtml:23
 msgid "Summary Reports"
 msgstr "Rapports de synthèse"
@@ -9222,6 +9244,15 @@ msgstr "Contrôler étroitement les performances"
 #: application/views/scripts/vl/response.phtml:556
 msgid "Perform corrective action"
 msgstr "Mise en œuvre d'une action corrective"
+
+#~ msgid "Feedback Questions"
+#~ msgstr "Questions sur le retour d'information"
+
+#~ msgid "Shipment Qustions Map"
+#~ msgstr "Carte des Qustions d'expédition"
+
+#~ msgid "Feedback options"
+#~ msgstr "Options de retour d'information"
 
 #~ msgid "Section Image"
 #~ msgstr "Image Section"

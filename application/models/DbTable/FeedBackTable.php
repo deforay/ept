@@ -4,7 +4,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'r_feedback_questions';
-    
+
     protected $_primary = 'question_id';
 
     public function fetchFeedBackQuestions($sid)
@@ -187,17 +187,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('pfa' => $this->_name));
 
         if($type == 'mapped'){
-            $sQuery = $sQuery->join(array('rpff' => 'r_participant_feedback_form'), 'pfa.question_id=rpff.question_id', array('shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")));
-            $sQuery = $sQuery->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'));
-            $sQuery = $sQuery->joinLeft(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'));
+            $sQuery = $sQuery->join(['rpff' => 'r_participant_feedback_form'], 'pfa.question_id=rpff.question_id', ['shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")]);
+            $sQuery = $sQuery->join(['s' => 'shipment'], 'rpff.shipment_id=s.shipment_id', ['shipment_code']);
+            $sQuery = $sQuery->joinLeft(['sl' => 'scheme_list'], 'rpff.scheme_type=sl.scheme_id', ['scheme_name']);
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);

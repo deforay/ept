@@ -114,10 +114,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('pt' => $this->_name));
 

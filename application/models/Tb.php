@@ -667,7 +667,7 @@ class Application_Model_Tb
             array_push($reportHeadings, 'Final Result');
             /* Feed Back Response Section */
             $common = new Application_Service_Common();
-            $feedbackOption = $common->getConfig('feed_back_option');
+            $feedbackOption = $common->getConfig('participant_feedback');
             if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
                 if (isset($questions) && !empty($questions['question'])) {

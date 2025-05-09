@@ -227,9 +227,9 @@ if ($adminSession->privileges != "") {
 								<?php }
 								if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li class="divider"></li>
-									<?php if (isset($configData['feed_back_option']) && $configData['feed_back_option'] == 'yes') { ?>
-										<li id="FeedbackQuestions"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Feedback Questions"); ?></a></li>
-										<li id="ShipmentQustionsMap"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Shipment Qustions Map"); ?></a></li>
+									<?php if (isset($configData['participant_feedback']) && $configData['participant_feedback'] == 'yes') { ?>
+										<li id="FeedbackQuestions"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Configure Feedback"); ?></a></li>
+										<li id="ShipmentQustionsMap"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a></li>
 									<?php }
 									if (in_array('dts', $adminSession->activeSchemes)) { ?>
 										<li id="TestKits"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a></li>

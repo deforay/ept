@@ -1650,7 +1650,7 @@ class Application_Model_Dts
 
 
 		$common = new Application_Service_Common();
-		$feedbackOption = $common->getConfig('feed_back_option');
+		$feedbackOption = $common->getConfig('participant_feedback');
 		if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
 			/* Feed Back Response Section */
 			// $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);

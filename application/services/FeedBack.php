@@ -63,15 +63,15 @@ class Application_Service_FeedBack
             }
             $db->insert(
                 'participant_feedback_answer',
-                array(
-                    'shipment_id'      => $params["shipmentId"],
-                    'question_id'      => $q,
-                    'participant_id'   => $params['participantId'],
-                    'map_id'           => $params['mapId'],
-                    'answer'           => $answer,
+                [
+                    'shipment_id' => $params["shipmentId"],
+                    'question_id' => $q,
+                    'participant_id' => $params['participantId'],
+                    'map_id' => $params['mapId'],
+                    'answer' => $answer,
                     'updated_datetime' => Pt_Commons_General::getDateTime(),
-                    'modified_by'      => $authNameSpace->admin_id
-                )
+                    'modified_by' => $authNameSpace->admin_id
+                ]
             );
         }
         $alertMsg = new Zend_Session_Namespace('alertSpace');

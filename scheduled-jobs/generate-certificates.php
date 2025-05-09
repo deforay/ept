@@ -195,6 +195,8 @@ try {
 
 				$fields = [
 					'participant_name' => $arrayVal['labName'],
+					'participantname' => $arrayVal['labName'],
+					'participant' => $arrayVal['labName'],
 					'city' => $arrayVal['city'],
 					'country' => $arrayVal['country'],
 					'assay' => $assayName

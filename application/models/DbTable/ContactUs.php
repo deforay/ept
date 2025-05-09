@@ -97,10 +97,7 @@ class Application_Model_DbTable_ContactUs extends Zend_Db_Table_Abstract
         }
 
 
-        /*
-         * SQL queries
-         * Get data to display
-         */
+
 
         $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
 

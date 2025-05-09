@@ -247,14 +247,15 @@ if (!empty($this->shipment)) {
     <?php
     }
     ?>
-    <?php if ($reportQueue != 'disabled') { ?>
+    <?php
+    $summaryFile = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf";
+    if ($reportQueue != 'disabled' && file_exists($summaryFile)) { ?>
         <div class="row">
             <div id="summaryDiv" class="col-md-12">
-                <pre><?php
-                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-                        $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-summary.pdf");
-                        ?></pre>
-                <a href="<?php echo $this->baseUrl("/d/" . $filePath); ?>"><?= $this->translate->_("Download"); ?></a>
+                <?php
+                $filePath = base64_encode($summaryFile);
+                ?>
+                <a href="<?php echo $this->baseUrl("/d/$filePath"); ?>"><?= $this->translate->_("Download"); ?></a>
 
             </div>
         </div>

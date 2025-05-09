@@ -500,7 +500,7 @@ class Application_Model_Covid19
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
         $common = new Application_Service_Common();
-        $feedbackOption = $common->getConfig('feed_back_option');
+        $feedbackOption = $common->getConfig('participant_feedback');
 
         $styleArray = array(
             'font' => array(
