@@ -9,7 +9,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
-        if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+        if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
             return $this->removeShipmentResults($params['smid']);
         }
 

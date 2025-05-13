@@ -17,7 +17,7 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
             $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
             //Set tnd value if Yes
             $tnd = null;
-            if (isset($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] == 'yes') {
+            if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $params['vlResult'][$key] = '';
             } elseif ((!empty($params['vlResult'][$key]) && $params['vlResult'][$key] == 0) || (!empty($params['tnd'][$key]))) {
                 $tnd = 'yes';
