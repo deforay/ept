@@ -17,7 +17,7 @@
 <legend>
 	<h3>
 	<?= $this->translate->_("Corrective Actions and Preventive Action"); ?>
-		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button> 
+		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>
 	</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
@@ -42,7 +42,7 @@
 			</select>
 		</td>
 		<td>
-			<button style="margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> 
+			<button style="margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button>
 			<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
 		</td>
 	</tr>
@@ -211,7 +211,7 @@
 					"value": participant
 				});
 				aoData.push({
-					"name": "commingFrom",
+					"name": "originatedFrom",
 					"value": 'participant'
 				});
 			},
@@ -235,7 +235,7 @@
 	function generateReport() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'capa-export')); ?>", {
-				commingFrom: "participant",
+				originatedFrom: "participant",
 				format: "html"
 			},
 			function(data) {

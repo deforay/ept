@@ -203,7 +203,7 @@ class Application_Service_Shipments
             $downloadAllForm = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . 'TB-FORM-' . $aRow['shipment_code'] . '-All-participant-form.pdf';
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
                 $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
-            } elseif ($aRow['scheme_type'] == 'tb') {
+            } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'yes') {
                     $txt = "Generating TB Form ...";
                     $disabled = "disabled";
@@ -217,7 +217,7 @@ class Application_Service_Shipments
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
             }
-            if (isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
+            if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
                 $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
             }
 
@@ -608,9 +608,8 @@ class Application_Service_Shipments
 
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $adminAuthNameSpace = new Zend_Session_Namespace('administrators');
-        $commonService = new Application_Service_Common();
 
-        $mandatoryFields = array('receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm');
+        $mandatoryFields = ['receiptDate', 'testDate', 'sampleRehydrationDate', 'algorithm'];
         $db->beginTransaction();
         try {
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
@@ -663,8 +662,9 @@ class Application_Service_Shipments
                 $data["updated_on_admin"] = new Zend_Db_Expr('now()');
             }
 
-            if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+            $testResponseDate = $params['testResponseDate'] ?? $params['testReceiptDate'] ?? null;
+            if (isset($testResponseDate) && !empty($testResponseDate)) {
+                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($testResponseDate);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -682,7 +682,7 @@ class Application_Service_Shipments
                 }
             }
 
-            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] == 'yes') {
+            if (!isset($params['isPtTestNotPerformed']) || $params['isPtTestNotPerformed'] != 'yes') {
                 $data['is_pt_test_not_performed'] = null;
                 $data['vl_not_tested_reason'] = null;
                 $data['shipment_test_date'] = null;
@@ -3545,7 +3545,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dmId = $authNameSpace->dm_id;
-        if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
+        if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
             $aColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "shipment_code", "DATE_FORMAT(shipment_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
             $orderColumns = array("p.unique_identifier", "p.first_name", "distribution_code", "distribution_date", "shipment_code", "shipment_date", "lastdate_response", "sl.scheme_name", 'number_of_samples', 'shipment_score', 'final_result');
         } else {
@@ -3639,7 +3639,7 @@ class Application_Service_Shipments
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 's.distribution_id=d.distribution_id', array('distribution_code', 'distribution_date'))
             ->where("s.status = ?", 'finalized');
-        // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+        // if(isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin'){
         $sQuery = $sQuery->group('p.participant_id');
         /* }else{
             $sQuery = $sQuery->group('s.shipment_id');
@@ -3695,24 +3695,24 @@ class Application_Service_Shipments
 
         foreach ($rResult as $aRow) {
             $row = [];
-            // if(isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin'){
+            // if(isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin'){
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             // }
             $row[] = $aRow['distribution_code'];
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
-            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
+            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
             }
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
-            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
+            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = $aRow['shipment_score'] + $aRow['documentation_score'];
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
-            if (isset($parameters['commingFrom']) && !empty($parameters['commingFrom']) && $parameters['commingFrom'] == 'admin') {
+            if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             } else {
                 $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
@@ -3902,7 +3902,7 @@ class Application_Service_Shipments
                 ->setValueExplicit(html_entity_decode('CORRECTIVE ACTION PREVENTIVE ACTIONS FOR ' . $result['shipment_code'], ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 1, null, null)->getFont()->setBold(true);
             $dataRow = 3;
-            // if(isset($params['commingFrom']) && !empty($params['commingFrom']) && $params['commingFrom'] == 'admin'){
+            // if(isset($params['originatedFrom']) && !empty($params['originatedFrom']) && $params['originatedFrom'] == 'admin'){
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . 2)
                 ->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(4) . 2)

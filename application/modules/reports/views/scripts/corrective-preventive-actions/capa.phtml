@@ -82,7 +82,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<table>
 		<tr>
 			<td>
-				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button> 
+				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button>
 				<input type="hidden" name="shipmentId" value="<?php echo $result['shipment_id'];?>"/>
 				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Cencel"); ?></span></button>
 			</td>
@@ -109,7 +109,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions', 'action' => 'capa-export')); ?>", {
 				type: "view",
-				commingFrom: "admin",
+				originatedFrom: "admin",
 				format: "html"
 			},
 			function(data) {

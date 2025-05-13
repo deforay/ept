@@ -111,7 +111,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'capa-export')); ?>", {
 				type: "view",
-				commingFrom: "admin",
+				originatedFrom: "admin",
 				format: "html"
 			},
 			function(data) {
