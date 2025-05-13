@@ -69,8 +69,8 @@ class Application_Model_Dts
 
 		$finalResultArray = $this->getFinalResults();
 
-		$this->db->update('shipment_participant_map', array('failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'), "shipment_id = $shipmentId");
-		$this->db->update('shipment_participant_map', array('is_excluded' => 'yes'), "shipment_id = $shipmentId AND IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
+		$this->db->update('shipment_participant_map', ['failure_reason' => null, 'is_followup' => 'no', 'is_excluded' => 'no'], "shipment_id = $shipmentId");
+		$this->db->update('shipment_participant_map', ['is_excluded' => 'yes'], "shipment_id = $shipmentId AND IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
 
 
 		foreach ($shipmentResult as $shipment) {
@@ -137,7 +137,7 @@ class Application_Model_Dts
 			// CORRECT PARALLEL RESPONSES 'PPX','PNP','PNN','NNX','NPN','NPP';
 
 			// 3 tests algo added for Myanmar initally, might be used in other places eventually
-			//$threeTestCorrectResponses = array('NXX','PPP');
+			//$threeTestCorrectResponses = ['NXX','PPP'];
 
 			$testedOn = new DateTime($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date']);
 
@@ -201,10 +201,10 @@ class Application_Model_Dts
 						$tk1Expired = false;
 					}
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test kit 1 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
-					);
+					];
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -212,7 +212,7 @@ class Application_Model_Dts
 					if (!in_array($results[0]['test_kit_name_1'], $recommendedTestkits[1])) {
 						$tk1RecommendedUsed = false;
 						$failureReason[] = [
-							'warning' => "For Test 1, testing is not performed with country approved test kit.--- ".$results[0]['test_kit_name_1'],
+							'warning' => "For Test 1, testing is not performed with country approved test kit.--- " . $results[0]['test_kit_name_1'],
 							'correctiveAction' => $correctiveActions[17]
 						];
 					} else {
@@ -224,23 +224,23 @@ class Application_Model_Dts
 
 			if ($testKit2 != "") {
 				if ($expDate2 != "") {
-					if ($testedOn > ($expDate2)) {
+					if ($testedOn > $expDate2) {
 						$difference = $testedOn->diff($expDate2);
 
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Test Kit 2 (<strong>" . $testKit2 . "</strong>) expired " . round($difference->format("%a")) . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
-						);
+						];
 						$correctiveActionList[] = 5;
 						$tk2Expired = true;
 					} else {
 						$tk2Expired = false;
 					}
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test kit 2 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
-					);
+					];
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -248,10 +248,10 @@ class Application_Model_Dts
 				if (isset($recommendedTestkits[2]) && !empty($recommendedTestkits[2])) {
 					if (!in_array($results[0]['test_kit_name_2'], $recommendedTestkits[2])) {
 						$tk2RecommendedUsed = false;
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "For Test 2, testing is not performed with country approved test kit.",
 							'correctiveAction' => $correctiveActions[17]
-						);
+						];
 					} else {
 						$tk2RecommendedUsed = true;
 					}
@@ -261,12 +261,12 @@ class Application_Model_Dts
 
 			if ($testKit3 != "") {
 				if ($expDate3 != "") {
-					if ($testedOn > ($expDate3)) {
+					if ($testedOn > $expDate3) {
 						$difference = $testedOn->diff($expDate3);
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "Test Kit 3 (<strong>" . $testKit3 . "</strong>) expired " . round($difference->format("%a")) . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
-						);
+						];
 						$correctiveActionList[] = 5;
 						$tk3Expired = true;
 					} else {
@@ -274,10 +274,10 @@ class Application_Model_Dts
 					}
 				} else {
 
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test kit 3 expiry date is not reported with PT response.",
 						'correctiveAction' => $correctiveActions[6]
-					);
+					];
 					$correctiveActionList[] = 6;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -285,10 +285,10 @@ class Application_Model_Dts
 				if (isset($recommendedTestkits[3]) && !empty($recommendedTestkits[3])) {
 					if (!in_array($results[0]['test_kit_name_3'], $recommendedTestkits[3])) {
 						$tk3RecommendedUsed = false;
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "For Test 3, testing is not performed with country approved test kit.",
 							'correctiveAction' => $correctiveActions[17]
-						);
+						];
 					} else {
 						$tk3RecommendedUsed = true;
 					}
@@ -297,10 +297,10 @@ class Application_Model_Dts
 			//checking if testkits were repeated
 			// T.9 Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3).
 			if (($testKit1 == "") && ($testKit2 == "") && ($testKit3 == "")) {
-				$failureReason[] = array(
+				$failureReason[] = [
 					'warning' => "No Test Kit reported. Result not evaluated",
 					'correctiveAction' => $correctiveActions[7]
-				);
+				];
 				$correctiveActionList[] = 7;
 				$shipment['is_excluded'] = 'yes';
 			} elseif (($testKit1 != "") && ($testKit2 != "") && ($testKit3 != "") && ($testKit1 == $testKit2) && ($testKit2 == $testKit3)) {
@@ -308,10 +308,10 @@ class Application_Model_Dts
 				//Myanmar does not mind if all three test kits are same.
 				if ($dtsSchemeType != 'myanmar') {
 					//$testKitRepeatResult = 'Fail';
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "<strong>$testKit1</strong> repeated for all three Test Kits",
 						'correctiveAction' => $correctiveActions[8]
-					);
+					];
 					$correctiveActionList[] = 8;
 				}
 			} else {
@@ -319,26 +319,26 @@ class Application_Model_Dts
 				if ($dtsSchemeType != 'myanmar') {
 					if (($testKit1 != "") && ($testKit2 != "") && ($testKit1 == $testKit2)) {
 						//$testKitRepeatResult = 'Fail';
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 2",
 							'correctiveAction' => $correctiveActions[9]
-						);
+						];
 						$correctiveActionList[] = 9;
 					}
 					if (($testKit2 != "") && ($testKit3 != "") && ($testKit2 == $testKit3)) {
 						//$testKitRepeatResult = 'Fail';
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "<strong>$testKit2</strong> repeated as Test Kit 2 and Test Kit 3",
 							'correctiveAction' => $correctiveActions[9]
-						);
+						];
 						$correctiveActionList[] = 9;
 					}
 					if (($testKit1 != "") && ($testKit3 != "") && ($testKit1 == $testKit3)) {
 						//$testKitRepeatResult = 'Fail';
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "<strong>$testKit1</strong> repeated as Test Kit 1 and Test Kit 3",
 							'correctiveAction' => $correctiveActions[9]
-						);
+						];
 						$correctiveActionList[] = 9;
 					}
 				}
@@ -350,10 +350,10 @@ class Application_Model_Dts
 			if ($testKit1 != "" && (!isset($results[0]['lot_no_1']) || $results[0]['lot_no_1'] == "" || $results[0]['lot_no_1'] == null)) {
 				if (isset($results[0]['test_result_1']) && $results[0]['test_result_1'] != "" && $results[0]['test_result_1'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test Kit lot number 1 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
-					);
+					];
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -361,10 +361,10 @@ class Application_Model_Dts
 			if ($testKit2 != "" && (!isset($results[0]['lot_no_2']) || $results[0]['lot_no_2'] == "" || $results[0]['lot_no_2'] == null)) {
 				if (isset($results[0]['test_result_2']) && $results[0]['test_result_2'] != "" && $results[0]['test_result_2'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test Kit lot number 2 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
-					);
+					];
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -372,10 +372,10 @@ class Application_Model_Dts
 			if ($testKit3 != "" && (!isset($results[0]['lot_no_3']) || $results[0]['lot_no_3'] == "" || $results[0]['lot_no_3'] == null)) {
 				if (isset($results[0]['test_result_3']) && $results[0]['test_result_3'] != "" && $results[0]['test_result_3'] != null) {
 					$lotResult = 'Fail';
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Result not evaluated : Test Kit lot number 3 is not reported.",
 						'correctiveAction' => $correctiveActions[10]
-					);
+					];
 					$correctiveActionList[] = 10;
 					$shipment['is_excluded'] = 'yes';
 				}
@@ -384,13 +384,13 @@ class Application_Model_Dts
 			foreach ($results as $result) {
 				//if Sample is not mandatory, we will skip the evaluation
 				if (0 == $result['mandatory']) {
-					$this->db->update('response_result_dts', array('calculated_score' => "N.A."), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+					$this->db->update('response_result_dts', ['calculated_score' => "N.A."], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 					continue;
 				}
 
-				$reportedResultCode = isset($result['result_code']) ? $result['result_code'] : null;
-				$reportedSyphilisResultCode = isset($result['syp_result_code']) ? $result['syp_result_code'] : null;
-				$reportedSyphilisResult = isset($result['syphilis_final']) ? $result['syphilis_final'] : null;
+				$reportedResultCode = $result['result_code'] ?? null;
+				$reportedSyphilisResultCode = $result['syp_result_code'] ?? null;
+				$reportedSyphilisResult = $result['syphilis_final'] ?? null;
 
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
@@ -489,10 +489,10 @@ class Application_Model_Dts
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R') {
@@ -506,18 +506,18 @@ class Application_Model_Dts
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
-									$failureReason[] = array(
+									$failureReason[] = [
 										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 										'correctiveAction' => $correctiveActions[2]
-									);
+									];
 									$correctiveActionList[] = 2;
 								}
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						}
@@ -573,15 +573,16 @@ class Application_Model_Dts
 
 
 					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'serial') {
+
 						if ($result1 == 'NR') {
 							if (($result2 == '-') && ($result3 == '-' || $result3 == 'X')) {
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR') {
@@ -591,22 +592,23 @@ class Application_Model_Dts
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
+
 					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
 						if ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == '-' || $result3 == 'X')) {
@@ -614,10 +616,10 @@ class Application_Model_Dts
 							} else {
 
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R' && $result2 == 'NR' && ($result3 == 'R' || $result3 == 'X')) {
@@ -629,10 +631,10 @@ class Application_Model_Dts
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'NR' && $result2 == 'R' && ($result3 == 'NR' || $result3 == 'X')) {
@@ -641,16 +643,16 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
 					} elseif ($dtsSchemeType == 'sierraLeone' || $attributes['algorithm'] == 'sierraLeoneNationalDtsAlgo') {
 
 
-						// array('NXX','PNN','PPX','PNP')
+						// ['NXX','PNN','PPX','PNP']
 
 						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
 
@@ -709,10 +711,10 @@ class Application_Model_Dts
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
 					} elseif ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
@@ -722,10 +724,10 @@ class Application_Model_Dts
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R') {
@@ -743,18 +745,18 @@ class Application_Model_Dts
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
-									$failureReason[] = array(
+									$failureReason[] = [
 										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 										'correctiveAction' => $correctiveActions[2]
-									);
+									];
 									$correctiveActionList[] = 2;
 								}
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						}
@@ -775,10 +777,10 @@ class Application_Model_Dts
 								$algoResult = 'Pass';
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 						} elseif ($result1 == 'R') {
@@ -796,28 +798,28 @@ class Application_Model_Dts
 									$algoResult = 'Pass';
 								} else {
 									$algoResult = 'Fail';
-									$failureReason[] = array(
+									$failureReason[] = [
 										'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 										'correctiveAction' => $correctiveActions[2]
-									);
+									];
 									$correctiveActionList[] = 2;
 								}
 							} else {
 								$algoResult = 'Fail';
-								$failureReason[] = array(
+								$failureReason[] = [
 									'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 									'correctiveAction' => $correctiveActions[2]
-								);
+								];
 								$correctiveActionList[] = 2;
 							}
 							//echo $algoResult;die;
 						}
 					} else {
 						$algoResult = 'Fail';
-						$failureReason[] = array(
+						$failureReason[] = [
 							'warning' => "For <strong>" . $result['sample_label'] . "</strong> National HIV Testing algorithm was not followed.",
 							'correctiveAction' => $correctiveActions[2]
-						);
+						];
 						$correctiveActionList[] = 2;
 					}
 
@@ -831,10 +833,10 @@ class Application_Model_Dts
 					if ($testKit1 != "") {
 						if (!isset($result['test_result_1']) || $result['test_result_1'] == "") {
 							$controlTesKitFail = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 1 (<strong>$testKit1</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
 					}
@@ -842,10 +844,10 @@ class Application_Model_Dts
 					if ($testKit2 != "") {
 						if (!isset($result['test_result_2']) || $result['test_result_2'] == "") {
 							$controlTesKitFail = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 2 (<strong>$testKit2</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
 					}
@@ -854,10 +856,10 @@ class Application_Model_Dts
 					if ($testKit3 != "") {
 						if (!isset($result['test_result_3']) || $result['test_result_3'] == "") {
 							$controlTesKitFail = 'Fail';
-							$failureReason[] = array(
+							$failureReason[] = [
 								'warning' => "For the Control <strong>" . $result['sample_label'] . "</strong>, Test Kit 3 (<strong>$testKit3</strong>) was not used",
 								'correctiveAction' => $correctiveActions[2]
-							);
+							];
 							$correctiveActionList[] = 2;
 						}
 					}

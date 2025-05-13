@@ -9,6 +9,19 @@ class Application_Service_Shipments
     {
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
     }
+
+    private function calculateMandatorySampleCount($mandatoryArr, $controlArr)
+    {
+        $count = 0;
+        foreach ($mandatoryArr as $index => $isMandatory) {
+            if ((string)$isMandatory === "1" && (string)$controlArr[$index] !== "1") {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+
     public function getAllShipments($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1749,10 +1762,13 @@ class Application_Service_Shipments
 
             $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
             $size = count($params['sampleName']);
-            $crtSampleCount = array_count_values($params['control']);
+
+            $mandatorySampleCount = $this->calculateMandatorySampleCount($params['mandatory'], $params['control']);
+            $perSampleScore = $mandatorySampleCount > 0 ? floatval(100 / $mandatorySampleCount) : 1;
 
             if ($params['schemeId'] == 'eid') {
                 for ($i = 0; $i < $size; $i++) {
+                    $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                     $dbAdapter->insert(
                         'reference_result_eid',
                         [
@@ -1765,13 +1781,14 @@ class Application_Service_Shipments
                             'reference_ic_qs' => $params['icQs'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
+                            'sample_score' => $singleSampleScore
                         ]
                     );
                 }
             } elseif ($params['schemeId'] == 'vl') {
                 //Zend_Debug::dump($params['vlRef']);die;
                 for ($i = 0; $i < $size; $i++) {
+                    $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                     $dbAdapter->insert(
                         'reference_result_vl',
                         array(
@@ -1782,7 +1799,7 @@ class Application_Service_Shipments
                             //'reference_result' => $params['vlResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
-                            'sample_score' => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
+                            'sample_score' => $singleSampleScore // 0 for control, 1 for normal sample
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
@@ -1814,7 +1831,7 @@ class Application_Service_Shipments
                         'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
                         'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
                         'mandatory' => $params['mandatory'][$i],
-                        'sample_score' => ($params['control'][$i] == 1 ? 0 : 1) // 0 for control, 1 for normal sample
+                        'sample_score' => ($params['control'][$i] == 1 ? 0 : 1)
                     ];
                     if (isset($params['possibleSyphilisResults'][$i]) && trim($params['possibleSyphilisResults'][$i]) != "") {
                         $refResulTDTSData['syphilis_reference_result'] = $params['possibleSyphilisResults'][$i];
@@ -2337,7 +2354,9 @@ class Application_Service_Shipments
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
-        $crtSampleCount = array_count_values($params['control']);
+
+        $mandatorySampleCount = $this->calculateMandatorySampleCount($params['mandatory'], $params['control']);
+        $perSampleScore = $mandatorySampleCount > 0 ? floatval(100 / $mandatorySampleCount) : 1;
 
         $controlCount = 0;
         foreach ($params['control'] as $control) {
@@ -2350,39 +2369,42 @@ class Application_Service_Shipments
         if ($scheme == 'eid') {
             $dbAdapter->delete('reference_result_eid', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
+
+                $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                 $dbAdapter->insert(
                     'reference_result_eid',
-                    array(
-                        'shipment_id'               => $params['shipmentId'],
-                        'sample_id'                 => ($i + 1),
-                        'sample_label'              => $params['sampleName'][$i],
-                        'sample_preparation_date'   => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                        'reference_result'          => $params['possibleResults'][$i],
-                        'reference_hiv_ct_od'       => $params['hivCtOd'][$i],
-                        'reference_ic_qs'           => $params['icQs'][$i],
-                        'control'                   => $params['control'][$i],
-                        'mandatory'                 => $params['mandatory'][$i],
-                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
-                    )
+                    [
+                        'shipment_id' => $params['shipmentId'],
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'reference_result' => $params['possibleResults'][$i],
+                        'reference_hiv_ct_od' => $params['hivCtOd'][$i],
+                        'reference_ic_qs' => $params['icQs'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => ($params['control'][$i] == 1 ? 0 : $singleSampleScore) // 0 for control, 1 for normal sample
+                    ]
                 );
             }
         } elseif ($scheme == 'vl') {
-            //var_dump($params['vlRef']);die;
+
             $dbAdapter->delete('reference_result_vl', 'shipment_id = ' . $params['shipmentId']);
             $dbAdapter->delete('reference_vl_methods', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
+                $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                 $dbAdapter->insert(
                     'reference_result_vl',
-                    array(
-                        'shipment_id'               => $params['shipmentId'],
-                        'sample_id'                 => ($i + 1),
-                        'sample_label'              => $params['sampleName'][$i],
-                        'sample_preparation_date'   => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                        'reference_result'          => $params['vlResult'][$i],
-                        'control'                   => $params['control'][$i],
-                        'mandatory'                 => $params['mandatory'][$i],
-                        'sample_score'              => ($params['control'][$i] == 1 ? 0 : 100 / $crtSampleCount[0]) // 0 for control, 1 for normal sample
-                    )
+                    [
+                        'shipment_id' => $params['shipmentId'],
+                        'sample_id' => ($i + 1),
+                        'sample_label' => $params['sampleName'][$i],
+                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'reference_result' => $params['vlResult'][$i],
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
+                        'sample_score' => ($params['control'][$i] == 1 ? 0 : $singleSampleScore) // 0 for control, 1 for normal sample
+                    ]
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
@@ -2460,7 +2482,7 @@ class Application_Service_Shipments
                     'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
                     'control' => $params['control'][$i],
                     'mandatory' => $params['mandatory'][$i],
-                    // 'sample_score' => (isset($params['score'][$i]) && !empty($params['score'][$i])) ? $params['score'][$i] : null
+                    'sample_score' => ($params['control'][$i] == 1 ? 0 : 1)
                 );
                 $dbAdapter->insert('reference_result_dts', $refResulTDTSData);
                 if (isset($params['eia'][$i + 1]['eia'])) {
