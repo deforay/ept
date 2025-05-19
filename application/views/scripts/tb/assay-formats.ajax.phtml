@@ -10,6 +10,11 @@ foreach ($this->tbPossibleResults as $pr) {
         $possibleMicrosopeResults[$pr['result_code']] = $pr['response'];
     }
 }
+
+if(empty($this->type) || $this->type == '' || $this->type == 'undefined') {
+    $this->type = 'microscopy';
+}
+
 if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
     unset($possibleResults['trace']);
 }

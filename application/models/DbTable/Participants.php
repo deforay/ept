@@ -1633,7 +1633,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             // Duplications check
             $psql = $db->select()->from('participant')
-                ->where("unique_identifier LIKE ?", $sheetData[$i]['B']);
+                ->where("unique_identifier = ?", $sheetData[$i]['B']);
             $participantRow = $db->fetchRow($psql);
 
             if (isset($params['bulkUploadDuplicateSkip']) && !empty($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates') {
@@ -1645,7 +1645,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             if (!empty($originalEmail)) {
                 $dmsql = $db->select()->from('data_manager')
-                    ->where("primary_email LIKE ?", $originalEmail);
+                    ->where("primary_email = ?", $originalEmail);
 
                 $dataManagerRow = $db->fetchRow($dmsql);
                 if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && !empty($dataManagerRow)) {

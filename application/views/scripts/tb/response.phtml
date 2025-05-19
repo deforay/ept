@@ -158,7 +158,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						</tr>
 					</table>
 
-					<table class="vlResultSection table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>width:100%;margin:10px auto;">
+					<table class="tbPTTestingRelatedFields table table-bordered table-striped" style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>width:100%;margin:10px auto;">
 						<tr class="dark">
 							<td style="width:20%;"> <label class="control-lable" for="receiptDate"><?= $this->translate->_("Panel Received Date"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
@@ -174,7 +174,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						<tr class="light">
 							<td style="width:20%;"> <label class="control-lable" for="assayName"><?= $this->translate->_("Assay Name"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
 							<td style="width:30%;">
-								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="loadAssayFields(this);">
+								<select class="form-control vlResultValues isRequired" name="assayName" id="assayName" title="Please select the assay name" onchange="">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php if (isset($this->assay) && !empty($this->assay)) {
 										foreach ($this->assay as $row) { ?>
@@ -226,10 +226,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							</tr>
 						<?php } ?>
 					</table>
-					<div style="width:100%;padding-left:0;" class="vlResultSection">
+					<div style="width:100%;padding-left:0;" class="tbPTTestingRelatedFields instrumentsAtFacility">
 						<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Instruments at Facility"); ?>:&nbsp; &nbsp;<label>
 					</div>
-					<table class="table table-responsive table-bordered table-striped vlResultSection">
+					<table class="table table-responsive table-bordered table-striped tbPTTestingRelatedFields instrumentsAtFacility">
 						<thead>
 							<tr>
 								<th><?= $this->translate->_('Serial Number'); ?></th>
@@ -258,7 +258,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<?php } ?>
 						</tbody>
 					</table>
-					<div class="vlResultSection vlResultBlock loadAssay">
+					<div class="tbPTTestingRelatedFields vlResultBlock loadAssay">
 
 					</div>
 					<br>
@@ -431,7 +431,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		</form>
 	</div>
 </section>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/toastify-js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/toastify-js.js'); ?>"></script>
 <script type="text/javascript" src="/js/datalist-css.min.js"></script>
 <script>
 	sampleCounter = 1;
@@ -444,6 +444,21 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 	let timeOut;
 	$(document).ready(function() {
+
+		$('#assayName').on('change', function() {
+			if ($(this).find(':selected').data('short') == 'other') {
+				$('.generic-tb-assay').show();
+				if ($('#otherAssayName option').length == 2) {
+					$('#otherAssayName').val($('#otherAssayName option').eq(1).val());
+				}
+				loadAssayFields(this);
+			} else {
+				$('.generic-tb-assay').hide();
+				loadAssayFields(this);
+			}
+
+
+		});
 
 		<?php if (!$adminAccess) { ?>
 			// Collapse the main sidebar
@@ -498,7 +513,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php } ?>
 
-		loadAssayFields($('#assayName'));
+
 		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
 		$('#supervisorApproval').change(function() {
@@ -689,7 +704,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 	function isPtTestNotPerformed(val) {
 		if (val == 'yes') {
-			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').hide();
+			$('.tbPTTestingRelatedFields,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').hide();
 			$('.vlResultValues').val('');
 			$('.vlResultBlock').html('');
 			$('.ptNotPerformedSection').show();
@@ -697,7 +712,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$('#shipmentTestDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').removeClass('isRequired');
 			$('#vlNotTestedReason').addClass('isRequired');
 		} else {
-			$('.vlResultSection,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').show();
+			$('.tbPTTestingRelatedFields,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').show();
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
 			$('#vlNotTestedReason').removeClass('isRequired');
@@ -707,25 +722,26 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 	function loadAssayFields(obj) {
 		let _short = $(obj).find(':selected').data('short');
+		if (_short == 'other' && $('#otherAssayName').val() == '') {
+			return false;
+		}else if (_short == 'other' && $('#otherAssayName').val() != '') {
+			_short = $("#otherAssayName").val();
+		}
+		_short = _short.toString().toLowerCase();
 		let _type = $(obj).find(':selected').data('type');
 		let _assayId = $(obj).val();
 		let _drug = $(obj).find(':selected').data('drug');
-		// return false;
-		if ($(obj).find(':selected').data('type') == "generic") {
-			$(".generic-tb-assay").show();
-		} else {
-			$(".generic-tb-assay").hide();
-		}
+
 		if (_short == 'microscopy') {
 			$('.microscopy-hide').hide();
+			$('.instrumentsAtFacility').hide();
+
 		} else {
 			$('.microscopy-hide').show();
+			$('.instrumentsAtFacility').show();
 		}
-		_reqF = 'participant';
-		<?php if ($adminAccess) { ?>
-			_reqF = 'admin';
-		<?php } ?>
-		if (obj.value != "") {
+		_reqF = '<?= isset($adminAccess) && $adminAccess == true ? 'admin' : 'participant'; ?>';
+		if (_short != "") {
 			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom=" + _reqF, {
 					format: "html"
 				},
