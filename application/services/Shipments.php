@@ -4034,6 +4034,7 @@ class Application_Service_Shipments
     {
         try {
 
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
             if (isset($_FILES['replaceSummaryReport']['tmp_name']) && file_exists($_FILES['replaceSummaryReport']['tmp_name']) && is_uploaded_file($_FILES['replaceSummaryReport']['tmp_name'])) {
                 $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['replaceSummaryReport']['name']);
                 $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
@@ -4044,13 +4045,15 @@ class Application_Service_Shipments
                 if (in_array($extension, $allowedExtensions)) {
                     if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
                         if (mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
-                            return 'permission-issue';
+                            $alertMsg->message = "File not uploaded. Directory permission required for replacing the file.";
+                            return false;
                         }
                     }
                     if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], $tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
                         return true;
                     }
                 } else {
+                    $alertMsg->message = "File not uploaded. Incorrect format. Please use a valid PDF format.";
                     return 'format-wrong';
                 }
             }
@@ -4066,6 +4069,7 @@ class Application_Service_Shipments
     public function moveSummaryReport($params)
     {
         try {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $downloadDirectory = realpath(DOWNLOADS_FOLDER);
             $pathComponents = ['reports', $params['shipmentCode']];
             $pathname = Application_Service_Common::buildSafePath($downloadDirectory, $pathComponents);
@@ -4079,13 +4083,13 @@ class Application_Service_Shipments
                         if (unlink($from)) {
                             return true;
                         } else {
-                            error_log('Old file not removed');
+                            $alertMsg->message = 'Old file not removed';
                         }
                     } else {
-                        error_log('File not copied');
+                        $alertMsg->message = 'File not copied';
                     }
                 } else {
-                    error_log('Is not file');
+                    $alertMsg->message = 'Is not file';
                 }
             }
             return false;
