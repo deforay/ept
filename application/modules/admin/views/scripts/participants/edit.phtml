@@ -3,8 +3,14 @@ $directParticipantLogin = false;
 if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogin)) && $this->directParticipantLogin == 'yes') {
     $directParticipantLogin = true;
 } ?>
+
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<style>
+    .hide {
+        display: none !important;
+    }
+</style>
 <div class="well">
     <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="<?php echo ($directParticipantLogin) ? "validPassword()" : "validateNow()"; ?>;return false;">
         <fieldset>
@@ -13,7 +19,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" id="individualParticipant" checked="checked" onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo ($directParticipantLogin) ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
                 </div>
             </div>
 
@@ -26,14 +32,14 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <input type="hidden" id="participantId" name="participantId" size="50" maxlength=tip"255" class="isRequired form-control" value="<?php echo $this->participant['participant_id']; ?>" />
             </div>
 
-            <div class="form-group col-lg-6" id="firstNameDiv">
+            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : 'hide'; ?>" id="firstNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
                     <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
-            <div class="form-group col-lg-6" id="lastNameDiv">
+            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : 'hide'; ?>" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
@@ -150,7 +156,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
             <hr style="border:1px solid #ccc;background: #ccc;width:90%;" />
-            <?php if ($directParticipantLogin) { ?>
+            <div class="<?php echo ($directParticipantLogin) ? '' : 'hide'; ?> direct-participant-div">
                 <div class="form-group col-lg-6">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
@@ -173,34 +179,33 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                         <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
                     </div>
                 </div>
-            <?php } else { ?>
-                <div class="form-group col-lg-12">
-                    <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
+            </div>
+            <div class="form-group col-lg-12 pt-login-dev <?php echo ($directParticipantLogin) ? 'hide' : ''; ?>">
+                <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
 
-                    <div class="col-lg-5">
-                        <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
-                            <?php
-                            $dataManagers = explode(",", $this->participant['data_manager']);
-                            foreach ($this->dataManagers as $dm) {
-                                $dmName = [];
-                                if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
-                                    $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
-                                }
-                                if (!empty(trim($dm['institute']))) {
-                                    $dmName[] = trim($dm['institute']);
-                                }
-                                if (!empty(trim($dm['primary_email']))) {
-                                    $dmName[] = trim($dm['primary_email']);
-                                }
-                            ?>
-                                <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
-                            <?php
+                <div class="col-lg-5">
+                    <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
+                        <?php
+                        $dataManagers = explode(",", $this->participant['data_manager']);
+                        foreach ($this->dataManagers as $dm) {
+                            $dmName = [];
+                            if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
+                                $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
                             }
-                            ?>
-                        </select>
-                    </div>
+                            if (!empty(trim($dm['institute']))) {
+                                $dmName[] = trim($dm['institute']);
+                            }
+                            if (!empty(trim($dm['primary_email']))) {
+                                $dmName[] = trim($dm['primary_email']);
+                            }
+                        ?>
+                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
+                        <?php
+                        }
+                        ?>
+                    </select>
                 </div>
-            <?php } ?>
+            </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
 
@@ -368,7 +373,8 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
         //checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
-
+        if ($('.direct-participant-div').hasClass('hide'))
+            $('#dataManager').val('').trigger('change');
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
         });
@@ -380,9 +386,13 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
 
     function checkIndividualParticipant(obj) {
         if (obj.checked) {
+            $('.direct-participant-div, #lastNameDiv').removeClass('hide');
+            $('.pt-login-dev').addClass('hide');
             tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the First Name here" placeholder="Please enter the First Name here"/></div>';
             $("#lastNameDiv").show();
         } else {
+            $('.pt-login-dev').removeClass('hide');
+            $('.direct-participant-div, #lastNameDiv').addClass('hide');
             tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here"/></div>';
             $("#lastNameDiv").hide();
             $("#plname").val('');
