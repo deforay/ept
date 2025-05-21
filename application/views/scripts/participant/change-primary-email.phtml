@@ -32,7 +32,7 @@
 					<br>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<p>
-							<input type="hidden" name="dmId" value="<?php echo base64_encode($authNameSpace->dm_id);?>"/>
+							<input type="hidden" name="dmId" value="<?php echo base64_encode($authNameSpace->dm_id); ?>" />
 							<input name="submitbtn" class="btn btn-primary" type="button" tabindex="7" value="<?= $this->translate->_("Change mail address"); ?>" onclick="validateNow();return false;" />
 							&nbsp;&nbsp;&nbsp;
 							<input name="reset" class="btn btn-warning" type="reset" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" onclick="" />

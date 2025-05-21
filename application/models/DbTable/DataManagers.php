@@ -579,7 +579,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function changeForceProfileCheckByEmail($params)
     {
-        return $this->update(array('force_profile_check' => 'no', 'primary_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))), "dm_id =" . base64_decode($params['dmId']));
+        return $this->update(array('force_profile_check' => 'no', 'new_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))), "dm_id =" . base64_decode($params['dmId']));
     }
 
     public function loginDatamanagerByAPI($params)
@@ -1335,7 +1335,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             foreach ($headings as $field => $value) {
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
@@ -1370,7 +1370,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         $value = "";
                     }
                     $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
                         $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
