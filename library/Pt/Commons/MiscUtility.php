@@ -48,11 +48,30 @@ final class Pt_Commons_MiscUtility
         return $input;
     }
 
+    public static function cleanString($string)
+    {
+        if(empty($string)){
+            return null;
+        }
+
+        // Remove common invisible Unicode characters
+        $string = preg_replace('/[\x{00A0}\x{200B}\x{FEFF}\x{202F}\x{2060}\x{00AD}]/u', '', $string ?? '');
+
+        // Remove ASCII control characters (0–31 and 127)
+        $string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
+
+        // Trim standard whitespace from both ends
+        return trim($string);
+    }
+
     public static function sanitizeAndValidateEmail($email)
     {
-        $sanitized = filter_var(trim($email ?? ''), FILTER_SANITIZE_EMAIL);
+        // Standard trim and sanitize
+        $sanitized = strtolower(filter_var(self::cleanString($email), FILTER_SANITIZE_EMAIL));
+
         return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: '';
     }
+
 
     public static function slugify(string $input): string
     {
@@ -65,27 +84,17 @@ final class Pt_Commons_MiscUtility
     }
 
 
-    public static function generateRandomString(int $length = 32)
+    public static function generateRandomString(int $length = 32): string
     {
         try {
             $bytes = random_bytes($length);
-            $result = '';
-
-            // Create a character set of alphanumeric characters
-            $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            $charSetLength = strlen($charSet);
-
-            // Convert random bytes to characters from our character set
-            for ($i = 0; $i < $length; $i++) {
-                $result .= $charSet[ord($bytes[$i]) % $charSetLength];
-            }
-
-            return $result;
+            $base64 = rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
+            return substr($base64, 0, $length);
         } catch (Throwable $e) {
-            Pt_Commons_LoggerUtility::log('Failed to generate random string: ', $e->getMessage());
-            throw $e;
+            throw new Exception('Failed to generate random string: ' . $e->getMessage());
         }
     }
+
 
     public static function generateRandomNumber(int $length = 8): string
     {
@@ -105,10 +114,10 @@ final class Pt_Commons_MiscUtility
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
-        $sanitizedUniqueId = self::sanitizeInput($uniqueId);
-        $sanitizedParticipantName = self::sanitizeInput($participantName);
+        $sanitizedUniqueId = self::sanitizeInput(self::cleanString($uniqueId));
+        $sanitizedParticipantName = self::sanitizeInput(self::cleanString($participantName));
         $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
-        return "{$sanitizedUniqueId}_$sanitizedParticipantName@$host";
+        return "{$sanitizedUniqueId}@$host";
     }
 
     public static function randomHexColor(): string

@@ -72,18 +72,9 @@ class Application_Service_Common
         $date = new \DateTime(date('Y-m-d H:i:s'));
         return $date->format($returnFormat);
     }
-    public static function generateRandomString($length = 8): string
+    public static function generateRandomString($length = 32): string
     {
-        $bytes = ceil($length * 3 / 4);
-        try {
-            $randomBytes = random_bytes($bytes);
-            $base64String = base64_encode($randomBytes);
-            // Replace base64 characters with some alphanumeric characters
-            $customBase64String = strtr($base64String, '+/=', 'ABC');
-            return substr($customBase64String, 0, $length);
-        } catch (Throwable $e) {
-            throw new Exception('Failed to generate random string: ' . $e->getMessage());
-        }
+        return Pt_Commons_MiscUtility::generateRandomString($length);
     }
 
     public static function generateRandomNumber(int $length = 8): string

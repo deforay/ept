@@ -840,7 +840,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $allowedExtensions = ['xls', 'xlsx', 'csv'];
                 $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['bulkMap']['name']);
                 $fileName = str_replace(" ", "-", $fileName);
-                $random = Common::generateRandomString(6);
+                $random = MiscUtility::generateRandomString(6);
                 $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 $fileName = "$random-$fileName";
                 if (in_array($extension, $allowedExtensions)) {
@@ -882,10 +882,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
                                     $dataManagerData = [
-                                        'first_name'        => $row['C'],
+                                        'first_name'        => MiscUtility::cleanString($row['C']),
                                         'primary_email'     => $row['D'],
                                         'secondary_email'   => $row['E'],
-                                        'mobile'            => $row['F'],
+                                        'mobile'            => MiscUtility::cleanString($row['F']),
                                         'password'          => $this->_defaultPasswordHash,
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
@@ -1704,24 +1704,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
 
             $participantData = [
-                'unique_identifier' => $sheetData[$i]['B'],
+                'unique_identifier' => MiscUtility::cleanString($sheetData[$i]['B']),
                 'individual'        => $isIndividual,
-                'first_name'        => $sheetData[$i]['D'],
-                'last_name'         => $sheetData[$i]['E'] ?? null,
-                'institute_name'    => $sheetData[$i]['F'] ?? null,
-                'department_name'   => $sheetData[$i]['G'] ?? null,
-                'address'           => $sheetData[$i]['H'] ?? null,
-                'shipping_address'  => $sheetData[$i]['I'] ?? null,
-                'district'          => $sheetData[$i]['J'] ?? null,
-                'state'             => $sheetData[$i]['K'] ?? null,
-                'region'            => $sheetData[$i]['L'] ?? null,
+                'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
+                'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']) ?? null,
+                'institute_name'    => MiscUtility::cleanString($sheetData[$i]['F']) ?? null,
+                'department_name'   => MiscUtility::cleanString($sheetData[$i]['G']) ?? null,
+                'address'           => MiscUtility::cleanString($sheetData[$i]['H']) ?? null,
+                'shipping_address'  => MiscUtility::cleanString($sheetData[$i]['I']) ?? null,
+                'district'          => MiscUtility::cleanString($sheetData[$i]['J']) ?? null,
+                'state'             => MiscUtility::cleanString($sheetData[$i]['K']) ?? null,
+                'region'            => MiscUtility::cleanString($sheetData[$i]['L']) ?? null,
                 'country'           => $countryId,
-                'zip'               => $sheetData[$i]['N'] ?? null,
-                'long'              => $sheetData[$i]['O'] ?? null,
-                'lat'               => $sheetData[$i]['P'] ?? null,
-                'mobile'            => $sheetData[$i]['Q'] ?? null,
+                'zip'               => MiscUtility::cleanString($sheetData[$i]['N']) ?? null,
+                'long'              => MiscUtility::cleanString($sheetData[$i]['O']) ?? null,
+                'lat'               => MiscUtility::cleanString($sheetData[$i]['P']) ?? null,
+                'mobile'            => MiscUtility::cleanString($sheetData[$i]['Q']) ?? null,
                 'email'             => $originalEmail,
-                'additional_email'  => $sheetData[$i]['T'] ?? null,
+                'additional_email'  => MiscUtility::cleanString($sheetData[$i]['T']) ?? null,
                 'force_profile_updation' => 0,
                 'created_by'        => $authNameSpace->admin_id,
                 'created_on'        => new Zend_Db_Expr('now()'),
@@ -1729,11 +1729,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ];
 
             $dataManagerData = [
-                'first_name'        => ($sheetData[$i]['D']),
-                'last_name'         => ($sheetData[$i]['E']),
-                'institute'         => ($sheetData[$i]['F']),
-                'mobile'            => ($sheetData[$i]['O']),
-                'secondary_email'   => ($sheetData[$i]['T']),
+                'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
+                'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']),
+                'institute'         => MiscUtility::cleanString($sheetData[$i]['F']),
+                'mobile'            => MiscUtility::cleanString($sheetData[$i]['O']),
+                'secondary_email'   => MiscUtility::cleanString($sheetData[$i]['T']),
                 'primary_email'     => $originalEmail,
                 'force_password_reset' => 1,
                 'created_by'        => $authNameSpace->admin_id,
@@ -1802,7 +1802,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 try {
                     $db->update('participant', $participantData, ' unique_identifier like "' . $participantRow['unique_identifier'] . '"');
                     $db->commit();
-                    $lastInsertedId = $participantRow['part icipant_id'];
+                    $lastInsertedId = $participantRow['participant_id'];
                 } catch (Exception $e) {
                     // If any of the queries failed and threw an exception,
                     // we want to roll back the whole transaction, reversing
@@ -1860,7 +1860,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             if ($participantId > 0 && is_numeric($participantId)) {
                 $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('mapCount' => new Zend_Db_Expr("COUNT(pmm.dm_id)"), "pmm.dm_id"))
-                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                     ->where("pmm.participant_id", $participantId)
                     ->group("pmm.participant_id");
                 $pmmCheck = $this->getAdapter()->fetchRow($sQuery);
@@ -1872,9 +1872,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $id = $db->delete("data_manager", array("dm_id" => $pmmCheck['dm_id']));
                     }
                 }
-                $partcipant = $this->fetchRow(array("participant_id = " . $participantId));
-                $id = $db->delete("enrollments", array("participant_id = " . $participantId));
-                $id = $db->delete("participant", array("participant_id = " . $participantId));
+                $partcipant = $this->fetchRow(["participant_id = $participantId"]);
+                $id = $db->delete("enrollments", ["participant_id = $participantId"]);
+                $id = $db->delete("participant", ["participant_id = $participantId"]);
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=1");
                 if ($participantId > 0) {
                     $auditDb = new Application_Model_DbTable_AuditLog();
@@ -1896,7 +1896,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array(new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result');
+        $aColumns = [new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result'];
 
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {

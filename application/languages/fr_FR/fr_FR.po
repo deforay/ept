@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-05-09 13:13+0530\n"
-"PO-Revision-Date: 2025-05-09 13:14+0530\n"
+"POT-Creation-Date: 2025-05-22 15:47+0530\n"
+"PO-Revision-Date: 2025-05-22 15:47+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -40,20 +40,20 @@ msgstr "Insatisfaisant"
 msgid "Excluded from evaluation"
 msgstr "Exclus de l'évaluation"
 
-#: application/services/Common.php:1211
+#: application/services/Common.php:1202
 msgid "Password must contain letters, numbers, and symbols"
 msgstr ""
 "Le mot de passe doit contenir des lettres, des chiffres et des symboles"
 
-#: application/services/Common.php:1216
+#: application/services/Common.php:1207
 msgid "Password must contain both letters and numbers."
 msgstr "Le mot de passe doit contenir des lettres et des chiffres."
 
-#: application/services/Common.php:1225
+#: application/services/Common.php:1216
 msgid "Password must not contain any part of your name."
 msgstr "Le mot de passe ne doit contenir aucune partie de votre nom."
 
-#: application/services/Common.php:1235
+#: application/services/Common.php:1226
 msgid "Password must not contain any part of your email."
 msgstr ""
 "Le mot de passe ne doit contenir aucune partie de votre adresse électronique."
@@ -746,7 +746,7 @@ msgstr "État"
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/enrollments/add.phtml:63
 #: application/modules/admin/views/scripts/participants/add.phtml:83
-#: application/modules/admin/views/scripts/participants/edit.phtml:79
+#: application/modules/admin/views/scripts/participants/edit.phtml:85
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:64
 #: application/views/scripts/participant/add-participant.phtml:76
 #: application/views/scripts/participant/add.phtml:47
@@ -908,7 +908,7 @@ msgstr "Créé le"
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:78
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:18
 #: application/modules/admin/views/scripts/participants/add.phtml:242
-#: application/modules/admin/views/scripts/participants/edit.phtml:279
+#: application/modules/admin/views/scripts/participants/edit.phtml:284
 #: application/modules/admin/views/scripts/participants/index.phtml:25
 #: application/modules/admin/views/scripts/participants/index.phtml:65
 #: application/modules/admin/views/scripts/participants/pending.phtml:18
@@ -1223,11 +1223,11 @@ msgstr "Statut du gène"
 #: application/modules/admin/views/scripts/participants/add.phtml:132
 #: application/modules/admin/views/scripts/participants/add.phtml:210
 #: application/modules/admin/views/scripts/participants/add.phtml:224
-#: application/modules/admin/views/scripts/participants/edit.phtml:129
-#: application/modules/admin/views/scripts/participants/edit.phtml:140
-#: application/modules/admin/views/scripts/participants/edit.phtml:229
-#: application/modules/admin/views/scripts/participants/edit.phtml:244
-#: application/modules/admin/views/scripts/participants/edit.phtml:282
+#: application/modules/admin/views/scripts/participants/edit.phtml:135
+#: application/modules/admin/views/scripts/participants/edit.phtml:146
+#: application/modules/admin/views/scripts/participants/edit.phtml:234
+#: application/modules/admin/views/scripts/participants/edit.phtml:249
+#: application/modules/admin/views/scripts/participants/edit.phtml:287
 #: application/modules/admin/views/scripts/report-config/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:36
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:46
@@ -1446,11 +1446,11 @@ msgstr "Statut du gène"
 #: application/views/scripts/recency/response.phtml:287
 #: application/views/scripts/recency/response.phtml:353
 #: application/views/scripts/recency/response.phtml:390
-#: application/views/scripts/tb/assay-formats.ajax.phtml:455
-#: application/views/scripts/tb/assay-formats.ajax.phtml:551
-#: application/views/scripts/tb/assay-formats.ajax.phtml:660
-#: application/views/scripts/tb/assay-formats.ajax.phtml:685
-#: application/views/scripts/tb/assay-formats.ajax.phtml:777
+#: application/views/scripts/tb/assay-formats.ajax.phtml:460
+#: application/views/scripts/tb/assay-formats.ajax.phtml:556
+#: application/views/scripts/tb/assay-formats.ajax.phtml:665
+#: application/views/scripts/tb/assay-formats.ajax.phtml:690
+#: application/views/scripts/tb/assay-formats.ajax.phtml:782
 #: application/views/scripts/tb/response.phtml:146
 #: application/views/scripts/tb/response.phtml:178
 #: application/views/scripts/tb/response.phtml:287
@@ -1474,7 +1474,7 @@ msgstr "Sélectionner"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:79
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:82
 #: application/modules/admin/views/scripts/participants/add.phtml:246
-#: application/modules/admin/views/scripts/participants/edit.phtml:284
+#: application/modules/admin/views/scripts/participants/edit.phtml:289
 #: application/modules/admin/views/scripts/participants/index.phtml:43
 #: application/modules/admin/views/scripts/partners/edit.phtml:26
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
@@ -1497,7 +1497,7 @@ msgstr "Actif"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:80
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:83
 #: application/modules/admin/views/scripts/participants/add.phtml:247
-#: application/modules/admin/views/scripts/participants/edit.phtml:287
+#: application/modules/admin/views/scripts/participants/edit.phtml:292
 #: application/modules/admin/views/scripts/participants/index.phtml:44
 #: application/modules/admin/views/scripts/partners/edit.phtml:29
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
@@ -1765,7 +1765,7 @@ msgstr " Oui"
 #: application/modules/admin/views/scripts/global-config/index.phtml:269
 #: application/modules/admin/views/scripts/participants/add.phtml:134
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
-#: application/modules/admin/views/scripts/participants/edit.phtml:142
+#: application/modules/admin/views/scripts/participants/edit.phtml:148
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:38
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:41
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:101
@@ -1966,7 +1966,7 @@ msgstr "Veuillez saisir l'adresse e-mail principale ici"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
 #: application/modules/admin/views/scripts/login/index.phtml:138
 #: application/modules/admin/views/scripts/participants/add.phtml:157
-#: application/modules/admin/views/scripts/participants/edit.phtml:165
+#: application/modules/admin/views/scripts/participants/edit.phtml:171
 #: application/modules/admin/views/scripts/system-admins/add.phtml:24
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:31
 #: application/views/scripts/data-managers/add.phtml:14
@@ -1978,7 +1978,7 @@ msgstr "Mot de passe"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:13
 #: application/modules/admin/views/scripts/participants/add.phtml:159
-#: application/modules/admin/views/scripts/participants/edit.phtml:167
+#: application/modules/admin/views/scripts/participants/edit.phtml:173
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:33
 #: application/views/scripts/auth/new-password.phtml:36
 #: application/views/scripts/data-managers/add.phtml:16
@@ -1997,7 +1997,7 @@ msgstr "Veuillez saisir un mot de passe"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:42
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:51
 #: application/modules/admin/views/scripts/participants/add.phtml:163
-#: application/modules/admin/views/scripts/participants/edit.phtml:171
+#: application/modules/admin/views/scripts/participants/edit.phtml:177
 #: application/modules/admin/views/scripts/system-admins/add.phtml:30
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:37
 #: application/views/scripts/data-managers/add.phtml:20
@@ -2091,7 +2091,7 @@ msgstr "Veuillez entrer votre numéro de téléphone mobile/cellulaire ici"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:86
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:95
 #: application/modules/admin/views/scripts/participants/add.phtml:200
-#: application/modules/admin/views/scripts/participants/edit.phtml:220
+#: application/modules/admin/views/scripts/participants/edit.phtml:225
 #: application/views/scripts/data-managers/add.phtml:46
 #: application/views/scripts/data-managers/edit.phtml:53
 #: application/views/scripts/participant/add-participant.phtml:175
@@ -2142,7 +2142,7 @@ msgstr "Accès au QC"
 #: application/modules/admin/views/scripts/global-config/index.phtml:268
 #: application/modules/admin/views/scripts/participants/add.phtml:133
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:32
-#: application/modules/admin/views/scripts/participants/edit.phtml:141
+#: application/modules/admin/views/scripts/participants/edit.phtml:147
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:37
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:40
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:100
@@ -2328,7 +2328,7 @@ msgstr "Veuillez sélectionner le statut de l'utilisateur ici"
 #: application/modules/admin/views/scripts/enrollments/add.phtml:23
 #: application/modules/admin/views/scripts/enrollments/index.phtml:38
 #: application/modules/admin/views/scripts/participants/add.phtml:54
-#: application/modules/admin/views/scripts/participants/edit.phtml:57
+#: application/modules/admin/views/scripts/participants/edit.phtml:63
 #: application/modules/admin/views/scripts/participants/index.phtml:22
 #: application/modules/admin/views/scripts/participants/index.phtml:60
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:38
@@ -2376,7 +2376,7 @@ msgstr "Sélectionnez un pays"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:159
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:168
 #: application/modules/admin/views/scripts/participants/add.phtml:75
-#: application/modules/admin/views/scripts/participants/edit.phtml:69
+#: application/modules/admin/views/scripts/participants/edit.phtml:75
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:51
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:78
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:105
@@ -2389,7 +2389,7 @@ msgstr "État/Province"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:165
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:180
 #: application/modules/admin/views/scripts/participants/add.phtml:79
-#: application/modules/admin/views/scripts/participants/edit.phtml:74
+#: application/modules/admin/views/scripts/participants/edit.phtml:80
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:52
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:79
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:106
@@ -2551,8 +2551,8 @@ msgstr "Ajouter un nouveau CCPT"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:31
 #: application/modules/admin/views/scripts/participants/add.phtml:28
 #: application/modules/admin/views/scripts/participants/add.phtml:343
-#: application/modules/admin/views/scripts/participants/edit.phtml:30
-#: application/modules/admin/views/scripts/participants/edit.phtml:383
+#: application/modules/admin/views/scripts/participants/edit.phtml:36
+#: application/modules/admin/views/scripts/participants/edit.phtml:391
 #: application/modules/admin/views/scripts/system-admins/add.phtml:6
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:12
 #: application/modules/admin/views/scripts/system-admins/index.phtml:10
@@ -2568,7 +2568,7 @@ msgstr "Prénom"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:32
 #: application/modules/admin/views/scripts/participants/add.phtml:34
-#: application/modules/admin/views/scripts/participants/edit.phtml:37
+#: application/modules/admin/views/scripts/participants/edit.phtml:43
 #: application/modules/admin/views/scripts/system-admins/add.phtml:11
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:18
 #: application/modules/admin/views/scripts/system-admins/index.phtml:11
@@ -3225,7 +3225,7 @@ msgstr "Afficher les filtres avancés"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:33
 #: application/modules/admin/views/scripts/participants/add.phtml:68
-#: application/modules/admin/views/scripts/participants/edit.phtml:84
+#: application/modules/admin/views/scripts/participants/edit.phtml:90
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:34
 #: application/modules/reports/views/scripts/detailed/index.phtml:52
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:147
@@ -3250,7 +3250,7 @@ msgstr "Réseau"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:84
 #: application/modules/admin/views/scripts/participants/add.phtml:220
-#: application/modules/admin/views/scripts/participants/edit.phtml:240
+#: application/modules/admin/views/scripts/participants/edit.phtml:245
 #: application/modules/admin/views/scripts/participants/index.phtml:63
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:101
 #: application/modules/admin/views/scripts/participants/pending.phtml:16
@@ -3365,7 +3365,7 @@ msgstr "Unique"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:36
 #: application/modules/admin/views/scripts/participants/add.phtml:20
-#: application/modules/admin/views/scripts/participants/edit.phtml:21
+#: application/modules/admin/views/scripts/participants/edit.phtml:27
 #: application/modules/admin/views/scripts/participants/index.phtml:58
 #: application/modules/admin/views/scripts/participants/pending.phtml:11
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:6
@@ -4069,7 +4069,7 @@ msgstr "Courriel de l'administrateur"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:61
 #: application/modules/admin/views/scripts/participants/add.phtml:39
-#: application/modules/admin/views/scripts/participants/edit.phtml:42
+#: application/modules/admin/views/scripts/participants/edit.phtml:48
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:50
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:77
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:104
@@ -4739,7 +4739,7 @@ msgid "Add New Participant"
 msgstr "Ajouter un nouveau participant"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:16
-#: application/modules/admin/views/scripts/participants/edit.phtml:16
+#: application/modules/admin/views/scripts/participants/edit.phtml:22
 #: application/views/scripts/participant/add-participant.phtml:12
 #: application/views/scripts/participant/add.phtml:18
 #: application/views/scripts/participant/edit-participant.phtml:15
@@ -4760,7 +4760,7 @@ msgid "Please enter the Institute Name here"
 msgstr "Veuillez saisir le nom de l'institut ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:44
-#: application/modules/admin/views/scripts/participants/edit.phtml:47
+#: application/modules/admin/views/scripts/participants/edit.phtml:53
 #: application/views/scripts/participant/add-participant.phtml:40
 #: application/views/scripts/participant/add.phtml:39
 #: application/views/scripts/participant/edit-participant.phtml:44
@@ -4773,7 +4773,7 @@ msgid "Please enter the Department Name here"
 msgstr "Veuillez saisir le nom du département ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:49
-#: application/modules/admin/views/scripts/participants/edit.phtml:52
+#: application/modules/admin/views/scripts/participants/edit.phtml:58
 #: application/views/scripts/participant/add-participant.phtml:45
 #: application/views/scripts/participant/add.phtml:43
 #: application/views/scripts/participant/edit-participant.phtml:49
@@ -4802,7 +4802,7 @@ msgid "Please enter the city here"
 msgstr "Veuillez entrer la ville ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:88
-#: application/modules/admin/views/scripts/participants/edit.phtml:91
+#: application/modules/admin/views/scripts/participants/edit.phtml:97
 #: application/views/scripts/participant/add-participant.phtml:81
 #: application/views/scripts/participant/add.phtml:77
 #: application/views/scripts/participant/edit-participant.phtml:88
@@ -4815,7 +4815,7 @@ msgid "Please enter the latitude here"
 msgstr "Veuillez entrer la latitude ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:94
-#: application/modules/admin/views/scripts/participants/edit.phtml:97
+#: application/modules/admin/views/scripts/participants/edit.phtml:103
 #: application/views/scripts/participant/add-participant.phtml:87
 #: application/views/scripts/participant/add.phtml:72
 #: application/views/scripts/participant/edit-participant.phtml:94
@@ -4828,7 +4828,7 @@ msgid "Please enter the longitude here"
 msgstr "Veuillez entrer la longitude ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:98
-#: application/modules/admin/views/scripts/participants/edit.phtml:102
+#: application/modules/admin/views/scripts/participants/edit.phtml:108
 #: application/views/scripts/participant/add-participant.phtml:91
 #: application/views/scripts/participant/add.phtml:85
 #: application/views/scripts/participant/edit-participant.phtml:99
@@ -4841,7 +4841,7 @@ msgid "Please enter the funding source here"
 msgstr "Veuillez indiquer ici la source de financement"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:102
-#: application/modules/admin/views/scripts/participants/edit.phtml:107
+#: application/modules/admin/views/scripts/participants/edit.phtml:113
 #: application/views/scripts/participant/add-participant.phtml:95
 #: application/views/scripts/participant/add.phtml:90
 #: application/views/scripts/participant/edit-participant.phtml:104
@@ -4854,7 +4854,7 @@ msgid "Please enter the testing volume here"
 msgstr "Veuillez indiquer ici le volume de l'essai"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:108
-#: application/modules/admin/views/scripts/participants/edit.phtml:114
+#: application/modules/admin/views/scripts/participants/edit.phtml:120
 #: application/modules/reports/views/scripts/detailed/index.phtml:53
 #: application/modules/reports/views/scripts/testkit/index.phtml:56
 #: application/views/scripts/participant/add-participant.phtml:101
@@ -4866,7 +4866,7 @@ msgid "Enrolled Programs"
 msgstr "Programmes inscrits"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:118
-#: application/modules/admin/views/scripts/participants/edit.phtml:126
+#: application/modules/admin/views/scripts/participants/edit.phtml:132
 #: application/views/scripts/participant/add-participant.phtml:111
 #: application/views/scripts/participant/add.phtml:107
 #: application/views/scripts/participant/edit-participant.phtml:130
@@ -4875,19 +4875,19 @@ msgid "Site Type/Testing Point"
 msgstr "Type de site/point d'essai"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:129
-#: application/modules/admin/views/scripts/participants/edit.phtml:137
+#: application/modules/admin/views/scripts/participants/edit.phtml:143
 #: application/views/scripts/participant/add-participant.phtml:122
 #: application/views/scripts/participant/edit-participant.phtml:144
 msgid "ANC"
 msgstr "ANC"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:139
-#: application/modules/admin/views/scripts/participants/edit.phtml:147
+#: application/modules/admin/views/scripts/participants/edit.phtml:153
 msgid "PEPFAR ID"
 msgstr "PEPFAR ID"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:147
-#: application/modules/admin/views/scripts/participants/edit.phtml:155
+#: application/modules/admin/views/scripts/participants/edit.phtml:161
 #: application/views/scripts/participant/add-participant.phtml:143
 #: application/views/scripts/participant/edit-participant.phtml:185
 msgid "Contact Name"
@@ -4898,7 +4898,7 @@ msgid "Please enter the contact name here"
 msgstr "Veuillez saisir le nom du contact ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:152
-#: application/modules/admin/views/scripts/participants/edit.phtml:160
+#: application/modules/admin/views/scripts/participants/edit.phtml:166
 #: application/views/scripts/participant/add-participant.phtml:148
 #: application/views/scripts/participant/edit-participant.phtml:190
 msgid "E-mail"
@@ -4909,7 +4909,7 @@ msgid "Please enter the email id here"
 msgstr "Veuillez saisir l'identifiant de l'email ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:170
-#: application/modules/admin/views/scripts/participants/edit.phtml:178
+#: application/modules/admin/views/scripts/participants/edit.phtml:184
 #: application/views/scripts/participant/add-participant.phtml:134
 #: application/views/scripts/participant/edit-participant.phtml:159
 msgid "PT Participant Login"
@@ -4920,7 +4920,7 @@ msgid "Please choose one or more PT Participant Logins"
 msgstr "Veuillez choisir un ou plusieurs logins pour les participants au PT"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:180
-#: application/modules/admin/views/scripts/participants/edit.phtml:205
+#: application/modules/admin/views/scripts/participants/edit.phtml:210
 #: application/views/scripts/participant/add-participant.phtml:155
 #: application/views/scripts/participant/add.phtml:133
 #: application/views/scripts/participant/edit-participant.phtml:197
@@ -4933,7 +4933,7 @@ msgid "Please enter the Shipping Address here"
 msgstr "Veuillez saisir l'adresse de livraison ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:185
-#: application/modules/admin/views/scripts/participants/edit.phtml:210
+#: application/modules/admin/views/scripts/participants/edit.phtml:215
 #: application/views/scripts/participant/add-participant.phtml:160
 #: application/views/scripts/participant/edit-participant.phtml:202
 msgid "Zip/Postal Code (if applicable)"
@@ -4944,14 +4944,14 @@ msgid "Please enter the Zip/Postal here"
 msgstr "Veuillez entrer le code postal ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:192
-#: application/modules/admin/views/scripts/participants/edit.phtml:215
+#: application/modules/admin/views/scripts/participants/edit.phtml:220
 #: application/views/scripts/participant/add-participant.phtml:167
 #: application/views/scripts/participant/edit-participant.phtml:207
 msgid "Cell/Mobile No."
 msgstr "Numéro de téléphone portable."
 
 #: application/modules/admin/views/scripts/participants/add.phtml:207
-#: application/modules/admin/views/scripts/participants/edit.phtml:225
+#: application/modules/admin/views/scripts/participants/edit.phtml:230
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:90
 #: application/modules/reports/views/scripts/detailed/index.phtml:50
 #: application/modules/reports/views/scripts/testkit/index.phtml:53
@@ -4962,7 +4962,7 @@ msgid "Network Tier"
 msgstr "Niveau du réseau"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:234
-#: application/modules/admin/views/scripts/participants/edit.phtml:271
+#: application/modules/admin/views/scripts/participants/edit.phtml:276
 #: application/views/scripts/participant/add-participant.phtml:209
 #: application/views/scripts/participant/edit-participant.phtml:263
 msgid "Additional E-mail"
@@ -4973,7 +4973,7 @@ msgid "Please enter the additional email id here"
 msgstr "Veuillez saisir l'adresse électronique supplémentaire ici"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:237
-#: application/modules/admin/views/scripts/participants/edit.phtml:274
+#: application/modules/admin/views/scripts/participants/edit.phtml:279
 #: application/views/scripts/participant/add-participant.phtml:212
 #: application/views/scripts/participant/edit-participant.phtml:266
 msgid "(Please enter comma separated mutiple email)"
@@ -4982,8 +4982,8 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/participants/add.phtml:303
 #: application/modules/admin/views/scripts/participants/add.phtml:347
-#: application/modules/admin/views/scripts/participants/edit.phtml:386
-#: application/modules/admin/views/scripts/participants/edit.phtml:397
+#: application/modules/admin/views/scripts/participants/edit.phtml:396
+#: application/modules/admin/views/scripts/participants/edit.phtml:407
 #: application/views/scripts/participant/add-participant.phtml:280
 #: application/views/scripts/participant/add-participant.phtml:323
 #: application/views/scripts/participant/edit-participant.phtml:377
@@ -5045,12 +5045,12 @@ msgstr ""
 "Si le participant est un laboratoire ou une clinique, indiquez le nom du "
 "laboratoire ou de la clinique à la place du \"prénom\""
 
-#: application/modules/admin/views/scripts/participants/edit.phtml:11
+#: application/modules/admin/views/scripts/participants/edit.phtml:17
 #: application/views/scripts/participant/edit-participant.phtml:10
 msgid "Edit Participant"
 msgstr "Modifier le participant"
 
-#: application/modules/admin/views/scripts/participants/edit.phtml:255
+#: application/modules/admin/views/scripts/participants/edit.phtml:260
 #: application/views/scripts/participant/add.phtml:162
 #: application/views/scripts/participant/edit-participant.phtml:247
 msgid "Schemes"
@@ -5978,7 +5978,7 @@ msgstr "MTB/Rif"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:176
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:304
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:354
-#: application/views/scripts/tb/assay-formats.ajax.phtml:756
+#: application/views/scripts/tb/assay-formats.ajax.phtml:761
 msgid "Rif Resistance"
 msgstr "Résistance du Rif"
 
@@ -7388,7 +7388,7 @@ msgstr "Date de réhydratation de l'échantillon"
 #: application/views/scripts/recency/response.phtml:149
 #: application/views/scripts/recency/response.phtml:165
 #: application/views/scripts/recency/response.phtml:220
-#: application/views/scripts/tb/assay-formats.ajax.phtml:742
+#: application/views/scripts/tb/assay-formats.ajax.phtml:747
 #: application/views/scripts/tb/response.phtml:171
 #: application/views/scripts/tb/response.phtml:202
 #: application/views/scripts/tb/response.phtml:224
@@ -7436,8 +7436,8 @@ msgstr "QC Fait"
 #: application/views/scripts/participant/report.phtml:63
 #: application/views/scripts/participant/schemeinfo.phtml:8
 #: application/views/scripts/recency/response.phtml:162
-#: application/views/scripts/tb/assay-formats.ajax.phtml:403
-#: application/views/scripts/tb/assay-formats.ajax.phtml:608
+#: application/views/scripts/tb/assay-formats.ajax.phtml:408
+#: application/views/scripts/tb/assay-formats.ajax.phtml:613
 #: application/views/scripts/tb/response.phtml:221
 #: application/views/scripts/vl/response.phtml:283
 msgid "Response Date"
@@ -8010,19 +8010,19 @@ msgid "Invalid/Error"
 msgstr "Invalide/Erreur"
 
 #: application/views/scripts/generic-test/response.phtml:203
-#: application/views/scripts/tb/assay-formats.ajax.phtml:62
-#: application/views/scripts/tb/assay-formats.ajax.phtml:174
-#: application/views/scripts/tb/assay-formats.ajax.phtml:432
-#: application/views/scripts/tb/assay-formats.ajax.phtml:531
-#: application/views/scripts/tb/assay-formats.ajax.phtml:637
-#: application/views/scripts/tb/assay-formats.ajax.phtml:816
+#: application/views/scripts/tb/assay-formats.ajax.phtml:67
+#: application/views/scripts/tb/assay-formats.ajax.phtml:179
+#: application/views/scripts/tb/assay-formats.ajax.phtml:437
+#: application/views/scripts/tb/assay-formats.ajax.phtml:536
+#: application/views/scripts/tb/assay-formats.ajax.phtml:642
+#: application/views/scripts/tb/assay-formats.ajax.phtml:821
 #: application/views/scripts/vl/response.phtml:378
 msgid "Error Code"
 msgstr "Code d'Erreur"
 
 #: application/views/scripts/generic-test/response.phtml:240
-#: application/views/scripts/tb/assay-formats.ajax.phtml:457
-#: application/views/scripts/tb/assay-formats.ajax.phtml:662
+#: application/views/scripts/tb/assay-formats.ajax.phtml:462
+#: application/views/scripts/tb/assay-formats.ajax.phtml:667
 #: application/views/scripts/vl/response.phtml:434
 msgid "Invalid"
 msgstr "Invalide"
@@ -8717,46 +8717,46 @@ msgstr "Télécharger le formulaire d'expédition"
 msgid "Submission Due Date"
 msgstr "Date limite de soumission"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:37
-#: application/views/scripts/tb/assay-formats.ajax.phtml:149
+#: application/views/scripts/tb/assay-formats.ajax.phtml:42
+#: application/views/scripts/tb/assay-formats.ajax.phtml:154
 msgid "Cycle Threshold Values"
 msgstr "Valeurs seuils du cycle"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:41
-#: application/views/scripts/tb/assay-formats.ajax.phtml:153
-#: application/views/scripts/tb/assay-formats.ajax.phtml:421
-#: application/views/scripts/tb/assay-formats.ajax.phtml:626
-#: application/views/scripts/tb/assay-formats.ajax.phtml:803
+#: application/views/scripts/tb/assay-formats.ajax.phtml:46
+#: application/views/scripts/tb/assay-formats.ajax.phtml:158
+#: application/views/scripts/tb/assay-formats.ajax.phtml:426
+#: application/views/scripts/tb/assay-formats.ajax.phtml:631
+#: application/views/scripts/tb/assay-formats.ajax.phtml:808
 msgid "PT Sample"
 msgstr "Échantillon de PT"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:52
+#: application/views/scripts/tb/assay-formats.ajax.phtml:57
 msgid "Probe D"
 msgstr "Sonde D"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:53
+#: application/views/scripts/tb/assay-formats.ajax.phtml:58
 msgid "Probe C"
 msgstr "Sonde C"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:54
+#: application/views/scripts/tb/assay-formats.ajax.phtml:59
 msgid "Probe E "
 msgstr "Sonde E "
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:55
+#: application/views/scripts/tb/assay-formats.ajax.phtml:60
 msgid "Probe B"
 msgstr "Sonde B"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:56
-#: application/views/scripts/tb/assay-formats.ajax.phtml:164
+#: application/views/scripts/tb/assay-formats.ajax.phtml:61
+#: application/views/scripts/tb/assay-formats.ajax.phtml:169
 msgid "SPC"
 msgstr "SPC"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:57
+#: application/views/scripts/tb/assay-formats.ajax.phtml:62
 msgid "Probe A"
 msgstr "Sonde A"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:58
-#: application/views/scripts/tb/assay-formats.ajax.phtml:170
+#: application/views/scripts/tb/assay-formats.ajax.phtml:63
+#: application/views/scripts/tb/assay-formats.ajax.phtml:175
 #: application/views/scripts/tb/response.phtml:211
 #: application/views/scripts/vl/response.phtml:218
 #: application/views/scripts/vl/response.phtml:245
@@ -8764,207 +8764,207 @@ msgstr "Sonde A"
 msgid "Instrument Serial Number"
 msgstr "Numéro de série de l'instrument"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:59
-#: application/views/scripts/tb/assay-formats.ajax.phtml:171
+#: application/views/scripts/tb/assay-formats.ajax.phtml:64
+#: application/views/scripts/tb/assay-formats.ajax.phtml:176
 msgid "Xpert Module Number"
 msgstr "Numéro du module Xpert"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:60
-#: application/views/scripts/tb/assay-formats.ajax.phtml:172
-#: application/views/scripts/tb/assay-formats.ajax.phtml:430
-#: application/views/scripts/tb/assay-formats.ajax.phtml:529
-#: application/views/scripts/tb/assay-formats.ajax.phtml:635
-#: application/views/scripts/tb/assay-formats.ajax.phtml:814
+#: application/views/scripts/tb/assay-formats.ajax.phtml:65
+#: application/views/scripts/tb/assay-formats.ajax.phtml:177
+#: application/views/scripts/tb/assay-formats.ajax.phtml:435
+#: application/views/scripts/tb/assay-formats.ajax.phtml:534
+#: application/views/scripts/tb/assay-formats.ajax.phtml:640
+#: application/views/scripts/tb/assay-formats.ajax.phtml:819
 msgid "Test Date"
 msgstr "Date de l’examen"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:61
-#: application/views/scripts/tb/assay-formats.ajax.phtml:173
-#: application/views/scripts/tb/assay-formats.ajax.phtml:425
-#: application/views/scripts/tb/assay-formats.ajax.phtml:431
-#: application/views/scripts/tb/assay-formats.ajax.phtml:522
-#: application/views/scripts/tb/assay-formats.ajax.phtml:530
-#: application/views/scripts/tb/assay-formats.ajax.phtml:630
-#: application/views/scripts/tb/assay-formats.ajax.phtml:636
-#: application/views/scripts/tb/assay-formats.ajax.phtml:754
-#: application/views/scripts/tb/assay-formats.ajax.phtml:815
+#: application/views/scripts/tb/assay-formats.ajax.phtml:66
+#: application/views/scripts/tb/assay-formats.ajax.phtml:178
+#: application/views/scripts/tb/assay-formats.ajax.phtml:430
+#: application/views/scripts/tb/assay-formats.ajax.phtml:436
+#: application/views/scripts/tb/assay-formats.ajax.phtml:527
+#: application/views/scripts/tb/assay-formats.ajax.phtml:535
+#: application/views/scripts/tb/assay-formats.ajax.phtml:635
+#: application/views/scripts/tb/assay-formats.ajax.phtml:641
+#: application/views/scripts/tb/assay-formats.ajax.phtml:759
+#: application/views/scripts/tb/assay-formats.ajax.phtml:820
 msgid "Tester Name"
 msgstr "Nom du testeur"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:165
+#: application/views/scripts/tb/assay-formats.ajax.phtml:170
 msgid "IS1081-IS6110"
 msgstr "IS1081-IS6110"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:166
+#: application/views/scripts/tb/assay-formats.ajax.phtml:171
 msgid "rpoB1"
 msgstr "rpoB1"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:167
+#: application/views/scripts/tb/assay-formats.ajax.phtml:172
 msgid "rpoB2"
 msgstr "rpoB2"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:168
+#: application/views/scripts/tb/assay-formats.ajax.phtml:173
 msgid "rpoB3"
 msgstr "rpoB3"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:169
+#: application/views/scripts/tb/assay-formats.ajax.phtml:174
 msgid "rpoB4"
 msgstr "rpoB4"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:241
+#: application/views/scripts/tb/assay-formats.ajax.phtml:246
 msgid "-- Select --"
 msgstr "-- Sélectionner --"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:382
-#: application/views/scripts/tb/assay-formats.ajax.phtml:587
+#: application/views/scripts/tb/assay-formats.ajax.phtml:387
+#: application/views/scripts/tb/assay-formats.ajax.phtml:592
 msgid "Truenat prep Auto cartridge Lot Number"
 msgstr "Truenat prep Auto cartridge Numéro de lot"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:386
-#: application/views/scripts/tb/assay-formats.ajax.phtml:591
+#: application/views/scripts/tb/assay-formats.ajax.phtml:391
+#: application/views/scripts/tb/assay-formats.ajax.phtml:596
 msgid "Expiration"
 msgstr "Expiration"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:393
-#: application/views/scripts/tb/assay-formats.ajax.phtml:598
+#: application/views/scripts/tb/assay-formats.ajax.phtml:398
+#: application/views/scripts/tb/assay-formats.ajax.phtml:603
 msgid "Truenat MTB chip Lot No"
 msgstr "Truenat MTB chip Lot No"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:417
-#: application/views/scripts/tb/assay-formats.ajax.phtml:622
+#: application/views/scripts/tb/assay-formats.ajax.phtml:422
+#: application/views/scripts/tb/assay-formats.ajax.phtml:627
 msgid "DNA Extraction"
 msgstr "Extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:418
-#: application/views/scripts/tb/assay-formats.ajax.phtml:623
+#: application/views/scripts/tb/assay-formats.ajax.phtml:423
+#: application/views/scripts/tb/assay-formats.ajax.phtml:628
 msgid "MTB Detection Results"
 msgstr "Résultats de la détection de MTB"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:422
-#: application/views/scripts/tb/assay-formats.ajax.phtml:627
+#: application/views/scripts/tb/assay-formats.ajax.phtml:427
+#: application/views/scripts/tb/assay-formats.ajax.phtml:632
 msgid "DNA Extraction Date"
 msgstr "Date d'extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:423
-#: application/views/scripts/tb/assay-formats.ajax.phtml:628
+#: application/views/scripts/tb/assay-formats.ajax.phtml:428
+#: application/views/scripts/tb/assay-formats.ajax.phtml:633
 msgid "DNA Extraction Status"
 msgstr "Statut de l'extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:424
-#: application/views/scripts/tb/assay-formats.ajax.phtml:629
+#: application/views/scripts/tb/assay-formats.ajax.phtml:429
+#: application/views/scripts/tb/assay-formats.ajax.phtml:634
 msgid "Molbio Truenat TB Test Date"
 msgstr "Molbio Truenat TB Test Date"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:426
-#: application/views/scripts/tb/assay-formats.ajax.phtml:631
+#: application/views/scripts/tb/assay-formats.ajax.phtml:431
+#: application/views/scripts/tb/assay-formats.ajax.phtml:636
 msgid "Mycobacterium tuberculosis complex (MTBC) Detected"
 msgstr "Détection du complexe Mycobacterium tuberculosis (MTBC)"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:427
-#: application/views/scripts/tb/assay-formats.ajax.phtml:528
-#: application/views/scripts/tb/assay-formats.ajax.phtml:632
-#: application/views/scripts/tb/assay-formats.ajax.phtml:760
+#: application/views/scripts/tb/assay-formats.ajax.phtml:432
+#: application/views/scripts/tb/assay-formats.ajax.phtml:533
+#: application/views/scripts/tb/assay-formats.ajax.phtml:637
+#: application/views/scripts/tb/assay-formats.ajax.phtml:765
 msgid "Control Ct"
 msgstr "Contrôle Ct"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:428
-#: application/views/scripts/tb/assay-formats.ajax.phtml:633
+#: application/views/scripts/tb/assay-formats.ajax.phtml:433
+#: application/views/scripts/tb/assay-formats.ajax.phtml:638
 msgid "MTB Ct"
 msgstr "MTB Ct"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:429
+#: application/views/scripts/tb/assay-formats.ajax.phtml:434
 msgid "CFU/mL"
 msgstr "CFU/mL"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:456
-#: application/views/scripts/tb/assay-formats.ajax.phtml:661
+#: application/views/scripts/tb/assay-formats.ajax.phtml:461
+#: application/views/scripts/tb/assay-formats.ajax.phtml:666
 msgid "Valid"
 msgstr "Valide"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:502
-#: application/views/scripts/tb/assay-formats.ajax.phtml:735
+#: application/views/scripts/tb/assay-formats.ajax.phtml:507
+#: application/views/scripts/tb/assay-formats.ajax.phtml:740
 #: application/views/scripts/vl/response.phtml:229
 #: application/views/scripts/vl/response.phtml:256
 msgid "Assay Lot"
 msgstr "Numéro du lot d'essai"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:506
-#: application/views/scripts/tb/assay-formats.ajax.phtml:739
+#: application/views/scripts/tb/assay-formats.ajax.phtml:511
+#: application/views/scripts/tb/assay-formats.ajax.phtml:744
 msgid "Assay Expiration:"
 msgstr "Expiration de l'essai :"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:517
-#: application/views/scripts/tb/assay-formats.ajax.phtml:750
+#: application/views/scripts/tb/assay-formats.ajax.phtml:522
+#: application/views/scripts/tb/assay-formats.ajax.phtml:755
 msgid "Rif Dx Results"
 msgstr "Résultats de la Dx Rif"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:520
+#: application/views/scripts/tb/assay-formats.ajax.phtml:525
 msgid "PT Samples"
 msgstr "Échantillons PT"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:521
-#: application/views/scripts/tb/assay-formats.ajax.phtml:753
+#: application/views/scripts/tb/assay-formats.ajax.phtml:526
+#: application/views/scripts/tb/assay-formats.ajax.phtml:758
 msgid "Rif Dx Test Date"
 msgstr "Rif Dx Test Date"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:524
+#: application/views/scripts/tb/assay-formats.ajax.phtml:529
 msgid "RIF Resistance"
 msgstr "Résistance au FRR"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:526
-#: application/views/scripts/tb/assay-formats.ajax.phtml:758
+#: application/views/scripts/tb/assay-formats.ajax.phtml:531
+#: application/views/scripts/tb/assay-formats.ajax.phtml:763
 msgid "P2"
 msgstr "P2"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:527
-#: application/views/scripts/tb/assay-formats.ajax.phtml:759
+#: application/views/scripts/tb/assay-formats.ajax.phtml:532
+#: application/views/scripts/tb/assay-formats.ajax.phtml:764
 msgid "P1"
 msgstr "P1"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:553
-#: application/views/scripts/tb/assay-formats.ajax.phtml:779
+#: application/views/scripts/tb/assay-formats.ajax.phtml:558
+#: application/views/scripts/tb/assay-formats.ajax.phtml:784
 msgid "Detected"
 msgstr "Détecté"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:554
-#: application/views/scripts/tb/assay-formats.ajax.phtml:780
+#: application/views/scripts/tb/assay-formats.ajax.phtml:559
+#: application/views/scripts/tb/assay-formats.ajax.phtml:785
 msgid "Not Detected"
 msgstr "Non détecté"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:555
-#: application/views/scripts/tb/assay-formats.ajax.phtml:781
+#: application/views/scripts/tb/assay-formats.ajax.phtml:560
+#: application/views/scripts/tb/assay-formats.ajax.phtml:786
 msgid "Indeterminate"
 msgstr "Indéterminé"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:634
+#: application/views/scripts/tb/assay-formats.ajax.phtml:639
 msgid "Quantification"
 msgstr "Quantification"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:686
+#: application/views/scripts/tb/assay-formats.ajax.phtml:691
 msgid "High"
 msgstr "Élevé"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:687
+#: application/views/scripts/tb/assay-formats.ajax.phtml:692
 msgid "Medium"
 msgstr "Moyen"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:688
+#: application/views/scripts/tb/assay-formats.ajax.phtml:693
 msgid "Low"
 msgstr "Basse"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:689
+#: application/views/scripts/tb/assay-formats.ajax.phtml:694
 msgid "Very Low"
 msgstr "Très faible"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:852
+#: application/views/scripts/tb/assay-formats.ajax.phtml:857
 msgid "DETECTED"
 msgstr "DÉTECTÉ"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:853
+#: application/views/scripts/tb/assay-formats.ajax.phtml:858
 msgid "NOT DETECTED"
 msgstr "NON DÉTECTÉ"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:854
+#: application/views/scripts/tb/assay-formats.ajax.phtml:859
 msgid "INDETERMINATE"
 msgstr "INDÉTERMINÉ"
 

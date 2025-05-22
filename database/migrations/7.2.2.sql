@@ -347,3 +347,4 @@ MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
 
 -- Amit 05-May-202
 UPDATE `global_config` SET `name` = 'participant_feedback' WHERE `global_config`.`name` = 'feed_back_option';
+
