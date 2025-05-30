@@ -348,3 +348,46 @@ MODIFY sample_score DECIMAL(10,4) NOT NULL DEFAULT 0;
 -- Amit 05-May-202
 UPDATE `global_config` SET `name` = 'participant_feedback' WHERE `global_config`.`name` = 'feed_back_option';
 
+-- Amit 22-May-2025
+-- Clean up emails step by step
+UPDATE participant
+SET email = REGEXP_REPLACE(
+    REGEXP_REPLACE(
+        REGEXP_REPLACE(email, '[\\r\\n\\t]', ''),  -- Remove newlines, returns, tabs
+        '\\s+', ' '),                              -- Collapse multiple spaces
+    '^\\s+|\\s+$', '')                           -- Trim
+WHERE email IS NOT NULL AND email REGEXP '[\\r\\n\\t\\s]';
+
+-- Convert to lowercase
+UPDATE participant
+SET email = LOWER(email)
+WHERE email IS NOT NULL;
+
+
+-- Clean up emails step by step
+UPDATE participant
+SET additional_email = REGEXP_REPLACE(
+    REGEXP_REPLACE(
+        REGEXP_REPLACE(additional_email, '[\\r\\n\\t]', ''),  -- Remove newlines, returns, tabs
+        '\\s+', ' '),                              -- Collapse multiple spaces
+    '^\\s+|\\s+$', '')                           -- Trim
+WHERE additional_email IS NOT NULL AND additional_email REGEXP '[\\r\\n\\t\\s]';
+
+-- Convert to lowercase
+UPDATE participant
+SET additional_email = LOWER(additional_email)
+WHERE additional_email IS NOT NULL;
+
+-- Clean up emails step by step
+UPDATE data_manager
+SET primary_email = REGEXP_REPLACE(
+    REGEXP_REPLACE(
+        REGEXP_REPLACE(primary_email, '[\\r\\n\\t]', ''),  -- Remove newlines, returns, tabs
+        '\\s+', ' '),                              -- Collapse multiple spaces
+    '^\\s+|\\s+$', '')                           -- Trim
+WHERE primary_email IS NOT NULL AND primary_email REGEXP '[\\r\\n\\t\\s]';
+
+-- Convert to lowercase
+UPDATE data_manager
+SET primary_email = LOWER(primary_email)
+WHERE primary_email IS NOT NULL;

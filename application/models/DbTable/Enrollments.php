@@ -210,6 +210,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', -1);
         try {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $common = new Application_Service_Common();
             $allowedExtensions = ['xls', 'xlsx', 'csv'];
@@ -217,13 +218,13 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $fileName = str_replace(" ", "-", $fileName);
             $random = $common->generateRandomString(6);
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $fileName = $random . "-" . $fileName;
+            $fileName = "$random-$fileName";
             $tempDirectory = realpath(TEMP_UPLOAD_PATH);
             if (in_array($extension, $allowedExtensions)) {
                 if (!file_exists($tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
                     if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
 
-                        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
                         $objPHPExcel = IOFactory::load($tempDirectory . DIRECTORY_SEPARATOR . $fileName);
                         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
                         $count = count($sheetData);
@@ -237,46 +238,38 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                         }
 
                         $this->delete(implode(' AND ', $where));
+
+                        $enrollmentListId = Pt_Commons_General::generateULID();
                         for ($i = 2; $i <= $count; ++$i) {
 
                             if (empty($sheetData[$i]['A'])) {
                                 continue;
                             }
-                            $sheetA = preg_replace("/[^a-zA-Z0-9-]/", "-", $sheetData[$i]['A']);
-                            $pID = filter_var(trim($sheetA), FILTER_SANITIZE_STRING);
+                            $pID = Pt_Commons_MiscUtility::cleanString($sheetData[$i]['A']);
 
                             // Fetch participant data based on the unique identifier
                             $participantData = $db->fetchRow(
                                 $db->select()
-                                   ->from('participant', ['participant_id']) // Fetch participant_id
-                                   ->where('unique_identifier = ?', $pID)
+                                    ->from('participant', ['participant_id']) // Fetch participant_id
+                                    ->where('unique_identifier = ?', $pID)
                             );
 
                             if ($participantData) {
-                                // Generate a unique enrollment ID
-                                $enrollmentListId = Pt_Commons_General::generateULID();
-                                // $enrolledData = [
-                                //     'enrollment_id' => $enrollmentListId,
-                                //     'list_name' => $listName,
-                                //     'participant_id' => $participantData['participant_id'],
-                                //     'scheme_id' => $params['scheme'],
-                                //     'status' => 'enrolled',
-                                //     'enrolled_on' => new Zend_Db_Expr('now()')
-                                // ];
-                                // $this->insert($enrolledData);
+
 
                                 // Prepare raw SQL query for insertion with ON DUPLICATE KEY UPDATE
                                 $query = "INSERT INTO `enrollments` (`enrollment_id`, `list_name`, `participant_id`, `status`, `enrolled_on`)
-                                          VALUES (:enrollment_id, :list_name, :participant_id, :status, NOW())
-                                          ON DUPLICATE KEY UPDATE
-                                              `status` = VALUES(`status`),
-                                              `enrolled_on` = VALUES(`enrolled_on`)";
+                                            VALUES (:enrollment_id, :list_name, :participant_id, :status, NOW())
+                                                    ON DUPLICATE KEY UPDATE
+                                                        `status` = VALUES(`status`),
+                                                        `enrolled_on` = VALUES(`enrolled_on`)";
 
                                 // Bind the data
                                 $bind = [
                                     'enrollment_id' => $enrollmentListId,
                                     'list_name'     => $listName,
-                                    'participant_id'=> $participantData['participant_id'],
+                                    'scheme_id'   => $params['scheme'] ?? null,
+                                    'participant_id' => $participantData['participant_id'],
                                     'status'        => 'enrolled'
                                 ];
 
@@ -286,7 +279,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                                 // Handle missing participant case
                                 throw new Exception("Participant with unique identifier '$pID' does not exist.");
                             }
-
                         }
                         $auditDb = new Application_Model_DbTable_AuditLog();
                         $auditDb->addNewAuditLog("Bulk imported enrollment", "enrollment");

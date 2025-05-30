@@ -1,13 +1,12 @@
 <?php
 
 use Throwable;
+use Normalizer;
 use ZipArchive;
 use InvalidArgumentException;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Uid\Uuid;
-use Pt_Commons_LoggerUtility;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 final class Pt_Commons_MiscUtility
 {
@@ -37,7 +36,12 @@ final class Pt_Commons_MiscUtility
                 $input = mb_convert_encoding($input, 'UTF-8', $encoding);
             }
 
-            // Remove BOM, zero-width spaces, non-breaking space, etc.
+            // Normalize Unicode (NFC form)
+            if (class_exists('Normalizer')) {
+                $input = Normalizer::normalize($input, Normalizer::FORM_C);
+            }
+
+            // Remove basic BOM, ZWSP, NBSP
             $input = preg_replace(
                 '/[\x{200B}-\x{200D}\x{FEFF}\x{00A0}]/u',
                 '',
@@ -48,30 +52,37 @@ final class Pt_Commons_MiscUtility
         return $input;
     }
 
+
     public static function cleanString($string)
     {
-        if(empty($string)){
+        if ($string === null || $string === '') {
             return null;
         }
 
+        if (class_exists('Normalizer')) {
+            $string = Normalizer::normalize($string, Normalizer::FORM_C);
+        }
+
         // Remove common invisible Unicode characters
-        $string = preg_replace('/[\x{00A0}\x{200B}\x{FEFF}\x{202F}\x{2060}\x{00AD}]/u', '', $string ?? '');
+        $string = preg_replace('/[\x{00A0}\x{200B}\x{FEFF}\x{202F}\x{2060}\x{00AD}]/u', '', $string);
 
         // Remove ASCII control characters (0–31 and 127)
         $string = preg_replace('/[\x00-\x1F\x7F]/u', '', $string);
 
-        // Trim standard whitespace from both ends
-        return trim($string);
+        // Trim Unicode whitespace and control characters from both ends
+        $string = preg_replace('/^[\p{Z}\p{C}]+|[\p{Z}\p{C}]+$/u', '', $string);
+
+        return $string;
     }
 
     public static function sanitizeAndValidateEmail($email)
     {
-        // Standard trim and sanitize
+        // Full clean: remove invisible junk + normalize
         $sanitized = strtolower(filter_var(self::cleanString($email), FILTER_SANITIZE_EMAIL));
 
-        return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: '';
+        // Validate as email, return null if invalid
+        return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: null;
     }
-
 
     public static function slugify(string $input): string
     {
@@ -88,8 +99,18 @@ final class Pt_Commons_MiscUtility
     {
         try {
             $bytes = random_bytes($length);
-            $base64 = rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
-            return substr($base64, 0, $length);
+            $result = '';
+
+            // Create a character set of alphanumeric characters
+            $charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            $charSetLength = strlen($charSet);
+
+            // Convert random bytes to characters from our character set
+            for ($i = 0; $i < $length; $i++) {
+                $result .= $charSet[ord($bytes[$i]) % $charSetLength];
+            }
+
+            return $result;
         } catch (Throwable $e) {
             throw new Exception('Failed to generate random string: ' . $e->getMessage());
         }
@@ -122,9 +143,7 @@ final class Pt_Commons_MiscUtility
 
     public static function randomHexColor(): string
     {
-        $hexColorPart = function () {
-            return str_pad(dechex(random_int(0, 255)), 2, '0', STR_PAD_LEFT);
-        };
+        $hexColorPart = fn() => str_pad(dechex(random_int(0, 255)), 2, '0', STR_PAD_LEFT);
 
         return strtoupper($hexColorPart() . $hexColorPart() . $hexColorPart());
     }
@@ -140,8 +159,7 @@ final class Pt_Commons_MiscUtility
         try {
             $filesystem->mkdir($path, $mode); // Handles recursive creation automatically
             return true;
-        } catch (IOExceptionInterface $exception) {
-            // You can log the exception or handle the error here
+        } catch (Throwable $exception) {
             return false; // Directory creation failed
         }
     }
@@ -159,8 +177,7 @@ final class Pt_Commons_MiscUtility
             // This handles both files and directories recursively
             $filesystem->remove($dirname);
             return true; // Removal was successful
-        } catch (IOExceptionInterface $exception) {
-            // You can log the exception or handle it here if necessary
+        } catch (Throwable $exception) {
             return false; // Removal failed
         }
     }
