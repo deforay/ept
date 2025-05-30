@@ -28,7 +28,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
             $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
-            $imageName = $common->generateRandomString(4) . '.' . $extension;
+            $imageName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
 
             if (in_array($extension, $allowedExtensions)) {
                 // Determine the section folder based on $params['section']

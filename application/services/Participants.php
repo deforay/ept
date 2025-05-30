@@ -678,21 +678,13 @@ class Application_Service_Participants
 		ini_set('max_execution_time', -1);
 		try {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
-			$adminSession = new Zend_Session_Namespace('administrators');
 			$participantDb = new Application_Model_DbTable_Participants();
-			// $userDb = new Application_Model_DbTable_DataManagers();
-			$common = new Application_Service_Common();
-			// $schemeDb = new Application_Model_DbTable_SchemeList();
-			// $activeSchemes = $schemeDb->getAllSchemes();
-			// var_dump($activeSchemes);die;
-			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			// $rResult = $db->fetchAll();
 			$allowedExtensions = ['xls', 'xlsx', 'csv'];
 			$fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
 			$fileName = str_replace(" ", "-", $fileName);
-			$random = $common->generateRandomString(6);
+			$random = Pt_Commons_MiscUtility::generateRandomString(6);
 			$extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-			$fileName = $random . "-" . $fileName;
+			$fileName = "$random-$fileName";
 			$response = [];
 			$lastInsertedId = 0;
 			if (in_array($extension, $allowedExtensions)) {
@@ -712,7 +704,7 @@ class Application_Service_Participants
 				$alertMsg->message = 'File format not supported';
 				return false;
 			}
-		} catch (Exception $exc) {
+		} catch (Throwable $exc) {
 			error_log($exc->getFile() . ":" . $exc->getLine() . ":" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
 			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
@@ -720,10 +712,6 @@ class Application_Service_Participants
 		}
 		return $response;
 	}
-
-
-
-
 
 	public function getFilterDetailsAPI($params)
 	{

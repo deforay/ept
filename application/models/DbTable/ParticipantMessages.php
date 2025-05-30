@@ -27,7 +27,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
                     $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                     $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
-                    $uniqueFileName = $common->generateRandomString(4) . '.' . $extension;
+                    $uniqueFileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
 
                     if (move_uploaded_file($_FILES['attachment']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $uniqueFileName)) {
                         $files[] = $uniqueFileName; // Add file path to array

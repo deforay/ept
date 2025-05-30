@@ -22,7 +22,7 @@ final class Pt_Commons_MiscUtility
      * @param array|string|null $input
      * @return array|string|null
      */
-    public static function toUtf8(array|string|null $input): array|string|null
+    public static function toUtf8(mixed $input): mixed
     {
         if (is_array($input)) {
             return array_map([self::class, 'toUtf8'], $input);
@@ -302,14 +302,6 @@ final class Pt_Commons_MiscUtility
         fclose($handle);
     }
 
-    public static function getGenderFromString(?string $gender)
-    {
-        return match (strtolower($gender)) {
-            'male', 'm' => 'Male',
-            'female', 'f' => 'Female',
-            default => 'Unreported'
-        };
-    }
     public static function removeFromAssociativeArray(array $fullArray, array $unwantedKeys)
     {
         return array_diff_key($fullArray, array_flip($unwantedKeys));
@@ -325,17 +317,6 @@ final class Pt_Commons_MiscUtility
         return array_merge($targetArray, array_intersect_key($sourceArray, $targetArray));
     }
 
-
-    // Helper function to convert file size string to bytes
-    public static function convertToBytes(string $sizeString): int
-    {
-        return match (substr($sizeString, -1)) {
-            'M', 'm' => (int)$sizeString * 1048576,
-            'K', 'k' => (int)$sizeString * 1024,
-            'G', 'g' => (int)$sizeString * 1073741824,
-            default => (int)$sizeString,
-        };
-    }
 
     public static function getMimeTypeStrings(array $extensions): array
     {

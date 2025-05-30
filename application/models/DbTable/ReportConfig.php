@@ -15,7 +15,9 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
 
             $uploadDirectory = realpath(UPLOAD_PATH);
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
-            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['logo_image']['name'], PATHINFO_EXTENSION));
+            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['logo_image']['name']);
+            $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
             $imageName = "logo_example." . $extension;
             if (in_array($extension, $allowedExtensions)) {
                 if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'logo') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'logo')) {
@@ -47,7 +49,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $pdfFormatAllowedExtensions = ['pdf'];
         $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['reportTemplate']['name']);
         $fileName = str_replace(" ", "-", $fileName);
-        $random = $common->generateRandomString(6);
+        $random = Pt_Commons_MiscUtility::generateRandomString(6);
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
         $fileName = $random . "-" . $fileName;
         $uploadDirectory = realpath(UPLOAD_PATH);

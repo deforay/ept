@@ -56,7 +56,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
                 $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                $fileName =   $common->generateRandomString(4) . '.' . $extension;
+                $fileName =   Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(array("value" => $fileName), "name = '" . $field . "'");
                 }

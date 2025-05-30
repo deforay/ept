@@ -216,7 +216,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $allowedExtensions = ['xls', 'xlsx', 'csv'];
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
             $fileName = str_replace(" ", "-", $fileName);
-            $random = $common->generateRandomString(6);
+            $random = Pt_Commons_MiscUtility::generateRandomString(6);
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             $fileName = "$random-$fileName";
             $tempDirectory = realpath(TEMP_UPLOAD_PATH);

@@ -65,7 +65,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileLink']['name'][$key]['file']);
                             $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                             $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                            $random = $common->generateRandomString(6);
+                            $random = Pt_Commons_MiscUtility::generateRandomString(6);
                             $fileName = $random . "." . $extension;
 
                             if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'home-links')) {
