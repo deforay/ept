@@ -23,7 +23,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function getParticipantsByUserSystemId($userSystemId)
     {
         $sql = $this->getAdapter()->select()->from(array('p' => $this->_name))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")))
+            ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")])
             ->where("pmm.dm_id = ?", $userSystemId)
             //->where("p.status = 'active'")
             ->group('p.participant_id');
@@ -38,7 +38,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         $sql = $this->getAdapter()->select()
-            ->from(array('pmm' => 'participant_manager_map'))
+            ->from(['pmm' => 'participant_manager_map'])
             ->where("pmm.participant_id = ?", $participantId);
 
         if (isset($dmDb) && !empty($dmDb) && $dmDb != "") {
@@ -337,7 +337,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $dmData['primary_email'] = $prefix . $params['pid'];
             }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-                $dmData['password'] = Application_Service_Common::passwordHash($params['dmPassword']);
+                $dmData['password'] = Common::passwordHash($params['dmPassword']);
             }
             $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
         }
@@ -420,7 +420,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'primary_email' => $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
-                'password' => Application_Service_Common::passwordHash($params['dmPassword']),
+                'password' => Common::passwordHash($params['dmPassword']),
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -533,8 +533,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $dataManager = $authNameSpace->first_name . " " . $authNameSpace->last_name;
         $common = new Application_Service_Common();
         $message = "Hi,<br/>  A new participant ($participantName) was added by $dataManager <br/><small>This is a system generated email. Please do not reply.</small>";
-        $toMail = Application_Service_Common::getConfig('admin_email');
-        //$fromName = Application_Service_Common::getConfig('admin-name');
+        $toMail = Common::getConfig('admin_email');
+        //$fromName = Common::getConfig('admin-name');
         $common->sendMail($toMail, null, null, "New Participant Registered  ($participantName)", $message, null, "ePT Admin");
 
         return $participantId;
@@ -906,7 +906,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                                 if ($dmId > 0) {
                                     $dmData = ['dm_id' => $dmId, 'participant_id' => $participantId];
-                                    $common = new Application_Service_Common();
                                     $common->insertIgnore('participant_manager_map', $dmData);
                                 }
                             }
@@ -1577,13 +1576,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
     {
-
         $response = [];
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         $common = new Application_Service_Common();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Path to the template Excel file
         $templateFilePath = realpath(WEB_ROOT) . "/files/Participant-Bulk-Import-Excel-Format-v2.xlsx";
 
         if (!$this->validateUploadedFile($fileName, $templateFilePath)) {
@@ -1592,259 +1589,238 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
         $objPHPExcel = IOFactory::load($fileName);
-
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $count = count($sheetData);
 
-        /* Direct Participant Login */
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $directParticipantLogin = $configDb->getValue('direct_participant_login');
         $prefix = $configDb->getValue('participant_login_prefix');
+        $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
 
-        for ($i = 2; $i <= $count; ++$i) {
-            /* Direct Participant Login */
-            if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
-                $ulid = Pt_Commons_General::generateULID();
-            }
-            $lastInsertedId = 0;
+        // Pre-load cached data to reduce database queries
+        $countryCache = $this->buildCountryCache();
+        $duplicateChecks = $this->batchCheckDuplicates($sheetData);
 
-            if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
-                continue;
-            }
+        // Single transaction for entire operation
+        $db->beginTransaction();
 
-            $sheetData[$i]['R'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
-            $sheetData[$i]['T'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['T']);
+        try {
+            for ($i = 2; $i <= $count; ++$i) {
+                // Direct Participant Login ULID generation
+                $ulid = null;
+                if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+                    $ulid = MiscUtility::generateULID();
+                }
+                $lastInsertedId = 0;
 
-            $sheetData[$i]['B'] = MiscUtility::slugify($sheetData[$i]['B']);
-
-            // if the unique_identifier is blank, we generate a new one
-            if (empty($sheetData[$i]['B'])) {
-                $sheetData[$i]['B'] = "PT-" . strtoupper(Common::generateRandomString(5));
-            }
-
-
-            $originalEmail = $sheetData[$i]['R'] ?? null;
-
-            // if the email is blank, we generate a new one
-            if (empty($originalEmail) || $allFakeEmail) {
-                $originalEmail = $sheetData[$i]['R'] = MiscUtility::generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
-            }
-
-            // Duplications check
-            $psql = $db->select()->from('participant')
-                ->where("unique_identifier = ?", $sheetData[$i]['B']);
-            $participantRow = $db->fetchRow($psql);
-
-            if (isset($params['bulkUploadDuplicateSkip']) && !empty($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates') {
-                $params['resetPassword'] = 'yes';
-                if (!empty($participantRow)) {
-                    $dataForStatistics['error'] = "Unique ID {$sheetData[$i]['B']} already exists.";
+                if (empty($sheetData[$i]['A']) && empty($sheetData[$i]['C']) && empty($sheetData[$i]['D'])) {
                     continue;
                 }
-            }
-            if (!empty($originalEmail)) {
-                $dmsql = $db->select()->from('data_manager')
-                    ->where("primary_email = ?", $originalEmail);
 
-                $dataManagerRow = $db->fetchRow($dmsql);
-                if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && !empty($dataManagerRow)) {
-                    $dataForStatistics['error'] = "Data Manager email $originalEmail already exists. Skipping for participant {$sheetData[$i]['B']}.";
+                $sheetData[$i]['R'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
+                $sheetData[$i]['T'] = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['T']);
+                $sheetData[$i]['B'] = MiscUtility::slugify($sheetData[$i]['B']);
+
+                if (empty($sheetData[$i]['B'])) {
+                    $sheetData[$i]['B'] = "PT-" . strtoupper(MiscUtility::generateRandomString(5));
+                }
+
+                $originalEmail = $sheetData[$i]['R'] ?? null;
+
+                if (empty($originalEmail) || $allFakeEmail) {
+                    $originalEmail = $sheetData[$i]['R'] = MiscUtility::generateFakeEmailId($sheetData[$i]['B'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
+                }
+
+                // Use cached duplicate check instead of individual query
+                $participantRow = $duplicateChecks['participants'][$sheetData[$i]['B']] ?? null;
+
+                if (isset($params['bulkUploadDuplicateSkip']) && !empty($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates') {
+                    $params['resetPassword'] = 'yes';
+                    if (!empty($participantRow)) {
+                        $dataForStatistics['error'] = "Unique ID {$sheetData[$i]['B']} already exists.";
+                        continue;
+                    }
+                }
+
+                if (!empty($originalEmail)) {
+                    // Use cached data manager check
+                    $dataManagerRow = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+                    if (isset($params['bulkUploadAllowEmailRepeat']) && !empty($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && !empty($dataManagerRow)) {
+                        $dataForStatistics['error'] = "Data Manager email $originalEmail already exists. Skipping for participant {$sheetData[$i]['B']}.";
+                        continue;
+                    }
+                } else {
+                    $dataForStatistics['error'] = "Email is empty for participant {$sheetData[$i]['B']}.";
                     continue;
                 }
-            } else {
-                $dataForStatistics['error'] = "Email is empty for participant {$sheetData[$i]['B']}.";
-                continue;
-            }
 
-            $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
-            $dataForStatistics = [
-                's_no'                  => $sheetData[$i]['A'],
-                'participant_id'        => $sheetData[$i]['B'],
-                'individual'            => $sheetData[$i]['C'] ?? 'no',
-                'participant_lab_name'  => $sheetData[$i]['D'],
-                'participant_last_name' => $sheetData[$i]['E'],
-                'institute_name'        => $sheetData[$i]['F'] ?? null,
-                'department'            => $sheetData[$i]['G'] ?? null,
-                'address'               => $sheetData[$i]['H'] ?? null,
-                'district'              => $sheetData[$i]['J'] ?? null,
-                'country'               => $sheetData[$i]['M'],
-                'zip'                   => $sheetData[$i]['N'] ?? null,
-                'longitude'             => $sheetData[$i]['O'] ?? null,
-                'latitude'              => $sheetData[$i]['P'] ?? null,
-                'mobile_number'         => $sheetData[$i]['Q'] ?? null,
-                'participant_email'     => $originalEmail,
-                'participant_password'  => $sheetData[$i]['S'],
-                'additional_email'      => $sheetData[$i]['T'] ?? null,
-                'filename'              => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
-                'updated_datetime'      => Common::getDateTime()
-            ];
+                $dataForStatistics = [
+                    's_no'                  => $sheetData[$i]['A'],
+                    'participant_id'        => $sheetData[$i]['B'],
+                    'individual'            => $sheetData[$i]['C'] ?? 'no',
+                    'participant_lab_name'  => $sheetData[$i]['D'],
+                    'participant_last_name' => $sheetData[$i]['E'],
+                    'institute_name'        => $sheetData[$i]['F'] ?? null,
+                    'department'            => $sheetData[$i]['G'] ?? null,
+                    'address'               => $sheetData[$i]['H'] ?? null,
+                    'district'              => $sheetData[$i]['J'] ?? null,
+                    'country'               => $sheetData[$i]['M'],
+                    'zip'                   => $sheetData[$i]['N'] ?? null,
+                    'longitude'             => $sheetData[$i]['O'] ?? null,
+                    'latitude'              => $sheetData[$i]['P'] ?? null,
+                    'mobile_number'         => $sheetData[$i]['Q'] ?? null,
+                    'participant_email'     => $originalEmail,
+                    'participant_password'  => $sheetData[$i]['S'],
+                    'additional_email'      => $sheetData[$i]['T'] ?? null,
+                    'filename'              => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
+                    'updated_datetime'      => Common::getDateTime()
+                ];
 
-            $dmId = 0;
-            $isIndividual = strtolower($sheetData[$i]['C']);
-            if (!in_array($isIndividual, ['yes', 'no'])) {
-                $isIndividual = 'yes'; // Default we treat testers as individuals
-            }
-
-
-            // COUNTRY ID
-            $countryId = 236; // Default is USA
-
-            if (!empty($sheetData[$i]['M'])) {
-                $cmsql = $db->select()->from('countries')
-                    ->where("iso_name LIKE ?", $sheetData[$i]['M'])
-                    ->orWhere("iso2 LIKE  ?", $sheetData[$i]['M'])
-                    ->orWhere("iso3 LIKE  ?", $sheetData[$i]['M']);
-
-                //echo $cmsql;
-                $cresult = $db->fetchRow($cmsql);
-                if (!empty($cresult)) {
-                    $countryId = $cresult['id'];
+                $dmId = 0;
+                $isIndividual = strtolower($sheetData[$i]['C']);
+                if (!in_array($isIndividual, ['yes', 'no'])) {
+                    $isIndividual = 'yes';
                 }
-            }
 
-            $participantData = [
-                'unique_identifier' => MiscUtility::cleanString($sheetData[$i]['B']),
-                'individual'        => $isIndividual,
-                'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
-                'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']) ?? null,
-                'institute_name'    => MiscUtility::cleanString($sheetData[$i]['F']) ?? null,
-                'department_name'   => MiscUtility::cleanString($sheetData[$i]['G']) ?? null,
-                'address'           => MiscUtility::cleanString($sheetData[$i]['H']) ?? null,
-                'shipping_address'  => MiscUtility::cleanString($sheetData[$i]['I']) ?? null,
-                'district'          => MiscUtility::cleanString($sheetData[$i]['J']) ?? null,
-                'state'             => MiscUtility::cleanString($sheetData[$i]['K']) ?? null,
-                'region'            => MiscUtility::cleanString($sheetData[$i]['L']) ?? null,
-                'country'           => $countryId,
-                'zip'               => MiscUtility::cleanString($sheetData[$i]['N']) ?? null,
-                'long'              => MiscUtility::cleanString($sheetData[$i]['O']) ?? null,
-                'lat'               => MiscUtility::cleanString($sheetData[$i]['P']) ?? null,
-                'mobile'            => MiscUtility::cleanString($sheetData[$i]['Q']) ?? null,
-                'email'             => $originalEmail,
-                'additional_email'  => MiscUtility::cleanString($sheetData[$i]['T']) ?? null,
-                'force_profile_updation' => 0,
-                'created_by'        => $authNameSpace->admin_id,
-                'created_on'        => new Zend_Db_Expr('now()'),
-                'status'            => 'active'
-            ];
+                // Use cached country lookup
+                $countryId = $this->getCountryIdFromCache($sheetData[$i]['M'], $countryCache);
 
-            $dataManagerData = [
-                'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
-                'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']),
-                'institute'         => MiscUtility::cleanString($sheetData[$i]['F']),
-                'mobile'            => MiscUtility::cleanString($sheetData[$i]['O']),
-                'secondary_email'   => MiscUtility::cleanString($sheetData[$i]['T']),
-                'primary_email'     => $originalEmail,
-                'force_password_reset' => 1,
-                'created_by'        => $authNameSpace->admin_id,
-                'created_on'        => new Zend_Db_Expr('now()'),
-                'status'            => 'active'
-            ];
+                $participantData = [
+                    'unique_identifier' => MiscUtility::cleanString($sheetData[$i]['B']),
+                    'individual'        => $isIndividual,
+                    'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
+                    'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']) ?? null,
+                    'institute_name'    => MiscUtility::cleanString($sheetData[$i]['F']) ?? null,
+                    'department_name'   => MiscUtility::cleanString($sheetData[$i]['G']) ?? null,
+                    'address'           => MiscUtility::cleanString($sheetData[$i]['H']) ?? null,
+                    'shipping_address'  => MiscUtility::cleanString($sheetData[$i]['I']) ?? null,
+                    'district'          => MiscUtility::cleanString($sheetData[$i]['J']) ?? null,
+                    'state'             => MiscUtility::cleanString($sheetData[$i]['K']) ?? null,
+                    'region'            => MiscUtility::cleanString($sheetData[$i]['L']) ?? null,
+                    'country'           => $countryId,
+                    'zip'               => MiscUtility::cleanString($sheetData[$i]['N']) ?? null,
+                    'long'              => MiscUtility::cleanString($sheetData[$i]['O']) ?? null,
+                    'lat'               => MiscUtility::cleanString($sheetData[$i]['P']) ?? null,
+                    'mobile'            => MiscUtility::cleanString($sheetData[$i]['Q']) ?? null,
+                    'email'             => $originalEmail,
+                    'additional_email'  => MiscUtility::cleanString($sheetData[$i]['T']) ?? null,
+                    'force_profile_updation' => 0,
+                    'created_by'        => $authNameSpace->admin_id,
+                    'created_on'        => new Zend_Db_Expr('now()'),
+                    'status'            => 'active'
+                ];
 
-            if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
-                $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
-                $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Application_Service_Common::passwordHash($password);
-            }
-            /* To check the duplication in data manager table */
-            $dmsql = $db->select()->from('data_manager')
-                ->where("primary_email LIKE ?", $originalEmail);
-            $dmresult = $db->fetchRow($dmsql);
-            if (empty($dmresult) || $dmresult === false) {
-                $db->insert('data_manager', $dataManagerData);
-                $dmId = $db->lastInsertId();
-            } else {
-                $dmId = $dmresult['dm_id'];
-            }
-            /* Direct Participant Login */
-            if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
-                $dataManagerData2 = $dataManagerData;
-                $dataManagerData2['data_manager_type'] = 'participant';
-                $dataManagerData2['primary_email'] = $prefix . $sheetData[$i]['B'];
-
-                $participantData['ulid'] = $ulid;
-                $dataManagerData2['participant_ulid'] = $ulid;
-                /* To check the duplication in data manager table */
-                $dmsql2 = $db->select()->from('data_manager')
-                    ->where("primary_email LIKE ?", $dataManagerData2['primary_email']);
-                $dmresult2 = $db->fetchRow($dmsql2);
+                $dataManagerData = [
+                    'first_name'        => MiscUtility::cleanString($sheetData[$i]['D']),
+                    'last_name'         => MiscUtility::cleanString($sheetData[$i]['E']),
+                    'institute'         => MiscUtility::cleanString($sheetData[$i]['F']),
+                    'mobile'            => MiscUtility::cleanString($sheetData[$i]['O']),
+                    'secondary_email'   => MiscUtility::cleanString($sheetData[$i]['T']),
+                    'primary_email'     => $originalEmail,
+                    'force_password_reset' => 1,
+                    'created_by'        => $authNameSpace->admin_id,
+                    'created_on'        => new Zend_Db_Expr('now()'),
+                    'status'            => 'active'
+                ];
 
                 if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
                     $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
-                    $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Application_Service_Common::passwordHash($password);
+                    $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
                 }
 
-                $dmId2 = 0;
-                if (empty($dmresult2) || $dmresult2 === false) {
-                    $db->insert('data_manager', $dataManagerData2);
-                    $dmId2 = $db->lastInsertId();
-                }
-            }
-
-            $db->beginTransaction();
-            if (empty($participantRow) || $participantRow === false) {
-                try {
-                    $lastInsertedId = $db->insert('participant', $participantData);
-
-                    $lastInsertedId = $db->lastInsertId();
-
-                    $db->commit();
-                } catch (Exception $e) {
-                    // If any of the queries failed and threw an exception,
-                    // we want to roll back the whole transaction, reversing
-                    // changes made in the transaction, even those that succeeded.
-                    // Thus all changes are committed together, or none are.
-                    $db->rollBack();
-                    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-                    error_log($e->getTraceAsString());
-                    continue;
-                }
-            } else {
-                try {
-                    $db->update('participant', $participantData, ' unique_identifier like "' . $participantRow['unique_identifier'] . '"');
-                    $db->commit();
-                    $lastInsertedId = $participantRow['participant_id'];
-                } catch (Exception $e) {
-                    // If any of the queries failed and threw an exception,
-                    // we want to roll back the whole transaction, reversing
-                    // changes made in the transaction, even those that succeeded.
-                    // Thus all changes are committed together, or none are.
-                    $db->rollBack();
-                    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-                    error_log($e->getTraceAsString());
-                    continue;
-                }
-            }
-            if ($lastInsertedId > 0) {
-                /* Direct Participant Login */
-                if ($dmId2 > 0) {
-                    $db->delete(
-                        'participant_manager_map',
-                        "participant_id = $lastInsertedId AND dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(data_manager_type, 'manager') like 'ptcc')"
-                    );
-                    $db->insert('participant_manager_map', ['dm_id' => $dmId2, 'participant_id' => $lastInsertedId]);
-                }
-                if ($dmId != null && $dmId > 0) {
-
-                    $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
-
-                    $common = new Application_Service_Common();
-                    $common->insertIgnore('participant_manager_map', $dmData);
-
-                    $response['data'][] = $dataForStatistics;
+                // Use cached data manager check
+                $dmresult = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+                if (empty($dmresult)) {
+                    $db->insert('data_manager', $dataManagerData);
+                    $dmId = $db->lastInsertId();
                 } else {
-                    $dataForStatistics['error'] = 'Could not add Participant Login';
+                    $dmId = $dmresult['dm_id'];
+                }
+
+                // Direct Participant Login logic
+                $dmId2 = 0;
+                if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+                    $dataManagerData2 = $dataManagerData;
+                    $dataManagerData2['data_manager_type'] = 'participant';
+                    $dataManagerData2['primary_email'] = $prefix . $sheetData[$i]['B'];
+
+                    $participantData['ulid'] = $ulid;
+                    $dataManagerData2['participant_ulid'] = $ulid;
+
+                    // Check for duplicate direct participant login
+                    $dmresult2 = $duplicateChecks['dataManagers'][$dataManagerData2['primary_email']] ?? null;
+
+                    if (isset($params['resetPassword']) && !empty($params['resetPassword']) && $params['resetPassword'] == 'yes') {
+                        $password = (!isset($sheetData[$i]['S']) || empty($sheetData[$i]['S'])) ? $this->_defaultPassword : trim($sheetData[$i]['S']);
+                        $dataManagerData2['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
+                    }
+
+                    if (empty($dmresult2)) {
+                        $db->insert('data_manager', $dataManagerData2);
+                        $dmId2 = $db->lastInsertId();
+                    }
+                }
+
+                // ORIGINAL UPDATE/INSERT LOGIC PRESERVED
+                if (empty($participantRow)) {
+                    try {
+                        $lastInsertedId = $db->insert('participant', $participantData);
+                        $lastInsertedId = $db->lastInsertId();
+                    } catch (Exception $e) {
+                        error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+                        error_log($e->getTraceAsString());
+                        continue;
+                    }
+                } else {
+                    // UPDATE existing participant - ORIGINAL LOGIC PRESERVED
+                    try {
+                        $db->update('participant', $participantData, ' unique_identifier like "' . $participantRow['unique_identifier'] . '"');
+                        $lastInsertedId = $participantRow['participant_id'];
+                    } catch (Exception $e) {
+                        error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+                        error_log($e->getTraceAsString());
+                        continue;
+                    }
+                }
+
+                if ($lastInsertedId > 0) {
+                    // Direct Participant Login mapping
+                    if ($dmId2 > 0) {
+                        $db->delete(
+                            'participant_manager_map',
+                            "participant_id = $lastInsertedId AND dm_id NOT IN ( SELECT dm_id FROM data_manager WHERE IFNULL(data_manager_type, 'manager') like 'ptcc')"
+                        );
+                        $db->insert('participant_manager_map', ['dm_id' => $dmId2, 'participant_id' => $lastInsertedId]);
+                    }
+
+                    if ($dmId != null && $dmId > 0) {
+                        $dmData = ['dm_id' => $dmId, 'participant_id' => $lastInsertedId];
+                        $common->insertIgnore('participant_manager_map', $dmData);
+                        $response['data'][] = $dataForStatistics;
+                    } else {
+                        $dataForStatistics['error'] = 'Could not add Participant Login';
+                        $db->insert('participants_not_uploaded', $dataForStatistics);
+                        $response['error-data'][] = $dataForStatistics;
+                        throw new Zend_Exception('Could not add Participant Login');
+                    }
+                } else {
+                    $dataForStatistics['error'] = 'Could not add Participant';
                     $db->insert('participants_not_uploaded', $dataForStatistics);
                     $response['error-data'][] = $dataForStatistics;
-                    throw new Zend_Exception('Could not add Participant Login');
+                    throw new Zend_Exception('Could not add Participant');
                 }
-            } else {
-                $dataForStatistics['error'] = 'Could not add Participant';
-                $db->insert('participants_not_uploaded', $dataForStatistics);
-                $response['error-data'][] = $dataForStatistics;
-                throw new Zend_Exception('Could not add Participant');
             }
-        }
 
+            // Commit the entire transaction at once
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log("BULK IMPORT ERROR: " . $e->getMessage());
+            error_log($e->getTraceAsString());
+            $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
+            return false;
+        }
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
@@ -1852,6 +1828,101 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
+    }
+
+    // Helper methods for optimization
+    private function buildCountryCache()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']);
+        $results = $db->fetchAll($sql);
+
+        $cache = [];
+        foreach ($results as $row) {
+            $cache[strtolower($row['iso_name'])] = $row['id'];
+            if (!empty($row['iso2'])) {
+                $cache[strtolower($row['iso2'])] = $row['id'];
+            }
+            if (!empty($row['iso3'])) {
+                $cache[strtolower($row['iso3'])] = $row['id'];
+            }
+        }
+
+        return $cache;
+    }
+
+    private function batchCheckDuplicates($sheetData)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $uniqueIds = [];
+        $emails = [];
+
+        for ($i = 2; $i <= count($sheetData); $i++) {
+            if (!empty($sheetData[$i]['B'])) {
+                $cleanId = MiscUtility::slugify($sheetData[$i]['B']);
+                if (empty($cleanId)) {
+                    $cleanId = "PT-" . strtoupper(MiscUtility::generateRandomString(5));
+                }
+                $uniqueIds[] = $cleanId;
+            }
+
+            $email = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
+            if ($email) {
+                $emails[] = $email;
+            }
+
+            // Also check for direct participant login emails
+            $configDb = new Application_Model_DbTable_GlobalConfig();
+            $prefix = $configDb->getValue('participant_login_prefix');
+            if ($prefix && !empty($sheetData[$i]['B'])) {
+                $directEmail = $prefix . MiscUtility::slugify($sheetData[$i]['B']);
+                if ($directEmail) {
+                    $emails[] = $directEmail;
+                }
+            }
+        }
+
+        // Get existing participants with full row data for update logic
+        $existingParticipants = [];
+        if (!empty($uniqueIds)) {
+            $sql = $db->select()
+                ->from('participant', ['unique_identifier', 'participant_id'])
+                ->where('unique_identifier IN (?)', $uniqueIds);
+            $results = $db->fetchAll($sql);
+            foreach ($results as $row) {
+                $existingParticipants[$row['unique_identifier']] = $row;
+            }
+        }
+
+        // Get existing data managers
+        $existingDataManagers = [];
+        if (!empty($emails)) {
+            $sql = $db->select()
+                ->from('data_manager', ['primary_email', 'dm_id'])
+                ->where('primary_email IN (?)', $emails);
+            $results = $db->fetchAll($sql);
+            foreach ($results as $row) {
+                $existingDataManagers[$row['primary_email']] = $row;
+            }
+        }
+
+        return [
+            'participants' => $existingParticipants,
+            'dataManagers' => $existingDataManagers
+        ];
+    }
+
+    private function getCountryIdFromCache($countryInput, $countryCache)
+    {
+        $countryId = 236; // Default is USA
+
+        if (!empty($countryInput)) {
+            $key = strtolower(trim($countryInput));
+            $countryId = $countryCache[$key] ?? 236;
+        }
+
+        return $countryId;
     }
 
     public function deleteParticipantBId($participantId)
@@ -2093,7 +2164,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
             foreach ($headings as $field => $value) {
                 $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                 $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
@@ -2120,7 +2191,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $value = "";
                     }
                     $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
                         $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2, null, null)->getAlignment()->setWrapText(true);

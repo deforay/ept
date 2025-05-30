@@ -1515,7 +1515,7 @@ class Application_Service_Common
                 'data'  => $responseData
             ];
             /* File name creation */
-            $fileName = Pt_Commons_General::generateRandomString(12) . time() . '-' . $data['scheme'] . '.json';
+            $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . time() . '-' . $data['scheme'] . '.json';
             $filePath  = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
             $fp = fopen($filePath, 'w');
             fwrite($fp, json_encode($output));

@@ -1,6 +1,7 @@
 <?php
 
 use Pt_Commons_MiscUtility as MiscUtility;
+use Application_Service_Common as Common;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -36,7 +37,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'created_on' => new Zend_Db_Expr('now()')
         ];
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-            $password = Application_Service_Common::passwordHash($params['dmPassword']);
+            $password = Common::passwordHash($params['dmPassword']);
             $data['password'] = $password;
         }
         $isPtcc = (isset($params['ptcc']) && $params['ptcc'] == 'yes') ? true : false;
@@ -46,56 +47,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return 0;
         }
         if ($dmId > 0) {
-            $params['participantsList'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
+            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
-            /* if (!$isPtcc) {
-                $db->delete('participant_manager_map', "dm_id = " . $dmId);
-                $params['allparticipant'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
-                if (!empty($params['allparticipant'])) {
-                    foreach ($params['allparticipant'] as $participant) {
-                        $db->insert('participant_manager_map', array('dm_id' => $dmId, 'participant_id' => $participant));
-                    }
-                }
-            } elseif ($isPtcc) {
-                // $db->delete('participant_manager_map', "dm_id = " . $dmId);
-                // $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
-
-                $params['district'] = isset($params['district']) ? Application_Service_Common::removeEmpty($params['district']) : [];
-                $params['province'] = isset($params['province']) ? Application_Service_Common::removeEmpty($params['province']) : [];
-                $params['country'] = isset($params['country']) ? Application_Service_Common::removeEmpty($params['country']) : [];
-
-                $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
-                $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
-
-                if (!empty($params['district'])) {
-                    $locationWiseSwitch = true;
-                    $params['district'] = !is_array($params['district']) ? [$params['district']] : $params['district'];
-                    $sql = $sql->where('district IN("' . implode('","', $params['district']) . '")');
-                } elseif (!empty($params['province'])) {
-                    $locationWiseSwitch = true;
-                    $params['province'] = !is_array($params['province']) ? [$params['province']] : $params['province'];
-                    $sql = $sql->where('state IN("' . implode('","', $params['province']) . '")');
-                } elseif (!empty($params['country'])) {
-                    $locationWiseSwitch = true;
-                    $params['country'] = !is_array($params['country']) ? [$params['country']] : $params['country'];
-                    $sql = $sql->where('country IN("' . implode('","', $params['country']) . '")');
-                }
-                $pmmData = []; // Declare the participant manager mapping variable
-                if ($locationWiseSwitch) { // Check the status activated or not
-
-                    // Fetch list of participants from location wise
-                    $locationwiseparticipants = $db->fetchAll($sql);
-                    foreach ($locationwiseparticipants as $value) {
-                        $pmmData[] = ['dm_id' => $dmId, 'participant_id' => $value['participant_id']]; // Create the inserting data
-                    }
-                }
-
-                $this->mapPtccLocations($params, $dmId);
-                $common = new Application_Service_Common(); // Common objection creation for accessing the multiinsert functionality
-                if (isset($pmmData) && !empty($pmmData)) {
-                    $common->insertMultiple('participant_manager_map', $pmmData, true); // Inserting the mulitiple pmm data at one go
-                }
-            } */
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  null;
             $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  null;
@@ -119,8 +72,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
         }
-        /* Indexed column (used for fast and accurate table cardinality) */
-        $sIndexColumn = "dm_id";
 
 
         /*
@@ -367,7 +318,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $data['view_only_access'] = $params['viewOnlyAccess'];
         }
         if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
-            $password = Application_Service_Common::passwordHash($params['dmPassword']);
+            $password = Common::passwordHash($params['dmPassword']);
             $data['password'] = $password;
             $data['force_password_reset'] = 1;
         }
@@ -388,7 +339,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->delete('ptcc_countries_map', "ptcc_id = " . $params['deleteSystemId']);
                 $this->delete("dm_id = {$params['deleteSystemId']}");
             }
-            $params['participantsList'] = isset($params['allparticipant']) ? Application_Service_Common::removeEmpty($params['allparticipant']) : [];
+            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
@@ -471,7 +422,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function updatePasswordFromAdmin($email, $newpassword)
     {
         $common = new Application_Service_Common();
-        $newpassword = Application_Service_Common::passwordHash($newpassword);
+        $newpassword = Common::passwordHash($newpassword);
         $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '" . $email . "'");
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
@@ -491,7 +442,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $passwordVerify = password_verify((string) $oldpassword, (string) $result['password']);
         }
         if ($passwordVerify) {
-            $newpassword = Application_Service_Common::passwordHash($newpassword);
+            $newpassword = Common::passwordHash($newpassword);
             $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '$email'");
             if ($noOfRows != null && $noOfRows == 1) {
                 $authNameSpace->forcePasswordReset = 0;
@@ -534,7 +485,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function saveNewPassword($params)
     {
-        $password = Application_Service_Common::passwordHash($params['password']);
+        $password = Common::passwordHash($params['password']);
         $noOfRows = $this->update(['password' => $password], "primary_email = '{$params['registeredEmail']}'");
         return $noOfRows === 1;
     }
@@ -637,8 +588,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return $payload;
         }
         /* Update the new auth token */
-        $params['authToken'] = Application_Service_Common::generateRandomString(32);
-        $params['download_link'] = Application_Service_Common::generateRandomString(32);
+        $params['authToken'] = Common::generateRandomString(32);
+        $params['download_link'] = Common::generateRandomString(32);
 
         $this->update(['auth_token' => $params['authToken'], 'download_link' => $params['download_link'] ?? null, 'last_login' => new Zend_Db_Expr('now()'), 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], "dm_id = " . $result['dm_id']);
         $aResult = $this->fetchAuthToken($params);
@@ -826,7 +777,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $response['force-logout'] = false;
             }
 
-            $response['newAuthToken'] = Application_Service_Common::generateRandomString(6);
+            $response['newAuthToken'] = Common::generateRandomString(6);
             $id = $this->update(array('auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
             if ($id > 0) {
                 $response['token-updated'] = true;
@@ -862,7 +813,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'fail', 'message' => 'Your old password is incorrect', 'profileInfo' => $aResult['profileInfo']);
         }
         /* Update the new password to the server */
-        $newpassword = Application_Service_Common::passwordHash($params['password']);
+        $newpassword = Common::passwordHash($params['password']);
         $update = $this->update(array('password' => $newpassword), array('dm_id = ?' => (int) $aResult['dm_id']));
         if ($update < 1) {
             return array('status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']);
@@ -898,8 +849,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if ($row) {
             $common = new Application_Service_Common();
             $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
-            $fromMail = Application_Service_Common::getConfig('admin_email');
-            $fromName = Application_Service_Common::getConfig('admin-name');
+            $fromMail = Common::getConfig('admin_email');
+            $fromName = Common::getConfig('admin-name');
             $check = $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
             if (!$check) {
                 return ['status' => 'fail', 'message' => 'Something went wrong please try again later.'];
@@ -1037,7 +988,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function addQuickDm($params, $participantId)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $password = Application_Service_Common::passwordHash($params['dmPassword']);
+        $password = Common::passwordHash($params['dmPassword']);
         $newDmId =  $this->insert([
             'primary_email' => $params['pemail'],
             'password' => $password,
@@ -1147,18 +1098,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         try {
             $response = [];
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $common = new Application_Service_Common();
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $objPHPExcel = IOFactory::load($fileName);
-            $db->beginTransaction();
 
+            $objPHPExcel = IOFactory::load($fileName);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-            // Zend_Debug::dump($sheetData);die;
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $count = count($sheetData);
 
-            for ($i = 2; $i <= $count; ++$i) {
+            // Pre-load cached data to reduce database queries
+            $countryCache = $this->buildCountryCache();
+            $duplicateChecks = $this->batchCheckDataManagerDuplicates($sheetData);
 
+            // Single transaction for entire operation
+            $db->beginTransaction();
+
+            for ($i = 2; $i <= $count; ++$i) {
                 $lastInsertedId = 0;
 
                 if (
@@ -1173,53 +1127,28 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     continue;
                 }
 
-                // $sheetData[$i]['A'] = htmlspecialchars(trim($sheetData[$i]['A']));
-                // $sheetData[$i]['B'] = htmlspecialchars(trim($sheetData[$i]['B']));
-                // $sheetData[$i]['C'] = htmlspecialchars(trim($sheetData[$i]['C']));
-                // $sheetData[$i]['D'] = htmlspecialchars(trim($sheetData[$i]['D']));
-                // $sheetData[$i]['E'] = htmlspecialchars(trim($sheetData[$i]['E']));
-                // $sheetData[$i]['F'] = htmlspecialchars(trim($sheetData[$i]['F']));
-                // $sheetData[$i]['G'] = htmlspecialchars(trim($sheetData[$i]['G']));
-                // $sheetData[$i]['H'] = htmlspecialchars(trim($sheetData[$i]['H']));
-                // $sheetData[$i]['I'] = htmlspecialchars(trim($sheetData[$i]['I']));
-                // $sheetData[$i]['J'] = htmlspecialchars(trim($sheetData[$i]['J']));
-                // $sheetData[$i]['K'] = htmlspecialchars(trim($sheetData[$i]['K']));
-                // $sheetData[$i]['L'] = htmlspecialchars(trim($sheetData[$i]['L']));
-                // $sheetData[$i]['M'] = htmlspecialchars(trim($sheetData[$i]['M']));
-
                 $sheetData[$i]['B'] = filter_var(trim($sheetData[$i]['B']), FILTER_SANITIZE_EMAIL);
-                $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
-                $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                $sheetData[$i]['K'] = Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                $sheetData[$i]['L'] = Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
 
                 $originalEmail = null;
                 if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
                     $originalEmail = $sheetData[$i]['B'];
                 }
-                // if the email is blank, we generate a new one
+
                 if (empty($originalEmail) || $allFakeEmail) {
                     $originalEmail = $sheetData[$i]['B'] = MiscUtility::generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
                 }
 
                 $originalEmail = $originalEmail ?? $sheetData[$i]['B'];
 
-                // COUNTRY ID
-                $countryId = 236; // Default is USA
+                // Use cached country lookup instead of individual query
+                $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
-                if (!empty($sheetData[$i]['J'])) {
-                    $cmsql = $db->select()->from('countries')
-                        ->where("iso_name LIKE ?", $sheetData[$i]['J'])
-                        ->orWhere("iso2 LIKE  ?", $sheetData[$i]['J'])
-                        ->orWhere("iso3 LIKE  ?", $sheetData[$i]['J']);
-
-                    //echo $cmsql;
-                    $cresult = $db->fetchRow($cmsql);
-                    if (!empty($cresult)) {
-                        $countryId = $cresult['id'];
-                    }
-                }
                 $common = new Application_Service_Common();
                 $password = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
-                $password = Application_Service_Common::passwordHash($password);
+                $password = Common::passwordHash($password);
+
                 $dataManagerData = [
                     'first_name'        => ($sheetData[$i]['C']),
                     'last_name'         => ($sheetData[$i]['D']),
@@ -1235,13 +1164,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'data_manager_type' => 'ptcc',
                     'status'            => 'active'
                 ];
-                /* To check the duplication in data manager table */
-                // echo '<pre>'; print_r($dataManagerData); die;
-                $dmsql = $db->select()->from('data_manager')
-                    ->where("primary_email LIKE ?", $originalEmail);
-                $dmresult = $db->fetchRow($dmsql);
 
-                if (empty($dmresult) || $dmresult === false) {
+                // Use cached duplicate check instead of individual query
+                $dmresult = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+
+                if (empty($dmresult)) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] != 'skip-duplicates') {
@@ -1250,40 +1177,114 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $lastInsertedId = $dmresult['dm_id'];
                 }
+
                 // PTCC manager location wise mapping
                 if (isset($sheetData[$i]['K']) && !empty($sheetData[$i]['K'])) {
-                    $sheetData[$i]['K'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
+                    $sheetData[$i]['K'] = Common::removeEmpty(explode(",", $sheetData[$i]['K'])) ?? [];
                 }
                 if (isset($sheetData[$i]['L']) && !empty($sheetData[$i]['L'])) {
-                    $sheetData[$i]['L'] = Application_Service_Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
+                    $sheetData[$i]['L'] = Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
                 }
-                $mappPtcc = [];
-                if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) || (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) || (isset($countryId) && !empty($countryId))) {
-                    if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
 
+                if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
+                    (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) ||
+                    (isset($countryId) && !empty($countryId))
+                ) {
+
+                    if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
                         $params['district'] = $sheetData[$i]['L'];
                         $params['province'] = $sheetData[$i]['K'];
                         $params['country'] = $countryId;
                         $this->dmParticipantMap($params, $lastInsertedId, true);
                     }
                 }
-                $db->commit();
             }
+
+            // Commit the entire transaction at once
+            $db->commit();
         } catch (Exception $e) {
-            // If any of the queries failed and threw an exception,
-            // we want to roll back the whole transaction, reversing
-            // changes made in the transaction, even those that succeeded.
-            // Thus all changes are committed together, or none are.
             $db->rollBack();
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
+            throw $e;
         }
+
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog("Bulk imported participants", "participants");
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;
+    }
+
+    // Helper methods for optimization
+    private function buildCountryCache()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from('countries', ['iso_name', 'iso2', 'iso3', 'id']);
+        $results = $db->fetchAll($sql);
+
+        $cache = [];
+        foreach ($results as $row) {
+            $cache[strtolower($row['iso_name'])] = $row['id'];
+            if (!empty($row['iso2'])) {
+                $cache[strtolower($row['iso2'])] = $row['id'];
+            }
+            if (!empty($row['iso3'])) {
+                $cache[strtolower($row['iso3'])] = $row['id'];
+            }
+        }
+
+        return $cache;
+    }
+
+    private function batchCheckDataManagerDuplicates($sheetData)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $emails = [];
+
+        for ($i = 2; $i <= count($sheetData); $i++) {
+            $email = filter_var(trim($sheetData[$i]['B'] ?? ''), FILTER_SANITIZE_EMAIL);
+            if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $emails[] = $email;
+            } else {
+                // Handle fake email generation case
+                if (!empty($sheetData[$i]['C'])) {
+                    $fakeEmail = MiscUtility::generateFakeEmailId($sheetData[$i]['C'], ($sheetData[$i]['D'] ?? '') . " " . ($sheetData[$i]['E'] ?? ''));
+                    if ($fakeEmail) {
+                        $emails[] = $fakeEmail;
+                    }
+                }
+            }
+        }
+
+        $existingDataManagers = [];
+        if (!empty($emails)) {
+            $sql = $db->select()
+                ->from('data_manager', ['primary_email', 'dm_id'])
+                ->where('primary_email IN (?)', $emails);
+            $results = $db->fetchAll($sql);
+            foreach ($results as $row) {
+                $existingDataManagers[$row['primary_email']] = $row;
+            }
+        }
+
+        return [
+            'dataManagers' => $existingDataManagers
+        ];
+    }
+
+    private function getCountryIdFromCache($countryInput, $countryCache)
+    {
+        $countryId = 236; // Default is USA
+
+        if (!empty($countryInput)) {
+            $key = strtolower(trim($countryInput));
+            $countryId = $countryCache[$key] ?? 236;
+        }
+
+        return $countryId;
     }
 
     public function exportPTCCDetails($params)
