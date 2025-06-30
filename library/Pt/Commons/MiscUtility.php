@@ -692,4 +692,17 @@ final class Pt_Commons_MiscUtility
         // Reconstruct the file name with its extension
         return $cleanFileName . ($extension ? '.' . $extension : '');
     }
+
+    public static function startDbProfiler()
+    {
+        Zend_Db_Table::getDefaultAdapter()->getProfiler()->setEnabled(true);
+    }
+
+    public static function stopDbProfiler()
+    {
+        $profiler = Zend_Db_Table::getDefaultAdapter()->getProfiler();
+        foreach ($profiler->getQueryProfiles() as $query) {
+            error_log(sprintf('[%.4fs] %s', $query->getElapsedSecs(), $query->getQuery()));
+        }
+    }
 }

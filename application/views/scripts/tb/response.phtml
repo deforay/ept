@@ -11,9 +11,9 @@ $asayExpiryDate = "";
 if (isset($this->shipment['attributes']['expiry_date']) && $this->shipment['attributes']['expiry_date'] != "") {
 	$asayExpiryDate = $this->dateFormat($this->shipment['attributes']['expiry_date']);
 }
-$adminAccess = false;
+$isLoggedInAsAdmin = false;
 if ($this->reqFrom == "admin") {
-	$adminAccess = true;
+	$isLoggedInAsAdmin = true;
 }
 $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $this->shipment['shipment_code'] . '/TB-FORM-' . $this->shipment['shipment_code'] . '-' . $this->shipment['unique_identifier'] . '.pdf');
 $download = "<a tabindex='7' href='/participant/download-tb/sid/" . $this->shipment['shipment_id'] . "/pid/" . $this->shipment['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-info' style='margin:3px 0;float: right;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
@@ -30,7 +30,7 @@ foreach ($this->tbPossibleResults as $pr) {
 if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	unset($possibleResults['trace']);
 }
-// Zend_Debug::dump($this->instruments);die;
+
 ?>
 <style>
 	th {
@@ -73,15 +73,15 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					$lastDate = (new DateTime($this->shipment['lastdate_response']))->setTime(0, 0, 0);
 					$message = "";
 
-					if (!$this->isEditable && !$adminAccess) {
+					if (!$this->isEditable && !$isLoggedInAsAdmin) {
 						$message = "Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications.";
-					} elseif ($this->shipment['status'] == 'finalized' && !$adminAccess) {
+					} elseif ($this->shipment['status'] == 'finalized' && !$isLoggedInAsAdmin) {
 						$message = "This shipment has been finalized. Your result will not be evaluated. Please contact your PT Provider for any clarifications.";
-					} elseif ($date > $lastDate && !$adminAccess) {
+					} elseif ($date > $lastDate && !$isLoggedInAsAdmin) {
 						$message = "Your response is late.";
 					}
 
-					if ($message && !$adminAccess) {
+					if ($message && !$isLoggedInAsAdmin) {
 						echo "<h4 style='color:red;text-align:center;'>{$this->translate->_($message)}</h4>";
 					}
 					?>
@@ -133,7 +133,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 					<div style="width:100%;padding-left:0;">
 						<label style="font-size:16px;" for="isPtTestNotPerformed"><?= $this->translate->_("Were you able to test the Panel?"); ?>&nbsp; &nbsp;<label>
 								<select name="isPtTestNotPerformed" id="isPtTestNotPerformed" class="form-control">
-									<option value="no" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
+									<option value="no" <?php echo (empty($this->shipment['is_pt_test_not_performed']) || $this->shipment['is_pt_test_not_performed'] == 'no') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Able to Test Panel"); ?></option>
 									<option value="yes" <?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Unable to Test Panel"); ?></option>
 								</select>
 					</div>
@@ -192,11 +192,11 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							</td>
 						</tr>
 						<tr>
-							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Cartridge/Assay Lot"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
+							<td style="width:20%;"> <label class="control-lable" for="mtbRifKitLotNo"><?= $this->translate->_("Cartridge/Assay Lot"); ?> </label></td>
 							<td style="width:30%;">
 								<input type="text" id="assayLot" name="assayLot" style="float:left;" value="<?php echo (isset($this->shipment['attributes']['assay_lot_number']) && !empty($this->shipment['attributes']['assay_lot_number'])) ? $this->shipment['attributes']['assay_lot_number'] : ""; ?>" class="form-control vlResultValues isRequired" placeholder="Enter Cartridge/Assay lot" title="Please enter the Assay Lot number" />
 							</td>
-							<td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Cartridge/Assay Expiration"); ?> <span class="mandatory vlResultValuesAsterisk">*</span></label></td>
+							<td style="width:20%;"> <label class="control-lable" for="expiryDate"><?= $this->translate->_("Cartridge/Assay Expiration"); ?> </label></td>
 							<td style="width:30%;">
 								<input type="text" id="expiryDate" name="expiryDate" style="width:180px;float:left;" placeholder="Assay Expiration" title="Please select the assay expiration" class="form-control vlResultValues isRequired expDatepicker" value="<?php echo $asayExpiryDate; ?>" readonly="readonly" />
 								<i class="icon-remove-sign" style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date" title="Clear Date" onclick="clearDate('expiryDate')"> <?= $this->translate->_("Clear"); ?></i>
@@ -215,7 +215,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						</td>
 						</tr> -->
 						<?php
-						$canEnterResponseDate = (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $adminAccess;
+						$canEnterResponseDate = (isset($authNameSpace->enable_adding_test_response_date) && $authNameSpace->enable_adding_test_response_date != null && $authNameSpace->enable_adding_test_response_date != '' && $authNameSpace->enable_adding_test_response_date == 'yes') || $isLoggedInAsAdmin;
 						if ($canEnterResponseDate) { ?>
 							<tr>
 								<td><label><?= $this->translate->_("Response Date"); ?> <span class='mandatory vlResultValuesAsterisk'>*</span></label></td>
@@ -258,7 +258,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<?php } ?>
 						</tbody>
 					</table>
-					<div class="tbPTTestingRelatedFields vlResultBlock loadAssay">
+					<div class="tbPTTestingRelatedFields vlResultBlock" id ="ptPanelTable">
 
 					</div>
 					<br>
@@ -303,7 +303,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 				<?php
 				$genderHelper = $this->getHelper('DateFormat');
 				$dtFormat =  $genderHelper->getDateFormat();
-				if ($adminAccess) {
+				if ($isLoggedInAsAdmin) {
 					$show = "display : none;";
 					if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
 						$show = "";
@@ -402,7 +402,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						</tr>
 					</table>
 				<?php }
-				if ($this->isEditable || $adminAccess) { ?>
+				if ($this->isEditable || $isLoggedInAsAdmin) { ?>
 					<div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
 						<?php $submitText = "Complete and Submit";
 						if (isset($_SESSION['confirmForm']) && !empty($_SESSION['confirmForm']) && $_SESSION['confirmForm'] == 'yes') {
@@ -412,11 +412,11 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 						<?php } ?>
 						<input type="hidden" name="participantId" value="<?php echo $this->shipment['participant_id']; ?>" />
 						<input type="hidden" name="requiredFields" id="requiredFields" />
-						<?php if (!$adminAccess) { ?>
+						<?php if (!$isLoggedInAsAdmin) { ?>
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="<?= $this->translate->_($submitText); ?>" />
 							<input name="draftbtn" class="btn btn-warning" type="button" onclick="return saveAsDraft();return false;" value="Save as Draft" />
 							&nbsp;&nbsp;&nbsp;
-						<?php } elseif ($adminAccess) { ?>
+						<?php } elseif ($isLoggedInAsAdmin) { ?>
 							<input name="submitbtn" class="btn btn-primary" type="submit" value="<?= $this->translate->_("Submit"); ?>" />
 						<?php } ?>
 						&nbsp;&nbsp;&nbsp;
@@ -460,7 +460,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 		});
 
-		<?php if (!$adminAccess) { ?>
+		$('#assayName').trigger('change');
+
+		<?php if (!$isLoggedInAsAdmin) { ?>
 			// Collapse the main sidebar
 			if ($(window).width() > $.AdminLTE.options.screenSizes.sm - 1) {
 				// If sidebar is not already collapsed, collapse it.
@@ -509,7 +511,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		$(".expDatepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
-		<?php if (!$this->isEditable && !$adminAccess) { ?>
+		<?php if (!$this->isEditable && !$isLoggedInAsAdmin) { ?>
 			$("#tbResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", true);
 		<?php } ?>
 
@@ -721,6 +723,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	function loadAssayFields(obj) {
+
 		let _short = $(obj).find(':selected').data('short');
 		if (_short == 'other' && $('#otherAssayName').val() == '') {
 			return false;
@@ -740,14 +743,16 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			$('.microscopy-hide').show();
 			$('.instrumentsAtFacility').show();
 		}
-		_reqF = '<?= isset($adminAccess) && $adminAccess == true ? 'admin' : 'participant'; ?>';
+		_reqF = '<?= isset($isLoggedInAsAdmin) && $isLoggedInAsAdmin == true ? 'admin' : 'participant'; ?>';
 		if (_short != "") {
+			$.blockUI();
 			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom=" + _reqF, {
 					format: "html"
 				},
 				function(data) {
+					$.unblockUI();
 					if (data != "") {
-						$(".loadAssay").html(data);
+						$("#ptPanelTable").html(data);
 						detectedResultChange();
 						if (instrumentSn.length > 0) {
 							$.each(instrumentSn, function(key, value) {

@@ -130,7 +130,10 @@ class Application_Model_Tb
                                 if (in_array($result['mtb_detected'], $positiveResults)) {
                                     // if they report any of the positive results, then they should be awarded 0.5
                                     $awardedScore = 0.5;
-                                    if ($result['mtb_detected'] == $result['reference_mtb_detected']) {
+                                    if (!in_array($result['reference_mtb_detected'], $positiveResults)) {
+                                        $calculatedScore = 0;
+                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    } elseif ($result['mtb_detected'] == $result['reference_mtb_detected']) {
                                         // if they report the same result as the reference, then they should be awarded 1
                                         $awardedScore = 1;
                                     } elseif ($result['reference_mtb_detected'] == 'scanty' && in_array($result['mtb_detected'], ['scanty', '1+'])) {
@@ -148,15 +151,15 @@ class Application_Model_Tb
                                     }
                                     if (0 == $result['control']) {
                                         $calculatedScore = $awardedScore * $result['sample_score'];
-                                        $totalScore += $calculatedScore;
                                     }
+                                    error_log("Reference Result: " . $result['reference_mtb_detected'] . " - Reported Result: " . $result['mtb_detected'] . " - Awarded Score: " . $calculatedScore);
                                 } else {
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
-                                        $totalScore += $calculatedScore;
                                         $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
                                     }
                                 }
+                                $totalScore += $calculatedScore;
                             }
                         } else {
                             if ($result['sample_score'] > 0) {
