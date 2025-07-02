@@ -950,7 +950,7 @@ class Application_Model_Dts
 							}
 						} elseif ($result['reference_result'] == $assumedFinalHivResult) {
 							if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
-								$totalScore += ($scoreForSample + $scoreForAlgorithm);
+								$totalScore += $scoreForSample + $scoreForAlgorithm;
 								$correctResponse = true;
 								$failureReason[] = [
 									'warning' => "<strong>" . $result['sample_label'] . "</strong> - Reported HIV result does not match the expected result. Passed with warning.",
@@ -1073,7 +1073,7 @@ class Application_Model_Dts
 
 
 
-			$configuredDocScore = ((isset($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? $config->evaluation->dts->documentationScore : 0);
+			$configuredDocScore = (isset($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? $config->evaluation->dts->documentationScore : 0;
 
 			// Response Score
 			if ($maxScore == 0 || $totalScore == 0) {
@@ -1084,10 +1084,10 @@ class Application_Model_Dts
 
 			//if ((isset($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes')) {
 			if (empty($attributes['algorithm']) || strtolower($attributes['algorithm']) == 'not-reported') {
-				$failureReason[] = array(
+				$failureReason[] = [
 					'warning' => "Result not evaluated. Testing algorithm not reported.",
 					'correctiveAction' => $correctiveActions[2]
-				);
+				];
 				$correctiveActionList[] = 2;
 				$shipment['is_excluded'] = 'yes';
 			}
@@ -1132,10 +1132,10 @@ class Application_Model_Dts
 				if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
 					$documentationScore += $documentationScorePerItem;
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Missing reporting rehydration date for DTS Panel",
 						'correctiveAction' => $correctiveActions[12]
-					);
+					];
 					$correctiveActionList[] = 12;
 				}
 			}
@@ -1144,10 +1144,10 @@ class Application_Model_Dts
 			if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
 				$documentationScore += $documentationScorePerItem;
 			} else {
-				$failureReason[] = array(
-					'warning' => "Shipment received test date not provided",
+				$failureReason[] = [
+					'warning' => "Shipment test date not provided",
 					'correctiveAction' => $correctiveActions[13]
-				);
+				];
 				$correctiveActionList[] = 13;
 			}
 			//D.7

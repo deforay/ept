@@ -87,10 +87,8 @@ if (!empty($mailResult)) {
 
             $alertMail->setSubject($subject);
             $sendResult = $alertMail->send($smtpTransportObj);
-            //var_dump($sendResult);
-            if ($sendResult === true) {
-                $db->delete('temp_mail', "temp_id=" . $result['temp_id']);
-            }
+
+            $db->delete('temp_mail', "temp_id=" . $result['temp_id']);
         } catch (Exception $e) {
             $db->update('temp_mail', ['status' => 'not-sent'], 'temp_id=' . $result['temp_id']);
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");

@@ -973,31 +973,26 @@ class Application_Service_Common
         }
     }
 
-    public static function validateEmails(string $emails): array
+    public static function validateEmails(string $emails, bool $checkDns = false): array
     {
-        // Split the input string into individual emails using comma or semicolon
         $emailArray = preg_split('/[;,]/', $emails);
-
-        // Trim whitespace and validate each email
         $validEmails = [];
         $invalidEmails = [];
 
         foreach ($emailArray as $email) {
             $email = trim($email);
 
-            // Validate email format
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $invalidEmails[] = $email;
                 continue;
             }
 
-            // Get domain from email
-            $domain = substr(strrchr($email, "@"), 1);
-
-            // Check MX records
-            if (!checkdnsrr($domain, 'MX')) {
-                $invalidEmails[] = $email;
-                continue;
+            if ($checkDns) {
+                $domain = substr(strrchr($email, "@"), 1);
+                if (!checkdnsrr($domain, 'MX') && !checkdnsrr($domain, 'A')) {
+                    $invalidEmails[] = $email;
+                    continue;
+                }
             }
 
             $validEmails[] = $email;
@@ -1008,6 +1003,8 @@ class Application_Service_Common
             'invalid' => $invalidEmails,
         ];
     }
+
+
 
     public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
     {
