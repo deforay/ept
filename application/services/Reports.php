@@ -1586,21 +1586,25 @@ class Application_Service_Reports
         $responseResult = [];
         $responseDate = [];
         $initialStartDate = $date;
-        for ($i = $step; $i <= $maxDays; $i += $step) {
 
+        for ($i = $step; $i <= $maxDays; $i += $step) {
             $sQuery = $dbAdapter->select()->from(['s' => 'shipment'], [''])
                 ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")])
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group('s.shipment_id');
-            $date = new DateTime($date);
-            $date->add(new DateInterval('P' . $i . 'D'));
-            $endDate = $date->format('Y-m-d');
+
+            // Create DateTime object and calculate end date
+            $dateObj = new DateTime($date);
+            $dateObj->add(new DateInterval('P' . $i . 'D'));
+            $endDate = $dateObj->format('Y-m-d');
+
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $sQuery = $sQuery
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', [])
                     ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
+
             if (isset($date) && $date != "" && $endDate != '' && $i < $maxDays) {
                 $sQuery = $sQuery->where("sp.shipment_test_date >= ?", $date);
                 $sQuery = $sQuery->where("sp.shipment_test_date <= ?", $endDate);
@@ -1608,9 +1612,11 @@ class Application_Service_Reports
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
                 $responseDate[] = Pt_Commons_General::humanReadableDateFormat($date) . ' ' . Pt_Commons_General::humanReadableDateFormat($endDate);
-                $endDate = new DateTime($endDate);
-                $endDate->add(new DateInterval('P1D'));
-                $date = $endDate->format('Y-m-d');
+
+                // Update date for next iteration
+                $nextDateObj = new DateTime($endDate);
+                $nextDateObj->add(new DateInterval('P1D'));
+                $date = $nextDateObj->format('Y-m-d');
             }
 
             if ($i == $maxDays) {
@@ -1621,6 +1627,7 @@ class Application_Service_Reports
                 $responseDate[] = Pt_Commons_General::humanReadableDateFormat($date) . '  and Above';
             }
         }
+
         return json_encode($responseResult) . '#' . json_encode($responseDate);
     }
 
