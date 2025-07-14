@@ -207,96 +207,175 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
     public function uploadBulkEnrollmentDetails($params)
     {
-        ini_set('memory_limit', -1);
-        ini_set('max_execution_time', -1);
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', 300);
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        $uploadedFilePath = null;
+
         try {
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $common = new Application_Service_Common();
+            // Validate file upload
+            if (!isset($_FILES['fileName']) || $_FILES['fileName']['error'] !== UPLOAD_ERR_OK) {
+                throw new Exception('No file uploaded or upload error occurred.');
+            }
+
             $allowedExtensions = ['xls', 'xlsx', 'csv'];
-            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
-            $fileName = str_replace(" ", "-", $fileName);
-            $random = Pt_Commons_MiscUtility::generateRandomString(6);
-            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $fileName = "$random-$fileName";
+            $extension = strtolower(pathinfo($_FILES['fileName']['name'], PATHINFO_EXTENSION));
+
+            if (!in_array($extension, $allowedExtensions)) {
+                throw new Exception('Invalid file extension. Only XLS, XLSX, and CSV files are allowed.');
+            }
+
+            // Process file upload
+            $originalFileName = $_FILES['fileName']['name'];
+            $sanitizedFileName = preg_replace('/[^A-Za-z0-9.]/', '-', $originalFileName);
+            $random = substr(md5(uniqid(rand(), true)), 0, 6);
+            $fileName = "{$random}-{$sanitizedFileName}";
+
             $tempDirectory = realpath(TEMP_UPLOAD_PATH);
-            if (in_array($extension, $allowedExtensions)) {
-                if (!file_exists($tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                    if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempDirectory . DIRECTORY_SEPARATOR . $fileName)) {
+            $uploadedFilePath = $tempDirectory . DIRECTORY_SEPARATOR . $fileName;
 
+            if (!move_uploaded_file($_FILES['fileName']['tmp_name'], $uploadedFilePath)) {
+                throw new Exception('Failed to move uploaded file.');
+            }
 
-                        $objPHPExcel = IOFactory::load($tempDirectory . DIRECTORY_SEPARATOR . $fileName);
-                        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
-                        $count = count($sheetData);
-                        $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
+            // Load Excel data
+            $objPHPExcel = IOFactory::load($uploadedFilePath);
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
-                        $where = [];
-                        $where[] = " list_name='$listName' ";
+            if (empty($sheetData) || count($sheetData) < 2) {
+                throw new Exception('Excel file is empty or has no data rows.');
+            }
 
-                        if (!empty($params['scheme'])) {
-                            $where[] = " scheme_id = '{$params['scheme']}'";
-                        }
+            // Prepare parameters
+            $listName = !empty($params['listName']) ? $params['listName'] : 'default';
+            $schemeId = $params['scheme'] ?? null;
 
-                        $this->delete(implode(' AND ', $where));
+            // Begin transaction
+            $db->beginTransaction();
 
-                        $enrollmentListId = Pt_Commons_General::generateULID();
-                        for ($i = 2; $i <= $count; ++$i) {
+            // Clear existing enrollments
+            $whereClause = "list_name = " . $db->quote($listName);
+            if (!empty($schemeId)) {
+                $whereClause .= " AND scheme_id = " . $db->quote($schemeId);
+            }
+            $db->delete('enrollments', $whereClause);
 
-                            if (empty($sheetData[$i]['A'])) {
-                                continue;
-                            }
-                            $pID = Pt_Commons_MiscUtility::cleanString($sheetData[$i]['A']);
+            // Process enrollments
+            $enrollmentListId = uniqid('enroll_', true);
+            $processedCount = 0;
 
-                            // Fetch participant data based on the unique identifier
-                            $participantData = $db->fetchRow(
-                                $db->select()
-                                    ->from('participant', ['participant_id']) // Fetch participant_id
-                                    ->where('unique_identifier = ?', $pID)
-                            );
+            for ($i = 2; $i <= count($sheetData); $i++) {
+                if (empty($sheetData[$i]['A'])) {
+                    continue;
+                }
 
-                            if ($participantData) {
+                $uniqueIdentifier = trim($sheetData[$i]['A']);
 
+                if (empty($uniqueIdentifier)) {
+                    continue;
+                }
 
-                                // Prepare raw SQL query for insertion with ON DUPLICATE KEY UPDATE
-                                $query = "INSERT INTO `enrollments` (`enrollment_id`, `list_name`, `participant_id`, `status`, `enrolled_on`)
-                                            VALUES (:enrollment_id, :list_name, :participant_id, :status, NOW())
-                                                    ON DUPLICATE KEY UPDATE
-                                                        `status` = VALUES(`status`),
-                                                        `enrolled_on` = VALUES(`enrolled_on`)";
+                // Get participant
+                $participantData = $db->fetchRow(
+                    $db->select()
+                        ->from('participant', ['participant_id'])
+                        ->where('unique_identifier = ?', $uniqueIdentifier)
+                        ->limit(1)
+                );
 
-                                // Bind the data
-                                $bind = [
-                                    'enrollment_id' => $enrollmentListId,
-                                    'list_name'     => $listName,
-                                    'scheme_id'   => $params['scheme'] ?? null,
-                                    'participant_id' => $participantData['participant_id'],
-                                    'status'        => 'enrolled'
-                                ];
+                if (!$participantData) {
+                    error_log("Participant not found: {$uniqueIdentifier}");
+                    continue;
+                }
 
-                                // Execute the query
-                                $db->query($query, $bind);
-                            } else {
-                                // Handle missing participant case
-                                throw new Exception("Participant with unique identifier '$pID' does not exist.");
-                            }
-                        }
-                        $auditDb = new Application_Model_DbTable_AuditLog();
-                        $auditDb->addNewAuditLog("Bulk imported enrollment", "enrollment");
-                        $alertMsg->message = 'Your file was imported successfully.';
-                    } else {
-                        $alertMsg->message = 'File not uploaded contact administrator to access permission';
+                // Insert or update enrollment using ON DUPLICATE KEY UPDATE
+                $insertData = [
+                    'enrollment_id' => $enrollmentListId,
+                    'list_name' => $listName,
+                    'scheme_id' => $schemeId,
+                    'participant_id' => $participantData['participant_id'],
+                    'status' => 'enrolled',
+                    'enrolled_on' => new Zend_Db_Expr('NOW()')
+                ];
+
+                // Remove null values
+                $insertData = array_filter($insertData, function ($value) {
+                    return $value !== null;
+                });
+
+                // Build column names and values for the query
+                $columns = array_keys($insertData);
+                $placeholders = array_fill(0, count($insertData), '?');
+                $values = array_values($insertData);
+
+                // Handle Zend_Db_Expr for NOW()
+                for ($idx = 0; $idx < count($values); $idx++) {
+                    if ($values[$idx] instanceof Zend_Db_Expr) {
+                        $placeholders[$idx] = $values[$idx]->__toString();
+                        unset($values[$idx]);
                     }
                 }
-            } else {
-                $alertMsg->message = 'Uploaded file entension not allowed. Only xls, xlsx and csv allowed';
+                $exist = $this->fetchRow(
+                    $this->select()
+                        ->where('enrollment_id', $enrollmentListId)
+                        ->where('list_name', $listName)
+                        ->where('scheme_id', $schemeId)
+                        ->where('participant_id', $participantData['participant_id'])
+                );
+                if (!$exist) {
+                    $sql = "INSERT INTO enrollments (" . implode(', ', $columns) . ") 
+                        VALUES (" . implode(', ', $placeholders) . ")
+                        ON DUPLICATE KEY UPDATE 
+                            enrollment_id = VALUES(enrollment_id),
+                            scheme_id = VALUES(scheme_id),
+                            status = VALUES(status),
+                            enrolled_on = VALUES(enrolled_on)";
+
+                    $db->query($sql, array_values($values));
+                    $processedCount++;
+                }
             }
+
+            // Log audit trail
+            try {
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Bulk imported {$processedCount} enrollments", "enrollment");
+            } catch (Exception $e) {
+                error_log("Audit log failed: " . $e->getMessage());
+            }
+
+            // Commit transaction
+            $db->commit();
+
+            $alertMsg->message = "Successfully imported {$processedCount} enrollments.";
+
+            return [
+                'success' => true,
+                'message' => $alertMsg->message,
+                'processed_count' => $processedCount
+            ];
         } catch (Exception $e) {
-            // If any of the queries failed and threw an exception,
-            // we want to roll back the whole transaction, reversing
-            // changes made in the transaction, even those that succeeded.
-            // Thus all changes are committed together, or none are.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            // Rollback transaction
+            if ($db->getConnection()->inTransaction()) {
+                $db->rollback();
+            }
+
+            error_log("BULK ENROLLMENT ERROR: " . $e->getMessage());
+
+            $alertMsg->message = 'Error during import: ' . $e->getMessage();
+
+            return [
+                'success' => false,
+                'message' => $alertMsg->message,
+                'error' => $e->getMessage()
+            ];
+        } finally {
+            // Clean up uploaded file
+            if ($uploadedFilePath && file_exists($uploadedFilePath)) {
+                unlink($uploadedFilePath);
+            }
         }
     }
 }

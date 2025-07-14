@@ -588,10 +588,10 @@ class Application_Service_Participants
 						$value = "";
 					}
 					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+						->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 					$rRowCount = $rowNo + 5;
 					$cellName = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
-->getColumn();
+						->getColumn();
 					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
 					$sheet->getDefaultRowDimension()->setRowHeight(18);
 					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);

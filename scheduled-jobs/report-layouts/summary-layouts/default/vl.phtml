@@ -68,15 +68,18 @@ if ($resultArray['shipment'] != "") {
         if (isset($reportFormat) && !empty($reportFormat)) {
         } else {
             if ($layout != 'zimbabwe') {
-                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen<br>All Participants Results Report</span><br>All Participants Results Report';
                 $pdf->writeHTML($htmlTitle, true, false, true, false, '');
             }
         }
     }
+    $pdf->SetFont('freesans', '', 11);
+    $htmlTitle = '<span style="font-weight: bold;font-size:12;">PT Panel Name and Results Due Date: </span>' . $resultArray['shipment']['distribution_code'] . '(' . $resultArray['shipment']['shipment_date'] . ')<br>';
+    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel/Assay Name</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '<tr>';
         $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
@@ -98,7 +101,7 @@ if ($resultArray['shipment'] != "") {
                     $calRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;height:500px;">
                         <tr>
                             <!-- <td style="background-color:#8ECF64;text-align:center;"><br><br>Platform </td> -->
-                            <td style="background-color:#8ECF64;text-align:center;"><br><br>Specimen ID </td>
+                            <td style="background-color:#8ECF64;text-align:center;"><br><br>Sample ID </td>
                             <td style="background-color:#8ECF64;text-align:center;width:100px;"><br><br>Mean<br/>(log<sub>10</sub> copies/mL)</td>
                             <td style="background-color:#8ECF64;text-align:center;"><br><br>S.D.</td>
                             <td style="background-color:#8ECF64;text-align:center;">Lowest Acceptable Limit</td>
@@ -137,9 +140,6 @@ if ($resultArray['shipment'] != "") {
         if (count($resultArray['shipment']['vlCalculation']) > 0) {
 
             $referenceRes = '<table style="text-align:center;width:100%" align="left">';
-            $referenceRes .= '<tr>';
-            $referenceRes .= '<td style="font-weight:bold;">PT Panel Name and Results Due Date : <span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
-            $referenceRes .= '</tr>';
             $referenceRes .= '</table>';
             $pdf->writeHTML($referenceRes, true, false, true, false, '');
             $sample = [];
@@ -179,7 +179,7 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong><span style="font-weight:normal;">' . $vlCal['vlAssay'] . '</span></th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Sample ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
@@ -221,7 +221,7 @@ if ($resultArray['shipment'] != "") {
                                         <th colspan="8" cellpadding="8" style="font-size:12px;font-weight:normal;padding-top:5px;padding-bottom:5px;"><strong>Platform/Assay Name: </strong>VL platforms with < 18 participants</th>
                                     </tr>
                                     <tr>
-                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Specimen ID </th>
+                                        <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Sample ID </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Number of Participants </th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;">Assigned Value<br/>(log<sub>10</sub> copies/mL)</th>
                                         <th style="background-color:#8ECF64;text-align:center;font-size:12px;"><br/><br/>Lower limit <br/>(Q1)</th>
@@ -255,7 +255,9 @@ if ($resultArray['shipment'] != "") {
         }
 
         $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
-        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '</span>';
+        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '
+        <i><br>*Values from Abbott m2000 RealTime platform were used as a reference to evaluate results for VL platforms with less than 18 participants in this PT round.</i>
+        </span><br><hr>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
 
@@ -462,8 +464,11 @@ if ($resultArray['shipment'] != "") {
         $note .= '<h5>Procedures used to establish the assigned value:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories using the same VL platform were grouped together and analyzed for peer-comparison using the Normalized interquartile range (nIQR) method. Assigned value, Robust Standard Deviation, Standard Uncertainty of assigned value, z score and performance score were derived as per the Standard ISO13528: 2015(E). A VL platform with the most participants was used as a reference value to evaluate results for VL platforms with less than eighteen participants in this PT round.</span>';
 
-        $note .= '<h5>Subcontracting:</h5>';
-        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>';
+        /* $note .= '<h5>Subcontracting:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are subcontracted.</span>'; */
+        $note .= '<h5>Cooperative Agreement (CoAg) Partner:</h5>';
+        $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items and the ePT site administration are managed by a CoAg.</span>';
+
         $note .= '<h5>Confidentiality:</h5>';
         $note .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
