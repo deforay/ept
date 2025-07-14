@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-06-03 10:48+0530\n"
-"PO-Revision-Date: 2025-06-03 10:48+0530\n"
+"POT-Creation-Date: 2025-07-11 16:38+0530\n"
+"PO-Revision-Date: 2025-07-11 16:43+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -40,20 +40,20 @@ msgstr "Insatisfaisant"
 msgid "Excluded from evaluation"
 msgstr "Exclus de l'évaluation"
 
-#: application/services/Common.php:1202
+#: application/services/Common.php:1199
 msgid "Password must contain letters, numbers, and symbols"
 msgstr ""
 "Le mot de passe doit contenir des lettres, des chiffres et des symboles"
 
-#: application/services/Common.php:1207
+#: application/services/Common.php:1204
 msgid "Password must contain both letters and numbers."
 msgstr "Le mot de passe doit contenir des lettres et des chiffres."
 
-#: application/services/Common.php:1216
+#: application/services/Common.php:1213
 msgid "Password must not contain any part of your name."
 msgstr "Le mot de passe ne doit contenir aucune partie de votre nom."
 
-#: application/services/Common.php:1226
+#: application/services/Common.php:1223
 msgid "Password must not contain any part of your email."
 msgstr ""
 "Le mot de passe ne doit contenir aucune partie de votre adresse électronique."
@@ -1446,11 +1446,11 @@ msgstr "Statut du gène"
 #: application/views/scripts/recency/response.phtml:287
 #: application/views/scripts/recency/response.phtml:353
 #: application/views/scripts/recency/response.phtml:390
-#: application/views/scripts/tb/assay-formats.ajax.phtml:460
-#: application/views/scripts/tb/assay-formats.ajax.phtml:556
-#: application/views/scripts/tb/assay-formats.ajax.phtml:665
-#: application/views/scripts/tb/assay-formats.ajax.phtml:690
-#: application/views/scripts/tb/assay-formats.ajax.phtml:782
+#: application/views/scripts/tb/assay-formats.ajax.phtml:466
+#: application/views/scripts/tb/assay-formats.ajax.phtml:562
+#: application/views/scripts/tb/assay-formats.ajax.phtml:671
+#: application/views/scripts/tb/assay-formats.ajax.phtml:696
+#: application/views/scripts/tb/assay-formats.ajax.phtml:788
 #: application/views/scripts/tb/response.phtml:146
 #: application/views/scripts/tb/response.phtml:178
 #: application/views/scripts/tb/response.phtml:287
@@ -2861,7 +2861,7 @@ msgstr "Note minimale de réussite"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:23
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:17
 msgid "Panel/Shipment Score"
-msgstr "Score panneau/envoi"
+msgstr "Score panel/envoi"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:25
 msgid "Please enter the Panel Score breakup"
@@ -5365,7 +5365,7 @@ msgstr "Code Motif"
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:33
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:36
 msgid "Collect Panel Receipt Date?"
-msgstr "Date de réception du panneau de collecte ?"
+msgstr "Date de réception du panel de collecte ?"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:10
 msgid "Edit Not Teasted Reason"
@@ -5386,7 +5386,7 @@ msgstr "Régime disponible"
 
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/index.phtml:17
 msgid "If It Collect Panel Receipt Date?"
-msgstr "Date de réception du panneau de collecte ?"
+msgstr "Date de réception du panel de collecte ?"
 
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:61
 #: application/modules/admin/views/scripts/shipment/dbs-form.phtml:40
@@ -5978,7 +5978,7 @@ msgstr "MTB/Rif"
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:176
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:304
 #: application/modules/admin/views/scripts/shipment/tb-form.phtml:354
-#: application/views/scripts/tb/assay-formats.ajax.phtml:761
+#: application/views/scripts/tb/assay-formats.ajax.phtml:767
 msgid "Rif Resistance"
 msgstr "Résistance du Rif"
 
@@ -6119,7 +6119,7 @@ msgstr "Enquête PT (non expédiée)"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:99
 msgid "Panel Name"
-msgstr "Nom du panneau"
+msgstr "Nom du panel"
 
 #: application/modules/admin/views/scripts/shipment/index.phtml:252
 msgid "Are you sure you wish to switch this shipment"
@@ -6957,7 +6957,7 @@ msgstr "Résultats de tous les sites en matière de tuberculose"
 #: application/views/scripts/participant/tb-all-sites-results.phtml:16
 #: application/views/scripts/participant/xtpt-indicators.phtml:14
 msgid "Select Panel"
-msgstr "Panneau de sélection"
+msgstr "Panel de sélection"
 
 #: application/modules/reports/views/scripts/testkit/index.phtml:19
 #: application/modules/reports/views/scripts/testkit/index.phtml:136
@@ -7344,7 +7344,7 @@ msgstr "Date de réception du test"
 #: application/views/scripts/dts/response.phtml:209
 #: application/views/scripts/recency/response.phtml:111
 msgid "Sample Rehydration Date"
-msgstr "Date de réhydratation de l'échantillon"
+msgstr "Date de reconstitution de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:172
 #: application/views/scripts/covid19/response.phtml:180
@@ -7388,7 +7388,7 @@ msgstr "Date de réhydratation de l'échantillon"
 #: application/views/scripts/recency/response.phtml:149
 #: application/views/scripts/recency/response.phtml:165
 #: application/views/scripts/recency/response.phtml:220
-#: application/views/scripts/tb/assay-formats.ajax.phtml:747
+#: application/views/scripts/tb/assay-formats.ajax.phtml:753
 #: application/views/scripts/tb/response.phtml:171
 #: application/views/scripts/tb/response.phtml:202
 #: application/views/scripts/tb/response.phtml:224
@@ -7400,7 +7400,7 @@ msgstr "Effacer"
 #: application/views/scripts/dbs/response.phtml:91
 #: application/views/scripts/vl/response.phtml:173
 msgid "Testing Date"
-msgstr "Date du test"
+msgstr "Date d’analyse"
 
 #: application/views/scripts/covid19/response.phtml:183
 msgid "Specimen Volume"
@@ -7436,8 +7436,8 @@ msgstr "QC Fait"
 #: application/views/scripts/participant/report.phtml:63
 #: application/views/scripts/participant/schemeinfo.phtml:8
 #: application/views/scripts/recency/response.phtml:162
-#: application/views/scripts/tb/assay-formats.ajax.phtml:408
-#: application/views/scripts/tb/assay-formats.ajax.phtml:613
+#: application/views/scripts/tb/assay-formats.ajax.phtml:414
+#: application/views/scripts/tb/assay-formats.ajax.phtml:619
 #: application/views/scripts/tb/response.phtml:221
 #: application/views/scripts/vl/response.phtml:283
 msgid "Response Date"
@@ -7472,7 +7472,7 @@ msgstr "Nombre de tests"
 #: application/views/scripts/recency/response.phtml:233
 #: application/views/scripts/vl/response.phtml:353
 msgid "PT panel not tested"
-msgstr "Panneau PT non testé"
+msgstr " PT Panel non techniqué"
 
 #: application/views/scripts/covid19/response.phtml:296
 #: application/views/scripts/dts/response.phtml:424
@@ -7574,7 +7574,7 @@ msgstr "Vos commentaires"
 #: application/views/scripts/recency/response.phtml:319
 #: application/views/scripts/vl/response.phtml:526
 msgid "Do you need any support from the PT Provider?"
-msgstr "Avez-vous besoin d'un soutien de la part du prestataire de PT ?"
+msgstr "Avez-vous besoin d'un soutien de la part du PT Provider?"
 
 #: application/views/scripts/covid19/response.phtml:555
 #: application/views/scripts/dbs/response.phtml:342
@@ -7726,11 +7726,11 @@ msgstr "sont obligatoires"
 
 #: application/views/scripts/dts/response.phtml:192
 msgid "Panel Receipt Date"
-msgstr "Date de réception du panneau"
+msgstr "Date de réception du panel"
 
 #: application/views/scripts/dts/response.phtml:198
 msgid "Panel Testing Date"
-msgstr "Date du test du panel"
+msgstr "Date d’analyse de panel"
 
 #: application/views/scripts/dts/response.phtml:223
 msgid "Algorithm Used"
@@ -7822,7 +7822,7 @@ msgstr "Répétition des tests"
 
 #: application/views/scripts/dts/response.phtml:735
 msgid "PT Panel Identifier"
-msgstr "Identifiant du panneau PT"
+msgstr "Identifiant du panel PT"
 
 #: application/views/scripts/dts/response.phtml:743
 msgid "Repeat Result-1"
@@ -7968,7 +7968,7 @@ msgstr "Nom du site du participant"
 #: application/views/scripts/generic-test/response.phtml:116
 #: application/views/scripts/tb/response.phtml:134
 msgid "Were you able to test the Panel?"
-msgstr "Avez-vous pu tester le panneau ?"
+msgstr "Avez-vous pu tester le panel?"
 
 #: application/views/scripts/generic-test/response.phtml:118
 #: application/views/scripts/tb/response.phtml:136
@@ -7986,7 +7986,7 @@ msgstr "Nom de l'analyste"
 
 #: application/views/scripts/generic-test/response.phtml:148
 msgid "Date Panel Received"
-msgstr "Date de réception du panneau"
+msgstr "Date de réception du panel"
 
 #: application/views/scripts/generic-test/response.phtml:155
 msgid "Date Tested"
@@ -8010,19 +8010,19 @@ msgid "Invalid/Error"
 msgstr "Invalide/Erreur"
 
 #: application/views/scripts/generic-test/response.phtml:203
-#: application/views/scripts/tb/assay-formats.ajax.phtml:67
-#: application/views/scripts/tb/assay-formats.ajax.phtml:179
-#: application/views/scripts/tb/assay-formats.ajax.phtml:437
-#: application/views/scripts/tb/assay-formats.ajax.phtml:536
-#: application/views/scripts/tb/assay-formats.ajax.phtml:642
-#: application/views/scripts/tb/assay-formats.ajax.phtml:821
+#: application/views/scripts/tb/assay-formats.ajax.phtml:73
+#: application/views/scripts/tb/assay-formats.ajax.phtml:185
+#: application/views/scripts/tb/assay-formats.ajax.phtml:443
+#: application/views/scripts/tb/assay-formats.ajax.phtml:542
+#: application/views/scripts/tb/assay-formats.ajax.phtml:648
+#: application/views/scripts/tb/assay-formats.ajax.phtml:827
 #: application/views/scripts/vl/response.phtml:378
 msgid "Error Code"
 msgstr "Code d'Erreur"
 
 #: application/views/scripts/generic-test/response.phtml:240
-#: application/views/scripts/tb/assay-formats.ajax.phtml:462
-#: application/views/scripts/tb/assay-formats.ajax.phtml:667
+#: application/views/scripts/tb/assay-formats.ajax.phtml:468
+#: application/views/scripts/tb/assay-formats.ajax.phtml:673
 #: application/views/scripts/vl/response.phtml:434
 msgid "Invalid"
 msgstr "Invalide"
@@ -8717,46 +8717,46 @@ msgstr "Télécharger le formulaire d'expédition"
 msgid "Submission Due Date"
 msgstr "Date limite de soumission"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:42
-#: application/views/scripts/tb/assay-formats.ajax.phtml:154
+#: application/views/scripts/tb/assay-formats.ajax.phtml:48
+#: application/views/scripts/tb/assay-formats.ajax.phtml:160
 msgid "Cycle Threshold Values"
 msgstr "Valeurs seuils du cycle"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:46
-#: application/views/scripts/tb/assay-formats.ajax.phtml:158
-#: application/views/scripts/tb/assay-formats.ajax.phtml:426
-#: application/views/scripts/tb/assay-formats.ajax.phtml:631
-#: application/views/scripts/tb/assay-formats.ajax.phtml:808
+#: application/views/scripts/tb/assay-formats.ajax.phtml:52
+#: application/views/scripts/tb/assay-formats.ajax.phtml:164
+#: application/views/scripts/tb/assay-formats.ajax.phtml:432
+#: application/views/scripts/tb/assay-formats.ajax.phtml:637
+#: application/views/scripts/tb/assay-formats.ajax.phtml:814
 msgid "PT Sample"
 msgstr "Échantillon de PT"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:57
+#: application/views/scripts/tb/assay-formats.ajax.phtml:63
 msgid "Probe D"
 msgstr "Sonde D"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:58
+#: application/views/scripts/tb/assay-formats.ajax.phtml:64
 msgid "Probe C"
 msgstr "Sonde C"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:59
+#: application/views/scripts/tb/assay-formats.ajax.phtml:65
 msgid "Probe E "
 msgstr "Sonde E "
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:60
+#: application/views/scripts/tb/assay-formats.ajax.phtml:66
 msgid "Probe B"
 msgstr "Sonde B"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:61
-#: application/views/scripts/tb/assay-formats.ajax.phtml:169
+#: application/views/scripts/tb/assay-formats.ajax.phtml:67
+#: application/views/scripts/tb/assay-formats.ajax.phtml:175
 msgid "SPC"
 msgstr "SPC"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:62
+#: application/views/scripts/tb/assay-formats.ajax.phtml:68
 msgid "Probe A"
 msgstr "Sonde A"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:63
-#: application/views/scripts/tb/assay-formats.ajax.phtml:175
+#: application/views/scripts/tb/assay-formats.ajax.phtml:69
+#: application/views/scripts/tb/assay-formats.ajax.phtml:181
 #: application/views/scripts/tb/response.phtml:211
 #: application/views/scripts/vl/response.phtml:218
 #: application/views/scripts/vl/response.phtml:245
@@ -8764,207 +8764,215 @@ msgstr "Sonde A"
 msgid "Instrument Serial Number"
 msgstr "Numéro de série de l'instrument"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:64
-#: application/views/scripts/tb/assay-formats.ajax.phtml:176
+#: application/views/scripts/tb/assay-formats.ajax.phtml:70
+#: application/views/scripts/tb/assay-formats.ajax.phtml:182
 msgid "Xpert Module Number"
 msgstr "Numéro du module Xpert"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:65
-#: application/views/scripts/tb/assay-formats.ajax.phtml:177
-#: application/views/scripts/tb/assay-formats.ajax.phtml:435
-#: application/views/scripts/tb/assay-formats.ajax.phtml:534
-#: application/views/scripts/tb/assay-formats.ajax.phtml:640
-#: application/views/scripts/tb/assay-formats.ajax.phtml:819
+#: application/views/scripts/tb/assay-formats.ajax.phtml:71
+#: application/views/scripts/tb/assay-formats.ajax.phtml:183
+#: application/views/scripts/tb/assay-formats.ajax.phtml:441
+#: application/views/scripts/tb/assay-formats.ajax.phtml:540
+#: application/views/scripts/tb/assay-formats.ajax.phtml:646
+#: application/views/scripts/tb/assay-formats.ajax.phtml:825
 msgid "Test Date"
 msgstr "Date de l’examen"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:66
-#: application/views/scripts/tb/assay-formats.ajax.phtml:178
-#: application/views/scripts/tb/assay-formats.ajax.phtml:430
+#: application/views/scripts/tb/assay-formats.ajax.phtml:72
+#: application/views/scripts/tb/assay-formats.ajax.phtml:184
 #: application/views/scripts/tb/assay-formats.ajax.phtml:436
-#: application/views/scripts/tb/assay-formats.ajax.phtml:527
-#: application/views/scripts/tb/assay-formats.ajax.phtml:535
-#: application/views/scripts/tb/assay-formats.ajax.phtml:635
+#: application/views/scripts/tb/assay-formats.ajax.phtml:442
+#: application/views/scripts/tb/assay-formats.ajax.phtml:533
+#: application/views/scripts/tb/assay-formats.ajax.phtml:541
 #: application/views/scripts/tb/assay-formats.ajax.phtml:641
-#: application/views/scripts/tb/assay-formats.ajax.phtml:759
-#: application/views/scripts/tb/assay-formats.ajax.phtml:820
+#: application/views/scripts/tb/assay-formats.ajax.phtml:647
+#: application/views/scripts/tb/assay-formats.ajax.phtml:765
+#: application/views/scripts/tb/assay-formats.ajax.phtml:826
 msgid "Tester Name"
 msgstr "Nom du testeur"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:170
+#: application/views/scripts/tb/assay-formats.ajax.phtml:176
 msgid "IS1081-IS6110"
 msgstr "IS1081-IS6110"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:171
+#: application/views/scripts/tb/assay-formats.ajax.phtml:177
 msgid "rpoB1"
 msgstr "rpoB1"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:172
+#: application/views/scripts/tb/assay-formats.ajax.phtml:178
 msgid "rpoB2"
 msgstr "rpoB2"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:173
+#: application/views/scripts/tb/assay-formats.ajax.phtml:179
 msgid "rpoB3"
 msgstr "rpoB3"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:174
+#: application/views/scripts/tb/assay-formats.ajax.phtml:180
 msgid "rpoB4"
 msgstr "rpoB4"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:246
+#: application/views/scripts/tb/assay-formats.ajax.phtml:252
 msgid "-- Select --"
 msgstr "-- Sélectionner --"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:387
-#: application/views/scripts/tb/assay-formats.ajax.phtml:592
+#: application/views/scripts/tb/assay-formats.ajax.phtml:393
+#: application/views/scripts/tb/assay-formats.ajax.phtml:598
 msgid "Truenat prep Auto cartridge Lot Number"
 msgstr "Truenat prep Auto cartridge Numéro de lot"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:391
-#: application/views/scripts/tb/assay-formats.ajax.phtml:596
+#: application/views/scripts/tb/assay-formats.ajax.phtml:397
+#: application/views/scripts/tb/assay-formats.ajax.phtml:602
 msgid "Expiration"
 msgstr "Expiration"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:398
-#: application/views/scripts/tb/assay-formats.ajax.phtml:603
+#: application/views/scripts/tb/assay-formats.ajax.phtml:404
+#: application/views/scripts/tb/assay-formats.ajax.phtml:609
 msgid "Truenat MTB chip Lot No"
 msgstr "Truenat MTB chip Lot No"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:422
-#: application/views/scripts/tb/assay-formats.ajax.phtml:627
+#: application/views/scripts/tb/assay-formats.ajax.phtml:428
+#: application/views/scripts/tb/assay-formats.ajax.phtml:633
 msgid "DNA Extraction"
 msgstr "Extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:423
-#: application/views/scripts/tb/assay-formats.ajax.phtml:628
+#: application/views/scripts/tb/assay-formats.ajax.phtml:429
+#: application/views/scripts/tb/assay-formats.ajax.phtml:634
 msgid "MTB Detection Results"
 msgstr "Résultats de la détection de MTB"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:427
-#: application/views/scripts/tb/assay-formats.ajax.phtml:632
+#: application/views/scripts/tb/assay-formats.ajax.phtml:433
+#: application/views/scripts/tb/assay-formats.ajax.phtml:638
 msgid "DNA Extraction Date"
 msgstr "Date d'extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:428
-#: application/views/scripts/tb/assay-formats.ajax.phtml:633
+#: application/views/scripts/tb/assay-formats.ajax.phtml:434
+#: application/views/scripts/tb/assay-formats.ajax.phtml:639
 msgid "DNA Extraction Status"
 msgstr "Statut de l'extraction de l'ADN"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:429
-#: application/views/scripts/tb/assay-formats.ajax.phtml:634
+#: application/views/scripts/tb/assay-formats.ajax.phtml:435
+#: application/views/scripts/tb/assay-formats.ajax.phtml:640
 msgid "Molbio Truenat TB Test Date"
 msgstr "Molbio Truenat TB Test Date"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:431
-#: application/views/scripts/tb/assay-formats.ajax.phtml:636
+#: application/views/scripts/tb/assay-formats.ajax.phtml:437
+#: application/views/scripts/tb/assay-formats.ajax.phtml:642
 msgid "Mycobacterium tuberculosis complex (MTBC) Detected"
 msgstr "Détection du complexe Mycobacterium tuberculosis (MTBC)"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:432
-#: application/views/scripts/tb/assay-formats.ajax.phtml:533
-#: application/views/scripts/tb/assay-formats.ajax.phtml:637
-#: application/views/scripts/tb/assay-formats.ajax.phtml:765
+#: application/views/scripts/tb/assay-formats.ajax.phtml:438
+#: application/views/scripts/tb/assay-formats.ajax.phtml:539
+#: application/views/scripts/tb/assay-formats.ajax.phtml:643
+#: application/views/scripts/tb/assay-formats.ajax.phtml:771
 msgid "Control Ct"
 msgstr "Contrôle Ct"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:433
-#: application/views/scripts/tb/assay-formats.ajax.phtml:638
+#: application/views/scripts/tb/assay-formats.ajax.phtml:439
+#: application/views/scripts/tb/assay-formats.ajax.phtml:644
 msgid "MTB Ct"
 msgstr "MTB Ct"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:434
+#: application/views/scripts/tb/assay-formats.ajax.phtml:440
 msgid "CFU/mL"
 msgstr "CFU/mL"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:461
-#: application/views/scripts/tb/assay-formats.ajax.phtml:666
+#: application/views/scripts/tb/assay-formats.ajax.phtml:467
+#: application/views/scripts/tb/assay-formats.ajax.phtml:672
 msgid "Valid"
 msgstr "Valide"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:507
-#: application/views/scripts/tb/assay-formats.ajax.phtml:740
+#: application/views/scripts/tb/assay-formats.ajax.phtml:513
+#: application/views/scripts/tb/assay-formats.ajax.phtml:746
 #: application/views/scripts/vl/response.phtml:229
 #: application/views/scripts/vl/response.phtml:256
 msgid "Assay Lot"
 msgstr "Numéro du lot d'essai"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:511
-#: application/views/scripts/tb/assay-formats.ajax.phtml:744
+#: application/views/scripts/tb/assay-formats.ajax.phtml:517
+#: application/views/scripts/tb/assay-formats.ajax.phtml:750
 msgid "Assay Expiration:"
 msgstr "Expiration de l'essai :"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:522
-#: application/views/scripts/tb/assay-formats.ajax.phtml:755
+#: application/views/scripts/tb/assay-formats.ajax.phtml:528
+#: application/views/scripts/tb/assay-formats.ajax.phtml:761
 msgid "Rif Dx Results"
 msgstr "Résultats de la Dx Rif"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:525
+#: application/views/scripts/tb/assay-formats.ajax.phtml:531
 msgid "PT Samples"
 msgstr "Échantillons PT"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:526
-#: application/views/scripts/tb/assay-formats.ajax.phtml:758
+#: application/views/scripts/tb/assay-formats.ajax.phtml:532
+#: application/views/scripts/tb/assay-formats.ajax.phtml:764
 msgid "Rif Dx Test Date"
 msgstr "Rif Dx Test Date"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:529
+#: application/views/scripts/tb/assay-formats.ajax.phtml:535
 msgid "RIF Resistance"
 msgstr "Résistance au FRR"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:531
-#: application/views/scripts/tb/assay-formats.ajax.phtml:763
+#: application/views/scripts/tb/assay-formats.ajax.phtml:537
+#: application/views/scripts/tb/assay-formats.ajax.phtml:769
 msgid "P2"
 msgstr "P2"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:532
-#: application/views/scripts/tb/assay-formats.ajax.phtml:764
+#: application/views/scripts/tb/assay-formats.ajax.phtml:538
+#: application/views/scripts/tb/assay-formats.ajax.phtml:770
 msgid "P1"
 msgstr "P1"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:558
-#: application/views/scripts/tb/assay-formats.ajax.phtml:784
+#: application/views/scripts/tb/assay-formats.ajax.phtml:564
+#: application/views/scripts/tb/assay-formats.ajax.phtml:790
 msgid "Detected"
 msgstr "Détecté"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:559
-#: application/views/scripts/tb/assay-formats.ajax.phtml:785
+#: application/views/scripts/tb/assay-formats.ajax.phtml:565
+#: application/views/scripts/tb/assay-formats.ajax.phtml:791
 msgid "Not Detected"
 msgstr "Non détecté"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:560
-#: application/views/scripts/tb/assay-formats.ajax.phtml:786
+#: application/views/scripts/tb/assay-formats.ajax.phtml:566
+#: application/views/scripts/tb/assay-formats.ajax.phtml:792
 msgid "Indeterminate"
 msgstr "Indéterminé"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:639
+#: application/views/scripts/tb/assay-formats.ajax.phtml:645
 msgid "Quantification"
 msgstr "Quantification"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:691
+#: application/views/scripts/tb/assay-formats.ajax.phtml:697
 msgid "High"
 msgstr "Élevé"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:692
+#: application/views/scripts/tb/assay-formats.ajax.phtml:698
 msgid "Medium"
 msgstr "Moyen"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:693
+#: application/views/scripts/tb/assay-formats.ajax.phtml:699
 msgid "Low"
 msgstr "Basse"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:694
+#: application/views/scripts/tb/assay-formats.ajax.phtml:700
 msgid "Very Low"
 msgstr "Très faible"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:857
+#: application/views/scripts/tb/assay-formats.ajax.phtml:817
+msgid "Reference/Expected MTBC"
+msgstr "Référence/attendu MTBC"
+
+#: application/views/scripts/tb/assay-formats.ajax.phtml:829
+msgid "Calculated Score"
+msgstr "Score calculé"
+
+#: application/views/scripts/tb/assay-formats.ajax.phtml:866
 msgid "DETECTED"
 msgstr "DÉTECTÉ"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:858
+#: application/views/scripts/tb/assay-formats.ajax.phtml:867
 msgid "NOT DETECTED"
 msgstr "NON DÉTECTÉ"
 
-#: application/views/scripts/tb/assay-formats.ajax.phtml:859
+#: application/views/scripts/tb/assay-formats.ajax.phtml:868
 msgid "INDETERMINATE"
 msgstr "INDÉTERMINÉ"
 
@@ -8974,7 +8982,7 @@ msgstr "Autre (veuillez expliquer dans la case commentaire ci-dessous)"
 
 #: application/views/scripts/tb/response.phtml:163
 msgid "Panel Received Date"
-msgstr "Date de réception du panneau"
+msgstr "Date de réception du panel"
 
 #: application/views/scripts/tb/response.phtml:168
 msgid "Submission Date"
