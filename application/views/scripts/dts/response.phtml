@@ -1376,9 +1376,11 @@ foreach ($this->allTestKits as $kit) {
         if (obj.value == 'other') {
             <?php if ((!isset($disableOtherTestkit) || empty($disableOtherTestkit)) || $disableOtherTestkit != 'yes') { ?>
                 document.getElementById(repeat + "test_kit_other_name_" + res[i]).style.display = "block";
+                $('#' + repeat + "test_kit_other_name_" + res[i]).addClass('isRequired');
             <?php } ?>
         } else {
             document.getElementById(repeat + "test_kit_other_name_" + res[i]).style.display = "none";
+            $('#' + repeat + "test_kit_other_name_" + res[i]).removeClass('isRequired');
             $("#test_kit_other_name_" + res[3]).val('');
         }
     }
