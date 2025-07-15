@@ -565,7 +565,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 	});
 
 	function testKitChanged(value) {
-		if (value == 'other') {
+		if (value.toLowerCase() == 'other') {
 			$('#kitNameOther').show();
 			$('#kitNameOther').addClass('isRequired');
 		} else {
