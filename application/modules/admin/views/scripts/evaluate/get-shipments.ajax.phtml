@@ -12,7 +12,8 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 	if ($this->shipments[0]['distribution_date'] <= $currentDate) {
 		$finalCheckReportDate = 1;
 	}
-	// Zend_Debug::dump($this->shipmentStatus);die;
+	// Zend_Debug::dump($this->shecdule['requested_on']);
+
 	if (isset($this->shipmentStatus['generateReport']['status']) && $this->shipmentStatus['generateReport']['status'] == 'pending') {
 		$pariticpantReportTitle = 'Processing..';
 		$indReportQueue = 'disabled';
@@ -73,6 +74,16 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 						} else {
 							$buttonText = $this->translate->_("Evaluate");
 							$buttonStatus = true;
+						}
+						if ($shipment['status'] == 'queued') {
+							$statusUpdateOn = $shipment['updated_on_admin'];
+							$currentTime = date('Y-m-d H:i:s');
+							$timeDiff = strtotime($currentTime) - strtotime($statusUpdateOn);
+							$isMinEarly = $timeDiff >= (15 * 60);
+							if ($isMinEarly) {
+								$buttonStatus = true;
+								$buttonText = $this->translate->_("Re-Evaluate");
+							}
 						}
 				?>
 						<tr>

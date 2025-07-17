@@ -46,7 +46,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $db->update('shipment', array('status' => "queued"), "shipment_id = " . $shipmentId);
+        $db->update('shipment', array('status' => "queued", "updated_on_admin" => Pt_Commons_General::getDateTime()), "shipment_id = " . $shipmentId);
 
         if (isset($shipmentId) && !empty($shipmentId)) {
             return $this->insert([
