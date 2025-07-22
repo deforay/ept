@@ -46,6 +46,11 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <div class="col-lg-8"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Department Name here" placeholder="<?= $this->translate->_('Please enter the Department Name here'); ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span class="mandatory">*</span></label>
+
+                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
+            </div>
+            <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
 
                 <div class="col-lg-8"><textarea id="address" name="address" size="50" class="form-control" title="Please enter the address here" placeholder="<?= $this->translate->_('Please enter the address here'); ?>"></textarea></div>
@@ -147,11 +152,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
                     <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="<?= $this->translate->_('Please enter the contact name here'); ?>" /></div>
-                </div>
-                <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?> <span class="mandatory">*</span></label>
-
-                    <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" placeholder="<?= $this->translate->_('Please enter the email id here'); ?>" /></div>
                 </div>
                 <div class="form-group col-lg-6">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
