@@ -317,13 +317,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
         $dmDb = new Application_Model_DbTable_DataManagers();
         $configDb = new Application_Model_DbTable_GlobalConfig();
-        $directParticipantLogin = $configDb->getValue('direct_participant_login');
-        if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+        // $directParticipantLogin = $configDb->getValue('direct_participant_login');
+        // if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) || isset($params['pemail']) && !empty($params['pemail'])) {
             $globalDb = new Application_Model_DbTable_GlobalConfig();
             $prefix = $globalDb->getValue('participant_login_prefix');
 
             $dmData = [
                 'data_manager_type' => 'participant',
+                'primary_email' => $params['pemail'],
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],
@@ -333,9 +335,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 'updated_on' => new Zend_Db_Expr('now()'),
                 'updated_by' => $authNameSpace->admin_id
             ];
-            if (($exist['unique_identifier'] != $params['pid'])) {
-                $dmData['primary_email'] = $prefix . $params['pid'];
-            }
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = Common::passwordHash($params['dmPassword']);
             }
@@ -414,13 +413,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $dmDb = new Application_Model_DbTable_DataManagers();
         $db = Zend_Db_Table_Abstract::getAdapter();
         $configDb = new Application_Model_DbTable_GlobalConfig();
-        $directParticipantLogin = $configDb->getValue('direct_participant_login');
-        if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
+        // $directParticipantLogin = $configDb->getValue('direct_participant_login');
+        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) || isset($params['pemail']) && !empty($params['pemail'])) {
             $newDmId =  $dmDb->insert([
-                'primary_email' => $prefix . $params['pid'],
+                'primary_email' => $params['pemail'] ?? $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
-                'password' => Common::passwordHash($params['dmPassword']),
+                'password' => Common::passwordHash($params['dmPassword'] ?? 'ept1@)(*&^'),
                 'first_name' => $params['pfname'],
                 'last_name' => $params['plname'],
                 'institute' => $params['instituteName'],

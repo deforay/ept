@@ -27,7 +27,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6" id="firstNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name or First Name here'); ?>" />
+                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name or First Name here'); ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6" id="lastNameDiv">
@@ -49,6 +49,18 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="<?= $this->translate->_('Please enter a password'); ?>" autocomplete="off">
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
+                <div class="col-lg-8">
+                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
+                </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
@@ -152,18 +164,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
                     <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="<?= $this->translate->_('Please enter the contact name here'); ?>" /></div>
-                </div>
-                <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
-                    <div class="col-lg-8">
-                        <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="<?= $this->translate->_('Please enter a password'); ?>" autocomplete="off">
-                    </div>
-                </div>
-                <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
-                    <div class="col-lg-8">
-                        <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
-                    </div>
                 </div>
             <?php } else { ?>
                 <div class="form-group col-lg-12">
