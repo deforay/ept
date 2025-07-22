@@ -1,12 +1,27 @@
 <?php
 $echoResult = [];
+$totalCount = 0; // Add total count for pagination
+
 if (count($this->results) > 0) {
     foreach ($this->results as $row) {
-        $echoResult[] = array("id" => $row[$this->arguments['returnId']], "text" => $row['concat']);
+        // Fix: Ensure proper text formatting and handle empty values
+        $text = !empty($row['concat']) ? trim($row['concat']) : 'N/A';
+        $fieldId = $this->arguments['returnId'];
+        $echoResult[] = array(
+            "id" => $row[$fieldId],
+            "text" => $text,
+            'selected' => ($selected && $selected == $row[$fieldId]) ? true : false
+        );
+        $totalCount++;
     }
 } else {
-    $echoResult[] = array("id" => '', 'text' => '');
+    // Don't add empty option - let Select2 handle "No results found"
+    // $echoResult[] = array("id" => '', 'text' => '');
 }
 
-$result = array("result" => $echoResult);
+$result = array(
+    "result" => $echoResult,
+    "total_count" => $totalCount // Add for pagination
+);
+
 echo json_encode($result);

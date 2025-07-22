@@ -482,4 +482,10 @@ class Application_Service_DataManagers
         $result = $db->fetchRow($sQuery);
         return $userDb->dmParticipantMap($result, $id, true);
     }
+
+    public function getDataManaersByParticipantId($participantId)
+    {
+        $userDb = new Application_Model_DbTable_DataManagers();
+        return $userDb->fetchDataManaersByParticipantId($participantId);
+    }
 }

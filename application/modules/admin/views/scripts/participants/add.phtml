@@ -71,13 +71,13 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
-                        <option value=""></option>
+                        <!--  <option value=""></option>
                         <?php foreach ($this->countriesList as $cou) {
                         ?>
                             <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
                         <?php
                         }
-                        ?>
+                        ?> -->
                     </select>
                 </div>
             </div>
@@ -267,43 +267,64 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         /* $(".select2").select2({
             allowClear: true
         }); */
-        $("#dataManager").select2({
-            placeholder: "Select PT Participant Login",
-            minimumInputLength: 3,
-            width: '96%',
-            allowClear: true,
-            ajax: {
-                placeholder: "Type participant name to search",
-                url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager-names')); ?>",
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term, // search term
-                        page: params.page
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.result,
-                        pagination: {
-                            more: (params.page * 30) < data.total_count
-                        }
-                    };
-                },
-                //cache: true
-            },
-            escapeMarkup: function(markup) {
-                return markup;
-            }
-        });
         $('#enrolledProgram').selectpicker();
-        $('#country').selectpicker();
+        // $('#country').selectpicker();
         /* tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name here'); ?>"/></div>'; */
         $("#lastNameDiv,#firstNameDiv").hide();
         $("#plname").val('');
         // $("#firstNameDiv").html(tag);
+
+        let _tables = ['data_manager', 'countries'];
+        let _elements = ['dataManager', 'country'];
+        let _returnId = ['dm_id', 'id'];
+        let _fieldNames = [
+            ['first_name', 'last_name', 'institute', 'primary_email'], // Array for multiple fields
+            ['iso_name'] // Array for single field (keep consistent structure)
+        ];
+        let _concat = [
+            ['first_name', 'last_name', 'institute', 'primary_email'], // Fields to concatenate
+            ['iso_name'] // Field to concatenate
+        ];
+
+        $(_elements).each(function(i, e) {
+            $("#" + _elements[i]).select2({
+                placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
+                minimumInputLength: 0,
+                width: '100%',
+                allowClear: true,
+                id: function(bond) {
+                    return bond._id;
+                },
+                ajax: {
+                    placeholder: "<?= $this->translate->_("Type list to search"); ?>",
+                    url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            tableName: _tables[i],
+                            returnId: _returnId[i],
+                            fieldNames: _fieldNames[i],
+                            concat: _concat[i],
+                            search: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.result,
+                            pagination: {
+                                more: (params.page * 10) < data.total_count
+                            }
+                        };
+                    }
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                }
+            });
+        });
     });
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
@@ -326,6 +347,10 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     }
 
     function validateNow() {
+        if ($('#dmPassword').val() == '' && $('#dataManager').val() == '') {
+            alert('Please choose either to log in with your PT account or enter your email ID and password.');
+            return false;
+        }
         $(".bootstrap-select").removeClass('isRequired');
         //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
 

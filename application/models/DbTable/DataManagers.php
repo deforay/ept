@@ -471,7 +471,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->from(['u' => $this->_name]);
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
-        $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
+        if (isset($searchParams) && !empty($searchParams))
+            $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sql =  $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', ['pmm.dm_id'])
@@ -480,6 +481,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sql =  $sql->where("data_manager_type != 'ptcc'");
         }
         //}
+
+        die($sql);
         return $db->fetchAll($sql);
     }
 
@@ -1502,5 +1505,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         $sql = $this->select()->from('data_manager')->where("primary_email = '" . $email . "' OR password = '" . $password . "'");
         return $this->fetchRow($sql);
+    }
+
+    public function fetchDataManaersByParticipantId($participantId)
+    {
+        $query = $this->getAdapter()->select()
+            ->from(['pmm' => 'participant_manager_map'], [])
+            ->joinLeft(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email'])
+            ->where("pmm.participant_id = ?", $participantId);
+        return $this->getAdapter()->fetchAll($query);
     }
 }

@@ -319,7 +319,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $configDb = new Application_Model_DbTable_GlobalConfig();
         // $directParticipantLogin = $configDb->getValue('direct_participant_login');
         // if (isset($directParticipantLogin) && $directParticipantLogin == 'yes') {
-        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) || isset($params['pemail']) && !empty($params['pemail'])) {
+        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) && isset($params['pemail']) && !empty($params['pemail'])) {
             $globalDb = new Application_Model_DbTable_GlobalConfig();
             $prefix = $globalDb->getValue('participant_login_prefix');
 
@@ -414,7 +414,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
         $configDb = new Application_Model_DbTable_GlobalConfig();
         // $directParticipantLogin = $configDb->getValue('direct_participant_login');
-        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) || isset($params['pemail']) && !empty($params['pemail'])) {
+        if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) && isset($params['pemail']) && !empty($params['pemail'])) {
             $newDmId =  $dmDb->insert([
                 'primary_email' => $params['pemail'] ?? $prefix . $params['pid'],
                 'participant_ulid' => $ulid,

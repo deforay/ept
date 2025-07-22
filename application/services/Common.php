@@ -1443,26 +1443,51 @@ class Application_Service_Common
     public function fetchAjaxDropdownList($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        // Fix: Handle concat fields properly
+        $concat = [];
         if (is_array($params['concat'])) {
-            foreach ($params['concat'] as $row) {
-                $concat[] = " COALESCE($row,'') ";
+            foreach ($params['concat'] as $field) {
+                $concat[] = "COALESCE($field,'')";
             }
         } else {
-            $concat[] = " COALESCE(" . $params['concat'] . ",'') ";
+            $concat[] = "COALESCE(" . $params['concat'] . ",'')";
         }
+
+        // Build the SQL query
         $sql = $db->select()->from($params['tableName'], [
             $params['returnId'],
-            'concat' => new Zend_Db_Expr("CONCAT( " . implode(",' '", $concat) . " )")
+            'concat' => new Zend_Db_Expr("CONCAT(" . implode(", ' ', ", $concat) . ")")
         ]);
-        if (is_array($params['fieldNames'])) {
-            foreach ($params['fieldNames'] as $key => $field) {
-                $sql = $sql->where("$field LIKE '%" . $params['search'] . "%'");
-                $sql = $sql->group($field);
+
+        // Fix: Handle search across multiple fields properly
+        if (isset($params['search']) && !empty($params['search'])) {
+            if (is_array($params['fieldNames'])) {
+                // Create OR conditions for searching across multiple fields
+                $searchConditions = [];
+                foreach ($params['fieldNames'] as $field) {
+                    $searchConditions[] = "$field LIKE '%" . $params['search'] . "%'";
+                }
+                $sql = $sql->where('(' . implode(' OR ', $searchConditions) . ')');
+            } else {
+                $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
             }
-        } else {
-            $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
-            $sql = $sql->group($params['fieldNames']);
         }
+
+        // Fix: Group by primary key to avoid duplicates
+        $sql = $sql->group($params['returnId']);
+
+        // Add ordering for better UX
+        $sql = $sql->order('concat ASC');
+
+        // Add pagination if needed
+        if (isset($params['page'])) {
+            $page = (int)$params['page'];
+            $limit = 10;
+            $offset = ($page - 1) * $limit;
+            $sql = $sql->limit($limit, $offset);
+        }
+
         return $db->fetchAll($sql);
     }
 
