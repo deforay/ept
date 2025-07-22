@@ -142,7 +142,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
             <hr style="border:1px solid #ccc;background: #ccc;width:95%; clear:both;" />
-            <div class="<?php echo ($directParticipantLogin) ? '' : 'hide'; ?> direct-participant-div">
+            <?php if ($directParticipantLogin) { ?>
                 <div class="form-group col-lg-6">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
@@ -165,16 +165,17 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                         <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
                     </div>
                 </div>
-            </div>
-            <div class="form-group col-lg-12 pt-login-dev <?php echo ($directParticipantLogin) ? 'hide' : ''; ?>">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
+            <?php } else { ?>
+                <div class="form-group col-lg-12">
+                    <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
 
-                <div class="col-lg-10">
-                    <select style="width:90%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="<?= $this->translate->_('Please choose one or more PT Participant Logins'); ?>">
-                        <option value=""></option>
-                    </select>
+                    <div class="col-lg-10">
+                        <select style="width:90%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="<?= $this->translate->_('Please choose one or more PT Participant Logins'); ?>">
+                            <option value=""></option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+            <?php } ?>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
 
@@ -299,10 +300,10 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         });
         $('#enrolledProgram').selectpicker();
         $('#country').selectpicker();
-        tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name here'); ?>"/></div>';
-        $("#lastNameDiv").hide();
+        /* tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name here'); ?>"/></div>'; */
+        $("#lastNameDiv,#firstNameDiv").hide();
         $("#plname").val('');
-        $("#firstNameDiv").html(tag);
+        // $("#firstNameDiv").html(tag);
     });
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
@@ -339,20 +340,13 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
 
     function checkIndividualParticipant(obj) {
         if (obj.checked) {
-            $('.direct-participant-div, #lastNameDiv').removeClass('hide');
-            $('.pt-login-dev').addClass('hide');
-            tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the First Name here" placeholder="Please enter the First Name here"/></div>';
             $("#lastNameDiv, #firstNameDiv").show();
             $("#lastNameDiv, #firstNameDiv").removeClass('hide');
         } else {
-            $('.pt-login-dev').removeClass('hide');
-            $('.direct-participant-div, #lastNameDiv').addClass('hide');
-            tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here"/></div>';
             $("#lastNameDiv, #firstNameDiv").hide();
             $("#lastNameDiv, #firstNameDiv").addClass('hide');
             $("#plname").val('');
         }
-        $("#firstNameDiv").html(tag);
     }
 
     <?php if ($directParticipantLogin) { ?>
