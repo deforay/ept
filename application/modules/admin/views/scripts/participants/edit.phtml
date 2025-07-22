@@ -32,14 +32,14 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <input type="hidden" id="participantId" name="participantId" size="50" maxlength=tip"255" class="isRequired form-control" value="<?php echo $this->participant['participant_id']; ?>" />
             </div>
 
-            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : 'hide'; ?>" id="firstNameDiv">
+            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : (($this->participant['individual'] == 'yes') ? '' : 'hide'); ?>" id="firstNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
                     <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
-            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : 'hide'; ?>" id="lastNameDiv">
+            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : (($this->participant['individual'] == 'yes') ? '' : 'hide'); ?>" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
@@ -346,6 +346,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 return markup;
             }
         });
+        $("#individualParticipant").trigger("change");
         $('#enrolledProgram').selectpicker();
         $('#country').selectpicker();
         $('#scheme').selectpicker();
