@@ -19,7 +19,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo ($directParticipantLogin) ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo (isset($this->participant['individual']) && $this->participant['individual'] == 'yes') ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <div class="form-group col-lg-6">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
                     <div class="col-lg-8">
-                        <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" class="form-control" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" autocomplete="off">
+                        <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" class="form-control isPassword" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group col-lg-6">
@@ -427,7 +427,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     <?php if ($directParticipantLogin) { ?>
 
         function validPassword() {
-            if ($('#dmPassword').val() != '') {
+            if ($('#dmPassword').is(':visible') && $('#dmPassword').val() != '') {
                 $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
                         name: $('#contactname').val(),
                         email: $('#pemail').val(),
