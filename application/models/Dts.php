@@ -391,6 +391,7 @@ class Application_Model_Dts
 				$reportedResultCode = $result['result_code'] ?? null;
 				$reportedSyphilisResultCode = $result['syp_result_code'] ?? null;
 				$reportedSyphilisResult = $result['syphilis_final'] ?? null;
+				$expectedResultCode = $this->getResultCodeFromId($result['reference_result']);
 
 
 				// Checking algorithm Pass/Fail only if it is NOT a control.
@@ -608,7 +609,6 @@ class Application_Model_Dts
 							];
 							$correctiveActionList[] = 2;
 						}
-
 					} elseif (isset($attributes['algorithm']) && $attributes['algorithm'] == 'parallel') {
 						if ($result1 == 'R' && $result2 == 'R') {
 							if (($result3 == '-' || $result3 == 'X')) {
@@ -688,26 +688,23 @@ class Application_Model_Dts
 						// R-R-NR => I
 
 						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
-
-						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
+						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $reportedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $expectedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'NR' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+						} elseif ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $reportedResultCode == 'N') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $reportedResultCode == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $expectedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $reportedResultCode == 'N') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $expectedResultCode == 'I') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $reportedResultCode == 'I') {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'P')) {
 							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'P')) {
-							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $reportedResultCode == 'I')) {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $expectedResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';
@@ -867,7 +864,10 @@ class Application_Model_Dts
 					// END OF CONTROLS
 				}
 				$algScore = $config->evaluation->dts->dtsAlgorithmScore ?? 0;
-				$scorePercentageForAlgorithm = (isset($algScore) && !empty($algScore) && $algScore > 0) ? $algScore : $scorePercentageForAlgorithm;
+				// Ensure $scorePercentageForAlgorithm is always between 0 and 1 (as a fraction)
+				if (isset($algScore) && !empty($algScore) && $algScore > 0) {
+					$scorePercentageForAlgorithm = ($algScore > 1) ? ($algScore / 100) : $algScore;
+				}
 				// Matching reported and reference results
 				$correctResponse = false;
 				$scoreForSample = $result['sample_score'];
@@ -2384,6 +2384,13 @@ class Application_Model_Dts
 		}
 
 		return $refResult;
+	}
+
+	public function getResultCodeFromId($resultId)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$query = $db->select()->from('r_possibleresult', ['result_code'])->where("id = ?", $resultId);
+		return $db->fetchOne($query);
 	}
 
 	public function addSampleNameInArray($shipmentId, $headings)

@@ -216,7 +216,7 @@ if ($adminSession->privileges != "") {
 									<li class="divider"></li>
 									<li id="pt-participants"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>"><?= $this->translate->_("PT Participants"); ?></a></li>
 									<li id="data-manager"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>"><?= $this->translate->_("Data Manager (Participant Login)"); ?></a></li>
-									<?php if (in_array('tb', $adminSession->activeSchemes)) { ?>
+									<?php if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) { ?>
 										<li id="manage-ptcc"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'ptcc' => '1'), 'default', true); ?>"><?= $this->translate->_("Manage PTCC"); ?></a></li>
 									<?php } ?>
 									<li id="participant-login-map"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>"><?= $this->translate->_("Participant Login Map"); ?></a></li>
