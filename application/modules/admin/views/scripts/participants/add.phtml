@@ -13,7 +13,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" onclick="checkIndividualParticipant()"><b> <?= $this->translate->_("Individual Participant"); ?></b>
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -24,16 +24,23 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
 
-            <div class="form-group col-lg-6" id="firstNameDiv">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
+            <div class="form-group col-lg-6 individualParticipantNameFields" id="firstNameDiv">
+                <label class="col-lg-4 control-label"><span id="pfnameLabel"><?= $this->translate->_("First Name"); ?></span><span class="mandatory">*</span></label>
+
                 <div class="col-lg-8">
-                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name or First Name here'); ?>" />
+                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
-            <div class="form-group col-lg-6" id="lastNameDiv">
+            <div class="form-group col-lg-6 individualParticipantNameFields" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="<?= $this->translate->_('Please enter the last name here'); ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
+            </div>
+
+            <div class="form-group col-lg-6 labParticipantNameFields" id="contactnameDiv">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Person Name"); ?> </label>
+
+                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" value="<?php echo $this->participant['contact_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
@@ -49,6 +56,15 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
+
+                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="<?= $this->translate->_('Please enter the additional email id here'); ?>" />
+                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
+                </div>
+
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
@@ -167,7 +183,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             <?php } else { ?>
                 <div class="form-group col-lg-12">
-                    <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
+                    <label class="col-lg-2 control-label"><?= $this->translate->_("Map to Existing Data Manager(s)"); ?></label>
 
                     <div class="col-lg-10">
                         <select style="width:90%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="<?= $this->translate->_('Please choose one or more PT Participant Logins'); ?>">
@@ -231,14 +247,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Additional E-mail"); ?></label>
-
-                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="<?= $this->translate->_('Please enter the additional email id here'); ?>" />
-                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
-                </div>
-
-            </div>
-            <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
@@ -263,16 +271,10 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     var duplicated = false;
 
     $(document).ready(function() {
-        //$('#dataManager').selectpicker();
-        /* $(".select2").select2({
-            allowClear: true
-        }); */
+
+        checkIndividualParticipant();
         $('#enrolledProgram').selectpicker();
-        // $('#country').selectpicker();
-        /* tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="<?= $this->translate->_('Please enter the Lab Name here'); ?>"/></div>'; */
-        $("#lastNameDiv,#firstNameDiv").hide();
-        $("#plname").val('');
-        // $("#firstNameDiv").html(tag);
+
 
         let _tables = ['data_manager', 'countries'];
         let _elements = ['dataManager', 'country'];
@@ -363,15 +365,22 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         }
     }
 
-    function checkIndividualParticipant(obj) {
-        if (obj.checked) {
-            $("#lastNameDiv, #firstNameDiv").show();
-            $("#lastNameDiv, #firstNameDiv").removeClass('hide');
+    function checkIndividualParticipant() {
+        let isChecked = $('#individualParticipant').is(':checked');
+        if (isChecked) {
+            $("#pfnameLabel").text("<?= $this->translate->_("First Name"); ?>");
+            $("#lastNameDiv").show();
+            $("#lastNameDiv").removeClass('hide');
+            $("#contactnameDiv").hide();
+            $("#contactnameDiv").addClass('hide');
         } else {
-            $("#lastNameDiv, #firstNameDiv").hide();
-            $("#lastNameDiv, #firstNameDiv").addClass('hide');
-            $("#plname").val('');
+            $("#pfnameLabel").html("<?= $this->translate->_("Lab Name"); ?>");
+            $("#lastNameDiv").hide();
+            $("#lastNameDiv").addClass('hide');
+            $("#contactnameDiv").show();
+            $("#contactnameDiv").removeClass('hide');
         }
+
     }
 
     <?php if ($directParticipantLogin) { ?>

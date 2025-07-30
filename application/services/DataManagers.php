@@ -483,7 +483,7 @@ class Application_Service_DataManagers
         return $userDb->dmParticipantMap($result, $id, true);
     }
 
-    public function getDataManaersByParticipantId($participantId)
+    public function getDataManagersByParticipantId($participantId)
     {
         $userDb = new Application_Model_DbTable_DataManagers();
         return $userDb->fetchDataManaersByParticipantId($participantId);

@@ -5,10 +5,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
         $selectedResponse = ['id' => $row['dm_id'], 'text' => $row['first_name'] . ' ' . $row['last_name'] . ' ' . $row['institute'] . ' ' . $row['primary_email']];
     }
 }
-$directParticipantLogin = false;
-if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogin)) && $this->directParticipantLogin == 'yes') {
-    $directParticipantLogin = true;
-} ?>
+?>
 
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
@@ -18,14 +15,14 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     }
 </style>
 <div class="well">
-    <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="<?php echo ($directParticipantLogin) ? "validPassword()" : "validateNow()"; ?>;return false;">
+    <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
         <fieldset>
             <legend><?= $this->translate->_("Edit Participant"); ?> (<?php echo ucwords($this->participant['status']); ?>)</legend>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo (isset($this->participant['individual']) && $this->participant['individual'] == 'yes') ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant(this)"><b> <?= $this->translate->_("Individual Participant"); ?></b>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo (isset($this->participant['individual']) && $this->participant['individual'] == 'yes') ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant()"><b> <?= $this->translate->_("Individual Participant"); ?></b>
                 </div>
             </div>
 
@@ -38,18 +35,25 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <input type="hidden" id="participantId" name="participantId" size="50" maxlength=tip"255" class="isRequired form-control" value="<?php echo $this->participant['participant_id']; ?>" />
             </div>
 
-            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : (($this->participant['individual'] == 'yes') ? '' : 'hide'); ?>" id="firstNameDiv">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label>
+            <div class="form-group col-lg-6 individualParticipantNameFields" id="firstNameDiv">
+                <label class="col-lg-4 control-label"><span id="pfnameLabel"><?= $this->translate->_("First Name"); ?></span><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
                     <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
-            <div class="form-group col-lg-6 <?php echo ($directParticipantLogin) ? '' : (($this->participant['individual'] == 'yes') ? '' : 'hide'); ?>" id="lastNameDiv">
+            <div class="form-group col-lg-6 individualParticipantNameFields" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
+
+            <div class="form-group col-lg-6 labParticipantNameFields" id="contactnameDiv">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Person Name"); ?> </label>
+
+                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" value="<?php echo $this->participant['contact_name']; ?>" /></div>
+            </div>
+
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
 
@@ -66,17 +70,45 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
-                <div class="col-lg-8">
-                    <input type="password" pattern=".{<?php echo $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword" class="form-control isPassword" title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . $this->passLength ?? 8); ?>" placeholder="Please enter a password" autocomplete="off">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
+
+                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" value="<?php echo $this->participant['additional_email']; ?>" />
+                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
                 </div>
             </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
-                <div class="col-lg-8">
-                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="Please repeat the same password" />
+
+
+            <div class="form-group col-lg-12" style="clear:both !important;">
+                <label class="col-lg-2 control-label"><?= $this->translate->_("Reset Password?"); ?></label>
+                <div class="col-lg-4">
+                    <select id="togglePasswordReset" class="form-control">
+                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                    </select>
                 </div>
             </div>
+
+
+            <div class="form-group col-lg-12" id="passwordGroup">
+                <div class="col-lg-6">
+                    <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
+                    <div class="col-lg-8">
+                        <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword"
+                            class="form-control isPassword"
+                            title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . ($this->passLength ?? 8)); ?>"
+                            placeholder="Please enter a password" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
+                    <div class="col-lg-8">
+                        <input type="password" id="confirmPassword" name="dmPassword"
+                            class="form-control confirmPassword" title="Please repeat the same password"
+                            placeholder="Please repeat the same password" />
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
 
@@ -175,19 +207,32 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 </div>
             </div>
             <hr style="border:1px solid #ccc;background: #ccc;width:90%;" />
-            <div class="<?php echo ($directParticipantLogin) ? '' : 'hide'; ?> direct-participant-div">
-                <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Name"); ?> </label>
 
-                    <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" value="<?php echo $this->participant['contact_name']; ?>" /></div>
-                </div>
-            </div>
-            <div class="form-group col-lg-12 pt-login-dev <?php echo ($directParticipantLogin) ? 'hide' : ''; ?>">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("PT Participant Login"); ?></label>
+            <div class="form-group col-lg-12 pt-login-dev">
+                <label class="col-lg-2 control-label"><?= $this->translate->_("Map to Existing Data Manager(s)"); ?></label>
+                <div class="col-lg-10">
 
-                <div class="col-lg-5">
                     <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
+                        <?php
+                        $dataManagers = explode(",", $this->participant['data_manager']);
+                        foreach ($this->dataManagers as $dm) {
+                            $dmName = [];
+                            if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
+                                $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
+                            }
+                            if (!empty(trim($dm['institute']))) {
+                                $dmName[] = trim($dm['institute']);
+                            }
+                            if (!empty(trim($dm['primary_email']))) {
+                                $dmName[] = trim($dm['primary_email']);
+                            }
+                        ?>
+                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
+                        <?php
+                        }
+                        ?>
                     </select>
+
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -256,14 +301,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                     </div>
                 </div>
             <?php } ?>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Additional E-mail"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" value="<?php echo $this->participant['additional_email']; ?>" />
-                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
-                </div>
-
-            </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
@@ -299,7 +337,21 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         /* $(".select2").select2({
             allowClear: true
         }); */
-        $("#individualParticipant").trigger("change");
+        checkIndividualParticipant();
+
+
+        // Hide and disable password fields by default
+        $('#passwordGroup').hide();
+        $('#dmPassword, #confirmPassword').prop('disabled', true);
+
+        // Toggle visibility when dropdown changes
+        $('#togglePasswordReset').on('change', function() {
+            const shouldShow = $(this).val() === 'yes';
+            $('#passwordGroup').toggle(shouldShow);
+            $('#dmPassword, #confirmPassword').prop('disabled', !shouldShow).val('');
+        });
+
+
         $('#enrolledProgram').selectpicker();
         // $('#country').selectpicker();
         $('#scheme').selectpicker();
@@ -411,69 +463,45 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         }
     }
 
-    function checkIndividualParticipant(obj) {
-        /* if (obj.checked) {
-            // $('.direct-participant-div, #lastNameDiv').removeClass('hide');
-            $('#lastNameDiv').removeClass('hide');
-            // $('.pt-login-dev').addClass('hide');
-            tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("First Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the First Name here" placeholder="Please enter the First Name here"/></div>';
-            $("#lastNameDiv, #firstNameDiv").show();
-            $("#lastNameDiv, #firstNameDiv").removeClass('hide');
-        } else {
-            // $('.pt-login-dev').removeClass('hide');
-            $('#lastNameDiv').addClass('hide');
-            tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here"/></div>';
-            $("#lastNameDiv, #firstNameDiv").hide();
-            $("#lastNameDiv, #firstNameDiv").addClass('hide');
-            $("#plname").val('');
-        }
-        $("#firstNameDiv").html(tag); */
 
-        if (obj.checked) {
-            $("#lastNameDiv, #firstNameDiv").show();
-            $("#lastNameDiv, #firstNameDiv").removeClass('hide');
+    function checkIndividualParticipant() {
+        let isChecked = $('#individualParticipant').is(':checked');
+        if (isChecked) {
+            $("#pfnameLabel").text("<?= $this->translate->_("First Name"); ?>");
+            $("#lastNameDiv").show();
+            $("#lastNameDiv").removeClass('hide');
+            $("#contactnameDiv").hide();
+            $("#contactnameDiv").addClass('hide');
         } else {
-            $("#lastNameDiv, #firstNameDiv").hide();
-            $("#lastNameDiv, #firstNameDiv").addClass('hide');
-            $("#plname").val('');
+            $("#pfnameLabel").html("<?= $this->translate->_("Lab Name"); ?>");
+            $("#lastNameDiv").hide();
+            $("#lastNameDiv").addClass('hide');
+            $("#contactnameDiv").show();
+            $("#contactnameDiv").removeClass('hide');
         }
+
     }
 
-    <?php
-    if (isset($this->participant['individual']) && trim($this->participant['individual']) == 'no') {
-    ?>
-        document.getElementById("individualParticipant").checked = false;
-        tag = '<label class="col-lg-4 control-label"><?= $this->translate->_("Lab Name"); ?><span class="mandatory">*</span></label><div class="col-lg-8"><input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Lab Name here" placeholder="Please enter the Lab Name here" value="<?php echo $this->participant['first_name']; ?>"/></div>';
-        $("#lastNameDiv, #firstNameDiv").hide();
-        $("#lastNameDiv, #firstNameDiv").addClass('hide');
-        $("#plname").val('');
-        $("#firstNameDiv").html(tag);
-    <?php } ?>
-
-
-    <?php if ($directParticipantLogin) { ?>
-
-        function validPassword() {
-            $.blockUI();
-            if ($('#dmPassword').is(':visible') && $('#dmPassword').val() != '') {
-                $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
-                        name: $('#contactname').val(),
-                        email: $('#pemail').val(),
-                        password: $('#dmPassword').val(),
-                        format: "html"
-                    },
-                    function(data) {
-                        if (data == 'success') {
-                            validateNow();
-                        }
-                        if (data != 'success') {
-                            alert(data);
-                            return false;
-                        }
-                    });
-            } else {
-                validateNow();
-            }
+    function validPassword() {
+        $.blockUI();
+        if ($('#dmPassword').is(':visible') && $('#dmPassword').val() != '') {
+            $.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'validate-password']); ?>", {
+                    name: $('#contactname').val(),
+                    email: $('#pemail').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
+                    if (data == 'success') {
+                        validateNow();
+                    }
+                    if (data != 'success') {
+                        alert(data);
+                        return false;
+                    }
+                });
+        } else {
+            validateNow();
         }
-    <?php } ?>
+    }
 </script>
