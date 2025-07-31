@@ -1236,13 +1236,13 @@ class Application_Model_Dts
 			}
 
 			$documentationScore = round($documentationScore);
-			$grandTotal = ($responseScore + $documentationScore);
+			$grandTotal = $responseScore + $documentationScore;
 			if ($grandTotal < $config->evaluation->dts->passPercentage) {
 				$scoreResult = 'Fail';
-				$failureReason[] = array(
+				$failureReason[] = [
 					'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($config->evaluation->dts->passPercentage) . "</strong>)",
 					'correctiveAction' => $correctiveActions[15]
-				);
+				];
 				$correctiveActionList[] = 15;
 			} else {
 				$scoreResult = 'Pass';
@@ -1255,7 +1255,7 @@ class Application_Model_Dts
 				$shipmentResult[$counter]['shipment_score'] = $responseScore = 0;
 				$shipmentResult[$counter]['documentation_score'] = 0;
 				$shipmentResult[$counter]['display_result'] = '';
-				$failureReason[] = array('warning' => 'Excluded from Evaluation');
+				$failureReason[] = ['warning' => 'Excluded from Evaluation'];
 				$finalResult = 3;
 				$shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
 			} else {
@@ -1284,20 +1284,18 @@ class Application_Model_Dts
 			$shipmentResult[$counter]['max_score'] = $maxScore;
 			$shipmentResult[$counter]['final_result'] = $finalResult;
 			if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
-				$failureReason = [array('warning' => 'Excluded from Evaluation')];
-				$failureReasonStr = json_encode($failureReason);
 				// let us update the total score in DB
 				$this->db->update(
 					'shipment_participant_map',
-					array(
+					[
 						'shipment_score' => 0,
 						'documentation_score' => 0,
 						'final_result' => 3,
 						'is_followup' => 'yes',
 						'is_excluded' => 'yes',
-						'failure_reason' => $failureReasonStr,
+						'failure_reason' => $failureReason,
 						'is_response_late' => $shipment['is_response_late']
-					),
+					],
 					'map_id = ' . $shipment['map_id']
 				);
 			} else {
@@ -1320,7 +1318,7 @@ class Application_Model_Dts
 					// let us update the total score in DB
 					$this->db->update(
 						'shipment_participant_map',
-						array(
+						[
 							'shipment_score' => $responseScore,
 							'documentation_score' => $documentationScore,
 							'final_result' => $finalResult,
@@ -1328,7 +1326,7 @@ class Application_Model_Dts
 							'is_excluded' => $shipment['is_excluded'],
 							'failure_reason' => $failureReason,
 							'is_response_late' => $shipment['is_response_late']
-						),
+						],
 						'map_id = ' . $shipment['map_id']
 					);
 				}
