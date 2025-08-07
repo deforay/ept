@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-07-11 16:38+0530\n"
-"PO-Revision-Date: 2025-07-11 16:43+0530\n"
+"POT-Creation-Date: 2025-07-31 16:12+0530\n"
+"PO-Revision-Date: 2025-07-31 16:12+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -130,7 +130,7 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:67
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:48
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:81
-#: application/modules/admin/views/scripts/participants/add.phtml:255
+#: application/modules/admin/views/scripts/participants/add.phtml:263
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:56
 #: application/modules/admin/views/scripts/participants/files.phtml:33
 #: application/modules/admin/views/scripts/participants/files.phtml:43
@@ -745,8 +745,8 @@ msgstr "État"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:48
 #: application/modules/admin/views/scripts/enrollments/add.phtml:63
-#: application/modules/admin/views/scripts/participants/add.phtml:83
-#: application/modules/admin/views/scripts/participants/edit.phtml:85
+#: application/modules/admin/views/scripts/participants/add.phtml:116
+#: application/modules/admin/views/scripts/participants/edit.phtml:136
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:64
 #: application/views/scripts/participant/add-participant.phtml:76
 #: application/views/scripts/participant/add.phtml:47
@@ -762,7 +762,7 @@ msgstr "Ville"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:41
 #: application/modules/admin/views/scripts/distributions/index.phtml:29
 #: application/modules/admin/views/scripts/enrollments/index.phtml:41
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:53
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:54
 #: application/modules/admin/views/scripts/evaluate/index.phtml:14
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:44
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:165
@@ -907,8 +907,8 @@ msgstr "Créé le"
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:76
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:78
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:18
-#: application/modules/admin/views/scripts/participants/add.phtml:242
-#: application/modules/admin/views/scripts/participants/edit.phtml:284
+#: application/modules/admin/views/scripts/participants/add.phtml:250
+#: application/modules/admin/views/scripts/participants/edit.phtml:306
 #: application/modules/admin/views/scripts/participants/index.phtml:25
 #: application/modules/admin/views/scripts/participants/index.phtml:65
 #: application/modules/admin/views/scripts/participants/pending.phtml:18
@@ -1132,7 +1132,7 @@ msgstr "Nom du type de gène"
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:12
 #: application/modules/admin/views/scripts/enrollments/index.phtml:39
 #: application/modules/admin/views/scripts/enrollments/view.phtml:5
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:46
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:47
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:35
 #: application/modules/admin/views/scripts/test-platform/add.phtml:27
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:28
@@ -1219,15 +1219,15 @@ msgstr "Statut du gène"
 #: application/modules/admin/views/scripts/home-config/index.phtml:214
 #: application/modules/admin/views/scripts/home-config/index.phtml:241
 #: application/modules/admin/views/scripts/home-config/index.phtml:324
-#: application/modules/admin/views/scripts/participants/add.phtml:121
-#: application/modules/admin/views/scripts/participants/add.phtml:132
-#: application/modules/admin/views/scripts/participants/add.phtml:210
-#: application/modules/admin/views/scripts/participants/add.phtml:224
-#: application/modules/admin/views/scripts/participants/edit.phtml:135
-#: application/modules/admin/views/scripts/participants/edit.phtml:146
-#: application/modules/admin/views/scripts/participants/edit.phtml:234
-#: application/modules/admin/views/scripts/participants/edit.phtml:249
-#: application/modules/admin/views/scripts/participants/edit.phtml:287
+#: application/modules/admin/views/scripts/participants/add.phtml:154
+#: application/modules/admin/views/scripts/participants/add.phtml:165
+#: application/modules/admin/views/scripts/participants/add.phtml:226
+#: application/modules/admin/views/scripts/participants/add.phtml:240
+#: application/modules/admin/views/scripts/participants/edit.phtml:186
+#: application/modules/admin/views/scripts/participants/edit.phtml:197
+#: application/modules/admin/views/scripts/participants/edit.phtml:263
+#: application/modules/admin/views/scripts/participants/edit.phtml:278
+#: application/modules/admin/views/scripts/participants/edit.phtml:309
 #: application/modules/admin/views/scripts/report-config/index.phtml:17
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:36
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:46
@@ -1473,8 +1473,8 @@ msgstr "Sélectionner"
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:27
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:79
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:82
-#: application/modules/admin/views/scripts/participants/add.phtml:246
-#: application/modules/admin/views/scripts/participants/edit.phtml:289
+#: application/modules/admin/views/scripts/participants/add.phtml:254
+#: application/modules/admin/views/scripts/participants/edit.phtml:311
 #: application/modules/admin/views/scripts/participants/index.phtml:43
 #: application/modules/admin/views/scripts/partners/edit.phtml:26
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:47
@@ -1496,8 +1496,8 @@ msgstr "Actif"
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:28
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:80
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:83
-#: application/modules/admin/views/scripts/participants/add.phtml:247
-#: application/modules/admin/views/scripts/participants/edit.phtml:292
+#: application/modules/admin/views/scripts/participants/add.phtml:255
+#: application/modules/admin/views/scripts/participants/edit.phtml:314
 #: application/modules/admin/views/scripts/participants/index.phtml:44
 #: application/modules/admin/views/scripts/partners/edit.phtml:29
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:48
@@ -1518,7 +1518,7 @@ msgstr "Inactif"
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:58
 #: application/modules/admin/views/scripts/generic-test/add.phtml:211
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:88
-#: application/modules/admin/views/scripts/participants/add.phtml:254
+#: application/modules/admin/views/scripts/participants/add.phtml:262
 #: application/modules/admin/views/scripts/partners/add.phtml:19
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:55
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:59
@@ -1763,9 +1763,10 @@ msgstr " Oui"
 #: application/modules/admin/views/scripts/global-config/index.phtml:201
 #: application/modules/admin/views/scripts/global-config/index.phtml:259
 #: application/modules/admin/views/scripts/global-config/index.phtml:269
-#: application/modules/admin/views/scripts/participants/add.phtml:134
+#: application/modules/admin/views/scripts/participants/add.phtml:167
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
-#: application/modules/admin/views/scripts/participants/edit.phtml:148
+#: application/modules/admin/views/scripts/participants/edit.phtml:85
+#: application/modules/admin/views/scripts/participants/edit.phtml:199
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:38
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:41
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:101
@@ -1965,8 +1966,8 @@ msgstr "Veuillez saisir l'adresse e-mail principale ici"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:32
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
 #: application/modules/admin/views/scripts/login/index.phtml:138
-#: application/modules/admin/views/scripts/participants/add.phtml:157
-#: application/modules/admin/views/scripts/participants/edit.phtml:171
+#: application/modules/admin/views/scripts/participants/add.phtml:70
+#: application/modules/admin/views/scripts/participants/edit.phtml:94
 #: application/modules/admin/views/scripts/system-admins/add.phtml:24
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:31
 #: application/views/scripts/data-managers/add.phtml:14
@@ -1977,8 +1978,8 @@ msgstr "Mot de passe"
 #: application/modules/admin/views/scripts/data-managers/add.phtml:34
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:13
-#: application/modules/admin/views/scripts/participants/add.phtml:159
-#: application/modules/admin/views/scripts/participants/edit.phtml:173
+#: application/modules/admin/views/scripts/participants/add.phtml:72
+#: application/modules/admin/views/scripts/participants/edit.phtml:98
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:33
 #: application/views/scripts/auth/new-password.phtml:36
 #: application/views/scripts/data-managers/add.phtml:16
@@ -1989,15 +1990,15 @@ msgstr "Veuillez saisir un mot de passe valide et d'une longueur minimale de "
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:34
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:43
-#: application/modules/admin/views/scripts/participants/add.phtml:159
+#: application/modules/admin/views/scripts/participants/add.phtml:72
 #: application/modules/admin/views/scripts/system-admins/add.phtml:26
 msgid "Please enter a password"
 msgstr "Veuillez saisir un mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:42
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:51
-#: application/modules/admin/views/scripts/participants/add.phtml:163
-#: application/modules/admin/views/scripts/participants/edit.phtml:177
+#: application/modules/admin/views/scripts/participants/add.phtml:76
+#: application/modules/admin/views/scripts/participants/edit.phtml:103
 #: application/modules/admin/views/scripts/system-admins/add.phtml:30
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:37
 #: application/views/scripts/data-managers/add.phtml:20
@@ -2007,7 +2008,7 @@ msgstr "Confirmer le mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:44
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:53
-#: application/modules/admin/views/scripts/participants/add.phtml:165
+#: application/modules/admin/views/scripts/participants/add.phtml:78
 #: application/modules/admin/views/scripts/system-admins/add.phtml:32
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:39
 msgid "Please repeat the same password"
@@ -2055,7 +2056,6 @@ msgstr "Nom de famille de l'utilisateur"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:65
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:74
-#: application/modules/admin/views/scripts/participants/add.phtml:36
 #: application/modules/admin/views/scripts/system-admins/add.phtml:13
 msgid "Please enter the last name here"
 msgstr "Veuillez saisir le nom de famille ici"
@@ -2082,7 +2082,7 @@ msgstr "Numéro de téléphone portable"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:79
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:88
-#: application/modules/admin/views/scripts/participants/add.phtml:195
+#: application/modules/admin/views/scripts/participants/add.phtml:211
 #: application/modules/admin/views/scripts/system-admins/add.phtml:38
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:45
 msgid "Please enter mobile/cell number here"
@@ -2090,8 +2090,8 @@ msgstr "Veuillez entrer votre numéro de téléphone mobile/cellulaire ici"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:86
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:95
-#: application/modules/admin/views/scripts/participants/add.phtml:200
-#: application/modules/admin/views/scripts/participants/edit.phtml:225
+#: application/modules/admin/views/scripts/participants/add.phtml:216
+#: application/modules/admin/views/scripts/participants/edit.phtml:254
 #: application/views/scripts/data-managers/add.phtml:46
 #: application/views/scripts/data-managers/edit.phtml:53
 #: application/views/scripts/participant/add-participant.phtml:175
@@ -2102,7 +2102,7 @@ msgstr "Numéro de téléphone"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:87
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:96
-#: application/modules/admin/views/scripts/participants/add.phtml:202
+#: application/modules/admin/views/scripts/participants/add.phtml:218
 msgid "Please enter phone number here"
 msgstr "Veuillez entrer le numéro de téléphone ici"
 
@@ -2140,9 +2140,10 @@ msgstr "Accès au QC"
 #: application/modules/admin/views/scripts/global-config/index.phtml:200
 #: application/modules/admin/views/scripts/global-config/index.phtml:258
 #: application/modules/admin/views/scripts/global-config/index.phtml:268
-#: application/modules/admin/views/scripts/participants/add.phtml:133
+#: application/modules/admin/views/scripts/participants/add.phtml:166
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:32
-#: application/modules/admin/views/scripts/participants/edit.phtml:147
+#: application/modules/admin/views/scripts/participants/edit.phtml:86
+#: application/modules/admin/views/scripts/participants/edit.phtml:198
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:37
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:40
 #: application/modules/admin/views/scripts/shipment/covid19-form.phtml:100
@@ -2327,8 +2328,8 @@ msgstr "Veuillez sélectionner le statut de l'utilisateur ici"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:37
 #: application/modules/admin/views/scripts/enrollments/add.phtml:23
 #: application/modules/admin/views/scripts/enrollments/index.phtml:38
-#: application/modules/admin/views/scripts/participants/add.phtml:54
-#: application/modules/admin/views/scripts/participants/edit.phtml:63
+#: application/modules/admin/views/scripts/participants/add.phtml:87
+#: application/modules/admin/views/scripts/participants/edit.phtml:118
 #: application/modules/admin/views/scripts/participants/index.phtml:22
 #: application/modules/admin/views/scripts/participants/index.phtml:60
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:38
@@ -2375,8 +2376,8 @@ msgstr "Sélectionnez un pays"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:159
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:168
-#: application/modules/admin/views/scripts/participants/add.phtml:75
-#: application/modules/admin/views/scripts/participants/edit.phtml:75
+#: application/modules/admin/views/scripts/participants/add.phtml:108
+#: application/modules/admin/views/scripts/participants/edit.phtml:126
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:51
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:78
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:105
@@ -2388,8 +2389,8 @@ msgstr "État/Province"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:165
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:180
-#: application/modules/admin/views/scripts/participants/add.phtml:79
-#: application/modules/admin/views/scripts/participants/edit.phtml:80
+#: application/modules/admin/views/scripts/participants/add.phtml:112
+#: application/modules/admin/views/scripts/participants/edit.phtml:131
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:52
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:79
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:106
@@ -2550,9 +2551,9 @@ msgstr "Ajouter un nouveau CCPT"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:31
 #: application/modules/admin/views/scripts/participants/add.phtml:28
-#: application/modules/admin/views/scripts/participants/add.phtml:343
-#: application/modules/admin/views/scripts/participants/edit.phtml:36
-#: application/modules/admin/views/scripts/participants/edit.phtml:391
+#: application/modules/admin/views/scripts/participants/add.phtml:371
+#: application/modules/admin/views/scripts/participants/edit.phtml:39
+#: application/modules/admin/views/scripts/participants/edit.phtml:470
 #: application/modules/admin/views/scripts/system-admins/add.phtml:6
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:12
 #: application/modules/admin/views/scripts/system-admins/index.phtml:10
@@ -2567,8 +2568,8 @@ msgid "First Name"
 msgstr "Prénom"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:32
-#: application/modules/admin/views/scripts/participants/add.phtml:34
-#: application/modules/admin/views/scripts/participants/edit.phtml:43
+#: application/modules/admin/views/scripts/participants/add.phtml:35
+#: application/modules/admin/views/scripts/participants/edit.phtml:46
 #: application/modules/admin/views/scripts/system-admins/add.phtml:11
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:18
 #: application/modules/admin/views/scripts/system-admins/index.phtml:11
@@ -2768,7 +2769,7 @@ msgstr "Expéditions dans le cadre de cette enquête PT"
 #: application/modules/admin/views/scripts/email-participants/index.phtml:50
 #: application/modules/admin/views/scripts/email-participants/index.phtml:95
 #: application/modules/admin/views/scripts/enrollments/view.phtml:10
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:45
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:46
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:34
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:8
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:65
@@ -2843,7 +2844,7 @@ msgid "No of Samples"
 msgstr "Nombre d'échantillons"
 
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:33
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:134
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:145
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:55
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:54
 msgid "No shipments for this distribution yet"
@@ -3224,8 +3225,8 @@ msgid "Show advanced filters"
 msgstr "Afficher les filtres avancés"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:33
-#: application/modules/admin/views/scripts/participants/add.phtml:68
-#: application/modules/admin/views/scripts/participants/edit.phtml:90
+#: application/modules/admin/views/scripts/participants/add.phtml:101
+#: application/modules/admin/views/scripts/participants/edit.phtml:141
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:34
 #: application/modules/reports/views/scripts/detailed/index.phtml:52
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:147
@@ -3249,8 +3250,8 @@ msgid "Network"
 msgstr "Réseau"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:84
-#: application/modules/admin/views/scripts/participants/add.phtml:220
-#: application/modules/admin/views/scripts/participants/edit.phtml:245
+#: application/modules/admin/views/scripts/participants/add.phtml:236
+#: application/modules/admin/views/scripts/participants/edit.phtml:274
 #: application/modules/admin/views/scripts/participants/index.phtml:63
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:101
 #: application/modules/admin/views/scripts/participants/pending.phtml:16
@@ -3302,12 +3303,16 @@ msgid "Deselect All"
 msgstr "Tout désélectionner"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:207
+#: application/modules/admin/views/scripts/participants/add.phtml:293
+#: application/modules/admin/views/scripts/participants/edit.phtml:377
 #: application/modules/admin/views/scripts/participants/index.phtml:187
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:297
 msgid "Choose one or more option(s)"
 msgstr "Choisissez une ou plusieurs option(s)"
 
 #: application/modules/admin/views/scripts/enrollments/add.phtml:215
+#: application/modules/admin/views/scripts/participants/add.phtml:301
+#: application/modules/admin/views/scripts/participants/edit.phtml:386
 #: application/modules/admin/views/scripts/participants/index.phtml:195
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:305
 msgid "Type list to search"
@@ -3365,7 +3370,7 @@ msgstr "Unique"
 
 #: application/modules/admin/views/scripts/enrollments/index.phtml:36
 #: application/modules/admin/views/scripts/participants/add.phtml:20
-#: application/modules/admin/views/scripts/participants/edit.phtml:27
+#: application/modules/admin/views/scripts/participants/edit.phtml:30
 #: application/modules/admin/views/scripts/participants/index.phtml:58
 #: application/modules/admin/views/scripts/participants/pending.phtml:11
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:6
@@ -3412,12 +3417,12 @@ msgstr "Type d'envoi"
 msgid "Submit"
 msgstr "Envoyer"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:40
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:41
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:11
 msgid "Shipments Under PT Survey"
 msgstr "Expéditions dans le cadre de l'enquête PT"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:47
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:48
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:36
 #: application/modules/admin/views/scripts/shipment/index.phtml:42
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:74
@@ -3428,7 +3433,7 @@ msgstr "Expéditions dans le cadre de l'enquête PT"
 msgid "No. of Samples"
 msgstr "Nombre d'échantillons"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:48
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:49
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:37
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:18
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:19
@@ -3437,7 +3442,7 @@ msgstr "Nombre d'échantillons"
 msgid "No. of Participants"
 msgstr "Nombre de participants"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:49
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:50
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:38
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:19
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:20
@@ -3450,12 +3455,12 @@ msgstr "Nombre de participants"
 msgid "No. of Responses"
 msgstr "Téléchargez les formulaires PT pour soumettre des réponses hors ligne"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:50
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:51
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:39
 msgid "Response%"
 msgstr "Réponse%"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:51
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:52
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:40
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:21
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:22
@@ -3464,7 +3469,7 @@ msgstr "Réponse%"
 msgid "Number Passed"
 msgstr "Nombre d'élèves retenus"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:52
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:53
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:41
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:22
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:23
@@ -3473,40 +3478,41 @@ msgstr "Nombre d'élèves retenus"
 msgid "Shipment Status"
 msgstr "Etat de l'expédition"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:64
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:65
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:55
 msgid "Queued"
 msgstr "File d'attente"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:67
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:68
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:58
 msgid "Processing"
 msgstr "En cours"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:70
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:71
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:85
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:61
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:109
 msgid "Re-Evaluate"
 msgstr "Réévaluer"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:74
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:75
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:64
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:89
 msgid "Evaluate"
 msgstr "Evaluer"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:92
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:99
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:124
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:103
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:110
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:135
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:81
 msgid "View"
 msgstr "Voir"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:103
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:114
 msgid "VL Range"
 msgstr "Gamme VL"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:121
+#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:132
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:86
 msgid "Not Responded Participants"
 msgstr "Pas de réponse Participants"
@@ -4068,8 +4074,8 @@ msgid "Admininstrator Email"
 msgstr "Courriel de l'administrateur"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:61
-#: application/modules/admin/views/scripts/participants/add.phtml:39
-#: application/modules/admin/views/scripts/participants/edit.phtml:48
+#: application/modules/admin/views/scripts/participants/add.phtml:46
+#: application/modules/admin/views/scripts/participants/edit.phtml:58
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:50
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:77
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:104
@@ -4739,7 +4745,7 @@ msgid "Add New Participant"
 msgstr "Ajouter un nouveau participant"
 
 #: application/modules/admin/views/scripts/participants/add.phtml:16
-#: application/modules/admin/views/scripts/participants/edit.phtml:22
+#: application/modules/admin/views/scripts/participants/edit.phtml:25
 #: application/views/scripts/participant/add-participant.phtml:12
 #: application/views/scripts/participant/add.phtml:18
 #: application/views/scripts/participant/edit-participant.phtml:15
@@ -4751,16 +4757,19 @@ msgstr "Participant individuel"
 msgid "Please enter a unique identifier here"
 msgstr "Veuillez saisir un identifiant unique ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:30
-msgid "Please enter the Lab Name or First Name here"
-msgstr "Veuillez saisir le nom ou le prénom du laboratoire ici"
-
 #: application/modules/admin/views/scripts/participants/add.phtml:41
+#: application/modules/admin/views/scripts/participants/edit.phtml:52
+#: application/views/scripts/eid/response.phtml:117
+#: application/views/scripts/vl/response.phtml:134
+msgid "Contact Person Name"
+msgstr "Nom de la personne de contact"
+
+#: application/modules/admin/views/scripts/participants/add.phtml:48
 msgid "Please enter the Institute Name here"
 msgstr "Veuillez saisir le nom de l'institut ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:44
-#: application/modules/admin/views/scripts/participants/edit.phtml:53
+#: application/modules/admin/views/scripts/participants/add.phtml:51
+#: application/modules/admin/views/scripts/participants/edit.phtml:63
 #: application/views/scripts/participant/add-participant.phtml:40
 #: application/views/scripts/participant/add.phtml:39
 #: application/views/scripts/participant/edit-participant.phtml:44
@@ -4768,12 +4777,36 @@ msgstr "Veuillez saisir le nom de l'institut ici"
 msgid "Department Name"
 msgstr "Nom du département"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:46
+#: application/modules/admin/views/scripts/participants/add.phtml:53
 msgid "Please enter the Department Name here"
 msgstr "Veuillez saisir le nom du département ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:49
-#: application/modules/admin/views/scripts/participants/edit.phtml:58
+#: application/modules/admin/views/scripts/participants/add.phtml:56
+#: application/modules/admin/views/scripts/participants/edit.phtml:68
+#: application/views/scripts/participant/add-participant.phtml:148
+#: application/views/scripts/participant/edit-participant.phtml:190
+msgid "E-mail"
+msgstr "E-mail"
+
+#: application/modules/admin/views/scripts/participants/add.phtml:62
+#: application/modules/admin/views/scripts/participants/edit.phtml:73
+msgid "Additional/Alternate E-mail"
+msgstr "E-mail supplémentaire"
+
+#: application/modules/admin/views/scripts/participants/add.phtml:64
+msgid "Please enter the additional email id here"
+msgstr "Veuillez saisir l'adresse électronique supplémentaire ici"
+
+#: application/modules/admin/views/scripts/participants/add.phtml:65
+#: application/modules/admin/views/scripts/participants/edit.phtml:76
+#: application/views/scripts/participant/add-participant.phtml:212
+#: application/views/scripts/participant/edit-participant.phtml:266
+msgid "(Please enter comma separated mutiple email)"
+msgstr ""
+"(Veuillez saisir plusieurs adresses électroniques séparées par des virgules)"
+
+#: application/modules/admin/views/scripts/participants/add.phtml:82
+#: application/modules/admin/views/scripts/participants/edit.phtml:113
 #: application/views/scripts/participant/add-participant.phtml:45
 #: application/views/scripts/participant/add.phtml:43
 #: application/views/scripts/participant/edit-participant.phtml:49
@@ -4781,28 +4814,28 @@ msgstr "Veuillez saisir le nom du département ici"
 msgid "Physical Address"
 msgstr "Adresse physique"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:51
+#: application/modules/admin/views/scripts/participants/add.phtml:84
 msgid "Please enter the address here"
 msgstr "Veuillez saisir l'adresse ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:70
+#: application/modules/admin/views/scripts/participants/add.phtml:103
 msgid "Please enter the region here"
 msgstr "Veuillez saisir la région ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:76
+#: application/modules/admin/views/scripts/participants/add.phtml:109
 msgid "Please enter the state/province here"
 msgstr "Veuillez indiquer ici l'état/province"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:80
+#: application/modules/admin/views/scripts/participants/add.phtml:113
 msgid "Enter the district/county here"
 msgstr "Indiquez ici le district/comté"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:84
+#: application/modules/admin/views/scripts/participants/add.phtml:117
 msgid "Please enter the city here"
 msgstr "Veuillez entrer la ville ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:88
-#: application/modules/admin/views/scripts/participants/edit.phtml:97
+#: application/modules/admin/views/scripts/participants/add.phtml:121
+#: application/modules/admin/views/scripts/participants/edit.phtml:148
 #: application/views/scripts/participant/add-participant.phtml:81
 #: application/views/scripts/participant/add.phtml:77
 #: application/views/scripts/participant/edit-participant.phtml:88
@@ -4810,12 +4843,12 @@ msgstr "Veuillez entrer la ville ici"
 msgid "Latitude"
 msgstr "Latitude"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:90
+#: application/modules/admin/views/scripts/participants/add.phtml:123
 msgid "Please enter the latitude here"
 msgstr "Veuillez entrer la latitude ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:94
-#: application/modules/admin/views/scripts/participants/edit.phtml:103
+#: application/modules/admin/views/scripts/participants/add.phtml:127
+#: application/modules/admin/views/scripts/participants/edit.phtml:154
 #: application/views/scripts/participant/add-participant.phtml:87
 #: application/views/scripts/participant/add.phtml:72
 #: application/views/scripts/participant/edit-participant.phtml:94
@@ -4823,12 +4856,12 @@ msgstr "Veuillez entrer la latitude ici"
 msgid "Longitude"
 msgstr "Longitude"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:95
+#: application/modules/admin/views/scripts/participants/add.phtml:128
 msgid "Please enter the longitude here"
 msgstr "Veuillez entrer la longitude ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:98
-#: application/modules/admin/views/scripts/participants/edit.phtml:108
+#: application/modules/admin/views/scripts/participants/add.phtml:131
+#: application/modules/admin/views/scripts/participants/edit.phtml:159
 #: application/views/scripts/participant/add-participant.phtml:91
 #: application/views/scripts/participant/add.phtml:85
 #: application/views/scripts/participant/edit-participant.phtml:99
@@ -4836,12 +4869,12 @@ msgstr "Veuillez entrer la longitude ici"
 msgid "Funding Source"
 msgstr "Sources de financement"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:99
+#: application/modules/admin/views/scripts/participants/add.phtml:132
 msgid "Please enter the funding source here"
 msgstr "Veuillez indiquer ici la source de financement"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:102
-#: application/modules/admin/views/scripts/participants/edit.phtml:113
+#: application/modules/admin/views/scripts/participants/add.phtml:135
+#: application/modules/admin/views/scripts/participants/edit.phtml:164
 #: application/views/scripts/participant/add-participant.phtml:95
 #: application/views/scripts/participant/add.phtml:90
 #: application/views/scripts/participant/edit-participant.phtml:104
@@ -4849,12 +4882,12 @@ msgstr "Veuillez indiquer ici la source de financement"
 msgid "Testing Volume"
 msgstr "Volume d'essai"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:104
+#: application/modules/admin/views/scripts/participants/add.phtml:137
 msgid "Please enter the testing volume here"
 msgstr "Veuillez indiquer ici le volume de l'essai"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:108
-#: application/modules/admin/views/scripts/participants/edit.phtml:120
+#: application/modules/admin/views/scripts/participants/add.phtml:141
+#: application/modules/admin/views/scripts/participants/edit.phtml:171
 #: application/modules/reports/views/scripts/detailed/index.phtml:53
 #: application/modules/reports/views/scripts/testkit/index.phtml:56
 #: application/views/scripts/participant/add-participant.phtml:101
@@ -4865,8 +4898,8 @@ msgstr "Veuillez indiquer ici le volume de l'essai"
 msgid "Enrolled Programs"
 msgstr "Programmes inscrits"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:118
-#: application/modules/admin/views/scripts/participants/edit.phtml:132
+#: application/modules/admin/views/scripts/participants/add.phtml:151
+#: application/modules/admin/views/scripts/participants/edit.phtml:183
 #: application/views/scripts/participant/add-participant.phtml:111
 #: application/views/scripts/participant/add.phtml:107
 #: application/views/scripts/participant/edit-participant.phtml:130
@@ -4874,53 +4907,39 @@ msgstr "Programmes inscrits"
 msgid "Site Type/Testing Point"
 msgstr "Type de site/point d'essai"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:129
-#: application/modules/admin/views/scripts/participants/edit.phtml:143
+#: application/modules/admin/views/scripts/participants/add.phtml:162
+#: application/modules/admin/views/scripts/participants/edit.phtml:194
 #: application/views/scripts/participant/add-participant.phtml:122
 #: application/views/scripts/participant/edit-participant.phtml:144
 msgid "ANC"
 msgstr "ANC"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:139
-#: application/modules/admin/views/scripts/participants/edit.phtml:153
+#: application/modules/admin/views/scripts/participants/add.phtml:172
+#: application/modules/admin/views/scripts/participants/edit.phtml:204
 msgid "PEPFAR ID"
 msgstr "PEPFAR ID"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:147
-#: application/modules/admin/views/scripts/participants/edit.phtml:161
+#: application/modules/admin/views/scripts/participants/add.phtml:180
 #: application/views/scripts/participant/add-participant.phtml:143
 #: application/views/scripts/participant/edit-participant.phtml:185
 msgid "Contact Name"
 msgstr "Nom du contact"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:149
+#: application/modules/admin/views/scripts/participants/add.phtml:182
 msgid "Please enter the contact name here"
 msgstr "Veuillez saisir le nom du contact ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:152
-#: application/modules/admin/views/scripts/participants/edit.phtml:166
-#: application/views/scripts/participant/add-participant.phtml:148
-#: application/views/scripts/participant/edit-participant.phtml:190
-msgid "E-mail"
-msgstr "E-mail"
+#: application/modules/admin/views/scripts/participants/add.phtml:186
+#: application/modules/admin/views/scripts/participants/edit.phtml:212
+msgid "Map to Existing Data Manager(s)"
+msgstr "Mapper sur le(s) gestionnaire(s) de données existant(s)"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:154
-msgid "Please enter the email id here"
-msgstr "Veuillez saisir l'identifiant de l'email ici"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:170
-#: application/modules/admin/views/scripts/participants/edit.phtml:184
-#: application/views/scripts/participant/add-participant.phtml:134
-#: application/views/scripts/participant/edit-participant.phtml:159
-msgid "PT Participant Login"
-msgstr "Connexion du participant au PT"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:173
+#: application/modules/admin/views/scripts/participants/add.phtml:189
 msgid "Please choose one or more PT Participant Logins"
 msgstr "Veuillez choisir un ou plusieurs logins pour les participants au PT"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:180
-#: application/modules/admin/views/scripts/participants/edit.phtml:210
+#: application/modules/admin/views/scripts/participants/add.phtml:196
+#: application/modules/admin/views/scripts/participants/edit.phtml:239
 #: application/views/scripts/participant/add-participant.phtml:155
 #: application/views/scripts/participant/add.phtml:133
 #: application/views/scripts/participant/edit-participant.phtml:197
@@ -4928,30 +4947,30 @@ msgstr "Veuillez choisir un ou plusieurs logins pour les participants au PT"
 msgid "Shipping Address (include city and country)"
 msgstr "Adresse de livraison (inclure la ville et le pays)"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:182
+#: application/modules/admin/views/scripts/participants/add.phtml:198
 msgid "Please enter the Shipping Address here"
 msgstr "Veuillez saisir l'adresse de livraison ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:185
-#: application/modules/admin/views/scripts/participants/edit.phtml:215
+#: application/modules/admin/views/scripts/participants/add.phtml:201
+#: application/modules/admin/views/scripts/participants/edit.phtml:244
 #: application/views/scripts/participant/add-participant.phtml:160
 #: application/views/scripts/participant/edit-participant.phtml:202
 msgid "Zip/Postal Code (if applicable)"
 msgstr "Code postal (le cas échéant)"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:187
+#: application/modules/admin/views/scripts/participants/add.phtml:203
 msgid "Please enter the Zip/Postal here"
 msgstr "Veuillez entrer le code postal ici"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:192
-#: application/modules/admin/views/scripts/participants/edit.phtml:220
+#: application/modules/admin/views/scripts/participants/add.phtml:208
+#: application/modules/admin/views/scripts/participants/edit.phtml:249
 #: application/views/scripts/participant/add-participant.phtml:167
 #: application/views/scripts/participant/edit-participant.phtml:207
 msgid "Cell/Mobile No."
 msgstr "Numéro de téléphone portable."
 
-#: application/modules/admin/views/scripts/participants/add.phtml:207
-#: application/modules/admin/views/scripts/participants/edit.phtml:230
+#: application/modules/admin/views/scripts/participants/add.phtml:223
+#: application/modules/admin/views/scripts/participants/edit.phtml:259
 #: application/modules/admin/views/scripts/participants/participant-manager-map.phtml:90
 #: application/modules/reports/views/scripts/detailed/index.phtml:50
 #: application/modules/reports/views/scripts/testkit/index.phtml:53
@@ -4961,52 +4980,16 @@ msgstr "Numéro de téléphone portable."
 msgid "Network Tier"
 msgstr "Niveau du réseau"
 
-#: application/modules/admin/views/scripts/participants/add.phtml:234
-#: application/modules/admin/views/scripts/participants/edit.phtml:276
-#: application/views/scripts/participant/add-participant.phtml:209
-#: application/views/scripts/participant/edit-participant.phtml:263
-msgid "Additional E-mail"
-msgstr "E-mail supplémentaire"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:236
-msgid "Please enter the additional email id here"
-msgstr "Veuillez saisir l'adresse électronique supplémentaire ici"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:237
-#: application/modules/admin/views/scripts/participants/edit.phtml:279
-#: application/views/scripts/participant/add-participant.phtml:212
-#: application/views/scripts/participant/edit-participant.phtml:266
-msgid "(Please enter comma separated mutiple email)"
-msgstr ""
-"(Veuillez saisir plusieurs adresses électroniques séparées par des virgules)"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:303
-#: application/modules/admin/views/scripts/participants/add.phtml:347
-#: application/modules/admin/views/scripts/participants/edit.phtml:396
-#: application/modules/admin/views/scripts/participants/edit.phtml:407
+#: application/modules/admin/views/scripts/participants/add.phtml:377
+#: application/modules/admin/views/scripts/participants/edit.phtml:476
 #: application/views/scripts/participant/add-participant.phtml:280
 #: application/views/scripts/participant/add-participant.phtml:323
-#: application/views/scripts/participant/edit-participant.phtml:377
-#: application/views/scripts/participant/edit-participant.phtml:388
+#: application/views/scripts/participant/edit-participant.phtml:378
+#: application/views/scripts/participant/edit-participant.phtml:390
 #: application/views/scripts/participant/testeredit.phtml:247
 #: application/views/scripts/participant/testeredit.phtml:277
 msgid "Lab Name"
 msgstr "Nom du Labo"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:303
-#: application/modules/admin/views/scripts/participants/add.phtml:347
-#: application/views/scripts/participant/add.phtml:262
-#: application/views/scripts/participant/add.phtml:263
-#: application/views/scripts/participant/testeredit.phtml:252
-#: application/views/scripts/participant/testeredit.phtml:253
-#: application/views/scripts/participant/testeredit.phtml:281
-#: application/views/scripts/participant/testeredit.phtml:282
-msgid "Please enter the Lab Name here"
-msgstr "Veuillez saisir le nom du laboratoire ici"
-
-#: application/modules/admin/views/scripts/participants/add.phtml:343
-msgid "Please enter the First Name here"
-msgstr "Veuillez saisir le prénom ici"
 
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:5
 #: application/modules/admin/views/scripts/participants/index.phtml:12
@@ -5045,12 +5028,16 @@ msgstr ""
 "Si le participant est un laboratoire ou une clinique, indiquez le nom du "
 "laboratoire ou de la clinique à la place du \"prénom\""
 
-#: application/modules/admin/views/scripts/participants/edit.phtml:17
+#: application/modules/admin/views/scripts/participants/edit.phtml:20
 #: application/views/scripts/participant/edit-participant.phtml:10
 msgid "Edit Participant"
 msgstr "Modifier le participant"
 
-#: application/modules/admin/views/scripts/participants/edit.phtml:260
+#: application/modules/admin/views/scripts/participants/edit.phtml:82
+msgid "Reset Password?"
+msgstr "Réinitialiser le mot de passe?"
+
+#: application/modules/admin/views/scripts/participants/edit.phtml:289
 #: application/views/scripts/participant/add.phtml:162
 #: application/views/scripts/participant/edit-participant.phtml:247
 msgid "Schemes"
@@ -7472,7 +7459,7 @@ msgstr "Nombre de tests"
 #: application/views/scripts/recency/response.phtml:233
 #: application/views/scripts/vl/response.phtml:353
 msgid "PT panel not tested"
-msgstr " PT Panel non techniqué"
+msgstr "PT Panel non techniqué"
 
 #: application/views/scripts/covid19/response.phtml:296
 #: application/views/scripts/dts/response.phtml:424
@@ -7871,7 +7858,7 @@ msgstr "Commentaires des participants/testeurs"
 msgid "Available Test Kits"
 msgstr "Kits de test disponibles"
 
-#: application/views/scripts/dts/response.phtml:1452
+#: application/views/scripts/dts/response.phtml:1454
 msgid ""
 "Changing the test type may lead to loss of previously entered data and "
 "cannot be undone. Are you sure you want to proceed?"
@@ -7899,11 +7886,6 @@ msgstr "Nom du directeur du laboratoire"
 #: application/views/scripts/vl/response.phtml:124
 msgid "Laboratory Director Email"
 msgstr "Directeur du laboratoire Courriel"
-
-#: application/views/scripts/eid/response.phtml:117
-#: application/views/scripts/vl/response.phtml:134
-msgid "Contact Person Name"
-msgstr "Nom de la personne de contact"
 
 #: application/views/scripts/eid/response.phtml:123
 #: application/views/scripts/vl/response.phtml:140
@@ -8166,6 +8148,16 @@ msgstr "Page"
 msgid "of"
 msgstr "de"
 
+#: application/views/scripts/participant/add-participant.phtml:134
+#: application/views/scripts/participant/edit-participant.phtml:159
+msgid "PT Participant Login"
+msgstr "Connexion du participant au PT"
+
+#: application/views/scripts/participant/add-participant.phtml:209
+#: application/views/scripts/participant/edit-participant.phtml:263
+msgid "Additional E-mail"
+msgstr "E-mail supplémentaire"
+
 #: application/views/scripts/participant/add.phtml:4
 #: application/views/scripts/participant/testeredit.phtml:7
 #: application/views/scripts/participant/testers.phtml:4
@@ -8228,6 +8220,15 @@ msgstr "Sélectionner un ou plusieurs programmes inscrits"
 #: application/views/scripts/participant/testeredit.phtml:275
 msgid "Please enter the Participant's First Name here"
 msgstr "Veuillez saisir ici le prénom du participant"
+
+#: application/views/scripts/participant/add.phtml:262
+#: application/views/scripts/participant/add.phtml:263
+#: application/views/scripts/participant/testeredit.phtml:252
+#: application/views/scripts/participant/testeredit.phtml:253
+#: application/views/scripts/participant/testeredit.phtml:281
+#: application/views/scripts/participant/testeredit.phtml:282
+msgid "Please enter the Lab Name here"
+msgstr "Veuillez saisir le nom du laboratoire ici"
 
 #: application/views/scripts/participant/all-schemes.phtml:8
 msgid "All PT Schemes"
@@ -9252,6 +9253,15 @@ msgstr "Contrôler étroitement les performances"
 #: application/views/scripts/vl/response.phtml:556
 msgid "Perform corrective action"
 msgstr "Mise en œuvre d'une action corrective"
+
+#~ msgid "Please enter the Lab Name or First Name here"
+#~ msgstr "Veuillez saisir le nom ou le prénom du laboratoire ici"
+
+#~ msgid "Please enter the email id here"
+#~ msgstr "Veuillez saisir l'identifiant de l'email ici"
+
+#~ msgid "Please enter the First Name here"
+#~ msgstr "Veuillez saisir le prénom ici"
 
 #~ msgid "Feedback Questions"
 #~ msgstr "Questions sur le retour d'information"

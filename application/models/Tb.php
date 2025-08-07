@@ -1503,6 +1503,8 @@ class Application_Model_Tb
         $result = $this->db->fetchAll($query);
 
         $fileName = "TB-FORM-" . $result[0]['shipment_code'];
+        $configDb = new Application_Model_DbTable_GlobalConfig();
+        $prefix = $configDb->getValue('participant_login_prefix');
 
         // now we will use this result to create an Excel file and then generate the PDF
         $reader = IOFactory::load(UPLOAD_PATH . "/../files/tb/tb-excel-form.xlsx");
@@ -1517,8 +1519,8 @@ class Application_Model_Tb
         }
 
         if ($showCredentials === true) {
-            $sheet->setCellValue('C9', " " . $result[0]['unique_identifier']);
-            $sheet->setCellValue('C11', " " . $result[0]['password']);
+            $sheet->setCellValue('C9', $prefix . $result[0]['unique_identifier']);
+            //$sheet->setCellValue('C11', " " . $result[0]['password']);
         }
         if (!empty($participantId)) {
             $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);

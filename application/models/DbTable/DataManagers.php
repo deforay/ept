@@ -1096,7 +1096,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
     }
 
-    public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
+    public function processBulkImport($fileName, $allFakeEmail = false, $params = null, $type = 'ptcc')
     {
         try {
             $response = [];
@@ -1136,19 +1136,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
                 $originalEmail = null;
                 if (!empty($sheetData[$i]['B']) && filter_var($sheetData[$i]['B'], FILTER_VALIDATE_EMAIL)) {
-                    $originalEmail = $sheetData[$i]['B'];
+                    $originalEmail = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['B']);
                 }
 
                 if (empty($originalEmail) || $allFakeEmail) {
                     $originalEmail = $sheetData[$i]['B'] = MiscUtility::generateFakeEmailId($sheetData[$i]['C'], $sheetData[$i]['D'] . " " . $sheetData[$i]['E']);
                 }
 
-                $originalEmail = $originalEmail ?? $sheetData[$i]['B'];
+                $originalEmail ??= MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['B']);
 
                 // Use cached country lookup instead of individual query
                 $countryId = $this->getCountryIdFromCache($sheetData[$i]['J'], $countryCache);
 
-                $common = new Application_Service_Common();
                 $password = (!isset($sheetData[$i]['M']) || empty($sheetData[$i]['M'])) ? 'ept1@)(*&^' : trim($sheetData[$i]['M']);
                 $password = Common::passwordHash($password);
 
@@ -1157,14 +1156,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     'last_name'         => ($sheetData[$i]['D']),
                     'institute'         => ($sheetData[$i]['E']),
                     'mobile'            => ($sheetData[$i]['H']),
-                    'secondary_email'   => ($sheetData[$i]['F']),
+                    'secondary_email'   => MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['F']),
                     'view_only_access'  => ($sheetData[$i]['I']),
                     'country_id'        => $countryId,
-                    'primary_email'     => $originalEmail,
+                    'primary_email'     => MiscUtility::sanitizeAndValidateEmail($originalEmail),
                     'password'          => $password,
                     'created_by'        => $authNameSpace->admin_id,
                     'created_on'        => new Zend_Db_Expr('now()'),
-                    'data_manager_type' => 'ptcc',
+                    'data_manager_type' => $type ?? 'ptcc',
                     'status'            => 'active'
                 ];
 
@@ -1174,8 +1173,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (empty($dmresult)) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
-                } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] != 'skip-duplicates') {
-                    $db->update('data_manager', $dataManagerData, 'primary_email = "' . $originalEmail . '"');
+                } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
+                    $db->update('data_manager', $dataManagerData, "primary_email = '$originalEmail'");
                     $lastInsertedId = $dmresult['dm_id'];
                 } else {
                     $lastInsertedId = $dmresult['dm_id'];
@@ -1194,7 +1193,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     (isset($countryId) && !empty($countryId))
                 ) {
 
-                    if (isset($lastInsertedId) && !empty(($lastInsertedId))) {
+                    if (isset($lastInsertedId) && !empty($lastInsertedId)) {
                         $params['district'] = $sheetData[$i]['L'];
                         $params['province'] = $sheetData[$i]['K'];
                         $params['country'] = $countryId;
@@ -1250,7 +1249,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         for ($i = 2; $i <= count($sheetData); $i++) {
             $email = filter_var(trim($sheetData[$i]['B'] ?? ''), FILTER_SANITIZE_EMAIL);
             if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $emails[] = $email;
+                $emails[] = MiscUtility::sanitizeAndValidateEmail($email);
             } else {
                 // Handle fake email generation case
                 if (!empty($sheetData[$i]['C'])) {
@@ -1280,11 +1279,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     private function getCountryIdFromCache($countryInput, $countryCache)
     {
-        $countryId = 236; // Default is USA
+        $countryId = null; // Default country ID if not found
 
         if (!empty($countryInput)) {
             $key = strtolower(trim($countryInput));
-            $countryId = $countryCache[$key] ?? 236;
+            $countryId = $countryCache[$key] ?? null;
         }
 
         return $countryId;

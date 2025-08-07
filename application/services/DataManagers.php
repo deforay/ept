@@ -2,16 +2,19 @@
 
 class Application_Service_DataManagers
 {
+    protected $datamanagersDb;
+    public function __construct()
+    {
+        $this->datamanagersDb = new Application_Model_DbTable_DataManagers();
+    }
 
     public function addUser($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->addUser($params);
+        return $this->datamanagersDb->addUser($params);
     }
 
     public function updateUser($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         /* Set lang in runtime */
@@ -26,21 +29,20 @@ class Application_Service_DataManagers
             $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             $sessionAlert->message = "Please check your email “" . $params['pemail'] . "”. Once you verify, you can use “" . $params['pemail'] . "” to login to ePT.";
             $sessionAlert->status = "success";
-            // $userDb->setStatusByEmail('inactive',$params['oldpemail']);
+            // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldpemail']);
         } else {
             if ($authNameSpace->force_profile_check_primary == 'yes') {
                 $sessionAlert->status = "failure";
-                $userDb->updateForceProfileCheckByEmail(base64_encode($params['oldpemail']));
+                $this->datamanagersDb->updateForceProfileCheckByEmail(base64_encode($params['oldpemail']));
             } else {
                 $sessionAlert->status = "failure";
             }
         }
-        return $userDb->updateUser($params);
+        return $this->datamanagersDb->updateUser($params);
     }
 
     public function confirmPrimaryMail($params, $showAlert = false)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         if ($params['oldEmail'] != $params['registeredEmail']) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -52,9 +54,9 @@ class Application_Service_DataManagers
             $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
             $sessionAlert->message = "Please check your email “" . $params['registeredEmail'] . "”. Once you verify, you can use “" . $params['registeredEmail'] . "” to login to ePT.";
             $sessionAlert->status = "success";
-            // $userDb->setStatusByEmail('inactive',$params['oldEmail']);
+            // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldEmail']);
         }
-        $status = $userDb->changeForceProfileCheckByEmail($params);
+        $status = $this->datamanagersDb->changeForceProfileCheckByEmail($params);
         if ($showAlert) {
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
             if ($status) {
@@ -70,8 +72,7 @@ class Application_Service_DataManagers
 
     public function resentDMVerifyMail($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $row = $userDb->fetchRow('new_email = "' . $params['registeredEmail'] . '"');
+        $row = $this->datamanagersDb->fetchRow('new_email = "' . $params['registeredEmail'] . '"');
         if ($row) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
@@ -90,58 +91,53 @@ class Application_Service_DataManagers
 
     public function updateLastLogin($dmId)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->updateLastLogin($dmId);
+        return $this->datamanagersDb->updateLastLogin($dmId);
     }
 
     public function checkOldMail($dmId)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchRow('new_email IS NOT NULL AND new_email not like "" AND dm_id = ' . $dmId);
+        return $this->datamanagersDb->fetchRow('new_email IS NOT NULL AND new_email not like "" AND dm_id = ' . $dmId);
+
     }
 
     public function getAllUsers($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->getAllUsers($params);
+        return $this->datamanagersDb->getAllUsers($params);
     }
 
     public function getPtccCountryMap($userId = null, $type = null, $ptcc = false)
     {
 
-        $userDb = new Application_Model_DbTable_DataManagers();
         if ($userId == null) {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userId = $authNameSpace->UserID;
         }
-        return $userDb->fetchUserCuntryMap($userId, $type, $ptcc);
+        return $this->datamanagersDb->fetchUserCuntryMap($userId, $type, $ptcc);
     }
 
     public function getUserInfo($userId = null)
     {
 
-        $userDb = new Application_Model_DbTable_DataManagers();
         if ($userId == null) {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userId = $authNameSpace->UserID;
         }
-        return $userDb->getUserDetails($userId);
+        return $this->datamanagersDb->getUserDetails($userId);
     }
     public function getUserInfoBySystemId($userSystemId = null)
     {
 
-        $userDb = new Application_Model_DbTable_DataManagers();
         if ($userSystemId == null) {
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $userSystemId = $authNameSpace->dm_id;
         }
-        return $userDb->getUserDetailsBySystemId($userSystemId);
+        return $this->datamanagersDb->getUserDetailsBySystemId($userSystemId);
     }
 
     public function resetPassword($email)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $participant = $userDb->resetPasswordForEmail($email);
+
+        $participant = $this->datamanagersDb->resetPasswordForEmail($email);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         //    echo "<pre>"; print_r($conf); die;
@@ -195,8 +191,7 @@ class Application_Service_DataManagers
     public function resetPasswordFromAdmin($params)
     {
         $email = $params['primaryMail'];
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $result = $userDb->updatePasswordFromAdmin($email, $params['password']);
+        $result = $this->datamanagersDb->updatePasswordFromAdmin($email, $params['password']);
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $eptDomain = rtrim($conf->domain, "/");
         if ($result) {
@@ -214,8 +209,7 @@ class Application_Service_DataManagers
 
     public function getDataManagerList($ptcc = false)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->getAllDataManagers($ptcc);
+        return $this->datamanagersDb->getAllDataManagers($ptcc);
     }
 
     public function getParticipantDatamanagerListByPid($participantId)
@@ -293,8 +287,7 @@ class Application_Service_DataManagers
 
     public function changePassword($oldPassword, $newPassword)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $newPassword = $userDb->updatePassword($oldPassword, $newPassword);
+        $newPassword = $this->datamanagersDb->updatePassword($oldPassword, $newPassword);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         if ($newPassword != false) {
             $sessionAlert->message = "Your password has been updated.";
@@ -328,14 +321,12 @@ class Application_Service_DataManagers
 
     public function getParticipantDatamanagerSearch($participant)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchParticipantDatamanagerSearch($participant);
+        return $this->datamanagersDb->fetchParticipantDatamanagerSearch($participant);
     }
 
     public function newPassword($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        $newPassword = $userDb->saveNewPassword($params);
+        $newPassword = $this->datamanagersDb->saveNewPassword($params);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         if ($newPassword  != false) {
             $sessionAlert->message = "Your password has been updated.";
@@ -350,56 +341,47 @@ class Application_Service_DataManagers
 
     public function checkEmail($email)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchEmailById($email);
+        return $this->datamanagersDb->fetchEmailById($email);
     }
 
     public function verifyEmailById($email)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchVerifyEmailById($email);
+        return $this->datamanagersDb->fetchVerifyEmailById($email);
     }
 
     public function checkForceProfileEmail($link)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchForceProfileEmail($link);
+        return $this->datamanagersDb->fetchForceProfileEmail($link);
     }
 
     public function updateForceProfileCheck($email, $result = "")
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->updateForceProfileCheckByEmail($email, $result);
+        return $this->datamanagersDb->updateForceProfileCheckByEmail($email, $result);
     }
 
     public function loginDatamanagerAPI($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->loginDatamanagerByAPI($params);
+        return $this->datamanagersDb->loginDatamanagerByAPI($params);
     }
 
     public function changePasswordDatamanagerAPI($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->changePasswordDatamanagerByAPI($params);
+        return $this->datamanagersDb->changePasswordDatamanagerByAPI($params);
     }
 
     public function getLoggedInDetails($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchLoggedInDetails($params);
+        return $this->datamanagersDb->fetchLoggedInDetails($params);
     }
 
     public function forgetPasswordDatamanagerAPI($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->setForgetPasswordDatamanagerAPI($params);
+        return $this->datamanagersDb->setForgetPasswordDatamanagerAPI($params);
     }
 
     public function setStatusByEmailDM($status, $email)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->setStatusByEmail($status, $email);
+        return $this->datamanagersDb->setStatusByEmail($status, $email);
     }
 
     public function checkSystemDuplicate($params) // This function created for checking ptcc and actual dm replacement using primary email
@@ -424,8 +406,6 @@ class Application_Service_DataManagers
         ini_set('max_execution_time', -1);
         try {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $userDb = new Application_Model_DbTable_DataManagers();
-            $common = new Application_Service_Common();
             $allowedExtensions = array('xls', 'xlsx', 'csv');
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
             $fileName = str_replace(" ", "-", $fileName);
@@ -437,7 +417,7 @@ class Application_Service_DataManagers
                 $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
                 if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
                     if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                        $response = $userDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+                        $response = $this->datamanagersDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
                     } else {
                         $alertMsg->message = 'Data import failed';
                         return false;
@@ -461,13 +441,11 @@ class Application_Service_DataManagers
 
     public function exportPTCCDetails($params)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->exportPTCCDetails($params);
+        return $this->datamanagersDb->exportPTCCDetails($params);
     }
 
     public function mapPtccLogin($id)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()
             ->from(array('u' => 'data_manager'), array(''))
@@ -480,12 +458,11 @@ class Application_Service_DataManagers
             ->where('dm_id = ?', $id)
             ->group('u.dm_id');
         $result = $db->fetchRow($sQuery);
-        return $userDb->dmParticipantMap($result, $id, true);
+        return $this->datamanagersDb->dmParticipantMap($result, $id, true);
     }
 
     public function getDataManagersByParticipantId($participantId)
     {
-        $userDb = new Application_Model_DbTable_DataManagers();
-        return $userDb->fetchDataManaersByParticipantId($participantId);
+        return $this->datamanagersDb->fetchDataManaersByParticipantId($participantId);
     }
 }

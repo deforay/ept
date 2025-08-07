@@ -988,7 +988,9 @@ class Application_Model_Dts
 				}
 
 				// Calculating the max score -- will be used in calculations later
-				$maxScore += $result['sample_score'];
+				$maxScore += $scoreForSample + $scoreForAlgorithm;
+
+				$interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
 
 				if (isset($result['test_result_1']) && !empty($result['test_result_1']) && trim($result['test_result_1']) != false && trim($result['test_result_1']) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
@@ -1004,14 +1006,16 @@ class Application_Model_Dts
 					//T.15 Testing performed with a test kit that is not recommended by MOH
 					if ((isset($tk1Expired) && $tk1Expired) || (isset($tk1RecommendedUsed) && !$tk1RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $scoreForSample;
-						}
-						if ($algoResult == 'Pass') {
-							$totalScore -= $scoreForAlgorithm;
-						}
+						// if ($correctResponse) {
+						// 	$totalScore -= $scoreForSample;
+						// }
+						// if ($algoResult == 'Pass') {
+						// 	$totalScore -= $scoreForAlgorithm;
+						// }
+						$totalScore = 0;
 						$correctResponse = false;
 						$algoResult = 'Fail';
+						$interpretationResult = 'Fail';
 					}
 				}
 				if (isset($result['test_result_2']) && !empty($result['test_result_2']) && trim($result['test_result_2']) != false && trim($result['test_result_2']) != '24') {
@@ -1028,14 +1032,16 @@ class Application_Model_Dts
 					//T.15 Testing performed with a test kit that is not recommended by MOH
 					if ((isset($tk2Expired) && $tk2Expired) || (isset($tk2RecommendedUsed) && !$tk2RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $scoreForSample;
-						}
-						if ($algoResult == 'Pass') {
-							$totalScore -= $scoreForAlgorithm;
-						}
+						// if ($correctResponse) {
+						// 	$totalScore -= $scoreForSample;
+						// }
+						// if ($algoResult == 'Pass') {
+						// 	$totalScore -= $scoreForAlgorithm;
+						// }
+						$totalScore = 0;
 						$correctResponse = false;
 						$algoResult = 'Fail';
+						$interpretationResult = 'Fail';
 					}
 				}
 				if (isset($result['test_result_3']) && !empty($result['test_result_3']) && trim($result['test_result_3']) != false && trim($result['test_result_3']) != '24') {
@@ -1052,28 +1058,30 @@ class Application_Model_Dts
 					//T.15 Testing performed with a test kit that is not recommended by MOH
 					if ((isset($tk3Expired) && $tk3Expired) || (isset($tk3RecommendedUsed) && !$tk3RecommendedUsed)) {
 						$testKitExpiryResult = 'Fail';
-						if ($correctResponse) {
-							$totalScore -= $scoreForSample;
-						}
-						if ($algoResult == 'Pass') {
-							$totalScore -= $scoreForAlgorithm;
-						}
+						// if ($correctResponse) {
+						// 	$totalScore -= $scoreForSample;
+						// }
+						// if ($algoResult == 'Pass') {
+						// 	$totalScore -= $scoreForAlgorithm;
+						// }
+						$totalScore = 0;
 						$correctResponse = false;
 						$algoResult = 'Fail';
+						$interpretationResult = 'Fail';
 					}
 				}
-				$interpretationResult = ($result['reference_result'] == $result['reported_result']) ? 'Pass' : 'Fail';
 
-				if (!$correctResponse || $algoResult == 'Fail' || $mandatoryResult == 'Fail' || ($result['reference_result'] != $result['reported_result'])) {
-					$this->db->update('response_result_dts', ['calculated_score' => "Fail", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-				} else {
-					$this->db->update('response_result_dts', ['calculated_score' => "Pass", 'algorithm_result' => $algoResult, 'interpretation_result' => $interpretationResult], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
-				}
+
+
+				$this->db->update('response_result_dts', [
+					'calculated_score' => ($correctResponse && $algoResult != 'Fail' && $mandatoryResult != 'Fail' && $result['reference_result'] == $result['reported_result']) ? "Pass" : "Fail",
+					'algorithm_result' => $algoResult,
+					'interpretation_result' => $interpretationResult
+				], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
 			}
 
-
-
 			$configuredDocScore = (isset($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? $config->evaluation->dts->documentationScore : 0;
+
 
 			// Response Score
 			if ($maxScore == 0 || $totalScore == 0) {
@@ -1081,6 +1089,7 @@ class Application_Model_Dts
 			} else {
 				$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
 			}
+
 
 			//if ((isset($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes')) {
 			if (empty($attributes['algorithm']) || strtolower($attributes['algorithm']) == 'not-reported') {
@@ -1200,28 +1209,28 @@ class Application_Model_Dts
 				if (!empty($attributes['condition_pt_samples'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Condition of PT Samples not reported",
 						'correctiveAction' => $correctiveActions[18]
-					);
+					];
 					$correctiveActionList[] = 18;
 				}
 				if (!empty($attributes['refridgerator'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Refridgerator availability not reported",
 						'correctiveAction' => $correctiveActions[19]
-					);
+					];
 					$correctiveActionList[] = 18;
 				}
 				if (!empty($attributes['room_temperature'])) {
 					$documentationScore += $documentationScorePerItem;
 				} else {
-					$failureReason[] = array(
+					$failureReason[] = [
 						'warning' => "Room Temperature not reported",
 						'correctiveAction' => $correctiveActions[20]
-					);
+					];
 					$correctiveActionList[] = 18;
 				}
 				if (!empty($attributes['stop_watch'])) {
@@ -1311,7 +1320,7 @@ class Application_Model_Dts
 						}
 
 						$shipmentResult[$counter]['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
-						$this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+						$this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], "map_id = " . $shipment['map_id']);
 					}
 				} else {
 

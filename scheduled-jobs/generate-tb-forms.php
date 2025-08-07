@@ -54,14 +54,14 @@ try {
             $db->update(
                 'shipment',
                 [
-                    'tb_form_generated' => 'no',
+                    'tb_form_generated' => 'yes',
                     'updated_on_admin' => new Zend_Db_Expr('now()'),
                 ],
                 'shipment_id = ' . $tbResult[0]['shipment_id']
             );
         }
 
-        $generalModel->zipFolder($folderPath, $folderPath . ".zip");
+
 
         $batchSize = 50; // Number of PDFs to merge at a time
         $batchFiles = array_chunk($pdfsToMerge, $batchSize);
@@ -109,8 +109,10 @@ try {
         }
 
         // Output the final merged PDF
-        $finalPdfPath = $folderPath . DIRECTORY_SEPARATOR . 'Final_Merged_PDF.pdf';
+        $finalPdfPath = $folderPath . DIRECTORY_SEPARATOR . $tbResult[0]['shipment_code'].'-TB-Participant-Forms.pdf';
         $finalPdf->Output($finalPdfPath, "F");
+
+        $generalModel->zipFolder($folderPath, $folderPath . "-TB-FORMS.zip");
     }
 } catch (Exception $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");

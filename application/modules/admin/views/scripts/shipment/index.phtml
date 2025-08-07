@@ -450,15 +450,15 @@
 
     }
 
-    function generateTbFromPdf(sid) {
-        if (window.confirm("Are you sure you want to generate TB form to all participants ?")) {
-            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'generate-tb-form')); ?>", {
+    function generateTBFormsPDF(sid) {
+        if (window.confirm("<?= $this->translate->_("Are you sure you want to generate TB forms for this shipment?"); ?>")) {
+            $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'generate-tb-form']); ?>", {
                     sid: sid,
                     format: "html"
                 },
                 function(data) {
                     if (data > 0) {
-                        alert("<?= $this->translate->_("TB form started generating"); ?>");
+                        alert("<?= $this->translate->_("Generating TB forms"); ?>");
                     }
                     oTable.fnDraw();
                 });
