@@ -177,6 +177,8 @@ class ParticipantController extends Zend_Controller_Action
                 $this->redirect('/participant/current-schemes');
             }
         }
+        $userService = new Application_Service_DataManagers();
+        $this->view->rsUser = $userInfo = $userService->getUserInfo();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }

@@ -13,8 +13,6 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
     <div class="box">
         <div class="box-body">
             <form name="userInfoForm" id="userInfoForm" method="post" action="<?php echo $this->url(array("controller" => "participant", "action" => "user-info"), null, true) ?>">
-
-
                 <table style="width: 95%;margin: auto;" class="table table-striped table-hover">
                     <?php if (isset($this->rsUser['new_email']) && $this->rsUser['new_email'] != "") { ?>
                         <tr align="left" class="dark">

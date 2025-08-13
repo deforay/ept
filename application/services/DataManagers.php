@@ -97,7 +97,6 @@ class Application_Service_DataManagers
     public function checkOldMail($dmId)
     {
         return $this->datamanagersDb->fetchRow('new_email IS NOT NULL AND new_email not like "" AND dm_id = ' . $dmId);
-
     }
 
     public function getAllUsers($params)
@@ -294,8 +293,10 @@ class Application_Service_DataManagers
             $sessionAlert->status = "success";
             return true;
         } else {
-            $sessionAlert->message = "Sorry, we could not update your password(check you enter correct old password). Please try again";
-            $sessionAlert->status = "failure";
+            if ($_SESSION['profile_confirmed']) {
+                $sessionAlert->message = "Sorry, we could not update your password(check you enter correct old password). Please try again";
+                $sessionAlert->status = "failure";
+            }
             return false;
         }
     }

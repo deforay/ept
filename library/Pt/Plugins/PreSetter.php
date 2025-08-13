@@ -76,7 +76,9 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             } elseif ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1') {
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'password') {
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
-                    $sessionAlert->message = "Please change your password to proceed.";
+                    if ($_SESSION['profile_confirmed']) {
+                        $sessionAlert->message = "Please change your password to proceed.";
+                    }
                 } else {
                     $request->setModuleName('default')->setControllerName('participant')->setActionName('password');
                     $request->setDispatched(false);
@@ -91,5 +93,4 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             $layout->setLayout('admin');
         }
     }
-
 }
