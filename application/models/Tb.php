@@ -1478,6 +1478,7 @@ class Application_Model_Tb
             EOF;
         return preg_replace($bodystring, $bodyrepl, $html);
     }
+
     public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
     {
 
@@ -1519,13 +1520,17 @@ class Application_Model_Tb
         }
 
         if ($showCredentials === true) {
-            $sheet->setCellValue('C9', $prefix . $result[0]['unique_identifier']);
+            $sheet->setCellValue('C8', $prefix . $result[0]['unique_identifier']);
             //$sheet->setCellValue('C11', " " . $result[0]['password']);
         }
+        $sheet->setCellValue('C10', " ");
+        $sheet->setCellValue('C12', " ");
         if (!empty($participantId)) {
-            $sheet->setCellValue('C5', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
-            $sheet->setCellValue('C7', " " . $result[0]['unique_identifier']);
+            $sheet->setCellValue('C6', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
+            $sheet->setCellValue('C8', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
+            if (isset($result[0]['primary_email']) && !empty($result[0]['primary_email']))
+                $sheet->setCellValue('C10', " " . $result[0]['primary_email']);
         }
         $eptDomain = rtrim($conf->domain, "/");
         // Create a new RichText object
@@ -1542,13 +1547,24 @@ class Application_Model_Tb
         $text = $richText->createText(" using your username and password above.");
 
         // Set the rich text to the cell
-        $sheet->setCellValue('A25', $richText);
+        $sheet->setCellValue('A22', $richText);
 
+        $richText1 = new RichText();
 
-        $sheet->setCellValue('A43', " " . "If you are experiencing challenges testing the panel or submitting results please contact your Country's PT Coordinator");
-        $sheet->getStyle('C14:P14')->getAlignment()->setTextRotation(90);
+        // Add the first part of the text
+        $text = $richText1->createText("If you are experiencing challenges testing the panel or submitting results please contact your country's PT Coordinator. Please direct ePT systems questions and support requests related to participant log-in and credentialing to  ur web management team at ");
 
-        $sampleLabelRow = 15;
+        // Make the next part bold
+        $bold = $richText1->createTextRun('support@mtbept.com');
+        $bold->getFont()->setBold(true);
+
+        // Add the last part of the text
+        $text = $richText1->createText("  for review.");
+        $sheet->setCellValue('A33', $richText1);
+
+        // $sheet->getStyle('C14:P14')->getAlignment()->setTextRotation(90);
+
+        $sampleLabelRow = 16;
         foreach ($result as $sampleRow) {
             $sheet->setCellValue('A' . $sampleLabelRow, $sampleRow['sample_label']);
             $sampleLabelRow++;

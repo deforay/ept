@@ -215,7 +215,7 @@ class Application_Service_Shipments
             }
             $downloadAllForm = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
-                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>'. _("Download TB Forms").'</a>';
+                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . _("Download TB Forms") . '</a>';
             } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] != 'yes') {
                     $txt = _("Generating TB Forms...");
@@ -3418,7 +3418,7 @@ class Application_Service_Shipments
             $tbDb = new Application_Model_Tb();
             $GLOBALS['issuingAuthority'] = $tbResult['issuing_authority'] ?? null;
             return [
-                'file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true),
+                // 'file' => $tbDb->generateFormPDF($tbResult['shipment_id'], $tbResult['participant_id'], true, true),
                 'result' => $tbResult
             ];
         }
