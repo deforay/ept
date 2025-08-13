@@ -22,11 +22,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function getParticipantsByUserSystemId($userSystemId)
     {
-        $sql = $this->getAdapter()->select()->from(array('p' => $this->_name))
+        $sql = $this->getAdapter()->select()->from(array('p' => $this->_name), array(
+            '*',
+            'participant_name' => new Zend_Db_Expr("
+                CASE 
+                    WHEN p.individual = 'yes' THEN CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.last_name, ''))
+                    WHEN p.individual = 'no' THEN COALESCE(p.lab_name, '')
+                    ELSE ''
+                END
+            ")
+        ))
             ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")])
+            ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
             ->where("pmm.dm_id = ?", $userSystemId)
             //->where("p.status = 'active'")
-            ->group('p.participant_id');
+            ->group('p.participant_id')
+            ->order('participant_name ASC');
         return $this->getAdapter()->fetchAll($sql);
     }
 
