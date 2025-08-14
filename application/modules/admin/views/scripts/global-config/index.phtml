@@ -17,7 +17,7 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="aggregate_insights_url" class="col-lg-3 control-label"><?= $this->translate->_("Participant Login Prefix"); ?></label>
+				<label for="aggregate_insights_url" class="col-lg-3 control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
 				<div class="col-lg-6">
 					<input type="text" class="form-control" id="aggregate_insights_url" name="aggregate_insights_url" placeholder="Enter aggregate insights URL" title="Please enter aggregate insights URL" value="<?php echo $this->aggregate_insights_url; ?>" />
 				</div>
@@ -55,13 +55,13 @@
 			<div class="form-group">
 				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?php echo $this->admin_email; ?>" />
+					<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?= $this->admin_email; ?>" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="admin_email" class="col-lg-3 control-label"><?= $this->translate->_("Institute Name"); ?></label>
+				<label for="instituteName" class="col-lg-3 control-label"><?= $this->translate->_("Institute Name"); ?></label>
 				<div class="col-lg-6">
-					<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?php echo $this->config->instituteName; ?>" />
+					<input type="text" class="form-control" id="instituteName" name="instituteName" placeholder="Enter Institute Name" title="Enter Institute Name" value="<?= $this->config->instituteName; ?>" />
 				</div>
 			</div>
 			<div class="form-group">

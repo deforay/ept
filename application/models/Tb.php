@@ -1444,39 +1444,78 @@ class Application_Model_Tb
 
     public function addHeadersFooters(string $html): string
     {
-        $issuingAuthority = $GLOBALS['issuingAuthority'];
+        $issuingAuthority = $GLOBALS['issuingAuthority'] ?? '';
         $formVersion = $GLOBALS['formVersion'] ?? '';
+        $effectiveDate = $GLOBALS['effectiveDate'] ?? '';
+        $organizationName = $GLOBALS['organizationName'] ?? '';
+        $formTitle = $GLOBALS['formTitle'] ?? '';
+
         $pagerepl = <<<EOF
-            @page page0 {
-            odd-header-name: html_myHeader1;
-            even-header-name: html_myHeader1;
-            odd-footer-name: html_myFooter2;
-            even-footer-name: html_myFooter2;
-            EOF;
-        $html = preg_replace('/@page page0 {/', $pagerepl, $html);
+    @page page0 {
+        margin-top: 25mm;
+        margin-bottom: 20mm;
+        margin-left: 15mm;
+        margin-right: 15mm;
+        odd-header-name: html_myHeader1;
+        even-header-name: html_myHeader1;
+        odd-footer-name: html_myFooter2;
+        even-footer-name: html_myFooter2;
+    }
+    EOF;
+
+        $html = preg_replace('/@page page0 {[^}]*}/', $pagerepl, $html);
+
         $bodystring = '/<body>/';
         $bodyrepl = <<<EOF
-            <body>
-                <htmlpageheader name="myHeader1" style="display:none">
-                    <div style="text-align: right; font-weight: bold; font-size: 10pt;">
-                    <table width="100%">
-                        <tr>
-                            <td style="text-align:center;font-weight:bold;border-bottom:solid 1px black;"><h2>Xpert TB Proficiency Test Result Form</h2></td>
-                        </tr>
-                    </table>
-                    </div>
-                </htmlpageheader>
-                <htmlpagefooter name="myFooter2" style="display:none">
-                    <table width="100%">
-                        <tr>
-                            <td width="33%">$formVersion</td>
-                            <td width="33%" align="center">{PAGENO} of {nbpg}<br>Issuing Authority: $issuingAuthority</td>
-                            <td width="33%" style="text-align: right;">Effective Date : 15-Mar-2024</td>
-                        </tr>
-                    </table>
-                </htmlpagefooter>
-            EOF;
+    <body>
+        <htmlpageheader name="myHeader1" style="display:none">
+            <div style="text-align: center; font-weight: bold; font-size: 12pt; border-bottom: 2px solid black; padding-bottom: 5px;">
+                $organizationName<br/>$formTitle
+            </div>
+        </htmlpageheader>
+
+        <htmlpagefooter name="myFooter2" style="display:none">
+            <table width="100%" style="font-size: 10pt; padding-top: 5px;">
+                <tr>
+                    <td width="33%" style="vertical-align: bottom; text-align: left;">$formVersion</td>
+                    <td width="34%" style="text-align: center; vertical-align: bottom;">
+                        Issuing Authority: $issuingAuthority<br/>
+                        Page {PAGENO} of {nbpg}
+                    </td>
+                    <td width="33%" style="text-align: right; vertical-align: bottom;">
+                        Effective Date: $effectiveDate
+                    </td>
+                </tr>
+            </table>
+        </htmlpagefooter>
+    EOF;
+
         return preg_replace($bodystring, $bodyrepl, $html);
+    }
+
+    public function getFormConfiguration($shipmentId)
+    {
+        $config = [];
+
+        $shipmentQuery = $this->db->select()
+            ->from('shipment', ['shipment_attributes', 'issuing_authority'])
+            ->where('shipment_id = ?', $shipmentId);
+        $shipmentData = $this->db->fetchRow($shipmentQuery);
+
+        if (!empty($shipmentData['shipment_attributes'])) {
+            $shipmentAttrs = json_decode($shipmentData['shipment_attributes'], true);
+            $config = array_merge($config, $shipmentAttrs);
+        }
+
+        $config['issuing_authority'] = $shipmentData['issuing_authority'] ?? '';
+
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $config['organization_name'] = $config['organization_name'] ?? $globalConfigDb->getValue('institute_name');
+        $config['form_title'] = $config['form_title'] ?? $globalConfigDb->getValue('tb_form_title');
+        $config['effective_date'] = $config['effective_date'] ?? $globalConfigDb->getValue('tb_form_effective_date');
+        $config['form_version'] = $config['form_version'] ?? $globalConfigDb->getValue('tb_form_version');
+
+        return $config;
     }
 
     public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
@@ -1485,7 +1524,9 @@ class Application_Model_Tb
         ini_set("memory_limit", -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
         $query = $this->db->select()
             ->from(['s' => 'shipment'])
             ->join(['ref' => 'reference_result_tb'], 's.shipment_id=ref.shipment_id')
@@ -1508,9 +1549,21 @@ class Application_Model_Tb
         $prefix = $configDb->getValue('participant_login_prefix');
 
         // now we will use this result to create an Excel file and then generate the PDF
-        $reader = IOFactory::load(UPLOAD_PATH . "/../files/tb/tb-excel-form.xlsx");
+        $reader = IOFactory::load(WEB_ROOT . "/files/tb/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
+        $sheet->getPageSetup()
+            ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE)
+            ->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4)
+            ->setFitToPage(true)
+            ->setFitToWidth(1)
+            ->setFitToHeight(0)
+            ->setScale(100);
 
+        $sheet->getPageMargins()
+            ->setTop(0.5)
+            ->setRight(0.3)
+            ->setLeft(0.3)
+            ->setBottom(0.5);
 
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
         $sheet->setCellValue('R2', Pt_Commons_General::humanReadableDateFormat($result[0]['lastdate_response']));
@@ -1519,68 +1572,60 @@ class Application_Model_Tb
             $sheet->setCellValue('H2', $result[0]['iso_name']);
         }
 
-        if ($showCredentials === true) {
-            $sheet->setCellValue('C8', $prefix . $result[0]['unique_identifier']);
-            //$sheet->setCellValue('C11', " " . $result[0]['password']);
-        }
-        $sheet->setCellValue('C10', " ");
-        $sheet->setCellValue('C12', " ");
+
+
         if (!empty($participantId)) {
             $sheet->setCellValue('C6', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
             $sheet->setCellValue('C8', " " . $result[0]['unique_identifier']);
             $fileName .= "-" . $result[0]['unique_identifier'];
-            if (isset($result[0]['primary_email']) && !empty($result[0]['primary_email']))
-                $sheet->setCellValue('C10', " " . $result[0]['primary_email']);
+            if ($showCredentials === true) {
+                $sheet->setCellValue('C10', $prefix . $result[0]['unique_identifier']);
+                //$sheet->setCellValue('C12', " " . $result[0]['password']);
+            }
         }
-        $eptDomain = rtrim($conf->domain, "/");
-        // Create a new RichText object
-        $richText = new RichText();
 
-        // Add the first part of the text
-        $text = $richText->createText("This form is for your site's proficiency test records only. All results must be submitted in ePT at ");
+        $eptDomain = rtrim($applicationConfig->domain, "/");
+        // $richText = new RichText();
+        // $richText->createText("This form is for your site's proficiency test records only. All results must be submitted in ePT at ");
+        // $bold = $richText->createTextRun($eptDomain);
+        // $bold->getFont()->setBold(true);
+        // $richText->createText(" using your username and password above.");
+        // $sheet->setCellValue('A22', $richText);
 
-        // Make the next part bold
-        $bold = $richText->createTextRun($eptDomain);
-        $bold->getFont()->setBold(true);
-
-        // Add the last part of the text
-        $text = $richText->createText(" using your username and password above.");
-
-        // Set the rich text to the cell
-        $sheet->setCellValue('A22', $richText);
-
+        $adminEmail = Application_Service_Common::getConfig('admin_email');
         $richText1 = new RichText();
-
-        // Add the first part of the text
-        $text = $richText1->createText("If you are experiencing challenges testing the panel or submitting results please contact your country's PT Coordinator. Please direct ePT systems questions and support requests related to participant log-in and credentialing to  ur web management team at ");
-
-        // Make the next part bold
-        $bold = $richText1->createTextRun('support@mtbept.com');
-        $bold->getFont()->setBold(true);
-
-        // Add the last part of the text
-        $text = $richText1->createText("  for review.");
+        $richText1->createText("If you are experiencing challenges testing the panel or submitting results please contact your country's PT Coordinator. Please direct ePT systems questions and support requests related to participant log-in and credentialing to our web management team at ");
+        $bold1 = $richText1->createTextRun($adminEmail);
+        $bold1->getFont()->setBold(true);
+        $richText1->createText(" for review.");
         $sheet->setCellValue('A33', $richText1);
-
         // $sheet->getStyle('C14:P14')->getAlignment()->setTextRotation(90);
 
         $sampleLabelRow = 16;
         foreach ($result as $sampleRow) {
-            $sheet->setCellValue('A' . $sampleLabelRow, $sampleRow['sample_label']);
+            $sheet->setCellValue("A$sampleLabelRow", $sampleRow['sample_label']);
             $sampleLabelRow++;
         }
 
-        $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? null;
+        $GLOBALS['issuingAuthority'] = $result[0]['issuing_authority'] ?? '';
+        $GLOBALS['formVersion'] = '';
+        $GLOBALS['effectiveDate'] = '';
+        $GLOBALS['organizationName'] = $config->instituteName ?? '';
+        $GLOBALS['formTitle'] = '';
+
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
             $shipmentAttribute = json_decode($result[0]['shipment_attributes'], true);
-            $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? null;
+            $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
+            $GLOBALS['effectiveDate'] = $shipmentAttribute['effective_date'] ?? '';
+            $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';
         }
+
 
         $fileName .= ".pdf";
 
         $maxRow = 50;
         if ($sheet->getHighestRow() > $maxRow) {
-            $sheet->removeRow(($maxRow + 1), $sheet->getHighestRow() - $maxRow);
+            $sheet->removeRow($maxRow + 1, $sheet->getHighestRow() - $maxRow);
         }
 
         $writer = new Mpdf($reader);
@@ -1623,7 +1668,7 @@ class Application_Model_Tb
             $panelStatisticsQuery .= " JOIN participant AS p ON p.participant_id = spm.participant_id
                 WHERE spm.shipment_id = " . $params['shipmentId'];
             if (!empty($authNameSpace->dm_id)) {
-                $panelStatisticsQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
+                $panelStatisticsQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
             $panelStatisticsQuery .= ";";
             $panelStatistics = $db->fetchRow($panelStatisticsQuery);
@@ -1768,7 +1813,7 @@ class Application_Model_Tb
             $errorCodesQuery .= " WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
             if (!empty($authNameSpace->dm_id)) {
-                $errorCodesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
+                $errorCodesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
             // die($errorCodesQuery);
@@ -1827,7 +1872,7 @@ class Application_Model_Tb
                 SUM(CASE WHEN rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1 THEN 1 ELSE 0 END) AS false_positives,
                 SUM(CASE WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 1 ELSE 0 END) AS false_negatives,
                 SUM(CASE WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 1 ELSE 0 END) AS false_resistances
-                " . $discordantResultsInnerQuery . "
+                $discordantResultsInnerQuery
                 GROUP BY rifDetect.sample_id
                 ORDER BY rifDetect.sample_id ASC;";
             // die($discordantResultsQuery);
@@ -1998,7 +2043,7 @@ class Application_Model_Tb
                 WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 'False Negative'
                 WHEN rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1 THEN 'False Resistance Detected'
             END AS non_concordance_reason
-            " . $discordantResultsInnerQuery . "
+            $discordantResultsInnerQuery
             WHERE (rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1)
             OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1)
             OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1)
@@ -2075,7 +2120,7 @@ class Application_Model_Tb
                 "report-name" => $filename
             ];
         } catch (Exception $exc) {
-            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getFile() . ":" . $exc->getLine() . ":" . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
             return "";

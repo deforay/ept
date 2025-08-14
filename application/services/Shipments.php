@@ -5,9 +5,13 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class Application_Service_Shipments
 {
     protected $tempUploadDirectory;
+    protected $translator;
     public function __construct()
     {
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+
+        $this->translator = Zend_Registry::get('translate');
+
     }
 
     private function calculateMandatorySampleCount($mandatoryArr, $controlArr)
@@ -25,6 +29,7 @@ class Application_Service_Shipments
     public function getAllShipments($parameters)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
 
         $aColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", "DATE_FORMAT(lastdate_response,'%d-%b-%Y')", 'number_of_samples', '', '', 's.status');
         $orderColumns = array("sl.scheme_name", "shipment_code", 'distribution_code', 'distribution_date', 'lastdate_response', 'number_of_samples', 'total_participants', '', 's.status');
@@ -130,7 +135,7 @@ class Application_Service_Shipments
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($sQuery);
+
 
         $rResult = $db->fetchAll($sQuery);
 
@@ -148,12 +153,12 @@ class Application_Service_Shipments
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+            "aaData" => []
+        ];
 
         foreach ($rResult as $aRow) {
             $mailedOn = '';
@@ -215,13 +220,13 @@ class Application_Service_Shipments
             }
             $downloadAllForm = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
-                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . _("Download TB Forms") . '</a>';
+                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . $this->translator->_("Download TB Forms") . '</a>';
             } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
-                if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] != 'yes') {
-                    $txt = _("Generating TB Forms...");
+                if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
+                    $txt = $this->translator->_("Generating TB Forms...");
                     $disabled = "disabled";
                 } else {
-                    $txt = _("Generate TB Forms");
+                    $txt = $this->translator->_("Generate TB Forms");
                     $disabled = "";
                 }
 
@@ -233,16 +238,6 @@ class Application_Service_Shipments
             if (($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') && isset($aRow['notResponded']) && !empty($aRow['notResponded']) && $aRow['notResponded'] > 0) {
                 $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
             }
-
-            //           if ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] != 'shipped' && $aRow['status'] != 'evaluated' && $aRow['status'] != 'closed' && $aRow['status'] != 'finalized') {
-            //                $row[] = '<a class="btn ' . $btn . ' btn-xs" href="/admin/shipment/ship-it/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-user"></i> Enroll</span></a>'
-            //                        . $edit
-            //                        . '&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
-            //            } elseif ($aRow['status'] != null && $aRow['status'] != "" && $aRow['status'] == 'shipped' && $aRow['status'] != 'closed') {
-            //                $row[] = $edit;
-            //            } else {
-            //                $row[] = $edit.'<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> Shipped</span></a>';
-            //            }
 
             $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll  . $informMail . $download;
             $output['aaData'][] = $row;
