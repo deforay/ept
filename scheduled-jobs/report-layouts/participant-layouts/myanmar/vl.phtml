@@ -188,8 +188,9 @@ if (!empty($resultArray['shipment'])) {
                 //if($result['responseResult'][0]['no_of_participants'] > 6 && $attributes['vl_assay']!=6) {
                 $width = 12.5;
                 if ($result['responseResult'][0]['no_of_participants'] > 0) {
-                    $labRes .= '<table border="1" style="text-align:center;width:650px;font-size:10;">
-                                <tr>';
+                    $labRes .= '<table border="1" style="text-align:center;width:650px;font-size:10;">';
+
+                    /* $labRes .= '<tr>';
                     if ($responseGreater) {
                         $labRes .= '    <th style="background-color:#8ECF64;" colspan="5">' . $machine . ' (Peer-Comparison)</th>';
                     } else {
@@ -198,8 +199,9 @@ if (!empty($resultArray['shipment'])) {
                     }
 
                     $labRes .= '    <th style="background-color:#8ECF64;" colspan="3">Your Laboratory Performance</th>
-                                </tr>
-                                <tr>
+                                </tr>'; */
+
+                    $labRes .= '    <tr>
                                         <th style="background-color:#8ECF64;width: ' . ($width + 5) . '%;"><br><br>Specimen ID </th>
                                         <th style="background-color:#8ECF64;width: ' . $width . '%;">Your Results<br/>(log<sub>10</sub> copies/mL)</th>';
                     if ($responseGreater) {

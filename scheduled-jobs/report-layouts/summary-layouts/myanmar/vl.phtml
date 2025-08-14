@@ -241,6 +241,8 @@ if ($resultArray['shipment'] != "") {
                                         <th style="background-color:#8ECF64;text-align:center;font-size:10;"><br/><br/>Robust <br/>SD</th>'; */
                 $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
+                // Zend_Debug::dump($sample);
+                // die;
                 foreach ($sample as $point => $label) {
                     $score = round((($label['NumberPassed'] / $label['response']) * 100));
                     $calRes .= '<tr>';
