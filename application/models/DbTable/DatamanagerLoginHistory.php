@@ -47,15 +47,15 @@ class Application_Model_DbTable_DataManagerLoginHistory extends Zend_Db_Table_Ab
 
     /**
      * Get login history for a specific data manager
-     * @param string $dmId
+     * @param string $userId
      * @param int $limit
      * @return array
      */
-    public function getLoginHistoryByDmId($dmId, $limit = 50)
+    public function getLoginHistoryByDmId($userId, $limit = 50)
     {
         try {
             $select = $this->select()
-                ->where('dm_id = ?', $dmId)
+                ->where('user_id = ?', $userId)
                 ->order('login_attempted_datetime DESC')
                 ->limit($limit);
 
@@ -176,7 +176,7 @@ class Application_Model_DbTable_DataManagerLoginHistory extends Zend_Db_Table_Ab
             ->from(array('dlh' => $this->_name))
             ->joinLeft(
                 array('dm' => 'data_managers'),
-                'dlh.dm_id = dm.dm_id',
+                'dlh.user_id = dm.dm_id',
                 array('first_name', 'last_name', 'primary_email')
             );
 
@@ -236,18 +236,18 @@ class Application_Model_DbTable_DataManagerLoginHistory extends Zend_Db_Table_Ab
     }
     /**
      * Get unique IP addresses for a user (security monitoring)
-     * @param string $dmId
+     * @param string $userId
      * @param int $days
      * @return array
      */
-    public function getUniqueIpAddresses($dmId, $days = 30)
+    public function getUniqueIpAddresses($userId, $days = 30)
     {
         try {
             $fromDate = date('Y-m-d H:i:s', strtotime("-{$days} days"));
 
             $select = $this->getAdapter()->select()
                 ->from($this->_name, array('ip_address', 'COUNT(*) as login_count'))
-                ->where('dm_id = ?', $dmId)
+                ->where('user_id = ?', $userId)
                 ->where('login_attempted_datetime >= ?', $fromDate)
                 ->group('ip_address')
                 ->order('login_count DESC');
