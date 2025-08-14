@@ -391,3 +391,17 @@ WHERE primary_email IS NOT NULL AND primary_email REGEXP '[\\r\\n\\t\\s]';
 UPDATE data_manager
 SET primary_email = LOWER(primary_email)
 WHERE primary_email IS NOT NULL;
+
+-- Thana 14-Aug-2025
+CREATE TABLE `datamanager_login_history` (
+  `history_id` int NOT NULL AUTO_INCREMENT,
+  `dm_id` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `login_id` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `login_attempted_datetime` datetime DEFAULT NULL,
+  `login_status` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `ip_address` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `browser` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `operating_system` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`history_id`),
+  KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
