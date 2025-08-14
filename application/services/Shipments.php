@@ -4039,7 +4039,7 @@ class Application_Service_Shipments
                 $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['replaceSummaryReport']['name']);
                 $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                 $tempUploadDirectory = realpath($this->tempUploadDirectory);
-                $allowedExtensions = array('pdf');
+                $allowedExtensions = ['pdf'];
                 $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {

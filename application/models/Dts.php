@@ -688,23 +688,23 @@ class Application_Model_Dts
 						// R-R-NR => I
 
 						//$rstring = $result1."-".$result2."-".$result3."-".$reportedResultCode;
-						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N') {
+						if ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'P' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $expectedResultCode == 'P') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == '-' && $expectedResultCode == 'P' && $reportedResultCode == 'P') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N') {
+						} elseif ($result1 == 'NR' && $result2 == '-' && $result3 == '-' && $expectedResultCode == 'N' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'R') {
+						} elseif ($result1 == 'R' && $result2 == 'R' && $result3 == 'R' && $expectedResultCode == 'R' && $reportedResultCode == 'R') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $expectedResultCode == 'N') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'NR' && $expectedResultCode == 'N' && $reportedResultCode == 'N') {
 							$algoResult = 'Pass';
-						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $expectedResultCode == 'I') {
+						} elseif ($result1 == 'R' && $result2 == 'NR' && $result3 == 'R' && $expectedResultCode == 'I' && $reportedResultCode == 'I') {
 							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'P')) {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'P' && $reportedResultCode == 'P')) {
 							$algoResult = 'Pass';
-						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $expectedResultCode == 'I')) {
+						} elseif (($result1 == 'R' && $result2 == 'R' && $result3 == 'NR' && $expectedResultCode == 'I' && $reportedResultCode == 'I') || ($result1 == 'R' && $result2 == 'R' && $result3 == 'I' && $expectedResultCode == 'I' && $reportedResultCode == 'I')) {
 							$algoResult = 'Pass';
 						} else {
 							$algoResult = 'Fail';

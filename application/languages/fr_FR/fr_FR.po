@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
-"POT-Creation-Date: 2025-07-31 16:12+0530\n"
-"PO-Revision-Date: 2025-07-31 16:12+0530\n"
+"POT-Creation-Date: 2025-08-12 01:00+0530\n"
+"PO-Revision-Date: 2025-08-12 01:00+0530\n"
 "Last-Translator: Deforay <support@deforay.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -77,6 +77,18 @@ msgstr "Rapport d’aperçu"
 #: application/services/Reports.php:219
 msgid "No Response Sites"
 msgstr "Sites sans réponse"
+
+#: application/services/Shipments.php:218
+msgid "Download TB Forms"
+msgstr "Télécharger les formulaires de la CT"
+
+#: application/services/Shipments.php:221
+msgid "Generating TB Forms..."
+msgstr "Générer des formulaires TB..."
+
+#: application/services/Shipments.php:224
+msgid "Generate TB Forms"
+msgstr "Générer des formulaires TB"
 
 #: application/layouts/scripts/admin.phtml:9
 #: application/layouts/scripts/home.phtml:10
@@ -293,7 +305,7 @@ msgid "HIV Recency (RTRI) Settings"
 msgstr "Paramètres de récurrence du VIH (RTRI)"
 
 #: application/layouts/scripts/admin.phtml:268
-#: application/modules/admin/views/scripts/global-config/index.phtml:4
+#: application/modules/admin/views/scripts/global-config/index.phtml:5
 msgid "ePT Global Settings"
 msgstr "paramètres globaux de l'ePT"
 
@@ -1212,9 +1224,9 @@ msgstr "Statut du gène"
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:437
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:463
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:470
-#: application/modules/admin/views/scripts/global-config/index.phtml:11
-#: application/modules/admin/views/scripts/global-config/index.phtml:257
-#: application/modules/admin/views/scripts/global-config/index.phtml:267
+#: application/modules/admin/views/scripts/global-config/index.phtml:12
+#: application/modules/admin/views/scripts/global-config/index.phtml:258
+#: application/modules/admin/views/scripts/global-config/index.phtml:268
 #: application/modules/admin/views/scripts/home-config/index.phtml:142
 #: application/modules/admin/views/scripts/home-config/index.phtml:214
 #: application/modules/admin/views/scripts/home-config/index.phtml:241
@@ -1543,7 +1555,7 @@ msgstr "Modifier la plate-forme de test"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:297
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:72
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:347
-#: application/modules/admin/views/scripts/global-config/index.phtml:322
+#: application/modules/admin/views/scripts/global-config/index.phtml:323
 #: application/modules/admin/views/scripts/home-banner/index.phtml:31
 #: application/modules/admin/views/scripts/home-config/index.phtml:256
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:92
@@ -1605,7 +1617,7 @@ msgstr "Nom du plan"
 
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:5
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:12
-#: application/modules/admin/views/scripts/global-config/index.phtml:5
+#: application/modules/admin/views/scripts/global-config/index.phtml:6
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:5
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:5
 msgid "Export Config"
@@ -1699,7 +1711,7 @@ msgstr "Type de test recommandé 3"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:298
 #: application/modules/admin/views/scripts/email-participants/index.phtml:105
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:111
-#: application/modules/admin/views/scripts/global-config/index.phtml:323
+#: application/modules/admin/views/scripts/global-config/index.phtml:324
 #: application/modules/admin/views/scripts/home-config/index.phtml:257
 #: application/modules/admin/views/scripts/participant-messages/view.phtml:43
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:81
@@ -1753,16 +1765,16 @@ msgstr " Oui"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:146
 #: application/modules/admin/views/scripts/generic-test/add.phtml:83
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:90
-#: application/modules/admin/views/scripts/global-config/index.phtml:96
-#: application/modules/admin/views/scripts/global-config/index.phtml:125
-#: application/modules/admin/views/scripts/global-config/index.phtml:135
-#: application/modules/admin/views/scripts/global-config/index.phtml:157
-#: application/modules/admin/views/scripts/global-config/index.phtml:169
-#: application/modules/admin/views/scripts/global-config/index.phtml:179
-#: application/modules/admin/views/scripts/global-config/index.phtml:191
-#: application/modules/admin/views/scripts/global-config/index.phtml:201
-#: application/modules/admin/views/scripts/global-config/index.phtml:259
-#: application/modules/admin/views/scripts/global-config/index.phtml:269
+#: application/modules/admin/views/scripts/global-config/index.phtml:97
+#: application/modules/admin/views/scripts/global-config/index.phtml:126
+#: application/modules/admin/views/scripts/global-config/index.phtml:136
+#: application/modules/admin/views/scripts/global-config/index.phtml:158
+#: application/modules/admin/views/scripts/global-config/index.phtml:170
+#: application/modules/admin/views/scripts/global-config/index.phtml:180
+#: application/modules/admin/views/scripts/global-config/index.phtml:192
+#: application/modules/admin/views/scripts/global-config/index.phtml:202
+#: application/modules/admin/views/scripts/global-config/index.phtml:260
+#: application/modules/admin/views/scripts/global-config/index.phtml:270
 #: application/modules/admin/views/scripts/participants/add.phtml:167
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
 #: application/modules/admin/views/scripts/participants/edit.phtml:85
@@ -2130,16 +2142,16 @@ msgstr "Accès au QC"
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:147
 #: application/modules/admin/views/scripts/generic-test/add.phtml:82
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:89
-#: application/modules/admin/views/scripts/global-config/index.phtml:97
-#: application/modules/admin/views/scripts/global-config/index.phtml:124
-#: application/modules/admin/views/scripts/global-config/index.phtml:134
-#: application/modules/admin/views/scripts/global-config/index.phtml:156
-#: application/modules/admin/views/scripts/global-config/index.phtml:168
-#: application/modules/admin/views/scripts/global-config/index.phtml:178
-#: application/modules/admin/views/scripts/global-config/index.phtml:190
-#: application/modules/admin/views/scripts/global-config/index.phtml:200
-#: application/modules/admin/views/scripts/global-config/index.phtml:258
-#: application/modules/admin/views/scripts/global-config/index.phtml:268
+#: application/modules/admin/views/scripts/global-config/index.phtml:98
+#: application/modules/admin/views/scripts/global-config/index.phtml:125
+#: application/modules/admin/views/scripts/global-config/index.phtml:135
+#: application/modules/admin/views/scripts/global-config/index.phtml:157
+#: application/modules/admin/views/scripts/global-config/index.phtml:169
+#: application/modules/admin/views/scripts/global-config/index.phtml:179
+#: application/modules/admin/views/scripts/global-config/index.phtml:191
+#: application/modules/admin/views/scripts/global-config/index.phtml:201
+#: application/modules/admin/views/scripts/global-config/index.phtml:259
+#: application/modules/admin/views/scripts/global-config/index.phtml:269
 #: application/modules/admin/views/scripts/participants/add.phtml:166
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:32
 #: application/modules/admin/views/scripts/participants/edit.phtml:86
@@ -4028,52 +4040,52 @@ msgstr "Nom du test/système personnalisé"
 msgid "Custom Test/Scheme Code"
 msgstr "Code de test/système personnalisé"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:8
+#: application/modules/admin/views/scripts/global-config/index.phtml:9
 #: application/views/scripts/participant/user-info.phtml:62
 msgid "Language"
 msgstr "Langue"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:12
+#: application/modules/admin/views/scripts/global-config/index.phtml:13
 #: application/views/scripts/participant/user-info.phtml:66
 msgid "English"
 msgstr "Anglais"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:13
+#: application/modules/admin/views/scripts/global-config/index.phtml:14
 #: application/views/scripts/participant/user-info.phtml:67
 msgid "French"
 msgstr "Français"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:14
+#: application/modules/admin/views/scripts/global-config/index.phtml:15
 #: application/views/scripts/participant/user-info.phtml:68
 msgid "Austronesian"
 msgstr "Austronésien"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:19
-#: application/modules/admin/views/scripts/global-config/index.phtml:25
+#: application/modules/admin/views/scripts/global-config/index.phtml:20
+#: application/modules/admin/views/scripts/global-config/index.phtml:26
 msgid "Participant Login Prefix"
 msgstr "Préfixe de connexion du participant"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:31
+#: application/modules/admin/views/scripts/global-config/index.phtml:32
 msgid "Participant Login Password Length"
 msgstr "Longueur du mot de passe de connexion du participant"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:37
+#: application/modules/admin/views/scripts/global-config/index.phtml:38
 msgid "Temporary Login Ban Time in Minutes:Seconds"
 msgstr "Durée de l'interdiction temporaire de connexion en minutes:secondes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:43
+#: application/modules/admin/views/scripts/global-config/index.phtml:44
 msgid "Maximum attempts For Temporary Ban"
 msgstr "Tentatives maximales d'interdiction temporaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:49
+#: application/modules/admin/views/scripts/global-config/index.phtml:50
 msgid "Maximum Attempts for Permanently Ban"
 msgstr "Nombre maximal de tentatives d'interdiction permanente"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:55
+#: application/modules/admin/views/scripts/global-config/index.phtml:56
 msgid "Admininstrator Email"
 msgstr "Courriel de l'administrateur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:61
+#: application/modules/admin/views/scripts/global-config/index.phtml:62
 #: application/modules/admin/views/scripts/participants/add.phtml:46
 #: application/modules/admin/views/scripts/participants/edit.phtml:58
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:50
@@ -4089,124 +4101,124 @@ msgstr "Courriel de l'administrateur"
 msgid "Institute Name"
 msgstr "Nom de l'Institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:67
+#: application/modules/admin/views/scripts/global-config/index.phtml:68
 msgid "Institute Address"
 msgstr "Adresse de l'Institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:73
+#: application/modules/admin/views/scripts/global-config/index.phtml:74
 msgid "Additional InstituteDetails"
 msgstr "Détails supplémentaires sur l'institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:79
+#: application/modules/admin/views/scripts/global-config/index.phtml:80
 msgid "PT Program Name"
 msgstr "Nom du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:85
+#: application/modules/admin/views/scripts/global-config/index.phtml:86
 msgid "PT Program Short Name"
 msgstr "Nom abrégé du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:92
+#: application/modules/admin/views/scripts/global-config/index.phtml:93
 msgid "Is this installation of ePT used for training purposes?"
 msgstr "Cette installation d'ePT est-elle utilisée à des fins de formation ?"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:102
+#: application/modules/admin/views/scripts/global-config/index.phtml:103
 msgid "For training instances, use this Watermark in reports"
 msgstr "Pour les cas de formation, utilisez ce filigrane dans les rapports"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:109
+#: application/modules/admin/views/scripts/global-config/index.phtml:110
 #: application/modules/admin/views/scripts/system-admins/add.phtml:58
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:66
 msgid "Choose Active Schemes"
 msgstr "Choisir des régimes actifs"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:121
+#: application/modules/admin/views/scripts/global-config/index.phtml:122
 msgid "Enable Login Attempt Ban"
 msgstr "Activer l'interdiction des tentatives de connexion"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:131
+#: application/modules/admin/views/scripts/global-config/index.phtml:132
 msgid "Participant Can Edit Name"
 msgstr "Le participant peut modifier son nom"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:143
+#: application/modules/admin/views/scripts/global-config/index.phtml:144
 msgid "Participant Feedback"
 msgstr "Rétroaction des participants"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:146
+#: application/modules/admin/views/scripts/global-config/index.phtml:147
 msgid "Enable"
 msgstr "Activer"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:147
+#: application/modules/admin/views/scripts/global-config/index.phtml:148
 msgid "Disable"
 msgstr "Désactiver"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:153
+#: application/modules/admin/views/scripts/global-config/index.phtml:154
 msgid "Accept responses after shipment is finalized?"
 msgstr "Accepter les réponses après la finalisation de l'envoi ?"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:165
+#: application/modules/admin/views/scripts/global-config/index.phtml:166
 msgid "Custom Tests Config"
 msgstr "Tests personnalisés Config"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:175
+#: application/modules/admin/views/scripts/global-config/index.phtml:176
 msgid "Re-evaluate before Finalizing"
 msgstr "Réévaluer avant de finaliser"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:187
+#: application/modules/admin/views/scripts/global-config/index.phtml:188
 msgid "Enable CAPA"
 msgstr "Activer le CAPA"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:197
+#: application/modules/admin/views/scripts/global-config/index.phtml:198
 msgid "Direct Participant Login"
 msgstr "Connexion directe du participant"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:223
+#: application/modules/admin/views/scripts/global-config/index.phtml:224
 msgid "Theme Color"
 msgstr "Couleur du thème"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:237
+#: application/modules/admin/views/scripts/global-config/index.phtml:238
 msgid "Instance"
 msgstr "Instance"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:254
+#: application/modules/admin/views/scripts/global-config/index.phtml:255
 msgid "Send Alerts On Job Completion"
 msgstr "Envoi d'alertes à l'achèvement d'un travail"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:264
+#: application/modules/admin/views/scripts/global-config/index.phtml:265
 msgid "Auto generate PT Survey code"
 msgstr "Génération automatique du code d'enquête PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:274
+#: application/modules/admin/views/scripts/global-config/index.phtml:275
 msgid "Footer Text"
 msgstr "Texte de pied de page"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:280
+#: application/modules/admin/views/scripts/global-config/index.phtml:281
 msgid "Emails To Send Job Completion Alert"
 msgstr "Emails à envoyer Alerte de fin d'emploi"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:287
+#: application/modules/admin/views/scripts/global-config/index.phtml:288
 msgid "Home Logo 1"
 msgstr "Logo Home 1"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:293
-#: application/modules/admin/views/scripts/global-config/index.phtml:295
+#: application/modules/admin/views/scripts/global-config/index.phtml:294
+#: application/modules/admin/views/scripts/global-config/index.phtml:296
 msgid "Please select home left logo image"
 msgstr "Veuillez sélectionner l'image du logo à gauche de la maison"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:299
-#: application/modules/admin/views/scripts/global-config/index.phtml:314
+#: application/modules/admin/views/scripts/global-config/index.phtml:300
+#: application/modules/admin/views/scripts/global-config/index.phtml:315
 msgid "Please make sure logo image size is 80x80 px"
 msgstr "Veillez à ce que la taille de l'image du logo soit de 80x80 px"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:302
+#: application/modules/admin/views/scripts/global-config/index.phtml:303
 msgid "Home Logo 2"
 msgstr "Home Logo 2"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:308
-#: application/modules/admin/views/scripts/global-config/index.phtml:310
+#: application/modules/admin/views/scripts/global-config/index.phtml:309
+#: application/modules/admin/views/scripts/global-config/index.phtml:311
 msgid "Please select home right logo image"
 msgstr "Veuillez sélectionner l'image du logo de la maison"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:334
+#: application/modules/admin/views/scripts/global-config/index.phtml:335
 msgid "You have to choose at least 1 Scheme to proceed"
 msgstr "Vous devez choisir au moins un schéma pour continuer"
 
@@ -6126,9 +6138,13 @@ msgstr "Pas encore d'actions de transfert dans le cadre de cette distribution"
 msgid "Mail Sent successfully"
 msgstr "Mail envoyé avec succès"
 
+#: application/modules/admin/views/scripts/shipment/index.phtml:454
+msgid "Are you sure you want to generate TB forms for this shipment?"
+msgstr "Êtes-vous sûr de vouloir générer des formulaires TB pour cet envoi ?"
+
 #: application/modules/admin/views/scripts/shipment/index.phtml:461
-msgid "TB form started generating"
-msgstr "Le formulaire TB a commencé à générer"
+msgid "Generating TB forms"
+msgstr "Générer des formulaires TB"
 
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:35
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:116
@@ -9253,6 +9269,9 @@ msgstr "Contrôler étroitement les performances"
 #: application/views/scripts/vl/response.phtml:556
 msgid "Perform corrective action"
 msgstr "Mise en œuvre d'une action corrective"
+
+#~ msgid "TB form started generating"
+#~ msgstr "Le formulaire TB a commencé à générer"
 
 #~ msgid "Please enter the Lab Name or First Name here"
 #~ msgstr "Veuillez saisir le nom ou le prénom du laboratoire ici"

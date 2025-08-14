@@ -6,6 +6,7 @@
 
 <?php
 
+$csrfNamespace = new Zend_Session_Namespace('csrf');
 $methodOfEvaluation = $this->result['method_of_evaluation'];
 
 unset($this->result['method_of_evaluation']);
@@ -79,7 +80,7 @@ unset($this->result['use_range']);
 			$counter = 0;
 			foreach ($this->result as $sampleId => $result) {
 
-				$numberOfAssays = (count($result));
+				$numberOfAssays = count($result);
 				$sampleAddedToTableAlready = [];
 				foreach ($result as $assay => $row) {
 			?>
@@ -101,6 +102,7 @@ unset($this->result['use_range']);
 								echo round($row['median'], 4);
 							} ?>
 							<input type="hidden" class="form-control" name="sampleId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['sample_id']; ?>" style="width:100px;margin:0 auto;">
+							<input type="hidden" id="csrf_token" name="csrf_token" value="<?php echo $csrfNamespace->token; ?>" />
 							<input type="hidden" class="form-control" name="assayId[<?php echo $row['vl_assay']; ?>][<?php echo $row['sample_id']; ?>]" value="<?php echo $row['vl_assay']; ?>" style="width:100px;margin:0 auto;">
 							<input type="hidden" name="manualRange[]" id="manualRange<?php echo $row['vl_assay'] . $row['sample_id']; ?>" title="Please enter the manual data for <?php echo $row['sample_label']; ?> sample and <?php echo $row['assay_name']; ?> assay" value="<?php echo isset($row['manual_low_limit']) ? round($row['manual_low_limit'], 4) : ''; ?>">
 						</td>
