@@ -1,9 +1,8 @@
 <?php
 
-use Pt_Commons_MiscUtility as MiscUtility;
 use Application_Service_Common as Common;
 
-class Application_Model_DbTable_DataManagerLoginHistory extends Zend_Db_Table_Abstract
+class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'datamanager_login_history';
