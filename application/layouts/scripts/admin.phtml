@@ -311,6 +311,7 @@ if ($adminSession->privileges != "") {
 							<ul class="dropdown-menu">
 								<li id="shipmentsReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>"><?= $this->translate->_("Shipments Report"); ?></a></li>
 								<li id="ShipmentResponseReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response-report'), 'default', true); ?>"><?= $this->translate->_("Shipment Response Report"); ?></a></li>
+								<li id="testingFacilityByOwnership"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership'), 'default', true); ?>"><?= $this->translate->_("Testing Facility By Ownership"); ?></a></li>
 								<li class="divider"></li>
 								<li id="ParticipantResponseReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>"><?= $this->translate->_("Participant Response Report"); ?></a></li>
 								<li id="ParticipantPerformanceReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>"><?= $this->translate->_("Participant Performance Report"); ?></a></li>
@@ -488,6 +489,8 @@ if ($adminSession->privileges != "") {
 				$('#FinalizeReports').addClass('active');
 			} else if (splitsUrl[2] == 'shipment-response-report') {
 				$('#ShipmentResponseReport').addClass('active');
+			} else if (splitsUrl[2] == 'testing-facility-by-ownership') {
+				$('#testingFacilityByOwnership').addClass('active');
 			} else if (splitsUrl[2] == 'detailed') {
 				$('#ParticipantResponseReport').addClass('active');
 			} else if (splitsUrl[2] == 'participant-performance') {
