@@ -1,0 +1,305 @@
+<style>
+    @media print {
+
+        .dontPrint,
+        #shipmentTable_filter,
+        #shipmentTable_info {
+            display: none;
+        }
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .report-table {
+        min-width: 800px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .font-weight-bold {
+        font-weight: bold;
+    }
+</style>
+
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+<legend>
+    <h3><?= $this->translate->_("Testing Facilities by Ownership Report"); ?></h3>
+</legend>
+
+<table style="margin:20px 0;" class="table table-bordered">
+    <tr>
+        <td style="width:33%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+        </td>
+        <td style="width:33%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Select Scheme Type (Optional)"); ?>
+        </td>
+        <td style="width:33%;text-align: center;font-weight:bold;"></td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                style="background: #fff" placeholder="Click here to pick a Date Range" />
+        </td>
+        <td>
+            <select id="scheme" name="scheme" class="form-control input-lg">
+                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                <?php foreach ($this->schemes as $scheme) { ?>
+                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                <?php } ?>
+            </select>
+        </td>
+        <td>
+            <button style="margin-right: 10px;" class="btn btn-success btn-sm" onclick="getReport()">
+                <span><?= $this->translate->_("Get Report"); ?></span>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="resetReport()">
+                <span><?= $this->translate->_("Reset"); ?></span>
+            </button>
+            <button style="margin-left: 10px;" class="btn btn-info btn-sm dontPrint" onclick="exportReport()">
+                <span><?= $this->translate->_("Export"); ?></span>
+            </button>
+        </td>
+    </tr>
+</table>
+
+<div class="table-container">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide report-table" id="shipmentTable">
+        <thead>
+            <tr>
+                <th style="text-align: center;" rowspan="2"><?= $this->translate->_("Type of Testing Facility"); ?></th>
+                <th style="text-align: center;" colspan="2" id="shipmentColumns"><?= $this->translate->_("Total Registered"); ?></th>
+            </tr>
+            <tr>
+                <th class="text-center"><?= $this->translate->_("No."); ?></th>
+                <th class="text-center" id="shipmentSubColumns"><?= $this->translate->_("%"); ?></th>
+            </tr>
+        </thead>
+        <tbody id="reportTableBody">
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+</div>
+
+<div id="loadingMessage" class="hide text-center" style="margin: 20px 0;">
+    <div class="alert alert-info">
+        <?= $this->translate->_("Loading report data..."); ?>
+    </div>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+    var startDate = "";
+    var endDate = "";
+    var currentReportData = null;
+
+    $(document).ready(function() {
+        $("#scheme").select2({
+            placeholder: "Select scheme type",
+            allowClear: true
+        });
+
+        $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: false,
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                    'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                    'Current Year To Date': [moment().startOf('year'), moment()]
+                }
+            },
+            function(start, end) {
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
+                $('#dateRange').val(startDate + ' to ' + endDate);
+            });
+
+        $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+            startDate = "";
+            endDate = "";
+        });
+
+        // Load initial report
+        getReport();
+    });
+
+    function getReport() {
+        $("#loadingMessage").removeClass("hide");
+        $("#shipmentTable").addClass("hide");
+
+        var dateRange = $("#dateRange").val();
+        var scheme = $("#scheme").val();
+
+        var postData = {
+            dateRange: dateRange,
+            scheme: scheme
+        };
+
+        if (dateRange) {
+            var _dateRange = dateRange.split(" to ");
+            postData.startDate = _dateRange[0];
+            postData.endDate = _dateRange[1];
+        }
+
+        $.blockUI();
+
+        $.ajax({
+            url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership', 'action' => 'get-report-data')); ?>",
+            type: 'POST',
+            dataType: 'json',
+            data: postData,
+            success: function(data) {
+                console.log("Success response:", data);
+
+                try {
+                    // Check if data has the expected structure
+                    if (data && data.shipments && data.overallStats) {
+                        currentReportData = data;
+                        buildReportTable(data);
+                        $("#loadingMessage").addClass("hide");
+                        $("#shipmentTable").removeClass("hide");
+                    } else if (data && data.error) {
+                        console.error("Server error:", data.error);
+                        alert("Server error: " + data.error);
+                    } else {
+                        console.error("Invalid data structure:", data);
+                        alert("Invalid data structure received from server.");
+                    }
+                } catch (e) {
+                    console.error("Error processing report data:", e);
+                    alert("Error processing report data: " + e.message);
+                }
+                $.unblockUI();
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX request failed:", xhr.responseText);
+                console.error("Status:", status);
+                console.error("Error:", error);
+                alert("Error loading report data: " + error + "\nStatus: " + status);
+                $("#loadingMessage").addClass("hide");
+                $.unblockUI();
+            }
+        });
+    }
+
+    function buildReportTable(data) {
+        if (!data || !data.shipments || !data.overallStats) {
+            return;
+        }
+
+        // Build dynamic columns for shipments
+        var shipmentColumnsHtml = '';
+        var shipmentSubColumnsHtml = '';
+
+        data.shipments.forEach(function(shipment) {
+            shipmentColumnsHtml += '<th style="text-align: center;" colspan="2">' + shipment.shipment_code + '</th>';
+            shipmentSubColumnsHtml += '<th class="text-center"><?= $this->translate->_("No."); ?></th>';
+            shipmentSubColumnsHtml += '<th class="text-center"><?= $this->translate->_("%"); ?></th>';
+        });
+
+        $('#shipmentColumns').after(shipmentColumnsHtml);
+        $('#shipmentSubColumns').after(shipmentSubColumnsHtml);
+
+        // Build table body
+        var tableBodyHtml = '';
+
+        // Government row
+        tableBodyHtml += '<tr>';
+        tableBodyHtml += '<td class="font-weight-bold"><?= $this->translate->_("Government"); ?></td>';
+        tableBodyHtml += '<td class="text-center">' + data.overallStats.government + '</td>';
+        tableBodyHtml += '<td class="text-center">' + data.overallStats.governmentPercentage + '</td>';
+
+        data.shipments.forEach(function(shipment) {
+            tableBodyHtml += '<td class="text-center">' + shipment.government + '</td>';
+            tableBodyHtml += '<td class="text-center">' + shipment.governmentPercentage + '</td>';
+        });
+        tableBodyHtml += '</tr>';
+
+        // Private row
+        tableBodyHtml += '<tr>';
+        tableBodyHtml += '<td class="font-weight-bold"><?= $this->translate->_("Private"); ?></td>';
+        tableBodyHtml += '<td class="text-center">' + data.overallStats.private + '</td>';
+        tableBodyHtml += '<td class="text-center">' + data.overallStats.privatePercentage + '</td>';
+
+        data.shipments.forEach(function(shipment) {
+            tableBodyHtml += '<td class="text-center">' + shipment.private + '</td>';
+            tableBodyHtml += '<td class="text-center">' + shipment.privatePercentage + '</td>';
+        });
+        tableBodyHtml += '</tr>';
+
+        // Total row
+        tableBodyHtml += '<tr class="font-weight-bold" style="background-color: #f5f5f5;">';
+        tableBodyHtml += '<td><?= $this->translate->_("Total Participants"); ?></td>';
+        tableBodyHtml += '<td class="text-center" colspan="2">' + data.overallStats.total + '</td>';
+
+        data.shipments.forEach(function(shipment) {
+            tableBodyHtml += '<td class="text-center" colspan="2">' + shipment.totalRegistered + '</td>';
+        });
+        tableBodyHtml += '</tr>';
+
+        $('#reportTableBody').html(tableBodyHtml);
+    }
+
+    function resetReport() {
+        $("#dateRange").val('');
+        $("#scheme").val('').trigger('change');
+        startDate = "";
+        endDate = "";
+        getReport();
+    }
+
+    function exportReport() {
+        if (!currentReportData) {
+            alert("No data available to export. Please generate a report first.");
+            return;
+        }
+
+        $.blockUI();
+
+        var postData = {
+            dateRange: $("#dateRange").val(),
+            scheme: $("#scheme").val(),
+            format: "html"
+        };
+
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership', 'action' => 'export-testing-facility-by-ownership')); ?>",
+                postData,
+                function(data) {
+                    if (data && data.trim() !== "") {
+                        document.location.href = '/temporary/' + data;
+                    } else {
+                        alert("Error generating export file.");
+                    }
+                    $.unblockUI();
+                })
+            .fail(function() {
+                alert("Error exporting data. Please try again.");
+                $.unblockUI();
+            });
+    }
+</script>
