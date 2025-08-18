@@ -405,4 +405,4 @@ CREATE TABLE `user_login_history` (
   `operating_system` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`history_id`),
   KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
