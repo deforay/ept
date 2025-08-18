@@ -158,7 +158,16 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Funding Source"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="fundingSource" name="fundingSource" size="50" maxlength="255" class="form-control" title="Please enter the funding source here" placeholder="Please enter the funding source here" value="<?php echo $this->participant['funding_source']; ?>" /></div>
+                <div class="col-lg-8">
+                    <select id="fundingSource" name="fundingSource" class="form-control" title="Please select the funding source">
+                        <option value="">--<?= $this->translate->_(" Select "); ?>--</option>
+                        <option value="government" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'government') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Government"); ?></option>
+                        <option value="private" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'private') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Private"); ?></option>
+                        <?php if (isset($this->participant['funding_source']) && !in_array($this->participant['funding_source'], ['government', 'private'])) {
+                            echo '<option value="' . $this->participant['funding_source'] . '">' . $this->participant['funding_source'] . '</option>';
+                        } ?>
+                    </select>
+                </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Testing Volume"); ?></label>
@@ -458,7 +467,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
             formId: 'editParticipantForm'
         });
         if (flag && !duplicated) {
-            $.blockUI();
+            // $.blockUI();
             document.getElementById('editParticipantForm').submit();
         }
     }
@@ -483,7 +492,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
     }
 
     function validPassword() {
-        $.blockUI();
+        // $.blockUI();
         if ($('#dmPassword').is(':visible') && $('#dmPassword').val() != '') {
             $.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'validate-password']); ?>", {
                     name: $('#contactname').val(),

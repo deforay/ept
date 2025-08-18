@@ -129,7 +129,13 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Funding Source"); ?></label>
-                <div class="col-lg-8"><input type="text" id="fundingSource" name="fundingSource" size="50" maxlength="255" class="form-control" title="Please enter the funding source here" placeholder="<?= $this->translate->_('Please enter the funding source here'); ?>" /></div>
+                <div class="col-lg-8">
+                    <select id="fundingSource" name="fundingSource" class="form-control" title="Please select the funding source">
+                        <option value="">--<?= $this->translate->_(" Select "); ?>--</option>
+                        <option value="government"><?= $this->translate->_("Government"); ?></option>
+                        <option value="private"><?= $this->translate->_("Private"); ?></option>
+                    </select>
+                </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Testing Volume"); ?></label>
@@ -274,8 +280,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
 
         checkIndividualParticipant();
         $('#enrolledProgram').selectpicker();
-
-
         let _tables = ['data_manager', 'countries'];
         let _elements = ['dataManager', 'country'];
         let _returnId = ['dm_id', 'id'];

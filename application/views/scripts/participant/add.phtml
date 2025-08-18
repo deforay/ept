@@ -85,7 +85,13 @@
                                 <label><?= $this->translate->_("Funding Source"); ?> </label>
                             </th>
 
-                            <td><input type="text" id="fundingSource" name="fundingSource" size="25" maxlength="45" class="form-control" title="Please enter the funding source here" placeholder="Please enter the funding source here" /></td>
+                            <td>
+                                <select id="fundingSource" name="fundingSource" class="form-control" title="Please select the funding source">
+                                    <option value="">--<?= $this->translate->_(" Select "); ?>--</option>
+                                    <option value="government"><?= $this->translate->_("Government"); ?></option>
+                                    <option value="private"><?= $this->translate->_("Private"); ?></option>
+                                </select>
+                            </td>
                             <th>
                                 <label><?= $this->translate->_("Testing Volume"); ?> </label>
                             </th>
