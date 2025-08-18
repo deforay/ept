@@ -705,4 +705,47 @@ final class Pt_Commons_MiscUtility
             error_log(sprintf('[%.4fs] %s', $query->getElapsedSecs(), $query->getQuery()));
         }
     }
+
+    /**
+     * Generate a deterministic temporary password for a participant ID.
+     *
+     * Same ID → Same password (until the secret or version are changed).
+     *
+     * @param string $participantId
+     * @param int    $length  8–10 chars
+     * @return string
+     */
+    public static function generateTempPassword(string $participantId, int $length = 10): string
+    {
+        $length = max(8, min($length, 10));
+        $normId = strtolower(trim($participantId));
+
+        // Load from application.ini
+        $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $salt   = (string)($config->security->salt ?? '');
+
+        if (strlen($salt) < 16) { // ensure some entropy
+            throw new RuntimeException('security.salt missing/too short');
+        }
+
+        // Version tag so you can rotate later
+        $version = 'v1';
+
+        // HMAC with salt
+        $raw    = hash_hmac('sha256', $version . '|' . $normId, $salt, true);
+
+        // Base64 encode
+        $b64url = rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
+
+        // Keep only alphanumeric, strip confusing ones
+        $clean  = preg_replace('/[^A-Za-z0-9]/', '', $b64url);
+        $clean  = str_replace(['0', 'O', 'o', '1', 'I', 'l'], '', $clean);
+
+        // Fallback: if too short, use hex
+        if (strlen($clean) < $length) {
+            $clean = str_replace(['0', '1'], '', bin2hex($raw));
+        }
+
+        return substr($clean, 0, $length);
+    }
 }

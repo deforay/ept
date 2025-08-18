@@ -419,11 +419,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         return $this->fetchAll($sql);
     }
 
-    public function updatePasswordFromAdmin($email, $newpassword)
+    public function updatePasswordFromAdmin($email, $newpassword, $forcePasswordReset = false)
     {
         $common = new Application_Service_Common();
         $newpassword = Common::passwordHash($newpassword);
-        $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '" . $email . "'");
+        $noOfRows = $this->update(
+            ['password' => $newpassword, 'force_password_reset' => $forcePasswordReset ? 1 : 0],
+            "primary_email = '$email'"
+        );
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
         } else {
