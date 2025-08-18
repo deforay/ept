@@ -6,6 +6,7 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Tb
@@ -1524,9 +1525,9 @@ class Application_Model_Tb
         ini_set("memory_limit", -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
-        $applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        //$applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-
+        $dataManagerService = new Application_Service_DataManagers();
         $query = $this->db->select()
             ->from(['s' => 'shipment'])
             ->join(['ref' => 'reference_result_tb'], 's.shipment_id=ref.shipment_id')
@@ -1552,8 +1553,8 @@ class Application_Model_Tb
         $reader = IOFactory::load(WEB_ROOT . "/files/tb/tb-excel-form.xlsx");
         $sheet = $reader->getSheet(0);
         $sheet->getPageSetup()
-            ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE)
-            ->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4)
+            ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
+            ->setPaperSize(PageSetup::PAPERSIZE_A4)
             ->setFitToPage(true)
             ->setFitToWidth(1)
             ->setFitToHeight(0)
@@ -1580,11 +1581,16 @@ class Application_Model_Tb
             $fileName .= "-" . $result[0]['unique_identifier'];
             if ($showCredentials === true) {
                 $sheet->setCellValue('C10', $prefix . $result[0]['unique_identifier']);
-                //$sheet->setCellValue('C12', " " . $result[0]['password']);
+                $tempPassword = Pt_Commons_MiscUtility::generateTempPassword($prefix . $result[0]['unique_identifier']);
+                $sheet->setCellValue('C12', $tempPassword);
+                $dataManagerService->resetPasswordFromAdmin([
+                    'primaryMail' => $prefix . $result[0]['unique_identifier'],
+                    'password' => $tempPassword,
+                ],true);
             }
         }
 
-        $eptDomain = rtrim($applicationConfig->domain, "/");
+        // $eptDomain = rtrim($applicationConfig->domain, "/");
         // $richText = new RichText();
         // $richText->createText("This form is for your site's proficiency test records only. All results must be submitted in ePT at ");
         // $bold = $richText->createTextRun($eptDomain);
@@ -1941,8 +1947,7 @@ class Application_Model_Tb
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 JOIN countries ON countries.id = p.country
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
-                JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id
-                                                AND ref.sample_id = res.sample_id
+                JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id AND ref.sample_id = res.sample_id
                 LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
             if (!empty($authNameSpace->dm_id)) {
                 $discordantCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";

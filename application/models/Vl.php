@@ -377,10 +377,10 @@ class Application_Model_Vl
         //$firstSheet->getCell(Coordinate::stringFromColumnIndex(8) . 1)
         //->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(2) . 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(3) . 1, null, null)->applyFromArray($borderStyle, true);
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(4) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(2) . 1)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(3) . 1)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex(4) . 1)->applyFromArray($borderStyle, true);
         //$firstSheet->getStyle(Coordinate::stringFromColumnIndex(4) . 1)->applyFromArray($borderStyle);
         //$firstSheet->getStyle(Coordinate::stringFromColumnIndex(5) . 1)->applyFromArray($borderStyle);
         //$firstSheet->getStyle(Coordinate::stringFromColumnIndex(6) . 1)->applyFromArray($borderStyle);
@@ -399,85 +399,85 @@ class Application_Model_Vl
             }
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
                 ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
-            $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+            $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Final Score";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Date Received";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Date Tested";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Institute Name";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Department Name";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Region";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Site Type";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay Expiration Date";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Assay Lot Number";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Specimen Volume";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
         $colNamesArray[] = "Supervisor Name";
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
             ->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'));
-        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1, null, null)->applyFromArray($borderStyle, true);
+        $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         // $colNameCount++;
 
         $firstSheet->setTitle('OVERALL', true);
@@ -681,22 +681,22 @@ class Application_Model_Vl
         $countOfVlAssaySheet = 1;
 
         foreach ($assayRes as $assayRow) {
-            $newsheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, '');
+            $newsheet = new Worksheet($excel, '');
             $excel->addSheet($newsheet, $countOfVlAssaySheet);
 
             $newsheet->getDefaultRowDimension()->setRowHeight(15);
 
             $vlCalculation = [];
-            $vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), ['*'])
-                ->join(array('refVl' => 'reference_result_vl'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
-                ->join(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', array(
+            $vlQuery = $db->select()->from(['vlCal' => 'reference_vl_calculation'], ['*'])
+                ->join(['refVl' => 'reference_result_vl'], 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', ['refVl.sample_label', 'refVl.mandatory'])
+                ->join(['sp' => 'shipment_participant_map'], 'vlCal.shipment_id=sp.shipment_id', [])
+                ->join(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id', [
                     'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-                ))
+                ])
 
-                ->where("vlCal.shipment_id=?", $shipmentId)
-                ->where("vlCal.vl_assay=?", $assayRow['id'])
-                ->where("refVl.control!=1")
+                ->where("vlCal.shipment_id = ?", $shipmentId)
+                ->where("vlCal.vl_assay = ?", $assayRow['id'])
+                ->where("refVl.control != 1")
                 ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
                 ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
                 ->where("sp.final_result = 1 OR sp.final_result = 2")
@@ -704,20 +704,20 @@ class Application_Model_Vl
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $vlQuery = $vlQuery
-                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('pmm.dm_id'))
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
                     ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
             }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
                 $cQuery = $db->select()
-                    ->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+                    ->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes'])
                     ->where("sp.is_excluded not like 'yes'")
                     ->where('sp.attributes->>"$.vl_assay" = 6')
                     ->where('sp.shipment_id = ? ', $shipmentId);
                 $authNameSpace = new Zend_Session_Namespace('datamanagers');
                 if (!empty($authNameSpace->dm_id)) {
                     $vlQuery = $vlQuery
-                        ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('pmm.dm_id'))
+                        ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
                         ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
                 }
                 $cResult = $db->fetchAll($cQuery);
@@ -768,7 +768,7 @@ class Application_Model_Vl
                     // $responseTxt = $val['no_of_responses'];
                     if ($vlCal['vlAssay'] == "Other") {
                         foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
-                            $assayNameTxt .= 'Other - ' . $otherAssayName . '(n=' . $otherAssayCount . '), ';
+                            $assayNameTxt .= "Other - $otherAssayName(n=$otherAssayCount), ";
                         }
                     } else {
                         $assayNameTxt .= $vlCal['vlAssay'] . '(n=' . $vlCal[0]['no_of_responses'] . '), ';
@@ -793,14 +793,14 @@ class Application_Model_Vl
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(7) . 11)
                         ->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
 
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 10, null, null)->applyFromArray($boldStyleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(2) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(3) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(4) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(5) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(6) . 11, null, null)->applyFromArray($borderStyle, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(7) . 11, null, null)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 10)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(2) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(3) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(4) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(5) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(6) . 11)->applyFromArray($borderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(7) . 11)->applyFromArray($borderStyle, true);
                     $row = 12;
                     foreach ($vlCal as $key => $val) {
                         $col = 1;
@@ -815,35 +815,35 @@ class Application_Model_Vl
                             $score = round((($val['NumberPassed'] / $val['no_of_responses']) * 100));
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode($val['sample_label'], ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode($val['no_of_responses'], ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode(number_format(round($val['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode(number_format(round($val['low_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode(number_format(round($val['high_limit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode(number_format(round($val['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode($val['NumberPassed'], ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $col++;
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($col) . $row)
                                 ->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'));
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . $row)->applyFromArray($vlBorderStyle, true);
                             $row++;
                         }
                     }
@@ -878,14 +878,14 @@ class Application_Model_Vl
                     Coordinate::stringFromColumnIndex(7) . ($row + 1)
                 )->setValueExplicit(html_entity_decode('Participants with Passing Results (|z| <3.0)', ENT_QUOTES, 'UTF-8'));
 
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . $row, null, null)->applyFromArray($boldStyleArray, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(2) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(3) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(4) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(5) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(6) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex(7) . ($row + 1), null, null)->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . $row)->applyFromArray($boldStyleArray, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(2) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(3) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(4) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(5) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(6) . ($row + 1))->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex(7) . ($row + 1))->applyFromArray($borderStyle, true);
 
                 $row++;
                 foreach ($sample as $point => $label) {
@@ -895,42 +895,42 @@ class Application_Model_Vl
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode($label['label'], ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode($label['response'], ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode(number_format(round($label['median'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode(number_format(round($label['lowLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode(number_format(round($label['highLimit'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode(number_format(round($label['sd'], 2), 2, '.', ''), ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode($label['NumberPassed'], ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $col++;
                     $newsheet->getCell(
                         Coordinate::stringFromColumnIndex($col) . ($row + 1)
                     )->setValueExplicit(html_entity_decode($score . '%', ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1), null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($col) . ($row + 1))->applyFromArray($vlBorderStyle, true);
                     $row++;
                 }
                 // $assayName[] = 'VL platforms with < 18 participants';
@@ -946,7 +946,7 @@ class Application_Model_Vl
             foreach ($colNamesArray as $colName) {
                 $newsheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $startAt)
                     ->setValueExplicit(html_entity_decode($colName, ENT_QUOTES, 'UTF-8'));
-                $newsheet->getStyle(Coordinate::stringFromColumnIndex($i + 1) . $startAt, null, null)->applyFromArray($borderStyle, true);
+                $newsheet->getStyle(Coordinate::stringFromColumnIndex($i + 1) . $startAt)->applyFromArray($borderStyle, true);
                 $i++;
             }
             //get vl_assay wise low high limit
@@ -986,18 +986,18 @@ class Application_Model_Vl
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 12)
                         ->setValueExplicit(html_entity_decode('High Limit', ENT_QUOTES, 'UTF-8'));
 
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->applyFromArray($boldStyleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 7, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 8, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 9, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 10, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 11, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 12, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 7)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 8)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 9)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 10)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 11)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 12)->applyFromArray($styleArray, true);
 
                     $k = 1;
                     $manual = [];
@@ -1025,17 +1025,17 @@ class Application_Model_Vl
                         $newsheet->getCell(Coordinate::stringFromColumnIndex($k + 1) . 12)
                             ->setValueExplicit(html_entity_decode(round($calculation['high_limit'], 4), ENT_QUOTES, 'UTF-8'));
 
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 2, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 3, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 4, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 5, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 6, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 7, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 8, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 9, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 10, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 11, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 12, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 2)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 3)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 4)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 5)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 6)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 7)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 8)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 9)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 10)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 11)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 12)->applyFromArray($vlBorderStyle, true);
                         $keys = ['manual_mean', 'manual_sd', 'manual_low_limit', 'manual_high_limit', 'manual_cv', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high'];
 
                         foreach ($keys as $key) {
@@ -1073,18 +1073,18 @@ class Application_Model_Vl
                         $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 26)
                             ->setValueExplicit(html_entity_decode('Manual High Limit', ENT_QUOTES, 'UTF-8'));
 
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 15, null, null)->applyFromArray($boldStyleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 16, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 17, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 18, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 19, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 20, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 21, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 22, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 23, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 24, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 25, null, null)->applyFromArray($styleArray, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 26, null, null)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 15)->applyFromArray($boldStyleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 16)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 17)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 18)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 19)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 20)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 21)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 22)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 23)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 24)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 25)->applyFromArray($styleArray, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 26)->applyFromArray($styleArray, true);
                         $k = 1;
                         foreach ($refVlCalci as $calculation) {
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($k + 1) . 16)
@@ -1110,17 +1110,17 @@ class Application_Model_Vl
                             $newsheet->getCell(Coordinate::stringFromColumnIndex($k + 1) . 26)
                                 ->setValueExplicit(html_entity_decode(round($calculation['manual_high_limit'], 4), ENT_QUOTES, 'UTF-8'));
 
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 16, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 17, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 18, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 19, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 20, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 21, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 22, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 23, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 24, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 25, null, null)->applyFromArray($vlBorderStyle, true);
-                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 26, null, null)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 16)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 17)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 18)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 19)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 20)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 21)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 22)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 23)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 24)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 25)->applyFromArray($vlBorderStyle, true);
+                            $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 26)->applyFromArray($vlBorderStyle, true);
 
                             $k++;
                         }
@@ -1144,14 +1144,14 @@ class Application_Model_Vl
                     $newsheet->getCell(Coordinate::stringFromColumnIndex(1) . 8)
                         ->setValueExplicit(html_entity_decode('Is Uncertainty Acceptable?', ENT_QUOTES, 'UTF-8'));
 
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1, null, null)->applyFromArray($boldStyleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 7, null, null)->applyFromArray($styleArray, true);
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 8, null, null)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 1)->applyFromArray($boldStyleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 2)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 3)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 4)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 5)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 6)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 7)->applyFromArray($styleArray, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex(1) . 8)->applyFromArray($styleArray, true);
 
                     $k = 1;
                     $manual = [];
@@ -1172,13 +1172,13 @@ class Application_Model_Vl
                             ->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'));
 
 
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 2, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 3, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 4, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 5, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 6, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 7, null, null)->applyFromArray($vlBorderStyle, true);
-                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 8, null, null)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 2)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 3)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 4)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 5)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 6)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 7)->applyFromArray($vlBorderStyle, true);
+                        $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 8)->applyFromArray($vlBorderStyle, true);
 
 
                         $k++;
@@ -1198,7 +1198,7 @@ class Application_Model_Vl
                 for ($c = 0; $c < $noOfCols; $c++) {
                     $newsheet->getCell(Coordinate::stringFromColumnIndex($c + 1) . $row)
                         ->setValueExplicit(html_entity_decode($assayRow[$c], ENT_QUOTES, 'UTF-8'));
-                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($c + 1) . $row, null, null)->applyFromArray($vlBorderStyle, true);
+                    $newsheet->getStyle(Coordinate::stringFromColumnIndex($c + 1) . $row)->applyFromArray($vlBorderStyle, true);
                 }
             }
 
