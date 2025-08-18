@@ -11,7 +11,6 @@ class Application_Service_Shipments
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
 
         $this->translator = Zend_Registry::get('translate');
-
     }
 
     private function calculateMandatorySampleCount($mandatoryArr, $controlArr)
@@ -218,9 +217,9 @@ class Application_Service_Shipments
             if ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated') {
                 $manageEnroll = '<br>&nbsp;<a class="btn btn-info btn-xs" href="/admin/shipment/manage-enroll/sid/' . base64_encode($aRow['shipment_id']) . '/sctype/' . base64_encode($aRow['scheme_type']) . '"><span><i class="icon-gear"></i> Enrollment </span></a>';
             }
-            $downloadAllForm = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
-            if (file_exists($downloadAllForm) && $aRow['scheme_type'] == 'tb') {
-                $download = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($downloadAllForm) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . $this->translator->_("Download TB Forms") . '</a>';
+            $tbFormPath = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
+            if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
+                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . $this->translator->_("Download TB Forms") . '</a>';
             } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $txt = $this->translator->_("Generating TB Forms...");
@@ -230,7 +229,7 @@ class Application_Service_Shipments
                     $disabled = "";
                 }
 
-                $download = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');" ' . $disabled . '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
+                $downloadAllTBForms = '<br>&nbsp;<a class="btn btn-success btn-xs" href="javascript:void(0);" onclick="generateTBFormsPDF(\'' . base64_encode($aRow['shipment_id']) . '\');" ' . $disabled . '><span><i class="icon-refresh"></i> ' . $txt . ' </span></a>';
             }
             if ($aRow['status'] != 'finalized' && ($aRow['reported_count'] == 0)) {
                 $delete = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="removeShipment(\'' . base64_encode($aRow['shipment_id']) . '\')"><span><i class="icon-remove"></i> Delete</span></a>';
@@ -239,7 +238,7 @@ class Application_Service_Shipments
                 $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
             }
 
-            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll  . $informMail . $download;
+            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll  . $informMail . $downloadAllTBForms;
             $output['aaData'][] = $row;
         }
 

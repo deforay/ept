@@ -64,10 +64,10 @@ class Application_Service_Participants
 	public function getEnrollmentDetails($pid, $sid)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('p' => 'participant'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id')
-			->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id')
-			->where("p.participant_id=" . $pid);
+		$sql = $db->select()->from(['p' => 'participant'])
+			->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id')
+			->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id')
+			->where("p.participant_id=$pid");
 		return $db->fetchAll($sql);
 	}
 

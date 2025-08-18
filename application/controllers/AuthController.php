@@ -259,6 +259,19 @@ class AuthController extends Zend_Controller_Action
 					return;
 				}
 
+				// Insert login history
+				$userId = $result['dm_id']; // Set this to the logged-in user's ID
+
+				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
+					$loginData = array(
+					'user_id' => $userId,
+					'login_context' => 'participant', // or 'failed' if login failed
+					'login_status' => 'success', // Indicate failed login
+					'login_id' => $username, // This can be set to a unique ID if needed
+				);
+
+				$loginHistoryModel->addLoginHistory($loginData);
+
 				// Successful login - redirect to dashboard
 				$this->redirect('/participant/dashboard');
 			} else {
@@ -296,6 +309,19 @@ class AuthController extends Zend_Controller_Action
 						return;
 					}
 				}
+
+					// Insert login history
+				$userId = $authenticatedUserId; // Set this to the logged-in user's ID
+
+				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
+				$loginData = array(
+					'user_id' => $userId,
+					'login_context' => 'participant', // or 'failed' if login failed
+					'login_status' => 'failed', // Indicate failed login
+					'login_id' => $username, // This can be set to a unique ID if needed
+				);
+
+				$loginHistoryModel->addLoginHistory($loginData);
 
 				// Generic login failure message
 				$sessionAlert->message = "Invalid username or password. Please try again.";

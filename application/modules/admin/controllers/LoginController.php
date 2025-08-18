@@ -62,8 +62,32 @@ class Admin_LoginController extends Zend_Controller_Action
 				}
 				$authNameSpace->activeSchemes = $schemeList;
 
+				// Insert login history
+				$userId = $result['admin_id']; // Set this to the logged-in user's ID
+
+				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
+					$loginData = array(
+					'user_id' => $userId,
+					'login_context' => 'admin', // or 'failed' if login failed
+					'login_status' => 'success', // Indicate failed login
+					'login_id' => $params['username'], // This can be set to a unique ID if needed
+				);
+
+				$loginHistoryModel->addLoginHistory($loginData);
+
 				$this->redirect('/admin');
 			} else {
+				// Insert login history
+
+				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
+					$loginData = array(
+					'user_id' => NULL,
+					'login_context' => 'admin', // or 'failed' if login failed
+					'login_status' => 'failed', // Indicate failed login
+					'login_id' => $params['username'], // This can be set to a unique ID if needed
+				);
+
+				$loginHistoryModel->addLoginHistory($loginData);
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check your login credentials";
 				$sessionAlert->status = "failure";

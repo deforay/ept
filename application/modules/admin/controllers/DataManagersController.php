@@ -131,7 +131,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
-        } else if ($this->hasParam('id')) {
+        } elseif ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
