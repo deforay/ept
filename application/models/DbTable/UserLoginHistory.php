@@ -5,7 +5,7 @@ use Application_Service_Common as Common;
 class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 {
 
-    protected $_name = 'datamanager_login_history';
+    protected $_name = 'user_login_history';
     protected $_primary = 'history_id';
 
     /**
