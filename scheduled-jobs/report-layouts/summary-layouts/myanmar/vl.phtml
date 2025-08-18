@@ -154,8 +154,7 @@ if ($resultArray['shipment'] != "") {
                             $val['high_limit'] = $val['manual_high'];
                             $val['median'] = $val['manual_median'];
                             $val['sd'] = $val['manual_sd'];
-                        }
-                        if (isset($val['median'])) {
+
                             $sample[$k]['response']       += $val['no_of_responses'];
                             $sample[$k]['median']         = $val['median'];
                             $sample[$k]['lowLimit']       = $val['low_limit'];
@@ -164,6 +163,17 @@ if ($resultArray['shipment'] != "") {
                             $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
                             $sample[$t]['label']          = $val['sample_label'];
                             $t++;
+                        } else {
+                            if (isset($val['median']) && $val['median'] !== 0) {
+                                $sample[$k]['response']       += $val['no_of_responses'];
+                                $sample[$k]['median']         = $val['median'];
+                                $sample[$k]['lowLimit']       = $val['low_limit'];
+                                $sample[$k]['highLimit']      = $val['high_limit'];
+                                $sample[$k]['sd']             = $val['sd'];
+                                $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                                $sample[$t]['label']          = $val['sample_label'];
+                                $t++;
+                            }
                         }
                     }
                     // $responseTxt = $val['no_of_responses'];
@@ -225,7 +235,6 @@ if ($resultArray['shipment'] != "") {
                     $pdf->writeHTML($calRes, true, false, true, false, '');
                 }
             }
-
             if (isset($sample) && count($sample) > 0) {
                 $platform = 'VL platforms with < 18 participants';
                 $calRes = '<br><table border="1" style="font-weight:bold;width:100%;font-size:10;">
