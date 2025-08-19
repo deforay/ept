@@ -2,7 +2,6 @@
 
 class Reports_TestingFacilityByOwnershipController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -19,7 +18,7 @@ class Reports_TestingFacilityByOwnershipController extends Zend_Controller_Actio
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('index', 'html')
-            ->addActionContext('get-report-data', 'json')
+            ->addActionContext('get-report-data', 'html')
             ->addActionContext('export-testing-facility-by-ownership', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'report';
@@ -29,10 +28,6 @@ class Reports_TestingFacilityByOwnershipController extends Zend_Controller_Actio
     {
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
-
-        // Get initial data for display
-        $reportService = new Application_Service_Reports();
-        $this->view->availableShipments = $reportService->getAvailableShipments();
     }
 
     public function getReportDataAction()
@@ -47,7 +42,6 @@ class Reports_TestingFacilityByOwnershipController extends Zend_Controller_Actio
             $result = $reportService->getTestingFacilityByOwnerShips($params);
 
             $this->view->result = $result;
-            echo Zend_Json::encode($result);
         }
     }
 

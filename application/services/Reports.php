@@ -4775,52 +4775,6 @@ class Application_Service_Reports
             return "";
         }
     }
-    public function getTestingFacilityByOwnerShips($params)
-    {
-        $startDate = null;
-        $endDate = null;
-        $schemeType = null;
-
-        // Parse date range if provided
-        if (!empty($params['dateRange'])) {
-            $dateRange = explode(' to ', $params['dateRange']);
-            if (count($dateRange) == 2) {
-                $startDate = date('Y-m-d', strtotime($dateRange[0]));
-                $endDate = date('Y-m-d', strtotime($dateRange[1]));
-            }
-        }
-
-        // Parse scheme type if provided
-        if (!empty($params['scheme'])) {
-            $schemeType = $params['scheme'];
-        }
-
-        // Get all available shipments
-        $shipments = $this->getAvailableShipments($schemeType, $startDate, $endDate);
-
-        $shipmentsData = array();
-
-        foreach ($shipments as $shipment) {
-            $shipmentData = $this->getShipmentData($shipment['shipment_id'], $startDate, $endDate);
-            $shipmentsData[] = array(
-                'shipment_id' => $shipment['shipment_id'],
-                'shipment_code' => $shipment['shipment_code'],
-                'government' => $shipmentData['government'],
-                'private' => $shipmentData['private'],
-                'totalRegistered' => $shipmentData['total'],
-                'governmentPercentage' => $shipmentData['governmentPercentage'],
-                'privatePercentage' => $shipmentData['privatePercentage']
-            );
-        }
-
-        // Get overall statistics
-        $overallStats = $this->getOverallStatistics($schemeType, $startDate, $endDate);
-
-        return array(
-            'shipments' => $shipmentsData,
-            'overallStats' => $overallStats
-        );
-    }
 
     public function getAvailableShipments($schemeType = null, $startDate = null, $endDate = null)
     {
@@ -4847,49 +4801,59 @@ class Application_Service_Reports
         return $this->db->fetchAll($sql, $params);
     }
 
-    protected function getShipmentData($shipmentId, $startDate = null, $endDate = null)
+    public function getTestingFacilityByOwnerShips($params)
     {
-        // Get government facilities count
-        $governmentSql = "SELECT COUNT(*) as count 
-                         FROM shipment_participant_map spm 
-                         INNER JOIN participant p ON spm.participant_id = p.participant_id 
-                         WHERE spm.shipment_id = ? 
-                         AND p.funding_source = 'government'";
+        $startDate = null;
+        $endDate = null;
+        $schemeType = null;
 
-        $governmentCount = $this->db->fetchOne($governmentSql, array($shipmentId));
+        // Parse date range if provided
+        if (!empty($params['dateRange'])) {
+            $dateRange = explode(' to ', $params['dateRange']);
+            if (count($dateRange) == 2) {
+                $startDate = date('Y-m-d', strtotime($dateRange[0]));
+                $endDate = date('Y-m-d', strtotime($dateRange[1]));
+            }
+        }
 
-        // Get private facilities count
-        $privateSql = "SELECT COUNT(*) as count 
-                      FROM shipment_participant_map spm 
-                      INNER JOIN participant p ON spm.participant_id = p.participant_id 
-                      WHERE spm.shipment_id = ? 
-                      AND p.funding_source = 'private'";
+        // Parse scheme type if provided
+        if (!empty($params['scheme'])) {
+            $schemeType = $params['scheme'];
+        }
 
-        $privateCount = $this->db->fetchOne($privateSql, array($shipmentId));
+        // Get all available shipments
+        $shipments = $this->getAvailableShipments($schemeType, $startDate, $endDate);
 
-        $total = $governmentCount + $privateCount;
+        // Get funding sources
+        $fundingSources = $this->getFundingSources($schemeType, $startDate, $endDate);
 
-        $governmentPercentage = $total > 0 ? round(($governmentCount / $total) * 100) : 0;
-        $privatePercentage = $total > 0 ? round(($privateCount / $total) * 100) : 0;
+        $shipmentsData = array();
+        foreach ($shipments as $shipment) {
+            $shipmentData = $this->getShipmentDataByFundingSource($shipment['shipment_id']);
+            $shipmentsData[] = array(
+                'shipment_id' => $shipment['shipment_id'],
+                'shipment_code' => $shipment['shipment_code'],
+                'data' => $shipmentData
+            );
+        }
+
+        // Get overall statistics by funding source
+        $overallStats = $this->getOverallStatisticsByFundingSource($schemeType, $startDate, $endDate);
 
         return array(
-            'government' => $governmentCount,
-            'private' => $privateCount,
-            'total' => $total,
-            'governmentPercentage' => $governmentPercentage . '%',
-            'privatePercentage' => $privatePercentage . '%'
+            'shipments' => $shipmentsData,
+            'fundingSources' => $fundingSources,
+            'overallStats' => $overallStats
         );
     }
 
-    public function getOverallStatistics($schemeType = null, $startDate = null, $endDate = null)
+    public function getFundingSources($schemeType = null, $startDate = null, $endDate = null)
     {
-        $sql = "SELECT 
-                    p.funding_source,
-                    COUNT(DISTINCT p.participant_id) as count
-                FROM participant p 
-                INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
-                INNER JOIN shipment s ON spm.shipment_id = s.shipment_id 
-                WHERE 1=1";
+        $sql = "SELECT DISTINCT p.funding_source 
+            FROM participant p 
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+            INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
+            WHERE p.funding_source IS NOT NULL AND p.funding_source != ''";
 
         $params = array();
 
@@ -4904,43 +4868,91 @@ class Application_Service_Reports
             $params[] = $endDate;
         }
 
-        $sql .= " GROUP BY p.funding_source";
+        $sql .= " ORDER BY p.funding_source";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    protected function getShipmentDataByFundingSource($shipmentId)
+    {
+        $sql = "SELECT 
+                p.funding_source,
+                COUNT(DISTINCT p.participant_id) as count
+            FROM shipment_participant_map spm 
+            INNER JOIN participant p ON spm.participant_id = p.participant_id 
+            WHERE spm.shipment_id = ? 
+            AND p.funding_source IS NOT NULL 
+            AND p.funding_source != ''
+            GROUP BY p.funding_source
+            ORDER BY p.funding_source";
+
+        $results = $this->db->fetchAll($sql, array($shipmentId));
+
+        // Calculate total for percentage calculation
+        $total = array_sum(array_column($results, 'count'));
+
+        $response = array();
+        foreach ($results as $row) {
+            $percentage = $total > 0 ? round(($row['count'] / $total) * 100, 2) : 0;
+            $response[$row['funding_source']] = array(
+                'count' => $row['count'],
+                'percentage' => $percentage
+            );
+        }
+
+        return $response;
+    }
+
+    public function getOverallStatisticsByFundingSource($schemeType = null, $startDate = null, $endDate = null)
+    {
+        $sql = "SELECT 
+                p.funding_source,
+                COUNT(DISTINCT p.participant_id) as count
+            FROM participant p 
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+            INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
+            WHERE p.funding_source IS NOT NULL 
+            AND p.funding_source != ''";
+
+        $params = array();
+
+        if ($schemeType) {
+            $sql .= " AND s.scheme_type = ?";
+            $params[] = $schemeType;
+        }
+
+        if ($startDate && $endDate) {
+            $sql .= " AND s.shipment_date BETWEEN ? AND ?";
+            $params[] = $startDate;
+            $params[] = $endDate;
+        }
+
+        $sql .= " GROUP BY p.funding_source ORDER BY p.funding_source";
 
         $results = $this->db->fetchAll($sql, $params);
 
-        $government = 0;
-        $private = 0;
+        // Calculate total for percentage calculation
+        $total = array_sum(array_column($results, 'count'));
 
-        foreach ($results as $result) {
-            if ($result['funding_source'] == 'government') {
-                $government = $result['count'];
-            } else if ($result['funding_source'] == 'private') {
-                $private = $result['count'];
-            }
+        $response = array();
+        foreach ($results as $row) {
+            $percentage = $total > 0 ? round(($row['count'] / $total) * 100, 2) : 0;
+            $response[$row['funding_source']] = array(
+                'count' => $row['count'],
+                'percentage' => $percentage
+            );
         }
 
-        $total = $government + $private;
-        $governmentPercentage = $total > 0 ? round(($government / $total) * 100) : 0;
-        $privatePercentage = $total > 0 ? round(($private / $total) * 100) : 0;
+        // Add total
+        $response['total'] = $total;
 
-        return array(
-            'government' => $government,
-            'private' => $private,
-            'total' => $total,
-            'governmentPercentage' => $governmentPercentage . '%',
-            'privatePercentage' => $privatePercentage . '%'
-        );
+        return $response;
     }
 
     public function exportTestingFacilityByOwnership($params)
     {
         try {
             $data = $this->getTestingFacilityByOwnerShips($params);
-            $overallStats = $this->getOverallStatistics(
-                !empty($params['scheme']) ? $params['scheme'] : null,
-                !empty($params['startDate']) ? $params['startDate'] : null,
-                !empty($params['endDate']) ? $params['endDate'] : null
-            );
 
             // Create new Spreadsheet object
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -4971,51 +4983,39 @@ class Application_Service_Reports
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('FFE0E0E0');
 
-            // Government row (row 2)
             $row = 2;
-            $governmentData = [
-                'Government',
-                $overallStats['government'],
-                $overallStats['governmentPercentage']
-            ];
 
-            foreach ($data as $shipment) {
-                $governmentData[] = $shipment['government'];
-                $governmentData[] = $shipment['governmentPercentage'];
+            // Add rows for each funding source
+            foreach ($data['fundingSources'] as $fundingSource) {
+                $fundingSourceName = $fundingSource['funding_source'];
+                $rowData = [
+                    ucfirst($fundingSourceName),
+                    $data['overallStats'][$fundingSourceName]['count'] ?? 0,
+                    ($data['overallStats'][$fundingSourceName]['percentage'] ?? 0) . '%'
+                ];
+
+                // Add shipment data for this funding source
+                foreach ($data['shipments'] as $shipment) {
+                    $count = $shipment['data'][$fundingSourceName]['count'] ?? 0;
+                    $percentage = $shipment['data'][$fundingSourceName]['percentage'] ?? 0;
+                    $rowData[] = $count;
+                    $rowData[] = $percentage . '%';
+                }
+
+                $column = 'A';
+                foreach ($rowData as $value) {
+                    $sheet->setCellValue($column . $row, $value);
+                    $column++;
+                }
+                $row++;
             }
 
-            $column = 'A';
-            foreach ($governmentData as $value) {
-                $sheet->setCellValue($column . $row, $value);
-                $column++;
-            }
-
-            // Private row (row 3)
-            $row = 3;
-            $privateData = [
-                'Private',
-                $overallStats['private'],
-                $overallStats['privatePercentage']
-            ];
-
-            foreach ($data as $shipment) {
-                $privateData[] = $shipment['private'];
-                $privateData[] = $shipment['privatePercentage'];
-            }
-
-            $column = 'A';
-            foreach ($privateData as $value) {
-                $sheet->setCellValue($column . $row, $value);
-                $column++;
-            }
-
-            // Total row (row 4)
-            $row = 4;
-            $totalData = ['Total Participants', $overallStats['total'], ''];
-
-            foreach ($data as $shipment) {
-                $totalData[] = $shipment['totalRegistered'];
-                $totalData[] = '';
+            // Total row
+            $totalData = ['Total Participants', $data['overallStats']['total'], '100%'];
+            foreach ($data['shipments'] as $shipment) {
+                $shipmentTotal = array_sum(array_column($shipment['data'], 'count'));
+                $totalData[] = $shipmentTotal;
+                $totalData[] = '100%';
             }
 
             $column = 'A';
@@ -5025,7 +5025,7 @@ class Application_Service_Reports
             }
 
             // Style total row
-            $totalRange = 'A4:' . chr(64 + count($totalData)) . '4';
+            $totalRange = 'A' . $row . ':' . chr(64 + count($totalData)) . $row;
             $sheet->getStyle($totalRange)->getFont()->setBold(true);
 
             // Auto-size columns
@@ -5034,21 +5034,9 @@ class Application_Service_Reports
             }
 
             // Add borders to all data
-            $dataRange = 'A1:' . chr(64 + count($headers)) . '4';
+            $dataRange = 'A1:' . chr(64 + count($headers)) . $row;
             $sheet->getStyle($dataRange)->getBorders()->getAllBorders()
                 ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-
-            // Format percentage columns
-            $column = 'C'; // Starting from percentage column
-            $sheet->getStyle($column . '2:' . $column . '3')->getNumberFormat()
-                ->setFormatCode('0.00%');
-
-            // Format other percentage columns (every second column after the first percentage)
-            for ($i = 0; $i < count($data); $i++) {
-                $column = chr(69 + ($i * 2)); // E, G, I, K, etc.
-                $sheet->getStyle($column . '2:' . $column . '3')->getNumberFormat()
-                    ->setFormatCode('0.00%');
-            }
 
             // Create file
             $fileName = 'testing_facility_by_ownership_' . date('Y_m_d_H_i_s') . '.xlsx';
@@ -5070,6 +5058,7 @@ class Application_Service_Reports
             return $fileName;
         } catch (Exception $e) {
             error_log($e);
+            return false;
         }
     }
 }
