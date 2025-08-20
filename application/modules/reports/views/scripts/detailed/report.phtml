@@ -72,7 +72,7 @@ foreach ($data as $row) {
 
 // Sort headers
 $shipmentCodes = array_keys($shipments);
-echo "<table border='1' cellpadding='6' cellspacing='0'>";
+echo "<table border='1' cellpadding='6' cellspacing='0' class='table table-striped table-bordered table-hover dataTable no-footer'>";
 echo "<thead><tr><th>".ucfirst($reportType)."</th>";
 foreach ($shipmentCodes as $code) {
     echo "<th>{$code}</th>";
