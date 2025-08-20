@@ -958,6 +958,7 @@ try {
     $reportService = new Application_Service_Reports();
     $commonService = new Application_Service_Common();
     $schemeService = new Application_Service_Schemes();
+    $shipmentService = new Application_Service_Shipments();
     $evalService = new Application_Service_Evaluation();
     if (!empty($evalResult)) {
         $header = $reportService->getReportConfigValue('report-header');
@@ -1052,7 +1053,7 @@ try {
                 )
             )
                 ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', [])
-                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type'))
+                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type', 'distribution_id'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
@@ -1068,6 +1069,8 @@ try {
 
                     // continue; // for testing
                     $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
+                    if ($layout == 'zimbabwe')
+                        $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
                     // file_put_contents('data.json',json_encode($resultArray));
                     $endValue = $offset + ($limit - 1);
                     // $endValue = $offset + 49;
