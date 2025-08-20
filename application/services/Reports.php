@@ -6,9 +6,11 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Exception;
 
 class Application_Service_Reports
 {
+    protected $db;
     protected $common;
     protected $tempUploadDirectory;
 
@@ -20,6 +22,7 @@ class Application_Service_Reports
         $this->common = new Application_Service_Common();
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
         $this->translator = Zend_Registry::get('translate');
+        $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
     }
 
     public function getAllShipments($parameters)
@@ -4822,6 +4825,292 @@ class Application_Service_Reports
             error_log($exc->getTraceAsString());
 
             return "";
+        }
+    }
+
+    public function getAvailableShipments($schemeType = null, $startDate = null, $endDate = null)
+    {
+        $sql = "SELECT DISTINCT s.shipment_id, s.shipment_code, s.scheme_type 
+                FROM shipment s 
+                INNER JOIN shipment_participant_map spm ON s.shipment_id = spm.shipment_id 
+                WHERE 1=1";
+
+        $params = array();
+
+        if ($schemeType) {
+            $sql .= " AND s.scheme_type = ?";
+            $params[] = $schemeType;
+        }
+
+        if ($startDate && $endDate) {
+            $sql .= " AND s.shipment_date BETWEEN ? AND ?";
+            $params[] = $startDate;
+            $params[] = $endDate;
+        }
+
+        $sql .= " ORDER BY s.shipment_code";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    public function getTestingFacilityByOwnerShips($params)
+    {
+        $startDate = null;
+        $endDate = null;
+        $schemeType = null;
+
+        // Parse date range if provided
+        if (!empty($params['dateRange'])) {
+            $dateRange = explode(' to ', $params['dateRange']);
+            if (count($dateRange) == 2) {
+                $startDate = date('Y-m-d', strtotime($dateRange[0]));
+                $endDate = date('Y-m-d', strtotime($dateRange[1]));
+            }
+        }
+
+        // Parse scheme type if provided
+        if (!empty($params['scheme'])) {
+            $schemeType = $params['scheme'];
+        }
+
+        // Get all available shipments
+        $shipments = $this->getAvailableShipments($schemeType, $startDate, $endDate);
+
+        // Get funding sources
+        $fundingSources = $this->getFundingSources($schemeType, $startDate, $endDate);
+
+        $shipmentsData = array();
+        foreach ($shipments as $shipment) {
+            $shipmentData = $this->getShipmentDataByFundingSource($shipment['shipment_id']);
+            $shipmentsData[] = array(
+                'shipment_id' => $shipment['shipment_id'],
+                'shipment_code' => $shipment['shipment_code'],
+                'data' => $shipmentData
+            );
+        }
+
+        // Get overall statistics by funding source
+        $overallStats = $this->getOverallStatisticsByFundingSource($schemeType, $startDate, $endDate);
+
+        return array(
+            'shipments' => $shipmentsData,
+            'fundingSources' => $fundingSources,
+            'overallStats' => $overallStats
+        );
+    }
+
+    public function getFundingSources($schemeType = null, $startDate = null, $endDate = null)
+    {
+        $sql = "SELECT DISTINCT p.funding_source 
+            FROM participant p 
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+            INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
+            WHERE p.funding_source IS NOT NULL AND p.funding_source != ''";
+
+        $params = array();
+
+        if ($schemeType) {
+            $sql .= " AND s.scheme_type = ?";
+            $params[] = $schemeType;
+        }
+
+        if ($startDate && $endDate) {
+            $sql .= " AND s.shipment_date BETWEEN ? AND ?";
+            $params[] = $startDate;
+            $params[] = $endDate;
+        }
+
+        $sql .= " ORDER BY p.funding_source";
+
+        return $this->db->fetchAll($sql, $params);
+    }
+
+    protected function getShipmentDataByFundingSource($shipmentId)
+    {
+        $sql = "SELECT 
+                p.funding_source,
+                COUNT(DISTINCT p.participant_id) as count
+            FROM shipment_participant_map spm 
+            INNER JOIN participant p ON spm.participant_id = p.participant_id 
+            WHERE spm.shipment_id = ? 
+            AND p.funding_source IS NOT NULL 
+            AND p.funding_source != ''
+            GROUP BY p.funding_source
+            ORDER BY p.funding_source";
+
+        $results = $this->db->fetchAll($sql, array($shipmentId));
+
+        // Calculate total for percentage calculation
+        $total = array_sum(array_column($results, 'count'));
+
+        $response = array();
+        foreach ($results as $row) {
+            $percentage = $total > 0 ? round(($row['count'] / $total) * 100, 2) : 0;
+            $response[$row['funding_source']] = array(
+                'count' => $row['count'],
+                'percentage' => $percentage
+            );
+        }
+
+        return $response;
+    }
+
+    public function getOverallStatisticsByFundingSource($schemeType = null, $startDate = null, $endDate = null)
+    {
+        $sql = "SELECT 
+                p.funding_source,
+                COUNT(DISTINCT p.participant_id) as count
+            FROM participant p 
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+            INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
+            WHERE p.funding_source IS NOT NULL 
+            AND p.funding_source != ''";
+
+        $params = array();
+
+        if ($schemeType) {
+            $sql .= " AND s.scheme_type = ?";
+            $params[] = $schemeType;
+        }
+
+        if ($startDate && $endDate) {
+            $sql .= " AND s.shipment_date BETWEEN ? AND ?";
+            $params[] = $startDate;
+            $params[] = $endDate;
+        }
+
+        $sql .= " GROUP BY p.funding_source ORDER BY p.funding_source";
+
+        $results = $this->db->fetchAll($sql, $params);
+
+        // Calculate total for percentage calculation
+        $total = array_sum(array_column($results, 'count'));
+
+        $response = array();
+        foreach ($results as $row) {
+            $percentage = $total > 0 ? round(($row['count'] / $total) * 100, 2) : 0;
+            $response[$row['funding_source']] = array(
+                'count' => $row['count'],
+                'percentage' => $percentage
+            );
+        }
+
+        // Add total
+        $response['total'] = $total;
+
+        return $response;
+    }
+
+    public function exportTestingFacilityByOwnership($params)
+    {
+        try {
+            $data = $this->getTestingFacilityByOwnerShips($params);
+
+            // Create new Spreadsheet object
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set sheet title
+            $sheet->setTitle('Testing Facility by Ownership');
+
+            // Create headers
+            $headers = ['Type of Testing Facility', 'Total Registered No.', 'Total Registered %'];
+            // Add shipment headers
+            foreach ($data['shipments'] as $shipment) {
+                $headers[] = $shipment['shipment_code'] . ' No.';
+                $headers[] = $shipment['shipment_code'] . ' %';
+            }
+
+            // Set headers in first row
+            $column = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($column . '1', $header);
+                $column++;
+            }
+
+            // Style headers
+            $headerRange = 'A1:' . chr(64 + count($headers)) . '1';
+            $sheet->getStyle($headerRange)->getFont()->setBold(true);
+            $sheet->getStyle($headerRange)->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FFE0E0E0');
+
+            $row = 2;
+
+            // Add rows for each funding source
+            foreach ($data['fundingSources'] as $fundingSource) {
+                $fundingSourceName = $fundingSource['funding_source'];
+                $rowData = [
+                    ucfirst($fundingSourceName),
+                    $data['overallStats'][$fundingSourceName]['count'] ?? 0,
+                    ($data['overallStats'][$fundingSourceName]['percentage'] ?? 0) . '%'
+                ];
+
+                // Add shipment data for this funding source
+                foreach ($data['shipments'] as $shipment) {
+                    $count = $shipment['data'][$fundingSourceName]['count'] ?? 0;
+                    $percentage = $shipment['data'][$fundingSourceName]['percentage'] ?? 0;
+                    $rowData[] = $count;
+                    $rowData[] = $percentage . '%';
+                }
+
+                $column = 'A';
+                foreach ($rowData as $value) {
+                    $sheet->setCellValue($column . $row, $value);
+                    $column++;
+                }
+                $row++;
+            }
+
+            // Total row
+            $totalData = ['Total Participants', $data['overallStats']['total'], '100%'];
+            foreach ($data['shipments'] as $shipment) {
+                $shipmentTotal = array_sum(array_column($shipment['data'], 'count'));
+                $totalData[] = $shipmentTotal;
+                $totalData[] = '100%';
+            }
+
+            $column = 'A';
+            foreach ($totalData as $value) {
+                $sheet->setCellValue($column . $row, $value);
+                $column++;
+            }
+
+            // Style total row
+            $totalRange = 'A' . $row . ':' . chr(64 + count($totalData)) . $row;
+            $sheet->getStyle($totalRange)->getFont()->setBold(true);
+
+            // Auto-size columns
+            foreach (range('A', chr(64 + count($headers))) as $columnID) {
+                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            }
+
+            // Add borders to all data
+            $dataRange = 'A1:' . chr(64 + count($headers)) . $row;
+            $sheet->getStyle($dataRange)->getBorders()->getAllBorders()
+                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            // Create file
+            $fileName = 'testing_facility_by_ownership_' . date('Y_m_d_H_i_s') . '.xlsx';
+            $filePath = APPLICATION_PATH . '/../public/temporary/' . $fileName;
+
+            // Ensure directory exists
+            if (!is_dir(dirname($filePath))) {
+                mkdir(dirname($filePath), 0755, true);
+            }
+
+            // Write file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save($filePath);
+
+            // Clean up memory
+            $spreadsheet->disconnectWorksheets();
+            unset($spreadsheet);
+
+            return $fileName;
+        } catch (Exception $e) {
+            error_log($e);
+            return false;
         }
     }
 }

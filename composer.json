@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "^1.29",
+        "phpoffice/phpspreadsheet": "^1.30",
         "setasign/fpdi": "^2.6",
         "tecnickcom/tcpdf": "^6.7",
         "shardj/zf1-future": "^1.24",

@@ -1,0 +1,215 @@
+<style>
+    @media print {
+
+        .dontPrint,
+        #shipmentTable_filter,
+        #shipmentTable_info {
+            display: none;
+        }
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .report-table {
+        min-width: 800px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .font-weight-bold {
+        font-weight: bold;
+    }
+</style>
+
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+
+<legend>
+    <h3><?= $this->translate->_("Testing Facilities by Ownership Report"); ?></h3>
+</legend>
+
+<table style="margin:20px 0;" class="table table-bordered">
+    <tr>
+        <td style="width:33%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+        </td>
+        <td style="width:33%;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Select Scheme Type (Optional)"); ?>
+        </td>
+        <td style="width:33%;text-align: center;font-weight:bold;"></td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                style="background: #fff" placeholder="Click here to pick a Date Range" />
+        </td>
+        <td>
+            <select id="scheme" name="scheme" class="form-control input-lg">
+                <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
+                <?php foreach ($this->schemes as $scheme) { ?>
+                    <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
+                <?php } ?>
+            </select>
+        </td>
+        <td>
+            <button style="margin-right: 10px;" class="btn btn-success btn-sm" onclick="getReport()">
+                <span><?= $this->translate->_("Get Report"); ?></span>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="resetReport()">
+                <span><?= $this->translate->_("Reset"); ?></span>
+            </button>
+            <button style="margin-left: 10px;" class="btn btn-info btn-sm dontPrint" onclick="exportReport()">
+                <span><?= $this->translate->_("Export"); ?></span>
+            </button>
+        </td>
+    </tr>
+</table>
+
+<div id="reportContainer">
+    <!-- Report will be loaded here -->
+</div>
+
+<div id="loadingMessage" class="hide text-center" style="margin: 20px 0;">
+    <div class="alert alert-info">
+        <?= $this->translate->_("Loading report data..."); ?>
+    </div>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript">
+    var startDate = "";
+    var endDate = "";
+    var hasReportData = false;
+
+    $(document).ready(function() {
+        $("#scheme").select2({
+            placeholder: "Select scheme type",
+            allowClear: true
+        });
+
+        $('#dateRange').daterangepicker({
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: false,
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                    'Previous Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+                    'Current Year To Date': [moment().startOf('year'), moment()]
+                }
+            },
+            function(start, end) {
+                startDate = start.format('DD-MMM-YYYY');
+                endDate = end.format('DD-MMM-YYYY');
+                $('#dateRange').val(startDate + ' to ' + endDate);
+            });
+
+        $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+            startDate = "";
+            endDate = "";
+        });
+
+        // Load initial report
+        getReport();
+    });
+
+    function getReport() {
+        $("#loadingMessage").removeClass("hide");
+        $("#reportContainer").html('');
+
+        var dateRange = $("#dateRange").val();
+        var scheme = $("#scheme").val();
+
+        var postData = {
+            dateRange: dateRange,
+            scheme: scheme
+        };
+
+        if (dateRange) {
+            var _dateRange = dateRange.split(" to ");
+            postData.startDate = _dateRange[0];
+            postData.endDate = _dateRange[1];
+        }
+
+        $.blockUI();
+
+        $.ajax({
+            url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership', 'action' => 'get-report-data')); ?>",
+            type: 'POST',
+            dataType: 'html',
+            data: postData,
+            success: function(html) {
+                $("#reportContainer").html(html);
+                $("#loadingMessage").addClass("hide");
+                hasReportData = true;
+                $.unblockUI();
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX request failed:", xhr.responseText);
+                console.error("Status:", status);
+                console.error("Error:", error);
+                alert("Error loading report data: " + error + "\nStatus: " + status);
+                $("#loadingMessage").addClass("hide");
+                $.unblockUI();
+            }
+        });
+    }
+
+    function resetReport() {
+        $("#dateRange").val('');
+        $("#scheme").val('').trigger('change');
+        startDate = "";
+        endDate = "";
+        getReport();
+    }
+
+    function exportReport() {
+        if (!hasReportData) {
+            alert("No data available to export. Please generate a report first.");
+            return;
+        }
+
+        $.blockUI();
+
+        var postData = {
+            dateRange: $("#dateRange").val(),
+            scheme: $("#scheme").val(),
+            format: "html"
+        };
+
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership', 'action' => 'export-testing-facility-by-ownership')); ?>",
+                postData,
+                function(data) {
+                    if (data && data.trim() !== "") {
+                        document.location.href = '/temporary/' + data;
+                    } else {
+                        alert("Error generating export file.");
+                    }
+                    $.unblockUI();
+                })
+            .fail(function() {
+                alert("Error exporting data. Please try again.");
+                $.unblockUI();
+            });
+    }
+</script>
