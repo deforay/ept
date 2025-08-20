@@ -286,6 +286,7 @@ if (!empty($resultArray['shipment'])) {
         }
         // Check testkit approved or not
         $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
+        $wishes = '';
         if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
             $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
         } else {

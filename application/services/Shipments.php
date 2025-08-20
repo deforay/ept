@@ -2858,7 +2858,7 @@ class Application_Service_Shipments
         return $shipmentDb->getSummaryReportDetails($parameters);
     }
 
-    public function getShipmentInReports($distributionId)
+    public function getShipmentInReports($distributionId, $shipmentId = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
@@ -2868,8 +2868,8 @@ class Application_Service_Shipments
             ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
             ->group('s.shipment_id');
-
-
+        if (isset($shipmentId) && !empty($shipmentId) && $shipmentId > 0)
+            $sql = $sql->where("s.shipment_id = ?", $shipmentId);
 
         return $db->fetchAll($sql);
     }
