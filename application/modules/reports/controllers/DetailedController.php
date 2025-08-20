@@ -42,12 +42,20 @@ class Reports_DetailedController extends Zend_Controller_Action
 
     public function reportAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
+
+       $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
-            $reportService->getAllParticipantDetailedReport($params);
+            $response = $reportService->getParticipantTrendsReportData($params);
+        //  echo "<pre>"; print_r($response); die;
+            $this->_helper->layout()->disableLayout();
+
+            // Assign data to view
+            $this->view->response = $response;
+            $this->view->reportType = isset($params['reportType']) ? $params['reportType'] : 'Unknown';
+
         }
+
     }
 }

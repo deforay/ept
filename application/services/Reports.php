@@ -288,7 +288,7 @@ class Application_Service_Reports
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
-                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('lastdate_response'))
+                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('lastdate_response','shipment_code'))
                 ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')")))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
@@ -345,35 +345,6 @@ class Application_Service_Reports
             $aColumns = array('s.shipment_code', 'sl.scheme_name', 'enrolled_programs', 'distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'state', 'district');
         }
 
-
-
-        /*
-         * Paging
-         */
-        /*
-         * Paging
-         */
-        $sLimit = "";
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
-        }
-
-        /*
-         * Ordering
-         */
-        $sOrder = "";
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, "", -2);
-        }
 
         /*
          * Filtering
@@ -490,8 +461,8 @@ class Application_Service_Reports
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($sQuery);
-        $rResult = $dbAdapter->fetchAll($sQuery);
+      //   echo ($sQuery);
+        $rResult = $this->getParticipantDetailedReport($parameters);
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -536,6 +507,87 @@ class Application_Service_Reports
         }
 
         echo json_encode($output);
+    }
+
+    public function getParticipantTrendsReportData($parameters)
+    {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+         $sQuery = $dbAdapter->select()
+                ->from(['sp' => 'shipment_participant_map'], [])
+                ->join(['p' => 'participant'], 'sp.participant_id = p.participant_id', [])
+                ->join(['s' => 'shipment'], 'sp.shipment_id = s.shipment_id', ['shipment_id', 'shipment_code'])
+                ->join(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name']);
+
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
+            // Get total participants for each shipment code in each network
+           
+                $sQuery = $sQuery->join(['n' => 'r_network_tiers'], 'p.network_tier = n.network_id', ['network_name'])
+                ->columns([
+                    'network' => 'n.network_name',
+                    'shipment_code' => 's.shipment_code',
+                    'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
+                ])
+                ->group(['n.network_name', 's.shipment_code'])
+                ->where("n.network_name IS NOT NULL")
+                ->where("n.network_name != ''");
+
+        }
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
+            // Get total participants for each shipment code in each affiliation
+           
+                $sQuery = $sQuery->join(['pa' => 'r_participant_affiliates'], 'p.affiliation = pa.affiliate', ['affiliate'])
+                ->columns([
+                    'affiliation' => 'pa.affiliate',
+                    'shipment_code' => 's.shipment_code',
+                    'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
+                ])
+                ->group(['pa.affiliate', 's.shipment_code'])
+                ->where("pa.affiliate IS NOT NULL")
+                ->where("pa.affiliate != ''");
+
+        }
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
+            // Get total participants for each shipment code in each region
+           
+                $sQuery = $sQuery->columns([
+                    'region' => 'p.region',
+                    'shipment_code' => 's.shipment_code',
+                    'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
+                ])
+                ->group(['p.region', 's.shipment_code'])
+                ->where("p.region IS NOT NULL")
+                ->where("p.region != ''");
+
+        }
+        if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
+            // Get total participants for each shipment code in each enrolled program
+           
+                $sQuery = $sQuery->join(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id = p.participant_id', [])
+                ->join(['rep' => 'r_enrolled_programs'], 'rep.r_epid = pe.ep_id', ['enrolled_programs'])
+                ->columns([
+                    'enrolled-programs' => 'rep.enrolled_programs',
+                    'shipment_code' => 's.shipment_code',
+                    'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
+                ])
+                ->group(['rep.r_epid', 's.shipment_code'])
+                ->where("rep.enrolled_programs IS NOT NULL")
+                ->where("rep.enrolled_programs != ''");
+
+        }
+       // Modified query: Get total participants for each shipment code in each region
+       
+
+    if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+        $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+    }
+
+    if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        $sQuery = $sQuery->where("s.shipment_date >= ?", $this->common->isoDateFormat($parameters['startDate']));
+        $sQuery = $sQuery->where("s.shipment_date <= ?", $this->common->isoDateFormat($parameters['endDate']));
+    }
+
+    return $dbAdapter->fetchAll($sQuery);
     }
 
     public function getParticipantTrendsReport($parameters)

@@ -1,0 +1,109 @@
+
+<?php
+$data = $this->response;
+$reportType = $this->reportType;
+$type = "";
+if(!empty($reportType) && $reportType == "region"){
+  $type = "REGION";
+}
+elseif($reportType == "affiliation"){
+  $type = "AFFILIATION";
+}
+elseif($reportType == "enrolled-programs"){
+  $type = "ENROLLED PROGRAMS";
+}
+elseif($reportType == "network"){
+  $type = "NETWORK";
+}
+else{
+  $type = "TEST EVENT";
+}
+
+//echo "<pre>"; print_r($data); die;
+?>
+ <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .scroll-table {
+    width: 85%;
+    max-height: 400px;
+    margin: 0 auto;
+    overflow: auto;
+    border: 1px solid #ccc;
+  }
+    table {
+      width: 80%;
+      border-collapse: collapse;
+      margin: 0 auto;
+      text-align: center;
+    }
+    caption {
+      caption-side: top;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 8px;
+    }
+    th {
+      background-color: #d9d9d9;
+    }
+    tr:nth-child(even) td {
+      background-color: #f9f9f9;
+    }
+    tfoot td {
+      font-weight: bold;
+      background-color: #e6e6e6;
+    }
+  </style>
+  <div class="">
+    <?php
+// Collect unique shipment codes
+$shipments = [];
+$reportTypes = [];
+
+foreach ($data as $row) {
+    $shipments[$row['shipment_code']] = true;
+    $reportTypes[$row[$reportType]][$row['shipment_code']] = $row['total_participants'];
+}
+
+// Sort headers
+$shipmentCodes = array_keys($shipments);
+echo "<table border='1' cellpadding='6' cellspacing='0'>";
+echo "<thead><tr><th>".ucfirst($reportType)."</th>";
+foreach ($shipmentCodes as $code) {
+    echo "<th>{$code}</th>";
+}
+echo "<th>TOTAL (Participants by ".ucfirst($reportType).")</th></tr></thead><tbody>";
+
+// Fill rows by region
+foreach ($reportTypes as $key => $values) {
+    echo "<tr><td>{$key}</td>";
+    $rowTotal = 0;
+    foreach ($shipmentCodes as $code) {
+        $count = isset($values[$code]) ? $values[$code] : 0;
+        $rowTotal += $count;
+        echo "<td>{$count}</td>";
+    }
+    echo "<td><b>{$rowTotal}</b></td></tr>";
+}
+
+// Totals row
+echo "<tr><th>Total (Participants by Test Event)</th>";
+$grandTotal = 0;
+foreach ($shipmentCodes as $code) {
+    $total = 0;
+    foreach ($reportTypes as $values) {
+        $total += $values[$code] ?? 0;
+    }
+    $grandTotal += $total;
+    echo "<th style='text-align: center;'>{$total}</th>";
+}
+echo "<th style='text-align: center;'>{$grandTotal}</th></tr>";
+
+echo "</tbody></table>";
+?>
+</div>
