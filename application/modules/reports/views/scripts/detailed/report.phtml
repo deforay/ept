@@ -59,6 +59,9 @@ else{
       background-color: #e6e6e6;
     }
   </style>
+ <button id="exportExcelBtn" class="btn btn-success btn-sm" style="margin: 10px; float: right;">Export to Excel</button>
+
+
   <div class="">
     <?php
 // Collect unique shipment codes
@@ -72,7 +75,7 @@ foreach ($data as $row) {
 
 // Sort headers
 $shipmentCodes = array_keys($shipments);
-echo "<table border='1' cellpadding='6' cellspacing='0' class='table table-striped table-bordered table-hover dataTable no-footer'>";
+echo "<table id='participantsData' border='1' cellpadding='6' cellspacing='0' class='table table-striped table-bordered table-hover dataTable no-footer'>";
 echo "<thead><tr><th>".ucfirst($reportType)."</th>";
 foreach ($shipmentCodes as $code) {
     echo "<th>{$code}</th>";
@@ -107,3 +110,27 @@ echo "<th style='text-align: center;'>{$grandTotal}</th></tr>";
 echo "</tbody></table>";
 ?>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+document.getElementById('exportExcelBtn').onclick = function () {
+    var table = document.getElementById('participantsData');
+    var wb = XLSX.utils.table_to_book(table, {sheet:"Report"});
+    var ws = wb.Sheets["Report"];
+
+    // Get the range of the sheet
+    var range = XLSX.utils.decode_range(ws['!ref']);
+
+ // Make first row bold (header)
+    for (var C = range.s.c; C <= range.e.c; ++C) {
+        var cell_address = XLSX.utils.encode_cell({r:0, c:C});
+        if(ws[cell_address]) {
+            ws[cell_address].s = ws[cell_address].s || {};
+            ws[cell_address].s.font = ws[cell_address].s.font || {};
+            ws[cell_address].s.font.bold = true;
+        }
+    }
+
+
+    XLSX.writeFile(wb, 'ParticipantsReport.xlsx');
+};
+</script>

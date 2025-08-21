@@ -58,4 +58,5 @@ class Reports_DetailedController extends Zend_Controller_Action
         }
 
     }
+
 }
