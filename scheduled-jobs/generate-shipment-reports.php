@@ -947,7 +947,7 @@ try {
 
     $limit = 3;
     $sQuery = $db->select()
-        ->from(['eq' => 'evaluation_queue'])
+        ->from(['eq' => 'queue_report_generation'])
         ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
         ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
         ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
@@ -1037,7 +1037,7 @@ try {
                 $reportTypeStatus = 'not-finalized';
             }
 
-            $db->update('evaluation_queue', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            $db->update('queue_report_generation', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
             if (!file_exists($reportsPath)) {
                 $commonService->makeDirectory($reportsPath);
             }
@@ -1190,7 +1190,7 @@ try {
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
-            $db->update('evaluation_queue', $update, 'id=' . $evalRow['id']);
+            $db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
 
             $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';

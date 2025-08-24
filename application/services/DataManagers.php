@@ -135,57 +135,112 @@ class Application_Service_DataManagers
 
     public function resetPassword($email)
     {
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
+        $conf         = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $eptDomain    = rtrim((string) $conf->domain, "/");
+
+        // Normalize/quick-validate the incoming email first
+        $normalizedInput = Application_Service_Common::validateEmail((string) $email);
+        // (We’ll still prefer the DB email below, but this prevents weird inputs early.)
 
         $participant = $this->datamanagersDb->resetPasswordForEmail($email);
-        $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        //    echo "<pre>"; print_r($conf); die;
 
+        // (Optional) prevent enumeration: always show a generic message
+        $genericOkMsg = "If the email is registered, you'll receive a password reset link shortly.";
 
-        $eptDomain = rtrim($conf->domain, "/");
+        if ($participant === false) {
+            // Avoid revealing whether the email exists
+            $sessionAlert->message = $genericOkMsg;
+            $sessionAlert->status  = "success";
+            return;
+        }
 
-        if ($participant != false) {
+        $common          = new Application_Service_Common();
+        $participantName = trim((string)($participant->first_name . ' ' . $participant->last_name));
+        $participantName = htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8');
 
+        // Prefer the email stored in DB
+        $participantMail = Application_Service_Common::validateEmail((string) $participant->primary_email);
 
+        // Admin config (ensure keys match your config names)
+        $adminName = Application_Service_Common::getConfig('admin_name') ?: 'ePT Admin';
+        $adminMail = Application_Service_Common::getConfig('admin_email');
 
-            $common = new Application_Service_Common();
-            $participantName = $participant->first_name . $participant->last_name;
-            $participantMail = $participant->primary_email;
-            $adminName = Application_Service_Common::getConfig('admin-name');
-            $adminMail = Application_Service_Common::getConfig('admin_email');
-            $excludedDomains = [
-                "spam.com",
-                "example.org",
-                "example.com",
-                "10minutemail.com",
-                "guerrillamail.com",
-                "tempmail.com",
-                "mailinator.com",
-                "yopmail.com",
-                "throwawaymail.com",
-                "fakeinbox.com",
-                "test.com",
-                "invalid.com",
-                "noreply.com"
-            ];
+        // If DB email isn't even syntactically valid, fall back to generic success
+        if ($participantMail === null) {
+            // Optionally notify admin about bad record
+            $common->insertTempMail(
+                $adminMail,
+                null,
+                null,
+                "Password Reset - ePT",
+                "Record has invalid email for participant <b>{$participantName}</b> (input: " . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ")."
+            );
+            $sessionAlert->message = $genericOkMsg;
+            $sessionAlert->status  = "success";
+            return;
+        }
 
-            $validMail = $common->isValidEmail($participantMail, $excludedDomains);
-            if ($validMail == 1) {
-                $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
-                $common->insertTempMail($email, null, null, "Password Reset - e-PT", $message, $adminMail, $adminName);
-                $sessionAlert->message = "Your password has been reset. Please check your registered email id for the instructions.";
-                $sessionAlert->status = "success";
-            } else {
-                $message = "Dear " . $adminName . ",<br/><br/> Participant " . $participantName . " has requested to reset their password<br/><br/>";
-                $common->insertTempMail($adminMail, null, null, "Password Reset - e-PT", $message);
-                $sessionAlert->message = "Ept admin will contact you shortly!.";
-                $sessionAlert->status = "success";
-            }
+        // Heavier validation: syntax + excluded domains + MX
+        $excludedDomains = [
+            "spam.com",
+            "example.org",
+            "example.com",
+            "10minutemail.com",
+            "guerrillamail.com",
+            "tempmail.com",
+            "mailinator.com",
+            "yopmail.com",
+            "throwawaymail.com",
+            "fakeinbox.com",
+            "test.com",
+            "invalid.com",
+            "noreply.com"
+        ];
+        $validMail = Application_Service_Common::isValidEmail($participantMail, $excludedDomains);
+
+        if ($validMail === true) {
+            // Build reset link using the **normalized DB email**
+            $emailToken = base64_encode($participantMail);
+            $resetUrl   = "$eptDomain/auth/new-password/email/$emailToken";
+
+            $message = "Dear {$participantName},<br/><br/>"
+                . "You (or someone else) requested a password reset for your ePT account (<b>"
+                . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
+                . "</b>).<br/><br/>"
+                . "If you requested this, click the link below or paste it into your browser:<br/>"
+                . "<a href='{$resetUrl}'>{$resetUrl}</a><br/><br/>"
+                . "If you did not request a password reset, you can safely ignore this email.<br/><br/>"
+                . "<small>Thanks,<br/>ePT Support</small>";
+
+            $common->insertTempMail(
+                $participantMail,
+                null,
+                null,
+                "Password Reset - ePT",
+                $message,
+                $adminMail,
+                $adminName
+            );
+
+            // Generic response to the user/browser
+            $sessionAlert->message = $genericOkMsg;
+            $sessionAlert->status  = "success";
         } else {
-            $sessionAlert->message = "Sorry, we could not reset your password. Please make sure that you entered your registered primary email";
-            $sessionAlert->status = "failure";
+            // Bad/temporary domain or no MX: notify admin, keep user message generic
+            $adminMsg = "Participant <b>{$participantName}</b> requested a password reset, "
+                . "but their email appears invalid or undeliverable: <b>"
+                . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
+                . "</b> (input: "
+                . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ").";
+
+            $common->insertTempMail($adminMail, null, null, "Password Reset - e-PT", $adminMsg);
+
+            $sessionAlert->message = $genericOkMsg;
+            $sessionAlert->status  = "success";
         }
     }
+
 
     public function resetPasswordFromAdmin($params, $forcePasswordReset = false)
     {

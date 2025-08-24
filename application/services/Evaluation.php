@@ -1328,13 +1328,13 @@ class Application_Service_Evaluation
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		if ($evaluate) {
 			$response = array();
-			$result = $db->fetchAll($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->order('id desc'));
+			$result = $db->fetchAll($db->select()->from('queue_report_generation')->where('shipment_id = ?', $shipmentId)->order('id desc'));
 			foreach ($result as $row) {
 				$response[$row['report_type']] = $row;
 			}
 			return $response;
 		} else {
-			return $db->fetchRow($db->select()->from('evaluation_queue')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
+			return $db->fetchRow($db->select()->from('queue_report_generation')->where('shipment_id = ?', $shipmentId)->where('report_type = ?', $type));
 		}
 	}
 
@@ -2630,14 +2630,14 @@ class Application_Service_Evaluation
 			'last_updated_on' => new Zend_Db_Expr('now()'),
 			'status' => 'pending'
 		);
-		$db->insert('evaluation_queue', $data);
+		$db->insert('queue_report_generation', $data);
 	}
 
 	public function queueReportsGeneration($params)
 	{
 		$shipmentId = base64_decode($params['sid']);
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$existData = $db->fetchRow($db->select()->from('evaluation_queue')
+		$existData = $db->fetchRow($db->select()->from('queue_report_generation')
 			->where("shipment_id = ?", $shipmentId)
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
@@ -2659,7 +2659,7 @@ class Application_Service_Evaluation
 					'requested_on' => new Zend_Db_Expr('now()'),
 					'status' => 'pending'
 				);
-				$saved = $db->insert('evaluation_queue', $data);
+				$saved = $db->insert('queue_report_generation', $data);
 				if ($saved > 0) {
 					$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
 					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
@@ -2673,7 +2673,7 @@ class Application_Service_Evaluation
 				'status' => 'pending'
 			);
 			// Zend_Debug::dump($data);die;
-			return $db->update('evaluation_queue', $data, "id = " . $existData['id']);
+			return $db->update('queue_report_generation', $data, "id = " . $existData['id']);
 		}
 	}
 

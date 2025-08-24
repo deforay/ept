@@ -53,7 +53,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         $this->view->schemes = $scheme->getAllSchemes();
     }
 
-    function getMailTemplateAction()
+    public function getMailTemplateAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -64,7 +64,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
         }
     }
 
-    function getMailTemplateBySubjectAction()
+    public function getMailTemplateBySubjectAction()
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();

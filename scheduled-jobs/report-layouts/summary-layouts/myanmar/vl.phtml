@@ -149,18 +149,25 @@ if ($resultArray['shipment'] != "") {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
+
+                        if (!isset($sample[$k]['response'])) {
+                            $sample[$k]['response'] = 0;
+                        }
+                        if (!isset($sample[$k]['NumberPassed'])) {
+                            $sample[$k]['NumberPassed'] = 0;
+                        }
                         if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                            $val['low_limit'] = $val['manual_low'];
-                            $val['high_limit'] = $val['manual_high'];
-                            $val['median'] = $val['manual_median'];
-                            $val['sd'] = $val['manual_sd'];
+                            $val['low_limit'] = $val['manual_low'] ?: $val['low_limit'];
+                            $val['high_limit'] = $val['manual_high'] ?: $val['high_limit'];
+                            $val['median'] = $val['manual_median'] ?: $val['median'];
+                            $val['sd'] = $val['manual_sd'] ?: $val['sd'];
 
                             $sample[$k]['response']       += $val['no_of_responses'];
                             $sample[$k]['median']         = $val['median'];
                             $sample[$k]['lowLimit']       = $val['low_limit'];
                             $sample[$k]['highLimit']      = $val['high_limit'];
                             $sample[$k]['sd']             = $val['sd'];
-                            $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                            $sample[$k]['NumberPassed']   += $val['NumberPassed'] ?? 0;
                             $sample[$t]['label']          = $val['sample_label'];
                             $t++;
                         } else {
@@ -170,7 +177,7 @@ if ($resultArray['shipment'] != "") {
                                 $sample[$k]['lowLimit']       = $val['low_limit'];
                                 $sample[$k]['highLimit']      = $val['high_limit'];
                                 $sample[$k]['sd']             = $val['sd'];
-                                $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                                $sample[$k]['NumberPassed']   += $val['NumberPassed'] ?? 0;
                                 $sample[$t]['label']          = $val['sample_label'];
                                 $t++;
                             }

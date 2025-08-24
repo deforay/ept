@@ -2,49 +2,74 @@
 
 class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 {
-
-    protected $_name = 'temp_mail';
+    protected $_name    = 'temp_mail';
     protected $_primary = 'temp_id';
 
-    public function insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachments = array())
+    public function insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = [])
     {
-        if (empty($to) || empty($message)) return false;
+        if (trim((string)$message) === '') {
+            return false;
+        }
 
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $fromMail = $conf->email->config->username;
-        // Handle attachments
+        // Normalize recipients using the parseRecipients helper
+        $recips = Application_Service_Common::parseRecipients(
+            (string)$to,
+            $cc !== null ? (string)$cc : null,
+            $bcc !== null ? (string)$bcc : null
+        );
+
+        // Must have at least one valid TO
+        if (empty($recips['to'])) {
+            // Log invalids (if any) to help ops
+            if (!empty($recips['invalid'])) {
+                error_log("TempMail insert rejected: no valid TO. Invalid: " . implode(', ', $recips['invalid']));
+            }
+            return false;
+        }
+
+        // Attachments: normalize to array of existing files
+        $files = [];
         if (!empty($attachments)) {
-            if (is_array($attachments)) {
-                foreach ($attachments as $attachment) {
-                    if (!is_string($attachment) || !file_exists($attachment)) {
-                        throw new Exception("Invalid attachment: $attachment");
-                    }
+            $list = is_array($attachments) ? $attachments : [$attachments];
+            foreach ($list as $path) {
+                if (!is_string($path) || !file_exists($path)) {
+                    throw new Exception("Invalid attachment: " . (string)$path);
                 }
-            } elseif (!file_exists($attachments)) {
-                throw new Exception("Attachment file does not exist: $attachments");
+                $files[] = $path;
             }
         }
-        $result = $this->insert(array(
-            //'message' => strip_tags(html_entity_decode(stripslashes($message),ENT_QUOTES,'UTF-8')),
-            'message'       => $message,
-            'from_mail'     => $fromMail,
-            'to_email'      => trim($to),
-            'subject'       => $subject,
+
+        // From: fall back to config if not provided
+        $conf     = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $fromMail = Application_Service_Common::validateEmail((string)($fromMail ?: $conf->email->config->username)) ?: $conf->email->config->username;
+        $fromName = $fromName ?: 'ePT Support';
+
+        // Prepare row
+        $row = [
+            'from_mail'      => $fromMail,
             'from_full_name' => $fromName,
-            'cc'            => (isset($cc) && !empty($cc)) ? trim($cc) : '',
-            'bcc'           => (isset($bcc) && !empty($bcc)) ? trim($bcc) : '',
-            'attachment'    => (!empty($attachments)) ? json_encode($attachments) : '' // Store as JSON
-        ));
-        return $result;
+            'to_email'       => implode(',', $recips['to']),
+            'cc'             => !empty($recips['cc'])  ? implode(',', $recips['cc'])  : '',
+            'bcc'            => !empty($recips['bcc']) ? implode(',', $recips['bcc']) : '',
+            'subject'        => (string)$subject,
+            'message'        => (string)$message,
+            'attachment'     => $files ? json_encode($files, JSON_UNESCAPED_SLASHES) : '',
+            'status'         => 'pending',
+        ];
+
+        return $this->insert($row);
     }
 
-    public function updateTempMailStatus($id)
+    public function updateTempMailStatus($id, $status = 'picked-to-process')
     {
-        $this->update(array('status' => 'not-sent'), "dm_id = " . (int)$id);
+        return $this->update(
+            ['status' => $status],
+            $this->getAdapter()->quoteInto('temp_id = ?', (int)$id)
+        );
     }
 
     public function deleteTempMail($id)
     {
-        $this->delete("dm_id = " . (int)$id);
+        return $this->delete($this->getAdapter()->quoteInto('temp_id = ?', (int)$id));
     }
 }
