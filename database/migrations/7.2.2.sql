@@ -410,3 +410,7 @@ CREATE TABLE IF NOT EXISTS `user_login_history` (
 
 -- Amit 18-Aug-2025
 RENAME TABLE `evaluation_queue` TO `queue_report_generation`;
+
+
+-- Amit 24-Aug-2025
+ALTER TABLE `temp_mail` ADD `reply_to` VARCHAR(128) NULL DEFAULT NULL AFTER `from_mail`;

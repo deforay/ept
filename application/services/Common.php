@@ -161,7 +161,6 @@ class Application_Service_Common
         }
     }
 
-
     // Returns current date time in Y-m-d H:i:s format or any specified format
     public static function getCurrentDateTime($format = 'Y-m-d H:i:s')
     {
@@ -212,7 +211,7 @@ class Application_Service_Common
                 $toArray[] = $authNameSpace->email;
             }
 
-            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName);
+            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, replyTo: $params['email']);
             if ($mailSent) {
                 return 1;
             } else {
@@ -225,8 +224,8 @@ class Application_Service_Common
     public function checkDuplicate($params): int
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $tableName = trim(($params['tableName']), "'");
-        $fieldName = trim(($params['fieldName']), "'");
+        $tableName = trim($params['tableName'], "'");
+        $fieldName = trim($params['fieldName'], "'");
         $value = trim(trim($params['value']), "'");
         $fnct = $params['fnct'];
 
@@ -382,10 +381,11 @@ class Application_Service_Common
             }
         }
     }
-    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null)
+    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null, $replyTo = null)
     {
         $db = new Application_Model_DbTable_TempMail();
-        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachedFile);
+        $replyTo ??= $fromMail;
+        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message,  $fromMail, $fromName, $attachedFile, $replyTo);
     }
 
     public function getAllModeOfReceipt()

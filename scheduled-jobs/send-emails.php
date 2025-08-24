@@ -214,6 +214,21 @@ try {
             $fromEmail    = $conf->email->config->username;
             $fromFullName = $conf->email->fromName ?? 'ePT System';
 
+            // Validate reply_to (single address; take first if commas/semicolons present)
+            $replyToRaw = isset($result['reply_to']) ? trim((string)$result['reply_to']) : '';
+            $replyTo = null;
+            if ($replyToRaw !== '') {
+                $first = trim(preg_split('/[;,]+/', $replyToRaw)[0] ?? '');
+                if ($first !== '' && filter_var($first, FILTER_VALIDATE_EMAIL)) {
+                    $replyTo = $first;
+                } else {
+                    error_log("Invalid reply_to for temp_id={$result['temp_id']}: {$replyToRaw}");
+                }
+            }
+            if ($replyTo === null) {
+                $replyTo = $fromEmail;
+            }
+
             $allOk = true;
             $batchIndex = 0;
 
@@ -233,7 +248,7 @@ try {
                 $mail->setBodyText($bodyText);
 
                 $mail->setFrom($fromEmail, $fromFullName);
-                $mail->setReplyTo($fromEmail, $fromFullName);
+                $mail->setReplyTo($replyTo, $fromFullName);
 
                 // Diagnostics (headers visible in logs)
                 $mail->addHeader('X-Mail-Batch', (string)$batchIndex);
