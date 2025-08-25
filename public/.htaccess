@@ -27,7 +27,7 @@ Header set Access-Control-Max-Age "1000"
 Header set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token"
 
 
-<FilesMatch ".(perl|py|htaccess|htpasswd|ini|psd|log|sh|json|lock|phar|yml|md|sql|zip|hgignore|hg|hgtags|DS_Store)$">
+<FilesMatch ".(perl|py|htaccess|htpasswd|ini|psd|log|sh|json|lock|phar|yml|md|sql|hgignore|hg|hgtags|DS_Store)$">
   Order Allow,Deny
   Deny from all
 </FilesMatch>

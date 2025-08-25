@@ -13,17 +13,18 @@ class Application_Model_DbTable_ResponseGenericTest extends Zend_Db_Table_Abstra
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $data = array(
+            $data = [
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
-                'result' => (isset($params['result'][$key]) && !empty($params['result'][$key])) ? $params['result'][$key] : '',
-                'repeat_result' => (isset($params['repeatResult'][$key]) && !empty($params['repeatResult'][$key])) ? $params['repeatResult'][$key] : '',
-                'reported_result' => $params['finalResult'][$key] ?? null,
+                'result_1' => (isset($params['result1'][$key]) && !empty($params['result1'][$key])) ? $params['result1'][$key] : '',
+                'result_2' => (isset($params['result2'][$key]) && !empty($params['result2'][$key])) ? $params['result2'][$key] : '',
+                'result_3' => (isset($params['result3'][$key]) && !empty($params['result3'][$key])) ? $params['result3'][$key] : '',
+                'reported_result' => (isset($params['reportedResult'][$key]) && !empty($params['reportedResult'][$key])) ? $params['reportedResult'][$key] : '',
                 'is_result_invalid' => $params['invalidVlResult'][$key] ?? null,
                 'error_code' => $params['errorCode'][$key] ?? null,
                 'additional_detail' => (isset($params['additionalDetail'][$key]) && !empty($params['additionalDetail'][$key])) ? $params['additionalDetail'][$key] : '',
                 'comments' => (isset($params['comments'][$key]) && !empty($params['comments'][$key])) ? $params['comments'][$key] : ''
-            );
+            ];
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;
                 $data['created_on'] = new Zend_Db_Expr('now()');

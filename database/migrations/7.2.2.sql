@@ -414,3 +414,12 @@ RENAME TABLE `evaluation_queue` TO `queue_report_generation`;
 
 -- Amit 24-Aug-2025
 ALTER TABLE `temp_mail` ADD `reply_to` VARCHAR(128) NULL DEFAULT NULL AFTER `from_mail`;
+ALTER TABLE temp_mail
+  ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  ADD COLUMN created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+
+-- Amit 25-Aug-2025
+ALTER TABLE `response_result_generic_test` CHANGE `result` `result_1` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_generic_test` CHANGE `repeat_result` `result_2` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_generic_test` ADD `result_3` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `result_2`;
