@@ -547,7 +547,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
 
-        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of report";
+        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "";
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
