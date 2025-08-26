@@ -232,7 +232,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 											<input type="hidden" class="sampleIdsCounts" value="<?php echo $count; ?>" />
 										</td>
 										<td style="text-align:center;">
-											<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="finalResult[]" id="finalResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal" value="<?php echo $sample['reported_result']; ?>" placeholder="Enter the result" title="Please enter the result for <?php echo $sample['sample_label']; ?>" />
+											<input type="number" data-sample-label="<?php echo $sample['sample_label']; ?>" <?php echo $disabledAInvalid; ?> min="0.00" max="7.00" step="0.01" maxlength="4" name="reportedResult[]" id="reportedResult<?php echo $count; ?>" class="<?php echo ($sample['mandatory'] == 1 && empty($disabledAInvalid) && $disabledAInvalid == '') ? "isRequired" : ""; ?>  form-control checkVlVal" value="<?php echo $sample['reported_result']; ?>" placeholder="Enter the result" title="Please enter the result for <?php echo $sample['sample_label']; ?>" />
 										</td>
 										<td>
 											<select name="invalidVlResult[]" id="invalidVlResult<?php echo $count; ?>" title="Please choose assay invalid or error" class="invalidVlResult assayInvalidFields form-control" onchange="invalidOrErrorResult(this.value, <?php echo $count; ?>)">
@@ -274,7 +274,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 											</td>
 										<?php } ?>
 										<td>
-											<select name="finalResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "vlResultValues isRequired" : ""; ?> form-control input-sm " title="Please choose one" placeholder="Please choose final result for this sample">
+											<select name="reportedResult[]" class="<?php echo ($sample['mandatory'] == 1) ? "vlResultValues isRequired" : ""; ?> form-control input-sm " title="Please choose one" placeholder="Please choose final result for this sample">
 												<?php $this->dropdownSelection($otherTestPossibleResults, $sample['reported_result'], true); ?>
 											</select>
 										</td>

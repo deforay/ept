@@ -271,8 +271,13 @@ if (!empty($resultArray['shipment'])) {
                 $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
                     <tr style="background-color:#dbe4ee;width:100%;">
                         <td style="text-align:center;font-weight:bold;">Sample ID</td>
-                        <td style="text-align:center;font-weight:bold;">Test-1</td>
-                        <td style="text-align:center;font-weight:bold;">Expected Results</td>';
+                        <td style="text-align:center;font-weight:bold;">Test-1</td>';
+                if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">Test-2</td>';
+                if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
+                    $labRes .= '<td style="text-align:center;font-weight:bold;">Test-3</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Reported Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
 
                 // Add additional detail column if configured
                 if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
@@ -287,8 +292,13 @@ if (!empty($resultArray['shipment'])) {
                 foreach ($result['responseResult'] as $key => $response) {
                     $labRes .= '<tr>
                         <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>
-                        <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>
-                        <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
+                        <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_1']] ?? '') . '</td>';
+                    if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
+                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_2']] ?? '') . '</td>';
+                    if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
+                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_3']] ?? '') . '</td>';
+                    $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>
+                    <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
 
                     if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
                         $labRes .= '<td style="text-align:center;">' . ($response['additional_detail'] ?? '') . '</td>';
@@ -302,7 +312,14 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 // Add testing score row
-                $shipmentScoreColspan = 3 + (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes' ? 1 : 0);
+                $shipmentScoreColspan = 4;
+                if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes')
+                    $shipmentScoreColspan += 1;
+                if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2))
+                    $shipmentScoreColspan += 1;
+                if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3))
+                    $shipmentScoreColspan += 1;
+
                 $labRes .= '<tr>
                     <td colspan="' . $shipmentScoreColspan . '">TESTING SCORE</td>
                     <td style="text-align:center;">' . $result['shipment_score'] . '</td>

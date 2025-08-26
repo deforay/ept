@@ -1547,7 +1547,7 @@ class Application_Service_Evaluation
 
 				$sQuery = $db->select()->from(
 					['reseid' => 'response_result_generic_test'],
-					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result', 'calculated_score', 'additional_detail', 'z_score']
+					['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.result_1', 'reseid.result_2', 'reseid.result_3', 'reseid.reported_result', 'calculated_score', 'additional_detail', 'z_score']
 				)
 					->joinLeft(
 						['spm' => 'shipment_participant_map'],
