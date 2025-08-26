@@ -2,11 +2,8 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Exception;
 
 class Application_Service_Reports
 {
@@ -244,7 +241,7 @@ class Application_Service_Reports
 
                 $db->getAdapter()->commit();
                 return $result;
-            } catch (Exception $exc) {
+            } catch (Throwable $exc) {
                 $db->getAdapter()->rollBack();
                 error_log($exc->getMessage());
                 error_log($exc->getTraceAsString());
@@ -524,7 +521,7 @@ class Application_Service_Reports
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             // Get total participants for each shipment code in each network
-           
+
                 $sQuery = $sQuery->join(['n' => 'r_network_tiers'], 'p.network_tier = n.network_id', ['network_name'])
                 ->columns([
                     'network' => 'n.network_name',
@@ -538,7 +535,7 @@ class Application_Service_Reports
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             // Get total participants for each shipment code in each affiliation
-           
+
                 $sQuery = $sQuery->join(['pa' => 'r_participant_affiliates'], 'p.affiliation = pa.affiliate', ['affiliate'])
                 ->columns([
                     'affiliation' => 'pa.affiliate',
@@ -552,7 +549,7 @@ class Application_Service_Reports
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             // Get total participants for each shipment code in each region
-           
+
                 $sQuery = $sQuery->columns([
                     'region' => 'p.region',
                     'shipment_code' => 's.shipment_code',
@@ -565,7 +562,7 @@ class Application_Service_Reports
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             // Get total participants for each shipment code in each enrolled program
-           
+
                 $sQuery = $sQuery->join(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id = p.participant_id', [])
                 ->join(['rep' => 'r_enrolled_programs'], 'rep.r_epid = pe.ep_id', ['enrolled_programs'])
                 ->columns([
@@ -579,7 +576,7 @@ class Application_Service_Reports
 
         }
        // Modified query: Get total participants for each shipment code in each region
-       
+
 
     if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
         $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
@@ -4830,9 +4827,9 @@ class Application_Service_Reports
 
     public function getAvailableShipments($schemeType = null, $startDate = null, $endDate = null)
     {
-        $sql = "SELECT DISTINCT s.shipment_id, s.shipment_code, s.scheme_type 
-                FROM shipment s 
-                INNER JOIN shipment_participant_map spm ON s.shipment_id = spm.shipment_id 
+        $sql = "SELECT DISTINCT s.shipment_id, s.shipment_code, s.scheme_type
+                FROM shipment s
+                INNER JOIN shipment_participant_map spm ON s.shipment_id = spm.shipment_id
                 WHERE 1=1";
 
         $params = array();
@@ -4901,9 +4898,9 @@ class Application_Service_Reports
 
     public function getFundingSources($schemeType = null, $startDate = null, $endDate = null)
     {
-        $sql = "SELECT DISTINCT p.funding_source 
-            FROM participant p 
-            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+        $sql = "SELECT DISTINCT p.funding_source
+            FROM participant p
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id
             INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
             WHERE p.funding_source IS NOT NULL AND p.funding_source != ''";
 
@@ -4927,13 +4924,13 @@ class Application_Service_Reports
 
     protected function getShipmentDataByFundingSource($shipmentId)
     {
-        $sql = "SELECT 
+        $sql = "SELECT
                 p.funding_source,
                 COUNT(DISTINCT p.participant_id) as count
-            FROM shipment_participant_map spm 
-            INNER JOIN participant p ON spm.participant_id = p.participant_id 
-            WHERE spm.shipment_id = ? 
-            AND p.funding_source IS NOT NULL 
+            FROM shipment_participant_map spm
+            INNER JOIN participant p ON spm.participant_id = p.participant_id
+            WHERE spm.shipment_id = ?
+            AND p.funding_source IS NOT NULL
             AND p.funding_source != ''
             GROUP BY p.funding_source
             ORDER BY p.funding_source";
@@ -4957,13 +4954,13 @@ class Application_Service_Reports
 
     public function getOverallStatisticsByFundingSource($schemeType = null, $startDate = null, $endDate = null)
     {
-        $sql = "SELECT 
+        $sql = "SELECT
                 p.funding_source,
                 COUNT(DISTINCT p.participant_id) as count
-            FROM participant p 
-            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id 
+            FROM participant p
+            INNER JOIN shipment_participant_map spm ON p.participant_id = spm.participant_id
             INNER JOIN shipment s ON spm.shipment_id = s.shipment_id
-            WHERE p.funding_source IS NOT NULL 
+            WHERE p.funding_source IS NOT NULL
             AND p.funding_source != ''";
 
         $params = array();

@@ -1108,7 +1108,7 @@ class Application_Service_Evaluation
 			$geneIdentifyTypesDb->saveCovid19IdentifiedGenesResults($params);
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
-				$grandTotal = ($shipmentScore + $docScore);
+				$grandTotal = $shipmentScore + $docScore;
 				if ($grandTotal < $config->evaluation->covid19->passPercentage) {
 					$finalResult = 2;
 				} else {
@@ -1117,7 +1117,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'tb') {
 
-			$attributes = array(
+			$attributes = [
 				"sample_rehydration_date" => Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? null),
 				"assay_name" => $params['assayName'] ?? null,
 				"other_assay_name" => $params['otherAssayName'] ?? null,
@@ -1126,9 +1126,9 @@ class Application_Service_Evaluation
 				"expiry_date" => $params['expiryDate'] ?? null,
 				"attestation" => $params['attestation'] ?? null,
 				"attestation_statement" => $params['attestationStatement'] ?? null
-			);
+			];
 			$attributes = json_encode($attributes);
-			$mapData = array(
+			$mapData = [
 				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
 				"attributes" => $attributes,
 				//"shipment_test_report_date" => new Zend_Db_Expr('now()'),
@@ -1138,7 +1138,7 @@ class Application_Service_Evaluation
 				"mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt'])) ? $params['modeOfReceipt'] : "",
 				"updated_by_user" => $authNameSpace->dm_id,
 				"updated_on_user" => new Zend_Db_Expr('now()')
-			);
+			];
 
 			if (isset($params['testDate']) && trim($params['testDate']) != '') {
 				$mapData['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
@@ -1163,7 +1163,7 @@ class Application_Service_Evaluation
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
 			$db->delete('response_result_tb', "shipment_map_id = " . $params['smid']);
 			for ($i = 0; $i < $size; $i++) {
-				$resultData = array(
+				$resultData = [
 					'shipment_map_id' => $params['smid'],
 					'sample_id' => $params['sampleId'][$i],
 					'mtb_detected' => $params['mtbcDetected'][$i],
@@ -1183,7 +1183,7 @@ class Application_Service_Evaluation
 					'error_code' => $params['errCode'][$i],
 					'created_by' => $admin,
 					'created_on' => new Zend_Db_Expr('now()')
-				);
+				];
 				/* Check if assay xpert or ultra */
 				$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 				$sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
@@ -1197,14 +1197,14 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'generic-test') {
 
-			$attributes = array(
+			$attributes = [
 				"analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
 				"kit_name" => (isset($params['kitName']) && !empty($params['kitName'])) ? $params['kitName'] : "",
 				"kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
 				"kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
-			);
+			];
 			$attributes = json_encode($attributes);
-			$mapData = array(
+			$mapData = [
 				"shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
 				"shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
 				"attributes" => $attributes,
@@ -1213,7 +1213,7 @@ class Application_Service_Evaluation
 				"user_comment" => $params['userComments'],
 				"updated_by_user" => $authNameSpace->dm_id,
 				"updated_on_user" => new Zend_Db_Expr('now()')
-			);
+			];
 
 			if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
 				$data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
@@ -1231,17 +1231,18 @@ class Application_Service_Evaluation
 			$db->update('shipment_participant_map', $mapData, "map_id = " . $params['smid']);
 			$db->delete('response_result_generic_test', "shipment_map_id = " . $params['smid']);
 			for ($i = 0; $i < $size; $i++) {
-				$resultData = array(
+				$resultData = [
 					'shipment_map_id' => $params['smid'],
 					'sample_id' => $params['sampleId'][$i],
-					'result' => (isset($params['result'][$i]) && !empty($params['result'][$i])) ? $params['result'][$i] : '',
-					'repeat_result' => (isset($params['repeatResult'][$i]) && !empty($params['repeatResult'][$i])) ? $params['repeatResult'][$i] : '',
+					'result_1' => (isset($params['result_1'][$i]) && !empty($params['result_1'][$i])) ? $params['result_1'][$i] : '',
+					'result_2' => (isset($params['result_2'][$i]) && !empty($params['result_2'][$i])) ? $params['result_2'][$i] : '',
+					'result_3' => (isset($params['result_3'][$i]) && !empty($params['result_3'][$i])) ? $params['result_3'][$i] : '',
 					'reported_result' => (isset($params['finalResult'][$i]) && !empty($params['finalResult'][$i])) ? $params['finalResult'][$i] : '',
 					'additional_detail' => (isset($params['additionalDetail'][$i]) && !empty($params['additionalDetail'][$i])) ? $params['additionalDetail'][$i] : '',
 					'comments' => (isset($params['comments'][$i]) && !empty($params['comments'][$i])) ? $params['comments'][$i] : '',
 					'created_by' => $admin,
 					'created_on' => new Zend_Db_Expr('now()')
-				);
+				];
 				$db->insert('response_result_generic_test', $resultData);
 			}
 		}

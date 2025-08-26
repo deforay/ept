@@ -326,7 +326,7 @@ class Application_Model_GenericTest
             ->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
-            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result', 'repeat_result', 'reported_result', 'is_result_invalid', 'error_code', 'additional_detail', 'comments'])
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result_1', 'result_2', 'result_3','reported_result', 'is_result_invalid', 'error_code', 'additional_detail', 'comments'])
             ->where("sp.shipment_id = $sId AND sp.participant_id = $pId");
         return $db->fetchAll($sql);
     }
@@ -639,8 +639,8 @@ class Application_Model_GenericTest
 
 
                 //<------------ Total score sheet ------------
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 //------------ Total score sheet ------------>
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
@@ -655,7 +655,7 @@ class Application_Model_GenericTest
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
                         $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
-                        $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
+                        $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
                             $countCorrectResult++;
                         }
@@ -667,24 +667,24 @@ class Application_Model_GenericTest
                     }
                     $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
 
-                    $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($countCorrectResult);
+                    $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($countCorrectResult);
 
                     $totPer = round((($countCorrectResult / 5) * 100), 2);
                     if ($aRow['number_of_samples'] > 0) {
                         $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     }
-                    $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($totPer);
+                    $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
-                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($totPer);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($totPer);
 
-                    $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($totPer * 0.9));
+                    $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($totPer * 0.9));
                 }
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($documentScore);
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['documentation_score']);
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($documentScore);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['documentation_score']);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
                 $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
-                $totalScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($finalResultCell);
+                $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($finalResultCell);
 
 
                 $panelScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
@@ -793,7 +793,7 @@ class Application_Model_GenericTest
 
         foreach ($sQueryRes as $sVal) {
             $cQuery = $db->select()->from(array('refGenTest' => 'reference_result_generic_test'), array('refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'))
-                ->joinLeft(array('resGenTest' => 'response_result_generic_test'), 'resGenTest.sample_id = refGenTest.sample_id', array('reported_result'))
+                ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
                 ->where('refGenTest.shipment_id = ? ', $shipmentId)
                 ->where("refGenTest.control = 0")
                 ->where('resGenTest.shipment_map_id = ? ', $sVal['map_id']);
@@ -802,7 +802,7 @@ class Application_Model_GenericTest
         }
 
         // To getting no of sample's and score from reference result model
-        $query = $db->select()->from(array('refvl' => 'reference_result_generic_test'), array('refvl.sample_score'))
+        $query = $db->select()->from(['refvl' => 'reference_result_generic_test'], ['refvl.sample_score'])
 
             ->where('refvl.control!=1')
             ->where('refvl.shipment_id = ? ', $shipmentId);
@@ -857,15 +857,15 @@ class Application_Model_GenericTest
 
         $vlAssayResultSet = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type']);
         foreach ($vlAssayResultSet as $vlAssayRow) {
-            $vlQuery = $db->select()->from(array('vlCal' => 'reference_generic_test_calculations'), ['*'])
-                ->join(array('refVl' => 'reference_result_generic_test'), 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', array('refVl.sample_label', 'refVl.mandatory'))
-                ->join(array('sp' => 'shipment_participant_map'), 'vlCal.shipment_id=sp.shipment_id', array())
+            $vlQuery = $db->select()->from(['vlCal' => 'reference_generic_test_calculations'], ['*'])
+                ->join(['refVl' => 'reference_result_generic_test'], 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', ['refVl.sample_label', 'refVl.mandatory'])
+                ->join(['sp' => 'shipment_participant_map'], 'vlCal.shipment_id=sp.shipment_id', [])
                 ->join(
-                    array('res' => 'response_result_generic_test'),
+                    ['res' => 'response_result_generic_test'],
                     'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
-                    array(
+                    [
                         'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-                    )
+                    ]
                 )
                 ->where("vlCal.shipment_id=?", $shipmentId)
                 ->where("vlCal.testkit_id=?", $vlAssayRow['TESTKITNAMEID'])

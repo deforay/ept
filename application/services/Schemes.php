@@ -247,17 +247,18 @@ class Application_Service_Schemes
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('ref' => 'reference_result_generic_test'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_generic_test'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
                 'shipment_map_id',
-                'result',
-                'repeat_result',
+                'result_1',
+                'result_2',
+                'result_3',
                 'reported_result',
                 'additional_detail',
                 'comments',
                 'calculated_score'
-            ))
+            ])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         // die($sql);
