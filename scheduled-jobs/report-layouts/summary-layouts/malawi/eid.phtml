@@ -87,7 +87,7 @@ if ($resultArray['shipment'] != "") {
         if (isset($reportFormat) && !empty($reportFormat)) {
         } else {
             if ($layout != 'zimbabwe' && (!isset($reportFormat) && empty($reportFormat))) {
-                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+                $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
                 $pdf->writeHTML($htmlTitle, true, false, true, false, '');
             }
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
@@ -463,7 +463,7 @@ if ($resultArray['shipment'] != "") {
                 $pdf->writeHTML($html, true, false, true, false, '');
             }
 
-            $note = '<h4 style="font-size:12;">Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
+            $note = '<h4 style="font-size:12px;">Information with respect to compliance with standards ISO 13528:2015(E) </h4>';
 
             $note .= '<h5 style="font-size:10;">Preparation of Proficiency Test items:</h5>';
             $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
@@ -492,7 +492,7 @@ if ($resultArray['shipment'] != "") {
     if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             }

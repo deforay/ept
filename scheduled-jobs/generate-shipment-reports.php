@@ -1,4 +1,6 @@
 <?php
+// scheduled-jobs/generate-shipment-reports.php
+
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
 
 use setasign\Fpdi\Tcpdf\Fpdi;
@@ -117,8 +119,8 @@ class IndividualPDF extends Fpdi
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
-                $html .= '<br/><br/><span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
-                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+                $html .= '<br/><br/><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
+                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
             }
@@ -296,18 +298,13 @@ class IndividualPDF extends Fpdi
         } else {
             $finalizeReport = ' | INDIVIDUAL REPORT ';
         }
-        if (isset($this->dateTime) && $this->dateTime != '') {
-            $showTime = $this->dateTime;
-        } else {
-            $showTime = date("Y-m-d H:i:s");
-        }
+
+        $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
         // Position at 15 mm from bottom
-        $this->SetY(-18);
+        $this->SetY(-5);
         // Set font
         $this->SetFont('freesans', '', 7);
         // Page number
-        //$this->Cell(0, 10, "Report generated at :".date("d-M-Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        //$this->Cell(0, 10, "Report generated on ".date("d M Y H:i:s").$finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') {
             $this->writeHTML("<hr>", true, false, true, false, '');
             if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
@@ -437,7 +434,7 @@ class SummaryPDF extends Fpdi
                     $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span><br><br><span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
+                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
                     }
                     $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                     $html = '<hr/>';
@@ -452,7 +449,7 @@ class SummaryPDF extends Fpdi
                     $html = '<hr/>';
                     $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
                 }
-                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+                //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
             } else {
                 $html .= '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
@@ -706,13 +703,14 @@ class FPDIReport extends Fpdi
     public $schemeType = "";
     public $approveTxt = "";
     public $instance = "";
+    public $staticFooterHtml = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $instance = "")
+    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -723,12 +721,12 @@ class FPDIReport extends Fpdi
         $this->scheme = $scheme;
         $this->schemeType = $schemeType;
         $this->approveTxt = $approveTxt;
+        $this->staticFooterHtml = $staticFooterHtml;
 
         $reportService = new Application_Service_Reports();
         $commonService = new Application_Service_Common();
         $reportFormat = $reportService->getReportConfigValue('report-format');
         $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
-        /* To get the instance layout to modify the PDF */
         $this->instance = $commonService->getConfig('instance');
         $this->templateTopMargin = $templateTopMargin;
         if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
@@ -741,11 +739,11 @@ class FPDIReport extends Fpdi
         if (!empty($this->template) && $this->template != "") {
             $this->setSourceFile($this->template);
             $template = $this->ImportPage(1);
-            $this->useImportedPage($template, 7, -10);
+            $this->useImportedPage($template);
         }
         if (isset($this->scheme) && !empty($this->scheme) && $this->PageNo() == 1) {
             if (isset($this->templateTopMargin) && !empty($this->templateTopMargin)) {
-                $this->SetY($this->templateTopMargin - 10);
+                $this->SetY($this->templateTopMargin);
             } else {
                 $this->SetY(32);
             }
@@ -756,7 +754,7 @@ class FPDIReport extends Fpdi
         }
         if ($this->layout != 'malawi') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
-                $this->writeHTML("<br>Summary Results Report", true, false, true, false, 'C');
+                $this->writeHTML("<br>All Participants Results Report", true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
                 $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
             }
@@ -813,37 +811,48 @@ class FPDIReport extends Fpdi
     // Page footer
     public function Footer()
     {
+        // Build complete footer HTML in one go
+        $completeFooterHtml = "";
+
+        // Add static footer content if provided
+        if (!empty($this->staticFooterHtml)) {
+            $completeFooterHtml .= $this->staticFooterHtml;
+        }
+
+        // Add dynamic content to the same HTML block
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
-            $finalizeReport = ' | ' . $this->reportType . ' REPORT | FINALIZED ';
+            $finalizeReport = " | {$this->reportType} REPORT | FINALIZED ";
         } else {
-            $finalizeReport = ' | ' . $this->reportType . ' REPORT ';
+            $finalizeReport = " | {$this->reportType} REPORT ";
         }
-        if (isset($this->dateTime) && $this->dateTime != '') {
-            $showTime = $this->dateTime;
-        } else {
-            $showTime = date("Y-m-d H:i:s");
-        }
-        // Position at 15 mm from bottom
-        $this->SetY(-10);
-        // Set font
-        $this->SetFont('freesans', '', 7, '', true);
-        // Page number
+        $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
+
+        // Append dynamic content to footer HTML
+        $reportDate = $this->generalModel->humanReadableDateFormat($showTime);
+        $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
+
+        // Append page numbers
+        $completeFooterHtml .= '<div style="text-align:right; font-size:7px; margin-top:2px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div>';
+
+        // Handle special cases
         if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {
             if (isset($this->approveTxt) && !empty($this->approveTxt)) {
-                $text = "This document has been reviewed and validated by EQA officers and authorized personnel of " . $this->approveTxt;
+                $text = "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}";
             } else {
                 $text = "This document has been reviewed and validated by EQA officers.";
             }
-            $this->writeHTML($text, true, false, true, false, 'C');
+            $completeFooterHtml = '<div style="text-align:center; font-size:7px;">' . $text . '</div>' . $completeFooterHtml;
         }
-        $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
-        $this->Cell(0, 0, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+
+        // Output complete footer in single call
+        $this->SetY(-25);
+        $this->SetFont('freesans', '', 7, '', true);
+        $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
 }
 class PDF_Rotate extends FPDI
 {
-
     public $angle = 0;
     public function Rotate($angle, $x = -1, $y = -1)
     {
@@ -899,7 +908,7 @@ class Watermark extends PDF_Rotate
             $this->RotatedText(25, 190, $this->waterMarkText, 45);
         }
 
-        if (is_null($this->_tplIdx)) {
+        if (null !== $this->_tplIdx) {
             // THIS IS WHERE YOU GET THE NUMBER OF PAGES
             $this->numPages = $this->setSourceFile($fullPathToFile);
             $this->_tplIdx = $this->importPage(1);

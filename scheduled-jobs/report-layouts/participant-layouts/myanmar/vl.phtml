@@ -128,7 +128,7 @@ if (!empty($resultArray['shipment'])) {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_report_date']);
         }
         /* if($layout != 'zimbabwe'){
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         } */
         if (isset($reportFormat) && !empty($reportFormat)) {

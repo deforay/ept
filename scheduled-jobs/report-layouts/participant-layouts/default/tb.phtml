@@ -120,7 +120,7 @@ if (!empty($resultArray['shipment'])) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
@@ -347,7 +347,7 @@ if (!empty($resultArray['shipment'])) {
         // add a page
         $pdf->AddPage();
 
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ucwords($panelName) . '</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ucwords($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
@@ -489,7 +489,7 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->AddPage();
 
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">' . ($panelName) . '</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
