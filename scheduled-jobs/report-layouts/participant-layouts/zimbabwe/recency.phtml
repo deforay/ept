@@ -490,7 +490,7 @@ if (!empty($resultArray['shipment'])) {
 
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
             $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';

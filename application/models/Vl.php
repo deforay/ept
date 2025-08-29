@@ -53,7 +53,7 @@ class Application_Model_Vl
             $attributes = json_decode($shipment['attributes'], true);
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
-            $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+            $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
@@ -194,14 +194,16 @@ class Application_Model_Vl
                     $shipmentResult[$counter]['display_result'] = 'Excluded';
                     $shipmentResult[$counter]['is_followup'] = 'yes';
                     $shipmentResult[$counter]['is_excluded'] = 'yes';
-                    $failureReason[] = array('warning' => 'Excluded from Evaluation');
+                    $failureReason[] = ['warning' => 'Excluded from Evaluation'];
                     $finalResult = 3;
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason;
                 } else {
 
                     // checking if total score and maximum scores are the same
                     if ($totalScore == 'N.A.') {
-                        $failureReason[]['warning'] = "Could not determine score. Not enough responses found in the chosen VL Assay.";
+                        $failureReason[] = [
+                            'warning' => "Could not determine score. Not enough responses found in the chosen VL Assay."
+                        ];
                         $scoreResult = 'Not Evaluated';
                         $shipment['is_excluded'] = 'yes';
                     } elseif ($totalScore != $maxScore) {
@@ -236,7 +238,7 @@ class Application_Model_Vl
                     $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
-                    $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
+                    $shipmentResult[$counter]['failure_reason'] = $failureReason;
                     //Zend_Debug::dump($shipmentResult[$counter]);
                     // let us update the total score in DB
                     if ($totalScore == 'N/A') {
@@ -255,17 +257,20 @@ class Application_Model_Vl
                         $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         // Zend_Debug::dump($shipmentResult);die;
-                        $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                        $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                     }
                 } else {
-
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => $failureReason), "map_id = " . $shipment['map_id']);
+                    $db->update('shipment_participant_map', array('shipment_score' => $totalScore, 'final_result' => $finalResult, 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
                 }
             } else {
-                $failureReason = array('warning' => "Response was submitted after the last response date.");
+
+                $failureReason[] = ['warning' => "Response was submitted after the last response date."];
                 $shipment['is_excluded'] = 'yes';
 
-                $db->update('shipment_participant_map', ['is_excluded' => 'yes', 'failure_reason' => json_encode($failureReason)], "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', [
+                    'is_excluded' => 'yes',
+                    'failure_reason' => json_encode($failureReason)
+                ], "map_id = " . $shipment['map_id']);
             }
             $counter++;
         }
@@ -283,45 +288,45 @@ class Application_Model_Vl
         $excel = new Spreadsheet();
 
 
-        $styleArray = array(
-            'font' => array(
+        $styleArray = [
+            'font' => [
                 'bold' => true,
-            ),
-            'alignment' => array(
+            ],
+            'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
+            ],
+            'borders' => [
+                'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
+                ],
+            ]
+        ];
 
-        $boldStyleArray = array(
-            'font' => array(
+        $boldStyleArray = [
+            'font' => [
                 'bold' => true,
-            ),
-            'alignment' => array(
+            ],
+            'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            )
-        );
+            ]
+        ];
 
-        $borderStyle = array(
-            'font' => array(
+        $borderStyle = [
+            'font' => [
                 'bold' => true,
-                'size'  => 12,
-            ),
-            'alignment' => array(
+                'size' => 12,
+            ],
+            'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
+            ],
+            'borders' => [
+                'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
+                ],
+            ]
+        ];
         $vlBorderStyle = array(
             'alignment' => array(
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,

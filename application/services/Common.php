@@ -88,59 +88,54 @@ class Application_Service_Common
 
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
     {
-        //Send to email
-        $to = explode(",", $to);
+        // Normalize scalars/arrays to strings for parseRecipients()
+        $toStr  = is_array($to)  ? implode(',', array_values($to))  : (string) $to;
+        $ccStr  = is_array($cc)  ? implode(',', array_values($cc))  : (string) $cc;
+        $bccStr = is_array($bcc) ? implode(',', array_values($bcc)) : (string) $bcc;
+
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-        $fromMail = $conf->email->config->username;
+        $fromMail = $fromMail ?: $conf->email->config->username;
+        $fromName = $fromName ?: "ePT System";
 
-        if ($fromName == null || $fromName == "") {
-            $fromName = "ePT System";
-        }
-        $originalMessage = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
         $systemMail = new Zend_Mail();
 
-        $originalMessage = str_replace("&nbsp;", "", strval($originalMessage));
-        $originalMessage = str_replace("&amp;nbsp;", "", strval($originalMessage));
+        $originalMessage = html_entity_decode((string) $message, ENT_QUOTES, 'UTF-8');
+        $originalMessage = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $originalMessage);
 
-        $systemMail->setSubject($subject);
-        $systemMail->setBodyHtml(html_entity_decode($originalMessage, ENT_QUOTES, 'UTF-8'));
-
+        $systemMail->setSubject((string) $subject);
+        $systemMail->setBodyHtml($originalMessage);
         $systemMail->setFrom($fromMail, $fromName);
         $systemMail->setReplyTo($fromMail, $fromName);
 
-        if (is_array($to)) {
-            foreach ($to as $name => $mail) {
-                $systemMail->addTo($mail, $name);
-            }
-        } else {
-            $systemMail->addTo($to);
+        // NEW: unified parsing/validation + dedupe
+        $recips = self::parseRecipients(trim($toStr), trim($ccStr) ?: null, trim($bccStr) ?: null);
+
+        if (!empty($recips['invalid'])) {
+            error_log("Invalid emails in sendMail(): " . implode(', ', $recips['invalid']));
         }
-        if (isset($cc) && $cc != "" && $cc != null) {
-            if (is_array($cc)) {
-                foreach ($cc as $name => $mail) {
-                    $systemMail->addCc($mail, $name);
-                }
-            } else {
-                $systemMail->addCc($cc);
-            }
+        if (empty($recips['to'])) {
+            error_log("sendMail(): no valid 'To' recipients; aborting send.");
+            return false;
         }
-        if (isset($bcc) && $bcc != "" && $bcc != null) {
-            if (is_array($bcc)) {
-                foreach ($bcc as $name => $mail) {
-                    $systemMail->addBcc($mail);
-                }
-            } else {
-                $systemMail->addBcc($bcc);
-            }
+
+        foreach ($recips['to'] as $addr) {
+            $systemMail->addTo($addr);
         }
+        foreach ($recips['cc'] as $addr) {
+            $systemMail->addCc($addr);
+        }
+        foreach ($recips['bcc'] as $addr) {
+            $systemMail->addBcc($addr);
+        }
+
         // Attach files if any
         if (!empty($attachments)) {
             foreach ($attachments as $filePath) {
                 if (file_exists($filePath)) {
                     $attachment = file_get_contents($filePath);
-                    $fileName = basename($filePath);
+                    $fileName   = basename($filePath);
                     $systemMail->createAttachment(
                         $attachment,
                         Zend_Mime::TYPE_OCTETSTREAM,
@@ -153,6 +148,7 @@ class Application_Service_Common
                 }
             }
         }
+
         try {
             $systemMail->send($smtpTransportObj);
             return true;
@@ -215,7 +211,7 @@ class Application_Service_Common
                 $toArray[] = $authNameSpace->email;
             }
 
-            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName);
+            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, replyTo: $params['email']);
             if ($mailSent) {
                 return 1;
             } else {
@@ -228,8 +224,8 @@ class Application_Service_Common
     public function checkDuplicate($params): int
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $tableName = trim(($params['tableName']), "'");
-        $fieldName = trim(($params['fieldName']), "'");
+        $tableName = trim($params['tableName'], "'");
+        $fieldName = trim($params['fieldName'], "'");
         $value = trim(trim($params['value']), "'");
         $fnct = $params['fnct'];
 
@@ -385,10 +381,11 @@ class Application_Service_Common
             }
         }
     }
-    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null)
+    public function insertTempMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachedFile = null, $replyTo = null)
     {
         $db = new Application_Model_DbTable_TempMail();
-        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachedFile);
+        $replyTo ??= $fromMail;
+        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message,  $fromMail, $fromName, $attachedFile, $replyTo);
     }
 
     public function getAllModeOfReceipt()
@@ -439,80 +436,79 @@ class Application_Service_Common
     {
         $tempMailDb = new Application_Model_DbTable_TempMail();
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-
-        // Setup SMTP transport using LOGIN authentication
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-        $limit = '10';
-        $sQuery = $tempMailDb->getAdapter()->select()->from(array('tm' => 'temp_mail'))
-            ->where("status='pending'")->limit($limit);
+        $limit  = '10';
+        $sQuery = $tempMailDb->getAdapter()->select()
+            ->from(array('tm' => 'temp_mail'))
+            ->where("status='pending'")
+            ->limit($limit);
+
         $mailResult = $tempMailDb->getAdapter()->fetchAll($sQuery);
-        if (count($mailResult) > 0) {
-            foreach ($mailResult as $result) {
-                $id = $result['temp_id'];
-                $tempMailDb->updateTempMailStatus($id);
+        if (count($mailResult) <= 0) {
+            return; // nothing to do
+        }
 
-                $fromEmail = $result['from_mail'];
-                $fromFullName = $result['from_full_name'];
-                $subject = $result['subject'];
+        foreach ($mailResult as $result) {
+            $id = $result['temp_id'];
+            // mark picked
+            $tempMailDb->updateTempMailStatus($id);
 
-                $originalMessage = html_entity_decode($result['message'], ENT_QUOTES, 'UTF-8');
-                $systemMail = new Zend_Mail();
+            $fromEmail   = $result['from_mail'];
+            $fromFullName = $result['from_full_name'];
+            $subject     = $result['subject'];
+            $bodyHtml    = html_entity_decode((string) $result['message'], ENT_QUOTES, 'UTF-8');
+            $bodyHtml    = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $bodyHtml);
 
-                $originalMessage = str_replace("&nbsp;", "", strval($originalMessage));
-                $originalMessage = str_replace("&amp;nbsp;", "", strval($originalMessage));
+            $mail = new Zend_Mail();
+            $mail->setSubject((string) $subject);
+            $mail->setBodyHtml($bodyHtml);
+            $mail->setFrom($fromEmail, $fromFullName);
+            $mail->setReplyTo($fromEmail, $fromFullName);
 
-                $systemMail->setSubject($subject);
-                $systemMail->setBodyHtml(html_entity_decode($originalMessage, ENT_QUOTES, 'UTF-8'));
+            // NEW: use parseRecipients for To/CC/BCC
+            $recips = self::parseRecipients(
+                trim((string) ($result['to_email'] ?? '')),
+                isset($result['cc'])  ? trim((string) $result['cc'])  : null,
+                isset($result['bcc']) ? trim((string) $result['bcc']) : null
+            );
 
-                $systemMail->setFrom($fromEmail, $fromFullName);
-                $systemMail->setReplyTo($fromEmail, $fromFullName);
+            if (!empty($recips['invalid'])) {
+                error_log("Invalid emails in sendTempMail(temp_id={$id}): " . implode(', ', $recips['invalid']));
+            }
+            if (empty($recips['to'])) {
+                error_log("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
+                // revert status to not-sent and continue
+                $tempMailDb->getAdapter()->update('temp_mail', ['status' => 'not-sent'], $tempMailDb->getAdapter()->quoteInto('temp_id = ?', $id));
+                continue;
+            }
 
-                $to = explode(",", $result['to_email']);
+            foreach ($recips['to'] as $addr) {
+                $mail->addTo($addr);
+            }
+            foreach ($recips['cc'] as $addr) {
+                $mail->addCc($addr);
+            }
+            foreach ($recips['bcc'] as $addr) {
+                $mail->addBcc($addr);
+            }
 
-                if (isset($result['cc']) && trim($result['cc']) != "") {
-                    if (is_array($result['cc'])) {
-                        foreach ($result['cc'] as $name => $mail) {
-                            $systemMail->addCc($mail, $name);
-                        }
-                    } else {
-                        $systemMail->addCc($result['cc']);
-                    }
-                }
-
-                if (isset($result['bcc']) && trim($result['bcc']) != "") {
-                    if (is_array($result['bcc'])) {
-                        foreach ($result['bcc'] as $name => $mail) {
-                            $systemMail->addBcc($mail);
-                        }
-                    } else {
-                        $systemMail->addBcc($result['bcc']);
-                    }
-                }
-
-                if (is_array($to)) {
-                    foreach ($to as $name => $mail) {
-                        $systemMail->addTo($mail, $name);
-                    }
-                } else {
-                    $systemMail->addTo($to);
-                }
-
-                try {
-                    $systemMail->send($smtpTransportObj);
-                    $tempMailDb->deleteTempMail($id);
-
-                    return true;
-                } catch (Exception $exc) {
-                    error_log("===== MAIL SENDING FAILED - START =====");
-                    error_log($exc->getMessage());
-                    error_log($exc->getTraceAsString());
-                    error_log("===== MAIL SENDING FAILED - END =====");
-                    return false;
-                }
+            try {
+                $mail->send($smtpTransportObj);
+                $tempMailDb->deleteTempMail($id);
+                // keep looping: do not return early so we can send up to $limit emails
+            } catch (Exception $exc) {
+                error_log("===== MAIL SENDING FAILED (temp_id={$id}) - START =====");
+                error_log($exc->getMessage());
+                error_log($exc->getTraceAsString());
+                error_log("===== MAIL SENDING FAILED - END =====");
+                // mark not-sent and continue to next
+                $tempMailDb->getAdapter()->update('temp_mail', ['status' => 'not-sent'], $tempMailDb->getAdapter()->quoteInto('temp_id = ?', $id));
+                continue;
             }
         }
     }
+
 
     public function fetchNotify()
     {
@@ -973,35 +969,82 @@ class Application_Service_Common
         }
     }
 
-    public static function validateEmails(string $emails, bool $checkDns = false): array
+    public static function parseRecipients(string $to = '', ?string $cc = null, ?string $bcc = null): array
     {
-        $emailArray = preg_split('/[;,]/', $emails);
-        $validEmails = [];
-        $invalidEmails = [];
+        $buckets = ['to' => $to, 'cc' => $cc, 'bcc' => $bcc];
+        $out     = ['to' => [], 'cc' => [], 'bcc' => [], 'invalid' => []];
+        $seen    = [];
 
-        foreach ($emailArray as $email) {
-            $email = trim($email);
+        $split = static function (?string $list): array {
+            if ($list === null || trim($list) === '') return [];
+            return preg_split('/[;,]+/', $list) ?: [];
+        };
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $invalidEmails[] = $email;
-                continue;
-            }
-
-            if ($checkDns) {
-                $domain = substr(strrchr($email, "@"), 1);
-                if (!checkdnsrr($domain, 'MX') && !checkdnsrr($domain, 'A')) {
-                    $invalidEmails[] = $email;
-                    continue;
+        foreach ($buckets as $bucket => $rawList) {
+            foreach ($split($rawList) as $raw) {
+                $normalized = self::validateEmail($raw); // returns normalized or null
+                if ($normalized !== null) {
+                    $key = strtolower($normalized);
+                    if (!isset($seen[$key])) {
+                        $seen[$key] = true;              // cross-bucket dedupe
+                        $out[$bucket][] = $normalized;   // already normalized
+                    }
+                } else {
+                    $out['invalid'][] = $raw;           // keep original for logging
                 }
             }
-
-            $validEmails[] = $email;
         }
 
-        return [
-            'valid' => $validEmails,
-            'invalid' => $invalidEmails,
-        ];
+        return $out;
+    }
+
+
+    public static function validateEmail(string $email): ?string
+    {
+        static $cache = []; // memoize per-process
+
+        $original = trim($email);
+        if ($original === '') {
+            return null;
+        }
+
+        // "Name <user@host>" → "user@host"
+        if (preg_match('/<([^>]+)>/', $original, $m)) {
+            $original = trim($m[1]);
+        }
+
+        // Strip wrapping quotes
+        $email = trim($original, " \t\n\r\0\x0B\"'");
+
+        // Normalize domain (IDN → ASCII if available, lowercase)
+        $at = strrpos($email, '@');
+        if ($at === false) {
+            return null;
+        }
+        $local  = substr($email, 0, $at);
+        $domain = substr($email, $at + 1);
+
+        if (function_exists('idn_to_ascii')) {
+            // PHP 8.1+ deprecates the variant arg; handle both
+            if (defined('INTL_IDNA_VARIANT_UTS46')) {
+                $ascii = idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+            } else {
+                $ascii = idn_to_ascii($domain, IDNA_DEFAULT);
+            }
+            if ($ascii !== false) {
+                $domain = $ascii;
+            }
+        }
+
+        $domain = strtolower($domain);
+        $normalized = $local . '@' . $domain;
+        $key = strtolower($normalized);
+
+        if (!isset($cache[$key])) {
+            $cache[$key] = filter_var($normalized, FILTER_VALIDATE_EMAIL) !== false;
+        }
+
+        return $cache[$key] ? $normalized : null;
     }
 
 
@@ -1550,10 +1593,13 @@ class Application_Service_Common
 
     public function unserializeForm($str)
     {
-        $strArray = explode("&", $str['formPost']);
+        $returndata = [];
+        $strArray = explode("&", $str['formPost'] ?? '');
         foreach ($strArray as $item) {
-            $array = explode("=", $item);
-            $returndata[str_replace('[]', '', urldecode($array[0]))][] = $array[1];
+            $array = explode("=", $item, 2);
+            $key = str_replace('[]', '', urldecode($array[0] ?? ''));
+            $val = urldecode($array[1] ?? '');
+            $returndata[$key][] = $val;
         }
         return $returndata;
     }

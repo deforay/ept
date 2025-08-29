@@ -1,16 +1,19 @@
 <?php
 
+// scheduled-jobs/report-layouts/participant-layouts/default/eid.phtml
+
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 $general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $pdfNew = new Zend_Pdf();
-$extractor = new Zend_Pdf_Resource_Extractor();
+//$extractor = new Zend_Pdf_Resource_Extractor();
 $shipmentCode = '';
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     foreach ($resultArray['shipment'] as $count => $result) {
+
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
         if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
@@ -27,9 +30,47 @@ if (!empty($resultArray['shipment'])) {
 
         // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
+
+        $formVersion = $shipmentAttributes['formVersion'] ?? '';
+        $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
+        $issuingAuthority = $result['issuing_authority'] ?? '';
+
+        // Build footer table row conditionally
+        $footerCells = [];
+
+        // Add form version if not empty
+        if (!empty($formVersion)) {
+            $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Add issuing authority if not empty
+        if (!empty($issuingAuthority)) {
+            $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Add effective date if not empty
+        if (!empty($effectiveDate)) {
+            $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Only create footer if we have at least one element
+        $staticFooterHtml = '<hr style="border: 1px solid #000;">';
+        if (!empty($footerCells)) {
+            $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
+                    <tr align="center" style="text-align:center;">
+                        ' . implode('', $footerCells) . '
+                    </tr>
+                </table>';
+        }
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml);
         } else {
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
@@ -89,10 +130,10 @@ if (!empty($resultArray['shipment'])) {
 
         // ---------------------------------------------------------
 
-        if (trim($result['shipment_date']) != "") {
+        if (trim($result['shipment_date'] ?? '') != "") {
             $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
         }
-        if (trim($result['lastdate_response']) != "") {
+        if (trim($result['lastdate_response'] ?? '') != "") {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
@@ -113,7 +154,7 @@ if (!empty($resultArray['shipment'])) {
 
         /* for Shipment attributes functionality end */
 
-        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'] ?? '') != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
         }
@@ -123,15 +164,15 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $shipmentReceiptDate = "";
-        if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
+        if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date'] ?? '') != "") {
             $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
-        if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
+        if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date'] ?? '') != "") {
             $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
-        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'] ?? '') != "") {
             $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
@@ -155,7 +196,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         if ($layout != 'zimbabwe') {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+            $htmlTitle = '<br><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
@@ -171,7 +212,7 @@ if (!empty($resultArray['shipment'])) {
 
         $machine = $result['extractionAssayVal'];
         if (isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == 6) {
-            $machine = 'Other' . " - " . $attributes['other_assay'];
+            $machine = 'Other' . " - " . ($attributes['other_assay'] ?? '');
         }
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
@@ -187,7 +228,7 @@ if (!empty($resultArray['shipment'])) {
         if (!empty($result['responseResult'])) {
             $n = count($result['responseResult']);
             $labRes = "";
-            $labRes = '<span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/><br/></span>';
+            //$labRes = '<br><span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/><br/></span>';
 
             $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
             $labRes .= '<tr style="background-color:#dbe4ee;">';
@@ -224,20 +265,20 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }
 
-        //if(trim($result['distribution_date'])!=""){
+        //if(trim($result['distribution_date'] ?? '')!=""){
         //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
         //}
-        if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
+        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
-            if (trim($result['evaluationComments']) != "") {
+            if (trim($result['evaluationComments'] ?? '') != "") {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
                 $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
                 $comment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment']) != "") {
+            if (trim($result['optional_eval_comment'] ?? '') != "") {
                 $comment .= '<tr>';
                 $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
                 $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
@@ -253,7 +294,7 @@ if (!empty($resultArray['shipment'])) {
             Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under
             the Main Navigation.</span>'; */
 
-        $html .= '<h5>Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
+        $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
         $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
             homogeneity prior to shipment and met program requirements.</span>';
 
@@ -268,7 +309,7 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        if (!empty(trim($result['shipment_comment']))) {
+        if (!empty(trim($result['shipment_comment'] ?? ''))) {
             $comment = '<table border="1" style="width:100%;" cellpadding="3">';
 
             $comment .= '<tr>';
@@ -282,13 +323,14 @@ if (!empty($resultArray['shipment'])) {
 
         $html = '';
         // if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-        $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $html .= '<br/><hr>';
         if ($layout == 'zimbabwe') {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+        if (!empty($approveTxt)) {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . date('d M Y') . '</small></span>';
+        }
         // }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $eodReportText = "End of report";
@@ -304,7 +346,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         //Close and output PDF document
-        if (isset($result['last_name']) && trim($result['last_name']) != "") {
+        if (isset($result['last_name']) && trim($result['last_name'] ?? '') != "") {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
@@ -324,13 +366,13 @@ if (!empty($resultArray['shipment'])) {
 
         //$pdf->Output($fileName, 'I');
 
-        $loadpdf = Zend_Pdf::load($filePath);
+        // $loadpdf = Zend_Pdf::load($filePath);
 
-        foreach ($loadpdf->pages as $page) {
-            $pdfExtract = $extractor->clonePage($page);
-            //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
-            $pdfNew->pages[] = $pdfExtract;
-        }
+        // foreach ($loadpdf->pages as $page) {
+        //     $pdfExtract = $extractor->clonePage($page);
+        //     //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
+        //     $pdfNew->pages[] = $pdfExtract;
+        // }
         $shipmentCode = $result['shipment_code'];
         $j++;
     }

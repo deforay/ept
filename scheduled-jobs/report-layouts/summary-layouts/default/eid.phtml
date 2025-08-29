@@ -1,5 +1,8 @@
 <?php
-require_once(CRON_PATH . '/Common.php');
+
+// scheduled-jobs/report-layouts/summary-layouts/default/eid.phtml
+
+require_once CRON_PATH . '/Common.php';
 $general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -12,9 +15,49 @@ if ($resultArray['shipment'] != "") {
 
     // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
+
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+
+    $formVersion = $shipmentAttributes['formVersion'] ?? '';
+    $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
+    $issuingAuthority = $resultArray['shipment']['issuing_authority'] ?? '';
+
+    // Build footer table row conditionally
+    $footerCells = [];
+
+    // Add form version if not empty
+    if (!empty($formVersion)) {
+        $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
+    } else {
+        $footerCells[] = "<td></td>";
+    }
+
+    // Add issuing authority if not empty
+    if (!empty($issuingAuthority)) {
+        $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
+    } else {
+        $footerCells[] = "<td></td>";
+    }
+
+    // Add effective date if not empty
+    if (!empty($effectiveDate)) {
+        $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
+    } else {
+        $footerCells[] = "<td></td>";
+    }
+
+    // Only create footer if we have at least one element
+    $staticFooterHtml = '<hr style="border: 1px solid #000;">';
+    if (!empty($footerCells)) {
+        $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            ' . implode('', $footerCells) . '
+        </tr>
+    </table>';
+    }
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_name']);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
     } else {
         $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout);
@@ -24,8 +67,8 @@ if ($resultArray['shipment'] != "") {
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
     // set header and footer fonts
-    $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+    $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -33,7 +76,7 @@ if ($resultArray['shipment'] != "") {
     // set margins
     $mt = ($layout == 'zimbabwe') ? 55 : 35;
     if (isset($templateTopMargin) && !empty($templateTopMargin)) {
-        $mt = $templateTopMargin;
+        $mt = $templateTopMargin + 10;
     }
     $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -48,16 +91,15 @@ if ($resultArray['shipment'] != "") {
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
-    // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 11);
 
     if ($layout != 'zimbabwe' && (!isset($reportFormat) && empty($reportFormat))) {
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     }
-    $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
-    $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+    // $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11px;">Individual Participant Results Report</span><br>';
+    // $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
     $referenceRes = '<table style="text-align:center;width:100%" align="left">';
     $referenceRes .= '<tr>';
@@ -86,6 +128,10 @@ if ($resultArray['shipment'] != "") {
         $scoringPer = round(($overAllMaxScore / $partCount) * 100, 2);
         // set font
         $pdf->SetFont('helvetica', '', 10);
+
+        $htmlTitle = '<br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
         $overAllCorrectRes = '<div style="border:1px solid #333;">';
         $overAllCorrectRes .= '<table border="1" cellpadding="3">';
         $overAllCorrectRes .= '<tr><td colspan="5"><strong>Summary of All Participants Scores</strong></td></tr>';
@@ -148,8 +194,6 @@ if ($resultArray['shipment'] != "") {
         }
 
         $k = count($resultArray['shipment']['avgAssayResult']);
-
-        // Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
 
         $avgAssay = "";
         $assay = "";
@@ -232,59 +276,59 @@ if ($resultArray['shipment'] != "") {
                 if ($pdf->getY() >= 250) {
                     $pdf->AddPage();
                 }
-                $assay = implode(",", $assayResult['eidAssayWithCount']);
-                $assayCount = $assayResult['participantCount'];
+                $assay = isset($assayResult['eidAssayWithCount']) && count($assayResult['eidAssayWithCount']) > 0 ? implode(",", $assayResult['eidAssayWithCount']) : "";
+                $assayCount = $assayResult['participantCount'] > 0 ? $assayResult['participantCount'] : 0;
             }
         }
 
         if ($assay != "") {
             $html = "";
             $html .= '<h4>Number of Participants for each platform using other platforms and In-House Assays (Total ' . $assayCount . '):</h4>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">' . $assay . '</span>';
+            $html .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">' . $assay . '</span>';
             $pdf->writeHTML($html, true, false, true, false, '');
         }
 
 
-        $note = '<h5 style="font-size:10;">Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
+        $note = '<h5 style="font-size:11px;">Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
         $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
             homogeneity prior to shipment and met program requirements.</span>';
 
-        $note .= '<h5 style="font-size:10;">Procedures used to establish the assigned value:</h5>';
+        $note .= '<h5 style="font-size:11px;">Procedures used to establish the assigned value:</h5>';
         $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the reference results from homogeneity and stability testing..</span>';
 
-        $note .= '<h5 style="font-size:10;">Subcontracting:</h5>';
+        $note .= '<h5 style="font-size:11px;">Subcontracting:</h5>';
         $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">Only transport of PT items is subcontracted. The identify of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing and relative co-operation partners.  To ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
-        /* $note .= '<h5 style="font-size:10;">Confidentiality:</h5>';
+        /* $note .= '<h5 style="font-size:11px;">Confidentiality:</h5>';
             $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant
             has been assigned a unique identification number for database management purposes.</span>'; */
 
         if (isset($resultArray['shipment']['shipment_comment']) && $resultArray['shipment']['shipment_comment'] != "") {
             $note .= '<br><br><table border="1" cellpadding="3">
                             <tr>
-                                <td style="text-align:left;font-size:10;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
+                                <td style="text-align:left;font-size:11px;font-weight:bold;">' . $resultArray['shipment']['shipment_comment'] . '</td>
                             </tr>
                         </table>';
         }
         $pdf->writeHTML($note, true, false, true, false, '');
     }
-    if (isset($resultArray['shipment']['scheme_type']) && $resultArray['shipment']['scheme_type'] == 'zimbabwe') {
-        $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
-            if ($layout == 'zimbabwe') {
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+
+    $html = '<br/>';
+    if ((isset($resultArray['shipment']['pt_co_ordinator_name']) && $resultArray['shipment']['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+        $approveTxt = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        if ($layout == 'zimbabwe') {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        }
+        if (!empty($approveTxt)) {
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . date('d M Y') . '</small></span>';
             }
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
-        }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $eodReportText = "End of report";
-        if ($evalRow['report_type'] == 'finalized') {
-            $eodReportText = "End of final report";
-        }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-        $pdf->writeHTML($html, true, false, true, false, '');
     }
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+    $eodReportText = "End of report";
+    if ($evalRow['report_type'] == 'finalized') {
+        $eodReportText = "End of final report";
+    }
+    $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+    $pdf->writeHTML($html, true, false, true, false, '');
 }
 
 //Close and output PDF document

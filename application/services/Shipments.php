@@ -4075,7 +4075,7 @@ class Application_Service_Shipments
                 if (is_file($from)) {
                     if (copy($from, $to)) {
                         if (unlink($from)) {
-                            return true;
+                            return 1;
                         } else {
                             $alertMsg->message = 'Old file not removed';
                         }
@@ -4086,7 +4086,7 @@ class Application_Service_Shipments
                     $alertMsg->message = 'Is not file';
                 }
             }
-            return false;
+            return 0;
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

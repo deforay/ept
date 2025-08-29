@@ -393,7 +393,7 @@ SET primary_email = LOWER(primary_email)
 WHERE primary_email IS NOT NULL;
 
 -- Thana 14-Aug-2025
-CREATE TABLE `user_login_history` (
+CREATE TABLE IF NOT EXISTS `user_login_history` (
   `history_id` int NOT NULL AUTO_INCREMENT,
   `login_context` enum('participant','admin','','') COLLATE utf8mb4_general_ci DEFAULT 'participant',
   `user_id` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -406,3 +406,20 @@ CREATE TABLE `user_login_history` (
   PRIMARY KEY (`history_id`),
   KEY `login_status_attempted_datetime_idx` (`login_status`,`login_attempted_datetime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- Amit 18-Aug-2025
+RENAME TABLE `evaluation_queue` TO `queue_report_generation`;
+
+
+-- Amit 24-Aug-2025
+ALTER TABLE `temp_mail` ADD `reply_to` VARCHAR(128) NULL DEFAULT NULL AFTER `from_mail`;
+ALTER TABLE temp_mail
+  ADD COLUMN updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  ADD COLUMN created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+
+-- Amit 25-Aug-2025
+ALTER TABLE `response_result_generic_test` CHANGE `result` `result_1` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_generic_test` CHANGE `repeat_result` `result_2` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `response_result_generic_test` ADD `result_3` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `result_2`;

@@ -21,12 +21,16 @@ $shipment = $this->shipment[0];
         $replaceHide = false;
         if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '-summary.pdf')) { ?>
             <div class="fileexist">
+
+                <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept Current File</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" title="Upload New File" onclick="removeReport();">Upload New File</a>
+                <br>
                 <div style="width: auto;">
-                    <embed width="70%" height="auto" class="oldReport" name="plugin" src="/temporary/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>" type="application/pdf">
+                    <embed width="70%" height="600px" class="oldReport" name="plugin" src="/temporary/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>" type="application/pdf">
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File" onclick="layoutModal('/d/<?php echo base64_encode($summaryFilePath); ?>', 800, 700);" style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
                 </div>
-                <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept</a>
-                <a href="javascript:void(0);" class="btn btn-sm btn-warning" title="Upload New File" onclick="removeReport();">Upload New</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept Current File</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning" title="Upload New File" onclick="removeReport();">Upload New File</a>
                 <br>
             </div>
         <?php $replaceHide = true;
@@ -70,7 +74,7 @@ $shipment = $this->shipment[0];
                         alert('Incorrect folder permissions. Please reach out to technical support.')
                     } else if (data && data == 'format-wrong') {
                         alert('Incorrect file format. Please upload PDF')
-                    } else if (data) {
+                    } else if (data == 1) {
                         alert("Successfully accept the summary report for shipment (<?php echo $this->shipment[0]['shipment_code']; ?>)");
                         window.location.reload();
                     } else {

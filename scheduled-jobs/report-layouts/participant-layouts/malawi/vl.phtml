@@ -117,7 +117,7 @@ if (!empty($resultArray['shipment'])) {
         }
         if (isset($reportFormat) && !empty($reportFormat)) {
         } else {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
+            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Individual Participant Results Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');

@@ -136,7 +136,7 @@ if (!empty($resultArray['shipment'])) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
-        // Zend_Debug::dump($attributes['recency_assay']);die;
+
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
@@ -508,7 +508,7 @@ if (!empty($resultArray['shipment'])) {
 
         $html = '<br/><hr>';
         if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
+            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
             if ($layout == 'zimbabwe') {
                 $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             }
