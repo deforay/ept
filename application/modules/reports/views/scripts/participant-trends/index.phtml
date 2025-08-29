@@ -93,6 +93,16 @@
         <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawTable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button> <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#" class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i> <?= $this->translate->_("PDF"); ?></a> </td>
     </tr>
 </table>
+
+<div class="labPerformanceReport">
+
+
+            </div>
+
+
+
+
+
 <figure class="highcharts-figure">
     <div id="container"></div>
 </figure>
@@ -325,6 +335,26 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         getChart();
 
         performanceExportPdf();
+
+        getLabPerformanceReport();
+
+    }
+
+    function getLabPerformanceReport()
+    {
+        $.blockUI;
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'participant-lab-performance-report'), 'default', true); ?>", {
+                scheme: $("#scheme").val(),
+                shipmentId: $("#shipmentId").val(),
+                startDate: startDate,
+                endDate: endDate,
+                format: "html"
+            },
+            function(data) {
+                //alert(data);
+                $('.labPerformanceReport').html(data);
+                $.unblockUI;
+            });
 
     }
 

@@ -32,8 +32,6 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     }
 
 
-
-
     public function updateConfigDetails($params)
     {
         // Zend_Debug::dump($params);die;

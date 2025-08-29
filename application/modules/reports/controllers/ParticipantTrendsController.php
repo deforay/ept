@@ -38,6 +38,9 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantTrendsReport($params);
+            $labPerformanceReport = $reportService->getLabPerformanceReportWithScore($params);
+           // echo '<pre>';print_r($labPerformanceReport); die;
+            $this->view->labPerformanceReport = $labPerformanceReport;
             $this->view->response = $response;
         }
         $scheme = new Application_Service_Schemes();
@@ -131,6 +134,18 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $this->view->result = $reportService->getAberrantChartInfo($params);
+        }
+    }
+
+    public function participantLabPerformanceReportAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $reportService = new Application_Service_Reports();
+        if ($request->isPost()) {
+            $params = $this->getAllParams();
+            $this->_helper->layout()->disableLayout();
+            $this->view->result = $reportService->getLabPerformanceReportWithScore($params);
         }
     }
 }
