@@ -78,7 +78,28 @@ endif;
     <?php endforeach; ?>
 </tr>
   <?php }  else {
-   echo "<tr><td colspan='100%' style='text-align:center;'>No data available</td></tr>";
+   echo " 
+        <tr>
+            <th style='width:20%'>RATING PER<br>SHIPMENT</th>
+            <th>No.</th>
+            <th>%</th>
+        </tr>
+        <tr>
+            <td>EXCELLENT</td>
+            <td style='text-align:center;'>0</td>
+            <td style='text-align:center;'>0</td>
+        </tr>
+        <tr>
+            <td>SATISFACTORY</td>
+            <td style='text-align:center;'>0</td>
+            <td style='text-align:center;'>0</td>
+        </tr>
+        <tr>
+            <td>UNSATISFACTORY</td>
+            <td style='text-align:center;'>0</td>
+            <td style='text-align:center;'>0</td>
+        </tr>
+        ";
 
-  }?>
+  } ?>
 </table>

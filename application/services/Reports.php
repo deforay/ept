@@ -5,6 +5,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
+
 class Application_Service_Reports
 {
     protected $db;
@@ -5112,99 +5113,120 @@ class Application_Service_Reports
     }
 
     public function getLabPerformanceReportWithScore($parameters)
-    {
-        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $globalConfig = new Application_Model_DbTable_GlobalConfig();
-        $passing_score = $globalConfig->getGlobalConfig('pass_percentage');
+{
+    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+    $globalConfig = new Application_Model_DbTable_GlobalConfig();
+    $passing_score = $globalConfig->getGlobalConfig('pass_percentage');
 
+    $sQuery = $dbAdapter->select()
+        ->from(
+            ["p" => "participant"],
+            [
+                "p.first_name",
+                "p.participant_id",
+                "s.shipment_code",
+                'participantName' => new Zend_Db_Expr("CONCAT(p.first_name, '(' ,p.unique_identifier, ')')"),
+                'final_result' => 'spm.final_result',
+                'score' => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")
+            ]
+        )
+        ->joinLeft(["spm" => "shipment_participant_map"], "p.participant_id = spm.participant_id", [])
+        ->joinLeft(["s" => "shipment"], "spm.shipment_id = s.shipment_id", ["s.shipment_code", "s.shipment_id"])
+        ->where('spm.response_status like "responded"')
+        ->where('spm.is_pt_test_not_performed not like "yes"')
+        ->where('spm.is_excluded not like "yes"')
+        ->group("s.shipment_id")
+        ->group("p.participant_id");
+//echo $sQuery;die;
+    if ($passing_score == 100) {
+        $sQuery = $sQuery->having("score = 100");
+    } elseif ($passing_score < 100) {
+        $sQuery = $sQuery->having("score >= ?", $passing_score);
+    }
 
-      //  $availableShipments = $this->getAvailableShipments($parameters['scheme'],$parameters['startDate'],$parameters['endDate']);
-        //echo "dd<pre>";print_r($availableShipments);die;
-        $sQuery = $dbAdapter->select()
-            ->from(
-                ["p" => "participant"],
-                [
-                    "p.first_name",
-                    "p.participant_id",
-                    'participantName' => new Zend_Db_Expr("CONCAT(p.first_name, '(' ,p.unique_identifier, ')')"),
-                    'final_result' => 'spm.final_result',
-                    'score' => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")
-                ]
-            )
-            ->join(["spm" => "shipment_participant_map"], "p.participant_id = spm.participant_id", [])
-            ->join(["s" => "shipment"], "spm.shipment_id = s.shipment_id", ["s.shipment_code", "s.shipment_id"])
-            ->where('spm.response_status like "responded"')
-            ->where('spm.is_pt_test_not_performed not like "yes"')
-            ->where('spm.is_excluded not like "yes"')
-            ->group("s.shipment_id")
-            ->group("p.participant_id");
+    if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+        $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+    }
 
-        if ($passing_score == 100) {
-            $sQuery = $sQuery->having("score = 100");
-        } elseif ($passing_score < 100) {
-            $sQuery = $sQuery->having("score >= ?", $passing_score);
-        }
+    if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+        $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+    }
 
-        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
-        }
+    $results = $dbAdapter->fetchAll($sQuery);
 
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
-        }
-        echo $sQuery; die;
-
-        $results = $dbAdapter->fetchAll($sQuery);
-
-        // Group results by shipment_code and performance
-        $shipmentResults = [];
-        foreach ($results as $row) {
-            $shipmentCode = $row['shipment_code'];
-            if (!isset($shipmentResults[$shipmentCode])) {
-                if($passing_score == 100){
-                    $shipmentResults[$shipmentCode] = [
-                        'Excellent' => 0,
-                        'Unsatisfactory' => 0,
-                        'Total' => 0
-                    ];
-                }
-                elseif($passing_score < 100){
-                    $shipmentResults[$shipmentCode] = [
-                        'Excellent' => 0,
-                        'Satisfactory' => 0,
-                        'Unsatisfactory' => 0,
-                        'Total' => 0
-                    ];
-                }
-              
+    // Group results by shipment_code and performance
+    $shipmentResults = [];
+    foreach ($results as $row) {
+        $shipmentCode = $row['shipment_code'];
+        if (!isset($shipmentResults[$shipmentCode])) {
+            if($passing_score == 100){
+                $shipmentResults[$shipmentCode] = [
+                    'Excellent' => 0,
+                    'Unsatisfactory' => 0,
+                    'Total' => 0
+                ];
             }
-            if ($row['final_result'] == 1 && $row['score'] == 100) {
-                $shipmentResults[$shipmentCode]['Excellent']++;
-            } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passing_score) {
-                $shipmentResults[$shipmentCode]['Satisfactory']++;
-            } elseif ($row['final_result'] == 2) {
-                $shipmentResults[$shipmentCode]['Unsatisfactory']++;
+            elseif($passing_score < 100){
+                $shipmentResults[$shipmentCode] = [
+                    'Excellent' => 0,
+                    'Satisfactory' => 0,
+                    'Unsatisfactory' => 0,
+                    'Total' => 0
+                ];
             }
-            $shipmentResults[$shipmentCode]['Total']++;
         }
+        if ($row['final_result'] == 1 && $row['score'] == 100) {
+            $shipmentResults[$shipmentCode]['Excellent']++;
+        } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passing_score) {
+            $shipmentResults[$shipmentCode]['Satisfactory']++;
+        } elseif ($row['final_result'] == 2) {
+            $shipmentResults[$shipmentCode]['Unsatisfactory']++;
+        }
+        $shipmentResults[$shipmentCode]['Total']++;
+    }
 
+    // Ensure all expected shipment codes are present, even if no response
+    $allShipments = $this->getAvailableShipments($parameters['scheme'], $parameters['startDate'], $parameters['endDate']);
+    foreach ($allShipments as $shipment) {
+        $code = $shipment['shipment_code'];
+        if (!isset($shipmentResults[$code])) {
+            if($passing_score == 100){
+                $shipmentResults[$code] = [
+                    'Excellent' => 0,
+                    'Unsatisfactory' => 0,
+                    'Total' => 0,
+                    'Excellent_Percentage' => 0,
+                    'Unsatisfactory_Percentage' => 0
+                ];
+            }
+            elseif($passing_score < 100){
+                $shipmentResults[$code] = [
+                    'Excellent' => 0,
+                    'Satisfactory' => 0,
+                    'Unsatisfactory' => 0,
+                    'Total' => 0,
+                    'Excellent_Percentage' => 0,
+                    'Satisfactory_Percentage' => 0,
+                    'Unsatisfactory_Percentage' => 0
+                ];
+            }
+        }
+    }
+
+    // Calculate percentages
+    foreach ($shipmentResults as $shipmentCode => &$data) {
         if($passing_score == 100){
-            // Calculate percentage for each category
-            foreach ($shipmentResults as $shipmentCode => &$data) {
-                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-            }
+            $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
+            $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
         }
         elseif($passing_score < 100){
-            // Calculate percentage for each category
-            foreach ($shipmentResults as $shipmentCode => &$data) {
-                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-                $data['Satisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Satisfactory'] / $data['Total']) * 100, 2) : 0;
-                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-            }
+            $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
+            $data['Satisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Satisfactory'] / $data['Total']) * 100, 2) : 0;
+            $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
         }
-   
-        return $shipmentResults;
     }
+
+    return $shipmentResults;
+}
 }
