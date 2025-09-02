@@ -485,16 +485,18 @@ if (!empty($resultArray['shipment'])) {
         }
         $html = '<p style="font-size:12px;">' . $wishes . '</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . ($result['scheme_name']) . ' Proficiency Testing Program.</p>';
-        $html .= '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
+        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
+        $html = '<p style="font-size:12px;text-align:center;"> - ' . $eodReportText . ' - </p>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         $html = '<br/><hr>';
-        if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+
+        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        if (!empty($approveTxt)) {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . ($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span><br>';
         }
+
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {

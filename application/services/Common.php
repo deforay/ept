@@ -211,7 +211,7 @@ class Application_Service_Common
                 $toArray[] = $authNameSpace->email;
             }
 
-            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, replyTo: $params['email']);
+            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, $params['email']);
             if ($mailSent) {
                 return 1;
             } else {
