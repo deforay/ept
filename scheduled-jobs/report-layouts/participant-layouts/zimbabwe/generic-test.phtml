@@ -128,7 +128,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Build laboratory information table
-        $labInfo = '<table cellpadding="3" style="font-size:11px;">
+        $labInfo = '<br><br><table cellpadding="3" style="font-size:11px;">
             <tr>
                 <td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>
                 <td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>
@@ -146,7 +146,7 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
-                <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>
+                <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . ($sampleRehydrationDate ?? 'N.A.') . '</td>
                 <td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>
             </tr>
             <tr>
@@ -276,8 +276,8 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '<td style="text-align:center;font-weight:bold;">Test-2</td>';
                 if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
                     $labRes .= '<td style="text-align:center;font-weight:bold;">Test-3</td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Reported Results</td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Results</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Reported Result</td>';
+                $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Result</td>';
 
                 // Add additional detail column if configured
                 if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
@@ -484,54 +484,49 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
-        // Thank you message and report footer
-        $html = '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
-        $html .= '<br/><hr>';
+        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
+        $html = '<p style="font-size:12px;text-align:center;"> - ' . $eodReportText . ' - </p>';
 
-        if (!empty($resultArray['shipment'][0]['pt_co_ordinator_name']) || !empty($evalRow['saname'])) {
-            $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? null;
+        if (!empty($approveTxt)) {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . ($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span><br>';
+        }
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
 
-            // Add end of report text if finalized
-            $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "";
-            if ($eodReportText) {
-                $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        // Clear output buffer if exists
+        if (ob_get_contents()) {
+            ob_end_clean();
+        }
+
+        // Generate filename for PDF output
+        if (isset($result['last_name']) && !empty(trim($result['last_name']))) {
+            $result['last_name'] = "_" . $result['last_name'];
+        }
+
+        // Build filename from available data
+        $nameParts = [];
+        $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
+
+        foreach ($keys as $key) {
+            if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
+                $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
             }
+        }
 
-            $pdf->writeHTML($html, true, false, true, false, '');
+        // Create final filename
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
+        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $filePath = $shipmentDir . DIRECTORY_SEPARATOR . $fileName;
 
-            // Clear output buffer if exists
-            if (ob_get_contents()) {
-                ob_end_clean();
-            }
+        // Save PDF to file
+        $created = $pdf->Output($filePath, "F");
 
-            // Generate filename for PDF output
-            if (isset($result['last_name']) && !empty(trim($result['last_name']))) {
-                $result['last_name'] = "_" . $result['last_name'];
-            }
-
-            // Build filename from available data
-            $nameParts = [];
-            $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
-
-            foreach ($keys as $key) {
-                if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
-                    $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
-                }
-            }
-
-            // Create final filename
-            $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-            $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
-            $filePath = $shipmentDir . DIRECTORY_SEPARATOR . $fileName;
-
-            // Save PDF to file
-            $created = $pdf->Output($filePath, "F");
-
-            // Optional: Load PDF for further processing (commented out)
-            /*
+        // Optional: Load PDF for further processing (commented out)
+        /*
         $loadpdf = Zend_Pdf::load($filePath);
         foreach ($loadpdf->pages as $page) {
             $pdfExtract = $extractor->clonePage($page);
@@ -539,8 +534,7 @@ if (!empty($resultArray['shipment'])) {
         }
         */
 
-            $shipmentCode = $result['shipment_code'];
-            $pageCounter++;
-        }
+        $shipmentCode = $result['shipment_code'];
+        $pageCounter++;
     }
 }

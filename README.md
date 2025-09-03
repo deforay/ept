@@ -33,12 +33,11 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
    ServerName ept.example.org
 
    <Directory "/var/www/ept/public">
-       AddDefaultCharset UTF-8
-       Options Indexes MultiViews FollowSymLinks
-       AllowOverride All
-       Order allow,deny
-       Allow from all
-   </Directory>
+        AddDefaultCharset UTF-8
+        Options -Indexes -MultiViews +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
 ```
 

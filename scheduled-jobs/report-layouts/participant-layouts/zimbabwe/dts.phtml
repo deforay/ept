@@ -536,19 +536,22 @@ if (!empty($resultArray['shipment'])) {
         // Thank you message and report footer
         $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . $result['scheme_name'] . ' Proficiency Testing Program.</p>';
-        $html .= '<br><br><p style="font-size:12px;text-align:center;">* END OF REPORT *</p>';
+
+        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
+        $html .= '<br><br><p style="font-size:12px;text-align:center;">- '.$eodReportText.' -</p>';
 
         $html .= '<br/><hr>';
-        if (!empty($resultArray['shipment'][0]['pt_co_ordinator_name']) || !empty($evalRow['saname'])) {
-            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+
+        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ??  null;
+        $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        if (!empty($approveTxt)) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
         }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
 
-        $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "";
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+    
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Clear output buffer if exists
