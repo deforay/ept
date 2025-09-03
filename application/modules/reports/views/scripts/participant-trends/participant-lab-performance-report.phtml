@@ -1,105 +1,71 @@
 
 <?php
 $labPerform = isset($this->result) ? $this->result : array();
-//  echo '<pre>';print_r($labPerform); die;
+ // echo '<pre>';print_r($labPerform); die;
 ?>
+<br>
+<button class="btn btn-info btn-sm pull-right" onclick="exportToExcel();" id="exportExcelBtn"><i class="icon-download"></i> Excel</button>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover dataTable no-footer" id="labPerformanceTable" role="grid" aria-describedby="labPerformanceTable_info">
-    <caption><h5>Laboratory Performance per Shipment</h5></caption>
-
+  
+<tr><th colspan="5">
+<caption><h5>Laboratory Performance per Shipment</h5></caption>
+</th></tr>
     <?php if(!empty($labPerform)){ ?>
     <tr>
         <th rowspan="2">RATING PER<br>SHIPMENT</th>
-        
-        <?php foreach($labPerform as $shipmentCode => $results): ?>
-            <th colspan="2"><?php echo htmlspecialchars($shipmentCode); ?></th>
+        <?php foreach($labPerform as $key => $results): ?>
+            <th colspan="2"><?php echo htmlspecialchars($results['shipment_code']).'<br>'.'(Total Participants: '.$results['total_participants'].')'; ?></th>
         <?php endforeach; ?>
     </tr>
-
     <tr>
-        <?php foreach($labPerform as $shipmentCode => $results): ?>
+        <?php foreach($labPerform as $key => $results): ?>
         <th>No.</th>
         <th>%</th>
         <?php endforeach; ?>
     </tr>
- <tr>
-    <td>EXCELLENT</td>
-    <?php foreach($labPerform as $shipmentCode => $data): ?>
-        <td>
-            <?php
-            echo $data['Excellent'];
-            
-            ?>
-        </td>
-        <td>
-            <?php
-            echo $data['Excellent_Percentage'];
-            ?>
-        </td>
-    <?php endforeach; ?>
-</tr>
-<?php
-if(array_key_exists('Satisfactory', $labPerform[array_key_first($labPerform)])):
-?>
- <tr>
-    <td>SATISFACTORY</td>
-    <?php foreach($labPerform as $shipmentCode => $data): ?>
-        <td>
-            <?php
-            echo $data['Satisfactory'];
-            
-            ?>
-        </td>
-        <td>
-            <?php
-
-            echo $data['Satisfactory_Percentage'];
-            ?>
-        </td>
-    <?php endforeach; ?>
-</tr>
-<?php
-endif;
-?>
- <tr>
-    <td>UNSATISFACTORY</td>
-    <?php foreach($labPerform as $shipmentCode => $data): ?>
-        <td>
-            <?php
-            echo $data['Unsatisfactory'];
-            
-            ?>
-        </td>
-        <td>
-            <?php
-
-            echo $data['Unsatisfactory_Percentage'];
-            ?>
-        </td>
-    <?php endforeach; ?>
-</tr>
-  <?php }  else {
-   echo " 
-        <tr>
-            <th style='width:20%'>RATING PER<br>SHIPMENT</th>
-            <th>No.</th>
-            <th>%</th>
-        </tr>
-        <tr>
-            <td>EXCELLENT</td>
-            <td style='text-align:center;'>0</td>
-            <td style='text-align:center;'>0</td>
-        </tr>
-        <tr>
-            <td>SATISFACTORY</td>
-            <td style='text-align:center;'>0</td>
-            <td style='text-align:center;'>0</td>
-        </tr>
-        <tr>
-            <td>UNSATISFACTORY</td>
-            <td style='text-align:center;'>0</td>
-            <td style='text-align:center;'>0</td>
-        </tr>
-        ";
-
-  } ?>
+    <?php if(array_key_exists('excellent',$labPerform[0])) { ?>
+    <tr>
+        <td>EXCELLENT</td>
+        <?php foreach($labPerform as $key => $results): ?>
+        <td style="text-align:center;"><?php echo $results['excellent']; ?></td>
+        <td style="text-align:center;"><?php echo number_format($results['excellent']/$results['total_participants']*100, 2, '.', ''); ?></td>
+        <?php endforeach; ?>
+    </tr>
+    <?php } 
+    if(array_key_exists('satisfactory',$labPerform[0])) { ?>
+     <tr>
+        <td>SATISFACTORY</td>
+        <?php foreach($labPerform as $key => $results): ?>
+        <td style="text-align:center;"><?php echo $results['satisfactory']; ?></td>
+        <td style="text-align:center;"><?php echo number_format($results['satisfactory']/$results['total_participants']*100, 2, '.', ''); ?></td>
+        <?php endforeach; ?>
+    </tr>
+    <?php } 
+    if(array_key_exists('unsatisfactory',$labPerform[0])) { ?>
+     <tr>
+        <td>UNSATISFACTORY</td>
+        <?php foreach($labPerform as $key => $results): ?>
+        <td style="text-align:center;"><?php echo $results['unsatisfactory']; ?></td>
+        <td style="text-align:center;"><?php echo number_format($results['unsatisfactory']/$results['total_participants']*100, 2, '.', ''); ?></td>
+        <?php endforeach; ?>
+    </tr>
+   
+  <?php } }  ?>
 </table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function exportToExcel(){
+   // alert($("#scheme").val());
+    $.blockUI();
+		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends', 'action' => 'export-lab-performance-report', 'format' => 'html')); ?>", { scheme: $('#scheme').val(), shipmentId: $('#shipmentId').val(), startDate: $('#startDate').val(), endDate: $('#endDate').val() },
+			
+        function(data) {
+				$.unblockUI();
+				if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
+					alert('<?= $this->translate->_("Unable to generate download"); ?>');
+				} else {
+					window.open('/temporary/' + data, '_blank');
+				}
+			});
+}
+</script>

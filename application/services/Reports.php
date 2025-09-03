@@ -4,6 +4,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 
 
 class Application_Service_Reports
@@ -5113,120 +5116,174 @@ class Application_Service_Reports
     }
 
     public function getLabPerformanceReportWithScore($parameters)
-{
-    $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-    $globalConfig = new Application_Model_DbTable_GlobalConfig();
-    $passing_score = $globalConfig->getGlobalConfig('pass_percentage');
+    {
 
-    $sQuery = $dbAdapter->select()
-        ->from(
-            ["p" => "participant"],
-            [
-                "p.first_name",
-                "p.participant_id",
-                "s.shipment_code",
-                'participantName' => new Zend_Db_Expr("CONCAT(p.first_name, '(' ,p.unique_identifier, ')')"),
-                'final_result' => 'spm.final_result',
-                'score' => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)")
-            ]
-        )
-        ->joinLeft(["spm" => "shipment_participant_map"], "p.participant_id = spm.participant_id", [])
-        ->joinLeft(["s" => "shipment"], "spm.shipment_id = s.shipment_id", ["s.shipment_code", "s.shipment_id"])
-        ->where('spm.response_status like "responded"')
-        ->where('spm.is_pt_test_not_performed not like "yes"')
-        ->where('spm.is_excluded not like "yes"')
-        ->group("s.shipment_id")
-        ->group("p.participant_id");
-//echo $sQuery;die;
-    if ($passing_score == 100) {
-        $sQuery = $sQuery->having("score = 100");
-    } elseif ($passing_score < 100) {
-        $sQuery = $sQuery->having("score >= ?", $passing_score);
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $globalConfig = new Application_Model_DbTable_GlobalConfig();
+        $passingScore = $globalConfig->getGlobalConfig('pass_percentage');
+
+            $columns = array(
+                        "s.shipment_id",
+                        "s.shipment_code",
+                        "total_participants" => new Zend_Db_Expr('COUNT(*)'),
+                        "excellent" => new Zend_Db_Expr("SUM(
+                            (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) = 100
+                            AND spm.final_result = 1
+                        )"),
+                        "unsatisfactory" => new Zend_Db_Expr($dbAdapter->quoteInto(
+                        'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ?)',
+                        $passingScore
+                    )),
+            );
+
+        // only add satisfactory column if passingScore < 100
+       if ($passingScore < 100) {
+            $columns['satisfactory'] = new Zend_Db_Expr($dbAdapter->quoteInto(
+            'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) >= ? AND (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ? AND spm.final_result = 1)',
+            $passingScore, 100
+        ));
+        }
+
+        $sQuery = $dbAdapter->select()
+            ->from(
+                ["spm" => "shipment_participant_map"],$columns
+            )
+            ->join(["s" => "shipment"], "spm.shipment_id = s.shipment_id")
+            ->where("IFNULL(spm.is_excluded, 'no') <> 'yes'")
+            ->group("s.shipment_id");
+  
+
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
+
+        if(isset($parameters['shipmentId']) && $parameters['shipmentId'] != ""){
+            $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
+        }   
+
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+        }
+
+        $results = $dbAdapter->fetchAll($sQuery);      
+
+        return $results;
     }
 
-    if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-        $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
-    }
+    public function exportLabPerformanceReportDetails($params)
+	{
+		try {
+			$excel = new Spreadsheet();
 
-    if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-        $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
-        $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
-    }
+			$output = [];
+			$sheet = $excel->getActiveSheet();
+			$colNo = 0;
 
-    $results = $dbAdapter->fetchAll($sQuery);
 
-    // Group results by shipment_code and performance
-    $shipmentResults = [];
-    foreach ($results as $row) {
-        $shipmentCode = $row['shipment_code'];
-        if (!isset($shipmentResults[$shipmentCode])) {
-            if($passing_score == 100){
-                $shipmentResults[$shipmentCode] = [
-                    'Excellent' => 0,
-                    'Unsatisfactory' => 0,
-                    'Total' => 0
-                ];
+			$sheet->getCell('A1')->setValue(html_entity_decode("LAB PERFORMANCE REPORT", ENT_QUOTES, 'UTF-8'));
+		
+
+			$rResult = $this->getLabPerformanceReportWithScore($params);
+
+            $shipmentCodes = array_unique(array_column($rResult, 'shipment_code'));
+
+         // Merge title row
+            $mergeEndCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($shipmentCodes) * 2 + 1);
+            $sheet->mergeCells("A1:{$mergeEndCol}1");
+            $sheet->setCellValue('A1', 'Laboratory Performance per Shipment');
+            $sheet->getStyle("A1")->getFont()->setBold(true)->setSize(14);
+            $sheet->getStyle("A1:{$mergeEndCol}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Second row headers
+            $sheet->mergeCells("A2:A3");
+            $sheet->setCellValue('A2', 'RATING PER SHIPMENT');
+
+            // Create shipment headers
+            $colIndex = 2; // Start from B
+            foreach ($rResult as $shipment) {
+                $startCol = $colIndex;
+                $endCol = $colIndex + 1;
+                $startColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startCol);
+                $endColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($endCol);
+
+                $sheet->mergeCells("{$startColLetter}2:{$endColLetter}2");
+                $sheet->setCellValue("{$startColLetter}2", "{$shipment['shipment_code']} <br>(Total Participants: {$shipment['total_participants']})");
+
+                $sheet->setCellValue("{$startColLetter}3", 'No.');
+                $sheet->setCellValue("{$endColLetter}3", '%');
+
+                $colIndex += 2;
             }
-            elseif($passing_score < 100){
-                $shipmentResults[$shipmentCode] = [
-                    'Excellent' => 0,
-                    'Satisfactory' => 0,
-                    'Unsatisfactory' => 0,
-                    'Total' => 0
-                ];
-            }
-        }
-        if ($row['final_result'] == 1 && $row['score'] == 100) {
-            $shipmentResults[$shipmentCode]['Excellent']++;
-        } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passing_score) {
-            $shipmentResults[$shipmentCode]['Satisfactory']++;
-        } elseif ($row['final_result'] == 2) {
-            $shipmentResults[$shipmentCode]['Unsatisfactory']++;
-        }
-        $shipmentResults[$shipmentCode]['Total']++;
-    }
 
-    // Ensure all expected shipment codes are present, even if no response
-    $allShipments = $this->getAvailableShipments($parameters['scheme'], $parameters['startDate'], $parameters['endDate']);
-    foreach ($allShipments as $shipment) {
-        $code = $shipment['shipment_code'];
-        if (!isset($shipmentResults[$code])) {
-            if($passing_score == 100){
-                $shipmentResults[$code] = [
-                    'Excellent' => 0,
-                    'Unsatisfactory' => 0,
-                    'Total' => 0,
-                    'Excellent_Percentage' => 0,
-                    'Unsatisfactory_Percentage' => 0
-                ];
-            }
-            elseif($passing_score < 100){
-                $shipmentResults[$code] = [
-                    'Excellent' => 0,
-                    'Satisfactory' => 0,
-                    'Unsatisfactory' => 0,
-                    'Total' => 0,
-                    'Excellent_Percentage' => 0,
-                    'Satisfactory_Percentage' => 0,
-                    'Unsatisfactory_Percentage' => 0
-                ];
-            }
-        }
-    }
+            // Data rows
+            $ratings = ['EXCELLENT', 'SATISFACTORY', 'UNSATISFACTORY'];
+            $row = 4;
 
-    // Calculate percentages
-    foreach ($shipmentResults as $shipmentCode => &$data) {
-        if($passing_score == 100){
-            $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-            $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-        }
-        elseif($passing_score < 100){
-            $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
-            $data['Satisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Satisfactory'] / $data['Total']) * 100, 2) : 0;
-            $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
-        }
-    }
+            foreach ($ratings as $rating) {
+                $sheet->setCellValue('A' . $row, $rating);
+                $colIndex = 2;
 
-    return $shipmentResults;
-}
+                foreach ($rResult as $shipment) {
+                    $total = $shipment['total_participants'];
+                    $count = 0;
+
+                    if ($rating === 'EXCELLENT') {
+                        $count = $shipment['excellent'];
+                    } elseif ($rating === 'SATISFACTORY') {
+                        $count = $shipment['satisfactory'];
+                    } elseif ($rating === 'UNSATISFACTORY') {
+                        $count = $shipment['unsatisfactory'];
+                    }
+
+                    $percent = ($total > 0) ? round(($count / $total) * 100, 2) : 0;
+
+                    $sheet->setCellValueByColumnAndRow($colIndex, $row, $count);
+                    $sheet->setCellValueByColumnAndRow($colIndex + 1, $row, $percent);
+
+                    $colIndex += 2;
+                }
+
+                $row++;
+            }
+
+            // Styling
+            $headerRange = "A2:{$mergeEndCol}3";
+            $sheet->getStyle($headerRange)->getFont()->setBold(true);
+            $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $styleArray = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => '000000'],
+                    ],
+                ],
+            ];
+            $sheet->getStyle("A1:{$mergeEndCol}" . ($row - 1))->applyFromArray($styleArray);
+
+            // Auto-size columns
+            foreach (range('A', $sheet->getHighestColumn()) as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+
+			$sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A1');
+			$sheet = $this->common->applyBordersToSheet($sheet);
+			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
+			$tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
+			$writer = IOFactory::createWriter($excel, 'Xlsx');
+			$filename = 'LAB-PERFORMANCE-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
+			$writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
+			echo $filename;
+		} catch (Exception $exc) {
+			//$sQuerySession->shipmentRespondedParticipantQuery = '';
+			error_log("GENERATE-LAB-PERFORMANCE-REPORT-" . $exc->getMessage());
+			error_log($exc->getTraceAsString());
+			echo "";
+		}
+	}
+
 }

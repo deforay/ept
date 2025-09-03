@@ -148,4 +148,18 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
             $this->view->result = $reportService->getLabPerformanceReportWithScore($params);
         }
     }
+
+    public function exportLabPerformanceReportAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        if ($request->isPost()) {
+            $params = $this->getAllParams();
+            $reportService = new Application_Service_Reports();
+            $this->view->result = $reportService->exportLabPerformanceReportDetails($params);
+        } else {
+            return false;
+        }
+    }
 }
