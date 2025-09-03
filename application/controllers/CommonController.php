@@ -87,7 +87,8 @@ class CommonController extends Zend_Controller_Action
         $request = $this->getRequest();
         $this->_helper->layout()->disableLayout();
         if ($request->isPost()) {
-            $id = (int)$this->_getParam('nid');
+            $param = $request->getParams();
+            $id = $param['nid'];
             $commonService = new Application_Service_Common();
             $this->view->result = $commonService->saveNotifyStatus($id);
         }
