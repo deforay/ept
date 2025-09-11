@@ -24,7 +24,8 @@
         "monolog/monolog": "^2.9",
         "mitoteam/jpgraph": "^10.4",
         "gregwar/captcha": "^1.2",
-        "symfony/uid": "^5.4"
+        "symfony/uid": "^5.4",
+        "phpoffice/phpword": "^1.4"
     },
     "config": {
         "platform": {

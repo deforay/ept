@@ -266,13 +266,13 @@ class Application_Service_Common
     public function getParticipantsProvinceList($cid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from(array('p' => 'participant'), array("state"))->group(array("state"))->order(array("state"));
+        $sql =  $db->select()->distinct()->from(['p' => 'participant'], ["state"])->group(["state"])->order(["state"]);
         if (isset($cid) && !empty($cid)) {
             $sql = $sql->where("p.country IN (?)", $cid);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
-            $sql = $sql->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+            $sql = $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
         $result = $db->fetchAll($sql);
@@ -290,7 +290,7 @@ class Application_Service_Common
     public function getParticipantsDistrictList($sid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant', array("district"))->group(array("district"))->order(array("district"));
+        $sql =  $db->select()->distinct()->from('participant', ["district"])->group(["district"])->order(["district"]);
         if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("state IN (?)", $sid);
         }
@@ -320,7 +320,7 @@ class Application_Service_Common
     public function getAllInstitutes($pid = null, $did = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant', array("institute_name"))->group(array("institute_name"))->order(array("institute_name"));
+        $sql =  $db->select()->distinct()->from('participant', ["institute_name"])->group(["institute_name"])->order(["institute_name"]);
         if (isset($pid) && !empty($pid)) {
             $sql = $sql->where("state like ?", $pid);
         }
@@ -358,10 +358,10 @@ class Application_Service_Common
     }
     public function updateTemplate($params)
     {
-        $filterRules = array(
+        $filterRules = [
             '*' => 'StripTags',
             '*' => 'StringTrim'
-        );
+        ];
 
         $filter = new Zend_Filter_Input($filterRules, null, $params);
 
@@ -819,7 +819,7 @@ class Application_Service_Common
         $highestColumn = $sheet->getHighestColumn();
 
         // Calculate the range for the entire row
-        $range = $startCell . ':' . $highestColumn . $startRow;
+        $range = "$startCell:$highestColumn$startRow";
 
         // Set alignment to center and font to bold for the range
         $sheet->getStyle($range)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -836,7 +836,7 @@ class Application_Service_Common
             $highestRow = $sheet->getHighestRow($column);
 
             // Define the range for the entire column
-            $range = $column . '1:' . $column . $highestRow;
+            $range = "{$column}1:$column$highestRow";
 
             // Apply center alignment to the range
             $sheet->getStyle($range)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

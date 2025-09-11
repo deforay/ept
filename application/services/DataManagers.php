@@ -234,7 +234,7 @@ class Application_Service_DataManagers
                 . "</b> (input: "
                 . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ").";
 
-            $common->insertTempMail($adminMail, null, null, "Password Reset - e-PT", $adminMsg);
+            $common->insertTempMail($adminMail, null, null, "Password Reset - ePT", $adminMsg);
 
             $sessionAlert->message = $genericOkMsg;
             $sessionAlert->status  = "success";
@@ -252,7 +252,7 @@ class Application_Service_DataManagers
             // $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $params['primaryMail'] . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
             // $fromMail = Application_Service_Common::getConfig('admin_email');
             // $fromName = Application_Service_Common::getConfig('admin-name');
-            // $common->insertTempMail($params['primaryMail'], null, null, "Password Reset - e-PT", $message, $fromMail, $fromName);
+            // $common->insertTempMail($params['primaryMail'], null, null, "Password Reset - ePT", $message, $fromMail, $fromName);
             return true;
         } else {
             return false;

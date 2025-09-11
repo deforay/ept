@@ -94,8 +94,8 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
 
         $sQuery = $this->getAdapter()->select()->from(array('d' => $this->_name))
-            ->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")))
-            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->joinLeft(['s' => 'shipment'], 's.distribution_id=d.distribution_id', ['shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')")])
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
             ->group('d.distribution_id');
 
         if (isset($sWhere) && $sWhere != "") {

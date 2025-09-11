@@ -52,7 +52,7 @@ class Application_Service_Reports
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
                     $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-					    " . ($parameters['sSortDir_' . $i]) . ", ";
+					" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }
 
@@ -183,7 +183,7 @@ class Application_Service_Reports
             if (isset($aRow['status']) && $aRow['status'] == 'finalized') {
                 if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf")) {
                     $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
-                    $summaryDownload = '<a href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> ' . $this->translator->_('Summary Report') . '</a>';
+                    $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> ' . $this->translator->_('Summary Report') . '</a>';
                 }
                 $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip";
                 if (file_exists($zipFilePath)) {
@@ -292,7 +292,7 @@ class Application_Service_Reports
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
                 //->joinLeft(array('sp'=>'shipment_participant_map'),'sp.participant_id=p.participant_id',array('participant_count'=> new Zend_Db_Expr("SUM(shipment_test_date = '') + SUM(shipment_test_date <> '')"), 'reported_count'=> new Zend_Db_Expr("SUM(shipment_test_date <> '')"), 'number_passed'=> new Zend_Db_Expr("SUM(final_result = 1)")))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
-                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('lastdate_response','shipment_code'))
+                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('lastdate_response', 'shipment_code'))
                 ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('others' => new Zend_Db_Expr("SUM(sp.shipment_test_date IS NULL)"), 'excluded' => new Zend_Db_Expr("SUM(if(sp.is_excluded = 'yes', 1, 0))"), 'number_failed' => new Zend_Db_Expr("SUM(sp.final_result = 2 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1 AND sp.shipment_test_date <= s.lastdate_response AND sp.is_excluded != 'yes')"), 'number_late' => new Zend_Db_Expr("SUM(sp.shipment_test_date > s.lastdate_response AND sp.is_excluded != 'yes')")))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
@@ -465,7 +465,7 @@ class Application_Service_Reports
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-      //   echo ($sQuery);
+        //   echo ($sQuery);
         $rResult = $this->getParticipantDetailedReport($parameters);
 
         /* Data set length after filtering */
@@ -517,16 +517,16 @@ class Application_Service_Reports
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-         $sQuery = $dbAdapter->select()
-                ->from(['sp' => 'shipment_participant_map'], [])
-                ->join(['p' => 'participant'], 'sp.participant_id = p.participant_id', [])
-                ->join(['s' => 'shipment'], 'sp.shipment_id = s.shipment_id', ['shipment_id', 'shipment_code'])
-                ->join(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name']);
+        $sQuery = $dbAdapter->select()
+            ->from(['sp' => 'shipment_participant_map'], [])
+            ->join(['p' => 'participant'], 'sp.participant_id = p.participant_id', [])
+            ->join(['s' => 'shipment'], 'sp.shipment_id = s.shipment_id', ['shipment_id', 'shipment_code'])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name']);
 
         if (isset($parameters['reportType']) && $parameters['reportType'] == "network") {
             // Get total participants for each shipment code in each network
 
-                $sQuery = $sQuery->join(['n' => 'r_network_tiers'], 'p.network_tier = n.network_id', ['network_name'])
+            $sQuery = $sQuery->join(['n' => 'r_network_tiers'], 'p.network_tier = n.network_id', ['network_name'])
                 ->columns([
                     'network' => 'n.network_name',
                     'shipment_code' => 's.shipment_code',
@@ -535,12 +535,11 @@ class Application_Service_Reports
                 ->group(['n.network_name', 's.shipment_code'])
                 ->where("n.network_name IS NOT NULL")
                 ->where("n.network_name != ''");
-
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             // Get total participants for each shipment code in each affiliation
 
-                $sQuery = $sQuery->join(['pa' => 'r_participant_affiliates'], 'p.affiliation = pa.affiliate', ['affiliate'])
+            $sQuery = $sQuery->join(['pa' => 'r_participant_affiliates'], 'p.affiliation = pa.affiliate', ['affiliate'])
                 ->columns([
                     'affiliation' => 'pa.affiliate',
                     'shipment_code' => 's.shipment_code',
@@ -549,25 +548,23 @@ class Application_Service_Reports
                 ->group(['pa.affiliate', 's.shipment_code'])
                 ->where("pa.affiliate IS NOT NULL")
                 ->where("pa.affiliate != ''");
-
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             // Get total participants for each shipment code in each region
 
-                $sQuery = $sQuery->columns([
-                    'region' => 'p.region',
-                    'shipment_code' => 's.shipment_code',
-                    'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
-                ])
+            $sQuery = $sQuery->columns([
+                'region' => 'p.region',
+                'shipment_code' => 's.shipment_code',
+                'total_participants' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)')
+            ])
                 ->group(['p.region', 's.shipment_code'])
                 ->where("p.region IS NOT NULL")
                 ->where("p.region != ''");
-
         }
         if (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             // Get total participants for each shipment code in each enrolled program
 
-                $sQuery = $sQuery->join(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id = p.participant_id', [])
+            $sQuery = $sQuery->join(['pe' => 'participant_enrolled_programs_map'], 'pe.participant_id = p.participant_id', [])
                 ->join(['rep' => 'r_enrolled_programs'], 'rep.r_epid = pe.ep_id', ['enrolled_programs'])
                 ->columns([
                     'enrolled-programs' => 'rep.enrolled_programs',
@@ -577,21 +574,20 @@ class Application_Service_Reports
                 ->group(['rep.r_epid', 's.shipment_code'])
                 ->where("rep.enrolled_programs IS NOT NULL")
                 ->where("rep.enrolled_programs != ''");
-
         }
-       // Modified query: Get total participants for each shipment code in each region
+        // Modified query: Get total participants for each shipment code in each region
 
 
-    if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-        $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
-    }
+        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
+            $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
+        }
 
-    if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-        $sQuery = $sQuery->where("s.shipment_date >= ?", $this->common->isoDateFormat($parameters['startDate']));
-        $sQuery = $sQuery->where("s.shipment_date <= ?", $this->common->isoDateFormat($parameters['endDate']));
-    }
+        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+            $sQuery = $sQuery->where("s.shipment_date >= ?", $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("s.shipment_date <= ?", $this->common->isoDateFormat($parameters['endDate']));
+        }
 
-    return $dbAdapter->fetchAll($sQuery);
+        return $dbAdapter->fetchAll($sQuery);
     }
 
     public function getParticipantTrendsReport($parameters)
@@ -5165,125 +5161,56 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
+        //echo $sQuery;
+        //die;
 
-        $results = $dbAdapter->fetchAll($sQuery);      
+        $results = $dbAdapter->fetchAll($sQuery);
 
-        return $results;
-    }
-
-    public function exportLabPerformanceReportDetails($params)
-	{
-		try {
-			$excel = new Spreadsheet();
-
-			$output = [];
-			$sheet = $excel->getActiveSheet();
-			$colNo = 0;
-
-
-			$sheet->getCell('A1')->setValue(html_entity_decode("LAB PERFORMANCE REPORT", ENT_QUOTES, 'UTF-8'));
-		
-
-			$rResult = $this->getLabPerformanceReportWithScore($params);
-
-            $shipmentCodes = array_unique(array_column($rResult, 'shipment_code'));
-
-         // Merge title row
-            $mergeEndCol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($shipmentCodes) * 2 + 1);
-            $sheet->mergeCells("A1:{$mergeEndCol}1");
-            $sheet->setCellValue('A1', 'Laboratory Performance per Shipment');
-            $sheet->getStyle("A1")->getFont()->setBold(true)->setSize(14);
-            $sheet->getStyle("A1:{$mergeEndCol}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            // Second row headers
-            $sheet->mergeCells("A2:A3");
-            $sheet->setCellValue('A2', 'RATING PER SHIPMENT');
-
-            // Create shipment headers
-            $colIndex = 2; // Start from B
-            foreach ($rResult as $shipment) {
-                $startCol = $colIndex;
-                $endCol = $colIndex + 1;
-                $startColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($startCol);
-                $endColLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($endCol);
-
-                $sheet->mergeCells("{$startColLetter}2:{$endColLetter}2");
-                $sheet->setCellValue("{$startColLetter}2", "{$shipment['shipment_code']} <br>(Total Participants: {$shipment['total_participants']})");
-
-                $sheet->setCellValue("{$startColLetter}3", 'No.');
-                $sheet->setCellValue("{$endColLetter}3", '%');
-
-                $colIndex += 2;
-            }
-
-            // Data rows
-            $ratings = ['EXCELLENT', 'SATISFACTORY', 'UNSATISFACTORY'];
-            $row = 4;
-
-            foreach ($ratings as $rating) {
-                $sheet->setCellValue('A' . $row, $rating);
-                $colIndex = 2;
-
-                foreach ($rResult as $shipment) {
-                    $total = $shipment['total_participants'];
-                    $count = 0;
-
-                    if ($rating === 'EXCELLENT') {
-                        $count = $shipment['excellent'];
-                    } elseif ($rating === 'SATISFACTORY') {
-                        $count = $shipment['satisfactory'];
-                    } elseif ($rating === 'UNSATISFACTORY') {
-                        $count = $shipment['unsatisfactory'];
-                    }
-
-                    $percent = ($total > 0) ? round(($count / $total) * 100, 2) : 0;
-
-                    $sheet->setCellValueByColumnAndRow($colIndex, $row, $count);
-                    $sheet->setCellValueByColumnAndRow($colIndex + 1, $row, $percent);
-
-                    $colIndex += 2;
+        // Group results by shipment_code and performance
+        $shipmentResults = [];
+        foreach ($results as $row) {
+            $shipmentCode = $row['shipment_code'];
+            if (!isset($shipmentResults[$shipmentCode])) {
+                if ($passing_score == 100) {
+                    $shipmentResults[$shipmentCode] = [
+                        'Excellent' => 0,
+                        'Unsatisfactory' => 0,
+                        'Total' => 0
+                    ];
+                } elseif ($passing_score < 100) {
+                    $shipmentResults[$shipmentCode] = [
+                        'Excellent' => 0,
+                        'Satisfactory' => 0,
+                        'Unsatisfactory' => 0,
+                        'Total' => 0
+                    ];
                 }
-
-                $row++;
             }
-
-            // Styling
-            $headerRange = "A2:{$mergeEndCol}3";
-            $sheet->getStyle($headerRange)->getFont()->setBold(true);
-            $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            $styleArray = [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['argb' => '000000'],
-                    ],
-                ],
-            ];
-            $sheet->getStyle("A1:{$mergeEndCol}" . ($row - 1))->applyFromArray($styleArray);
-
-            // Auto-size columns
-            foreach (range('A', $sheet->getHighestColumn()) as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
+            if ($row['final_result'] == 1 && $row['score'] == 100) {
+                $shipmentResults[$shipmentCode]['Excellent']++;
+            } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passing_score) {
+                $shipmentResults[$shipmentCode]['Satisfactory']++;
+            } elseif ($row['final_result'] == 2) {
+                $shipmentResults[$shipmentCode]['Unsatisfactory']++;
             }
+            $shipmentResults[$shipmentCode]['Total']++;
+        }
 
+        if ($passing_score == 100) {
+            // Calculate percentage for each category
+            foreach ($shipmentResults as $shipmentCode => &$data) {
+                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
+                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
+            }
+        } elseif ($passing_score < 100) {
+            // Calculate percentage for each category
+            foreach ($shipmentResults as $shipmentCode => &$data) {
+                $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
+                $data['Satisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Satisfactory'] / $data['Total']) * 100, 2) : 0;
+                $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
+            }
+        }
 
-			$sheet = $this->common->centerAndBoldRowInSheet($sheet, 'A1');
-			$sheet = $this->common->applyBordersToSheet($sheet);
-			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
-			$tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
-			$writer = IOFactory::createWriter($excel, 'Xlsx');
-			$filename = 'LAB-PERFORMANCE-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
-			$writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
-			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
-			echo $filename;
-		} catch (Exception $exc) {
-			//$sQuerySession->shipmentRespondedParticipantQuery = '';
-			error_log("GENERATE-LAB-PERFORMANCE-REPORT-" . $exc->getMessage());
-			error_log($exc->getTraceAsString());
-			echo "";
-		}
-	}
-
+        return $shipmentResults;
+    }
 }

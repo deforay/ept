@@ -14,7 +14,9 @@ syntax: regexp
 ^node_modules/
 ^cypress/
 vendor/*
+.vscode/*
 .*\.vendor$
+.*\.vscode$
 .*\.idea$
 .*\.orig$
 
@@ -27,8 +29,10 @@ Thumbs.db.orig
 .DS_Store.orig
 .git
 .git/*
+.vscode/*
 .gitattributes
 .gitignore
+.vscode
 application.ini
 config.ini
 application/configs/application.ini

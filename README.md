@@ -1,6 +1,6 @@
-# e-PT #
+# ePT #
 
-Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) software
+Welcome to the Open Source repository of the e-Proficiency Testing (ePT) software
 
 #### Pre-requisites
 * Apache2
@@ -18,7 +18,7 @@ Welcome to the Open Source repository of the e-Proficiency Testing (e-PT) softwa
 
 ### How do I get set up? ###
 
-* [Download the e-PT Source Code](https://github.com/deforay/ept/releases) and put it into your server's root folder (www or htdocs).
+* [Download the ePT Source Code](https://github.com/deforay/ept/releases) and put it into your server's root folder (www or htdocs).
 * Create a blank database and [import the sql file that you can find in the downloads section of this repository](https://github.com/deforay/ept/releases)
 * Rename the config file application/configs/application.dist.ini to application/configs/application.ini and update the database and other settings
 * Rename the config file application/configs/config.dist.ini to application/configs/congig.ini

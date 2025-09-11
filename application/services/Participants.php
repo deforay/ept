@@ -94,17 +94,17 @@ class Application_Service_Participants
 	public function getParticipantSchemes($dmId)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('p' => 'participant'))
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id')
-			->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id')
-			->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type')
+		$sql = $db->select()->from(['p' => 'participant'])
+			->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id')
+			->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id')
+			->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type')
 			->where("pmm.dm_id= ?", $dmId)
-			->group(array("sp.participant_id", "s.scheme_type"))
+			->group(["sp.participant_id", "s.scheme_type"])
 			->order("p.first_name");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
@@ -113,7 +113,7 @@ class Application_Service_Participants
 	public function getPendingParticipants()
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('p' => 'participant'), array('p.participant_id'))
+		$sql = $db->select()->from(['p' => 'participant'], ['p.participant_id'])
 			->where("p.status= ?", "pending");
 		return $db->fetchAll($sql);
 	}
@@ -122,8 +122,8 @@ class Application_Service_Participants
 	{
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$subSql = $db->select()->from(array('e' => 'enrollments'), 'participant_id')->where("scheme_id = ?", $scheme);
-		$sql = $db->select()->from(array('p' => 'participant'))
+		$subSql = $db->select()->from(['e' => 'enrollments'], 'participant_id')->where("scheme_id = ?", $scheme);
+		$sql = $db->select()->from(['p' => 'participant'])
 			->where("participant_id NOT IN ?", $subSql)
 			->where("p.status='active'")
 			->order('first_name')
@@ -174,8 +174,8 @@ class Application_Service_Participants
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(['p' => 'participant'])
-			->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array())
-			->joinLeft(array('s' => 'shipment'), 'sp.shipment_id=s.shipment_id', array())
+			->joinLeft(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', [])
+			->joinLeft(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id', [])
 			->where("s.shipment_id = ?", $shipmentId)
 			->where("p.status='active'")
 			->order('p.first_name')
@@ -186,15 +186,15 @@ class Application_Service_Participants
 	public function getSchemesByParticipantId($pid)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('p' => 'participant'), array())
-			->joinLeft(array('e' => 'enrollments'), 'e.participant_id=p.participant_id', array())
-			->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=e.scheme_id', array('scheme_id'))
+		$sql = $db->select()->from(['p' => 'participant'], [])
+			->joinLeft(['e' => 'enrollments'], 'e.participant_id=p.participant_id', [])
+			->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=e.scheme_id', ['scheme_id'])
 			->where("p.participant_id = ?", $pid)
 			->order('p.first_name');
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchCol($sql);
@@ -271,13 +271,13 @@ class Application_Service_Participants
 	public function getAllParticipantRegion()
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('p' => 'participant'), array('p.region'))
+		$sql = $db->select()->from(['p' => 'participant'], ['p.region'])
 			->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")
 			->order("p.region");
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
@@ -291,7 +291,7 @@ class Application_Service_Participants
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
@@ -305,7 +305,7 @@ class Application_Service_Participants
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
-				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
+				->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', [])
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
 		}
 		return $db->fetchAll($sql);
