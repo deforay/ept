@@ -305,33 +305,34 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 }
 function createZipAndGetDownloadUrl(string $folderPath, string $certificateName, string $urlToTempFolder): ?string
 {
-    $zipFileName = "certificates-{$certificateName}-" . date('Y-m-d-H-i-s') . ".zip";
-    $zipPath = dirname($folderPath) . DIRECTORY_SEPARATOR . $zipFileName;
+	$zipFileName = "certificates-{$certificateName}-" . date('Y-m-d-H-i-s') . ".zip";
+	$zipPath = $folderPath . DIRECTORY_SEPARATOR . $zipFileName;
 
-    $zip = new ZipArchive();
-    if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
-        error_log("Cannot create ZIP file: $zipPath");
-        return null;
-    }
 
-    // Add all DOCX files from both excellence and participation folders
-    $folders = ['excellence', 'participation'];
-    $fileCount = 0;
+	$zip = new ZipArchive();
+	if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
+		error_log("Cannot create ZIP file: $zipPath");
+		return null;
+	}
 
-    foreach ($folders as $folder) {
-        $fullFolderPath = $folderPath . DIRECTORY_SEPARATOR . $folder;
-        if (is_dir($fullFolderPath)) {
-            $files = glob($fullFolderPath . DIRECTORY_SEPARATOR . "*.docx");
-            foreach ($files as $file) {
-                $relativeName = $folder . '/' . basename($file);
-                $zip->addFile($file, $relativeName);
-                $fileCount++;
-            }
-        }
-    }
+	// Add all DOCX files from both excellence and participation folders
+	$folders = ['excellence', 'participation'];
+	$fileCount = 0;
 
-    // Add PowerShell script
-    $powershellScript = '@echo off
+	foreach ($folders as $folder) {
+		$fullFolderPath = $folderPath . DIRECTORY_SEPARATOR . $folder;
+		if (is_dir($fullFolderPath)) {
+			$files = glob($fullFolderPath . DIRECTORY_SEPARATOR . "*.docx");
+			foreach ($files as $file) {
+				$relativeName = $folder . '/' . basename($file);
+				$zip->addFile($file, $relativeName);
+				$fileCount++;
+			}
+		}
+	}
+
+	// Add PowerShell script
+	$powershellScript = '@echo off
 echo Converting DOCX certificates to PDF...
 echo Running from: %~dp0
 echo.
@@ -372,10 +373,10 @@ powershell -ExecutionPolicy Bypass -Command "& {
     $null = $Host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\")
 }"';
 
-    $zip->addFromString('CONVERT-TO-PDF.bat', $powershellScript);
+	$zip->addFromString('CONVERT-TO-PDF.bat', $powershellScript);
 
-    // Add AppleScript for macOS
-    $applescript = 'tell application "Finder"
+	// Add AppleScript for macOS
+	$applescript = 'tell application "Finder"
     -- Ask user to select the folder containing excellence and participation folders
     set selectedFolder to choose folder with prompt "Select the folder containing the extracted certificate files:"
     
@@ -446,10 +447,10 @@ tell application "Microsoft Word"
     
 end tell';
 
-    $zip->addFromString('Convert-Certificates.scpt', $applescript);
+	$zip->addFromString('Convert-Certificates.scpt', $applescript);
 
-    // Add README with updated instructions
-    $readme = "CERTIFICATE FILES - DOCX FORMAT
+	// Add README with updated instructions
+	$readme = "CERTIFICATE FILES - DOCX FORMAT
 ======================================
 
 Generated on: " . date('Y-m-d H:i:s') . "
@@ -494,21 +495,21 @@ The scripts automatically find and convert all DOCX files to PDF
 while preserving perfect formatting.
 ";
 
-    $zip->addFromString('README.txt', $readme);
-    $zip->close();
+	$zip->addFromString('README.txt', $readme);
+	$zip->close();
 
-    if (file_exists($zipPath)) {
-        return $urlToTempFolder . '/' . $zipFileName;
-    }
+	if (file_exists($zipPath)) {
+		return $urlToTempFolder . '/' . $zipFileName;
+	}
 
-    return null;
+	return null;
 }
 
 
 try {
 	$db = Zend_Db::factory($conf->resources->db);
 	$domain = rtrim($conf->domain, "/");
-	$urlToTempFolder = "$domain/temporary/certificates";
+	$urlToTempFolder = "$domain/temporary/certificates/$certificateName";
 	Zend_Db_Table::setDefaultAdapter($db);
 
 	$output = [];
@@ -524,6 +525,11 @@ try {
 		$shipmentIdArray[] = (int) $val['shipment_id'];
 		$shipmentCodeArray[$val['scheme_type']][] = $val['shipment_code'];
 	}
+
+	$allShipmentsProcessed = array_unique(
+		array_merge(...array_values($shipmentCodeArray))
+	);
+
 	$impShipmentId = implode(",", $shipmentIdArray);
 
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
@@ -654,7 +660,12 @@ try {
 		}
 	}
 
-	sendNotification($customConfig->email->certificates ?? null, $shipmentsList ?? null);
+	if (!empty($allShipmentsProcessed)) {
+		sendNotification(
+			$customConfig->email->certificates ?? null,
+			array_unique($allShipmentsProcessed)
+		);
+	}
 } catch (Exception $e) {
 	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
