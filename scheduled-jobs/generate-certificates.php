@@ -16,16 +16,23 @@ if (empty($shipmentsToGenerate)) {
 
 /* ---------- Common helpers ---------- */
 
-function sendNotification($emailConfig, $shipmentsList)
+function sendNotification($emailConfig, $shipmentsList, ?string $downloadUrl = null)
 {
 	if (!empty($emailConfig) && !empty($shipmentsList) && $emailConfig->status == "yes" && !empty($emailConfig->mails)) {
 		$common = new Application_Service_Common();
 		$emailSubject = "ePT | Certificates Generated";
 		$emailContent = "Certificates for Shipment " . implode(", ", $shipmentsList) . " have been generated.";
+
+		if ($downloadUrl) {
+			$emailContent .= "<br><br>Download link: <a href=\"$downloadUrl\">$downloadUrl</a>";
+		}
+
 		$emailContent .= "<br><br><br><small>This is a system generated email</small>";
+
 		$common->insertTempMail($emailConfig->mails, null, null, $emailSubject, $emailContent);
 	}
 }
+
 
 
 function findPdftk(): ?string
@@ -661,9 +668,15 @@ try {
 	}
 
 	if (!empty($allShipmentsProcessed)) {
+		$downloadUrlForNotification = null;
+		if ($templateMode === 'docx' && isset($downloadUrl) && $downloadUrl) {
+			$downloadUrlForNotification = $downloadUrl;
+		}
+
 		sendNotification(
 			$customConfig->email->certificates ?? null,
-			array_unique($allShipmentsProcessed)
+			array_unique($allShipmentsProcessed),
+			$downloadUrlForNotification
 		);
 	}
 } catch (Exception $e) {
