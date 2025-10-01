@@ -9,6 +9,16 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 class Application_Service_Common
 {
 
+    protected $db;
+
+    /** @var Zend_Translate */
+    protected $translator;
+
+    public function __construct()
+    {
+        $this->translator = Zend_Registry::get('translate');
+        $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    }
     public static function isDateValid($date): bool
     {
         $date = trim($date);
@@ -1228,46 +1238,88 @@ class Application_Service_Common
     }
 
 
-    public function validatePassword($password, $name = null, $email = null, $minLength = 8, $requireSymbols = true)
+    public function validatePassword($password, $name = null, $email = null, $minLength = 8, $requireSymbols = false)
     {
-        // Check length
-        if (strlen($password) < $minLength) {
-            return _("Password must be at least $minLength characters long.");
+        // Validate input types
+        if (!is_string($password)) {
+            return  $this->translator->_("Password must be a string.");
         }
 
-        // Check for alphanumeric or alphanumeric + symbols based on $requireSymbols
-        if ($requireSymbols) {
-            // Alphanumeric and symbols
-            if (!preg_match('/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W_]).{' . $minLength . ',}$/', $password)) {
-                return _("Password must contain letters, numbers, and symbols");
-            }
-        } else {
-            // Only alphanumeric
-            if (!preg_match('/^(?=.*[a-zA-Z])(?=.*[0-9]).{' . $minLength . ',}$/', $password)) {
-                return _("Password must contain both letters and numbers.");
-            }
+        // Check length - use mb_strlen for proper multibyte character support
+        if (mb_strlen($password, 'UTF-8') < $minLength) {
+            return  $this->translator->_("Password must be at least {$minLength} characters long.");
         }
-        // Split name and email into parts for partial matching
-        if (isset($name) && !empty($name)) {
-            $nameParts = explode(' ', $name);
-            // Check if password contains any part of the name
+
+        // Check maximum length to prevent DoS attacks
+        if (mb_strlen($password, 'UTF-8') > 128) {
+            return  $this->translator->_("Password must not exceed 128 characters.");
+        }
+
+        // Check for at least one letter
+        if (!preg_match('/[a-zA-Z]/', $password)) {
+            return  $this->translator->_("Password must contain at least one letter.");
+        }
+
+        // Check for at least one number
+        if (!preg_match('/[0-9]/', $password)) {
+            return  $this->translator->_("Password must contain at least one number.");
+        }
+
+        // Check for symbols if required
+        if ($requireSymbols && !preg_match('/[\W_]/', $password)) {
+            return  $this->translator->_("Password must contain at least one symbol.");
+        }
+
+        // Check against name parts (minimum 3 characters to avoid false positives)
+        if (!empty($name) && is_string($name)) {
+            $nameParts = preg_split('/\s+/', trim($name), -1, PREG_SPLIT_NO_EMPTY);
+
             foreach ($nameParts as $part) {
-                if (!empty($part) && stripos($password, $part) !== false) {
-                    return _("Password must not contain any part of your name.");
+                // Only check parts that are 3+ characters
+                if (mb_strlen($part, 'UTF-8') >= 3) {
+                    if (stripos($password, $part) !== false) {
+                        return  $this->translator->_("Password must not contain parts of your name.");
+                    }
                 }
             }
         }
-        if (isset($email) && !empty($email)) {
-            $emailParts = explode('@', $email);
-            $emailLocal = $emailParts[0]; // Part before @
 
-            // Check if password contains any part of the email (local part only)
-            if (stripos($password, $emailLocal) !== false) {
-                return _("Password must not contain any part of your email.");
+        // Check against email local part (minimum 3 characters)
+        if (!empty($email) && is_string($email)) {
+            $emailParts = explode('@', $email, 2);
+
+            if (isset($emailParts[0]) && !empty($emailParts[0])) {
+                $emailLocal = $emailParts[0];
+
+                // Split email local part by common separators
+                $localParts = preg_split('/[._\-+]/', $emailLocal, -1, PREG_SPLIT_NO_EMPTY);
+
+                foreach ($localParts as $part) {
+                    // Only check parts that are 3+ characters
+                    if (mb_strlen($part, 'UTF-8') >= 3) {
+                        if (stripos($password, $part) !== false) {
+                            return  $this->translator->_("Password must not contain parts of your email address.");
+                        }
+                    }
+                }
             }
         }
 
-        return 'success'; // Password is valid
+        // Check for common weak patterns
+        $weakPatterns = [
+            '/^(.)\1+$/',           // All same character (e.g., "aaaaaaaa")
+            '/^(..+)\1+$/',         // Repeating patterns (e.g., "abcabcabc")
+            '/^(?:0123|1234|2345|3456|4567|5678|6789|7890)+/', // Sequential numbers
+            '/^(?:abcd|bcde|cdef|defg|efgh|fghi|ghij|hijk|ijkl|jklm|klmn|lmno|mnop|nopq|opqr|pqrs|qrst|rstu|stuv|tuvw|uvwx|vwxy|wxyz)+/i', // Sequential letters
+        ];
+
+        foreach ($weakPatterns as $pattern) {
+            if (preg_match($pattern, $password)) {
+                return  $this->translator->_("Password is too weak. Please choose a more complex password.");
+            }
+        }
+
+        return 'success';
     }
 
     public static function displayProgressBar($current, $total = null, $size = 30)

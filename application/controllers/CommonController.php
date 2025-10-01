@@ -238,9 +238,8 @@ class CommonController extends Zend_Controller_Action
             $password = $this->_getParam('password');
             $name = $this->_getParam('name') ?? null;
             $email = $this->_getParam('email') ?? null;
-            $length = $commonService->getConfig('participant_login_password_length');
-            $passwordCheck = $commonService->validatePassword($password, $name, $email, $length);
-            $this->view->result = $passwordCheck;
+            $length = $commonService->getConfig('participant_login_password_length') ?? 8;
+            $this->view->result = $commonService->validatePassword($password, $name, $email, $length);
         }
     }
 }
