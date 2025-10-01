@@ -10,5 +10,5 @@ export APPLICATION_ENV
 # Get the directory where the script is located
 SCRIPT_DIR=$(dirname "$0")
 
-# Run the crunzphp command using the script's directory to construct the path
-"$SCRIPT_DIR"/vendor/bin/crunz schedule:run
+# Run the composer script using the project root as working directory
+composer --working-dir="$SCRIPT_DIR" tasks

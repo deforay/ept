@@ -40,6 +40,7 @@
         "symfony/var-dumper": "^5.4"
     },
     "scripts": {
+        "tasks": "crunz schedule:run",
         "migrate": "php bin/migrate.php -yq"
     }
 }

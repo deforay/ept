@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# File: runner
+
+# Use current dir if it has composer.json; else use script dir
+if [ -f "composer.json" ]; then
+    WORK_DIR="$(pwd)"
+else
+    WORK_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+    cd "$WORK_DIR"
+fi
+
+if [ $# -eq 0 ]; then
+    exec composer tasks
+else
+    exec composer "$@"
+fi

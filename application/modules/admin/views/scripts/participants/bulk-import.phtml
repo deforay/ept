@@ -28,8 +28,8 @@
                         <label class="col-lg-4 control-label" for="resetPassword"><?= $this->translate->_("Reset Password"); ?><span class="mandatory">*</span></label>
                         <div class="col-lg-8">
                             <select name="resetPassword" id="resetPassword" class="form-control" title="Please choose the reset password">
-                                <option value="no"><?= $this->translate->_("No"); ?></option>
                                 <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                                <option value="no"><?= $this->translate->_("No"); ?></option>
                             </select>
                         </div>
                     </div><br>
@@ -74,9 +74,11 @@
     function showHideResetPassword(value) {
         if (value == 'update-on-unique-id-match') {
             $('.reset-password').removeClass('hide');
+            $("#resetPassword").val('no');
             $('#resetPassword').addClass('isRequired');
         } else {
             $('#resetPassword').removeClass('isRequired');
+            $("#resetPassword").val('yes');
             $('.reset-password').addClass('hide');
         }
     }

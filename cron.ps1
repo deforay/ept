@@ -11,5 +11,5 @@ $env:APPLICATION_ENV = $EnvName
 # Get the directory where this script is located
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# Run the crunz command using the script's directory
-php "$ScriptDir/vendor/bin/crunz" schedule:run
+# Run the composer script using the project root as working directory
+composer --working-dir="$ScriptDir" tasks
