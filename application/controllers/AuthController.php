@@ -272,8 +272,8 @@ class AuthController extends Zend_Controller_Action
 
 				$loginHistoryModel->addLoginHistory($loginData);
 
-				// Successful login - redirect to dashboard
-				$this->redirect('/participant/dashboard');
+				// Successful login - redirect to current schemes
+				$this->redirect('/participant/current-schemes');
 			} else {
 				// Failed login - handle login attempts and banning
 				if (
