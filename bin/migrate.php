@@ -6,7 +6,7 @@ if (php_sapi_name() !== 'cli') {
     exit(0);
 }
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 use PhpMyAdmin\SqlParser\Parser;
 
@@ -354,9 +354,7 @@ $currentVersion = (string)$db->fetchOne(
 
 // collect migrations
 $migrationFiles = (array)glob(DB_PATH . '/migrations/*.sql');
-$versions = array_map(function ($file) {
-    return basename($file, '.sql');
-}, $migrationFiles);
+$versions = array_map(fn($file) => basename($file, '.sql'), $migrationFiles);
 usort($versions, 'version_compare');
 
 // counters
@@ -366,9 +364,10 @@ $successfulQueries = 0;
 $skippedQueries    = 0;
 $totalErrors       = 0;
 
+
+
 foreach ($versions as $version) {
     $file = DB_PATH . '/migrations/' . $version . '.sql';
-
     // Only run strictly newer versions (avoid re-running the current file)
     if (version_compare($version, $currentVersion, '>=')) {
 
@@ -519,7 +518,7 @@ foreach ($versions as $version) {
     gc_collect_cycles();
 }
 
-// summary
+// Migration summary
 if (!$quietMode) {
     echo "\n=======================================\n";
     echo "Migration summary:\n";

@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 use Symfony\Component\Uid\Ulid;
 

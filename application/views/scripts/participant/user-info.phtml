@@ -26,12 +26,7 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Primary e-mail address (used for login)"); ?></td>
                         <td>
-                            <?php
-                            if ($authNameSpace->force_profile_check_primary == 'yes') { ?>
-                            <?php } else {
-                                // echo $this->rsUser['primary_email'];
-                            } ?>
-                            <input id="pemail" type="text" name="pemail" size="50" maxlength="45" value="<?php echo $this->rsUser['primary_email']; ?>" class="isRequired form-control" title="Please enter a primary email id here" placeholder="Please enter a primary email id here" onblur="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "dm_id##" . $this->rsUser['dm_id']; ?>', 'Entered email already exists. Please enter another email id.')" <?php echo (isset($this->rsUser['data_manager_type']) && !empty($this->rsUser['data_manager_type']) && $this->rsUser['data_manager_type'] == 'participant') ? "readonly='readonly'" : ''; ?> />
+                            <?= $this->rsUser['primary_email']; ?>
                             <input type="hidden" id="oldpemail" name="oldpemail" value="<?php echo $this->rsUser['primary_email']; ?>" />
                             <input type="hidden" id="userSystemId" name="userSystemId" value="<?php echo $this->rsUser['dm_id']; ?>" />
                         </td>

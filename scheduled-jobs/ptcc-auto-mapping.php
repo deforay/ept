@@ -2,7 +2,7 @@
 // PTCC manager location wise mapping issue fixing auto runner
 // set php memeroy limit
 ini_set('memory_limit', '-1');
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php'); //Initiate the cron
+require_once __DIR__ . '/../cli-bootstrap.php'; //Initiate the cron
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV); // Define the db resource config object
 $general = new Application_Service_Common(); // Declare the common functionality access object

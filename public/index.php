@@ -1,4 +1,7 @@
 <?php
+
+require_once '../constants.php';
+
 // Allow from any origin
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
@@ -16,22 +19,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS'
     exit(0);
 }
 
-defined('APPLICATION_ENV')
-    || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-
-
-defined('ROOT_PATH')
-    || define('ROOT_PATH', dirname(__DIR__, 1));
-
-const WEB_ROOT = ROOT_PATH . DIRECTORY_SEPARATOR . 'public';
-const UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'uploads';
-const TEMP_UPLOAD_PATH = WEB_ROOT . DIRECTORY_SEPARATOR . 'temporary';
-const DB_PATH = ROOT_PATH . DIRECTORY_SEPARATOR . 'database';
-const APPLICATION_PATH = ROOT_PATH . DIRECTORY_SEPARATOR . 'application';
-const DOWNLOADS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'downloads';
-const SCHEDULED_JOBS_FOLDER = ROOT_PATH . DIRECTORY_SEPARATOR . 'scheduled-jobs';
-const PARTICIPANT_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/participant-layouts';
-const SUMMARY_REPORTS_LAYOUT = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'report-layouts/summary-layouts';
 
 //if (APPLICATION_ENV == 'production') {
 // Suppress deprecation warnings, notices, and warnings
@@ -39,11 +26,11 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
 //}
 
 
-set_include_path(implode(PATH_SEPARATOR, array(
+set_include_path(implode(PATH_SEPARATOR, [
     realpath(ROOT_PATH . '/vendor'),
     realpath(ROOT_PATH . '/library'),
     get_include_path(),
-)));
+]));
 
 /** Zend_Application */
 require_once ROOT_PATH . '/vendor/autoload.php';

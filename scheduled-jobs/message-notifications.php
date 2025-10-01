@@ -5,7 +5,7 @@
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
 use Netflie\WhatsAppCloudApi\Message\Template\Component;

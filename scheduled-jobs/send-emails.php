@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php';
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 /* ========= Tunables ========= */
 const QUEUE_FETCH_LIMIT    = 100; // fetch up to N rows per run

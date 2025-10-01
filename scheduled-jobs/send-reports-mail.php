@@ -2,7 +2,7 @@
 
 ini_set('memory_limit', '-1');
 
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 $cliOptions = getopt("s:");
 $shipmentToSendReport = $cliOptions['s'];

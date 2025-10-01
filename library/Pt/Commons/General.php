@@ -82,7 +82,7 @@ class Pt_Commons_General
         closedir($dir_handle);
     }
 
-    function removeDirectory($dirname)
+    public function removeDirectory($dirname)
     {
         // Sanity check
         if (!file_exists($dirname)) {

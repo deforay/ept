@@ -423,3 +423,11 @@ ALTER TABLE temp_mail
 ALTER TABLE `response_result_generic_test` CHANGE `result` `result_1` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `response_result_generic_test` CHANGE `repeat_result` `result_2` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `response_result_generic_test` ADD `result_3` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `result_2`;
+
+
+-- END OF VERSION 7.2.2
+-- END OF VERSION 7.2.2
+-- END OF VERSION 7.2.2
+-- END OF VERSION 7.2.2
+-- END OF VERSION 7.2.2
+-- END OF VERSION 7.2.2

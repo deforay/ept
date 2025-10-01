@@ -3,8 +3,6 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
     protected function _initAppSetup()
     {
-
-        define('APP_VERSION', '7.2.2');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
 

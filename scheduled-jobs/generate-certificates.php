@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . DIRECTORY_SEPARATOR . 'CronInit.php');
+require_once __DIR__ . '/../cli-bootstrap.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -231,9 +231,10 @@ function docxToPdf(string $inDocx, string $outPdf): ?string
 }
 
 /* ---------- Setup ---------- */
-
+$generalModel = new Pt_Commons_General();
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
+$generalModel->rmdirRecursive($folderPath);
 $certificatePaths[] = $excellenceCertPath = "$folderPath/excellence";
 $certificatePaths[] = $participationCertPath = "$folderPath/participation";
 foreach ($certificatePaths as $p) if (!is_dir($p)) @mkdir($p, 0777, true);
@@ -246,7 +247,7 @@ $schemeService = new Application_Service_Schemes();
 $vlModel = new Application_Model_Vl();
 $vlAssayArray = $vlModel->getVlAssay();
 $eidAssayArray = $schemeService->getEidExtractionAssay();
-$generalModel = new Pt_Commons_General();
+
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 /* ---------- Template resolver that supports both modes ---------- */
@@ -286,7 +287,11 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 	];
 
 	$t = $templates[$certificateType][$shipmentType] ?? null;
-	if (!$t) throw new Exception("$certificateType template map missing for $shipmentType");
+	if (!$t) {
+		echo "No template found for $certificateType - $shipmentType. Skipping.\n";
+		return;
+		//throw new Exception("$certificateType template map missing for $shipmentType");
+	}
 
 	if ($mode === 'pdf') {
 		$tpl = $t['pdf'] ?? '';
@@ -298,9 +303,13 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 
 	if ($mode === 'docx') {
 		$tpl = $t['docx'] ?? '';
-		if (!is_file($tpl)) throw new Exception("DOCX template not found: $tpl");
+		if (!is_file($tpl)) {
+			echo "DOCX template not found: $tpl. Skipping.\n";
+			return;
+			//throw new Exception("DOCX template not found: $tpl");
+		}
 
-		$outDocx = $outputFileBase . ".docx";
+		$outDocx = "$outputFileBase.docx";
 		if (!renderDocx($tpl, $fields, $outDocx)) throw new Exception("DOCX render failed");
 
 		// No PDF conversion - let users handle this locally
@@ -540,7 +549,7 @@ try {
 	$impShipmentId = implode(",", $shipmentIdArray);
 
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
-		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response'])
+		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response', 'shipment_date'])
 		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
 		// ->where("spm.final_result = 1 OR spm.final_result = 2")
 		// ->where("spm.is_excluded NOT LIKE 'yes'")
@@ -549,9 +558,9 @@ try {
 
 	$sQuery->where("spm.shipment_id IN ($impShipmentId)");
 
-	//Zend_Debug::dump($shipmentCodeArray);die;
+
 	$shipmentParticipantResult = $db->fetchAll($sQuery);
-	//Zend_Debug::dump($shipmentParticipantResult);die;
+	//var_dump($shipmentParticipantResult);die;
 	$participants = [];
 
 	foreach ($shipmentParticipantResult as $shipment) {
@@ -565,6 +574,7 @@ try {
 		$participants[$shipment['unique_identifier']]['labName'] = implode(' ', $fullNameParts);
 		$participants[$shipment['unique_identifier']]['city'] = $shipment['city'];
 		$participants[$shipment['unique_identifier']]['country'] = $shipment['country'];
+		$participants[$shipment['unique_identifier']]['shipment_year'] = date('Y', strtotime($shipment['shipment_date']));
 		//$participants[$shipment['unique_identifier']]['finalResult']=$shipment['final_result'];
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
 		$participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'];
@@ -618,7 +628,9 @@ try {
 				'city' => $arrayVal['city'],
 				'country' => $arrayVal['country'],
 				'assay' => $assayName,
-				'assayname' => $assayName
+				'assayname' => $assayName,
+				'shipment_year' => $arrayVal['shipment_year'],
+				'shipmentyear' => $arrayVal['shipment_year'],
 			];
 
 			$attribs = $arrayVal['attribs'] ?? [];

@@ -182,7 +182,7 @@ class AuthController extends Zend_Controller_Action
 			if (isset($result) && !empty($result) && isset($result['password'])) {
 				$passwordVerify = password_verify($password, $result['password']);
 			}
-
+			$userId = null;
 			if (isset($result) && !empty($result) && $passwordVerify) {
 				// Successful login - clear login attempts
 				unset($_SESSION['loginAttempt'][$username]);
@@ -311,15 +311,15 @@ class AuthController extends Zend_Controller_Action
 				}
 
 					// Insert login history
-				$userId = $authenticatedUserId; // Set this to the logged-in user's ID
+				//$userId = $authenticatedUserId; // Set this to the logged-in user's ID
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-				$loginData = array(
+				$loginData = [
 					'user_id' => $userId,
 					'login_context' => 'participant', // or 'failed' if login failed
 					'login_status' => 'failed', // Indicate failed login
 					'login_id' => $username, // This can be set to a unique ID if needed
-				);
+				];
 
 				$loginHistoryModel->addLoginHistory($loginData);
 
