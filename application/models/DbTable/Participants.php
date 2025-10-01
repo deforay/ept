@@ -1727,6 +1727,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dmId = $db->lastInsertId();
                 } else {
                     $dmId = $dataManagerExists['dm_id'];
+                    $db->update('data_manager', $dataManagerData, 'dm_id = ' . $dmId);
                 }
 
                 // Handle direct participant login

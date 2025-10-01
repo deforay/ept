@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# crunz-run.ps1
+# cron.ps1
 
 param(
     [string]$EnvName = "production"
