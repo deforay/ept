@@ -762,9 +762,9 @@ if [ "$NEED_FULL_INSTALL" = true ]; then
 
     if curl --output /dev/null --silent --head --fail "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"; then
         # Download tar + checksums (with cache-bust)
-        download_file "vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz?t=$(date +%s)" "Downloading vendor packages..." || { print error "Failed to download vendor.tar.gz"; exit 1; }
+        download_file "vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz" "Downloading vendor packages..." || { print error "Failed to download vendor.tar.gz"; exit 1; }
 
-        if download_file "vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256?t=$(date +%s)" "Downloading SHA-256..." ; then
+        if download_file "vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256" "Downloading SHA-256..." ; then
             print info "Verifying SHA-256..."
             if ! sha256sum -c vendor.tar.gz.sha256; then
                 print error "SHA-256 verification failed"; exit 1
@@ -772,7 +772,7 @@ if [ "$NEED_FULL_INSTALL" = true ]; then
             rm -f vendor.tar.gz.sha256
         else
             print warning "SHA-256 not available; falling back to MD5."
-            download_file "vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5?t=$(date +%s)" "Downloading MD5..." || { print error "Failed to download vendor.tar.gz.md5"; exit 1; }
+            download_file "vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5" "Downloading MD5..." || { print error "Failed to download vendor.tar.gz.md5"; exit 1; }
             print info "Verifying MD5..."
             if ! md5sum -c vendor.tar.gz.md5; then
                 print error "MD5 verification failed"; exit 1

@@ -77,15 +77,15 @@ function table_exists(Zend_Db_Adapter_Abstract $db, string $table): bool
 function table_primary_key(Zend_Db_Adapter_Abstract $db, string $table): array
 {
     $sql = "SELECT k.COLUMN_NAME
-              FROM information_schema.TABLE_CONSTRAINTS t
-              JOIN information_schema.KEY_COLUMN_USAGE k
-                ON t.CONSTRAINT_NAME = k.CONSTRAINT_NAME
-               AND t.TABLE_SCHEMA = k.TABLE_SCHEMA
-               AND t.TABLE_NAME   = k.TABLE_NAME
-             WHERE t.TABLE_SCHEMA = ?
-               AND t.TABLE_NAME   = ?
-               AND t.CONSTRAINT_TYPE = 'PRIMARY KEY'
-             ORDER BY k.ORDINAL_POSITION";
+                FROM information_schema.TABLE_CONSTRAINTS t
+                JOIN information_schema.KEY_COLUMN_USAGE k
+                    ON t.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                AND t.TABLE_SCHEMA = k.TABLE_SCHEMA
+                AND t.TABLE_NAME   = k.TABLE_NAME
+                WHERE t.TABLE_SCHEMA = ?
+                AND t.TABLE_NAME   = ?
+                AND t.CONSTRAINT_TYPE = 'PRIMARY KEY'
+                ORDER BY k.ORDINAL_POSITION";
     $rows = $db->fetchCol($sql, [current_db($db), $table]);
     if (!$rows) return [];
     return array_map(function ($c) {
@@ -97,9 +97,9 @@ function table_primary_key(Zend_Db_Adapter_Abstract $db, string $table): array
 function inbound_foreign_keys(Zend_Db_Adapter_Abstract $db, string $table): array
 {
     $sql = "SELECT CONSTRAINT_NAME, TABLE_NAME
-              FROM information_schema.KEY_COLUMN_USAGE
-             WHERE REFERENCED_TABLE_SCHEMA = ?
-               AND REFERENCED_TABLE_NAME   = ?";
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE REFERENCED_TABLE_SCHEMA = ?
+                AND REFERENCED_TABLE_NAME   = ?";
     return (array)$db->fetchAll($sql, [current_db($db), $table]);
 }
 

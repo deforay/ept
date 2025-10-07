@@ -2,12 +2,20 @@ name: Build Vendor Package
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
     paths:
-      - composer.json
-      - composer.lock
-      - .github/workflows/vendor-package.yml
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/vendor-package.yml'
   workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force rebuild even without changes'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -18,60 +26,167 @@ concurrency:
 
 jobs:
   build:
+    name: Build Vendor Package
     runs-on: ubuntu-latest
+    env:
+      PHP_VERSION: '7.4'
+      PACKAGE_NAME: 'vendor.tar.gz'
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
-          extensions: gd, zip, pdo_mysql, intl, bcmath
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: gd, zip, pdo, json, curl, gettext, openssl, fileinfo, sodium, zlib, intl, bcmath
           tools: composer:v2
+          coverage: none
 
-      - name: Get Composer cache dir
+      - name: Get Composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache Composer
+      - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer files
+        run: composer validate --no-check-publish
 
       - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
+        run: |
+          composer install \
+            --no-dev \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction \
+            --optimize-autoloader \
+            --classmap-authoritative
 
       - name: Verify vendor
         run: test -f vendor/autoload.php
 
-      - name: Create vendor.tar.gz
+      - name: Generate composer hash
+        id: composer_hash
         run: |
-          # prune deadweight
-          find vendor -type d \( -iname ".git" -o -iname "tests" -o -iname "test" -o -iname "docs" -o -iname ".github" -o -iname "examples" -o -iname "bench*" \) -prune -exec rm -rf {} +
-          find vendor -type f \( -iname "*.md" -o -iname "phpunit*.xml*" -o -iname "*.dist" -o -iname ".gitattributes" -o -iname ".gitignore" \) -delete
-          tar -czf vendor.tar.gz vendor
-          md5sum vendor.tar.gz > vendor.tar.gz.md5
-          sha256sum vendor.tar.gz > vendor.tar.gz.sha256
+          HASH=$(cat composer.json composer.lock | sha256sum | cut -d' ' -f1 | cut -c1-8)
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+          echo "Generated hash: $HASH"
 
-      - name: Upload artifact
+      - name: Clean and package vendor
+        run: |
+          echo "Original vendor size:"
+          du -sh vendor/
+          
+          # Prune unnecessary directories and files
+          find vendor -type d \( \
+            -iname ".git" -o \
+            -iname "tests" -o \
+            -iname "Tests" -o \
+            -iname "test" -o \
+            -iname "docs" -o \
+            -iname "doc" -o \
+            -iname ".github" -o \
+            -iname "examples" -o \
+            -iname "bench*" \
+          \) -prune -exec rm -rf {} + 2>/dev/null || true
+          
+          find vendor -type f \( \
+            -iname "*.md" -o \
+            -iname "phpunit*.xml*" -o \
+            -iname "*.dist" -o \
+            -iname ".gitattributes" -o \
+            -iname ".gitignore" -o \
+            -iname ".travis.yml" \
+          \) -delete 2>/dev/null || true
+          
+          echo "Cleaned vendor size:"
+          du -sh vendor/
+          
+          # Create package and checksums
+          tar -czf "${{ env.PACKAGE_NAME }}" vendor/
+          md5sum "${{ env.PACKAGE_NAME }}" > "${{ env.PACKAGE_NAME }}.md5"
+          sha256sum "${{ env.PACKAGE_NAME }}" > "${{ env.PACKAGE_NAME }}.sha256"
+          
+          echo "Package created successfully"
+          ls -lh *.tar.gz
+          
+          # Store package size for release notes
+          echo "PACKAGE_SIZE=$(du -h ${{ env.PACKAGE_NAME }} | cut -f1)" >> $GITHUB_ENV
+
+      - name: Upload vendor package as artifact
         uses: actions/upload-artifact@v4
         with:
           name: vendor-package
           path: |
-            vendor.tar.gz
-            vendor.tar.gz.md5
-            vendor.tar.gz.sha256
+            ${{ env.PACKAGE_NAME }}
+            ${{ env.PACKAGE_NAME }}.md5
+            ${{ env.PACKAGE_NAME }}.sha256
           retention-days: 90
+          compression-level: 0
 
-      - name: Create/Update release (rolling tag; replace assets)
+      - name: Generate release notes
+        run: |
+          cat << EOF > release_notes.md
+          ## Vendor Package Information
+          
+          **Build Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Commit:** \`${{ github.sha }}\`
+          **Branch:** \`${{ github.ref_name }}\`
+          **Run:** #${{ github.run_number }}
+          **PHP Version:** ${{ env.PHP_VERSION }}
+          **Package Size:** ${{ env.PACKAGE_SIZE }}
+          **Composer Hash:** \`${{ steps.composer_hash.outputs.hash }}\`
+          
+          ### Checksums
+          
+          **MD5:** \`$(cat ${{ env.PACKAGE_NAME }}.md5 | cut -d' ' -f1)\`
+          **SHA256:** \`$(cat ${{ env.PACKAGE_NAME }}.sha256 | cut -d' ' -f1)\`
+          
+          ### Installation
+          
+          \`\`\`bash
+          # Download
+          wget https://github.com/${{ github.repository }}/releases/download/vendor-latest/vendor.tar.gz
+          
+          # Verify (optional)
+          wget https://github.com/${{ github.repository }}/releases/download/vendor-latest/vendor.tar.gz.sha256
+          sha256sum -c vendor.tar.gz.sha256
+          
+          # Extract
+          tar -xzf vendor.tar.gz
+          \`\`\`
+          
+          ### Recent Changes
+          
+          \`\`\`
+          $(git log -3 --pretty=format:"%h - %s (%an, %ar)" -- composer.json composer.lock)
+          \`\`\`
+          EOF
+
+      - name: Create or update release
         uses: ncipollo/release-action@v1
         with:
           tag: vendor-latest
           name: Latest Vendor Package
-          body: "Built from ${{ github.sha }} (run ${{ github.run_number }})"
+          bodyFile: release_notes.md
           artifacts: "vendor.tar.gz,vendor.tar.gz.md5,vendor.tar.gz.sha256"
           allowUpdates: true
           replacesArtifacts: true
+
+      - name: Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Vendor package built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** \`${{ env.PACKAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Size:** ${{ env.PACKAGE_SIZE }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Hash:** \`${{ steps.composer_hash.outputs.hash }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 [Download Release](https://github.com/${{ github.repository }}/releases/tag/vendor-latest)" >> $GITHUB_STEP_SUMMARY
