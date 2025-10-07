@@ -35,6 +35,11 @@ prepare_system
 
 DEFAULT_EPT_PATH="/var/www/ept"
 
+# Semver-ish compare using sort -V: version_ge A B  => true if A >= B
+version_ge() {
+    [ "$(printf '%s\n' "$2" "$1" | sort -V | head -n1)" = "$2" ]
+}
+
 resolve_ept_path() {
     local provided="$1"
     if [ -n "$provided" ]; then
@@ -187,13 +192,24 @@ chown mysql:mysql /var/log/mysql/mysql-slow.log
 mysql_version=$(mysql -V | awk '{for(i=1;i<=NF;i++) if ($i ~ /^[0-9]+\.[0-9]+(\.[0-9]+)?$/) {print $i; exit}}' | cut -d. -f1-2)
 print info "MySQL version detected: ${mysql_version}"
 
-# Determine collation based on MySQL version
-if [[ $(echo "$mysql_version >= 8.0" | bc -l) -eq 1 ]]; then
+# Detect server/client flavor + version
+ver_out="$(mysql -V 2>/dev/null || true)"
+is_mariadb=false
+echo "$ver_out" | grep -qi 'mariadb' && is_mariadb=true
+
+# First numeric group like 8.0.39 or 10.11.6 → keep major.minor (e.g., 8.0 or 10.11)
+ver_num="$(printf '%s\n' "$ver_out" | grep -oE '[0-9]+(\.[0-9]+)+' | head -1 || echo '0.0')"
+mysql_version="$(awk -F. '{printf "%d.%d\n",$1,$2}' <<<"$ver_num" 2>/dev/null || echo '0.0')"
+
+print info "MySQL version detected: ${mysql_version} (MariaDB: $is_mariadb)"
+
+# Collation: only MySQL 8.0+ supports utf8mb4_0900_ai_ci; MariaDB does not
+if ! $is_mariadb && version_ge "$mysql_version" "8.0"; then
     mysql_collation="utf8mb4_0900_ai_ci"
     print info "Using MySQL 8.0+ optimized collation: utf8mb4_0900_ai_ci"
 else
     mysql_collation="utf8mb4_unicode_ci"
-    print info "Using MySQL 5.x compatible collation: utf8mb4_unicode_ci"
+    print info "Using utf8mb4_unicode_ci collation"
 fi
 
 # Desired MySQL settings
@@ -225,7 +241,7 @@ declare -A mysql_settings=(
 )
 
 # Version-specific
-if [[ $(echo "$mysql_version < 8.0" | bc -l) -eq 1 ]]; then
+if $is_mariadb || ! version_ge "$mysql_version" "8.0"; then
     mysql_settings["query_cache_type"]="0"
     mysql_settings["query_cache_size"]="0"
     mysql_settings["innodb_buffer_pool_instances"]="8"
