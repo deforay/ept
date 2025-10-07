@@ -1,0 +1,77 @@
+name: Build Vendor Package
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - composer.json
+      - composer.lock
+      - .github/workflows/vendor-package.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: gd, zip, pdo_mysql, intl, bcmath
+          tools: composer:v2
+
+      - name: Get Composer cache dir
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
+
+      - name: Verify vendor
+        run: test -f vendor/autoload.php
+
+      - name: Create vendor.tar.gz
+        run: |
+          # prune deadweight
+          find vendor -type d \( -iname ".git" -o -iname "tests" -o -iname "test" -o -iname "docs" -o -iname ".github" -o -iname "examples" -o -iname "bench*" \) -prune -exec rm -rf {} +
+          find vendor -type f \( -iname "*.md" -o -iname "phpunit*.xml*" -o -iname "*.dist" -o -iname ".gitattributes" -o -iname ".gitignore" \) -delete
+          tar -czf vendor.tar.gz vendor
+          md5sum vendor.tar.gz > vendor.tar.gz.md5
+          sha256sum vendor.tar.gz > vendor.tar.gz.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor-package
+          path: |
+            vendor.tar.gz
+            vendor.tar.gz.md5
+            vendor.tar.gz.sha256
+          retention-days: 90
+
+      - name: Create/Update release (rolling tag; replace assets)
+        uses: ncipollo/release-action@v1
+        with:
+          tag: vendor-latest
+          name: Latest Vendor Package
+          body: "Built from ${{ github.sha }} (run ${{ github.run_number }})"
+          artifacts: "vendor.tar.gz,vendor.tar.gz.md5,vendor.tar.gz.sha256"
+          allowUpdates: true
+          replacesArtifacts: true

@@ -12,9 +12,13 @@ class Application_Model_Dts
 {
 	private $db = null;
 
+	/** @var Zend_Translate */
+	protected $translator;
+
 	public function __construct()
 	{
 		$this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$this->translator = Zend_Registry::get('translate');
 	}
 
 	public function getFinalResults()
@@ -1517,16 +1521,16 @@ class Application_Model_Dts
 
 		$excel = new Spreadsheet();
 
-		$borderStyle = array(
-			'alignment' => array(
+		$borderStyle = [
+			'alignment' => [
 				'horizontal' => Alignment::HORIZONTAL_CENTER,
-			),
-			'borders' => array(
-				'outline' => array(
+			],
+			'borders' => [
+				'outline' => [
 					'style' => Border::BORDER_THIN,
-				),
-			)
-		);
+				],
+			]
+		];
 
 		$kitQuery = $db->select()
 			->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.number_of_samples', 's.number_of_controls'])
@@ -1581,9 +1585,44 @@ class Application_Model_Dts
 				unset($participantRow);
 			}
 		}
-		$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Sample Rehydration Date', 'Testing Date', 'Reported On', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
+		$reportHeadings = [
+			$this->translator->_('Participant Code'),
+			$this->translator->_('Participant Name'),
+			$this->translator->_('Institute Name'),
+			$this->translator->_('Province'),
+			$this->translator->_('District'),
+			$this->translator->_('Shipment Receipt Date'),
+			$this->translator->_('Test Type'),
+			$this->translator->_('Sample Rehydration Date'),
+			$this->translator->_('Testing Date'),
+			$this->translator->_('Reported On'),
+			$this->translator->_('Test #1 Kit Name'),
+			$this->translator->_('Kit Lot #1'),
+			$this->translator->_('Expiry Date #1'),
+			$this->translator->_('QC Done #1'),
+			$this->translator->_('QC Expiry Date #1'),
+		];
 		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'Shipment Receipt Date', 'Test Type', 'Testing Date', 'Reported On', 'Condition Of PT Samples', 'Refridgerator', 'Room Temperature', 'Stop Watch', 'Test#1 Kit Name', 'Kit Lot#1', 'Expiry Date#1', 'QC Done#1', 'QC Expiry Date#1'];
+			$reportHeadings = [
+				$this->translator->_('Participant Code'),
+				$this->translator->_('Participant Name'),
+				$this->translator->_('Institute Name'),
+				$this->translator->_('Province'),
+				$this->translator->_('District'),
+				$this->translator->_('Shipment Receipt Date'),
+				$this->translator->_('Test Type'),
+				$this->translator->_('Testing Date'),
+				$this->translator->_('Reported On'),
+				$this->translator->_('Condition Of PT Samples'),
+				$this->translator->_('Refridgerator'),
+				$this->translator->_('Room Temperature'),
+				$this->translator->_('Stop Watch'),
+				$this->translator->_('Test #1 Kit Name'),
+				$this->translator->_('Kit Lot #1'),
+				$this->translator->_('Expiry Date #1'),
+				$this->translator->_('QC Done #1'),
+				$this->translator->_('QC Expiry Date #1')
+			];
 		}
 
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
@@ -1595,7 +1634,14 @@ class Application_Model_Dts
 				$reportHeadings[] = $kit1Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 			}
 		}
-		array_push($reportHeadings, 'Test#2 Kit Name', 'Kit Lot#2', 'Expiry Date#2', 'QC Done#2', 'QC Expiry Date#2');
+		array_push(
+			$reportHeadings,
+			$this->translator->_('Test #2 Kit Name'),
+			$this->translator->_('Kit Lot #2'),
+			$this->translator->_('Expiry Date #2'),
+			$this->translator->_('QC Done #2'),
+			$this->translator->_('QC Expiry Date #2')
+		);
 		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 		if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
 			// To search the kit name postion
@@ -1606,13 +1652,20 @@ class Application_Model_Dts
 			}
 		}
 		if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-			array_push($reportHeadings, 'Test#3 Kit Name', 'Kit Lot#3', 'Expiry Date#3', 'QC Done#3', 'QC Expiry Date#3');
+			array_push(
+				$reportHeadings,
+				$this->translator->_('Test#3 Kit Name'),
+				$this->translator->_('Kit Lot #3'),
+				$this->translator->_('Expiry Date #3'),
+				$this->translator->_('QC Done #3'),
+				$this->translator->_('QC Expiry Date #3')
+			);
 			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
 			if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
 				// To search the kit name postion
 				$index = array_search('QC Expiry Date#3', $reportHeadings);
 				// Insert the value after this index
-				foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
+				foreach (range($index + 1, count($reportHeadings) - 1) as $row) {
 					$reportHeadings[] = $kit3Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 				}
 			}
@@ -1651,7 +1704,10 @@ class Application_Model_Dts
 				array_push($reportHeadings, $customField2);
 			}
 		}
-		array_push($reportHeadings, 'Comments');
+		array_push(
+			$reportHeadings,
+			$this->translator->_('Comments')
+		);
 		$finalResultStartCellCount += 1;
 		$finalResultStartCellCount += $result['number_of_samples'];
 		if ($result['number_of_controls'] > 0)
@@ -1727,7 +1783,7 @@ class Application_Model_Dts
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 			$repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-				$repeatHeadingColumn = $n - (($result['number_of_samples'] * 4) + $result['number_of_controls'] + 1);
+				$repeatHeadingColumn = $n - ($result['number_of_samples'] * 4 + $result['number_of_controls'] + 1);
 			}
 			$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 2) + $result['number_of_controls']);
 			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
@@ -2259,7 +2315,19 @@ class Application_Model_Dts
 		$participantListSheet->getDefaultRowDimension()->setRowHeight(18);
 		$excel->addSheet($participantListSheet, 0);
 		$participantListSheet->setTitle('Participant List', true);
-		$participantListHeadings = ['Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Telephone', 'Email'];
+		$participantListHeadings = [
+			$this->translator->_('Participant Code'),
+			$this->translator->_('Participant Name'),
+			$this->translator->_('Institute Name'),
+			$this->translator->_('Department'),
+			$this->translator->_('Country'),
+			$this->translator->_('Address'),
+			$this->translator->_('Province'),
+			$this->translator->_('District'),
+			$this->translator->_('City'),
+			$this->translator->_('Telephone'),
+			$this->translator->_('Email')
+		];
 		$participantListSheet->fromArray($participantListHeadings, null, "A1");
 		$participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($styleArray);
 
@@ -2283,9 +2351,14 @@ class Application_Model_Dts
 		$panelScoreSheet->setTitle('Panel Score', true);
 		$panelScoreSheet->getDefaultColumnDimension()->setWidth(20);
 		$panelScoreSheet->getDefaultRowDimension()->setRowHeight(18);
-		$panelScoreHeadings = ['Participant Code', 'Participant Name', 'Institude Name', 'Province'];
+		$panelScoreHeadings = [
+			$this->translator->_('Participant Code')$this->translator->_(,
+			$this->translator->_('Participant Name'),
+			$this->translator->_('Institute Name'),
+			$this->translator->_('Province')
+		];
 		$panelScoreHeadings = $this->addSampleNameInArray($shipmentId, $panelScoreHeadings);
-		array_push($panelScoreHeadings, 'No. of Correct Responses', '% Correct');
+		array_push($panelScoreHeadings, $this->translator->_('No. of Correct Responses'), $this->translator->_('% Correct'));
 		$panelScoreSheet->fromArray($panelScoreHeadings, null, 'A1');
 		$panelScoreSheet->getStyle('A1:' . $panelScoreSheet->getHighestColumn() . '1')->applyFromArray($styleArray);
 
@@ -2299,7 +2372,18 @@ class Application_Model_Dts
 		$docScoreSheet->setTitle('Documentation Score', true);
 		$docScoreSheet->getDefaultColumnDimension()->setWidth(20);
 		$docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
-		$docScoreHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'Supervisor signature', 'Panel Receipt Date', 'Sample Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %'];
+		$docScoreHeadings = [
+			$this->translator->_('Participant Code'),
+			$this->translator->_('Participant Name'),
+			$this->translator->_('Institute Name'),
+			$this->translator->_('Province'),
+			$this->translator->_('Supervisor signature'),
+			$this->translator->_('Panel Receipt Date'),
+			$this->translator->_('Sample Rehydration Date'),
+			$this->translator->_('Tested Date'),
+			$this->translator->_('Rehydration Test In Specified Time'),
+			$this->translator->_('Documentation Score %')
+		];
 		$docScoreSheet->fromArray($docScoreHeadings, null, 'A1');
 		$docScoreSheet->getStyle('A1:' . $docScoreSheet->getHighestColumn() . '1')->applyFromArray($styleArray);
 
@@ -2316,7 +2400,21 @@ class Application_Model_Dts
 		$totalScoreSheet->setTitle('Total Score', true);
 		$totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
 		$totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-		$totalScoreHeadings = ['Participant Code', 'Participant Name', 'Institute Name', 'Province', 'District', 'City', 'Country', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score', 'Documentation Score', 'Total Score', 'Overall Performance', 'Warnings and/or Reasons for Failure'];
+		$totalScoreHeadings = [
+			$this->translator->_('Participant Code'),
+			$this->translator->_('Participant Name'),
+			$this->translator->_('Institute Name'),
+			$this->translator->_('Province'),
+			$this->translator->_('District'),
+			$this->translator->_('City'),
+			$this->translator->_('Country'),
+			$this->translator->_('No. of Correct Samples') .  ' (N=' . $result['number_of_samples'] . ')',
+			$this->translator->_('Panel Score'),
+			$this->translator->_('Documentation Score'),
+			$this->translator->_('Total Score'),
+			$this->translator->_('Overall Performance'),
+			$this->translator->_('Warnings and/or Reasons for Failure')
+		];
 		$totalScoreSheet->fromArray($totalScoreHeadings, null, 'A1');
 		$totalScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($styleArray);
 
@@ -2339,15 +2437,15 @@ class Application_Model_Dts
 		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 
 		$sql = $this->db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples', 's.number_of_controls', 'shipment_attributes'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'))
-			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-			->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
-			->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmm.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-			->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-			->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-			->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
+			->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.final_result', 'sp.is_excluded', 'sp.failure_reason', 'sp.user_comment', 'sp.custom_field_1', 'sp.custom_field_2'])
+			->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
+			->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
+			->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmm.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
+			->joinLeft(['c' => 'countries'], 'c.id=p.country', ['iso_name'])
+			->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
+			->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
 			->where("s.shipment_id = ?", $shipmentId)
-			->group(array('sp.map_id'));
+			->group(['sp.map_id']);
 		if (!empty($authNameSpace->dm_id)) {
 			$sql = $sql
 				->where("pmm.dm_id = ?", $authNameSpace->dm_id);
@@ -2358,7 +2456,7 @@ class Application_Model_Dts
 	{
 
 		$responseQuery = $this->db->select()->from(array('rrdts' => 'response_result_dts'))
-			->joinLeft(array('tk1' => 'r_testkitnames'), 'tk1.TestKitName_ID=rrdts.test_kit_name_1', array('testKitName1' => 'tk1.TestKit_Name'))
+			->joinLeft(['tk1' => 'r_testkitnames'], 'tk1.TestKitName_ID=rrdts.test_kit_name_1', ['testKitName1' => 'tk1.TestKit_Name'])
 			->joinLeft(array('tk2' => 'r_testkitnames'), 'tk2.TestKitName_ID=rrdts.test_kit_name_2', array('testKitName2' => 'tk2.TestKit_Name'))
 			->joinLeft(array('tk3' => 'r_testkitnames'), 'tk3.TestKitName_ID=rrdts.test_kit_name_3', array('testKitName3' => 'tk3.TestKit_Name'))
 			->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrdts.test_result_1', array('testResult1' => 'r.response'))

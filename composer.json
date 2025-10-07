@@ -41,6 +41,9 @@
     },
     "scripts": {
         "tasks": "crunz schedule:run",
-        "migrate": "php bin/migrate.php -yq"
+        "migrate": "php bin/migrate.php -yq",
+        "post-update": [
+            "@migrate"
+        ]
     }
 }

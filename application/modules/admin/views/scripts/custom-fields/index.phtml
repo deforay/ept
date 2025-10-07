@@ -8,7 +8,7 @@
 			<div class="form-group">
 				<label for="haveCustom" class="col-lg-3 control-label"><?= $this->translate->_("Add Custom Field(s)?"); ?> <span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<label style="margin-top:8px;"><input type="radio" name="haveCustom" id="customYes" onclick="customFieldStatus('yes');" class="isRequired" <?php echo (isset($this->haveCustom) && $this->haveCustom == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether you want to have a custom field or not" /><?= $this->translate->_(" Yes"); ?></label>
+					<label style="margin-top:8px;"><input type="radio" name="haveCustom" id="customYes" onclick="customFieldStatus('yes');" class="isRequired" <?php echo (isset($this->haveCustom) && $this->haveCustom == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether you want to have a custom field or not" /><?= $this->translate->_("Yes"); ?></label>
 					&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="radio" name="haveCustom" id="customNo" onclick="customFieldStatus('no');" <?php echo (isset($this->haveCustom) && $this->haveCustom == "no") ? " checked='checked' " : ""; ?> value="no" /> <?= $this->translate->_("No"); ?></label>
 					&nbsp;&nbsp;&nbsp;&nbsp;<small>(<?= $this->translate->_("Please note, if you choose Yes you have to enter at least 1 Custom Field."); ?>)</small>
 				</div>

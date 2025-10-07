@@ -160,7 +160,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
 
                 <div class="col-lg-8">
                     <select id="fundingSource" name="fundingSource" class="form-control" title="Please select the funding source">
-                        <option value="">--<?= $this->translate->_(" Select "); ?>--</option>
+                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
                         <option value="government" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'government') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Government"); ?></option>
                         <option value="private" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'private') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Private"); ?></option>
                         <?php if (isset($this->participant['funding_source']) && !in_array($this->participant['funding_source'], ['government', 'private'])) {

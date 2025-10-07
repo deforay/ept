@@ -1963,7 +1963,16 @@ class Application_Service_Reports
     public function exportParticipantTrendsReport($params)
     {
 
-        $headings = array('Scheme', 'Shipment Date', 'Shipment Code', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
+        $headings = [
+            $this->translator->_('Scheme'),
+            $this->translator->_('Shipment Date'),
+            $this->translator->_('Shipment Code'),
+            $this->translator->_('No. of Shipments'),
+            $this->translator->_('No. of Responses'),
+            $this->translator->_('No. of Valid Responses'),
+            $this->translator->_('No. of Passed Responses'),
+            $this->translator->_('Pass Percentage')
+        ];
         try {
             $excel = new Spreadsheet();
 
@@ -2050,7 +2059,10 @@ class Application_Service_Reports
     public function exportCorrectiveActionsReport($params)
     {
 
-        $headings = array('Corrective Action', 'No. of Responses having this corrective action');
+        $headings = array(
+            $this->translator->_('Corrective Action'),
+            $this->translator->_('No. of Responses having this corrective action')
+        );
         try {
             $excel = new Spreadsheet();
 
@@ -2180,7 +2192,18 @@ class Application_Service_Reports
     public function exportShipmentsReport($params)
     {
 
-        $headings = array('Scheme', 'Shipment Code', 'Sample Label', 'Reference Result', 'Total Positive Responses', 'Total Negative Responses', 'Total Indeterminate Responses', 'Total Responses', 'Total Valid Responses(Total - Excluded)', 'Total Passed');
+        $headings = array(
+            $this->translator->_('Scheme'),
+            $this->translator->_('Shipment Code'),
+            $this->translator->_('Sample Label'),
+            $this->translator->_('Reference Result'),
+            $this->translator->_('Total Positive Responses'),
+            $this->translator->_('Total Negative Responses'),
+            $this->translator->_('Total Indeterminate Responses'),
+            $this->translator->_('Total Responses'),
+            $this->translator->_('Total Valid Responses(Total - Excluded)'),
+            $this->translator->_('Total Passed')
+        );
         try {
             $excel = new Spreadsheet();
 
@@ -2885,7 +2908,15 @@ class Application_Service_Reports
     }
     public function exportParticipantTrendsRegionReport($params)
     {
-        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
+        $headings = array(
+            $this->translator->_('Region'),
+            $this->translator->_('No. of Shipments'),
+            $this->translator->_('No. of Responses'),
+            $this->translator->_('No. of Valid Responses'),
+            $this->translator->_('No. of Passed Responses'),
+            $this->translator->_('Pass %')
+        );
+
         try {
             $excel = new Spreadsheet();
 
@@ -2958,21 +2989,29 @@ class Application_Service_Reports
                 mkdir($this->tempUploadDirectory);
             }
 
-            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($excel, 'Xlsx');
+            $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = 'participant-performance-region-wise' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            return "";
             $sQuerySession->participantRegionQuery = '';
             error_log("GENERATE-PARTICIPANT-PERFORMANCE-REGION-WISE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
+
+            return "";
         }
     }
 
     public function exportParticipantPerformanceRegionReport($params)
     {
-        $headings = array('Region', 'No. of Shipments', 'No. of Responses', 'No. of Valid Responses', 'No. of Passed Responses', 'Pass %');
+        $headings = array(
+            $this->translator->_('Region'),
+            $this->translator->_('No. of Shipments'),
+            $this->translator->_('No. of Responses'),
+            $this->translator->_('No. of Valid Responses'),
+            $this->translator->_('No. of Passed Responses'),
+            $this->translator->_('Pass %')
+        );
         try {
             $excel = new Spreadsheet();
 
@@ -5116,44 +5155,46 @@ class Application_Service_Reports
         $globalConfig = new Application_Model_DbTable_GlobalConfig();
         $passingScore = $globalConfig->getGlobalConfig('pass_percentage');
 
-            $columns = array(
-                        "s.shipment_id",
-                        "s.shipment_code",
-                        "total_participants" => new Zend_Db_Expr('COUNT(*)'),
-                        "excellent" => new Zend_Db_Expr("SUM(
+        $columns = array(
+            "s.shipment_id",
+            "s.shipment_code",
+            "total_participants" => new Zend_Db_Expr('COUNT(*)'),
+            "excellent" => new Zend_Db_Expr("SUM(
                             (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) = 100
                             AND spm.final_result = 1
                         )"),
-                        "unsatisfactory" => new Zend_Db_Expr($dbAdapter->quoteInto(
-                        'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ?)',
-                        $passingScore
-                    )),
-            );
+            "unsatisfactory" => new Zend_Db_Expr($dbAdapter->quoteInto(
+                'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ?)',
+                $passingScore
+            )),
+        );
 
         // only add satisfactory column if passingScore < 100
-       if ($passingScore < 100) {
+        if ($passingScore < 100) {
             $columns['satisfactory'] = new Zend_Db_Expr($dbAdapter->quoteInto(
-            'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) >= ? AND (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ? AND spm.final_result = 1)',
-            $passingScore, 100
-        ));
+                'SUM((COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) >= ? AND (COALESCE(spm.shipment_score,0) + COALESCE(spm.documentation_score,0)) < ? AND spm.final_result = 1)',
+                $passingScore,
+                100
+            ));
         }
 
         $sQuery = $dbAdapter->select()
             ->from(
-                ["spm" => "shipment_participant_map"],$columns
+                ["spm" => "shipment_participant_map"],
+                $columns
             )
             ->join(["s" => "shipment"], "spm.shipment_id = s.shipment_id")
             ->where("IFNULL(spm.is_excluded, 'no') <> 'yes'")
             ->group("s.shipment_id");
-  
+
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
 
-        if(isset($parameters['shipmentId']) && $parameters['shipmentId'] != ""){
+        if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
-        }   
+        }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
@@ -5169,13 +5210,13 @@ class Application_Service_Reports
         foreach ($results as $row) {
             $shipmentCode = $row['shipment_code'];
             if (!isset($shipmentResults[$shipmentCode])) {
-                if ($passing_score == 100) {
+                if ($passingScore == 100) {
                     $shipmentResults[$shipmentCode] = [
                         'Excellent' => 0,
                         'Unsatisfactory' => 0,
                         'Total' => 0
                     ];
-                } elseif ($passing_score < 100) {
+                } elseif ($passingScore < 100) {
                     $shipmentResults[$shipmentCode] = [
                         'Excellent' => 0,
                         'Satisfactory' => 0,
@@ -5186,7 +5227,7 @@ class Application_Service_Reports
             }
             if ($row['final_result'] == 1 && $row['score'] == 100) {
                 $shipmentResults[$shipmentCode]['Excellent']++;
-            } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passing_score) {
+            } elseif ($row['final_result'] == 1 && $row['score'] < 100 && $row['score'] >= $passingScore) {
                 $shipmentResults[$shipmentCode]['Satisfactory']++;
             } elseif ($row['final_result'] == 2) {
                 $shipmentResults[$shipmentCode]['Unsatisfactory']++;
@@ -5194,13 +5235,13 @@ class Application_Service_Reports
             $shipmentResults[$shipmentCode]['Total']++;
         }
 
-        if ($passing_score == 100) {
+        if ($passingScore == 100) {
             // Calculate percentage for each category
             foreach ($shipmentResults as $shipmentCode => &$data) {
                 $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;
                 $data['Unsatisfactory_Percentage'] = $data['Total'] > 0 ? round(($data['Unsatisfactory'] / $data['Total']) * 100, 2) : 0;
             }
-        } elseif ($passing_score < 100) {
+        } elseif ($passingScore < 100) {
             // Calculate percentage for each category
             foreach ($shipmentResults as $shipmentCode => &$data) {
                 $data['Excellent_Percentage'] = $data['Total'] > 0 ? round(($data['Excellent'] / $data['Total']) * 100, 2) : 0;

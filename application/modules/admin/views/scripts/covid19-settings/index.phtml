@@ -48,7 +48,7 @@
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="0" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
                         <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 -<?= $this->translate->_(" Testing after 2 days only"); ?></option>
+                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 -<?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
                 </div>
             </div>
