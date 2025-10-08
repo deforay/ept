@@ -10,6 +10,13 @@ syntax: regexp
 ^scheduled-jobs/certificate-templates/(?!index\.php)
 ^public/temporary/(?!index\.php)
 ^downloads/(?!index\.php)
+
+# Backups - ignore contents but allow .hgkeep
+^backups/db/(?!\.hgkeep).*
+^backups/config/(?!\.hgkeep).*
+^backups/(?!db/|config/|index\.php).*
+^backup/(?!index\.php).*
+
 ^\.ddev/(?!config\.yaml)
 ^node_modules/
 ^cypress/
