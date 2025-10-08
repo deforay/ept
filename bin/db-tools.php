@@ -84,6 +84,10 @@ try {
         case 'maintain':
             handleMaintain($mainConfig, $commandArgs);
             exit(0);
+        case 'collation':
+            $cmd = sprintf('%s %s/change-db-collation.php', PHP_BINARY, BIN_PATH);
+            passthru($cmd);
+            break;
         case 'help':
         case '--help':
         case '-h':

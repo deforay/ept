@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
 
+use Pt_Commons_MiscUtility as MiscUtility;
+use Symfony\Component\Console\Helper\ProgressBar;
+
+
 /**
  * This script converts the database tables and columns to use the utf8mb4 character set.
  * It ensures compatibility with emojis and other special characters.
@@ -40,6 +44,8 @@ $columnErrors = [];
 $successfulTables = [];
 $skippedTables = [];
 
+$__activeProgressBar = null;
+
 // Terminal colors for better readability
 $colors = [
     'reset' => "\033[0m",
@@ -53,79 +59,33 @@ $colors = [
     'bold' => "\033[1m"
 ];
 
-/**
- * Echo message with optional colorization and verbosity check
- *
- * @param string $message
- * @param string|null $color
- * @param bool $alwaysShow
- */
-function echoMessage(string $message, ?string $color = null, bool $alwaysShow = false)
+/** Register (or clear) the active spinner ProgressBar used by echoMessage */
+function setEchoProgressBar(?ProgressBar $bar): void
+{
+    $GLOBALS['__activeProgressBar'] = $bar;
+}
+
+/** Echo message with color + verbosity, auto-pausing the spinner if active */
+function echoMessage(string $message, ?string $color = null, bool $alwaysShow = false): void
 {
     global $verbose, $colors;
 
     if (!$verbose && !$alwaysShow) return;
 
+    $line = $message;
     if ($color && isset($colors[$color])) {
-        echo $colors[$color] . $message . $colors['reset'] . PHP_EOL;
+        $line = $colors[$color] . $message . $colors['reset'];
+    }
+
+    $bar = $GLOBALS['__activeProgressBar'] ?? null;
+
+    if ($bar instanceof ProgressBar) {
+        // pause the spinner, print, then resume
+        MiscUtility::spinnerPausePrint($bar, function () use ($line) {
+            echo $line . PHP_EOL;
+        });
     } else {
-        echo $message . PHP_EOL;
-    }
-}
-
-/**
- * Custom progress bar that shows the current table name
- *
- * @param int $current Current position
- * @param int $total Total items
- * @param string $tableName Current table name
- * @param int $size Progress bar size
- */
-function customProgressBar(int $current, int $total, string $tableName, int $size = 30): void
-{
-    static $startTime;
-
-    // Initialize the timer on the first call
-    if (!isset($startTime)) {
-        $startTime = time();
-    }
-
-    // Calculate elapsed time
-    $elapsed = time() - $startTime;
-
-    // Calculate progress percentage
-    $progress = ($current / $total);
-    $barLength = (int) floor($progress * $size);
-
-    // Generate the progress bar
-    $progressBar = str_repeat('=', $barLength) . str_repeat(' ', $size - $barLength);
-
-    // Truncate table name if too long
-    $displayName = (strlen($tableName) > 20) ? substr($tableName, 0, 17) . '...' : $tableName;
-
-
-    echo PHP_EOL;
-    echo PHP_EOL;
-    // Output the progress bar with current table name
-    printf(
-        "\r[%s] %3d%% (%d/%d) - %s - %d sec elapsed",
-        $progressBar,
-        $progress * 100,
-        $current,
-        $total,
-        $displayName,
-        $elapsed
-    );
-
-    echo PHP_EOL;
-
-    // Flush output for real-time updates
-    fflush(STDOUT);
-
-    // Print a newline and reset the timer when done
-    if ($current === $total) {
-        echo PHP_EOL;
-        $startTime = null; // Reset timer for reuse
+        echo $line . PHP_EOL;
     }
 }
 
@@ -162,7 +122,7 @@ function isMySQL8OrHigher(Zend_Db_Adapter_Abstract $db): bool
  * @param string $targetCollation
  * @return array [bool $needsConversion, string $currentCollation]
  */
-function tableNeedsConversion(Zend_Db_Adapter_Abstract $db, string $tableName, string $targetCollation): array
+function tableNeedsConversion(Zend_Db_Adapter_Abstract $db, string $tableName, string $targetCollation)
 {
     $tableStatus = $db->fetchAll("SHOW TABLE STATUS LIKE ?", [$tableName]);
 
@@ -184,7 +144,7 @@ function tableNeedsConversion(Zend_Db_Adapter_Abstract $db, string $tableName, s
  * @param string $targetCollation
  * @return array
  */
-function getColumnsNeedingConversion(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, string $targetCollation): array
+function getColumnsNeedingConversion(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, string $targetCollation)
 {
     $query = "SELECT
                 c.COLUMN_NAME,
@@ -215,7 +175,7 @@ function getColumnsNeedingConversion(Zend_Db_Adapter_Abstract $db, string $schem
  * @param string $columnName
  * @return array
  */
-function getColumnIndexes(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, string $columnName): array
+function getColumnIndexes(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, string $columnName)
 {
     $query = "SELECT DISTINCT
                 INDEX_NAME,
@@ -322,7 +282,7 @@ function verifyColumnConversion(Zend_Db_Adapter_Abstract $db, string $schema, st
  * @param bool $skipColumnConversion
  * @return array Results [success, error, skipped counts, etc.]
  */
-function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, bool $dryRun = false, bool $skipColumnConversion = false): array
+function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, string $tableName, bool $dryRun = false, bool $skipColumnConversion = false, ?ProgressBar $bar = null)
 {
     global $tableErrors, $columnErrors, $successfulTables, $skippedTables, $verbose;
 
@@ -357,11 +317,13 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
     }
 
     if (!$tableNeedsConversion) {
-        echoMessage("✅ Table $tableName ($tableSize MB) already uses $collation - skipping table conversion", 'green', true); // Add true here
+        echoMessage("✅ Table $tableName ($tableSize MB) already uses $collation - skipping table conversion", 'green');
+
         $result['tableSkipped'] = true;
         $skippedTables[] = "$tableName (already using $collation)";
     } else {
         echoMessage("⚙ Converting table: $tableName ($tableSize MB) from $currentCollation to $collation", 'cyan');
+
 
         if (!$dryRun) {
             try {
@@ -392,7 +354,7 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
     $columnsNeedingConversion = getColumnsNeedingConversion($db, $schema, $tableName, $collation);
 
     if (empty($columnsNeedingConversion)) {
-        echoMessage("✅ All columns in $tableName already use correct collation", 'green', true); // Add true here
+        echoMessage("✅ All columns in $tableName already use correct collation", 'green');
         return $result;
     }
 
@@ -405,10 +367,9 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
             $currentColumn = $index + 1;
             $columnName = $column['COLUMN_NAME'];
 
-            // Show column progress for tables with multiple columns
-            if ($totalColumns > 1) {
-                printf("\r  Column %d/%d: %s", $currentColumn, $totalColumns, $columnName);
-                fflush(STDOUT);
+            // reflect current work on the single bar
+            if ($bar) {
+                MiscUtility::spinnerUpdate($bar, $tableName, null, $currentColumn - 1, $totalColumns);
             }
 
             try {
@@ -424,7 +385,9 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
                     }
                 }
 
+
                 echoMessage("  ⚙ Converting column: $columnName (current collation: {$column['COLLATION_NAME']})", 'cyan');
+
 
                 // Build complete column definition preserving all properties
                 $columnDefinition = buildColumnDefinition($column, $collation);
@@ -461,11 +424,6 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
                 $columnErrors[] = "$tableName.$columnName: " . $e->getMessage();
             }
         }
-
-        // Add a newline after column progress completes
-        if ($totalColumns > 1) {
-            echo PHP_EOL;
-        }
     } else {
         foreach ($columnsNeedingConversion as $column) {
             $columnDefinition = buildColumnDefinition($column, $collation);
@@ -486,7 +444,7 @@ function convertTableAndColumns(Zend_Db_Adapter_Abstract $db, string $schema, st
  * @return array
  * @throws Exception
  */
-function fetchTables(Zend_Db_Adapter_Abstract $db, string $schema, ?string $specificTable = null): array
+function fetchTables(Zend_Db_Adapter_Abstract $db, string $schema, ?string $specificTable = null)
 {
     $query = "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = ?";
     $params = [$schema];
@@ -521,7 +479,7 @@ function fetchTables(Zend_Db_Adapter_Abstract $db, string $schema, ?string $spec
  * @param bool $verbose
  * @return array
  */
-function processBatches(array $tables, int $batchSize, callable $processFunction, bool $verbose = true): array
+function processBatches(array $tables, int $batchSize, callable $processFunction, bool $verbose = true, ?ProgressBar $bar = null)
 {
     $totalTables = count($tables);
     $batches = ceil($totalTables / $batchSize);
@@ -534,11 +492,7 @@ function processBatches(array $tables, int $batchSize, callable $processFunction
 
         foreach ($batchTables as $index => $tableName) {
             $currentPosition = $i + $index + 1;
-            // Show overall progress using custom progress bar with table name
-            customProgressBar($currentPosition, $totalTables, $tableName);
-
             if ($verbose) {
-                echo PHP_EOL; // Add a line break for verbose output
                 echoMessage("Processing table $currentPosition of $totalTables: {$tableName}", 'bold', true);
             }
 
@@ -615,13 +569,35 @@ try {
 
     // Start timer
     $scriptStartTime = microtime(true);
+    $bar = MiscUtility::spinnerStart($totalTables, "Preparing…");
+    setEchoProgressBar($bar);
+
 
     // Process tables in batches and collect results
-    $results = processBatches($tablesList, $batchSize, function ($tableName, $current, $total) use ($db, $dbName, $dryRun, $skipColumnConversion) {
-        return convertTableAndColumns($db, $dbName, $tableName, $dryRun, $skipColumnConversion);
-    }, $verbose);
+    $results = processBatches(
+        $tablesList,
+        $batchSize,
+        function ($tableName, $current, $total) use ($db, $dbName, $dryRun, $skipColumnConversion, $bar) {
+            // Show which table is being worked on,
+            // but progress should be “done so far”, not including this one.
+            MiscUtility::spinnerUpdate($bar, $tableName, null, $current - 1, $total);
+
+            $result = convertTableAndColumns($db, $dbName, $tableName, $dryRun, $skipColumnConversion, $bar);
+
+            // Now the table is done -> bump progress
+            MiscUtility::spinnerAdvance($bar, 1);
+
+            return $result;
+        },
+        $verbose,
+        $bar
+    );
+
 
     $totalDuration = microtime(true) - $scriptStartTime;
+    MiscUtility::spinnerUpdate($bar, '', null, $totalTables, $totalTables);
+    MiscUtility::spinnerFinish($bar);
+    setEchoProgressBar(null);
 
     // Display summary
     displaySummary($results);

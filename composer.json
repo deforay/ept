@@ -25,6 +25,7 @@
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
         "shardj/zf1-future": "^1.24",
+        "symfony/console": "^5.4",
         "symfony/uid": "^5.4",
         "tecnickcom/tcpdf": "^6.10"
     },
@@ -43,7 +44,7 @@
     "scripts": {
         "db-backup": "php bin/db-tools.php backup",
         "tasks": "crunz schedule:run",
-        "collation": "php bin/change-db-collations.php",
+        "collation": "php bin/db-tools.php collation",
         "migrate": "php bin/migrate.php -yq",
         "post-update": [
             "@migrate",
