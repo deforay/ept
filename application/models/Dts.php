@@ -2352,7 +2352,7 @@ class Application_Model_Dts
 		$panelScoreSheet->getDefaultColumnDimension()->setWidth(20);
 		$panelScoreSheet->getDefaultRowDimension()->setRowHeight(18);
 		$panelScoreHeadings = [
-			$this->translator->_('Participant Code')$this->translator->_(,
+			$this->translator->_('Participant Code'),
 			$this->translator->_('Participant Name'),
 			$this->translator->_('Institute Name'),
 			$this->translator->_('Province')
