@@ -258,7 +258,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 							<?php } ?>
 						</tbody>
 					</table>
-					<div class="tbPTTestingRelatedFields vlResultBlock" id ="ptPanelTable">
+					<div class="tbPTTestingRelatedFields vlResultBlock" id="ptPanelTable">
 
 					</div>
 					<br>
@@ -516,7 +516,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		<?php } ?>
 
 
-		isPtTestNotPerformed($('#isPtTestNotPerformed').val());
+		testNotPerformed($('#isPtTestNotPerformed').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
 		$('#supervisorApproval').change(function() {
 			if ($('#supervisorApproval').val() == 'yes') {
@@ -543,7 +543,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		});
 
 		$('#isPtTestNotPerformed').change(function() {
-			isPtTestNotPerformed(this.value);
+			testNotPerformed(this.value);
 		});
 		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
@@ -704,7 +704,8 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		}
 	}
 
-	function isPtTestNotPerformed(val) {
+	function testNotPerformed(val) {
+		console.log(val);
 		if (val == 'yes') {
 			$('.tbPTTestingRelatedFields,.ptTestPerformed,.vlResultValuesAsterisk,.vlResultValuesTable').hide();
 			$('.vlResultValues').val('');
@@ -724,10 +725,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 	function loadAssayFields(obj) {
 
-		let _short = $(obj).find(':selected').data('short');
+		let _short = $(obj).find(':selected').data('short') ?? '';
 		if (_short == 'other' && $('#otherAssayName').val() == '') {
 			return false;
-		}else if (_short == 'other' && $('#otherAssayName').val() != '') {
+		} else if (_short == 'other' && $('#otherAssayName').val() != '') {
 			_short = $("#otherAssayName").val();
 		}
 		_short = _short.toString().toLowerCase();
