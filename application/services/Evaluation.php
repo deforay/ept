@@ -1675,7 +1675,7 @@ class Application_Service_Evaluation
 		$shipmentResult = $db->fetchRow($sql);
 		$i = 0;
 		if (!empty($shipmentResult)) {
-			$db->update('shipment', array('status' => 'evaluated'), "shipment_id = " . $shipmentId);
+			$db->update('shipment', ['status' => 'evaluated'], "shipment_id = $shipmentId");
 			if ($shipmentResult['scheme_type'] == 'dbs') {
 				$sql = $db->select()->from(
 					['refdbs' => 'reference_result_dbs'],
@@ -1704,14 +1704,14 @@ class Application_Service_Evaluation
 					]
 				)
 					->join(
-						array('p' => 'participant'),
+						['p' => 'participant'],
 						'p.participant_id=spm.participant_id',
-						array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status')
+						['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status']
 					)
 					->joinLeft(
-						array('res' => 'r_results'),
+						['res' => 'r_results'],
 						'res.result_id=spm.final_result',
-						array('result_name')
+						['result_name']
 					)
 					->where("spm.shipment_id = ?", $shipmentId)
 					//->where("substring(spm.evaluation_status,4,1) != '0'")
@@ -1723,27 +1723,27 @@ class Application_Service_Evaluation
 				if (!empty($sQueryRes)) {
 
 					$tQuery = $db->select()->from(
-						array('refdbs' => 'reference_result_dbs'),
-						array('refdbs.sample_id', 'refdbs.sample_label')
+						['refdbs' => 'reference_result_dbs'],
+						['refdbs.sample_id', 'refdbs.sample_label']
 					)
 						->join(
-							array('resdbs' => 'response_result_dbs'),
+							['resdbs' => 'response_result_dbs'],
 							'resdbs.sample_id=refdbs.sample_id',
 							array('correctRes' => new Zend_Db_Expr("SUM(CASE WHEN resdbs.reported_result=refdbs.reference_result THEN 1 ELSE 0 END)"))
 						)
-						->join(array('spm' => 'shipment_participant_map'), 'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id', array())
+						->join(['spm' => 'shipment_participant_map'], 'resdbs.shipment_map_id=spm.map_id and refdbs.shipment_id=spm.shipment_id', [])
 						->where("spm.shipment_id = ?", $shipmentId)
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
-						->group(array("refdbs.sample_id"));
+						->group(["refdbs.sample_id"]);
 
 					$shipmentResult['summaryResult'][] = $sQueryRes;
 					$shipmentResult['summaryResult'][count($shipmentResult['summaryResult']) - 1]['correctCount'] = $db->fetchAll($tQuery);
 
 
-					$rQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id'))
-						->join(array('resdbs' => 'response_result_dbs'), 'resdbs.shipment_map_id=spm.map_id', array('resdbs.eia_1', 'resdbs.eia_2', 'resdbs.eia_3', 'resdbs.wb'))
+					$rQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id'])
+						->join(['resdbs' => 'response_result_dbs'], 'resdbs.shipment_map_id=spm.map_id', ['resdbs.eia_1', 'resdbs.eia_2', 'resdbs.eia_3', 'resdbs.wb'])
 						//->where("substring(spm.evaluation_status,4,1) != '0'")
 						->where("spm.final_result IS NOT NULL")
 						->where("spm.final_result!=''")

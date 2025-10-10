@@ -110,7 +110,7 @@ if ($resultArray['shipment'] != "") {
         }
     }
     $pdf->SetFont('freesans', '', 11);
-    $htmlTitle = '<br><br><span style="font-size:12px;"><strong>PT Panel Name and Results Due Date:</strong> ' . $resultArray['shipment']['distribution_code'] . '(' . $resultArray['shipment']['shipment_date'] . ')</span>';
+    $htmlTitle = '<br><br><span style="font-size:12px;"><strong>PT Panel Name and Results Due Date:</strong> ' . $resultArray['shipment']['distribution_code'] . '(' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';

@@ -130,12 +130,9 @@ if (!empty($resultArray['shipment'])) {
 
         // ---------------------------------------------------------
 
-        if (trim($result['shipment_date'] ?? '') != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
-        }
-        if (trim($result['lastdate_response'] ?? '') != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
-        }
+        // if (trim($result['shipment_date'] ?? '') != "") {
+        //     $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+        // }
 
         $responseDate = "";
         $shipmentTestDate = "";
@@ -202,7 +199,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['lastdate_response'] . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
         $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';

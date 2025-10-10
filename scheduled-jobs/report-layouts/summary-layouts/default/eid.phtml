@@ -319,8 +319,8 @@ if ($resultArray['shipment'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
         if (!empty($approveTxt)) {
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Application_Service_Common::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
-            }
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
+        }
     }
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
     $eodReportText = "End of report";

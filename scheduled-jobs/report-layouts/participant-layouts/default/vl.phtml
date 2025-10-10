@@ -129,13 +129,6 @@ if (!empty($resultArray['shipment'])) {
 
         // ---------------------------------------------------------
 
-        if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
-        }
-        if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
-        }
-
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentTestReportDate = "";
@@ -178,7 +171,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</tr>'; */
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
         $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
         $labInfo .= '</tr>';
 
@@ -552,7 +545,7 @@ if (!empty($resultArray['shipment'])) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
         if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Application_Service_Common::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
         }
         // }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
