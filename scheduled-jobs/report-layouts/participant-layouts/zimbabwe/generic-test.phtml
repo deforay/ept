@@ -12,6 +12,7 @@
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
 // Initialize objects and variables
+$kitDb = new Application_Model_DbTable_Testkitnames();
 $general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $pdfNew = new Zend_Pdf();
@@ -40,13 +41,12 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($shipmentDir) && !is_dir($shipmentDir)) {
             mkdir($shipmentDir, 0755, true);
         }
-
+        $attributes = [];
         // Initialize PDF document based on report format
         $reportFormat = $reportService->getReportConfigValue('report-format');
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))
             ? $shipmentAttributes['panelName']
             : $result['scheme_name'];
-
         if (isset($reportFormat) && !empty($reportFormat)) {
             // Use FPDI report format
             $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
@@ -63,9 +63,9 @@ if (!empty($resultArray['shipment'])) {
                 $logoRight,
                 $resultStatus,
                 'generic-test',
-                'generic-test',
+                $layout,
                 $evalRow['date_finalised'],
-                "",
+                $config,
                 $watermark,
                 "",
                 $instituteAddressPosition
@@ -395,16 +395,17 @@ if (!empty($resultArray['shipment'])) {
 
         // Add new page and performance criteria
         $pdf->AddPage();
+        $overallScore = ((int)$passPercentage == 100) ? $passPercentage : "&ge; $passPercentage";
+        $unsatisfactoryScore = "&lt; $passPercentage";
+
         $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
-            <ul>
-                <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
-                <li>A testing score of 15 is awarded for any result reported correctly</li>
-                <li>A documentation score of 0 is awarded for any result that is incorrect;y reported</li>
-                <li>A documentation score of 2 is awarded for any result reported correctly.</li>
-                <li>A grading of satisfactory is assigned when the participant overall score is ≥ 95%</li>
-                <li>A grading of Unsatisfactory is assigned when the participant overall score is < 95%</li>
-                <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
-            </ul>';
+                        <ul>
+                            <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
+                            <li>A testing score of 15 is awarded for any result reported correctly</li>
+                            <li>A grading of satisfactory is assigned when the participant overall score is ' . $overallScore . '%</li>
+                            <li>A grading of Unsatisfactory is assigned when the participant overall score is ' . $unsatisfactoryScore . '%</li>
+                            <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
+                        </ul>';
         $pdf->writeHTML($summaryNote, true, false, true, false, '');
 
         // Additional information
@@ -426,7 +427,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($additionalInfo, true, false, true, false, '');
 
         // Check testkit approved or not (if needed)
-        if (isset($attributes) && isset($attributes['kit_name'])) {
+        if (isset($attributes) && !empty($attributes)) {
             $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
             $wishes = '';
             if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
@@ -496,7 +497,6 @@ if (!empty($resultArray['shipment'])) {
 
 
         $pdf->writeHTML($html, true, false, true, false, '');
-
         // Clear output buffer if exists
         if (ob_get_contents()) {
             ob_end_clean();

@@ -437,8 +437,8 @@ if (!empty($resultArray['shipment'])) {
                     <li>A testing score of 15 is awarded for any result reported correctly</li>
                     <li>A documentation score of 0 is awarded for any result that is incorrect;y reported</li>
                     <li>A documentation score of 2 is awarded for any result reported correctly.</li>
-                    <li>A grading of satisfactory is assigned when the participant overall score is ≥ 95%</li>
-                    <li>A grading of Unsatisfactory is assigned when the participant overall score is < 95%</li>
+                    <li>A grading of satisfactory is assigned when the participant overall score is &ge; 100%</li>
+                    <li>A grading of Unsatisfactory is assigned when the participant overall score is &lt; 100%</li>
                     <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
                 </ul>';
             $pdf->writeHTML($summaryNote, true, false, true, false, '');
@@ -538,7 +538,7 @@ if (!empty($resultArray['shipment'])) {
         $html .= '<p style="font-size:12px;">Thank you for participating in the ' . $result['scheme_name'] . ' Proficiency Testing Program.</p>';
 
         $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
-        $html .= '<br><br><p style="font-size:12px;text-align:center;">- '.$eodReportText.' -</p>';
+        $html .= '<br><br><p style="font-size:12px;text-align:center;">- ' . $eodReportText . ' -</p>';
 
         $html .= '<br/><hr>';
 
@@ -551,7 +551,7 @@ if (!empty($resultArray['shipment'])) {
 
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
 
-    
+
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Clear output buffer if exists

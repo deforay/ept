@@ -394,7 +394,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
 
     public function fetchGivenKitApprovalStatus($kit)
     {
-        return $this->fetchRow('TestKitName_ID = "' . $kit . '" OR ' . $this->_primary . ' = "' . $kit . '"');
+        return $this->fetchRow('TestKitName_ID = "' . $kit . '" OR TestKit_Name = "' . $kit . '"');
     }
 
     public function getAllTestKitList($scheme = null, $countryAdapted = false, $isArray = false)

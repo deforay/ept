@@ -80,7 +80,7 @@ class IndividualPDF extends Fpdi
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
-                if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
+                if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb', 'generic-test']) && $this->layout == 'zimbabwe') {
                     $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
                     $this->Image($image_file, 90, 10, 15, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
@@ -159,7 +159,7 @@ class IndividualPDF extends Fpdi
             /* if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             } */
-        } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb']) && $this->layout == 'zimbabwe') {
+        } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb', 'generic-test']) && $this->layout == 'zimbabwe') {
             if ($this->schemeType != 'tb') {
                 $this->SetFont('freesans', '', 10, '', true);
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
@@ -219,7 +219,7 @@ class IndividualPDF extends Fpdi
             $html = '<hr/>';
             $html .= '<br><span style="font-weight: bold; font-size:11;text-align:center;">Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report ' . $screening . '</span>';
             $this->writeHTMLCell(0, 0, 10, 28, $html, 0, 0, 0, true, 'J', true);
-        } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid']) && $this->layout == 'zimbabwe') {
+        } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'generic-test']) && $this->layout == 'zimbabwe') {
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
