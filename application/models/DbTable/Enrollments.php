@@ -18,18 +18,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         $aColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')"];
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
@@ -43,12 +39,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -2);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);

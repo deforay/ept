@@ -55,7 +55,6 @@
                                                     <th><?= $this->translate->_("Phone"); ?></th>
                                                     <th><?= $this->translate->_("Affiliation"); ?></th>
                                                     <th><?= $this->translate->_("Email"); ?></th>
-                                                    <th><?= $this->translate->_("Response Status"); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -82,7 +81,6 @@
                                                     <th><?= $this->translate->_("Phone"); ?></th>
                                                     <th><?= $this->translate->_("Affiliation"); ?></th>
                                                     <th><?= $this->translate->_("Email"); ?></th>
-                                                    <th><?= $this->translate->_("Response Status"); ?></th>
                                                     <th><?= $this->translate->_("Action"); ?></th>
                                                 </tr>
                                             </thead>
@@ -137,20 +135,18 @@
     selectedParticipants = [];
     $(document).ready(function() {
         drawTableResponded();
-        drawTableNotResponded();
-        drawTableNotEnrolled();
 
     });
     $('#myTab a[href="#listOfResponded"]').click(function(e) {
         //oTableResponded.fnDraw();
-        drawTableResponded();
+        //drawTableResponded();
     });
     $('#myTab a[href="#listOfNotResponded"]').click(function(e) {
         //oTableNotResponded.fnDraw();
         drawTableNotResponded()
     });
     $('#myTab a[href="#notEnrolled"]').click(function(e) {
-        oTableNotEnrolled.fnDraw();
+        drawTableNotEnrolled();
     });
 
     function drawTableResponded() {
@@ -194,9 +190,6 @@
                 },
                 {
                     "sClass": ""
-                },
-                {
-                    "sClass": "center"
                 }
             ],
             "aaSorting": [
@@ -263,9 +256,6 @@
                 },
                 {
                     "sClass": ""
-                },
-                {
-                    "sClass": "center"
                 },
                 {
                     "sClass": "center",

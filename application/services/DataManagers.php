@@ -3,9 +3,11 @@
 class Application_Service_DataManagers
 {
     protected $datamanagersDb;
+    protected $translator;
     public function __construct()
     {
         $this->datamanagersDb = new Application_Model_DbTable_DataManagers();
+        $this->translator = Zend_Registry::get('translate');
     }
 
     public function addUser($params)
@@ -143,10 +145,10 @@ class Application_Service_DataManagers
         $normalizedInput = Application_Service_Common::validateEmail((string) $email);
         // (We’ll still prefer the DB email below, but this prevents weird inputs early.)
 
-        $participant = $this->datamanagersDb->resetPasswordForEmail($email);
+        $participant = $this->datamanagersDb->resetPasswordForEmail($normalizedInput);
 
         // (Optional) prevent enumeration: always show a generic message
-        $genericOkMsg = "If the email is registered, you'll receive a password reset link shortly.";
+        $genericOkMsg = $this->translator->_("If the entered email is registered, you will receive a password reset link. If not, please contact your PT provider for assistance.");
 
         if ($participant === false) {
             // Avoid revealing whether the email exists
