@@ -402,7 +402,7 @@ if (!empty($resultArray['shipment'])) {
         $overallScore = ((int)$passPercentage == 100) ? $passPercentage : "&ge; $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
 
-        $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
+        $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                         <ul>
                             <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
                             <li>A testing score of 15 is awarded for any result reported correctly</li>
