@@ -301,7 +301,7 @@ class IndividualPDF extends Fpdi
 
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
         // Position at 15 mm from bottom
-        $this->SetY(-5);
+        $this->SetY(-15);
         // Set font
         $this->SetFont('freesans', '', 7);
         // Page number
