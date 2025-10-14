@@ -108,18 +108,14 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";

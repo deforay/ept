@@ -133,18 +133,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -156,12 +152,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -268,18 +259,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
@@ -292,12 +279,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
 
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -464,18 +446,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
@@ -486,12 +464,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -646,18 +619,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -669,12 +638,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -879,18 +843,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -902,12 +862,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -1025,18 +980,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -1048,12 +999,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -1208,18 +1154,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -1231,12 +1173,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -1359,18 +1296,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
@@ -1382,12 +1315,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -1);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -1512,18 +1440,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = "shipment_id";
 
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
 
 
@@ -1539,12 +1463,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $sOrder = substr_replace($sOrder, "", -2);
         }
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
@@ -1648,18 +1567,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'distribution_id';
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
@@ -1673,12 +1588,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sOrder = substr_replace($sOrder, "", -2);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -1792,18 +1702,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $sIndexColumn = $this->_primary;
 
         $sTable = $this->_name;
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
 
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
@@ -1814,12 +1720,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
 
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {

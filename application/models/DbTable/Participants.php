@@ -86,18 +86,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -107,12 +103,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -579,18 +570,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -600,12 +587,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -714,18 +696,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -735,12 +713,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -973,25 +946,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function getShipmentRespondedParticipants($parameters)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-        */
+
         $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -1001,12 +968,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -1044,12 +1006,44 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.shipment_id', 'sp.participant_id', 'sp.shipment_test_date', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date is not NULL) THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
-            ->where("sp.shipment_test_date <>'0000-00-00'")
-            ->where("sp.shipment_test_date IS NOT NULL ")
+        $sQuery = $this->getAdapter()->select()
+            ->from(
+                ['sp' => 'shipment_participant_map'],
+                [
+                    new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'),
+                    'sp.shipment_id',
+                    'sp.participant_id',
+                    'sp.shipment_test_date',
+                    "RESPONSE" => new Zend_Db_Expr("
+                CASE 
+                    WHEN sp.response_status like 'responded'
+                    THEN 'Responded'
+                    ELSE 'Not Responded'
+                END
+                ")
+                ]
+            )
+            ->joinLeft(
+                ['p' => 'participant'],
+                'p.participant_id = sp.participant_id',
+                [
+                    'p.participant_id',
+                    'p.unique_identifier',
+                    'p.institute_name',
+                    'p.country',
+                    'p.state',
+                    'p.district',
+                    'p.mobile',
+                    'p.phone',
+                    'p.affiliation',
+                    'p.email',
+                    'p.status',
+                    'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ',COALESCE(p.last_name,''))")
+                ]
+            )
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
             ->where("sp.shipment_id = ?", $parameters['shipmentId'])
+            ->where("sp.response_status like 'responded'")
             ->group("sp.participant_id");
         //  error_log($sQuery);
         if (isset($parameters['withStatus']) && $parameters['withStatus'] != "") {
@@ -1101,8 +1095,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
-            // $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\''.base64_encode($aRow['shipment_id']).'\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
-            $row[] = ucwords($aRow['RESPONSE']);
 
             $output['aaData'][] = $row;
         }
@@ -1119,18 +1111,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -1140,12 +1128,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -1237,7 +1220,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
-            $row[] = ucwords($aRow['RESPONSE']);
             $row[] = '<a href="javascript:void(0);" onclick="removeParticipants(\'' . base64_encode($aRow['map_id']) . '\',\'' . base64_encode($aRow['shipment_id']) . '\')" class="btn btn-primary btn-xs"><i class="icon-remove"></i> Delete</a>';
             $output['aaData'][] = $row;
         }
@@ -1255,18 +1237,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -1276,12 +1254,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -1982,9 +1955,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = [];
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
@@ -1994,12 +1965,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);

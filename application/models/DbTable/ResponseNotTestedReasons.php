@@ -20,18 +20,14 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         $sIndexColumn = $this->_primary;
 
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
@@ -45,12 +41,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             $sOrder = substr_replace($sOrder, "", -2);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
@@ -133,7 +124,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             $row = [];
             $schemeData = [];
             $scheme = json_decode($aRow['ntr_test_type'], true);
-            foreach($scheme as $r){
+            foreach ($scheme as $r) {
                 $schemeData[] = $schemeList[$r];
             }
             $row[] = ucwords($aRow['ntr_reason']);
@@ -149,27 +140,29 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         echo json_encode($output);
     }
 
-    public function saveNotTestedReasonsDetails($params) {
+    public function saveNotTestedReasonsDetails($params)
+    {
         /* Check if the reason came as empty or not */
-        if(!isset($params['ntReason']) || empty($params['ntReason'])){
+        if (!isset($params['ntReason']) || empty($params['ntReason'])) {
             return false;
         }
 
         $data = array(
             'ntr_reason'                    => $params['ntReason'] ?? null,
-            'ntr_test_type'                 => (isset($params['testType']) && !empty($params['testType']))? json_encode($params['testType'], true) : null,
+            'ntr_test_type'                 => (isset($params['testType']) && !empty($params['testType'])) ? json_encode($params['testType'], true) : null,
             'collect_panel_receipt_date'    => $params['collectPanelReceiptDate'] ?? 'yes',
             'reason_code'                   => $params['ntReasonCode'] ?? null,
             'ntr_status'                    => $params['status'] ?? null
         );
 
-        if(isset($params['ntrId']) && !empty($params['ntrId'])){
-            return  $this->update($data, 'ntr_id = '. base64_decode($params['ntrId']));
+        if (isset($params['ntrId']) && !empty($params['ntrId'])) {
+            return  $this->update($data, 'ntr_id = ' . base64_decode($params['ntrId']));
         }
         return $this->insert($data);
     }
 
-    public function fetchNotTestedReasonById($id){
+    public function fetchNotTestedReasonById($id)
+    {
         return $this->fetchRow($this->select()->where("ntr_id=?", $id));
     }
 }

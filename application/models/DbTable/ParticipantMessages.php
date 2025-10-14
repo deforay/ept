@@ -42,7 +42,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 "message" => $params['message'],
                 "status" => 'pending',
                 "attached_file" => (!empty($files)) ? json_encode($files) : null,
-            "created_at" => new Zend_Db_Expr('now()')
+                "created_at" => new Zend_Db_Expr('now()')
             ];
             // echo '<pre>'; print_r($data); die;
 
@@ -71,18 +71,14 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         $sIndexColumn = $this->_primary;
 
 
-        /*
-         * Paging
-         */
+
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-        /*
-         * Ordering
-         */
+
         $sOrder = "";
         if (isset($parameters['iSortCol_0'])) {
             $sOrder = "";
@@ -96,12 +92,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $sOrder = substr_replace($sOrder, "", -2);
         }
 
-        /*
-         * Filtering
-         * NOTE this does not match the built-in DataTables filtering which does it
-         * word by word on any field. It's possible to do here, but concerned about efficiency
-         * on very large tables, and MySQL's regex functionality is very limited
-         */
+
         $sWhere = "";
         if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
             $searchArray = explode(" ", $parameters['sSearch']);
