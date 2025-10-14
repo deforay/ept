@@ -357,8 +357,9 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Overall score table
-        $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>
-            <table border="1" style="font-size:12px;width:100%;">
+        if (isset($result['documentation_score']) && $result['documentation_score'] > 0) {
+            $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>';
+            $totalScoreTxt = '<table border="1" style="font-size:12px;width:100%;">
                 <tr>
                     <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Testing Score</td>
                     <td style="text-align:center;width:25%;">' . round($result['shipment_score']) . '</td>
@@ -372,6 +373,9 @@ if (!empty($resultArray['shipment'])) {
                     <td style="text-align:center;width:25%;">' . round($result['shipment_score'] + $result['documentation_score']) . '</td>
                 </tr>
             </table>';
+        } else {
+            $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score : ' . round($result['shipment_score'] + $result['documentation_score']) . '</span><br/>';
+        }
         $pdf->writeHTML($totalScoreTxt, true, false, true, false, '');
 
         // Summary count if provided
