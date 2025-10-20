@@ -260,16 +260,36 @@ final class Application_Model_Dts
 			$testKitExpired[$kitIndex] = null;
 			$testKitRecommendedUsed[$kitIndex] = null;
 
-			$kitId = $results[0][$fields['nameField']] ?? null;
-			if (!empty($kitId) && trim($kitId) !== '') {
-				$kitName = $testKitDb->getTestKitNameById((int)$kitId);
+			// Resolve kit ID by scanning all result rows for the first non-empty value
+			$resolvedKitId = $results[0][$fields['nameField']] ?? null;
+			if (empty($resolvedKitId) || trim((string)$resolvedKitId) === '') {
+				foreach ($results as $rRow) {
+					if (!empty($rRow[$fields['nameField']]) && trim((string)$rRow[$fields['nameField']]) !== '') {
+						$resolvedKitId = $rRow[$fields['nameField']];
+						break;
+					}
+				}
+			}
+
+			// Lookup human-readable test kit name if we have an ID (string per schema)
+			if (!empty($resolvedKitId)) {
+				$kitName = $testKitDb->getTestKitNameById((string)$resolvedKitId);
 				if (isset($kitName[0])) {
 					$testKitNames[$kitIndex] = $kitName[0];
 				}
 			}
 
+			// Resolve expiry date by scanning all result rows for the first valid date
 			$expDate = null;
 			$expDateString = $results[0][$fields['expField']] ?? '';
+			if (!Common::isDateValid($expDateString)) {
+				foreach ($results as $rRow) {
+					if (!empty($rRow[$fields['expField']]) && Common::isDateValid($rRow[$fields['expField']])) {
+						$expDateString = $rRow[$fields['expField']];
+						break;
+					}
+				}
+			}
 			if (Common::isDateValid($expDateString)) {
 				$expDate = new DateTimeImmutable($expDateString);
 			}
@@ -298,10 +318,11 @@ final class Application_Model_Dts
 				}
 
 				if (isset($recommendedTestkits[$kitIndex]) && !empty($recommendedTestkits[$kitIndex])) {
-					if (!in_array($results[0][$fields['nameField']], $recommendedTestkits[$kitIndex])) {
+					$kitIdForCheck = $resolvedKitId;
+					if (!in_array($kitIdForCheck, $recommendedTestkits[$kitIndex])) {
 						$testKitRecommendedUsed[$kitIndex] = false;
 						$warning = $kitIndex === 1
-							? "For Test 1, testing is not performed with country approved test kit.--- " . $results[0][$fields['nameField']]
+							? "For Test 1, testing is not performed with country approved test kit.--- " . $kitIdForCheck
 							: "For Test {$kitIndex}, testing is not performed with country approved test kit.";
 						$failureReason[] = [
 							'warning' => $warning,
@@ -2114,10 +2135,10 @@ final class Application_Model_Dts
 		array $attributes,
 		string $dtsSchemeType,
 		array $result,                            // full $result row (for sample_label + RTRI fields)
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		?string $expectedResultCode,
 		string $repeatResult1 = '-',
 		string $repeatResult2 = '-',
@@ -2267,11 +2288,11 @@ final class Application_Model_Dts
 	/** Updated-3-tests / confirmatory path */
 	private function algoUpdatedThreeTests(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $repeatResult1,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $repeatResult1,
+		?string $reportedResultCode,
 		array $correctiveActions,
 		array &$out
 	) {
@@ -2333,10 +2354,10 @@ final class Application_Model_Dts
 	/** Serial */
 	private function algoSerial(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		array $correctiveActions,
 		array &$out
 	) {
@@ -2372,10 +2393,10 @@ final class Application_Model_Dts
 	/** Parallel */
 	private function algoParallel(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		array $correctiveActions,
 		array &$out
 	) {
@@ -2411,10 +2432,10 @@ final class Application_Model_Dts
 	/** Sierra Leone */
 	private function algoSierraLeone(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		array $correctiveActions,
 		array &$out
 	) {
@@ -2447,17 +2468,17 @@ final class Application_Model_Dts
 	/** Cote d'Ivoire */
 	private function algoCoteDivoire(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		string $repeatResult1,
 		array $correctiveActions,
 		array &$out
 	) {
 
 		// for ease of checking, we map all positive reported codes to 'P'
-		if (in_array($reportedResultCode, ['VIH1', 'VIH2', 'VIH1&2', 'P'], true)) {
+		if (in_array(strtoupper(trim($reportedResultCode)), ['VIH1', 'VH1', 'VIH2', 'VH2', 'VIH1&2', 'VH1&2', 'P'])) {
 			$reportedResultCode = 'P';
 		}
 		if ($result1 === 'NR' && $reportedResultCode === 'N') {
@@ -2490,11 +2511,11 @@ final class Application_Model_Dts
 	/** Myanmar (sets 50% score if algorithm is right) */
 	private function algoMyanmar(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
+		?string $result1,
+		?string $result2,
+		?string $result3,
 		?string $expectedResultCode,
-		string $reportedResultCode,
+		?string $reportedResultCode,
 		array $correctiveActions,
 		array &$out
 	) {
@@ -2518,9 +2539,9 @@ final class Application_Model_Dts
 	/** Malawi */
 	private function algoMalawi(
 		array $result,
-		string $result1,
-		string $result2,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $reportedResultCode,
 		string $repeatResult1,
 		string $repeatResult2,
 		array $correctiveActions,
@@ -2565,10 +2586,10 @@ final class Application_Model_Dts
 	/** Ghana (HIV algo) */
 	private function algoGhana(
 		array $result,
-		string $result1,
-		string $result2,
-		string $result3,
-		string $reportedResultCode,
+		?string $result1,
+		?string $result2,
+		?string $result3,
+		?string $reportedResultCode,
 		string $repeatResult1,
 		string $repeatResult2,
 		array $correctiveActions,

@@ -2857,10 +2857,10 @@ class Application_Service_Shipments
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
-            ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
-            ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-            ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+            ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+            ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
             ->group('s.shipment_id');
         if (isset($shipmentId) && !empty($shipmentId) && $shipmentId > 0)
