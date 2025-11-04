@@ -32,6 +32,7 @@ error_log
 npm-debug.log
 Thumbs.db
 Thumbs.db.orig
+snyk_rules.instructions.md
 .DS_Store
 .DS_Store.orig
 .git/*

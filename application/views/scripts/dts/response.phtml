@@ -232,6 +232,9 @@ foreach ($this->allTestKits as $kit) {
                                     if (!empty($allowedAlgorithms) && in_array('parallel', $allowedAlgorithms)) { ?>
                                         <option value="parallel" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'parallel') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Parallel"); ?></option>
                                     <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('cotedivoireNationalDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="cotedivoireNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'cotedivoireNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Côte d'Ivoire National Algorithm"); ?></option>
+                                    <?php }
                                     if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
                                     <?php }
