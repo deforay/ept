@@ -1,3 +1,8 @@
+<style>
+    .modal-backdrop.in {
+        z-index: -1 !important;
+    }
+</style>
 <div class="well">
     <form name="tbSettingsForm" id="tbSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "tb-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>

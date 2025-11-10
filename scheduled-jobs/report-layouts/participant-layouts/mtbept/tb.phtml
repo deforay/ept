@@ -129,6 +129,10 @@ if (!empty($resultArray['shipment'])) {
 
             $participantResult .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             $participantResult .= '<table style="font-size:11px;width:100%;" border="0" cellpadding="1">';
+            $participantResult .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $participantResult .= '	<td colspn="4" style="text-align:center;width:25%;"><strong>Site Results Testing with ' . $result['assayName'] . '</strong></td>';
+            $participantResult .= '</tr>';
+
             $participantResult .= '    <tr>';
             $participantResult .= '        <th style="font-size:11px;width:40%;text-align:center;font-weight:bold;"></th>';
             $participantResult .= '        <th style="font-size:11px;width:25%;text-align:center;font-weight:bold;">MTB Detected</th>';
@@ -379,16 +383,17 @@ if (!empty($resultArray['shipment'])) {
 
         $html = '<table cellpadding="4" style="width:100%;">';
 
-        $html .= '<tr>';
+        /* $html .= '<tr>';
         $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
         $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
-        $html .= '</tr>';
+        $html .= '</tr>'; */
 
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
-        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
-        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, the PT Provider. Questions or comments concerning this report may be submitted to the PTCC or to the PT Provider using the Contact Information listed below.</p>';
-        $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
+        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We, the undersigned, have read and reviewed the above Molecular TB Proficiency Test (mTB-PT) Final Individual Performance Report. Expected results, for which testing sites’ submitted results are scored against, are determined via the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing prior to panel shipment. If our final score was less than 100%, we (the undersigned) completed a root cause analysis. </p>';
+        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Participation and all submitted results will remain confidential; only our testing site, Proficiency Testing Country Coordinator(s) (PTCC), PT provider, and web management team will have access to individual testing site results, and results with site identifiers will not be shared externally without written consent. Each PTCC serves as a subcontractor to the mTB-PT Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, liaising between CDC/ILB mTB-PT program and testing sites, monitoring site participation, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Deidentified site results may be shared for mTB-PT program review and improvement purposes upon request, and with approval from, CDC/ ILB. Questions or comments concerning this report may be submitted to the PTCC or to CDC/ ILB using the contact information listed below.</p>';
+
+        $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;"><i>* The Final Individual Performance Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Final Individual Performance Report for reference. If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/).</i></p>';
         $html .= '</td></tr>';
 
         $html .= '<tr>';
