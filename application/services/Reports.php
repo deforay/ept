@@ -4614,12 +4614,21 @@ class Application_Service_Reports
 
     public function saveReportDownloadDateTime($id, $type)
     {
+        $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $where = "map_id = $id";
+        // if (base64_decode($id, true) === true) {
+        if ($type == 'summary') {
+            $encoded = base64_decode($id);
+            $explodeIds = explode('##', $encoded);
+
+            $where = " shipment_id = $explodeIds[1]";
+        } else {
+            $where = "map_id = $id";
+        }
         if ($type == "individual") {
-            $data = ["individual_report_downloaded_on" => new Zend_Db_Expr('now()')];
+            $data = ["individual_report_downloaded_on" => new Zend_Db_Expr('now()'), "individual_report_downloaded_by" => $authNameSpace->dm_id];
         } elseif ($type == 'summary') {
-            $data = ["summary_report_downloaded_on" => new Zend_Db_Expr('now()')];
+            $data = ["summary_report_downloaded_on" => new Zend_Db_Expr('now()'), "summary_report_downloaded_by" => $authNameSpace->dm_id];
         }
         return $dbAdapter->update('shipment_participant_map', $data, $where);
     }
