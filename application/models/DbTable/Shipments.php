@@ -1410,7 +1410,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
-                $row[] = '<a href="/d/' . $filePath . '" onclick="updateReportDownloadDateTime(\'' . base64_encode($aRow['participant_id'] . '##' . $aRow['shipment_id']) . '\', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
+                $row[] = '<a href="/d/' . $filePath . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
                 $row[] = _('Not Available');
             }

@@ -544,8 +544,7 @@ class Application_Model_Tb
                     'spm.final_result',
                     'pt_test_not_performed_comments',
                     'failure_reason',
-                    'individual_report_downloaded_on',
-                    'summary_report_downloaded_on',
+                    'report_download_metadata',
                     'is_pt_test_not_performed' => new Zend_Db_Expr("
                     CASE WHEN
                         (is_pt_test_not_performed = '' OR is_pt_test_not_performed IS NULL OR is_pt_test_not_performed like 'no') AND (response_status = 'responded')
@@ -628,8 +627,10 @@ class Application_Model_Tb
                     $participantRow[] = $aRow['city'];
                     $participantRow[] = $aRow['mobile'];
                     $participantRow[] = strtolower($aRow['email']);
-                    $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['individual_report_downloaded_on']);
-                    $participantRow[] = Pt_Commons_General::excelDateFormat($aRow['summary_report_downloaded_on']);
+
+                    $reportTime = json_decode($aRow['report_download_metadata'], true);
+                    $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_individual_report_on']);
+                    $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_summary_report_on']);
 
 
                     $currentRow++;
@@ -1586,7 +1587,7 @@ class Application_Model_Tb
                 $dataManagerService->resetPasswordFromAdmin([
                     'primaryMail' => $prefix . $result[0]['unique_identifier'],
                     'password' => $tempPassword,
-                ],true);
+                ], true);
             }
         }
 

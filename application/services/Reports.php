@@ -4612,24 +4612,82 @@ class Application_Service_Reports
         }
     }
 
+
     public function saveReportDownloadDateTime($id, $type)
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        // if (base64_decode($id, true) === true) {
-        if ($type == 'summary') {
-            $encoded = base64_decode($id);
-            $explodeIds = explode('##', $encoded);
 
-            $where = " shipment_id = $explodeIds[1]";
+        // Build WHERE clause based on type
+        if ($type == 'summary') {
+            // Fetch mapped participants ID's
+            $sql = $dbAdapter->select()->from(array('dm' => 'data_manager'), array(''))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
+                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participant_id'))
+                ->where("dm.dm_id = ?", $authNameSpace->dm_id);
+            $mappedParticipants = $dbAdapter->fetchAll($sql);
+            $participantIds = array_column($mappedParticipants, 'participant_id');
+            $participantIdsString = implode(',', $participantIds);
+
+            $where = " participant_id IN($participantIdsString) AND shipment_id = $id";
         } else {
             $where = "map_id = $id";
         }
-        if ($type == "individual") {
-            $data = ["individual_report_downloaded_on" => new Zend_Db_Expr('now()'), "individual_report_downloaded_by" => $authNameSpace->dm_id];
-        } elseif ($type == 'summary') {
-            $data = ["summary_report_downloaded_on" => new Zend_Db_Expr('now()'), "summary_report_downloaded_by" => $authNameSpace->dm_id];
+
+        // Fetch existing report_download_metadata
+        $select = $dbAdapter->select()
+            ->from('shipment_participant_map', ['report_download_metadata'])
+            ->where($where);
+
+        $existingData = $dbAdapter->fetchOne($select);
+
+        // Parse existing JSON data
+        $reportData = [];
+        if (!empty($existingData)) {
+            $reportData = json_decode($existingData, true);
+            if (!is_array($reportData)) {
+                $reportData = [];
+            }
         }
+
+        // Get current datetime
+        $currentDateTime = date('Y-m-d H:i:s');
+        $currentUserId = $authNameSpace->dm_id;
+
+        // Update based on report type
+        if ($type == "individual") {
+            // Check if first time download
+            if (
+                !isset($reportData['first_individual_report_on']) ||
+                empty($reportData['first_individual_report_on'])
+            ) {
+                // First time download - set both first and last
+                $reportData['first_individual_report_on'] = $currentDateTime;
+                $reportData['first_individual_report_by'] = $currentUserId;
+            }
+            // Always update last time (for first and subsequent downloads)
+            $reportData['latest_individual_report_on'] = $currentDateTime;
+            $reportData['latest_individual_report_by'] = $currentUserId;
+        } elseif ($type == 'summary') {
+            // Check if first time download
+            if (
+                !isset($reportData['first_summary_report_on']) ||
+                empty($reportData['first_summary_report_on'])
+            ) {
+                // First time download - set both first and last
+                $reportData['first_summary_report_on'] = $currentDateTime;
+                $reportData['first_summary_report_by'] = $currentUserId;
+            }
+            // Always update last time (for first and subsequent downloads)
+            $reportData['latest_summary_report_on'] = $currentDateTime;
+            $reportData['latest_summary_report_by'] = $currentUserId;
+        }
+
+        // Prepare data for update
+        $data = [
+            'report_download_metadata' => json_encode($reportData)
+        ];
+
         return $dbAdapter->update('shipment_participant_map', $data, $where);
     }
 
