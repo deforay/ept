@@ -31,7 +31,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 	}
 </style>
 <div class="well" <?php echo $style; ?>>
-	<fieldset>
+	<fieldset class="container">
 		<legend><?= $this->translate->_("Update Shipment Sample Details"); ?> - <?php echo $shipmentData['shipment']['shipment_code']; ?></legend>
 		<form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'edit')); ?>" autocomplete="off">
 			<div class="form-group">

@@ -1070,5 +1070,4 @@ class Application_Service_Participants
 		$enrollments = new Application_Model_DbTable_Enrollments();
 		return $enrollments->uploadBulkEnrollmentDetails($params);
 	}
-
 }

@@ -1210,10 +1210,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
         }
 
+        $general = new Pt_Commons_General();
 
         $sQuery = $this->getAdapter()->select()->from(array('s' => 'shipment'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS s.scheme_type'), 'SHIP_YEAR' => 'year(s.shipment_date)', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.corrective_action_file'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE substr(spm.evaluation_status,3,1) WHEN 1 THEN 'View' WHEN '9' THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result', "spm.evaluation_status", "spm.participant_id", "RESPONSEDATE" => "DATE_FORMAT(spm.shipment_test_report_date,'%Y-%m-%d')", "RESPONSE" => new Zend_Db_Expr("CASE WHEN ASCII(SUBSTRING(spm.evaluation_status FROM 3 FOR 1)) = ASCII('1') THEN 'View' WHEN ASCII(SUBSTRING(spm.evaluation_status FROM 3 FOR 1)) = ASCII('9') THEN 'Enter Result' END"), "REPORT" => new Zend_Db_Expr("CASE  WHEN spm.report_generated='yes' AND s.status='finalized' THEN 'Report' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name'))
             // ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id')
             // ->where("pmm.dm_id=?", $this->_session->dm_id)
@@ -1232,8 +1233,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $parameters['endDate']);
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $general->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $general->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -1247,7 +1248,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -1262,7 +1262,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             "aaData" => array()
         );
 
-        $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $corrective = "";
             $row = [];

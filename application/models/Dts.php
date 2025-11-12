@@ -962,6 +962,7 @@ final class Application_Model_Dts
 				);
 			}
 		}
+
 		$nofOfRowsDeleted = $this->db->delete('dts_shipment_corrective_action_map', $this->db->quoteInto('shipment_map_id = ?', $shipment['map_id']));
 		if ($shipment['is_excluded'] != 'yes' && $shipment['is_pt_test_not_performed'] != 'yes') {
 			$correctiveActionList = array_unique($correctiveActionList);
