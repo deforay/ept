@@ -8,3 +8,31 @@ ALTER TABLE `shipment_participant_map`
   DROP `summary_report_downloaded_on`,
   DROP `individual_report_downloaded_on`;
 ALTER TABLE `shipment_participant_map` ADD `report_download_metadata` JSON NULL DEFAULT NULL AFTER `response_status`;
+
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+
