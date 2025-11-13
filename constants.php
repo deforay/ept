@@ -1,6 +1,6 @@
 <?php
 
-const APP_VERSION = '7.3.0';
+const APP_VERSION = '7.3.1';
 
 // Define application environment
 defined('APPLICATION_ENV')

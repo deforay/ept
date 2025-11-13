@@ -8,6 +8,7 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 
 class Application_Service_Common
 {
+    const MAIL_FAILURE_REASON_MAX = 1000;
 
     protected $db;
 
@@ -489,7 +490,11 @@ class Application_Service_Common
             if (empty($recips['to'])) {
                 error_log("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
                 // revert status to not-sent and continue
-                $tempMailDb->getAdapter()->update('temp_mail', ['status' => 'not-sent'], $tempMailDb->getAdapter()->quoteInto('temp_id = ?', $id));
+                self::markTempMailFailed(
+                    $tempMailDb->getAdapter(),
+                    (int) $id,
+                    'No valid To recipients'
+                );
                 continue;
             }
 
@@ -513,7 +518,11 @@ class Application_Service_Common
                 error_log($exc->getTraceAsString());
                 error_log("===== MAIL SENDING FAILED - END =====");
                 // mark not-sent and continue to next
-                $tempMailDb->getAdapter()->update('temp_mail', ['status' => 'not-sent'], $tempMailDb->getAdapter()->quoteInto('temp_id = ?', $id));
+                self::markTempMailFailed(
+                    $tempMailDb->getAdapter(),
+                    (int) $id,
+                    $exc->getMessage()
+                );
                 continue;
             }
         }
@@ -1006,6 +1015,39 @@ class Application_Service_Common
         }
 
         return $out;
+    }
+
+    public static function formatMailFailureReason(?string $reason): ?string
+    {
+        if ($reason === null) {
+            return null;
+        }
+
+        $normalized = trim(preg_replace('/\s+/', ' ', (string) $reason));
+        if ($normalized === '') {
+            return null;
+        }
+
+        if (function_exists('mb_substr')) {
+            return mb_substr($normalized, 0, self::MAIL_FAILURE_REASON_MAX);
+        }
+
+        return substr($normalized, 0, self::MAIL_FAILURE_REASON_MAX);
+    }
+
+    /**
+     * Mark a temp_mail row as not-sent with an optional failure reason.
+     */
+    public static function markTempMailFailed(Zend_Db_Adapter_Abstract $adapter, int $tempId, ?string $reason = null): void
+    {
+        $adapter->update(
+            'temp_mail',
+            [
+                'status'         => 'failed',
+                'failure_reason' => self::formatMailFailureReason($reason),
+            ],
+            $adapter->quoteInto('temp_id = ?', $tempId)
+        );
     }
 
 

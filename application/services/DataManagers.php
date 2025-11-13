@@ -171,13 +171,13 @@ class Application_Service_DataManagers
         // If DB email isn't even syntactically valid, fall back to generic success
         if ($participantMail === null) {
             // Optionally notify admin about bad record
-            $common->insertTempMail(
-                $adminMail,
-                null,
-                null,
-                "Password Reset - ePT",
-                "Record has invalid email for participant <b>{$participantName}</b> (input: " . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ")."
-            );
+            // $common->insertTempMail(
+            //     $adminMail,
+            //     null,
+            //     null,
+            //     "Password Reset - ePT",
+            //     "Record has invalid email for participant <b>{$participantName}</b> (input: " . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ")."
+            // );
             $sessionAlert->message = $genericOkMsg;
             $sessionAlert->status  = "success";
             return;
