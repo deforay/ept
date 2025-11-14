@@ -15,6 +15,12 @@ class Application_Service_FeedBack
         return $db->fetchFeedBackQuestionsById($id, $type);
     }
 
+    public function getFeedBackFormsById($id, $type = '')
+    {
+        $db = new Application_Model_DbTable_FeedBackTable();
+        return $db->fetchFeedBackFormsById($id, $type);
+    }
+
     public function getFeedBackAnswers($sid, $pid, $mid)
     {
         $db = new Application_Model_DbTable_FeedBackTable();

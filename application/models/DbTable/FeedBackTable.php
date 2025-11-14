@@ -11,7 +11,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'))
-            ->join(array('rpff' => 'r_participant_feedback_form'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
+            ->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
             ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'))
             ->where("rpff.shipment_id =?", $sid)
@@ -23,7 +23,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'));
         if ($type == 'mapped') {
-            $sql = $sql->join(array('rpff' => 'r_participant_feedback_form'), 'rfq.question_id=rpff.question_id', array('*'));
+            $sql = $sql->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('*'));
             $sql = $sql->where("rpff.shipment_id =?", $id);
             return $db->fetchAll($sql);
         } else {
@@ -31,11 +31,45 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             return $db->fetchRow($sql);
         }
     }
+
+    /**
+     * Fetch feedback forms data by shipment ID with separate results for each table
+     *
+     * @param int $id Shipment ID
+     * @return array Array containing separate results for feedback form, questions, and files
+     */
+    public function fetchFeedBackFormsById($id)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $result = [];
+
+        // Fetch feedback form results
+        $feedbackFormSql = $db->select()
+            ->from(['rpf' => 'r_participant_feedback_form'], ['*'])
+            ->where('rpf.shipment_id = ?', $id);
+        $result['feedback_form_results'] = $db->fetchRow($feedbackFormSql);
+
+        // Fetch feedback form question mapping results
+        $questionMapSql = $db->select()
+            ->from(['rfq' => 'r_feedback_questions'], ['*'])
+            ->join(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['*'])
+            ->where('rpfq.shipment_id = ?', $id);
+        $result['feedback_form_question_results'] = $db->fetchAll($questionMapSql);
+
+        // Fetch feedback form files mapping results
+        $filesMapSql = $db->select()
+            ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
+            ->where('rpff.shipment_id = ?', $id);
+        $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
+
+        return $result;
+    }
     public function fetchAllIrelaventActiveQuestions($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('question_id', 'question_text', 'question_code'))
-            ->joinLeft(array('rpff' => 'r_participant_feedback_form'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
+            ->joinLeft(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
             ->where("rfq.question_status ='active'")
             ->where("(rpff.shipment_id != " . $sid . " OR rpff.shipment_id IS null OR rpff.shipment_id like '')")
             ->group('question_id');
@@ -46,7 +80,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('pfa' => 'participant_feedback_answer'), array('*'))
-            ->join(array('rpff' => 'r_participant_feedback_form'), 'pfa.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
+            ->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'pfa.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
             ->join(array('rfq' => 'r_feedback_questions'), 'pfa.question_id=rfq.question_id', array('question_text', 'question_code'))
             ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('s' => 'shipment'), 'pfa.shipment_id=s.shipment_id', array('shipment_code'))
@@ -82,7 +116,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'modified_by'           => $authNameSpace->admin_id
             );
 
-            if (isset($params['questionID']) && !empty($params['questionID'])) {
+            if (isset($params['questionID']) && !empty($params['questionID']) && $params['formType'] != 'clone') {
                 return $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
             } else {
                 return $this->insert($data);
@@ -90,21 +124,124 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         }
     }
 
+    /**
+     * Save shipment question mapping details including feedback form data, files, and question mappings
+     *
+     * @param array $params Contains shipmentId, rfId, question, formFiles, mandatory, and sortOrder data
+     * @return bool|void Returns false if shipmentId is not provided, void otherwise
+     */
     public function saveShipmentQuestionMapDetails($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if (isset($params['shipmentId']) && !empty($params['shipmentId']) && isset($params['question']) && !empty($params['question'])) {
-            $shipmentResult = $db->fetchRow($db->select()->from('shipment', array('scheme_type'))->where('shipment_id = ?', $params['shipmentId']));
-            $db->delete('r_participant_feedback_form', 'shipment_id = ' . $params['shipmentId'] . '');
-            foreach ($params['question'] as $q) {
-                $db->insert('r_participant_feedback_form', array(
-                    'question_id' => $q,
+
+        // Validate required shipment ID parameter
+        if (!isset($params['shipmentId']) || empty($params['shipmentId'])) {
+            return false;
+        }
+
+        // Fetch shipment details
+        $shipmentResult = $db->fetchRow(
+            $db->select()
+                ->from('shipment', array('scheme_type'))
+                ->where('shipment_id = ?', $params['shipmentId'])
+        );
+
+        // Prepare feedback form data
+        $feedbackFormData = [
+            'shipment_id' => $params['shipmentId'],
+            'scheme_type' => $shipmentResult['scheme_type'] ?? null,
+            'form_content' => $params['formContent'] ?? null,
+        ];
+
+        // Update or insert feedback form record
+        if (isset($params['rfId']) && !empty($params['rfId'])) {
+            // Update existing record
+            $feedbackFormId = base64_decode($params['rfId']);
+            $db->update(
+                'r_participant_feedback_form',
+                $feedbackFormData,
+                'rpff_id = ' . (int)$feedbackFormId
+            );
+        } else {
+            // Insert new record
+            $feedbackFormId = $db->insert('r_participant_feedback_form', $feedbackFormData);
+        }
+
+        // Process questions if provided
+        if (!isset($params['question']) || empty($params['question'])) {
+            return;
+        }
+
+        // ===== PROCESS AND SAVE UPLOADED FILES =====
+        if (isset($params['formFiles']['name']) && !empty($params['formFiles']['name'])) {
+            // Delete existing file mappings for this shipment
+            $db->delete(
+                'r_participant_feedback_form_files_map',
+                'shipment_id = ' . (int)$params['shipmentId']
+            );
+
+            // Prepare upload directory
+            $uploadFolder = realpath(UPLOAD_PATH);
+            $dirPath = 'feedback-forms' . DIRECTORY_SEPARATOR . $params['shipmentId'];
+            $uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirPath;
+
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                Application_Service_Common::makeDirectory($uploadDir);
+            }
+
+            // Process each uploaded file
+            foreach ($params['formFiles']['name'] as $key => $fileName) {
+                $fileData = [
+                    'rpff_id' => $feedbackFormId,
                     'shipment_id' => $params['shipmentId'],
                     'scheme_type' => $shipmentResult['scheme_type'] ?? null,
-                    'is_response_mandatory' => $params['mandatory'][$q] ?? null,
-                    'sort_order' => $params['sortOrder'][$q] ?? null,
-                ));
+                    'feedback_file' => null,
+                    'file_name' => $fileName ?? null,
+                    'sort_order' => $params['formFiles']['sort'][$key] ?? null,
+                ];
+                // Handle file upload if file is valid
+                if (
+                    !empty($_FILES['formFiles']['name']['files'][$key])
+                    && $_FILES['formFiles']['error']['files'][$key] === 0
+                ) {
+                    // Get file extension
+                    $originalFileName = $_FILES['formFiles']['name']['files'][$key];
+                    $extension = substr($originalFileName, strrpos($originalFileName, '.') + 1);
+                    // Generate unique filename
+                    $newFileName = Application_Service_Common::generateRandomString(6) . '.' . $extension;
+                    $targetPath = $uploadDir . DIRECTORY_SEPARATOR . $newFileName;
+
+                    // Move uploaded file and update file data
+                    if (move_uploaded_file($_FILES['formFiles']['tmp_name']['files'][$key], $targetPath)) {
+                        $fileData['feedback_file'] = $newFileName;
+                    }
+                }
+
+                // Insert file mapping record
+                $db->insert('r_participant_feedback_form_files_map', $fileData);
             }
+        }
+
+        // ===== PROCESS AND SAVE QUESTION MAPPINGS =====
+        // Delete existing question mappings for this shipment
+        $db->delete(
+            'r_participant_feedback_form_question_map',
+            'shipment_id = ' . (int)$params['shipmentId']
+        );
+
+        // Insert new question mappings
+        foreach ($params['question'] as $questionId) {
+            $questionData = [
+                'rpff_id' => $feedbackFormId,
+                'question_id' => $questionId,
+                'shipment_id' => $params['shipmentId'],
+                'scheme_type' => $shipmentResult['scheme_type'] ?? null,
+                'is_response_mandatory' => $params['mandatory'][$questionId] ?? null,
+                'sort_order' => $params['sortOrder'][$questionId] ?? null,
+            ];
+
+            $db->insert('r_participant_feedback_form_question_map', $questionData);
         }
     }
 
@@ -186,7 +323,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $sQuery = $this->getAdapter()->select()->from(array('pfa' => $this->_name));
 
         if ($type == 'mapped') {
-            $sQuery = $sQuery->join(['rpff' => 'r_participant_feedback_form'], 'pfa.question_id=rpff.question_id', ['shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")]);
+            $sQuery = $sQuery->join(['rpff' => 'r_participant_feedback_form_question_map'], 'pfa.question_id=rpff.question_id', ['shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")]);
             $sQuery = $sQuery->join(['s' => 'shipment'], 'rpff.shipment_id=s.shipment_id', ['shipment_code']);
             $sQuery = $sQuery->joinLeft(['sl' => 'scheme_list'], 'rpff.scheme_type=sl.scheme_id', ['scheme_name']);
         }

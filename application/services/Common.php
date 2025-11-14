@@ -1,7 +1,7 @@
 <?php
 
-
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Symfony\Component\Filesystem\Filesystem;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
@@ -906,7 +906,7 @@ class Application_Service_Common
     public function getFeedBackQuestions($shipmentId, $headings)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from(['pff' => 'r_participant_feedback_form'], ['pff.question_id'])
+        $query = $db->select()->from(['pff' => 'r_participant_feedback_form_question_map'], ['pff.question_id'])
             ->join(['fq' => 'r_feedback_questions'], "fq.question_id = pff.question_id", ['question_text'])
             ->where("pff.shipment_id = ?", $shipmentId);
         $result = $db->fetchAll($query);
@@ -1061,11 +1061,18 @@ class Application_Service_Common
 
     public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
     {
-        if (is_dir($path)) {
-            return true;
+        $filesystem = new Filesystem();
+
+        if ($filesystem->exists($path)) {
+            return true; // Directory already exists
         }
 
-        return mkdir($path, $mode, $recursive);
+        try {
+            $filesystem->mkdir($path, $mode); // Handles recursive creation automatically
+            return true;
+        } catch (Throwable $exception) {
+            return false; // Directory creation failed
+        }
     }
 
     public static function removeDirectory($dirname): bool
