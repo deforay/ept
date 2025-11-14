@@ -8,7 +8,6 @@ ALTER TABLE `shipment_participant_map`
   DROP `summary_report_downloaded_on`,
   DROP `individual_report_downloaded_on`;
 ALTER TABLE `shipment_participant_map` ADD `report_download_metadata` JSON NULL DEFAULT NULL AFTER `response_status`;
-
 -- Thana 13-Nov-2025
 CREATE TABLE `r_participant_feedback_form` (
   `rpff_id` int NOT NULL AUTO_INCREMENT,
@@ -50,3 +49,30 @@ CREATE TABLE `r_participant_feedback_form_files_map` (
   KEY `shipment_id` (`shipment_id`),
   CONSTRAINT `r_participant_feedback_form_files_map_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+-- END OF VERSION 7.3.0 --
+

@@ -124,6 +124,7 @@ try {
     }
 
     foreach ($mailResult as $result) {
+        $failureReason = null;
         try {
             // Mark in-flight (idempotent-ish; helps visibility and avoids double sends across overlapping runs)
             $claimed = $db->update(
@@ -306,6 +307,8 @@ try {
                     }
                 } catch (Throwable $e) {
                     $allOk = false;
+                    $batchError = "Batch {$batchIndex} failed: {$e->getMessage()}";
+                    $failureReason = $failureReason ?? $batchError;
                     error_log("Batch send failed (temp_id={$result['temp_id']} batch={$batchIndex}): {$e->getMessage()}");
                     error_log($e->getTraceAsString());
                     // keep trying remaining batches; mark row 'not-sent' afterwards
@@ -318,14 +321,23 @@ try {
             if ($allOk) {
                 $db->delete('temp_mail', $db->quoteInto('temp_id = ?', $result['temp_id']));
             } else {
-                $db->update('temp_mail', ['status' => 'not-sent'], $db->quoteInto('temp_id = ?', $result['temp_id']));
+                Application_Service_Common::markTempMailFailed(
+                    $db,
+                    (int) $result['temp_id'],
+                    $failureReason ?: 'One or more batches failed to send'
+                );
             }
 
             if (ROW_SLEEP_MS > 0) {
                 usleep(ROW_SLEEP_MS * 1000);
             }
         } catch (Throwable $e) {
-            $db->update('temp_mail', ['status' => 'not-sent'], $db->quoteInto('temp_id = ?', $result['temp_id']));
+            $failureReason = $failureReason ?? $e->getMessage();
+            Application_Service_Common::markTempMailFailed(
+                $db,
+                (int) $result['temp_id'],
+                $failureReason
+            );
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
             continue;
