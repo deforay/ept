@@ -11,20 +11,37 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'))
-            ->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
-            ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('s' => 'shipment'), 'rpff.shipment_id=s.shipment_id', array('shipment_code'))
-            ->where("rpff.shipment_id =?", $sid)
-            ->order('sort_order asc');
-        return $db->fetchAll($sql);
+            ->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('is_response_mandatory', 'sort_order'))
+            ->join(array('sl' => 'scheme_list'), 'rpfq.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->join(array('s' => 'shipment'), 'rpfq.shipment_id=s.shipment_id', array('shipment_code'))
+            ->where("rpfq.shipment_id =?", $sid)
+            ->order('rpfq.sort_order asc');
+        $result['result'] = $db->fetchAll($sql);;
+
+        // Fetch feedback form results
+        $feedbackFormSql = $db->select()
+            ->from(['rpf' => 'r_participant_feedback_form'], ['*'])
+            ->join(array('sl' => 'scheme_list'), 'rpf.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->join(array('s' => 'shipment'), 'rpf.shipment_id=s.shipment_id', array('shipment_code'))
+            ->where('rpf.shipment_id = ?', $sid);
+        $result['feedback_form_results'] = $db->fetchRow($feedbackFormSql);
+
+        // Fetch feedback form files mapping results
+        $filesMapSql = $db->select()
+            ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
+            ->where('rpff.shipment_id = ?', $sid);
+        $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
+
+        return $result;
     }
     public function fetchFeedBackQuestionsById($id, $type)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'));
         if ($type == 'mapped') {
-            $sql = $sql->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('*'));
-            $sql = $sql->where("rpff.shipment_id =?", $id);
+            $sql = $sql->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('*'));
+            $sql = $sql->join(['rpff' => 'r_participant_feedback_form_files_map'], 'rpfq.rpff_id=rpff.rpff_id',  ['*']);
+            $sql = $sql->where("rpfq.shipment_id =?", $id);
             return $db->fetchAll($sql);
         } else {
             $sql = $sql->where("rfq.question_id =?", $id);

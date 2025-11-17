@@ -1,8 +1,10 @@
 <?php
+// Zend_Debug::dump($this->questions['feedback_form_results']);
+// die;
 $answers = $this->ans;
 ?><section class="content-header">
     <h1>
-        <?= $this->translate->_($this->questions[0]['scheme_name'] . "( " . $this->questions[0]['shipment_code'] . ")" . " Participant Feedback Survey"); ?>
+        <?= $this->translate->_($this->questions['feedback_form_results']['scheme_name'] . "( " . $this->questions['feedback_form_results']['shipment_code'] . ")" . " Participant Feedback Survey"); ?>
         <small><?= $this->translate->_("Take the satisfaction survey and provide the feedback for each shipment"); ?></small>
     </h1>
 </section>
@@ -10,35 +12,51 @@ $answers = $this->ans;
     <div class="box">
         <div class="box-body">
             <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(["controller" => "participant", "action" => "feed-back"], null, true) ?>">
-                <table class="display datatable table table-bordered table-hover table-striped">
-                    <tr>
-                        <th style="width:5%;"><?= $this->translate->_("Number"); ?></th>
-                        <th style="width:75%;"><?= $this->translate->_("Question/Statement"); ?></th>
-                        <th style="width:20%;"><?= $this->translate->_("Your Response"); ?></th>
-                    </tr>
-                    <?php foreach ($this->questions as $key => $question) { ?>
-                        <tr>
-                            <td><?php echo ($key + 1); ?></td>
-                            <td><input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" /><?php echo ucwords($question['question_text']); ?> <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="mandatory">*</span>' : ""; ?></td>
-                            <td>
-                                <?php if ($question['question_type'] == 'text') { ?>
-                                    <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"><?php echo $answers[$question['question_id']] ?? null; ?></textarea>
-                                <?php } elseif ($question['question_type'] == 'dropdown') { ?>
-                                    <select name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
-                                        <option value="">-- Select --</option>
-                                        <?php foreach (json_decode($question['response_attributes']) as $dpd) { ?>
-                                            <option value="<?php echo $dpd; ?>" <?php echo (isset($answers[$question['question_id']]) && $answers[$question['question_id']] == $dpd) ? "selected='selected'" : ""; ?>><?php echo ucwords($dpd); ?></option>
+                <?php if (isset($this->questions['feedback_form_results']['form_content']) && !empty($this->questions['feedback_form_results']['form_content'])) { ?>
+                    <p><?php echo $this->questions['feedback_form_results']['form_content']; ?></p>
+                <?php } ?>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tr>
+                                <!-- <th style="width:5%;"><?= $this->translate->_("Number"); ?></th> -->
+                                <!-- <th style="width:75%;"><?= $this->translate->_("Question/Statement"); ?></th> -->
+                            </tr>
+                            <?php foreach ($this->questions['result'] as $key => $question) { ?>
+                                <tr>
+                                    <!-- <td><?php echo ($key + 1); ?></td> -->
+                                    <td>
+                                        <input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" /><?php echo ucwords($question['question_text']); ?> <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="mandatory">*</span>' : ""; ?>
+                                        <br>
+                                        <?php if ($question['question_type'] == 'text') { ?>
+                                            <textarea rows="5" name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control" title="Please enter your response" placeholder="Enter your response"><?php echo $answers[$question['question_id']] ?? null; ?></textarea>
+                                        <?php } elseif ($question['question_type'] == 'dropdown') { ?>
+                                            <select name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
+                                                <option value="">-- Select --</option>
+                                                <?php foreach (json_decode($question['response_attributes']) as $dpd) { ?>
+                                                    <option value="<?php echo $dpd; ?>" <?php echo (isset($answers[$question['question_id']]) && $answers[$question['question_id']] == $dpd) ? "selected='selected'" : ""; ?>><?php echo ucwords($dpd); ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        <?php } elseif ($question['question_type'] == 'numeric') { ?>
+                                            <input value="<?php echo $answers[$question['question_id']] ?? null; ?>" placeholder="Enter your response" type='number' name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please enter your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
+                                        <?php } elseif ($question['question_type'] == 'datetime') { ?>
+                                            <input value="<?php echo Pt_Commons_General::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>" type="text" readonly name="answer[<?php echo $key; ?>][date]" id="answer<?php echo ($key + 1); ?>" placeholder="Select date" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control datepicker" style=" background: white; ">
                                         <?php } ?>
-                                    </select>
-                                <?php } elseif ($question['question_type'] == 'numeric') { ?>
-                                    <input value="<?php echo $answers[$question['question_id']] ?? null; ?>" placeholder="Enter your response" type='number' name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>" title="Please enter your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
-                                <?php } elseif ($question['question_type'] == 'datetime') { ?>
-                                    <input value="<?php echo Pt_Commons_General::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>" type="text" readonly name="answer[<?php echo $key; ?>][date]" id="answer<?php echo ($key + 1); ?>" placeholder="Select your response" title="Please select your response" class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control datepicker">
-                                <?php } ?>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </table>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <?php if (isset($this->questions['feedback_form_files_results']) && !empty($this->questions['feedback_form_files_results'])) {
+                            echo "<ul style='list-style:none;'>";
+                            foreach ($this->questions['feedback_form_files_results'] as $row) {
+                                echo "<li style='width:100%;line-height: 10px;padding-bottom: 10px;'><a style='width:100%;' class='btn btn-primary' href='/uploads/feedback-forms/" . $row['shipment_id'] . "/" . $row['feedback_file'] . "' target='_blank'>Click here to download <strong>" . $row['file_name'] . "</strong></a></li>";
+                            }
+                            echo "</ul>";
+                        } ?>
+                    </div>
+                </div>
                 <br>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                     <input type="hidden" name="shipmentId" value="<?php echo $this->sID; ?>" />
