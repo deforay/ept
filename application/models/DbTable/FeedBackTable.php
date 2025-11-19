@@ -400,8 +400,9 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             }
             $clone = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '/type/clone" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Clone</a>';
             $edit = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+            $downloadResponse = '<a href="javascript:void(0);" onclick="generateFeedbackResponseReports(' . $aRow['shipment_id'] . ')" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download"></i> Download Response</a>';
 
-            $row[] = $edit . $clone;
+            $row[] = $edit . $clone . $downloadResponse;
 
             $output['aaData'][] = $row;
         }

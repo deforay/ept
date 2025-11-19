@@ -21,6 +21,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         $ajaxContext->addActionContext('questions', 'html')
             ->addActionContext('shipment-questions', 'html')
             ->addActionContext('get-questions', 'html')
+            ->addActionContext('get-feedback-response-report', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -108,6 +109,18 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $parameters = $this->getAllParams();
             $this->view->questions = $feedbackService->getAllIrelaventActiveQuestions($parameters['sid']);
             $this->view->result = $feedbackService->getFeedBackQuestionsById($parameters['sid'], 'mapped');
+        }
+    }
+
+    public function getFeedbackResponseReportAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        $feedbackService = new Application_Service_FeedBack();
+        if ($request->isPost()) {
+            $parameters = $this->getAllParams();
+            $this->view->result = $feedbackService->exportFeedbackResponseReport($parameters['sid']);
         }
     }
 }

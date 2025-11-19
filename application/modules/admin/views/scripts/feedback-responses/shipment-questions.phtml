@@ -64,4 +64,21 @@
         });
 
     });
+
+    function generateFeedbackResponseReports(shipmentId) {
+        // $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-feedback-response-report')); ?>", {
+                sid: shipmentId,
+                format: "html"
+            },
+            function(data) {
+                if (data != "") {
+                    $.unblockUI();
+                    document.location.href = '/temporary/' + data;
+                } else {
+                    alert("Response not found for this shipment");
+                }
+                $.unblockUI();
+            });
+    }
 </script>
