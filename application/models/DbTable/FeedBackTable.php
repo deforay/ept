@@ -165,6 +165,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 
         // Prepare feedback form data
         $feedbackFormData = [
+            'form_show_to' => $params['formTo'],
             'shipment_id' => $params['shipmentId'],
             'scheme_type' => $shipmentResult['scheme_type'] ?? null,
             'form_content' => $params['formContent'] ?? null,

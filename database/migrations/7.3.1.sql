@@ -4,3 +4,6 @@ ALTER TABLE `temp_mail`
     ADD COLUMN `failure_reason` TEXT NULL AFTER `status`;
 
 UPDATE `system_config` SET `value` = '7.3.1' WHERE `config` = 'app_version';
+
+-- Thana 20-Nov-2025
+ALTER TABLE `r_participant_feedback_form` ADD `form_show_to` VARCHAR(50) NULL DEFAULT NULL AFTER `form_content`;

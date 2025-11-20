@@ -31,21 +31,35 @@ if (isset($this->result) && !empty($this->result)) {
             <?php } else { ?>
                 <legend><?= $this->translate->_("New Feedback Form"); ?></legend>
             <?php  } ?>
-            <div class="form-group col-lg-12">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select shipment to fetch questions"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-12">
-                    <select id="shipmentId" name="shipmentId" class="select2 form-control isRequired" title="Please select the shipment" onchange="loadQuestions(this.value);">
-                        <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <?php if (isset($this->shipments) && !empty($this->shipments)) {
-                            foreach ($this->shipments as $key => $row) { ?>
-                                <option value="<?php echo $row['shipment_id']; ?>" <?php echo (isset($this->sid) && !empty($this->sid) && $this->sid == $row['shipment_id']) ? 'selected="selected"' : ''; ?>><?php echo $row['shipment_code']; ?></option>
-                        <?php }
-                        } ?>
-                    </select>
+            <div class="row">
+                <div class="col-lg-6">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select shipment to fetch questions"); ?> <span class="mandatory">*</span></label>
+                    <div class="col-lg-12">
+                        <select id="shipmentId" name="shipmentId" class="select2 form-control isRequired" title="Please select the shipment" onchange="loadQuestions(this.value);">
+                            <option value="">--<?= $this->translate->_("Select"); ?>--</option>
+                            <?php if (isset($this->shipments) && !empty($this->shipments)) {
+                                foreach ($this->shipments as $key => $row) { ?>
+                                    <option value="<?php echo $row['shipment_id']; ?>" <?php echo (isset($this->sid) && !empty($this->sid) && $this->sid == $row['shipment_id']) ? 'selected="selected"' : ''; ?>><?php echo $row['shipment_code']; ?></option>
+                            <?php }
+                            } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formContent"><?= $this->translate->_("Show feedback form to"); ?></label>
+                    <div class="col-lg-12">
+                        <select class="select2 form-control" id="formTo" name="formTo" title="Please select where we show the forms">
+                            <option value=""><?= $this->translate->_("--Select--"); ?></option>
+                            <option value="all-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'all-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("All Participants"); ?></option>
+                            <option value="passing-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'passing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
+                            <option value="failing-participants" <?php echo (isset($this->result['feedback_form_results']['form_show_to']) && !empty($this->result['feedback_form_results']['form_show_to']) && $this->result['feedback_form_results']['form_show_to'] == 'failing-participants') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
+                        </select>
+                    </div>
                 </div>
             </div>
+            <br>
             <div class="form-group col-lg-12">
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formContent"><?= $this->translate->_("Enter Feedback Form Content"); ?></label>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="formContent"><?= $this->translate->_("Enter feedback form content"); ?></label>
                 <div class="col-lg-12">
                     <textarea id="formContent" class="form-control richtextarea" name="formContent"><?php echo $this->result['feedback_form_results']['form_content']; ?></textarea>
                 </div>
@@ -147,6 +161,10 @@ if (isset($this->result) && !empty($this->result)) {
     $(document).ready(function() {
         $("#shipmentId").select2({
             placeholder: 'Select shipment to fetch questions',
+            allowClear: true,
+        });
+        $("#formTo").select2({
+            placeholder: 'Select form to show',
             allowClear: true,
         });
         $('#question').selectpicker();
