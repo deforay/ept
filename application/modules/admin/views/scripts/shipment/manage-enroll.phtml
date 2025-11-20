@@ -2,6 +2,7 @@
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">Manage Enrollment</div>
 </h4>
 
+<!-- Shipment Information Table -->
 <table class="table table-bordered table-striped" style="width:100%;margin:0 auto 10px auto;">
     <tr>
         <th><?= $this->translate->_("Shipment Code"); ?></th>
@@ -31,12 +32,15 @@
                     <div class="widget" style="padding-top:20px;">
                         <div class="widget-content">
                             <div class="bs-example bs-example-tabs">
+                                <!-- Tab Navigation -->
                                 <ul id="myTab" class="nav nav-tabs">
                                     <li class="active"><a href="#listOfResponded" data-toggle="tab"><?= $this->translate->_("Responded"); ?></a></li>
                                     <li><a href="#listOfNotResponded" data-toggle="tab"><?= $this->translate->_("Not Responded"); ?> </a></li>
                                     <li><a href="#notEnrolled" data-toggle="tab"><?= $this->translate->_("Not Enrolled in this Shipment"); ?> </a></li>
                                 </ul>
+
                                 <div id="myTabContent" class="tab-content">
+                                    <!-- Tab 1: Responded Participants -->
                                     <div class="tab-pane fade in active" id="listOfResponded">
                                         <div style="padding-top:10px;float:right;margin-bottom:10px;">
                                             <button class="btn btn-info btn-xs" type="button" onclick="exportRespondedShipment();"><?= $this->translate->_("Export to excel"); ?></button>
@@ -64,6 +68,8 @@
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    <!-- Tab 2: Not Responded Participants -->
                                     <div class="tab-pane fade" id="listOfNotResponded">
                                         <div style="padding-top:10px;float:right;margin-bottom:10px;">
                                             <button class="btn btn-info btn-xs" type="button" onclick="exportNotRespondedShipment();"><?= $this->translate->_("Export to excel"); ?></button>
@@ -91,8 +97,14 @@
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    <!-- Tab 3: Not Enrolled Participants -->
                                     <div class="tab-pane fade" id="notEnrolled">
-                                        <div style="padding-top:20px;"> <a href="javascript:void(0)" onclick="submitEnrollParticipants($('#enrollParticipants').val(), '<?php echo $this->shipmentId ?>')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="icon-cogs"></i>&nbsp;<?= $this->translate->_("Enroll"); ?> <span id="countCheckedParticipants">0</span> <?= $this->translate->_("participants"); ?></a></div>
+                                        <div style="padding-top:20px;">
+                                            <a href="javascript:void(0)" onclick="submitEnrollParticipants($('#enrollParticipants').val(), '<?php echo $this->shipmentId ?>')" class="btn btn-primary btn-sm" style="margin-bottom: 15px;">
+                                                <i class="icon-cogs"></i>&nbsp;<?= $this->translate->_("Enroll"); ?> <span id="countCheckedParticipants">0</span> <?= $this->translate->_("participants"); ?>
+                                            </a>
+                                        </div>
                                         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="notEnrolledTable">
                                             <thead>
                                                 <tr>
@@ -125,32 +137,65 @@
             </div><!-- /.box -->
         </div>
     </div>
+    <!-- Hidden field to store selected participant IDs -->
     <input type="hidden" name="enrollParticipants" id="enrollParticipants" />
 </section><!-- /.content -->
 
 <script type="text/javascript" charset="utf-8">
-    var oTableResponded = null;
-    var oTableNotResponded = null;
-    var oTableNotEnrolled = null;
-    selectedParticipants = [];
-    $(document).ready(function() {
-        drawTableResponded();
+    // ==========================================
+    // GLOBAL VARIABLES
+    // ==========================================
 
+    // DataTable objects - initialized as null
+    var oTableResponded = null; // DataTable for responded participants
+    var oTableNotResponded = null; // DataTable for not responded participants
+    var oTableNotEnrolled = null; // DataTable for not enrolled participants
+
+    // Array to track selected participants for bulk enrollment
+    selectedParticipants = [];
+
+    // ==========================================
+    // DOCUMENT READY - INITIALIZATION
+    // ==========================================
+    $(document).ready(function() {
+        // Initialize the first table (Responded) on page load
+        drawTableResponded();
     });
+
+    // ==========================================
+    // TAB CLICK HANDLERS
+    // ==========================================
+
+    // Handler for clicking "Responded" tab
     $('#myTab a[href="#listOfResponded"]').click(function(e) {
-        //oTableResponded.fnDraw();
-        //drawTableResponded();
+        // Table is already initialized on page load, no action needed
+        // Uncomment below if you want to refresh data on tab click
+        // if (oTableResponded !== null) {
+        //     oTableResponded.fnDraw();
+        // }
     });
+
+    // Handler for clicking "Not Responded" tab
     $('#myTab a[href="#listOfNotResponded"]').click(function(e) {
-        //oTableNotResponded.fnDraw();
-        drawTableNotResponded()
+        // Initialize table only if not already initialized
+        drawTableNotResponded();
     });
+
+    // Handler for clicking "Not Enrolled" tab
     $('#myTab a[href="#notEnrolled"]').click(function(e) {
+        // Initialize table only if not already initialized
         drawTableNotEnrolled();
     });
 
-    function drawTableResponded() {
+    // ==========================================
+    // DATATABLE INITIALIZATION FUNCTIONS
+    // ==========================================
 
+    /**
+     * Initialize DataTable for Responded Participants
+     * This table shows participants who have submitted responses
+     */
+    function drawTableResponded() {
         oTableResponded = $('#respondedTable').dataTable({
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page"
@@ -160,50 +205,54 @@
             "bInfo": true,
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
-            "bRetrieve": true,
+            "bRetrieve": true, // Prevent re-initialization if already exists
             "aoColumns": [{
                     "sClass": "center"
-                },
+                }, // Participant ID
                 {
                     "sClass": ""
-                },
+                }, // Lab Name
                 {
                     "sClass": "center"
-                },
+                }, // Institute Name
                 {
                     "sClass": "center"
-                },
+                }, // State/Province
                 {
                     "sClass": "center"
-                },
+                }, // District/County
                 {
                     "sClass": "center"
-                },
+                }, // Country
                 {
                     "sClass": "center"
-                },
+                }, // Cell/Mobile
                 {
                     "sClass": "center"
-                },
+                }, // Phone
                 {
                     "sClass": "center"
-                },
+                }, // Affiliation
                 {
                     "sClass": ""
-                }
+                } // Email
             ],
             "aaSorting": [
                 [1, "asc"]
-            ],
-            "bProcessing": true,
-            "bServerSide": true,
+            ], // Sort by Lab Name by default
+            "bProcessing": true, // Show processing indicator
+            "bServerSide": true, // Enable server-side processing
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-responded-participants', 'format' => 'html')); ?>",
+
+            // Add shipmentId parameter to server request
             "fnServerParams": function(aoData) {
                 aoData.push({
                     "name": "shipmentId",
                     "value": '<?php echo $this->shipmentId ?>'
                 });
             },
+
+            // Custom AJAX handler for server-side data
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
@@ -216,6 +265,11 @@
         });
     }
 
+    /**
+     * Initialize DataTable for Not Responded Participants
+     * This table shows participants who haven't submitted responses yet
+     * Includes action column for removing participants
+     */
     function drawTableNotResponded() {
         oTableNotResponded = $('#notRespondedTable').dataTable({
             "oLanguage": {
@@ -226,42 +280,44 @@
             "bInfo": true,
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
-            "bRetrieve": true,
+            "bRetrieve": true, // Prevent re-initialization if already exists
             "aoColumns": [{
                     "sClass": "center"
-                },
+                }, // Participant ID
                 {
                     "sClass": ""
-                },
+                }, // Lab Name
                 {
                     "sClass": "center"
-                },
+                }, // Institute Name
                 {
                     "sClass": "center"
-                },
+                }, // State/Province
                 {
                     "sClass": "center"
-                },
+                }, // District/County
                 {
                     "sClass": "center"
-                },
+                }, // Country
                 {
                     "sClass": "center"
-                },
+                }, // Cell/Mobile
                 {
                     "sClass": "center"
-                },
+                }, // Phone
                 {
                     "sClass": "center"
-                },
+                }, // Affiliation
                 {
                     "sClass": ""
-                },
+                }, // Email
                 {
                     "sClass": "center",
                     "bSortable": false
-                }
+                } // Action (non-sortable)
             ],
+
+            // Add shipmentId parameter to server request
             "fnServerParams": function(aoData) {
                 aoData.push({
                     "name": "shipmentId",
@@ -270,10 +326,12 @@
             },
             "aaSorting": [
                 [1, "asc"]
-            ],
+            ], // Sort by Lab Name by default
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-responded-participants', 'format' => 'html')); ?>",
+
+            // Custom AJAX handler for server-side data
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
@@ -284,10 +342,13 @@
                 });
             }
         });
-
-
     }
 
+    /**
+     * Initialize DataTable for Not Enrolled Participants
+     * This table shows participants who are not enrolled in this shipment
+     * Includes checkboxes for bulk enrollment and action column
+     */
     function drawTableNotEnrolled() {
         oTableNotEnrolled = $('#notEnrolledTable').dataTable({
             "oLanguage": {
@@ -298,46 +359,48 @@
             "bInfo": true,
             "bScrollCollapse": true,
             "sPaginationType": "bootstrap",
-            "bRetrieve": true,
+            "bRetrieve": true, // Prevent re-initialization if already exists
             "aoColumns": [{
                     "sClass": "center",
                     "bSortable": false
-                },
+                }, // Checkbox (non-sortable)
                 {
                     "sClass": "center"
-                },
+                }, // Participant ID
                 {
                     "sClass": ""
-                },
+                }, // Lab Name
                 {
                     "sClass": "center"
-                },
+                }, // Institute Name
                 {
                     "sClass": "center"
-                },
+                }, // State/Province
                 {
                     "sClass": "center"
-                },
+                }, // District/County
                 {
                     "sClass": "center"
-                },
+                }, // Country
                 {
                     "sClass": "center"
-                },
+                }, // Cell/Mobile
                 {
                     "sClass": "center"
-                },
+                }, // Phone
                 {
                     "sClass": "center"
-                },
+                }, // Affiliation
                 {
                     "sClass": ""
-                },
+                }, // Email
                 {
                     "sClass": "center",
                     "bSortable": false
-                }
+                } // Action (non-sortable)
             ],
+
+            // Add shipmentId and schemeType parameters to server request
             "fnServerParams": function(aoData) {
                 aoData.push({
                     "name": "shipmentId",
@@ -350,10 +413,12 @@
             },
             "aaSorting": [
                 [1, "asc"]
-            ],
+            ], // Sort by Participant ID by default
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-not-enrolled-participants', 'format' => 'html')); ?>",
+
+            // Custom AJAX handler for server-side data
             "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
@@ -364,133 +429,225 @@
                 });
             }
         });
-
-
     }
 
+    // ==========================================
+    // HELPER FUNCTION - REFRESH ALL TABLES
+    // ==========================================
+
+    /**
+     * Safely refresh all DataTables
+     * Only calls fnDraw() on tables that have been initialized
+     * This prevents "Cannot read properties of null" errors
+     */
+    function refreshTables() {
+        // Check if table exists before attempting to refresh
+        if (oTableNotResponded !== null) {
+            oTableNotResponded.fnDraw();
+        }
+        if (oTableResponded !== null) {
+            oTableResponded.fnDraw();
+        }
+        if (oTableNotEnrolled !== null) {
+            oTableNotEnrolled.fnDraw();
+        }
+    }
+
+    // ==========================================
+    // PARTICIPANT MANAGEMENT FUNCTIONS
+    // ==========================================
+
+    /**
+     * Remove a participant from the shipment
+     * @param {int} mid - Map ID (relationship between participant and shipment)
+     * @param {int} sid - Shipment ID
+     */
     function removeParticipants(mid, sid) {
-        if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?> ")) {
-            $.blockUI();
+        // Confirm action with user
+        if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?>")) {
+            $.blockUI(); // Show loading overlay
+
+            // Send AJAX request to remove participant
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
                     mid: mid,
                     sid: sid,
                     format: "html"
                 },
                 function(data) {
+                    // Check if removal was successful
                     if (data > 0) {
-                        alert("<?= $this->translate->_("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated."); ?> ");
+                        alert("<?= $this->translate->_("Participant(s) removed successfully. If previously evaluated, you may have to re-evaluate the shipment to ensure the numbers are updated."); ?>");
                     } else {
-                        alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?> ");
+                        alert("<?= $this->translate->_("Unable to delete. Please try again later or contact system admin for help"); ?>");
                     }
-                    oTableNotResponded.fnDraw();
-                    oTableResponded.fnDraw();
-                    oTableNotEnrolled.fnDraw();
-                    $.unblockUI();
+
+                    // Refresh all initialized tables to reflect changes
+                    refreshTables();
+                    $.unblockUI(); // Hide loading overlay
                 });
         }
-
     }
 
-    function enrollParticipants(pid, sid) {
+    /**
+     * Individual participant enrollment (called from action buttons)
+     * @param {object} obj - Checkbox element
+     * @param {int} pid - Participant ID
+     * @param {int} sid - Shipment ID
+     */
+    function enrollParticipants(obj, pid, sid) {
+        // Add or remove participant from selection array
         if ($.inArray(pid, selectedParticipants) == -1) {
             selectedParticipants.push(pid);
         } else {
             selectedParticipants.splice($.inArray(obj.value, selectedParticipants), 1);
         }
+
+        // Immediately enroll the selected participant
         submitEnrollParticipants(pid, sid);
     }
 
+    /**
+     * Toggle individual checkbox selection
+     * Updates the selectedParticipants array and UI counter
+     * @param {object} obj - Checkbox element
+     */
     function toggleSelect(obj) {
         if ($(obj).is(':checked')) {
+            // Add to selection if not already present
             if ($.inArray(obj.value, selectedParticipants) == -1) {
                 selectedParticipants.push(obj.value);
             }
         } else {
+            // Remove from selection
             selectedParticipants.splice($.inArray(obj.value, selectedParticipants), 1);
         }
+
+        // Update hidden field and counter display
         $("#enrollParticipants").val(selectedParticipants.join());
         $("#countCheckedParticipants").text(selectedParticipants.length);
     }
 
+    /**
+     * Toggle all checkboxes in the Not Enrolled table
+     * Handles bulk selection/deselection
+     */
     function toggleAllSelection() {
         if ($("#bulkParticipants").is(':checked')) {
+            // Select all checkboxes
             $(".checkParticipants").each(function() {
                 $(this).prop('checked', true);
+                // Add to selection array if not already present
                 if ($.inArray(this.value, selectedParticipants) == -1) {
                     selectedParticipants.push(this.value);
                 }
             });
         } else {
-
+            // Deselect all checkboxes
             $(".checkParticipants").each(function() {
                 $(this).prop('checked', false);
+                // Remove from selection array
                 selectedParticipants.splice($.inArray(this.value, selectedParticipants), 1);
             });
         }
+
+        // Update hidden field and counter display
         $("#enrollParticipants").val(selectedParticipants.join());
         $("#countCheckedParticipants").text(selectedParticipants.length);
     }
 
+    /**
+     * Submit enrollment for selected participants
+     * Can handle single or multiple participants
+     * @param {string} pid - Comma-separated list of participant IDs
+     * @param {int} sid - Shipment ID
+     */
     function submitEnrollParticipants(pid, sid) {
+        // Validate that at least one participant is selected
         if (pid == "" || pid == null || pid == undefined) {
-            alert("<?= $this->translate->_("You need to select at least one participant to proceed"); ?> ");
+            alert("<?= $this->translate->_("You need to select at least one participant to proceed"); ?>");
             return false;
         }
-        if (window.confirm("<?= $this->translate->_("Are you sure you want to enroll the selected participant(s)? This cannot be undone!"); ?> ")) {
-            $.blockUI();
+
+        // Confirm action with user
+        if (window.confirm("<?= $this->translate->_("Are you sure you want to enroll the selected participant(s)? This cannot be undone!"); ?>")) {
+            $.blockUI(); // Show loading overlay
+
+            // Send AJAX request to enroll participants
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'enroll-shipment-participant')); ?>", {
                     sid: sid,
                     pid: pid,
                     format: "html"
                 },
                 function(data) {
+                    // Check if enrollment was successful
                     if (data > 0) {
                         alert('<?= $this->translate->_("Participant(s) enrolled successfully"); ?>');
-                    } else {
-                        // alert("Unable to enroll. Please try again later or contact system admin for help");
                     }
-                    oTableNotResponded.fnDraw();
-                    oTableResponded.fnDraw();
-                    oTableNotEnrolled.fnDraw();
+
+                    // Refresh all initialized tables to reflect changes
+                    refreshTables();
+
+                    // Reset selection UI
                     $("#countCheckedParticipants").text("0");
                     $("#bulkParticipants").prop('checked', false);
-                    $.unblockUI();
+                    selectedParticipants = []; // Clear selection array
+
+                    $.unblockUI(); // Hide loading overlay
                 });
         }
     }
 
+    // ==========================================
+    // EXPORT FUNCTIONS
+    // ==========================================
 
+    /**
+     * Export responded participants data to Excel
+     * Generates a downloadable file with all responded participants
+     */
     function exportRespondedShipment() {
-        $.blockUI();
+        $.blockUI(); // Show loading overlay
+
+        // Send AJAX request to generate Excel file
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-responded-participants')); ?>", {
                 shipmentCode: "<?php echo $this->shipment['shipment']['shipment_code']; ?>",
                 shipmentDate: "<?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?>",
                 format: "html"
             },
             function(data) {
+                // Check if file was generated successfully
                 if (data == "" || data == null || data == undefined) {
                     alert('<?= $this->translate->_("Unable to generate download"); ?>');
                 } else {
+                    // Trigger download by redirecting to temporary file location
                     document.location.href = '/temporary/' + data;
                 }
-                $.unblockUI();
+                $.unblockUI(); // Hide loading overlay
             });
     }
 
+    /**
+     * Export not responded participants data to Excel
+     * Generates a downloadable file with all not responded participants
+     */
     function exportNotRespondedShipment() {
-        $.blockUI();
+        $.blockUI(); // Show loading overlay
+
+        // Send AJAX request to generate Excel file
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {
                 shipmentCode: "<?php echo $this->shipment['shipment']['shipment_code']; ?>",
                 shipmentDate: "<?php echo $this->dateFormat($this->shipment['shipment']['shipment_date']); ?>",
                 format: "html"
             },
             function(data) {
+                // Check if file was generated successfully
                 if (data == "" || data == null || data == undefined) {
                     alert('<?= $this->translate->_("Unable to generate download"); ?>');
                 } else {
+                    // Trigger download by redirecting to temporary file location
                     document.location.href = '/temporary/' + data;
                 }
-                $.unblockUI();
+                $.unblockUI(); // Hide loading overlay
             });
     }
 </script>
