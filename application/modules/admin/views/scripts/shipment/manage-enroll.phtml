@@ -59,11 +59,12 @@
                                                     <th><?= $this->translate->_("Phone"); ?></th>
                                                     <th><?= $this->translate->_("Affiliation"); ?></th>
                                                     <th><?= $this->translate->_("Email"); ?></th>
+                                                    <th><?= $this->translate->_("Action"); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                                                    <td colspan="11" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -235,7 +236,10 @@
                 }, // Affiliation
                 {
                     "sClass": ""
-                } // Email
+                }, // Email
+                {
+                    "sClass": ""
+                } // Actions
             ],
             "aaSorting": [
                 [1, "asc"]
