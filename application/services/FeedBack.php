@@ -59,7 +59,7 @@ class Application_Service_FeedBack
     public function checkExpiry($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchRow($db->select()->from('shipment')->where("scheme_type = ?", $sid)->where("DATE(feedback_expiry_date) >= ?", date('Y-m-d')));
+        return $db->fetchRow($db->select()->from('shipment')->where("shipment_id = ?", $sid)->where("DATE(feedback_expiry_date) >= ?", date('Y-m-d')));
     }
 
     public function getAllFeedBackResponses($parameters, $type)

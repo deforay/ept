@@ -672,13 +672,13 @@ class Application_Model_Tb
             array_push($reportHeadings, 'Final Result');
             /* Feed Back Response Section */
             $common = new Application_Service_Common();
-            $feedbackOption = $common->getConfig('participant_feedback');
+            /* $feedbackOption = $common->getConfig('participant_feedback');
             if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
                 if (isset($questions) && !empty($questions['question'])) {
                     $reportHeadings = $questions['heading'];
                 }
-            }
+            } */
             $resultReportedSheet = new Worksheet($excel, 'Results Reported');
             $excel->addSheet($resultReportedSheet, 1);
             $resultReportedSheet->setTitle('Results Reported', true);
@@ -883,8 +883,9 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         /* Feed Back Response Section */
-                        // Zend_Debug::dump($aRow);die;
-                        if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
+                        /* Zend_Debug::dump($aRow);
+                        die; */
+                        /* if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                             $feedbackDb = new Application_Model_DbTable_FeedBackTable();
                             $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
                             if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
@@ -892,7 +893,7 @@ class Application_Model_Tb
                                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                                         ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                                 }
-                            }
+                             */}
                         }
                         foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
