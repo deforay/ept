@@ -923,6 +923,12 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->sID = $sid = $request->getParam('sid');
             $this->view->pID = $pid = $request->getParam('pid');
             $this->view->mID = $mid = $request->getParam('mid');
+            $checkExpiry = $feedbackService->checkExpiry($sid);
+            if (!$checkExpiry) {
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = 'Feedback form expired!';
+                $this->redirect("/participant/report");
+            }
             $this->view->questions = $feedbackService->getFeedBackQuestions($sid);
             $this->view->ans = $feedbackService->getFeedBackAnswers($sid, $pid, $mid);
         }

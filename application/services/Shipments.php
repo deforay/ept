@@ -2905,7 +2905,6 @@ class Application_Service_Shipments
 
     public function removeShipmentParticipant($mapId, $sId = "")
     {
-
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
