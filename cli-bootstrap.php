@@ -1,6 +1,6 @@
 <?php
 require_once 'constants.php';
-// Ensure library/ is on include_path
+
 
 set_include_path(implode(PATH_SEPARATOR, [
     realpath(ROOT_PATH . '/vendor'),
