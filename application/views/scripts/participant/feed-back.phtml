@@ -122,9 +122,8 @@ $answers = $this->ans;
                     </div>
                     <div class="card-body">
                         <?php
-                      //  echo "<pre>"; print_r($this->questions['feedback_form_files_results']); die;
                         if (isset($this->questions['feedback_form_files_results']) && !empty($this->questions['feedback_form_files_results'])) { ?>
-                            <p class="text-muted mb-3">Download the following files for reference</p>
+                            <p class="text-muted mb-3">Downloads</p>
                             <div class="list-group">
                                 <?php foreach ($this->questions['feedback_form_files_results'] as $row) { 
                                     $file = "/uploads/feedback-forms/".$row['shipment_id']."/".$row['feedback_file'];
