@@ -10,5 +10,5 @@ export APPLICATION_ENV
 # Get the directory where the script is located
 SCRIPT_DIR=$(dirname "$0")
 
-# Run the composer script using the project root as working directory
-composer --working-dir="$SCRIPT_DIR" tasks
+# Run the crunz script directly with suppressed deprecation warnings
+php -d error_reporting="E_ALL & ~E_DEPRECATED" "$SCRIPT_DIR/vendor/bin/crunz" schedule:run

@@ -1,9 +1,11 @@
 <?php
 // scheduled-jobs/generate-shipment-reports.php
 
+
 require_once __DIR__ . '/../cli-bootstrap.php';
 
 use setasign\Fpdi\Tcpdf\Fpdi;
+use Symfony\Component\Process\Process;
 
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
@@ -11,16 +13,20 @@ ini_set('memory_limit', -1);
 ini_set('max_execution_time', -1);
 //error_reporting(E_ALL);
 
+
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 $isCli = php_sapi_name() === 'cli';
 
 // Flags for testing
-$options = getopt("sp");
+
+$options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:"]);
 
 // if -s then ONLY generate summary report
+
 // if -p then ONLY generate participant reports
+
 if (isset($options['s'])) {
     $skipParticipantReports = true;
     $skipSummaryReport = false;
@@ -30,6 +36,16 @@ if (isset($options['s'])) {
 } else {
     $skipSummaryReport = false;
     $skipParticipantReports = false;
+}
+
+$isWorker = isset($options['worker']);
+$workerShipmentId = $options['shipment'] ?? null;
+$workerOffset = isset($options['offset']) ? (int) $options['offset'] : 0;
+$workerLimit = isset($options['limit']) ? (int) $options['limit'] : 0;
+$workerReportType = $options['reportType'] ?? null;
+$procs = isset($options['procs']) ? (int) $options['procs'] : Pt_Commons_MiscUtility::getCpuCount();
+if ($procs < 1) {
+    $procs = 1;
 }
 
 
@@ -73,23 +89,26 @@ class IndividualPDF extends Fpdi
     }
 
     //Page header
+
     public function Header()
     {
         // Logo
+
         //$image_file = K_PATH_IMAGES.'logo_example.jpg';
+
         if (trim($this->logo) != "") {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
                 if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb', 'generic-test']) && $this->layout == 'zimbabwe') {
-                    $this->Image($image_file, 88, 15, 25, '', '', '', 'C', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 88, 15, 25, 0, '', '', 'C', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
-                    $this->Image($image_file, 90, 10, 15, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 90, 10, 15, 0, '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
-                    $this->Image($image_file, 10, 2, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 2, 25, 0, '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif ($this->schemeType == 'vl' && $this->layout == 'myanmar') {
-                    $this->Image($image_file, 10, 05, 22, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 05, 22, 0, '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } else {
-                    $this->Image($image_file, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+                    $this->Image($image_file, 10, 8, 25, 0, '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
             }
         }
@@ -98,9 +117,12 @@ class IndividualPDF extends Fpdi
             $screening = " - " . ucwords($this->dtsPanelType);
         }
         // Set font
+
         $this->SetFont('freesans', '', 10, '', true);
         //$this->header = nl2br(trim($this->header));
+
         //$this->header = preg_replace('/<br>$/', "", $this->header);
+
 
         if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
             $instituteAddress = nl2br(stripcslashes(trim($this->config->instituteAddress)));
@@ -115,12 +137,14 @@ class IndividualPDF extends Fpdi
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
                 $html .= '<br/><br/><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span>';
             }
@@ -129,6 +153,7 @@ class IndividualPDF extends Fpdi
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
@@ -157,7 +182,9 @@ class IndividualPDF extends Fpdi
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
             /* if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+
             } */
         } elseif (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb', 'generic-test']) && $this->layout == 'zimbabwe') {
             if ($this->schemeType != 'tb') {
@@ -179,6 +206,7 @@ class IndividualPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'tb') {
                 // $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for Tuberculosis</span>', 0, 0, 0, true, 'J', true);
+
             }
             if ($this->schemeType != 'tb') {
                 $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
@@ -246,10 +274,12 @@ class IndividualPDF extends Fpdi
 
         if (isset($this->watermark) && $this->watermark != "") {
             $this->SetAlpha(0.2); // Set transparency
+
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
             $this->SetAlpha(1); // Reset transparency
+
         }
     }
 
@@ -275,6 +305,7 @@ class IndividualPDF extends Fpdi
     public function RotatedText($x, $y, $txt, $angle)
     {
         //Text rotated around its origin
+
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
         $this->Rotate(0);
@@ -290,6 +321,7 @@ class IndividualPDF extends Fpdi
     }
 
     // Page footer
+
     public function Footer()
     {
         $finalizeReport = "";
@@ -301,10 +333,13 @@ class IndividualPDF extends Fpdi
 
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
         // Position at 15 mm from bottom
+
         $this->SetY(-15);
         // Set font
+
         $this->SetFont('freesans', '', 7);
         // Page number
+
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') {
             $this->writeHTML("<hr>", true, false, true, false, '');
             if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
@@ -314,7 +349,9 @@ class IndividualPDF extends Fpdi
         $effectiveDate = new DateTime($showTime);
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
+
             // $this->Ln();
+
             $effectiveMonthYear = ($this->schemeType == 'tb') ? "March 2022" : $effectiveDate->format('M Y');
             $this->SetFont('freesans', '', 10);
             if ($this->schemeType == 'tb') {
@@ -328,10 +365,15 @@ class IndividualPDF extends Fpdi
             }
         } else {
             // if (isset($this->layout) && $this->layout == 'zimbabwe') {
+
             // $this->Cell(0, 6, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+
             // $this->writeHTML("<hr>", true, false, true, false, '');
+
             // $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
+
             // }
+
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
@@ -386,9 +428,11 @@ class SummaryPDF extends Fpdi
     }
 
     //Page header
+
     public function Header()
     {
         // Logo
+
         $imagePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
 
         if (trim($this->logo) !== "" && file_exists($imagePath)) {
@@ -403,6 +447,7 @@ class SummaryPDF extends Fpdi
                     $this->Image($imagePath, 85, 15, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 } elseif (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
                     // $this->Image($imagePath, 10, 8, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
+
                 } else {
                     $this->Image($imagePath, 10, 3, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
                 }
@@ -412,6 +457,7 @@ class SummaryPDF extends Fpdi
         }
 
         // Set font
+
         $this->SetFont('freesans', '', 10);
         $screening = "";
         if (isset($this->dtsPanelType) && !empty($this->dtsPanelType)) {
@@ -428,10 +474,11 @@ class SummaryPDF extends Fpdi
         } else {
             $additionalInstituteDetails = null;
         }
-        if ($this->schemeType == 'vl'  && $this->layout != 'zimbabwe') {
+        if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
             if (isset($this->config) && $this->config != "") {
                 if ($this->layout == 'myanmar') {
                     $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                         $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
@@ -441,6 +488,7 @@ class SummaryPDF extends Fpdi
                     $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
                 } else {
                     $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                         $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
@@ -450,17 +498,19 @@ class SummaryPDF extends Fpdi
                     $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
                 }
                 //$htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:13;text-align:center;">All Participants Summary Report</span>';
+
             } else {
                 $html .= '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV Viral Load using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
                 $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
                 $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
             }
-        } elseif ($this->schemeType == 'eid'  && $this->layout != 'zimbabwe') {
+        } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
             if (isset($this->config) && $this->config != "") {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
@@ -490,7 +540,7 @@ class SummaryPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 15, 35, $html, 0, 0, 0, true, 'J', true);
                 $this->writeHTMLCell(0, 0, 10, 45, "<hr>", 0, 0, 0, true, 'J', true);
             }
-        } elseif ($this->schemeType == 'recency'  && $this->layout != 'zimbabwe') {
+        } elseif ($this->schemeType == 'recency' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for Recency using - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
             $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
@@ -513,7 +563,7 @@ class SummaryPDF extends Fpdi
             $this->writeHTMLCell(0, 0, 15, 5, $html, 0, 0, 0, true, 'J', true);
             $html = '<hr/>';
             $this->writeHTMLCell(0, 0, 10, 30, $html, 0, 0, 0, true, 'J', true);
-        } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe'  && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
+        } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
                 $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
@@ -547,6 +597,7 @@ class SummaryPDF extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'tb') {
                 // $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for Tuberculosis</span>', 0, 0, 0, true, 'J', true);
+
             } elseif ($this->schemeType == 'generic-test') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>' . $this->scheme_name . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
@@ -564,6 +615,7 @@ class SummaryPDF extends Fpdi
             }
         } else {
             //$html='<span style="font-weight: bold;text-align:center;">Proficiency Testing Program for Anti-HIV Antibodies Diagnostics using '.$this->scheme_name.'</span><br><span style="font-weight: bold;text-align:center;">All Participants Summary Report</span><br><small  style="text-align:center;">'.$this->header.'</small>';
+
             $this->SetFont('freesans', '', 10, '', true);
             if ($this->schemeType == 'dts') {
                 if ($this->layout == 'myanmar') {
@@ -589,10 +641,12 @@ class SummaryPDF extends Fpdi
 
         if (isset($this->watermark) && $this->watermark != "") {
             $this->SetAlpha(0.2); // Set transparency
+
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
             $this->SetAlpha(1); // Reset transparency
+
         }
     }
 
@@ -621,6 +675,7 @@ class SummaryPDF extends Fpdi
     public function RotatedText($x, $y, $txt, $angle)
     {
         //Text rotated around its origin
+
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
         $this->Rotate(0);
@@ -636,6 +691,7 @@ class SummaryPDF extends Fpdi
     }
 
     // Page footer
+
     public function Footer()
     {
         $finalizeReport = "";
@@ -651,10 +707,13 @@ class SummaryPDF extends Fpdi
             $showTime = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
+
         $this->SetY(-18);
         // Set font
+
         $this->SetFont('freesans', '', 7, '', true);
         // Page number
+
         $this->writeHTML("<hr>", true, false, true, false, "");
         if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
@@ -687,6 +746,7 @@ class SummaryPDF extends Fpdi
 }
 
 // Extend the FPDI class to create custom Header and Footer
+
 class FPDIReport extends Fpdi
 {
     public $resultStatus = "";
@@ -750,6 +810,7 @@ class FPDIReport extends Fpdi
             if ($this->layout != 'malawi') {
                 $this->SetFont('freesans', 'B', 10);
                 // $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
+
             }
         }
         if ($this->layout != 'malawi') {
@@ -762,10 +823,12 @@ class FPDIReport extends Fpdi
 
         if (isset($this->watermark) && $this->watermark != "") {
             $this->SetAlpha(0.2); // Set transparency
+
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
             $this->SetAlpha(1); // Reset transparency
+
         }
     }
 
@@ -794,6 +857,7 @@ class FPDIReport extends Fpdi
     public function RotatedText($x, $y, $txt, $angle)
     {
         //Text rotated around its origin
+
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
         $this->Rotate(0);
@@ -809,17 +873,21 @@ class FPDIReport extends Fpdi
     }
 
     // Page footer
+
     public function Footer()
     {
         // Build complete footer HTML in one go
+
         $completeFooterHtml = "";
 
         // Add static footer content if provided
+
         if (!empty($this->staticFooterHtml)) {
             $completeFooterHtml .= $this->staticFooterHtml;
         }
 
         // Add dynamic content to the same HTML block
+
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = " | {$this->reportType} REPORT | FINALIZED ";
@@ -829,13 +897,16 @@ class FPDIReport extends Fpdi
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
 
         // Append dynamic content to footer HTML
+
         $reportDate = $this->generalModel->humanReadableDateFormat($showTime);
         $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
 
         // Append page numbers
+
         $completeFooterHtml .= '<div style="text-align:right; font-size:7px; margin-top:2px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div>';
 
         // Handle special cases
+
         if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {
             if (isset($this->approveTxt) && !empty($this->approveTxt)) {
                 $text = "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}";
@@ -846,6 +917,7 @@ class FPDIReport extends Fpdi
         }
 
         // Output complete footer in single call
+
         $this->SetY(-25);
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
@@ -903,6 +975,7 @@ class Watermark extends PDF_Rotate
         global $fullPathToFile;
         if (isset($this->waterMarkText) && $this->waterMarkText != "") {
             //Put the watermark
+
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(230, 228, 198);
             $this->RotatedText(25, 190, $this->waterMarkText, 45);
@@ -910,6 +983,7 @@ class Watermark extends PDF_Rotate
 
         if (null !== $this->_tplIdx) {
             // THIS IS WHERE YOU GET THE NUMBER OF PAGES
+
             $this->numPages = $this->setSourceFile($fullPathToFile);
             $this->_tplIdx = $this->importPage(1);
         }
@@ -919,10 +993,12 @@ class Watermark extends PDF_Rotate
     public function RotatedText($x, $y, $txt, $angle)
     {
         //Text rotated around its origin
+
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
         $this->Rotate(0);
         //$this->SetAlpha(0.7);
+
     }
 }
 class Pdf_concat extends FPDI
@@ -953,57 +1029,194 @@ try {
 
     $generalModel = new Pt_Commons_General();
 
-
-    $limit = 3;
-    $sQuery = $db->select()
-        ->from(['eq' => 'queue_report_generation'])
-        ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
-        ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
-        ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
-        ->where("eq.status=?", 'pending')
-        ->limit($limit);
-    $evalResult = $db->fetchAll($sQuery);
-
     $reportService = new Application_Service_Reports();
     $commonService = new Application_Service_Common();
     $schemeService = new Application_Service_Schemes();
     $shipmentService = new Application_Service_Shipments();
     $evalService = new Application_Service_Evaluation();
-    if (!empty($evalResult)) {
-        $header = $reportService->getReportConfigValue('report-header');
-        $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');
-        $reportComment = $reportService->getReportConfigValue('report-comment');
-        $logo = $reportService->getReportConfigValue('logo');
-        $logoRight = $reportService->getReportConfigValue('logo-right');
-        $layout = $reportService->getReportConfigValue('report-layout');
-        $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
-        $instance = $commonService->getConfig('instance');
-        $passPercentage = $commonService->getConfig('pass_percentage');
-        $trainingInstance = $commonService->getConfig('training_instance');
-        $watermark = null;
-        if (isset($trainingInstance) && $trainingInstance === 'yes') {
-            $watermark = $commonService->getConfig('training_instance_text');
+    $header = $reportService->getReportConfigValue('report-header');
+    $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');
+    $reportComment = $reportService->getReportConfigValue('report-comment');
+    $logo = $reportService->getReportConfigValue('logo');
+    $logoRight = $reportService->getReportConfigValue('logo-right');
+    $layout = $reportService->getReportConfigValue('report-layout');
+    $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
+    $instance = $commonService->getConfig('instance');
+    $passPercentage = $commonService->getConfig('pass_percentage');
+    $trainingInstance = $commonService->getConfig('training_instance');
+    $watermark = null;
+    if (isset($trainingInstance) && $trainingInstance === 'yes') {
+        $watermark = $commonService->getConfig('training_instance_text');
+    }
+
+    $customField1 = $commonService->getConfig('custom_field_1');
+    $customField2 = $commonService->getConfig('custom_field_2');
+    $haveCustom = $commonService->getConfig('custom_field_needed');
+    $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
+    $feedbackOption = $commonService->getConfig('participant_feedback');
+    $recencyAssay = $schemeService->getRecencyAssay();
+    $downloadDirectory = realpath(DOWNLOADS_FOLDER);
+    $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
+
+    $manualShipmentMode = !$isWorker && !empty($workerShipmentId);
+
+    if ($isWorker) {
+        if (empty($workerShipmentId) || $workerLimit < 1) {
+            error_log("Worker mode requires --shipment and --limit arguments");
+            exit(1);
         }
 
-        $customField1 = $commonService->getConfig('custom_field_1');
-        $customField2 = $commonService->getConfig('custom_field_2');
-        $haveCustom = $commonService->getConfig('custom_field_needed');
-        $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
-        $feedbackOption = $commonService->getConfig('participant_feedback');
-        $recencyAssay = $schemeService->getRecencyAssay();
-        $downloadDirectory = realpath(DOWNLOADS_FOLDER);
-        $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
+        $shipmentId = (int) $workerShipmentId;
+        $resultStatus = $workerReportType ?? 'generateReport';
+
+        $shipmentRow = $db->fetchRow(
+            $db->select()
+                ->from(
+                    ['s' => 'shipment'],
+                    [
+                        'shipment_code',
+                        'scheme_type',
+                        'shipment_attributes',
+                        'pt_co_ordinator_name',
+                        'distribution_id',
+                        'date_finalised' => new Zend_Db_Expr('NULL')
+                    ]
+                )
+                ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
+                ->where("s.shipment_id = ?", $shipmentId)
+        );
+
+        if (empty($shipmentRow)) {
+            error_log("Shipment $shipmentId not found for worker");
+            exit(1);
+        }
+
+        $evalRow = array_merge($shipmentRow, [
+            'shipment_id' => $shipmentId,
+            'report_type' => $resultStatus
+        ]);
+
+        if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
+            $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
+        }
+
+        $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
+        if (!is_dir($shipmentCodePath)) {
+            mkdir($shipmentCodePath, 0777, true);
+        }
+
+        $pQuery = $db->select()->from(
+            array('spm' => 'shipment_participant_map'),
+            array(
+                'custom_field_1',
+                'custom_field_2',
+                'participant_count' => new Zend_Db_Expr('count("participant_id")'),
+                'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
+            )
+        )
+            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', [])
+            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type', 'distribution_id'))
+            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
+            ->where("spm.shipment_id = ?", $shipmentId)
+            ->group('spm.shipment_id');
+
+        $totParticipantsRes = $db->fetchRow($pQuery);
+        if (!is_array($totParticipantsRes)) {
+            exit(0);
+        }
+        $reportedCount = isset($totParticipantsRes['reported_count']) ? (int) $totParticipantsRes['reported_count'] : 0;
+
+        if ($reportedCount > 0 && $workerOffset <= $reportedCount) {
+            if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
+                $totParticipantsRes['scheme_type'] = 'generic-test';
+            }
+
+            $resultArray = $evalService->getIndividualReportsDataForPDF($shipmentId, $workerLimit, $workerOffset);
+            if ($layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
+                $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $shipmentId)[0];
+            }
+
+            $endValue = $workerOffset + ($workerLimit - 1);
+            if ($endValue > $reportedCount) {
+                $endValue = $reportedCount;
+            }
+
+            $bulkfileNameVal = $workerOffset . "-" . $endValue;
+            if (!empty($resultArray)) {
+                $participantLayoutFile = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+                if (!empty($layout)) {
+                    $customLayoutFileLocation = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
+                    if (file_exists($customLayoutFileLocation)) {
+                        $participantLayoutFile = $customLayoutFileLocation;
+                    }
+                }
+                include($participantLayoutFile);
+            }
+        }
+        exit(0);
+    }
+
+    $queueLimit = 3;
+    if ($manualShipmentMode) {
+        $manualReportType = $workerReportType ?? 'generateReport';
+        $shipmentRow = $db->select()
+            ->from(
+                ['s' => 'shipment'],
+                [
+                    'shipment_id',
+                    'shipment_code',
+                    'scheme_type',
+                    'shipment_attributes',
+                    'pt_co_ordinator_name',
+                    'distribution_id',
+                    'date_finalised' => new Zend_Db_Expr('NULL')
+                ]
+            )
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
+            ->where("s.shipment_id = ?", $workerShipmentId);
+        $manualEvalRow = $db->fetchRow($shipmentRow);
+        if (empty($manualEvalRow)) {
+            throw new Exception("Shipment {$workerShipmentId} not found.");
+        }
+        $manualEvalRow['report_type'] = $manualReportType;
+        $manualEvalRow['saname'] = '';
+        $manualEvalRow['requested_by'] = 0;
+        $manualEvalRow['id'] = null;
+        $evalResult = [$manualEvalRow];
+    } else {
+        $sQuery = $db->select()
+            ->from(['eq' => 'queue_report_generation'])
+            ->joinLeft(['s' => 'shipment'], 's.shipment_id=eq.shipment_id', ['shipment_code', 'scheme_type', 'shipment_attributes', 'pt_co_ordinator_name'])
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name'])
+            ->joinLeft(['sa' => 'system_admin'], 'eq.requested_by=sa.admin_id', ['saname' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name)")])
+            ->where("eq.status=?", 'pending')
+            ->limit($queueLimit);
+        $evalResult = $db->fetchAll($sQuery);
+    }
+    if (!empty($evalResult)) {
+
+        $evaluatedShipments = [];
 
         foreach ($evalResult as $evalRow) {
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
 
-                $timeStart = microtime(true);
-                $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
-                $timeEnd = microtime(true);
+                if (!isset($evaluatedShipments[$shipmentId])) {
+                    $timeStart = microtime(true);
+                    $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
+                    $timeEnd = microtime(true);
+                    $executionTime = ($timeEnd - $timeStart) / 60;
 
-                $executionTime = ($timeEnd - $timeStart) / 60;
+                    $evaluatedShipments[$shipmentId] = [
+                        'shipmentResult' => $shipmentResult,
+                        'executionTime' => $executionTime
+                    ];
+                } else {
+                    $shipmentResult = $evaluatedShipments[$shipmentId]['shipmentResult'];
+                    $executionTime = $evaluatedShipments[$shipmentId]['executionTime'];
+                }
+
                 $link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
                 $db->insert('notify', [
                     'title' => 'Shipment Evaluated',
@@ -1018,7 +1231,7 @@ try {
                     && !empty($customConfig->jobCompletionAlert->mails)
                 ) {
                     $emailSubject = "ePT | Shipment Evaluated";
-                    $emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;
+                    $emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
                     $emailContent .= "<br><br><br><small>This is a system generated email</small>";
                     $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
                 }
@@ -1035,6 +1248,7 @@ try {
                 }
             }
             // For Identify the geny types for covid-19 test type
+
             if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
                 $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
             }
@@ -1046,7 +1260,9 @@ try {
                 $reportTypeStatus = 'not-finalized';
             }
 
-            $db->update('queue_report_generation', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            if (!empty($evalRow['id'])) {
+                $db->update('queue_report_generation', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+            }
             if (!file_exists($reportsPath)) {
                 $commonService->makeDirectory($reportsPath);
             }
@@ -1067,40 +1283,117 @@ try {
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
             // die($pQuery);
+
             $totParticipantsRes = $db->fetchRow($pQuery);
             $resultStatus = $evalRow['report_type'];
-            $limit = 500;
-            if ($skipParticipantReports === false) {
-                for ($offset = 0; $offset <= $totParticipantsRes['reported_count']; $offset += $limit) {
+            $reportedCount = isset($totParticipantsRes['reported_count']) ? (int) $totParticipantsRes['reported_count'] : 0;
+            $chunkSize = 500;
+            $getFileCount = function () use ($reportsPath, $evalRow) {
+                return count(glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf'));
+            };
+            $participantProgressBar = null;
+            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar) {
+                $lastCount = $getFileCount();
+                for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
                     if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
 
-                    // continue; // for testing
-                    $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $limit, $offset);
-                    if ($layout == 'zimbabwe')
+                    $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $chunkSize, $offset);
+                    if ($layout == 'zimbabwe') {
                         $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
-                    // file_put_contents('data.json',json_encode($resultArray));
-                    $endValue = $offset + ($limit - 1);
-                    // $endValue = $offset + 49;
-                    if ($endValue > $totParticipantsRes['reported_count']) {
-                        $endValue = $totParticipantsRes['reported_count'];
+                    }
+
+                    $endValue = $offset + ($chunkSize - 1);
+                    if ($endValue > $reportedCount) {
+                        $endValue = $reportedCount;
                     }
 
                     $bulkfileNameVal = "$offset-$endValue";
                     if (!empty($resultArray)) {
-                        // this is the default layout
                         $participantLayoutFile = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
-                        // let us check if there is a custom layout file present for this scheme
                         if (!empty($layout)) {
                             $customLayoutFileLocation = PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $totParticipantsRes['scheme_type'] . '.phtml';
                             if (file_exists($customLayoutFileLocation)) {
                                 $participantLayoutFile = $customLayoutFileLocation;
                             }
                         }
-                        // error_log($participantLayoutFile);
+
                         include($participantLayoutFile);
+
+                        $newCount = $getFileCount();
+                        $delta = $newCount - $lastCount;
+                        if ($delta > 0 && $participantProgressBar) {
+                            Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
+                        }
+                        $lastCount = $newCount;
                     }
+                }
+            };
+
+            if ($skipParticipantReports === false && $reportedCount > 0) {
+                $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...");
+                if ($procs <= 1) {
+                    $generateParticipantChunks();
+                    Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                } else {
+                    $batchSize = (int) ceil($reportedCount / $procs);
+                    if ($batchSize < 1) {
+                        $batchSize = 1;
+                    }
+
+                    $processes = [];
+                    for ($offset = 0; $offset <= $reportedCount; $offset += $batchSize) {
+                        try {
+                            $cmd = ["php", __FILE__, "--worker", "--shipment", $evalRow['shipment_id'], "--offset", $offset, "--limit", $batchSize, "--reportType", $resultStatus];
+                            //error_log("Starting worker: " . implode(' ', $cmd));
+
+                            $process = new Process($cmd);
+                            $process->setTimeout(null);
+                            $process->start();
+
+                            $processes[] = ['process' => $process, 'offset' => $offset];
+                        } catch (Throwable $t) {
+                            error_log("Failed to start worker for offset {$offset}: " . $t->getMessage());
+                        }
+                    }
+
+                    $lastCount = $getFileCount();
+                    while (count($processes) > 0) {
+                        foreach ($processes as $key => $procData) {
+                            $process = $procData['process'];
+                            $offset = $procData['offset'];
+                            if (!$process->isRunning()) {
+                                try {
+                                    if (!$process->isSuccessful()) {
+                                        error_log("Worker failed (offset {$offset}): " . $process->getErrorOutput());
+                                    } else {
+                                        $out = trim($process->getOutput());
+                                        if ($out !== '') {
+                                            error_log("Worker completed (offset {$offset}) output: " . $out);
+                                        }
+                                    }
+                                } catch (Throwable $t) {
+                                    error_log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
+                                }
+                                unset($processes[$key]);
+                            }
+                        }
+                        $currentCount = $getFileCount();
+                        $delta = $currentCount - $lastCount;
+                        if ($delta > 0) {
+                            Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
+                            $lastCount = $currentCount;
+                        }
+                        usleep(150000);
+                    }
+
+                    $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
+                    if (empty($participantPdfs)) {
+                        error_log("Parallel generation produced no participant PDFs. Retrying sequentially.");
+                        $generateParticipantChunks();
+                    }
+                    Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
                 }
             }
             $panelTestType = "";
@@ -1111,6 +1404,7 @@ try {
                     foreach ($noOfTests as $panelTestType) {
 
                         // SUMMARY REPORT
+
                         $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
                         $responseResult = $evalService->getResponseReports($evalRow['shipment_id'], $panelTestType);
                         $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
@@ -1120,8 +1414,10 @@ try {
                                 $resultArray['shipment']['scheme_type'] = 'generic-test';
                             }
                             // this is the default layout
+
                             $summaryLayoutFile = SUMMARY_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
                             // let us check if there is a custom layout file present for this scheme
+
                             if (!empty($layout)) {
                                 $customLayoutFileLocation = SUMMARY_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
                                 if (file_exists($customLayoutFileLocation)) {
@@ -1133,6 +1429,7 @@ try {
                     }
                 } else {
                     // SUMMARY REPORT
+
                     $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
                     $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
                     $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
@@ -1142,8 +1439,10 @@ try {
                             $resultArray['shipment']['scheme_type'] = 'generic-test';
                         }
                         // this is the default layout
+
                         $summaryLayoutFile = SUMMARY_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
                         // let us check if there is a custom layout file present for this scheme
+
                         if (!empty($layout)) {
                             $customLayoutFileLocation = SUMMARY_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
                             if (file_exists($customLayoutFileLocation)) {
@@ -1167,6 +1466,7 @@ try {
                 $reportCompletedStatus = 'finalized';
                 $notifyType = 'summary_reports';
                 //$link = '/reports/distribution/finalize/sid/' . base64_encode($evalRow['shipment_id']);
+
                 $link = '/reports/shipments';
                 $feedbackExpiryDate = date('Y-m-d', strtotime("+56 days"));
             }
@@ -1199,7 +1499,9 @@ try {
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
             }
 
-            $db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
+            if (!empty($evalRow['id'])) {
+                $db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
+            }
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
 
             $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';
@@ -1215,7 +1517,7 @@ try {
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;
