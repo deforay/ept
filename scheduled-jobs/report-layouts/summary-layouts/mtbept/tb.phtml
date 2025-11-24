@@ -101,11 +101,11 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $referenceResultContent .= '<tr>';
             $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['sample_label'] . '</td>';
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
-                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate']  . '</td>';
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate'] . '</td>';
             }
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected']))  . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected'])) . '</td>';
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
-                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance']))  . '</td>';
+                $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance'])) . '</td>';
             }
             $referenceResultContent .= '</tr>';
         }
@@ -372,7 +372,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
 
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
-    if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+    if (trim($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '') != "") {
         $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
         /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
@@ -463,7 +463,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                     $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
                 }
                 $panelPerformanceMtbRifSvg .= '    <text x="' . (44 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.15)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
-                $panelPerformanceMtbRifSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . (9 + $barSpaceCenter) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:5pt">' . round($sampleSummary['average_ct'] ?? 0, 1) . '</text>';
             }
             $sampleIndexMtbRif++;
         }

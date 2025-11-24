@@ -17,7 +17,7 @@ class Application_Service_Shipments
     {
         $count = 0;
         foreach ($mandatoryArr as $index => $isMandatory) {
-            if ((string)$isMandatory === "1" && (string)$controlArr[$index] !== "1") {
+            if ((string) $isMandatory === "1" && (string) $controlArr[$index] !== "1") {
                 $count++;
             }
         }
@@ -98,7 +98,7 @@ class Application_Service_Shipments
 
         $sQuery = $db->select()->from(array('s' => 'shipment'))
             ->join(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count', 'shipment_test_report_date', 'response_status', 'notResponded' => new Zend_Db_Expr("SUM( CASE WHEN (spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status like 'noresponse') THEN 1 ELSE 0 END )")))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 's.shipment_id = spm.shipment_id', array('total_participants' => new Zend_Db_Expr('count(map_id)'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'last_new_shipment_mailed_on', 'new_shipment_mail_count', 'shipment_test_report_date', 'response_status', 'notResponded' => new Zend_Db_Expr("SUM( CASE WHEN (spm.shipment_test_report_date IS NULL OR DATE(spm.shipment_test_report_date) = '0000-00-00' OR spm.response_status like 'noresponse') THEN 1 ELSE 0 END )")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name', 'is_user_configured'))
             ->group('s.shipment_id');
 
@@ -165,8 +165,8 @@ class Application_Service_Shipments
                 $btn = "btn-primary";
             }
             if ($aRow['last_new_shipment_mailed_on'] != '') {
-                $mailedOn =  explode(' ', $aRow['last_new_shipment_mailed_on']);
-                $mailedOn =  Pt_Commons_General::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
+                $mailedOn = explode(' ', $aRow['last_new_shipment_mailed_on']);
+                $mailedOn = Pt_Commons_General::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
             }
             if ($aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
                 $responseSwitch = "<select onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
@@ -233,7 +233,7 @@ class Application_Service_Shipments
                 $informMail = '<br>&nbsp;<a class="btn btn-warning btn-xs" href="/admin/email-participants/index/sid/' . base64_encode($aRow['shipment_id']) . '"><span><i class="icon-bullhorn"></i> Remind Non-Responders</span></a>';
             }
 
-            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll  . $informMail . $downloadAllTBForms;
+            $row[] = $edit . $enrolled . $delete . $announcementMail . $manageEnroll . $informMail . $downloadAllTBForms;
             $output['aaData'][] = $row;
         }
 
@@ -317,8 +317,8 @@ class Application_Service_Shipments
                     $dbAdapter->update(
                         'r_eid_extraction_assay',
                         array(
-                            'name'        => $params['extractionAssayOther'],
-                            'status'  => 'active'
+                            'name' => $params['extractionAssayOther'],
+                            'status' => 'active'
                         ),
                         'id = ' . $ifExist['id']
                     );
@@ -327,8 +327,8 @@ class Application_Service_Shipments
                     $dbAdapter->insert(
                         'r_eid_extraction_assay',
                         array(
-                            'name'        => $params['extractionAssayOther'],
-                            'status'  => 'active'
+                            'name' => $params['extractionAssayOther'],
+                            'status' => 'active'
                         )
                     );
                     $lastInsertAssayId = $dbAdapter->lastInsertId();
@@ -413,11 +413,11 @@ class Application_Service_Shipments
                 $dbAdapter->update(
                     'shipment_participant_map',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name' => $params['labDirectorName'],
+                        'lab_director_email' => $params['labDirectorEmail'],
+                        'contact_person_name' => $params['contactPersonName'],
+                        'contact_person_email' => $params['contactPersonEmail'],
+                        'contact_person_telephone' => $params['contactPersonTelephone']
                     ),
                     'map_id = ' . $params['smid']
                 );
@@ -425,11 +425,11 @@ class Application_Service_Shipments
                 $dbAdapter->update(
                     'participant',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name' => $params['labDirectorName'],
+                        'lab_director_email' => $params['labDirectorEmail'],
+                        'contact_person_name' => $params['contactPersonName'],
+                        'contact_person_email' => $params['contactPersonEmail'],
+                        'contact_person_telephone' => $params['contactPersonTelephone']
                     ),
                     'participant_id = ' . $params['participantId']
                 );
@@ -720,13 +720,13 @@ class Application_Service_Shipments
                     $testkitId = "tk" . $randomStr;
                     $tkId = $testkitDb->checkTestkitId($testkitId, 'dts');
                     $testkitDb->insert(array(
-                        'TestKitName_ID'    => $tkId,
-                        'TestKit_Name'      => $kit,
-                        'scheme_type'       => 'dts',
-                        'Approval'          => '0',
-                        'CountryAdapted'    => '0',
-                        'testkit_status'    => 'pending',
-                        'Created_On'        => new Zend_Db_Expr('now()')
+                        'TestKitName_ID' => $tkId,
+                        'TestKit_Name' => $kit,
+                        'scheme_type' => 'dts',
+                        'Approval' => '0',
+                        'CountryAdapted' => '0',
+                        'testkit_status' => 'pending',
+                        'Created_On' => new Zend_Db_Expr('now()')
                     ));
                     $kitId = $tkId;
                 }
@@ -898,7 +898,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "qc_date" => null,
                 "qc_done" => 'no',
                 "qc_done_by" => null,
@@ -944,7 +944,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "qc_date" => null,
                 "qc_done" => 'no',
                 "qc_done_by" => null,
@@ -993,7 +993,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "mode_id" => null,
                 "custom_field_1" => null,
                 "custom_field_2" => null,
@@ -1035,7 +1035,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "mode_id" => null,
                 "custom_field_1" => null,
                 "custom_field_2" => null,
@@ -1076,7 +1076,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "qc_date" => null,
                 "qc_done" => 'no',
                 "qc_done_by" => null,
@@ -1120,7 +1120,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "qc_date" => null,
                 "qc_done" => 'no',
                 "qc_done_by" => null,
@@ -1165,7 +1165,7 @@ class Application_Service_Shipments
                 "pt_test_not_performed_comments" => null,
                 "pt_support_comments" => null,
                 "updated_on_user" => null,
-                "updated_by_user" =>  null,
+                "updated_by_user" => null,
                 "qc_date" => null,
                 "qc_done" => 'no',
                 "qc_done_by" => null,
@@ -1347,10 +1347,10 @@ class Application_Service_Shipments
                 $tbInstrumentDb = new Application_Model_DbTable_TBInstruments();
                 foreach ($params['serialNo'] as $key => $tbInstrument) {
                     $instrumentData = array(
-                        'participant_id'                => $params['participantId'],
-                        'map_id'                        => $params['smid'],
-                        'instrument_serial'             => $params['serialNo'][$key],
-                        'instrument_installed_on'       => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
+                        'participant_id' => $params['participantId'],
+                        'map_id' => $params['smid'],
+                        'instrument_serial' => $params['serialNo'][$key],
+                        'instrument_installed_on' => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
                         'instrument_last_calibrated_on' => Pt_Commons_General::isoDateFormat($params['lastCalibrated'][$key])
                     );
                     if (isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])) {
@@ -1553,13 +1553,13 @@ class Application_Service_Shipments
             // }
             $data = array(
                 "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date"    => Pt_Commons_General::isoDateFormat($params['testDate']),
-                "attributes"            => $attributes,
-                "supervisor_approval"   => $params['supervisorApproval'],
+                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "attributes" => $attributes,
+                "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
-                "user_comment"      => $params['userComments'],
-                "mode_id"           => $params['modeOfReceipt'],
-                "response_status"   => $responseStatus,
+                "user_comment" => $params['userComments'],
+                "mode_id" => $params['modeOfReceipt'],
+                "response_status" => $responseStatus,
             );
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
@@ -1607,11 +1607,11 @@ class Application_Service_Shipments
                 $dbAdapter->update(
                     'shipment_participant_map',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name' => $params['labDirectorName'],
+                        'lab_director_email' => $params['labDirectorEmail'],
+                        'contact_person_name' => $params['contactPersonName'],
+                        'contact_person_email' => $params['contactPersonEmail'],
+                        'contact_person_telephone' => $params['contactPersonTelephone']
                     ),
                     'map_id = ' . $params['smid']
                 );
@@ -1619,11 +1619,11 @@ class Application_Service_Shipments
                 $dbAdapter->update(
                     'participant',
                     array(
-                        'lab_director_name'         => $params['labDirectorName'],
-                        'lab_director_email'        => $params['labDirectorEmail'],
-                        'contact_person_name'       => $params['contactPersonName'],
-                        'contact_person_email'      => $params['contactPersonEmail'],
-                        'contact_person_telephone'  => $params['contactPersonTelephone']
+                        'lab_director_name' => $params['labDirectorName'],
+                        'lab_director_email' => $params['labDirectorEmail'],
+                        'contact_person_name' => $params['contactPersonName'],
+                        'contact_person_email' => $params['contactPersonEmail'],
+                        'contact_person_telephone' => $params['contactPersonTelephone']
                     ),
                     'participant_id = ' . $params['participantId']
                 );
@@ -1725,22 +1725,22 @@ class Application_Service_Shipments
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
             // Zend_Debug::dump($shipmentAttributes);die;
             $data = array(
-                'shipment_code'         => $params['shipmentCode'],
+                'shipment_code' => $params['shipmentCode'],
                 'allow_editing_response' => $params['allowEditingResponse'],
-                'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
-                'distribution_id'       => $params['distribution'],
-                'scheme_type'           => $scheme,
-                'shipment_date'         => $distro['distribution_date'],
-                'number_of_samples'     => count($params['sampleName']) - $controlCount,
-                'number_of_controls'    => $controlCount,
-                'issuing_authority'     => $params['issuingAuthority'],
-                'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-                'pt_co_ordinator_email'  => $params['ptEmail'] ?? null,
-                'pt_co_ordinator_phone'  => $params['ptPhone'] ?? null,
-                'collect_feedback'      => $params['collectFeedBack'] ?? 'no',
-                'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate']),
-                'created_on_admin'      => new Zend_Db_Expr('now()'),
-                'created_by_admin'      => $authNameSpace->primary_email
+                'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
+                'distribution_id' => $params['distribution'],
+                'scheme_type' => $scheme,
+                'shipment_date' => $distro['distribution_date'],
+                'number_of_samples' => count($params['sampleName']) - $controlCount,
+                'number_of_controls' => $controlCount,
+                'issuing_authority' => $params['issuingAuthority'],
+                'pt_co_ordinator_name' => $params['PtCoOrdinatorName'],
+                'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
+                'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
+                'collect_feedback' => $params['collectFeedBack'] ?? 'no',
+                'lastdate_response' => Pt_Commons_General::isoDateFormat($params['lastDate']),
+                'created_on_admin' => new Zend_Db_Expr('now()'),
+                'created_by_admin' => $authNameSpace->primary_email
             );
             $lastId = $db->insert($data);
             if ($lastId > 0) {
@@ -1792,7 +1792,8 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2028,7 +2029,7 @@ class Application_Service_Shipments
                     }
                     $dbAdapter->insert(
                         'reference_result_tb',
-                        array(
+                        [
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
@@ -2053,7 +2054,7 @@ class Application_Service_Shipments
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
                             'sample_score' => $score
-                        )
+                        ]
                     );
                 }
             } elseif ($params['schemeId'] == 'recency') {
@@ -2397,7 +2398,8 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                    ;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -2414,8 +2416,9 @@ class Application_Service_Shipments
                 }
             }
         } elseif ($scheme == 'tb') {
+
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
-            for ($i = 0; $i < $size; $i++) {
+            for ($i = 1; $i <= $size; $i++) {
                 $score = 0;
                 if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                     $score = $params['scorePerSample'];
@@ -2424,16 +2427,16 @@ class Application_Service_Shipments
                 }
                 $dbAdapter->insert(
                     'reference_result_tb',
-                    array(
+                    [
                         'shipment_id' => $params['shipmentId'] ?? null,
-                        'sample_id' => ($i + 1),
+                        'sample_id' => ($i),
                         'sample_label' => $params['sampleName'][$i] ?? null,
                         'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
                         'tb_isolate' => $params['tbIsolate'][$i] ?? null,
                         'mtb_detected' => $params['mtbDetected'][$i] ?? null,
-                        'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i] ?? null,
+                        'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i] ?? $params['mtbDetected'][$i] ?? null,
                         'rif_resistance' => $params['rifResistance'][$i] ?? null,
-                        'rif_resistance_ultra' => $params['rifResistanceUltra'][$i] ?? null,
+                        'rif_resistance_ultra' => $params['rifResistanceUltra'][$i] ?? $params['rifResistance'][$i] ?? null,
                         'probe_d' => $params['probeD'][$i] ?? null,
                         'probe_c' => $params['probeC'][$i] ?? null,
                         'probe_e' => $params['probeE'][$i] ?? null,
@@ -2446,10 +2449,10 @@ class Application_Service_Shipments
                         'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
                         'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
                         'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
-                        'control' => $params['control'][$i] ?? null,
-                        'mandatory' => $params['mandatory'][$i] ?? null,
+                        'control' => $params['control'][$i],
+                        'mandatory' => $params['mandatory'][$i],
                         'sample_score' => $score
-                    )
+                    ]
                 );
             }
         } elseif ($scheme == 'dts') {
@@ -2796,17 +2799,17 @@ class Application_Service_Shipments
         $dbAdapter->update(
             'shipment',
             array(
-                'number_of_samples'     => $size - $controlCount,
+                'number_of_samples' => $size - $controlCount,
                 'allow_editing_response' => $params['allowEditingResponse'],
-                'shipment_attributes'   => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
-                'number_of_controls'    => $controlCount,
-                'shipment_code'         => $params['shipmentCode'],
-                'issuing_authority'     => $params['issuingAuthority'],
-                'pt_co_ordinator_name'  => $params['PtCoOrdinatorName'],
-                'pt_co_ordinator_email'  => $params['ptEmail'] ?? null,
-                'pt_co_ordinator_phone'  => $params['ptPhone'] ?? null,
-                'collect_feedback'      => $params['collectFeedBack'],
-                'lastdate_response'     => Pt_Commons_General::isoDateFormat($params['lastDate'])
+                'shipment_attributes' => empty($shipmentAttributes) ? null : json_encode($shipmentAttributes),
+                'number_of_controls' => $controlCount,
+                'shipment_code' => $params['shipmentCode'],
+                'issuing_authority' => $params['issuingAuthority'],
+                'pt_co_ordinator_name' => $params['PtCoOrdinatorName'],
+                'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
+                'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
+                'collect_feedback' => $params['collectFeedBack'],
+                'lastdate_response' => Pt_Commons_General::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']
         );
@@ -2905,7 +2908,6 @@ class Application_Service_Shipments
 
     public function removeShipmentParticipant($mapId, $sId = "")
     {
-
         try {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $responseTable = array('response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl');
@@ -2920,7 +2922,7 @@ class Application_Service_Shipments
                     $db->delete($response, "shipment_map_id = " . $mapId);
                 }
             }
-            return  $db->delete('shipment_participant_map', "map_id = " . $mapId);
+            return $db->delete('shipment_participant_map', "map_id = " . $mapId);
             $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Enable foreign key checks
         } catch (Exception $e) {
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
@@ -3010,7 +3012,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3049,7 +3051,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3207,17 +3209,17 @@ class Application_Service_Shipments
             $sQuery->where('s.shipment_date <="' . date('Y-m-t', strtotime($shipmentDate[1])) . '"');
         }
         // die($sQuery);
-        $result =  $db->fetchAll($sQuery);
+        $result = $db->fetchAll($sQuery);
         if (!empty($result)) {
 
             foreach ($result as $key => $row) {
                 $response[$row['shipment_code']] = array(
-                    'shipment_code'         => $row['shipment_code'],
+                    'shipment_code' => $row['shipment_code'],
                     // 'participantName'       => $row['participantName'],
-                    'shipment_score'        => $row['shipment_score'],
-                    'documentation_score'   => $row['documentation_score'],
-                    'participantCount'      => $row['participantCount'],
-                    'scheme_type'           => $row['scheme_type']
+                    'shipment_score' => $row['shipment_score'],
+                    'documentation_score' => $row['documentation_score'],
+                    'participantCount' => $row['participantCount'],
+                    'scheme_type' => $row['scheme_type']
                 );
             }
         } else {
@@ -3238,19 +3240,19 @@ class Application_Service_Shipments
             ->where("s.status != 'pending'")
             ->group("s.shipment_id")
             ->order("s.shipment_id");
-        $result =  $db->fetchAll($sQuery);
+        $result = $db->fetchAll($sQuery);
 
 
         if (!empty($result)) {
 
             foreach ($result as $key => $row) {
                 $response[$row['scheme_type']][$key] = array(
-                    'shipment_code'         => $row['shipment_code'],
-                    'shipment_score'        => (isset($row['shipment_score']) && ($row['shipment_score']) > 0) ? $row['shipment_score'] : 0,
-                    'documentation_score'   => $row['documentation_score'],
-                    'participantCount'      => $row['participantCount'],
-                    'receivedCount'         => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
-                    'scheme_type'           => $row['scheme_type']
+                    'shipment_code' => $row['shipment_code'],
+                    'shipment_score' => (isset($row['shipment_score']) && ($row['shipment_score']) > 0) ? $row['shipment_score'] : 0,
+                    'documentation_score' => $row['documentation_score'],
+                    'participantCount' => $row['participantCount'],
+                    'receivedCount' => (isset($row['receivedCount']) && ($row['receivedCount']) > 0) ? $row['receivedCount'] : 0,
+                    'scheme_type' => $row['scheme_type']
                 );
 
                 $total['participants'] = $total['participants'] ?? array();
@@ -3371,7 +3373,7 @@ class Application_Service_Shipments
             'evaluation_comment' => $params['comment'],
             'optional_eval_comment' => $params['optionalComments'],
             'is_followup' => $params['isFollowUp'],
-            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] :  'no',
+            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] : 'no',
             'updated_by_admin' => $admin,
             'updated_on_admin' => new Zend_Db_Expr('now()')
         );
@@ -3432,9 +3434,9 @@ class Application_Service_Shipments
                 $db->update(
                     'shipment',
                     [
-                        'tb_form_generated'   => 'queued',
-                        'updated_on_admin'  => new Zend_Db_Expr('now()'),
-                        'updated_by_admin'  => $authNameSpace->admin_id
+                        'tb_form_generated' => 'queued',
+                        'updated_on_admin' => new Zend_Db_Expr('now()'),
+                        'updated_by_admin' => $authNameSpace->admin_id
                     ],
                     "shipment_id = $sid"
                 );
@@ -3470,7 +3472,7 @@ class Application_Service_Shipments
             'evaluation_comment' => $params['comment'],
             'optional_eval_comment' => $params['optionalComments'],
             'is_followup' => $params['isFollowUp'],
-            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] :  'no',
+            'is_excluded' => (isset($params['isExcluded']) && !empty($params['isExcluded']) && trim($params['isExcluded']) != '') ? $params['isExcluded'] : 'no',
             'updated_by_admin' => $authNameSpace->admin_id,
             'updated_on_admin' => new Zend_Db_Expr('now()')
         ];
@@ -3638,7 +3640,7 @@ class Application_Service_Shipments
                 'final_result',
                 'map_id',
                 'total_participants' => new Zend_Db_Expr('count(map_id)'),
-                'reported_count' =>  new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
+                'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
             )
         )
             ->join(array('s' => 'shipment'), 'spm.shipment_id=s.shipment_id', array('shipment_id', 'shipment_date', 'scheme_type', 'shipment_code', 'shipment_attributes', 'number_of_samples', 'lastdate_response'))
@@ -3721,9 +3723,11 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             }
             $output['aaData'][] = $row;
         }

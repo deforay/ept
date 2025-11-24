@@ -22,7 +22,7 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/generate-shipment-repo
 // DB Backup
 $schedule->run($phpPath . " " . BIN_PATH . "/db-tools.php backup")
     ->cron('45 0 * * *')
-    ->timezone($timeZone)
+    ->timezone($timezone)
     ->preventOverlapping()
     ->description('Backing Up Database');
 

@@ -130,7 +130,7 @@ if (!empty($resultArray['shipment'])) {
             $participantResult .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             $participantResult .= '<table style="font-size:11px;width:100%;" border="0" cellpadding="1">';
             $participantResult .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            $participantResult .= '	<td colspn="4" style="text-align:center;width:25%;"><strong>Site Results Testing with ' . $result['assayName'] . '</strong></td>';
+            $participantResult .= '	<td colspan="4" style="text-align:center;width:100%;"><strong>Site Results Testing with ' . $result['assayName'] . '</strong></td>';
             $participantResult .= '</tr>';
 
             $participantResult .= '    <tr>';
@@ -326,8 +326,8 @@ if (!empty($resultArray['shipment'])) {
                 $rx = 45;
                 // $rc = 60;
                 $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $previousShipment['shipment_score'] = (int)$previousShipment['shipment_score'];
-                $previousShipment['mean_shipment_score'] = (int)$previousShipment['mean_shipment_score'];
+                $previousShipment['shipment_score'] = (int) $previousShipment['shipment_score'];
+                $previousShipment['mean_shipment_score'] = (int) $previousShipment['mean_shipment_score'];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
                 $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i * $rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
                 // }x
@@ -434,7 +434,7 @@ if (!empty($resultArray['shipment'])) {
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
-        $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . "temp-" . $fileName;
+        $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $pdf->Output($tempFilePath, "F");
         Application_Service_Common::flattenPdf($tempFilePath, $filePath);

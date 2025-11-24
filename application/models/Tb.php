@@ -672,13 +672,13 @@ class Application_Model_Tb
             array_push($reportHeadings, 'Final Result');
             /* Feed Back Response Section */
             $common = new Application_Service_Common();
-            $feedbackOption = $common->getConfig('participant_feedback');
+            /* $feedbackOption = $common->getConfig('participant_feedback');
             if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
                 if (isset($questions) && !empty($questions['question'])) {
                     $reportHeadings = $questions['heading'];
                 }
-            }
+            } */
             $resultReportedSheet = new Worksheet($excel, 'Results Reported');
             $excel->addSheet($resultReportedSheet, 1);
             $resultReportedSheet->setTitle('Results Reported', true);
@@ -833,16 +833,16 @@ class Application_Model_Tb
                                 $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['spc_xpert_ultra']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             }
 
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_d'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_c'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_e'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_b'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['probe_a'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['is1081_is6110'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b1'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b2'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b3'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float)$aRow['response'][$k]['rpo_b4'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['probe_d'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['probe_c'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['probe_e'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['probe_b'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['probe_a'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['is1081_is6110'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['rpo_b1'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['rpo_b2'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['rpo_b3'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
+                            $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit((float) $aRow['response'][$k]['rpo_b4'], DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['instrument_serial_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['gene_xpert_module_no']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
                             $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(ucwords($aRow['response'][$k]['test_date']))->getStyle()->getFont()->getColor()->setARGB($txtColor);
@@ -883,8 +883,9 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         /* Feed Back Response Section */
-                        // Zend_Debug::dump($aRow);die;
-                        if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
+                        /* Zend_Debug::dump($aRow);
+                        die; */
+                        /* if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                             $feedbackDb = new Application_Model_DbTable_FeedBackTable();
                             $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
                             if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
@@ -892,7 +893,7 @@ class Application_Model_Tb
                                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                                         ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                                 }
-                            }
+                             */}
                         }
                         foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
@@ -1080,15 +1081,26 @@ class Application_Model_Tb
             // 1 => MTB/RIF
             // 2 => MTB/RIF Ultra
 
-            $mtbMatch = ($referenceResults['mtb_detected'] == $sampleConsensus[1]['mtb_detection_consensus_raw']) ? 'yes' : 'no';
-            $mtbUltraMatch = ($referenceResults['mtb_detected'] == $sampleConsensus[2]['mtb_detection_consensus_raw']) ? 'yes' : 'no';
-            $rifMatch = ($referenceResults['rif_resistance'] == $sampleConsensus[1]['rif_resistance_consensus_raw']) ? 'yes' : 'no';
-            $rifUltraMatch = ($referenceResults['rif_resistance'] == $sampleConsensus[2]['rif_resistance_consensus_raw']) ? 'yes' : 'no';
+            if (!$referenceResults) {
+                continue;
+            }
 
-            $calculatedConsensus[$sampleId][1]['mtb_match'] = $mtbMatch;
-            $calculatedConsensus[$sampleId][2]['mtb_match'] = $mtbUltraMatch;
-            $calculatedConsensus[$sampleId][1]['rif_match'] = $rifMatch;
-            $calculatedConsensus[$sampleId][2]['rif_match'] = $rifUltraMatch;
+            // 1 => MTB/RIF
+            // 2 => MTB/RIF Ultra
+
+            $mtbMatch = (isset($sampleConsensus[1]) && isset($sampleConsensus[1]['mtb_detection_consensus_raw']) && $referenceResults['mtb_detected'] == $sampleConsensus[1]['mtb_detection_consensus_raw']) ? 'yes' : 'no';
+            $mtbUltraMatch = (isset($sampleConsensus[2]) && isset($sampleConsensus[2]['mtb_detection_consensus_raw']) && $referenceResults['mtb_detected'] == $sampleConsensus[2]['mtb_detection_consensus_raw']) ? 'yes' : 'no';
+            $rifMatch = (isset($sampleConsensus[1]) && isset($sampleConsensus[1]['rif_resistance_consensus_raw']) && $referenceResults['rif_resistance'] == $sampleConsensus[1]['rif_resistance_consensus_raw']) ? 'yes' : 'no';
+            $rifUltraMatch = (isset($sampleConsensus[2]) && isset($sampleConsensus[2]['rif_resistance_consensus_raw']) && $referenceResults['rif_resistance'] == $sampleConsensus[2]['rif_resistance_consensus_raw']) ? 'yes' : 'no';
+
+            if (isset($sampleConsensus[1])) {
+                $calculatedConsensus[$sampleId][1]['mtb_match'] = $mtbMatch;
+                $calculatedConsensus[$sampleId][1]['rif_match'] = $rifMatch;
+            }
+            if (isset($sampleConsensus[2])) {
+                $calculatedConsensus[$sampleId][2]['mtb_match'] = $mtbUltraMatch;
+                $calculatedConsensus[$sampleId][2]['rif_match'] = $rifUltraMatch;
+            }
 
             $db->update(
                 'reference_result_tb',
@@ -1639,8 +1651,8 @@ class Application_Model_Tb
         $writer->setEditHtmlCallback([$this, 'addHeadersFooters']);
         $schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $result[0]['shipment_code']);
         $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
-        if (!file_exists($tempUploadFolder  . DIRECTORY_SEPARATOR . $schemeCode)) {
-            mkdir($tempUploadFolder  . DIRECTORY_SEPARATOR . $schemeCode);
+        if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode)) {
+            mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode);
         }
         $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $fileName);
 
@@ -1986,7 +1998,7 @@ class Application_Model_Tb
                 $columnIndex++;
                 $countryDiscordantRatio = 0;
                 if (intval($discordantCountry['total_results']) > 0) {
-                    $countryDiscordantRatio = intval($discordantCountry['discordant']) /  intval($discordantCountry['total_results']);
+                    $countryDiscordantRatio = intval($discordantCountry['discordant']) / intval($discordantCountry['total_results']);
                 }
                 $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($countryDiscordantRatio, ENT_QUOTES, 'UTF-8'), DataType::TYPE_NUMERIC);
             }
@@ -2110,8 +2122,8 @@ class Application_Model_Tb
             }
             $this->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, $sheetIndex);
             $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
-            if (!file_exists($tempUploadFolder  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
-                mkdir($tempUploadFolder  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+            if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+                mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
             }
             $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
                 array_map('chr', range(0, 31)),
@@ -2121,7 +2133,7 @@ class Application_Model_Tb
             $excel->setActiveSheetIndex(0);
             $writer = IOFactory::createWriter($excel, 'Xlsx');
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
-            $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR .  $filename);
+            $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR . $filename);
             return [
                 "report-name" => $filename
             ];

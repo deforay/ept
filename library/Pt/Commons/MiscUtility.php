@@ -724,7 +724,7 @@ final class Pt_Commons_MiscUtility
 
         // Load from application.ini
         $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $salt   = (string)($config->security->salt ?? '');
+        $salt = (string) ($config->security->salt ?? '');
 
         if (strlen($salt) < 16) { // ensure some entropy
             throw new RuntimeException('security.salt missing/too short');
@@ -734,14 +734,14 @@ final class Pt_Commons_MiscUtility
         $version = 'v1';
 
         // HMAC with salt
-        $raw    = hash_hmac('sha256', $version . '|' . $normId, $salt, true);
+        $raw = hash_hmac('sha256', $version . '|' . $normId, $salt, true);
 
         // Base64 encode
         $b64url = rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
 
         // Keep only alphanumeric, strip confusing ones
-        $clean  = preg_replace('/[^A-Za-z0-9]/', '', $b64url);
-        $clean  = str_replace(['0', 'O', 'o', '1', 'I', 'l'], '', $clean);
+        $clean = preg_replace('/[^A-Za-z0-9]/', '', $b64url);
+        $clean = str_replace(['0', 'O', 'o', '1', 'I', 'l'], '', $clean);
 
         // Fallback: if too short, use hex
         if (strlen($clean) < $length) {
@@ -756,7 +756,8 @@ final class Pt_Commons_MiscUtility
     public static function console(): ConsoleOutput
     {
         static $out = null;
-        if (!$out) $out = new ConsoleOutput();
+        if (!$out)
+            $out = new ConsoleOutput();
         return $out;
     }
 
@@ -781,12 +782,14 @@ final class Pt_Commons_MiscUtility
         $bar->setEmptyBarCharacter($emptyChar);
         $bar->setProgressCharacter($progressChar);
 
-        if (method_exists($bar, 'setRedrawFrequency')) $bar->setRedrawFrequency(1);
+        if (method_exists($bar, 'setRedrawFrequency'))
+            $bar->setRedrawFrequency(1);
         if (method_exists($bar, 'minSecondsBetweenRedraws')) {
             $bar->minSecondsBetweenRedraws(0.0);
             $bar->maxSecondsBetweenRedraws(0.25);
         }
-        if (method_exists($bar, 'setOverwrite')) $bar->setOverwrite(true);
+        if (method_exists($bar, 'setOverwrite'))
+            $bar->setOverwrite(true);
 
         $bar->setMessage($message);
         $bar->start();
@@ -833,5 +836,30 @@ final class Pt_Commons_MiscUtility
     {
         $bar->finish();
         self::console()->writeln(""); // newline after the bar
+    }
+
+    public static function getCpuCount(): int
+    {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $cmd = 'wmic cpu get NumberOfCores';
+            if (preg_match('/(\d+)/', shell_exec($cmd), $matches)) {
+                return (int) $matches[1];
+            }
+        } else {
+            // Linux / Mac / BSD
+            $cmd = 'sysctl -n hw.ncpu'; // Mac / BSD
+            $output = @shell_exec($cmd);
+            if ($output !== null) {
+                return (int) $output;
+            }
+
+            $cmd = 'cat /proc/cpuinfo | grep processor | wc -l'; // Linux
+            $output = @shell_exec($cmd);
+            if ($output !== null) {
+                return (int) $output;
+            }
+        }
+
+        return 2; // Fallback
     }
 }
