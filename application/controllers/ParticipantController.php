@@ -920,16 +920,20 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->response = $feedbackService->saveFeedBackForms($params);
             $this->redirect("/participant/report");
         } else {
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
             $this->view->sID = $sid = $request->getParam('sid');
             $this->view->pID = $pid = $request->getParam('pid');
             $this->view->mID = $mid = $request->getParam('mid');
             $checkExpiry = $feedbackService->checkExpiry($sid);
             if (!$checkExpiry) {
-                $alertMsg = new Zend_Session_Namespace('alertSpace');
                 $alertMsg->message = 'Feedback form expired!';
                 $this->redirect("/participant/report");
             }
-            $this->view->questions = $feedbackService->getFeedBackQuestions($sid);
+            $this->view->questions  = $result = $feedbackService->getFeedBackQuestions($sid);
+            if (count($result['result']) == 0) {
+                $alertMsg->message = 'Question not available for now. Please try again later.';
+                $this->redirect("/participant/report");
+            }
             $this->view->ans = $feedbackService->getFeedBackAnswers($sid, $pid, $mid);
         }
     }

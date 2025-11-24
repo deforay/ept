@@ -14,9 +14,17 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             ->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('is_response_mandatory', 'sort_order'))
             ->join(array('sl' => 'scheme_list'), 'rpfq.scheme_type=sl.scheme_id', array('scheme_name'))
             ->join(array('s' => 'shipment'), 'rpfq.shipment_id=s.shipment_id', array('shipment_code'))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result'))
             ->where("rpfq.shipment_id =?", $sid)
-            ->order('rpfq.sort_order asc');
-        $result['result'] = $db->fetchAll($sql);;
+            ->where("(
+                    rfq.question_show_to IS NULL
+                    OR rfq.question_show_to = 'all-participants' 
+                    OR (rfq.question_show_to = 'passing-participants' AND spm.final_result = 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
+                    OR (rfq.question_show_to = 'failing-participants' AND spm.final_result != 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
+                )")
+            ->order('rpfq.sort_order asc')
+            ->group('rfq.question_id');
+        $result['result'] = $db->fetchAll($sql);
 
         // Fetch feedback form results
         $feedbackFormSql = $db->select()
@@ -129,6 +137,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'response_attributes'   => ($params['questionType'] == 'dropdown') ? json_encode($params['options'], true) : null,
                 'question_code'         => $params['questionCode'],
                 'question_status'       => $params['questionStatus'],
+                'question_show_to'       => $params['questionTo'],
                 'updated_datetime'      => new Zend_Db_Expr('now()'),
                 'modified_by'           => $authNameSpace->admin_id
             );
