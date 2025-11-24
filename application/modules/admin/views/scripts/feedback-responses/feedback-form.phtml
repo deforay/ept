@@ -79,8 +79,8 @@ if (isset($this->result) && !empty($this->result)) {
                             foreach ($this->result['feedback_form_files_results'] as $key => $row) { ?>
                                 <tr>
                                     <td>
-                                        <?php if (isset($row) && !empty($row) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'feedback-forms' . DIRECTORY_SEPARATOR . $row['shipment_id'] . DIRECTORY_SEPARATOR . $row['feedback_file'])) { ?>
-                                            <a href="/uplods/feedback-forms/<?php echo $row['shipment_id']; ?>/<?php echo $row['feedback_file']; ?>" target="_blank">Download</a>
+                                        <?php if (isset($row['feedback_file']) && !empty($row['feedback_file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'feedback-forms' . DIRECTORY_SEPARATOR . $row['shipment_id'] . DIRECTORY_SEPARATOR . $row['feedback_file'])) { ?>
+                                            <a href="/uploads/feedback-forms/<?php echo $row['shipment_id']; ?>/<?php echo $row['feedback_file']; ?>" target="_blank">Download</a>
                                         <?php } else { ?>
                                             <input type="file" id="formFiles<?php echo ($key + 1); ?>" name="formFiles[files][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Select the form file" title="Please select the form file">
                                         <?php } ?>
