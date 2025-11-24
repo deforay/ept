@@ -121,10 +121,16 @@ $answers = $this->ans;
                         </h3>
                     </div>
                     <div class="card-body">
-                        <?php if (isset($this->questions['feedback_form_files_results']) && !empty($this->questions['feedback_form_files_results'])) { ?>
-                            <p class="text-muted mb-3">Download the following files for reference:</p>
+                        <?php
+                      //  echo "<pre>"; print_r($this->questions['feedback_form_files_results']); die;
+                        if (isset($this->questions['feedback_form_files_results']) && !empty($this->questions['feedback_form_files_results'])) { ?>
+                            <p class="text-muted mb-3">Download the following files for reference</p>
                             <div class="list-group">
-                                <?php foreach ($this->questions['feedback_form_files_results'] as $row) { ?>
+                                <?php foreach ($this->questions['feedback_form_files_results'] as $row) { 
+                                    $file = "/uploads/feedback-forms/".$row['shipment_id']."/".$row['feedback_file'];
+                                    if((!empty($row['feedback_file']) && file_exists($file)))
+                                    {
+                                    ?>
                                     <a href="/uploads/feedback-forms/<?php echo $row['shipment_id'] . "/" . $row['feedback_file']; ?>"
                                         target="_blank"
                                         class="list-group-item list-group-item-action d-flex align-items-center mb-2 rounded">
@@ -135,7 +141,10 @@ $answers = $this->ans;
                                         </div>
                                         <i class="fas fa-chevron-right text-muted"></i>
                                     </a>
-                                <?php } ?>
+                                <?php }
+                                
+                            
+                            } ?>
                             </div>
                         <?php } else { ?>
                             <div class="text-center py-4">

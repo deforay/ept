@@ -79,9 +79,8 @@ class Application_Service_FeedBack
             } else {
                 $answer = $params['answer'][$key];
             }
-            $db->insert(
-                'participant_feedback_answer',
-                [
+
+            $dataArr = [
                     'shipment_id' => $params["shipmentId"],
                     'question_id' => $q,
                     'participant_id' => $params['participantId'],
@@ -89,7 +88,13 @@ class Application_Service_FeedBack
                     'answer' => $answer,
                     'updated_datetime' => Pt_Commons_General::getDateTime(),
                     'modified_by' => $authNameSpace->admin_id
-                ]
+            ];
+
+       //     echo "<pre>"; print_r($dataArr); die;
+          
+            $db->insert(
+                'participant_feedback_answer',
+                $dataArr
             );
         }
         $alertMsg = new Zend_Session_Namespace('alertSpace');

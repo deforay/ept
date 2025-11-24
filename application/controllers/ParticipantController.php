@@ -911,12 +911,13 @@ class ParticipantController extends Zend_Controller_Action
     }
 
     public function feedBackAction()
-    {
+    { 
         $feedbackService = new Application_Service_FeedBack();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
+
             $this->view->response = $feedbackService->saveFeedBackForms($params);
             $this->redirect("/participant/report");
         } else {
