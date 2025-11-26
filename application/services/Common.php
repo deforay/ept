@@ -1054,8 +1054,8 @@ class Application_Service_Common
     /**
      * Validate and normalize an email address
      * 
-     * Accepts emails with single-word domains (e.g., user@localhost, user@ept)
-     * as well as standard formats (e.g., user@example.com)
+     * Requires a valid TLD (e.g., .com, .org, .net) in the domain
+     * Rejects single-word domains without TLD (e.g., user@ept, user@localhost)
      * 
      * @param string $email The email address to validate
      * @return string|null Normalized email on success, null on failure
@@ -1088,8 +1088,8 @@ class Application_Service_Common
             $local  = substr($email, 0, $at);
             $domain = substr($email, $at + 1);
 
-            // Validate local part is not empty and doesn't contain invalid characters
-            if ($local === '' || preg_match('/[<>(),;:\\\\"\[\]\s]/', $local)) {
+            // Validate local part is not empty
+            if ($local === '') {
                 return null;
             }
 
@@ -1114,9 +1114,24 @@ class Application_Service_Common
             // Normalize domain to lowercase
             $domain = strtolower($domain);
 
-            // Validate domain: must contain only valid characters
-            // Allow single-word domains (e.g., 'ept', 'localhost')
-            if ($domain === '' || !preg_match('/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i', $domain)) {
+            // CRITICAL: Require domain to have at least one dot (to have a TLD)
+            // This rejects emails like user@ept, user@localhost
+            // This accepts emails like user@example.com, user@mail.ept.com
+            if (strpos($domain, '.') === false) {
+                error_log("Email rejected - no TLD found: {$email}");
+                return null;
+            }
+
+            // Validate domain has valid TLD (at least 2 characters after last dot)
+            $lastDot = strrpos($domain, '.');
+            if ($lastDot === false || $lastDot === strlen($domain) - 1) {
+                error_log("Email rejected - invalid TLD position: {$email}");
+                return null;
+            }
+
+            $tld = substr($domain, $lastDot + 1);
+            if (strlen($tld) < 2 || !preg_match('/^[a-z]{2,}$/', $tld)) {
+                error_log("Email rejected - invalid TLD '{$tld}': {$email}");
                 return null;
             }
 
@@ -1125,23 +1140,25 @@ class Application_Service_Common
 
             // Use cache to avoid revalidating the same email multiple times
             if (!isset($cache[$key])) {
-                // Custom validation logic that accepts single-word domains
-                $isValid = true;
+                // Use PHP's built-in filter which now will pass because domain has TLD
+                $isValid = filter_var($normalized, FILTER_VALIDATE_EMAIL) !== false;
 
-                // Basic structure check: local@domain format
-                if (strlen($local) > 64 || strlen($domain) > 255) {
-                    // RFC 5321 limits
-                    $isValid = false;
-                }
+                // Additional validation checks
+                if ($isValid) {
+                    // RFC 5321 length limits
+                    if (strlen($local) > 64 || strlen($domain) > 255) {
+                        $isValid = false;
+                    }
 
-                // Check for consecutive dots in local part
-                if (strpos($local, '..') !== false) {
-                    $isValid = false;
-                }
+                    // Check for consecutive dots in local part
+                    if (strpos($local, '..') !== false) {
+                        $isValid = false;
+                    }
 
-                // Check if local part starts or ends with a dot
-                if ($local[0] === '.' || $local[strlen($local) - 1] === '.') {
-                    $isValid = false;
+                    // Check if local part starts or ends with a dot
+                    if ($local[0] === '.' || $local[strlen($local) - 1] === '.') {
+                        $isValid = false;
+                    }
                 }
 
                 $cache[$key] = $isValid;
@@ -1154,7 +1171,6 @@ class Application_Service_Common
             return null;
         }
     }
-
 
 
     public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
