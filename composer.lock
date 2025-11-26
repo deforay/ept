@@ -5200,5 +5200,5 @@
         "php": "7.4",
         "php-64bit": "7.4"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
