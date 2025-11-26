@@ -1,10 +1,13 @@
 <?php
-$questionResults = [];
-if (isset($this->result) && !empty($this->result)) {
-    foreach ($this->result as $key => $row) {
-        $questionResults[$row['question_id']] = $row;
+$questionResults = $sortOrder = $mandatory = [];
+if (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) {
+    foreach ($this->result['feedback_form_question_results'] as $key => $row) {
+        $questionResults[] = $row['questionId'];
+        $mandatory[] = ($row['is_response_mandatory'] == 'yes') ? $row['questionId'] : '';
+        $sortOrder[$row['questionId']] = $row['sort_order'];
     }
 }
+
 ?>
 <style>
     .dropdown-menu.open {
@@ -70,6 +73,7 @@ if (isset($this->result) && !empty($this->result)) {
                         <tr>
                             <th style="width:40%;">Upload one or more files</th>
                             <th style="width:30%;">File Name</th>
+                            <th style="width:20%;">Show feedback files to</th>
                             <th style="width:20%;">Sort Order</th>
                             <th style="width:10%;">Action</th>
                         </tr>
@@ -85,6 +89,14 @@ if (isset($this->result) && !empty($this->result)) {
                                             <input type="file" id="formFiles<?php echo ($key + 1); ?>" name="formFiles[files][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Select the form file" title="Please select the form file">
                                         <?php } ?>
                                     </td>
+                                    <td>
+                                        <select class="select2 form-control" id="filesTo<?php echo ($key + 1); ?>" name="formFiles[filesTo][<?php echo ($key + 1); ?>]" title="Please select where we show the question">
+                                            <option value=""><?= $this->translate->_("--Select--"); ?></option>
+                                            <option value="all-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'all-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("All Participants"); ?></option>
+                                            <option value="passing-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'passing-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Only Passing Participants"); ?></option>
+                                            <option value="failing-participants" <?php echo (isset($row['files_show_to']) && !empty($row['files_show_to']) && $row['files_show_to'] == 'failing-participants') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Only Failing Participants"); ?></option>
+                                        </select>
+                                    </td>
                                     <td><input type="text" id="formFilesName<?php echo ($key + 1); ?>" value="<?php echo $row['file_name']; ?>" name="formFiles[name][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>
                                     <td><input type="text" id="formFilesSort<?php echo ($key + 1); ?>" value="<?php echo $row['sort_order']; ?>" name="formFiles[sort][<?php echo ($key + 1); ?>]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>
                                     <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
@@ -94,6 +106,14 @@ if (isset($this->result) && !empty($this->result)) {
                             <tr>
                                 <td><input type="file" id="formFiles1" name="formFiles[files][]" class="form-control option" placeholder="Select the form file" title="Please select the form file"></td>
                                 <td><input type="text" id="formFilesName1" name="formFiles[name][]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>
+                                <td>
+                                    <select class="select2 form-control" id="filesTo1" name="formFiles[filesTo][]" title="Please select where we show the question">
+                                        <option value=""><?= $this->translate->_("--Select--"); ?></option>
+                                        <option value="all-participants"><?= $this->translate->_("All Participants"); ?></option>
+                                        <option value="passing-participants"><?= $this->translate->_("Only Passing Participants"); ?></option>
+                                        <option value="failing-participants"><?= $this->translate->_("Only Failing Participants"); ?></option>
+                                    </select>
+                                </td>
                                 <td><input type="text" id="formFilesSort1" name="formFiles[sort][]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>
                                 <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
                             </tr>
@@ -105,14 +125,9 @@ if (isset($this->result) && !empty($this->result)) {
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="control-label" for="shipmentId"><?= $this->translate->_("Select the available question"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-12">
                     <select id="question" multiple="multiple" name="question[]" class="select2 form-control" title="Please select the available question" onchange="loadQuestion()">
-                        <?php if (isset($this->result['feedback_form_question_results']) && !empty($this->result['feedback_form_question_results'])) {
-                            foreach ($this->result['feedback_form_question_results'] as $key => $row) { ?>
-                                <option value="<?php echo $row['question_id']; ?>" selected="selected"><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
-                        <?php }
-                        } ?>
                         <?php if (isset($this->questions) && !empty($this->questions)) {
                             foreach ($this->questions as $key => $row) { ?>
-                                <option value="<?php echo $row['question_id']; ?>"><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
+                                <option value="<?php echo $row['question_id']; ?>" <?php echo (isset($questionResults) && in_array($row['question_id'], $questionResults)) ? 'selected="selected"' : ''; ?>><?php echo $row['question_text'] . '(' . $row['question_code'] . ')'; ?></option>
                         <?php }
                         } ?>
                     </select>
@@ -233,11 +248,14 @@ if (isset($this->result) && !empty($this->result)) {
         $('#question > option:selected').each(function() {
             let text = $(this).text();
             let val = $(this).val();
-
+            let mandatory = <?php echo json_encode($mandatory); ?>.includes(val) ? 'checked' : '';
+            let sortOrder = <?php echo json_encode($sortOrder); ?>[val];
+            if (sortOrder == undefined)
+                sortOrder = '';
             html += '<tr> \
                     <td style="text-align:left !important;">' + text + '</td>\
-                    <td><input type="checkbox" name="mandatory[' + val + ']" id="mandatory' + val + '" title="Please select the mandatory or not" value="yes"/></td>\
-                    <td><input type="type" class="form-control" name="sortOrder[' + val + ']" id="sortOrder' + val + '" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
+                    <td><input type="checkbox" name="mandatory[' + val + ']"  ' + mandatory + ' id="mandatory' + val + '" title="Please select the mandatory or not" value="yes"/></td>\
+                    <td><input type="type" class="form-control" value="' + sortOrder + '" name="sortOrder[' + val + ']" id="sortOrder' + val + '" title="Please enter the sort order" placeholder="Enter the sort order"/></td>\
                 </tr>';
         });
         $('#questionRow').html(html);
@@ -249,6 +267,14 @@ if (isset($this->result) && !empty($this->result)) {
             '<tr> \
                 <td><input type="file" id="formFiles{{tableRow}}" name="formFiles[files][]" class="form-control option" placeholder="Select the form file" title="Please select the form file"></td>\
                 <td><input type="text" id="formFilesName{{tableRow}}" name="formFiles[name][]" class="form-control option" placeholder="Enter the file name" title="Please enter the file name"></td>\
+                <td>\
+                    <select class="select2 form-control" id="filesTo{{tableRow}}" name="formFiles[filesTo][]" title="Please select where we show the question">\
+                        <option value=""><?= $this->translate->_("--Select--"); ?></option>\
+                        <option value="all-participants"><?= $this->translate->_("All Participants"); ?></option>\
+                        <option value="passing-participants"><?= $this->translate->_("Only Passing Participants"); ?></option>\
+                        <option value="failing-participants"><?= $this->translate->_("Only Failing Participants"); ?></option>\
+                    </select>\
+                </td>\
                 <td><input type="text" id="formFilesSort{{tableRow}}" name="formFiles[sort][]" class="form-control option" placeholder="Enter the sort order" title="Please enter the sort order"></td>\
                 <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>\
             </tr>'
