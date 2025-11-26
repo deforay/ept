@@ -43,6 +43,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
+           // echo "<pre>"; print_r($params); die;
             $feedbackService = new Application_Service_FeedBack();
             $feedbackService->saveFeedbackQuestions($params);
             $this->redirect("/admin/feedback-responses/questions");

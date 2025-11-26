@@ -211,7 +211,7 @@ class Application_Service_Reports
 
                 $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_("Overview Report") . "</a>";
                 if ($aRow['status'] != 'finalized') {
-                    $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs' onclick='exportNotRespondedShipment(\"" . $aRow['shipment_code'] . "\",\"" . $aRow['shipment_date'] . "\")'><i class='icon icon-download'></i> " . $this->translator->_("No Response Sites") . "</a>";
+                    $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs'><i class='icon icon-download'></i> " . $this->translator->_("No Response Sites") . "</a>";
                 }
 
                 $row[] = "$exportReport $notResponded";
