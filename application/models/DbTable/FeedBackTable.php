@@ -19,7 +19,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             ->where("(
                     rfq.question_show_to IS NULL
                     OR rfq.question_show_to = 'all-participants' 
-                    OR (rfq.question_show_to = 'passing-participants' AND spm.final_result = 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
+                    OR (rfq.question_show_to = 'passing-participants' AND spm.final_result = 1 AND rfq.question_show_to != 'failing-participants' AND rfq.question_show_to != 'all-participants')
                     OR (rfq.question_show_to = 'failing-participants' AND spm.final_result != 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
                 )")
             ->order('rpfq.sort_order asc')
@@ -37,7 +37,15 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form files mapping results
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
-            ->where('rpff.shipment_id = ?', $sid);
+            ->where('rpff.shipment_id = ?', $sid)
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
+            ->where("(
+                    rpff.files_show_to IS NULL
+                    OR rpff.files_show_to = 'all-participants' 
+                    OR (rpff.files_show_to = 'passing-participants' AND spm.final_result = 1 AND rpff.files_show_to != 'failing-participants' AND rpff.files_show_to != 'all-participants')
+                    OR (rpff.files_show_to = 'failing-participants' AND spm.final_result != 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
+                )")
+            ->group('rpff.rpf_id');
         $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
 
         return $result;
@@ -78,14 +86,30 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form question mapping results
         $questionMapSql = $db->select()
             ->from(['rfq' => 'r_feedback_questions'], ['*'])
-            ->join(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['*'])
-            ->where('rpfq.shipment_id = ?', $id);
+            ->joinLeft(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['questionId' => 'question_id', '*'])
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpfq.shipment_id', array('spm.map_id', 'final_result'))
+            // ->where('rpfq.shipment_id = ?', $id)
+            ->where("(
+                    rfq.question_show_to IS NULL
+                    OR rfq.question_show_to = 'all-participants' 
+                    OR (rfq.question_show_to = 'passing-participants' AND spm.final_result = 1 AND rfq.question_show_to != 'failing-participants' AND rfq.question_show_to != 'all-participants')
+                    OR (rfq.question_show_to = 'failing-participants' AND spm.final_result != 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
+                )")
+            ->group('rfq.question_id');
         $result['feedback_form_question_results'] = $db->fetchAll($questionMapSql);
 
         // Fetch feedback form files mapping results
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
-            ->where('rpff.shipment_id = ?', $id);
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
+            ->where("(
+                    rpff.files_show_to IS NULL
+                    OR rpff.files_show_to = 'all-participants' 
+                    OR (rpff.files_show_to = 'passing-participants' AND spm.final_result = 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
+                    OR (rpff.files_show_to = 'failing-participants' AND spm.final_result != 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
+                )")
+            ->where('rpff.shipment_id = ?', $id)
+            ->group('rpff.rpf_id');
         $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
 
         return $result;
@@ -225,6 +249,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                     'scheme_type' => $shipmentResult['scheme_type'] ?? null,
                     'feedback_file' => null,
                     'file_name' => $fileName ?? null,
+                    'files_show_to' => $params['formFiles']['filesTo'][$key] ?? null,
                     'sort_order' => $params['formFiles']['sort'][$key] ?? null,
                 ];
                 // Handle file upload if file is valid
