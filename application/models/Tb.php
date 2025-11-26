@@ -887,14 +887,8 @@ class Application_Model_Tb
                         die; */
                         /* if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                             $feedbackDb = new Application_Model_DbTable_FeedBackTable();
-                            $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-                            if (isset($questions['question']) && !empty($questions['question']) && isset($answers) && !empty($answers)) {
-                                foreach ($questions['question'] as $q) {
-                                    $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
-                                        ->setValueExplicit($answers[$q])->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                                }
-                             */}
-                        }
+                            }
+                             */
                         foreach ([$countCorrectResult, $totPer, ($totPer * 0.9)] as $row) {
                             $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($countCorrectResult);
                         }

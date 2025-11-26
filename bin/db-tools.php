@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-use Ifsnop\Mysqldump\Mysqldump;
+use Pt_Commons_ArchiveUtility as ArchiveUtility;
+use Symfony\Component\Process\Process;
 
 // bin/db-tools.php - Database management CLI tool for ePT
 
@@ -155,6 +156,72 @@ function validateConfiguration(array $mainConfig)
     }
 }
 
+/**
+ * Run mysqldump via CLI (faster than PHP library) and write to a file.
+ */
+function runMysqldump(array $config, string $outputFile): void
+{
+    $command = [
+        'mysqldump',
+        '--host=' . $config['host'],
+        '--port=' . ($config['port'] ?? '3306'),
+        '--user=' . $config['username'],
+        '--single-transaction',
+        '--skip-lock-tables',
+        '--skip-add-locks',
+        '--routines',
+        '--triggers',
+        '--events',
+        '--add-drop-table',
+        '--result-file=' . $outputFile,
+        $config['db'],
+    ];
+
+    $env = buildProcessEnv([
+        'MYSQL_PWD' => $config['password'] ?? '',
+    ]);
+
+    $process = new Process($command, null, $env);
+    $process->setTimeout(null);
+    $process->run();
+
+    if (!$process->isSuccessful()) {
+        $error = trim($process->getErrorOutput()) ?: trim($process->getOutput());
+        throw new Exception('mysqldump failed: ' . $error);
+    }
+
+    if (!is_file($outputFile) || filesize($outputFile) === 0) {
+        throw new Exception('mysqldump produced an empty file');
+    }
+}
+
+/**
+ * Ensure an input path is decompressed to a SQL file and return that path.
+ */
+function ensureSqlExtracted(string $path, string $backupFolder): string
+{
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    if ($ext === 'sql') {
+        return $path;
+    }
+
+    $tempDir = getTempDir($backupFolder);
+    try {
+        return ArchiveUtility::decompressToFile($path, $tempDir);
+    } catch (Throwable $e) {
+        throw new Exception('Failed to extract SQL from archive: ' . $e->getMessage());
+    }
+}
+
+function getTempDir(string $backupFolder): string
+{
+    $tempDir = rtrim($backupFolder, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '.tmp';
+    if (!is_dir($tempDir)) {
+        @mkdir($tempDir, 0755, true);
+    }
+    return $tempDir;
+}
+
 function verifyBackupIntegrity(string $zipPath)
 {
     $zip = new ZipArchive();
@@ -198,18 +265,8 @@ function handleExport(string $backupFolder, array $mainConfig, array $args)
 
     echo "Exporting database to " . basename($outputFile) . "...\n";
 
-    $dsn = sprintf('mysql:host=%s;dbname=%s', $mainConfig['host'], $mainConfig['db']);
-    if (!empty($mainConfig['port'])) {
-        $dsn .= ';port=' . $mainConfig['port'];
-    }
-
-    try {
-        $dump = new Ifsnop\Mysqldump\Mysqldump($dsn, $mainConfig['username'], $mainConfig['password'] ?? '');
-        $dump->start($outputFile);
-        echo "Export completed: " . $outputFile . PHP_EOL;
-    } catch (Exception $e) {
-        throw new Exception('Database export failed: ' . $e->getMessage());
-    }
+    runMysqldump($mainConfig, $outputFile);
+    echo "Export completed: " . $outputFile . PHP_EOL;
 }
 
 function handleImport(string $backupFolder, array $mainConfig, array $args)
@@ -231,34 +288,13 @@ function handleImport(string $backupFolder, array $mainConfig, array $args)
         }
     }
 
-    $fileExtension = strtolower(pathinfo($sqlPath, PATHINFO_EXTENSION));
-    $isZipFile = in_array($fileExtension, ['zip', 'gz'], true);
-
     echo "Creating safety backup of current database before import...\n";
     $note = 'pre-import-' . date('His');
     $preImportZip = createBackupArchive('ept-backup', $mainConfig, $backupFolder, $note);
     echo '  Created: ' . basename($preImportZip) . PHP_EOL;
 
-    if ($fileExtension === 'gz') {
-        echo "Processing gzipped SQL file...\n";
-        $extractedSqlPath = extractGzipFile($sqlPath, $backupFolder);
-        TempFileRegistry::register($extractedSqlPath);
-    } elseif ($isZipFile) {
-        $isPasswordProtected = isZipPasswordProtected($sqlPath);
-
-        if ($isPasswordProtected) {
-            echo "Processing password-protected archive...\n";
-            $extractedSqlPath = extractSqlFromBackupWithFallback($sqlPath, $mainConfig['password'] ?? '', $backupFolder);
-            TempFileRegistry::register($extractedSqlPath);
-        } else {
-            echo "Processing unprotected archive...\n";
-            $extractedSqlPath = extractUnprotectedZip($sqlPath, $backupFolder);
-            TempFileRegistry::register($extractedSqlPath);
-        }
-    } else {
-        echo "Processing SQL file...\n";
-        $extractedSqlPath = $sqlPath;
-    }
+    $extractedSqlPath = ensureSqlExtracted($sqlPath, $backupFolder);
+    TempFileRegistry::register($extractedSqlPath);
 
     echo "Resetting database...\n";
     recreateDatabase($mainConfig);
@@ -316,16 +352,6 @@ function handleRestore(string $backupFolder, array $mainConfig, ?string $request
         }
     }
 
-    // Integrity check
-    if (!verifyBackupIntegrity($selectedPath)) {
-        echo "Warning: Backup file may be corrupted. Continue anyway? (y/N): ";
-        $input = trim(fgets(STDIN) ?: '');
-        if (strtolower($input) !== 'y') {
-            echo 'Restore cancelled due to integrity check failure.' . PHP_EOL;
-            return;
-        }
-    }
-
     $basename = basename($selectedPath);
 
     echo 'Creating safety backup of current database before restore...' . PHP_EOL;
@@ -333,8 +359,8 @@ function handleRestore(string $backupFolder, array $mainConfig, ?string $request
     $preRestoreZip = createBackupArchive('pre-restore-ept', $mainConfig, $backupFolder, $note);
     echo '  Created: ' . basename($preRestoreZip) . PHP_EOL;
 
-    echo 'Decrypting and extracting backup...' . PHP_EOL;
-    $sqlPath = extractSqlFromBackupWithFallback($selectedPath, $mainConfig['password'] ?? '', $backupFolder);
+    echo 'Extracting backup...' . PHP_EOL;
+    $sqlPath = ensureSqlExtracted($selectedPath, $backupFolder);
     TempFileRegistry::register($sqlPath);
 
     echo 'Resetting database...' . PHP_EOL;
@@ -716,98 +742,37 @@ function createBackupArchive(string $prefix, array $config, string $backupFolder
     $baseName = implode('-', array_filter($parts));
     $sqlFileName = $backupFolder . DIRECTORY_SEPARATOR . $baseName . '.sql';
 
-    $dsn = sprintf('mysql:host=%s;dbname=%s', $config['host'], $config['db']);
-    if (!empty($config['port'])) {
-        $dsn .= ';port=' . $config['port'];
+    try {
+        runMysqldump($config, $sqlFileName);
+    } catch (Exception $e) {
+        @unlink($sqlFileName);
+        throw $e;
     }
 
     try {
-        $dump = new Mysqldump($dsn, $config['username'], $config['password'] ?? '');
-        $dump->start($sqlFileName);
+        $backend = ArchiveUtility::pickBestBackend();
+        $compressedPath = ArchiveUtility::compressFile($sqlFileName, $sqlFileName, $backend);
+        @unlink($sqlFileName);
+        return $compressedPath;
     } catch (Exception $e) {
-        throw new Exception("Failed to create database dump for {$config['db']}: " . $e->getMessage());
-    }
-
-    $zipPath = $sqlFileName . '.zip';
-    $zip = new ZipArchive();
-    $zipStatus = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-    if ($zipStatus !== true) {
         @unlink($sqlFileName);
-        throw new Exception(sprintf('Failed to create zip archive. (Status code: %s)', $zipStatus));
+        throw new Exception('Failed to compress backup: ' . $e->getMessage());
     }
-
-    $zipPassword = ($config['password'] ?? '') . $randomString;
-    if (!$zip->setPassword($zipPassword)) {
-        $zip->close();
-        @unlink($sqlFileName);
-        throw new Exception('Failed to set password for backup archive');
-    }
-
-    $baseNameSql = basename($sqlFileName);
-    if (!$zip->addFile($sqlFileName, $baseNameSql)) {
-        $zip->close();
-        @unlink($sqlFileName);
-        throw new Exception(sprintf('Failed to add SQL file to archive: %s', $sqlFileName));
-    }
-
-    if (!$zip->setEncryptionName($baseNameSql, ZipArchive::EM_AES_256)) {
-        $zip->close();
-        @unlink($sqlFileName);
-        throw new Exception(sprintf('Failed to encrypt file in archive: %s', $baseNameSql));
-    }
-
-    $zip->close();
-    @unlink($sqlFileName);
-
-    return $zipPath;
 }
 
 // File Operations and Listing Functions
-function extractGzipFile(string $gzPath, string $backupFolder)
-{
-    if (!function_exists('gzopen')) {
-        throw new Exception('PHP gzip extension is not installed. Cannot process .gz files.');
-    }
-
-    $tempDir = $backupFolder . DIRECTORY_SEPARATOR . '.tmp';
-    if (!is_dir($tempDir)) {
-        mkdir($tempDir, 0755, true);
-    }
-
-    $outputPath = $tempDir . DIRECTORY_SEPARATOR . basename($gzPath, '.gz');
-
-    $gz = gzopen($gzPath, 'rb');
-    if (!$gz) {
-        throw new Exception('Could not open gzip file.');
-    }
-
-    $output = fopen($outputPath, 'wb');
-    if (!$output) {
-        gzclose($gz);
-        throw new Exception('Could not create temporary file.');
-    }
-
-    while (!gzeof($gz)) {
-        $data = gzread($gz, 8192);
-        if ($data === false) {
-            gzclose($gz);
-            fclose($output);
-            @unlink($outputPath);
-            throw new Exception('Error reading gzip file.');
-        }
-        fwrite($output, $data);
-    }
-
-    gzclose($gz);
-    fclose($output);
-
-    return $outputPath;
-}
-
 function getSortedBackups(string $backupFolder): array
 {
-    $pattern = $backupFolder . DIRECTORY_SEPARATOR . '*.sql.zip';
-    $files = glob($pattern) ?: [];
+    $patterns = [
+        $backupFolder . DIRECTORY_SEPARATOR . '*.sql.zip',
+        $backupFolder . DIRECTORY_SEPARATOR . '*.sql.gz',
+        $backupFolder . DIRECTORY_SEPARATOR . '*.sql.zst',
+    ];
+    $files = [];
+    foreach ($patterns as $pattern) {
+        $matches = glob($pattern) ?: [];
+        $files = array_merge($files, $matches);
+    }
 
     $backups = [];
     foreach ($files as $file) {
@@ -829,6 +794,7 @@ function getSortedSqlFiles(string $backupFolder): array
     $patterns = [
         $backupFolder . DIRECTORY_SEPARATOR . '*.sql',
         $backupFolder . DIRECTORY_SEPARATOR . '*.sql.gz',
+        $backupFolder . DIRECTORY_SEPARATOR . '*.sql.zst',
     ];
 
     $files = [];
@@ -943,7 +909,8 @@ function executeMysqlCommand(array $config, array $baseCommand, ?string $inputDa
 
             while (!feof($source)) {
                 $chunk = fread($source, 8192);
-                if ($chunk === false) break;
+                if ($chunk === false)
+                    break;
 
                 fwrite($pipes[0], $chunk);
                 $bytesRead += strlen($chunk);
@@ -1006,8 +973,8 @@ function runMysqlCheckCommand(array $config)
     // Run a single action per invocation, in this order
     $steps = [
         ['label' => 'REPAIR (auto)', 'args' => ['--auto-repair']], // no-op on InnoDB, safe on MyISAM
-        ['label' => 'OPTIMIZE',      'args' => ['--optimize']],
-        ['label' => 'ANALYZE',       'args' => ['--analyze']],
+        ['label' => 'OPTIMIZE', 'args' => ['--optimize']],
+        ['label' => 'ANALYZE', 'args' => ['--analyze']],
     ];
 
     $combined = [];
@@ -1484,58 +1451,17 @@ function handleVerify(string $backupFolder, array $args)
 
     echo "✓ File exists and is readable\n";
 
-    echo "Checking ZIP integrity... ";
-    if (!verifyBackupIntegrity($selectedPath)) {
-        echo "✗ FAILED\n";
-        echo "  Error: ZIP archive is corrupted or invalid\n";
-        exit(1);
-    }
-    echo "✓ PASSED\n";
-
-    echo "Checking archive contents... ";
-    $zip = new ZipArchive();
-    $status = $zip->open($selectedPath);
-
-    if ($status !== true) {
-        echo "✗ FAILED\n";
-        echo "  Error: Cannot open archive (code: {$status})\n";
-        exit(1);
-    }
-
-    if ($zip->numFiles < 1) {
-        echo "✗ FAILED\n";
-        echo "  Error: Archive is empty\n";
-        $zip->close();
-        exit(1);
-    }
-
-    $sqlFound = false;
-    for ($i = 0; $i < $zip->numFiles; $i++) {
-        $name = $zip->getNameIndex($i);
-        if ($name !== false && str_ends_with(strtolower($name), '.sql')) {
-            $sqlFound = true;
-            $stat = $zip->statIndex($i);
-            $sqlSize = $stat ? formatFileSize($stat['size']) : 'unknown';
-            echo "✓ PASSED\n";
-            echo "  Found: {$name} ({$sqlSize})\n";
-            break;
-        }
-    }
-
-    if (!$sqlFound) {
-        echo "✗ FAILED\n";
-        echo "  Error: No SQL file found in archive\n";
-        $zip->close();
-        exit(1);
-    }
-
-    $zip->close();
-
-    echo "Checking encryption... ";
-    if (isZipPasswordProtected($selectedPath)) {
-        echo "✓ Password protected (AES-256)\n";
+    $ext = strtolower(pathinfo($selectedPath, PATHINFO_EXTENSION));
+    if ($ext === 'sql') {
+        echo "✓ Plain SQL file\n";
     } else {
-        echo "⚠ WARNING: Archive is not password protected\n";
+        echo "Checking archive integrity... ";
+        if (!ArchiveUtility::validateArchive($selectedPath)) {
+            echo "✗ FAILED\n";
+            echo "  Error: Archive is corrupted or unsupported\n";
+            exit(1);
+        }
+        echo "✓ PASSED\n";
     }
 
     echo str_repeat('-', 50) . "\n";
@@ -1855,7 +1781,8 @@ function getDatabaseSize(array $config): array
 
         $lines = explode("\n", trim($output));
         foreach ($lines as $line) {
-            if (trim($line) === '') continue;
+            if (trim($line) === '')
+                continue;
 
             $parts = preg_split('/\s+/', $line);
             if (count($parts) >= 4) {
