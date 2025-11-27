@@ -1058,6 +1058,13 @@ class Application_Model_Recency
             }
         }
 
+        $firstName = $authNameSpace->first_name;
+        $lastName = $authNameSpace->last_name;
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Recency excel report downloaded by $userName", "shipment");
+
         $excel->setActiveSheetIndex(0);
 
         $writer = IOFactory::createWriter($excel, 'Xlsx');

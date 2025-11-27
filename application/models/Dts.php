@@ -2035,6 +2035,14 @@ final class Application_Model_Dts
 
 		$excel->setActiveSheetIndex(0);
 
+		$firstName = $authNameSpace->first_name;
+		$lastName = $authNameSpace->last_name;
+
+		$name = $firstName . " " . $lastName;
+		$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("DTS Rapid HIV report downloaded by $userName", "shipment");
+
 		$writer = IOFactory::createWriter($excel, 'Xlsx');
 		$filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';
 		$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
