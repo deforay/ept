@@ -344,9 +344,9 @@ if ! command -v php &>/dev/null; then
     exit 1
 fi
 
-# Check for PHP version 8.2.x
+# Check for PHP version 8.4.x
 php_version=$(php -v | head -n 1 | grep -oE 'PHP [0-9]+\.[0-9]+' | awk '{print $2}')
-desired_php_version="8.2"
+desired_php_version="8.4"
 
 # Download and install switch-php script
 download_file "/usr/local/bin/switch-php" "https://raw.githubusercontent.com/deforay/utility-scripts/master/php/switch-php"

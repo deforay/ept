@@ -2061,7 +2061,7 @@ class Application_Service_Shipments
                 for ($i = 0; $i < $size; $i++) {
                     $dbAdapter->insert(
                         'reference_result_recency',
-                        array(
+                        [
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
@@ -2073,7 +2073,7 @@ class Application_Service_Shipments
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
                             'sample_score' => 1
-                        )
+                        ]
                     );
 
                     // <------ Insert reference_recency_assay table

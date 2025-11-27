@@ -965,6 +965,7 @@ class Application_Service_Participants
 	public function sendParticipantEmail($data)
 	{
 		$commonServices = new Application_Service_Common();
+		$alertMsg = new Zend_Session_Namespace('alertSpace');
 
 		$file   = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
@@ -992,17 +993,16 @@ class Application_Service_Participants
 
 		$status = false;
 		$seen   = []; // cross-role de-dupe (participant/datamanager/ptcc)
-
 		foreach ($results as $row) {
 			foreach ($row as $pt) {
-				$rawTo = trim((string)($pt['email'] ?? ''));
-				if ($rawTo === '') {
+				$toMail = trim((string)($pt['email'] ?? ''));
+				if ($toMail === '') {
 					continue;
 				}
-
 				// Normalize & basic syntax validation; returns normalized or null
-				$toEmail = Application_Service_Common::validateEmail($rawTo);
+				$toEmail = Application_Service_Common::validateEmail($toMail);
 				if ($toEmail === null) {
+					$alertMsg->message = "$toMail this is not a valid email to send";
 					continue;
 				}
 
@@ -1034,15 +1034,12 @@ class Application_Service_Participants
 
 				$message = str_replace($search, $replace, (string)$data['message']);
 				$subject = str_replace($search, $replace, (string)$data['subject']);
-
 				// Queue email
 				$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName) || $status;
-
 				// Mark as seen after successful queue attempt to avoid duplicates
 				$seen[$k] = true;
 			}
 		}
-
 		if ($status) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$alertMsg->message = 'Emails queued for sending';

@@ -42,19 +42,45 @@ print() {
 
 # Install required packages
 install_packages() {
-    if ! command -v aria2c &>/dev/null; then
-        apt-get update
-        apt-get install -y aria2 wget lsb-release bc
-        if ! command -v aria2c &>/dev/null; then
-            print error "Failed to install required packages. Exiting."
-            exit 1
+    local required_pkgs=(aria2 wget lsb-release bc pigz gpg fzf zstd)
+    # Map package names to their actual command names
+    declare -A pkg_to_cmd=(
+        ["aria2"]="aria2c"
+        ["wget"]="wget"
+        ["lsb-release"]="lsb_release"
+        ["bc"]="bc"
+        ["pigz"]="pigz"
+        ["gpg"]="gpg"
+        ["fzf"]="fzf"
+        ["zstd"]="zstd"
+    )
+    
+    local missing_pkgs=()
+    for pkg in "${required_pkgs[@]}"; do
+        local cmd="${pkg_to_cmd[$pkg]}"
+        if ! command -v "$cmd" &>/dev/null; then
+            missing_pkgs+=("$pkg")
         fi
+    done
+
+    if [ "${#missing_pkgs[@]}" -gt 0 ]; then
+        apt-get update
+        apt-get install -y "${missing_pkgs[@]}"
+        
+        # Re-check all required packages with correct command names
+        for pkg in "${required_pkgs[@]}"; do
+            local cmd="${pkg_to_cmd[$pkg]}"
+            if ! command -v "$cmd" &>/dev/null; then
+                print error "Failed to install required package: $pkg (command: $cmd). Exiting."
+                exit 1
+            fi
+        done
     fi
 }
 
 prepare_system() {
     install_packages
-    check_ubuntu_version "20.04"
+    check_ubuntu_version "22.04"
 
     if ! command -v needrestart &>/dev/null; then
         print info "Installing needrestart..."
@@ -73,74 +99,56 @@ prepare_system() {
 
     print success "System preparation complete with non-interactive restarts configured."
 }
-spinner() {
-    local pid=$1
+spinner() {spinner() {
+    # BC signature: spinner <pid> [message]
+    local pid="${1:-}"
     local message="${2:-Processing...}"
-    local frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
-    local ascii_frames=('|' '/' '-' '\')
-    local delay=0.1
-    local i=0
-    local last_status=0
+    local delay=0.2
+    local status=1
+    local is_tty=0
 
-    # Colors (only when TTY)
-    local blue="\033[1;36m"
-    local green="\033[1;32m"
-    local red="\033[1;31m"
-    local reset="\033[0m"
-
-    # TTY + tput detection
-    local is_tty=0 has_tput=0
-    [ -t 1 ] && is_tty=1
-    command -v tput >/dev/null 2>&1 && has_tput=1
-
-    # UTF-8 heuristic; disable animation if not a TTY
-    local use_unicode=1
-    printf '%s' "$LC_ALL$LC_CTYPE$LANG" | grep -qi 'utf-8' || use_unicode=0
-    (( is_tty )) || use_unicode=0
-
-    # Hide cursor if we can and restore on exit
-    if (( is_tty && has_tput )); then
-        tput civis 2>/dev/null || true
-    fi
-    cleanup() {
-        if (( is_tty && has_tput )); then
-            tput cnorm 2>/dev/null || true
-        fi
+    # Basic validation
+    [[ "$pid" =~ ^[0-9]+$ ]] || {
+        printf "[FAIL] %s (invalid pid)\n" "$message"
+        return 1
     }
-    trap cleanup EXIT INT TERM
 
-    # Draw loop (only animate on TTY)
+    # TTY check (no locale/tput usage; set -u safe)
+    [ -t 1 ] && is_tty=1
+
+    # One-line start
     if (( is_tty )); then
-        while kill -0 "$pid" 2>/dev/null; do
-            printf "\r\033[K"
-            if (( use_unicode )); then
-                printf "${blue}%s${reset} %s" "${frames[i]}" "$message"
-                (( i = (i + 1) % ${#frames[@]} ))
-            else
-                printf "${blue}%s${reset} %s" "${ascii_frames[i]}" "$message"
-                (( i = (i + 1) % ${#ascii_frames[@]} ))
-            fi
-            sleep "$delay"
-        done
+        # Print message and then dots while we wait
+        printf "%s " "$message"
     fi
 
-    wait "$pid"; last_status=$?
-
-    if (( is_tty )); then
-        if (( last_status == 0 )); then
-            printf "\r\033[K${green}✅${reset} %s\n" "$message"
-        else
-            printf "\r\033[K${red}❌${reset} %s (failed with status %d)\n" "$message" "$last_status"
-        fi
+    # First try to 'wait' if it's our child; else fall back to polling
+    if wait "$pid" 2>/dev/null; then
+        status=0
     else
-        if (( last_status == 0 )); then
-            printf "[OK] %s\n" "$message"
-        else
-            printf "[FAIL:%d] %s\n" "$last_status" "$message"
+        status=$?
+        if [[ $status -eq 127 ]]; then
+            # Not our child → poll existence until it exits
+            status=0
+            while kill -0 "$pid" 2>/dev/null; do
+                (( is_tty )) && printf "."
+                sleep "$delay"
+            done
+            # Can't know true exit code here; treat as success unless caller checks otherwise
         fi
     fi
 
-    return "$last_status"
+    # Line end for TTY
+    (( is_tty )) && printf "\n"
+
+    # BC: print a clear success/fail line with the same message
+    if (( status == 0 )); then
+        printf "\033[1;92m✅ Success:\033[0m %s\n" "$message"
+    else
+        printf "\033[1;91m❌ Error:\033[0m %s (exit code: %d)\n" "$message" "$status"
+    fi
+
+    return "$status"
 }
 
 
@@ -172,35 +180,59 @@ download_file() {
     local log_file
     log_file=$(mktemp)
 
-    # Download with aria2c
-    # --no-conf: don't load aria2.conf (prevents cache settings)
-    # --conditional-get=false: always download, ignore cache headers
-    # --remote-time=false: don't preserve remote file timestamps
-    aria2c -x 5 -s 5 \
-        --console-log-level=error \
-        --summary-interval=0 \
-        --allow-overwrite=true \
-        --no-conf \
-        --conditional-get=false \
-        --remote-time=false \
-        -d "$output_dir" \
-        -o "$filename" \
-        "$url" >"$log_file" 2>&1 &
-    local download_pid=$!
-
-    spinner "$download_pid" "$message"
-    local download_status=$?
-
-    if [ $download_status -ne 0 ]; then
-        print error "Download failed for: $filename"
-        print info "Detailed download logs:"
-        cat "$log_file"
-    else
-        print success "Download completed: $filename"
+    # Try aria2c first
+    if command -v aria2c &>/dev/null; then
+        aria2c -x 5 -s 5 \
+            --console-log-level=error \
+            --summary-interval=0 \
+            --allow-overwrite=true \
+            --no-conf \
+            --conditional-get=false \
+            --remote-time=false \
+            -d "$output_dir" \
+            -o "$filename" \
+            "$url" >"$log_file" 2>&1 &
+        
+        local download_pid=$!
+        spinner "$download_pid" "$message"
+        
+        # Check if file downloaded successfully
+        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+            print success "Download completed: $filename"
+            rm -f "$log_file"
+            return 0
+        fi
+        
+        # aria2c failed, try wget
+        print warning "aria2c failed, trying wget..."
+        rm -f "$output_file"
     fi
 
+    # Fallback to wget
+    if command -v wget &>/dev/null; then
+        wget --progress=bar:force \
+            --tries=3 \
+            --timeout=30 \
+            -O "$output_file" \
+            "$url" >"$log_file" 2>&1 &
+        
+        local download_pid=$!
+        spinner "$download_pid" "$message"
+        
+        # Check if wget succeeded
+        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+            print success "Download completed: $filename"
+            rm -f "$log_file"
+            return 0
+        fi
+    fi
+
+    # Both failed
+    print error "Download failed for: $filename"
+    print info "Detailed download logs:"
+    cat "$log_file"
     rm -f "$log_file"
-    return $download_status
+    return 1
 }
 
 
@@ -235,6 +267,7 @@ download_if_changed() {
     print success "Downloaded and updated $(basename "$output_file")"
     return 0
 }
+
 
 
 error_handling() {
@@ -428,6 +461,43 @@ restart_service() {
 }
 
 
+# Function to restart a service (MySQL or Apache)
+restart_service() {
+    local service_type=$1
+
+    case "$service_type" in
+        apache)
+            if systemctl list-unit-files apache2.service >/dev/null 2>&1; then
+                print info "Restarting Apache (apache2)..."
+                log_action "Restarting apache2"
+                systemctl restart apache2 || return 1
+            elif systemctl list-unit-files httpd.service >/dev/null 2>&1; then
+                print info "Restarting Apache (httpd)..."
+                log_action "Restarting httpd"
+                systemctl restart httpd || return 1
+            else
+                print warning "Apache/httpd service not found"
+                log_action "Apache/httpd not found"
+                return 1
+            fi
+            ;;
+        mysql)
+            print info "Restarting MySQL..."
+            log_action "Restarting MySQL"
+            systemctl restart mysql || return 1
+        ;;
+      *)
+        print error "Unknown service type: $service_type"
+        log_action "Unknown service type: $service_type"
+        return 1
+        ;;
+    esac
+
+    print success "$service_type restarted successfully"
+    return 0
+}
+
+
 # Ask user yes/no
 ask_yes_no() {
     local prompt="$1"
@@ -579,4 +649,130 @@ setup_cron() {
 
     print success "Cron job for EPT added/replaced in root's crontab."
     log_action "Cron job for EPT added/replaced in root's crontab."
+}
+
+
+ensure_path() {
+    case ":$PATH:" in
+        *":/usr/local/bin:"*) ;; # already present
+        *) export PATH="/usr/local/bin:$PATH" ;;
+    esac
+}
+
+
+ensure_switch_php() {
+    if command -v switch-php >/dev/null 2>&1; then
+        return 0
+    fi
+    echo "switch-php not found; installing…"
+    download_file "/usr/local/bin/switch-php" "https://raw.githubusercontent.com/deforay/utility-scripts/master/php/switch-php"
+    chmod +x /usr/local/bin/switch-php
+}
+
+
+ensure_composer() {
+    ensure_path
+
+    if command -v composer >/dev/null 2>&1; then
+        echo "✓ Composer found: $(command -v composer)"
+        return 0
+    fi
+
+    echo "Composer not on PATH. Using switch-php to install it…"
+    ensure_switch_php
+
+    TARGET_PHP="${TARGET_PHP:-8.4}"
+    switch-php "$TARGET_PHP"
+
+    # Re-check PATH; some cron envs miss /usr/local/bin, so add a safety symlink
+    if ! command -v composer >/dev/null 2>&1; then
+        if [ -x /usr/local/bin/composer ] && [ -w /usr/bin ]; then
+            if [ ! -e /usr/bin/composer ] || [ "$(readlink -f /usr/bin/composer)" != "/usr/local/bin/composer" ]; then
+            ln -sf /usr/local/bin/composer /usr/bin/composer
+            fi
+        fi
+    fi
+
+    # Fallback: verified install if still missing after switch-php
+    if ! command -v composer >/dev/null 2>&1; then
+    print warning "Composer still missing after switch-php; installing verified global composer…"
+
+    sig="$(curl -fsSL https://composer.github.io/installer.sig)" || {
+        print error "Failed to fetch Composer installer signature."; exit 1; }
+
+    installer="$(mktemp)"
+    curl -fsSL https://getcomposer.org/installer -o "$installer" || {
+        print error "Failed to download Composer installer."; rm -f "$installer"; exit 1; }
+
+    actual="$(php -r "echo hash_file('sha384', '${installer}');")"
+    if [ "$sig" != "$actual" ]; then
+        print error "Composer installer signature mismatch."; rm -f "$installer"; exit 1
+    fi
+
+    php "$installer" --no-ansi --quiet --install-dir=/usr/local/bin --filename=composer || {
+        print error "Composer installation failed."; rm -f "$installer"; exit 1; }
+    rm -f "$installer"
+    fi
+    print success "✓ Composer installed: $(command -v composer)"
+    export COMPOSER_ALLOW_SUPERUSER=1
+}
+
+# --- Ensure OPcache is installed and enabled for Apache (don’t rely on php -m) ---
+ensure_opcache() {
+    local ver="${desired_php_version:-8.4}"
+    local pkg="php${ver}-opcache"
+    local apache_ini_glob="/etc/php/${ver}/apache2/conf.d/*opcache.ini"
+    local installed enabled
+
+    # Is the package installed?
+    if dpkg-query -W -f='${Status}\n' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
+        installed=true
+    else
+        installed=false
+    fi
+
+    # Is it enabled for Apache (conf.d link/file exists)?
+    if ls $apache_ini_glob >/dev/null 2>&1; then
+        enabled=true
+    else
+        enabled=false
+    fi
+
+    if $installed && $enabled; then
+        print success "OPcache already installed and enabled for PHP ${ver} (Apache); skipping."
+        return 0
+    fi
+
+    if ! $installed; then
+        print info "Installing OPcache for PHP ${ver}…"
+        apt-get update -y
+        apt-get install -y "$pkg" || true
+    fi
+
+    if ! $enabled; then
+        print info "Enabling OPcache for PHP ${ver} (Apache)…"
+        phpenmod -v "$ver" -s apache2 opcache 2>/dev/null || phpenmod opcache 2>/dev/null || true
+    fi
+
+    print success "OPcache is ready for PHP ${ver} (Apache)."
+}
+
+
+setup_mysql_config() {
+    local config_file="$1"
+    local mysql_cnf="/root/.my.cnf"
+    
+    if [ ! -f "$mysql_cnf" ] && [ -f "$config_file" ]; then
+        local pw=$(php -r "error_reporting(0);\$c=@include '$config_file';echo isset(\$c['database']['password'])?trim(\$c['database']['password']):'';")
+        if [ -n "$pw" ]; then
+            cat > "$mysql_cnf" << 'EOF'
+[client]
+user=root
+EOF
+            printf "password=%s\n" "$pw" >> "$mysql_cnf"
+            chmod 600 "$mysql_cnf"
+            return 0
+        fi
+    fi
+    return 1
 }

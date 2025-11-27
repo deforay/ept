@@ -1051,54 +1051,126 @@ class Application_Service_Common
     }
 
 
+    /**
+     * Validate and normalize an email address
+     * 
+     * Requires a valid TLD (e.g., .com, .org, .net) in the domain
+     * Rejects single-word domains without TLD (e.g., user@ept, user@localhost)
+     * 
+     * @param string $email The email address to validate
+     * @return string|null Normalized email on success, null on failure
+     */
     public static function validateEmail(string $email): ?string
     {
-        static $cache = []; // memoize per-process
+        static $cache = []; // Memoize results per-process for performance
 
         $original = trim($email);
         if ($original === '') {
             return null;
         }
 
-        // "Name <user@host>" → "user@host"
-        if (preg_match('/<([^>]+)>/', $original, $m)) {
-            $original = trim($m[1]);
-        }
+        try {
+            // Extract email from "Name <user@host>" format
+            if (preg_match('/<([^>]+)>/', $original, $m)) {
+                $original = trim($m[1]);
+            }
 
-        // Strip wrapping quotes
-        $email = trim($original, " \t\n\r\0\x0B\"'");
+            // Strip wrapping quotes and whitespace
+            $email = trim($original, " \t\n\r\0\x0B\"'");
 
-        // Normalize domain (IDN → ASCII if available, lowercase)
-        $at = strrpos($email, '@');
-        if ($at === false) {
+            // Split into local and domain parts
+            $at = strrpos($email, '@');
+            if ($at === false || $at === 0 || $at === strlen($email) - 1) {
+                // No @ sign, or @ is at start/end
+                return null;
+            }
+
+            $local  = substr($email, 0, $at);
+            $domain = substr($email, $at + 1);
+
+            // Validate local part is not empty
+            if ($local === '') {
+                return null;
+            }
+
+            // Normalize domain using IDN (Internationalized Domain Names) if available
+            if (function_exists('idn_to_ascii')) {
+                try {
+                    // PHP 8.1+ requires INTL_IDNA_VARIANT_UTS46
+                    if (defined('INTL_IDNA_VARIANT_UTS46')) {
+                        $ascii = idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+                    } else {
+                        $ascii = idn_to_ascii($domain, IDNA_DEFAULT);
+                    }
+                    if ($ascii !== false) {
+                        $domain = $ascii;
+                    }
+                } catch (Exception $e) {
+                    // IDN conversion failed, continue with original domain
+                    error_log("IDN conversion failed for domain '{$domain}': " . $e->getMessage());
+                }
+            }
+
+            // Normalize domain to lowercase
+            $domain = strtolower($domain);
+
+            // CRITICAL: Require domain to have at least one dot (to have a TLD)
+            // This rejects emails like user@ept, user@localhost
+            // This accepts emails like user@example.com, user@mail.ept.com
+            if (strpos($domain, '.') === false) {
+                error_log("Email rejected - no TLD found: {$email}");
+                return null;
+            }
+
+            // Validate domain has valid TLD (at least 2 characters after last dot)
+            $lastDot = strrpos($domain, '.');
+            if ($lastDot === false || $lastDot === strlen($domain) - 1) {
+                error_log("Email rejected - invalid TLD position: {$email}");
+                return null;
+            }
+
+            $tld = substr($domain, $lastDot + 1);
+            if (strlen($tld) < 2 || !preg_match('/^[a-z]{2,}$/', $tld)) {
+                error_log("Email rejected - invalid TLD '{$tld}': {$email}");
+                return null;
+            }
+
+            $normalized = $local . '@' . $domain;
+            $key = strtolower($normalized);
+
+            // Use cache to avoid revalidating the same email multiple times
+            if (!isset($cache[$key])) {
+                // Use PHP's built-in filter which now will pass because domain has TLD
+                $isValid = filter_var($normalized, FILTER_VALIDATE_EMAIL) !== false;
+
+                // Additional validation checks
+                if ($isValid) {
+                    // RFC 5321 length limits
+                    if (strlen($local) > 64 || strlen($domain) > 255) {
+                        $isValid = false;
+                    }
+
+                    // Check for consecutive dots in local part
+                    if (strpos($local, '..') !== false) {
+                        $isValid = false;
+                    }
+
+                    // Check if local part starts or ends with a dot
+                    if ($local[0] === '.' || $local[strlen($local) - 1] === '.') {
+                        $isValid = false;
+                    }
+                }
+
+                $cache[$key] = $isValid;
+            }
+
+            return $cache[$key] ? $normalized : null;
+        } catch (Exception $e) {
+            // Log unexpected errors and return null
+            error_log("Error validating email '{$email}': " . $e->getMessage());
             return null;
         }
-        $local  = substr($email, 0, $at);
-        $domain = substr($email, $at + 1);
-
-        if (function_exists('idn_to_ascii')) {
-            // PHP 8.1+ deprecates the variant arg; handle both
-            if (defined('INTL_IDNA_VARIANT_UTS46')) {
-                $ascii = idn_to_ascii($domain, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-            } else {
-                $ascii = idn_to_ascii($domain, IDNA_DEFAULT);
-            }
-            if ($ascii !== false) {
-                $domain = $ascii;
-            }
-        }
-
-        $domain = strtolower($domain);
-        $normalized = $local . '@' . $domain;
-        $key = strtolower($normalized);
-
-        if (!isset($cache[$key])) {
-            $cache[$key] = filter_var($normalized, FILTER_VALIDATE_EMAIL) !== false;
-        }
-
-        return $cache[$key] ? $normalized : null;
     }
-
 
 
     public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
