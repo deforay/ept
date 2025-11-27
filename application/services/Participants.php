@@ -600,6 +600,14 @@ class Application_Service_Participants
 				}
 			}
 
+
+			$firstName = $authNameSpace->first_name;
+			$lastName = $authNameSpace->last_name;
+			$name = $firstName . " " . $lastName;
+			$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Feedback downloaded by $userName", "feedback");
+
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);

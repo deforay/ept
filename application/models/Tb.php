@@ -13,7 +13,7 @@ class Application_Model_Tb
 {
 
     private $db = null;
-    private $common = null;
+    public $common;
 
     public function __construct()
     {
@@ -492,7 +492,7 @@ class Application_Model_Tb
             $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $excel = new Spreadsheet();
+            $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
             $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'])
                 ->where("shipment_id = ?", $shipmentId);
@@ -924,6 +924,14 @@ class Application_Model_Tb
             $this->common->setAllColumnWidthsInSheet($resultReportedSheet, 20);
             $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
             $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
+
+
+            $firstName = $authNameSpace->first_name;
+            $lastName = $authNameSpace->last_name;
+            $name = $firstName . " " . $lastName;
+            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("TB Excel report downloaded by $userName", "shipment");
 
             $excel->setActiveSheetIndex(0);
 

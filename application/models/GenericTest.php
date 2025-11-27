@@ -701,6 +701,13 @@ class Application_Model_GenericTest
 
         //----------- Second Sheet End----->
 
+        $firstName = $authNameSpace->first_name;
+        $lastName = $authNameSpace->last_name;
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Generic test excel report downloaded by $userName", "shipment");
+
         $excel->setActiveSheetIndex(0);
 
         $writer = IOFactory::createWriter($excel, 'Xlsx');

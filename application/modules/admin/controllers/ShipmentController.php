@@ -42,7 +42,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
     public function indexAction()
     {
-
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {

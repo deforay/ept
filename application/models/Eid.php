@@ -381,6 +381,13 @@ class Application_Model_Eid
         $firstSheet = $this->common->applyBordersToSheet($firstSheet);
         $firstSheet = $this->common->setAllColumnWidthsInSheet($firstSheet, 20);
 
+        $firstName = $authNameSpace->first_name;
+        $lastName = $authNameSpace->last_name;
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("DTS EID excel report downloaded by $userName", "shipment");
+
         $excel->setActiveSheetIndex(0);
 
         $writer = IOFactory::createWriter($excel, 'Xlsx');
