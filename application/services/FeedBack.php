@@ -44,7 +44,7 @@ class Application_Service_FeedBack
         $db = new Application_Model_DbTable_FeedBackTable();
         if ($db->saveFeedbackQuestionsDetails($params)) {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = 'Question saved succssfully';
+            $alertMsg->message = 'Question saved successfully';
         }
     }
     public function saveShipmentQuestionMap($params)
@@ -52,7 +52,7 @@ class Application_Service_FeedBack
         $db = new Application_Model_DbTable_FeedBackTable();
         if ($db->saveShipmentQuestionMapDetails($params)) {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = 'Question mapped succssfully';
+            $alertMsg->message = 'Question mapped successfully';
         }
     }
 
