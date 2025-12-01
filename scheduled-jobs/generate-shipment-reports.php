@@ -1489,7 +1489,7 @@ try {
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
-            $feedbackExpiryDate = (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') ? $feedbackExpiryDate : null;
+            // $feedbackExpiryDate = (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') ? $feedbackExpiryDate : null;
             $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
 
@@ -1517,7 +1517,7 @@ try {
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;
