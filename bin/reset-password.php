@@ -39,6 +39,7 @@ try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
+
     // Helper functions
     function validateEmail(string $email): bool
     {
@@ -47,7 +48,6 @@ try {
 
     function hashPassword(string $password): string
     {
-        // Use PASSWORD_DEFAULT for bcrypt (or PASSWORD_ARGON2ID if available)
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
@@ -64,10 +64,103 @@ try {
         return $password;
     }
 
-    // Parse CLI options
-    $options = getopt('e:p:g', ['email:', 'password:', 'generate', 'force-reset']);
+    /**
+     * Get data managers mapped to a participant code
+     */
+    function getDataManagersByParticipantCode($db, string $participantCode): array
+    {
+        $query = "
+            SELECT 
+                dm.dm_id,
+                CONCAT(dm.first_name, ' ', dm.last_name) AS dm_name,
+                dm.primary_email,
+                dm.status,
+                p.unique_identifier,
+                CONCAT(p.first_name, ' ', p.last_name) AS participant_name
+            FROM participant p
+            INNER JOIN participant_manager_map pmm ON p.participant_id = pmm.participant_id
+            INNER JOIN data_manager dm ON pmm.dm_id = dm.dm_id
+            WHERE p.unique_identifier = ?
+            ORDER BY dm.first_name
+        ";
 
-    $emailArg = $options['email'] ?? $options['e'] ?? null;
+        return $db->fetchAll($query, [$participantCode]);
+    }
+
+    /**
+     * Get data manager by email
+     */
+    function getDataManagerByEmail($db, string $email): ?array
+    {
+        $user = $db->fetchRow(
+            "SELECT dm_id, CONCAT(first_name, ' ', last_name) AS dm_name, primary_email, status 
+             FROM data_manager 
+             WHERE primary_email = ?",
+            [$email]
+        );
+
+        return $user ?: null;
+    }
+
+    /**
+     * Display data managers and let user select one
+     */
+    function selectDataManager(SymfonyStyle $io, array $dataManagers): ?array
+    {
+        if (empty($dataManagers)) {
+            return null;
+        }
+
+        $io->section('Available Data Managers');
+
+        $choices = [];
+        foreach ($dataManagers as $index => $dm) {
+            $number = $index + 1;
+            $status = strtolower($dm['status']) === 'active' ? '✓' : '⚠';
+            $choices[$number] = sprintf(
+                "%s %s (%s) - %s",
+                $status,
+                $dm['dm_name'],
+                $dm['primary_email'],
+                $dm['status']
+            );
+
+            $io->text(sprintf(
+                "[%d] %s <info>%s</info> <%s> - Status: <comment>%s</comment>",
+                $number,
+                $status,
+                $dm['dm_name'],
+                $dm['primary_email'],
+                $dm['status']
+            ));
+        }
+
+        $io->newLine();
+
+        $selection = $io->ask(
+            'Select a data manager (enter number)',
+            null,
+            function ($answer) use ($dataManagers) {
+                if ($answer === null || $answer === '') {
+                    throw new \RuntimeException('Selection is required.');
+                }
+
+                $num = (int) $answer;
+                if ($num < 1 || $num > count($dataManagers)) {
+                    throw new \RuntimeException('Invalid selection. Please enter a valid number.');
+                }
+
+                return $num;
+            }
+        );
+
+        return $dataManagers[$selection - 1];
+    }
+
+    // Parse CLI options
+    $options = getopt('e:p:g', ['email:', 'password:', 'generate', 'force-reset', 'input:']);
+
+    $inputArg = $options['input'] ?? $options['e'] ?? $options['email'] ?? null;
     $passwordArg = $options['password'] ?? $options['p'] ?? null;
     $generatePassword = isset($options['generate']) || isset($options['g']);
     $forceReset = isset($options['force-reset']);
@@ -75,23 +168,19 @@ try {
     // Display header
     $io->title('Reset User Password');
 
-    // Step 1: Get email address
-    $email = null;
-    if ($emailArg !== null) {
-        $email = trim((string) $emailArg);
-        if (!validateEmail($email)) {
-            $io->error("Invalid email format: $email");
-            exit(1);
-        }
-        $io->text("Email: <info>$email</info>");
+    // Step 1: Get input (email or participant code)
+    $userInput = null;
+    if ($inputArg !== null) {
+        $userInput = trim((string) $inputArg);
+        $io->text("Input: <info>$userInput</info>");
     } else {
         $attempts = 0;
         do {
             $attempts++;
-            $userInput = $io->ask('Enter user email address');
+            $input = $io->ask('Enter Data Manager email or Participant Code');
 
-            if ($userInput === null || $userInput === '') {
-                $io->error('Email address is required.');
+            if ($input === null || $input === '') {
+                $io->error('Input is required.');
                 if ($attempts >= 3) {
                     $io->error('Too many failed attempts. Exiting.');
                     exit(1);
@@ -99,47 +188,82 @@ try {
                 continue;
             }
 
-            $email = trim($userInput);
-            if (!validateEmail($email)) {
-                $io->warning('Invalid email format. Please try again.');
-                continue;
-            }
-
+            $userInput = trim($input);
             break;
         } while ($attempts < 3);
     }
 
-    // Step 2: Verify user exists
-    $io->section('Verifying User');
+    // Step 2: Determine if input is email or participant code
+    $io->section('Looking up user information');
 
-    $user = $db->fetchRow(
-        "SELECT dm_id, CONCAT(first_name, ' ', last_name) AS dm_name, primary_email, status 
-         FROM data_manager 
-         WHERE primary_email = ?",
-        [$email]
-    );
+    $selectedUser = null;
+    $isEmail = validateEmail($userInput);
 
-    if (!$user) {
-        $io->error("No user found with email: $email");
-        exit(1);
+    if ($isEmail) {
+        // OPTION 1: Direct email lookup
+        $io->text('Detected as email address, searching for data manager...');
+        $selectedUser = getDataManagerByEmail($db, $userInput);
+
+        if (!$selectedUser) {
+            $io->error("No data manager found with email: $userInput");
+            exit(1);
+        }
+
+        $io->success("Data manager found!");
+    } else {
+        // OPTION 2: Participant code lookup
+        $io->text('Not an email address, searching for participant code...');
+        $dataManagers = getDataManagersByParticipantCode($db, $userInput);
+
+        if (empty($dataManagers)) {
+            $io->error("No data managers found for participant code: $userInput");
+            $io->note('Please verify the participant code or enter a data manager email address.');
+            exit(1);
+        }
+
+        // Show participant info
+        $participantInfo = $dataManagers[0];
+        $io->success(sprintf(
+            "Found participant: %s (%s)",
+            $participantInfo['participant_name'],
+            $participantInfo['unique_identifier']
+        ));
+
+        $io->text(sprintf(
+            "This participant is mapped to <comment>%d</comment> data manager(s):",
+            count($dataManagers)
+        ));
+        $io->newLine();
+
+        // Let user select a data manager
+        $selectedUser = selectDataManager($io, $dataManagers);
+
+        if (!$selectedUser) {
+            $io->error('No data manager selected.');
+            exit(1);
+        }
     }
 
+    // Step 3: Display selected user info
+    $io->section('Selected Data Manager');
+
+    $email = $selectedUser['primary_email'];
     $io->text([
-        "User ID: <info>{$user['dm_id']}</info>",
-        "Username: <info>{$user['dm_name']}</info>",
-        "Email: <info>{$user['primary_email']}</info>",
-        "Status: <info>{$user['status']}</info>",
+        "User ID: <info>{$selectedUser['dm_id']}</info>",
+        "Name: <info>{$selectedUser['dm_name']}</info>",
+        "Email: <info>{$selectedUser['primary_email']}</info>",
+        "Status: <info>{$selectedUser['status']}</info>",
     ]);
 
-    if (strtolower($user['status']) !== 'active') {
-        $io->warning("User account status is: {$user['status']}");
+    if (strtolower($selectedUser['status']) !== 'active') {
+        $io->warning("User account status is: {$selectedUser['status']}");
         if (!$io->confirm('Continue with password reset?', false)) {
             $io->text('Operation cancelled.');
             exit(0);
         }
     }
 
-    // Step 3: Get new password
+    // Step 4: Get new password
     $io->section('Setting New Password');
 
     $newPassword = null;
@@ -164,9 +288,9 @@ try {
                 'Special characters allowed',
             ]);
 
-            $userInput = $io->askHidden('Enter new password (input hidden)');
+            $passwordInput = $io->askHidden('Enter new password (input hidden)');
 
-            if ($userInput === null || $userInput === '') {
+            if ($passwordInput === null || $passwordInput === '') {
                 $io->error('Password cannot be empty.');
                 if ($attempts >= 3) {
                     $io->error('Too many failed attempts. Exiting.');
@@ -175,7 +299,7 @@ try {
                 continue;
             }
 
-            $newPassword = trim($userInput);
+            $newPassword = trim($passwordInput);
             if (strlen($newPassword) < 6) {
                 $io->warning('Password must be at least 6 characters long. Please try again.');
                 continue;
@@ -198,11 +322,12 @@ try {
         }
     }
 
-    // Step 4: Confirm action
+    // Step 5: Confirm action
     $io->section('Confirmation');
 
     $forceResetText = $forceReset ? 'YES' : 'NO';
     $io->text([
+        "Data Manager: <info>{$selectedUser['dm_name']}</info>",
         "Email: <info>$email</info>",
         "Force password reset on next login: <info>$forceResetText</info>",
     ]);
@@ -212,10 +337,8 @@ try {
         exit(0);
     }
 
-    // Step 5: Update password
+    // Step 6: Update password
     $io->section('Updating Password');
-
-    // $bar = Pt_Commons_MiscUtility::spinnerStart(1, 'Updating password…', '█', '░', '█', 'cyan');
 
     try {
         $hashedPassword = hashPassword($newPassword);
@@ -225,10 +348,7 @@ try {
             'force_password_reset' => $forceReset ? 1 : 0,
         ];
 
-        $result = $db->update('data_manager', $updateData, 'primary_email ="' .  $email . '"');
-
-        /* Pt_Commons_MiscUtility::spinnerAdvance($bar, 1);
-        Pt_Commons_MiscUtility::spinnerFinish($bar); */
+        $result = $db->update('data_manager', $updateData, 'primary_email = "' . $email . '"');
 
         if ($result) {
             $io->success('Password updated successfully!');
@@ -243,8 +363,8 @@ try {
             }
 
             // Log the action
-            /*  Pt_Commons_LoggerUtility::log("Password reset for user: $email", [
-                'user_id' => $user['dm_id'],
+            /* Pt_Commons_LoggerUtility::log("Password reset for user: $email", [
+                'user_id' => $selectedUser['dm_id'],
                 'email' => $email,
                 'force_reset' => $forceReset,
             ]); */
@@ -253,8 +373,6 @@ try {
             exit(1);
         }
     } catch (Throwable $e) {
-        Pt_Commons_MiscUtility::spinnerFinish($bar);
-
         /* Pt_Commons_LoggerUtility::log("Password reset error: " . $e->getMessage(), [
             'email' => $email,
             'line' => $e->getLine(),
@@ -284,19 +402,29 @@ try {
     exit(1);
 }
 
+/*
+===========================================
+USAGE EXAMPLES
+===========================================
 
+# Interactive mode (will prompt for email or participant code)
+php bin/reset-password.php
 
-# Interactive mode
-// php bin/reset-password.php
+# With data manager email
+php bin/reset-password.php --input user@example.com
 
-# With email argument
-// php bin/reset-password.php -e user@example.com
+# With participant code
+php bin/reset-password.php --input PART-12345
 
-# Generate random password
-// php bin/reset-password.php -e user@example.com --generate
+# Using old -e flag (still works for backward compatibility)
+php bin/reset-password.php -e user@example.com
 
-# Set specific password
-// php bin/reset-password.php -e user@example.com -p "NewPassword123"
+# Generate random password with participant code
+php bin/reset-password.php --input PART-12345 --generate
 
-# Force password reset on next login
-// php bin/reset-password.php -e user@example.com --generate --force-reset
+# Set specific password with force reset
+php bin/reset-password.php --input PART-12345 -p "NewPassword123" --force-reset
+
+# Full example with all options
+php bin/reset-password.php --input PART-12345 --generate --force-reset
+*/
