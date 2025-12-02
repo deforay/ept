@@ -189,6 +189,13 @@ class Application_Service_Evaluation
 	public function getShipmentToEvaluate($shipmentId, $reEvaluate = false, $override = null)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		// Update heartbeat
+		$db->update(
+			'shipment',
+			array('last_heartbeat' => new Zend_Db_Expr('NOW()')),
+			"shipment_id = {$shipmentId}"
+		);
+
 		$sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.shipment_attributes', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.distribution_id', 's.number_of_samples', 's.response_switch', 's.max_score', 's.shipment_comment', 's.created_by_admin', 's.created_on_admin', 's.updated_by_admin', 's.updated_on_admin', 'shipment_status' => 's.status', 's.corrective_action_file'])
 			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id')
 			->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id')
@@ -1675,7 +1682,13 @@ class Application_Service_Evaluation
 		$shipmentResult = $db->fetchRow($sql);
 		$i = 0;
 		if (!empty($shipmentResult)) {
-			$db->update('shipment', ['status' => 'evaluated'], "shipment_id = $shipmentId");
+			$db->update('shipment', [
+				'status' => 'evaluated',
+				'previous_status' => null,
+				'processing_started_at' => null,
+				'last_heartbeat' => null
+			], "shipment_id=" . $shipmentId);
+
 			if ($shipmentResult['scheme_type'] == 'dbs') {
 				$sql = $db->select()->from(
 					['refdbs' => 'reference_result_dbs'],

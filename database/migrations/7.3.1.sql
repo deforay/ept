@@ -12,3 +12,13 @@ ALTER TABLE `r_participant_feedback_form` ADD `form_show_to` VARCHAR(50) NULL DE
 ALTER TABLE `r_feedback_questions` ADD `question_show_to` VARCHAR(256) NULL DEFAULT NULL AFTER `question_type`;
 ALTER TABLE `r_participant_feedback_form_files_map` ADD `files_show_to` VARCHAR(255) NULL DEFAULT NULL AFTER `file_name`;
 
+-- Thana 01-Dec-2025
+ALTER TABLE shipment
+ADD COLUMN previous_status VARCHAR(256) NULL,
+ADD COLUMN processing_started_at DATETIME NULL,
+ADD COLUMN last_heartbeat DATETIME NULL;
+
+ALTER TABLE queue_report_generation
+ADD COLUMN previous_status VARCHAR(256) NULL,
+ADD COLUMN processing_started_at DATETIME NULL,
+ADD COLUMN last_heartbeat DATETIME NULL;

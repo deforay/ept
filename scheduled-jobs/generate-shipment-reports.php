@@ -1203,10 +1203,32 @@ try {
                 $shipmentId = $evalRow['shipment_id'];
 
                 if (!isset($evaluatedShipments[$shipmentId])) {
+                    // Set processing state atomically with WHERE clause to prevent race conditions
+                    $rowsUpdated = $db->update(
+                        'shipment',
+                        array(
+                            'status' => 'processing',
+                            'previous_status' => new Zend_Db_Expr('status'),
+                            'processing_started_at' => new Zend_Db_Expr('NOW()'),
+                            'last_heartbeat' => new Zend_Db_Expr('NOW()')
+                        ),
+                        "shipment_id = {$shipmentId} AND status != 'processing'" // Only update if not already processing
+                    );
+
                     $timeStart = microtime(true);
                     $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
                     $timeEnd = microtime(true);
                     $executionTime = ($timeEnd - $timeStart) / 60;
+                    // To reset the processing fields
+                    $db->update(
+                        'shipment',
+                        array(
+                            'processing_started_at' => null,
+                            'previous_status' => null,
+                            'last_heartbeat' => null
+                        ),
+                        "shipment_id = " . $shipmentId
+                    );
 
                     $evaluatedShipments[$shipmentId] = [
                         'shipmentResult' => $shipmentResult,
@@ -1490,8 +1512,17 @@ try {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
             $feedbackExpiryDate = (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') ? $feedbackExpiryDate : null;
-            $id = $db->update('shipment', array('status' => $reportCompletedStatus, 'feedback_expiry_date' => $feedbackExpiryDate, 'report_in_queue' => 'no', 'updated_by_admin' => (int) $evalRow['requested_by'], 'updated_on_admin' => new Zend_Db_Expr('now()')), "shipment_id = " . $evalRow['shipment_id']);
 
+            $db->update('shipment', array(
+                'status' => $reportCompletedStatus,
+                'feedback_expiry_date' => $feedbackExpiryDate,
+                'report_in_queue' => 'no',
+                'updated_by_admin' => (int) $evalRow['requested_by'],
+                'updated_on_admin' => new Zend_Db_Expr('now()'),
+                'previous_status' => null,
+                'processing_started_at' => null,
+                'last_heartbeat' => null
+            ), "shipment_id = " . $evalRow['shipment_id']);
 
             if ($id > 0 && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
