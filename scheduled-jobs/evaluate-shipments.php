@@ -67,7 +67,7 @@ try {
 		}
 
 		$db->update('shipment', [
-			'status' => 'completed',
+			'status' => 'evaluated',
 			'processing_started_at' => null,
 			'previous_status' => null,
 			'last_heartbeat' => null
