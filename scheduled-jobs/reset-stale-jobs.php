@@ -6,7 +6,7 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 $db = Zend_Db::factory($conf->resources->db);
 Zend_Db_Table::setDefaultAdapter($db);
 
-$staleThresholdSeconds = 300; // Configurable
+$staleThresholdSeconds = 10; // Configurable
 
 try {
     // Reset stale shipments
@@ -18,9 +18,12 @@ try {
             'previous_status' => null,
             'last_heartbeat' => null
         ],
-        "status = 'processing' 
-         AND previous_status IS NOT NULL 
-         AND last_heartbeat < DATE_SUB(NOW(), INTERVAL {$staleThresholdSeconds} SECONDS)"
+        $db->quoteInto(
+            "status = 'processing' 
+             AND previous_status IS NOT NULL 
+             AND last_heartbeat < DATE_SUB(NOW(), INTERVAL ? SECOND)",
+            $staleThresholdSeconds
+        )
     );
 
     error_log("Reset {$resetCount} stale shipment jobs");
@@ -34,9 +37,12 @@ try {
             'previous_status' => null,
             'last_heartbeat' => null
         ],
-        "status IN ('not-evaluated', 'not-finalized') 
-         AND previous_status IS NOT NULL
-         AND last_heartbeat < DATE_SUB(NOW(), INTERVAL {$staleThresholdSeconds} SECONDS)"
+        $db->quoteInto(
+            "status IN ('not-evaluated', 'not-finalized') 
+             AND previous_status IS NOT NULL
+             AND last_heartbeat < DATE_SUB(NOW(), INTERVAL ? SECOND)",
+            $staleThresholdSeconds
+        )
     );
 
     error_log("Reset {$reportResetCount} stale report jobs");
