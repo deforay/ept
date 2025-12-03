@@ -48,7 +48,7 @@ class Application_Model_Vl
 
 
         foreach ($shipmentResult as $shipment) {
-
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
             $attributes = json_decode($shipment['attributes'], true);
             $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
@@ -1210,12 +1210,12 @@ class Application_Model_Vl
             $countOfVlAssaySheet++;
         }
 
-            $firstName = $authNameSpace->first_name;
-			$lastName = $authNameSpace->last_name;
-			$name = $firstName . " " . $lastName;
-			$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("DTS Viral Load report downloaded by $userName", "shipment");
+        $firstName = $authNameSpace->first_name;
+        $lastName = $authNameSpace->last_name;
+        $name = $firstName . " " . $lastName;
+        $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("DTS Viral Load report downloaded by $userName", "shipment");
 
         $excel->setActiveSheetIndex(0);
 

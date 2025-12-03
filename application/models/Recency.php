@@ -38,7 +38,7 @@ class Application_Model_Recency
         $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
         foreach ($shipmentResult as $shipment) {
-
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
@@ -459,33 +459,33 @@ class Application_Model_Recency
 
         $colNameCount = 11;
         $cellName1 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
-->getColumn();
+            ->getColumn();
 
         foreach ($refResult as $refRow) {
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)
-->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
 
         $cellName2 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount - 2) . '1')
-->getColumn();
+            ->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
         $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
         $cellName3 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . '1')
-->getColumn();
+            ->getColumn();
         $colNumberforReference = $colNameCount;
         foreach ($refResult as $refRow) {
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)
-->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount + 1) . 2)->applyFromArray($borderStyle, true);
             $colNameCount++;
         }
         $cellName4 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount - 2) . '1')
-->getColumn();
+            ->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
         $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
@@ -531,41 +531,41 @@ class Application_Model_Recency
             $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(1) . $row)
-->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(2) . $row)
-->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(3) . $row)
-->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
-->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['department_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(5) . $row)
-->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['region'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(6) . $row)
-->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['site_type'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(7) . $row)
-->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($sampleRehydrationDate, ENT_QUOTES, 'UTF-8'));
 
             $col = 7;
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($extraction, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'));
 
             $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
             $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
 
             foreach ($resultResponse as $responseRow) {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
             }
             foreach ($refResponse as $responseRow) {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
-->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode($responseRow['response'], ENT_QUOTES, 'UTF-8'));
             }
         }
 
@@ -603,10 +603,10 @@ class Application_Model_Recency
 
         foreach ($headings as $field => $value) {
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             // $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFont()->setBold(true);
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-->getColumn();
+                ->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
             $colNo++;
         }
@@ -623,31 +623,31 @@ class Application_Model_Recency
 
 
                 $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)
-->setValueExplicit(ucwords($aRow['unique_identifier']));
+                    ->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $sheet->getCell(Coordinate::stringFromColumnIndex(2) . $currentRow)
-->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
+                    ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(3) . $currentRow)
-->setValueExplicit($aRow['institute_name']);
+                    ->setValueExplicit($aRow['institute_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(4) . $currentRow)
-->setValueExplicit($aRow['department_name']);
+                    ->setValueExplicit($aRow['department_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(5) . $currentRow)
-->setValueExplicit($aRow['iso_name']);
+                    ->setValueExplicit($aRow['iso_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(6) . $currentRow)
-->setValueExplicit($aRow['address']);
+                    ->setValueExplicit($aRow['address']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(7) . $currentRow)
-->setValueExplicit($aRow['province']);
+                    ->setValueExplicit($aRow['province']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(8) . $currentRow)
-->setValueExplicit($aRow['district']);
+                    ->setValueExplicit($aRow['district']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(9) . $currentRow)
-->setValueExplicit($aRow['city']);
+                    ->setValueExplicit($aRow['city']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(10) . $currentRow)
-->setValueExplicit($aRow['mobile']);
+                    ->setValueExplicit($aRow['mobile']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex(11) . $currentRow)
-->setValueExplicit(strtolower($aRow['email']));
+                    ->setValueExplicit(strtolower($aRow['email']));
 
                 for ($i = 0; $i <= 11; $i++) {
                     $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $currentRow)
-->getColumn();
+                        ->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
@@ -688,15 +688,15 @@ class Application_Model_Recency
         foreach ($reportHeadings as $value) {
 
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, null, null)->getFont()->setBold(true);
 
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-->getColumn();
+                ->getColumn();
             $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
-->getColumn();
+                ->getColumn();
             $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
 
             if ($colNo >= $finalResColoumn) {
@@ -704,41 +704,41 @@ class Application_Model_Recency
                     $col = 7;
                     foreach ($samples as $sample) {
                         $firstCellName = $sheet->getCell(Coordinate::stringFromColumnIndex($col + 1) . 1)
-->getColumn();
+                            ->getColumn();
                         $secondCellName = $sheet->getCell(Coordinate::stringFromColumnIndex(($col + 3)) . 1)
-->getColumn();
+                            ->getColumn();
 
                         $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
                         $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
                         $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($col + 1) . 1)
-->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'));
+                            ->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'));
 
                         $colorCol = $col;
                         $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-->getColumn();
+                            ->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
                         $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-->getColumn();
+                            ->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                         $colorCol = $colorCol + 1;
 
                         $cellNameBar = $sheet->getCell(Coordinate::stringFromColumnIndex($colorCol + 1) . 1)
-->getColumn();
+                            ->getColumn();
                         $sheet->getStyle($cellNameBar . 2)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
                         $col = $col + 3;
                     }
                     $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)
-->getColumn();
+                        ->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
                     $c++;
                     $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
-->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'));
+                        ->setValueExplicit(html_entity_decode($refResult[$l]['reference_result'], ENT_QUOTES, 'UTF-8'));
                 }
             }
             $sheet->getStyle($cellName . '3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
@@ -757,7 +757,7 @@ class Application_Model_Recency
         //$sheet->getStyle("F2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
 
         $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($n + 1) . 3)
-->getColumn();
+            ->getColumn();
         //$sheet->getStyle('A3:'.$cellName.'3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#969696');
         //$sheet->getStyle('A3:'.$cellName.'3')->applyFromArray($borderStyle);
 
@@ -776,15 +776,15 @@ class Application_Model_Recency
         $sheetThreeColor = 1 + $result['number_of_samples'];
         foreach ($panelScoreHeadings as $sheetThreeHK => $value) {
             $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $sheetThree->getStyle(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow, null, null)->getFont()->setBold(true);
             $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-->getColumn();
+                ->getColumn();
             $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
 
             if ($sheetThreeHK > 1 && $sheetThreeHK <= $sheetThreeColor) {
                 $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeColNo + 1) . $sheetThreeRow)
-->getColumn();
+                    ->getColumn();
                 $sheetThree->getStyle($cellName . $sheetThreeRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
             }
 
@@ -813,25 +813,23 @@ class Application_Model_Recency
         $docScoreHeadingsCount = count($docScoreHeadings);
         foreach ($docScoreHeadings as $sheetThreeHK => $value) {
             $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol + 1) . $docScoreRow)
-->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $docScoreSheet->getStyle(Coordinate::stringFromColumnIndex($docScoreSheetCol + 1) . $docScoreRow, null, null)->getFont()->setBold(false);
             $cellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreSheetCol + 1) . $docScoreRow)
-->getColumn();
+                ->getColumn();
             $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
             $docScoreSheet->getStyle(Coordinate::stringFromColumnIndex($docScoreSheetCol + 1) . $docScoreRow, null, null)->getAlignment()->setWrapText(true);
             $docScoreSheetCol++;
         }
         $docScoreRow = 2;
-        $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(2) . $docScoreRow)
-;
+        $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(2) . $docScoreRow);
         $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'));
         $docScoreSheet->getStyle(Coordinate::stringFromColumnIndex(2) . $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
 
         for ($r = 2; $r <= 7; $r++) {
-            $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($r + 1) . $docScoreRow)
-;
+            $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($r + 1) . $docScoreRow);
             if ($r != 7) {
                 $secondRowcellName->setValueExplicit(html_entity_decode($documentationScorePerItem, ENT_QUOTES, 'UTF-8'));
             }
@@ -1005,48 +1003,48 @@ class Application_Model_Recency
                     $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['user_comment']);
 
                     $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-->setValueExplicit($countCorrectResult);
+                        ->setValueExplicit($countCorrectResult);
 
                     $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                     $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)
-->setValueExplicit($totPer);
+                        ->setValueExplicit($totPer);
 
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit($countCorrectResult);
+                        ->setValueExplicit($countCorrectResult);
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit($totPer);
+                        ->setValueExplicit($totPer);
 
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit(($totPer * 0.9));
+                        ->setValueExplicit(($totPer * 0.9));
                 }
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit($documentScore);
+                    ->setValueExplicit($documentScore);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit($aRow['documentation_score']);
+                    ->setValueExplicit($aRow['documentation_score']);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
-->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
+                    ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
 
                 for ($i = 0; $i < $panelScoreHeadingCount; $i++) {
                     $cellName = $sheetThree->getCell(Coordinate::stringFromColumnIndex($i + 1) . $sheetThreeRow)
-->getColumn();
+                        ->getColumn();
                     $sheetThree->getStyle($cellName . $sheetThreeRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $n; $i++) {
                     $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $currentRow)
-->getColumn();
+                        ->getColumn();
                     $sheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $docScoreHeadingsCount; $i++) {
                     $cellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $docScoreRow)
-->getColumn();
+                        ->getColumn();
                     $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
                 }
 
                 for ($i = 0; $i < $totScoreHeadingsCount; $i++) {
                     $cellName = $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($i + 1) . $totScoreRow)
-->getColumn();
+                        ->getColumn();
                     $totalScoreSheet->getStyle($cellName . $totScoreRow)->applyFromArray($borderStyle, true);
                 }
 

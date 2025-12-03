@@ -88,6 +88,8 @@ final class Application_Model_Dts
 
 
 		foreach ($shipmentResult as $index => $shipment) {
+			Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
+
 			$participantResults = $resultsForShipment[$shipment['participant_id']] ?? [];
 			$evaluationOutcome = $this->evaluateSingleShipment(
 				$shipment,

@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 final class Pt_Commons_MiscUtility
 {
+    private static $heartbeatCounter = [];
 
     public static function sanitizeFilename($filename, $regex = '/[^a-zA-Z0-9\-]/', $replace = ''): string
     {
@@ -861,5 +862,24 @@ final class Pt_Commons_MiscUtility
         }
 
         return 2; // Fallback
+    }
+
+    public static function updateHeartbeat($table, $idColumn, $id, $everyNIterations = 10)
+    {
+        $key = $table . '_' . $id;
+
+        if (!isset(self::$heartbeatCounter[$key])) {
+            self::$heartbeatCounter[$key] = 0;
+        }
+
+        self::$heartbeatCounter[$key]++;
+
+        if (self::$heartbeatCounter[$key] >= $everyNIterations) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $db->update($table, [
+                'last_heartbeat' => new Zend_Db_Expr('NOW()')
+            ], "$idColumn = " . (int) $id);
+            self::$heartbeatCounter[$key] = 0;
+        }
     }
 }

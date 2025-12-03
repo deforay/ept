@@ -212,13 +212,25 @@ class Application_Service_Evaluation
 
 		if ($shipmentResult[0]['scheme_type'] == 'eid') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$eidModel = new Application_Model_Eid();
 				$shipmentResult = $eidModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'recency') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$recencyModel = new Application_Model_Recency($db);
 				$shipmentResult = $recencyModel->evaluate($shipmentResult, $shipmentId);
 			}
@@ -226,6 +238,7 @@ class Application_Service_Evaluation
 			$counter = 0;
 			$maxScore = 0;
 			foreach ($shipmentResult as $shipment) {
+				Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 				$createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
 				if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
 
@@ -409,31 +422,61 @@ class Application_Service_Evaluation
 			$db->update('shipment', array('max_score' => $maxScore), "shipment_id = " . $shipmentId);
 		} elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$dtsModel = new Application_Model_Dts();
 				$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'vl') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$vlModel = new Application_Model_Vl();
 				$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'covid19') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$covid19Model = new Application_Model_Covid19();
 				$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'tb') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', array('status' => "processing"), "shipment_id = " . $shipmentId);
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
-				$db->update('shipment', ['status' => "processing"], "shipment_id = $shipmentId");
+				// Set processing state
+				$db->update('shipment', [
+					'status' => 'processing',
+					'previous_status' => new Zend_Db_Expr('status'),
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()')
+				], "shipment_id = {$shipmentId}");
 				$genericTestModel = new Application_Model_GenericTest();
 				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
@@ -1656,7 +1699,13 @@ class Application_Service_Evaluation
 			// PT Survey Participant Pass / Fail
 			$i++;
 			$db->update('shipment_participant_map', array('report_generated' => 'yes'), "map_id=" . $res['map_id']);
-			$db->update('shipment', array('status' => 'evaluated'), "shipment_id=" . $shipmentId);
+
+			$db->update('shipment', [
+				'status' => 'evaluated',
+				'processing_started_at' => null,
+				'previous_status' => null,
+				'last_heartbeat' => null
+			], "shipment_id = {$shipmentId}");
 		}
 
 		$result = [
@@ -1684,10 +1733,10 @@ class Application_Service_Evaluation
 		if (!empty($shipmentResult)) {
 			$db->update('shipment', [
 				'status' => 'evaluated',
-				'previous_status' => null,
 				'processing_started_at' => null,
+				'previous_status' => null,
 				'last_heartbeat' => null
-			], "shipment_id=" . $shipmentId);
+			], "shipment_id = {$shipmentId}");
 
 			if ($shipmentResult['scheme_type'] == 'dbs') {
 				$sql = $db->select()->from(

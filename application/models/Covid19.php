@@ -22,7 +22,7 @@ class Application_Model_Covid19
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
 
         foreach ($shipmentResult as $shipment) {
-            //Zend_Debug::dump($shipment);
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 
             //$shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
@@ -1180,7 +1180,7 @@ class Application_Model_Covid19
 
         //----------- Second Sheet End----->
 
-        $firstName = $authNameSpace->first_name; 
+        $firstName = $authNameSpace->first_name;
         $lastName = $authNameSpace->last_name;
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;

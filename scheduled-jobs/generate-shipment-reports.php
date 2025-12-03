@@ -1203,34 +1203,10 @@ try {
                 $shipmentId = $evalRow['shipment_id'];
 
                 if (!isset($evaluatedShipments[$shipmentId])) {
-                    // Set processing state atomically with WHERE clause to prevent race conditions
-                    $rowsUpdated = $db->update(
-                        'shipment',
-                        array(
-                            'status' => 'processing',
-                            'previous_status' => new Zend_Db_Expr('status'),
-                            'processing_started_at' => new Zend_Db_Expr('NOW()'),
-                            'last_heartbeat' => new Zend_Db_Expr('NOW()')
-                        ),
-                        "shipment_id = {$shipmentId} AND status != 'processing'" // Only update if not already processing
-                    );
-
                     $timeStart = microtime(true);
                     $shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
                     $timeEnd = microtime(true);
                     $executionTime = ($timeEnd - $timeStart) / 60;
-                    // To reset the processing fields
-                    $db->update(
-                        'shipment',
-                        array(
-                            'status' => 'evaluated',
-                            'processing_started_at' => null,
-                            'previous_status' => null,
-                            'last_heartbeat' => null
-                        ),
-                        "shipment_id = " . $shipmentId
-                    );
-
                     $evaluatedShipments[$shipmentId] = [
                         'shipmentResult' => $shipmentResult,
                         'executionTime' => $executionTime

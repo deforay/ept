@@ -33,14 +33,6 @@ try {
 
 
 	foreach ($shipmentsToEvaluate as $shipmentId) {
-		// Set processing state
-		$db->update('shipment', [
-			'status' => 'processing',
-			'previous_status' => new Zend_Db_Expr('status'),
-			'processing_started_at' => new Zend_Db_Expr('NOW()'),
-			'last_heartbeat' => new Zend_Db_Expr('NOW()')
-		], "shipment_id = {$shipmentId}");
-
 		// Do evaluation
 		$timeStart = microtime(true);
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
@@ -65,13 +57,6 @@ try {
 			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
 			$commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
 		}
-
-		$db->update('shipment', [
-			'status' => 'evaluated',
-			'processing_started_at' => null,
-			'previous_status' => null,
-			'last_heartbeat' => null
-		], "shipment_id = {$shipmentId}");
 	}
 } catch (Exception $e) {
 	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");

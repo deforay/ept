@@ -75,6 +75,7 @@ class Application_Model_GenericTest
         $this->updateEqualSampleScores($shipmentId);
 
         foreach ($shipmentResult as $shipment) {
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $recommendedTestkits = $this->getRecommededGenericTestkits($shipment['scheme_type']);
             if (isset($shipment['attributes']) && !empty($shipment['attributes'])) {
                 $attributes = Zend_Json_Decoder::decode($shipment['attributes'], true);
@@ -326,7 +327,7 @@ class Application_Model_GenericTest
             ->from(['ref' => 'reference_result_generic_test'], ['shipment_id', 'sample_id', 'sample_label', 'reference_result', 'control', 'mandatory', 'sample_score'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
-            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result_1', 'result_2', 'result_3','reported_result', 'is_result_invalid', 'error_code', 'additional_detail', 'comments'])
+            ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['shipment_map_id', 'result_1', 'result_2', 'result_3', 'reported_result', 'is_result_invalid', 'error_code', 'additional_detail', 'comments'])
             ->where("sp.shipment_id = $sId AND sp.participant_id = $pId");
         return $db->fetchAll($sql);
     }

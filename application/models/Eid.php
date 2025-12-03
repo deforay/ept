@@ -26,7 +26,7 @@ class Application_Model_Eid
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         foreach ($shipmentResult as $shipment) {
-
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 

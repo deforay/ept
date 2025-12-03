@@ -50,7 +50,7 @@ class Application_Model_Tb
 
 
         foreach ($shipmentResult as $shipment) {
-
+            Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             if ($shipment['response_status'] === 'draft' || $shipment['is_pt_test_not_performed'] === 'yes') {
                 continue;
             }
