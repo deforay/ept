@@ -53,7 +53,7 @@ try {
 			&& !empty($customConfig->jobCompletionAlert->mails)
 		) {
 			$emailSubject = "ePT | Shipment Evaluated";
-			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain .  $link;
+			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
 			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
 			$commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
 		}

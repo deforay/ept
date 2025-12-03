@@ -148,7 +148,7 @@ try {
                     'tb_form_generated' => 'yes',
                     'updated_on_admin' => new Zend_Db_Expr('now()'),
                 ],
-                'shipment_id = ' . $shipmentsToGenarateForm
+                "shipment_id = $shipmentsToGenarateForm"
             );
 
             echo "Merging " . count($pdfsToMerge) . " PDFs...\n";

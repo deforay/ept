@@ -2,7 +2,9 @@
 <?php
 
 use Pt_Commons_ArchiveUtility as ArchiveUtility;
+use Pt_Commons_MiscUtility as MiscUtility;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 // bin/db-tools.php - Database management CLI tool for ePT
 
@@ -222,6 +224,35 @@ function getTempDir(string $backupFolder): string
     return $tempDir;
 }
 
+/**
+ * Simple spinner wrapper using existing console utility.
+ */
+function startSpinner(string $label): ?\Symfony\Component\Console\Helper\ProgressBar
+{
+    try {
+        $out = console();
+        $bar = new ProgressBar($out);
+        $bar->setFormat("%message%");
+        $bar->setMessage($label);
+        $bar->start();
+        return $bar;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+function stopSpinner($spinner): void
+{
+    if ($spinner) {
+        try {
+            $spinner->finish();
+            console()->writeln('');
+        } catch (Throwable $e) {
+            // ignore
+        }
+    }
+}
+
 function verifyBackupIntegrity(string $zipPath)
 {
     $zip = new ZipArchive();
@@ -240,7 +271,12 @@ function verifyBackupIntegrity(string $zipPath)
 function handleBackup(string $backupFolder, array $mainConfig, array $args)
 {
     echo "Creating database backup...\n";
-    $zip = createBackupArchive('ept', $mainConfig, $backupFolder);
+    $spinner = startSpinner('Dumping and compressing…');
+    try {
+        $zip = createBackupArchive('ept', $mainConfig, $backupFolder);
+    } finally {
+        stopSpinner($spinner);
+    }
     echo '  Created: ' . basename($zip) . PHP_EOL;
 }
 
@@ -265,7 +301,13 @@ function handleExport(string $backupFolder, array $mainConfig, array $args)
 
     echo "Exporting database to " . basename($outputFile) . "...\n";
 
-    runMysqldump($mainConfig, $outputFile);
+    $spinner = startSpinner('Dumping database…');
+    try {
+        runMysqldump($mainConfig, $outputFile);
+    } finally {
+        stopSpinner($spinner);
+    }
+
     echo "Export completed: " . $outputFile . PHP_EOL;
 }
 
@@ -290,7 +332,12 @@ function handleImport(string $backupFolder, array $mainConfig, array $args)
 
     echo "Creating safety backup of current database before import...\n";
     $note = 'pre-import-' . date('His');
-    $preImportZip = createBackupArchive('ept-backup', $mainConfig, $backupFolder, $note);
+    $spinner = startSpinner('Safety backup…');
+    try {
+        $preImportZip = createBackupArchive('ept-backup', $mainConfig, $backupFolder, $note);
+    } finally {
+        stopSpinner($spinner);
+    }
     echo '  Created: ' . basename($preImportZip) . PHP_EOL;
 
     $extractedSqlPath = ensureSqlExtracted($sqlPath, $backupFolder);
@@ -300,7 +347,12 @@ function handleImport(string $backupFolder, array $mainConfig, array $args)
     recreateDatabase($mainConfig);
 
     echo "Importing data to database...\n";
-    importSqlDump($mainConfig, $extractedSqlPath);
+    $spinner = startSpinner('Importing…');
+    try {
+        importSqlDump($mainConfig, $extractedSqlPath);
+    } finally {
+        stopSpinner($spinner);
+    }
 
     // Cleanup is handled by TempFileRegistry shutdown function
     echo "Import completed successfully.\n";
@@ -344,7 +396,7 @@ function handleRestore(string $backupFolder, array $mainConfig, ?string $request
             throw new Exception("Backup file not found or access denied: {$requestedFile}");
         }
     } else {
-        showBackupsWithIndex($backups);
+        showBackupsWithIndex($backups, true);
         $selectedPath = promptForBackupSelection($backups);
         if ($selectedPath === null) {
             echo 'Restore cancelled.' . PHP_EOL;
@@ -356,7 +408,12 @@ function handleRestore(string $backupFolder, array $mainConfig, ?string $request
 
     echo 'Creating safety backup of current database before restore...' . PHP_EOL;
     $note = 'restoreof-' . slugifyForFilename($basename, 32);
-    $preRestoreZip = createBackupArchive('pre-restore-ept', $mainConfig, $backupFolder, $note);
+    $spinner = startSpinner('Safety backup…');
+    try {
+        $preRestoreZip = createBackupArchive('pre-restore-ept', $mainConfig, $backupFolder, $note);
+    } finally {
+        stopSpinner($spinner);
+    }
     echo '  Created: ' . basename($preRestoreZip) . PHP_EOL;
 
     echo 'Extracting backup...' . PHP_EOL;
@@ -367,7 +424,12 @@ function handleRestore(string $backupFolder, array $mainConfig, ?string $request
     recreateDatabase($mainConfig);
 
     echo 'Restoring database from ' . $basename . '...' . PHP_EOL;
-    importSqlDump($mainConfig, $sqlPath);
+    $spinner = startSpinner('Importing…');
+    try {
+        importSqlDump($mainConfig, $sqlPath);
+    } finally {
+        stopSpinner($spinner);
+    }
 
     echo 'Restore completed successfully.' . PHP_EOL;
 }
@@ -419,8 +481,12 @@ function promptForImportFileSelection(string $backupFolder)
         return null;
     }
 
+    if (shouldUseFzf()) {
+        return selectFileWithFzf($allFiles, 'Select import file (Esc to cancel)');
+    }
+
     echo "Available files for import:\n";
-    showBackupsWithIndex($allFiles);
+    showBackupsWithIndex($allFiles, true);
 
     $count = count($allFiles);
     while (true) {
@@ -776,11 +842,13 @@ function getSortedBackups(string $backupFolder): array
 
     $backups = [];
     foreach ($files as $file) {
+        $basename = basename($file);
         $backups[] = [
             'path' => $file,
-            'basename' => basename($file),
+            'basename' => $basename,
             'mtime' => @filemtime($file) ?: 0,
             'size' => @filesize($file) ?: 0,
+            'is_safety' => isSafetyBackupBasename($basename),
         ];
     }
 
@@ -818,19 +886,45 @@ function getSortedSqlFiles(string $backupFolder): array
     return $sqlFiles;
 }
 
-function showBackupsWithIndex(array $backups)
+function showBackupsWithIndex(array $backups, bool $groupSafety = false)
 {
-    foreach ($backups as $index => $backup) {
-        $position = $index + 1;
-        $timestamp = date('Y-m-d H:i:s', $backup['mtime']);
-        $size = formatFileSize($backup['size']);
-        echo sprintf('[%d] %s  %s  %s', $position, $backup['basename'], $timestamp, $size) . PHP_EOL;
+    if ($groupSafety) {
+        [$regular, $safety] = splitSafetyBackups($backups);
+        $idx = 1;
+        foreach ([$regular, $safety] as $chunkIdx => $chunk) {
+            if ($chunkIdx === 1 && !empty($chunk)) {
+                echo "Safety backups (pre-restore):\n";
+            }
+            foreach ($chunk as $backup) {
+                $timestamp = date('Y-m-d H:i:s', $backup['mtime']);
+                $size = formatFileSize($backup['size']);
+                echo sprintf('[%d] %s  %s  %s', $idx, $backup['basename'], $timestamp, $size) . PHP_EOL;
+                $idx++;
+            }
+            if ($chunkIdx === 0 && !empty($chunk) && !empty($safety)) {
+                echo "\n";
+            }
+        }
+    } else {
+        foreach ($backups as $index => $backup) {
+            $position = $index + 1;
+            $timestamp = date('Y-m-d H:i:s', $backup['mtime']);
+            $size = formatFileSize($backup['size']);
+            echo sprintf('[%d] %s  %s  %s', $position, $backup['basename'], $timestamp, $size) . PHP_EOL;
+        }
     }
 }
 
 function promptForBackupSelection(array $backups): ?string
 {
-    $count = count($backups);
+    [$regular, $safety] = splitSafetyBackups($backups);
+    $ordered = array_merge($regular, $safety);
+
+    if (shouldUseFzf()) {
+        return selectFileWithFzf($ordered, 'Select backup (safety backups listed last; Esc to cancel)');
+    }
+
+    $count = count($ordered);
     while (true) {
         $prompt = sprintf('Select backup [1-%d] (or press Enter to cancel): ', $count);
         $input = function_exists('readline') ? readline($prompt) : null;
@@ -855,8 +949,114 @@ function promptForBackupSelection(array $backups): ?string
             continue;
         }
 
-        return $backups[$index - 1]['path'];
+        return $ordered[$index - 1]['path'];
     }
+}
+
+function splitSafetyBackups(array $backups): array
+{
+    $regular = [];
+    $safety = [];
+    foreach ($backups as $b) {
+        $isSafety = $b['is_safety'] ?? isSafetyBackupBasename($b['basename'] ?? '');
+        if ($isSafety) {
+            $safety[] = $b;
+        } else {
+            $regular[] = $b;
+        }
+    }
+    return [$regular, $safety];
+}
+
+function isSafetyBackupBasename(string $basename): bool
+{
+    return str_starts_with(strtolower($basename), 'pre-restore-');
+}
+
+function shouldUseFzf(): bool
+{
+    // allow opt-out via argv or env
+    $argv = $GLOBALS['argv'] ?? [];
+    if (in_array('--no-fzf', $argv, true) || getenv('DBTOOLS_NO_FZF')) {
+        return false;
+    }
+    if (!commandExists('fzf')) {
+        return false;
+    }
+    if (!defined('STDIN') || !defined('STDOUT')) {
+        return false;
+    }
+    if (!function_exists('stream_isatty')) {
+        return false;
+    }
+    return stream_isatty(STDIN) && stream_isatty(STDOUT);
+}
+
+/**
+ * Use fzf to pick a file; returns path or null if cancelled.
+ */
+function selectFileWithFzf(array $candidates, string $header): ?string
+{
+    if (empty($candidates)) {
+        return null;
+    }
+
+    $inputFile = tempnam(sys_get_temp_dir(), 'dbtools_fzf_in_');
+    $outputFile = tempnam(sys_get_temp_dir(), 'dbtools_fzf_out_');
+    if ($inputFile === false || $outputFile === false) {
+        return null;
+    }
+
+    $lines = [];
+    foreach ($candidates as $index => $candidate) {
+        $basename = $candidate['basename'] ?? basename($candidate['path'] ?? '');
+        $isSafety = $candidate['is_safety'] ?? isSafetyBackupBasename((string) $basename);
+        $labelSuffix = $isSafety ? ' [SAFETY BACKUP]' : '';
+        $lines[] = implode("\t", [
+            $candidate['path'],
+            sprintf(
+                '%3d. %s%s  %s  %s',
+                $index + 1,
+                $basename,
+                $labelSuffix,
+                date('Y-m-d H:i:s', $candidate['mtime'] ?? time()),
+                formatFileSize((int) ($candidate['size'] ?? 0))
+            ),
+        ]);
+    }
+
+    file_put_contents($inputFile, implode(PHP_EOL, $lines));
+
+    $cmd = sprintf(
+        'OUT=%s; export OUT; ' .
+        'cat %s | fzf --ansi --height=80%% --reverse --border ' .
+        ' --prompt=%s ' .
+        ' --header=%s ' .
+        ' --delimiter="\t" --with-nth=2.. ' .
+        ' --bind "enter:execute-silent(echo {1} > \"$OUT\")+abort" ',
+        escapeshellarg($outputFile),
+        escapeshellarg($inputFile),
+        escapeshellarg('Select> '),
+        escapeshellarg($header)
+    );
+
+    $process = Process::fromShellCommandline($cmd, null, buildProcessEnv());
+    $process->setTimeout(null);
+    if (Process::isTtySupported()) {
+        try {
+            $process->setTty(true);
+        } catch (RuntimeException $e) {
+            // ignore
+        }
+    }
+    $process->run();
+
+    $selection = @file_get_contents($outputFile);
+    @unlink($inputFile);
+    @unlink($outputFile);
+
+    $selection = $selection === false ? '' : trim($selection);
+    return $selection === '' ? null : $selection;
 }
 
 // MySQL Operations
@@ -915,13 +1115,6 @@ function executeMysqlCommand(array $config, array $baseCommand, ?string $inputDa
                 fwrite($pipes[0], $chunk);
                 $bytesRead += strlen($chunk);
 
-                if ($fileSize > 1048576 && $fileSize > 0) {
-                    $progress = intval(($bytesRead / $fileSize) * 100);
-                    if ($progress >= $lastProgress + 10) {
-                        echo "  Progress: {$progress}%\n";
-                        $lastProgress = $progress;
-                    }
-                }
             }
             fclose($source);
         } else {
