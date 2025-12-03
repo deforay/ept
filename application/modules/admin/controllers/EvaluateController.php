@@ -96,15 +96,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $this->view->override = $override;
             $this->view->id = $this->_getParam('sid');
 
-            // Set processing state
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $db->update('shipment', [
-                'status' => 'processing',
-                'previous_status' => new Zend_Db_Expr('status'),
-                'processing_started_at' => new Zend_Db_Expr('NOW()'),
-                'last_heartbeat' => new Zend_Db_Expr('NOW()')
-            ], "shipment_id = {$id}");
-
             $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
             $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
         } else {

@@ -6,7 +6,7 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 $db = Zend_Db::factory($conf->resources->db);
 Zend_Db_Table::setDefaultAdapter($db);
 
-$staleThresholdMinutes = 5; // Configurable
+$staleThresholdMinutes = 1; // Configurable
 
 try {
     // Reset stale shipments
