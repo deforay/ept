@@ -3,8 +3,14 @@ $directParticipantLogin = false;
 if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogin)) && $this->directParticipantLogin == 'yes') {
     $directParticipantLogin = true;
 } ?>
+<style>
+    .tomselected {
+        display: none;
+    }
+</style>
+
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css" integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <div class="well">
     <form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="<?php echo ($directParticipantLogin) ? "validPassword()" : "validateNow()"; ?>;return false;">
         <fieldset>
@@ -87,13 +93,10 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
-                        <!--  <option value=""></option>
-                        <?php foreach ($this->countriesList as $cou) {
-                        ?>
+                        <option value=""></option>
+                        <?php foreach ($this->countriesList as $cou) { ?>
                             <option value="<?php echo $cou['id']; ?>"><?php echo $cou['iso_name']; ?></option>
-                        <?php
-                        }
-                        ?> -->
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -146,7 +149,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Enrolled Programs"); ?> </label>
                 <div class="col-lg-8">
-                    <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
+                    <select name="enrolledProgram[]" id="enrolledProgram" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
                         <?php foreach ($this->enrolledPrograms as $enrolledPrograms) { ?>
                             <option value="<?php echo $enrolledPrograms['r_epid']; ?>"><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
                         <?php } ?>
@@ -272,64 +275,75 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     </form>
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/js/tom-select.complete.min.js" integrity="sha512-PLbucJiSkC5G/5kCLg/tz+fDvIqDQSB92CrLn0bypi2KUmTS6Iv4l1C/eSX7RrlczdSrqzL1KVUBfcnjk9wV+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     var duplicated = false;
+    var dataManagerSelect, countrySelect;
 
     $(document).ready(function() {
 
         checkIndividualParticipant();
-        $('#enrolledProgram').selectpicker();
-        let _tables = ['data_manager', 'countries'];
-        let _elements = ['dataManager', 'country'];
-        let _returnId = ['dm_id', 'id'];
+        $('#enrolledProgram, #country').selectpicker();
+
+        let _tables = ['data_manager'];
+        let _elements = ['dataManager'];
+        let _returnId = ['dm_id'];
         let _fieldNames = [
-            ['first_name', 'last_name', 'institute', 'primary_email'], // Array for multiple fields
-            ['iso_name'] // Array for single field (keep consistent structure)
+            ['first_name', 'last_name', 'institute', 'primary_email']
         ];
         let _concat = [
-            ['first_name', 'last_name', 'institute', 'primary_email'], // Fields to concatenate
-            ['iso_name'] // Field to concatenate
+            ['first_name', 'last_name', 'institute', 'primary_email']
         ];
 
-        $(_elements).each(function(i, e) {
-            $("#" + _elements[i]).select2({
-                placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
-                minimumInputLength: 0,
-                width: '100%',
-                allowClear: true,
-                id: function(bond) {
-                    return bond._id;
-                },
-                ajax: {
-                    placeholder: "<?= $this->translate->_("Type list to search"); ?>",
-                    url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
+        // Initialize Tom Select for each element
+        _elements.forEach(function(elementId, i) {
+            var selectElement = document.getElementById(elementId);
+            if (!selectElement) return;
+
+            var tomSelectInstance = new TomSelect('#' + elementId, {
+                plugins: ['remove_button'],
+                valueField: 'id', // ✅ Changed from '_id' to 'id'
+                labelField: 'text',
+                searchField: 'text',
+                placeholder: "<?= $this->translate->_("Choose multiple options"); ?>",
+                loadThrottle: 250,
+                preload: false,
+                allowEmptyOption: true,
+                load: function(query, callback) {
+                    var url = "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>";
+
+                    fetch(url + '?' + new URLSearchParams({
                             tableName: _tables[i],
                             returnId: _returnId[i],
-                            fieldNames: _fieldNames[i],
-                            concat: _concat[i],
-                            search: params.term,
-                            page: params.page
-                        };
-                    },
-                    processResults: function(data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.result,
-                            pagination: {
-                                more: (params.page * 10) < data.total_count
-                            }
-                        };
-                    }
+                            fieldNames: JSON.stringify(_fieldNames[i]),
+                            concat: JSON.stringify(_concat[i]),
+                            search: query,
+                            page: 1
+                        }))
+                        .then(response => response.json())
+                        .then(json => {
+                            callback(json.result || []);
+                        })
+                        .catch(() => {
+                            callback();
+                        });
                 },
-                escapeMarkup: function(markup) {
-                    return markup;
+                render: {
+                    option: function(item, escape) {
+                        return '<div>' + escape(item.text) + '</div>';
+                    },
+                    item: function(item, escape) {
+                        return '<div>' + escape(item.text) + '</div>';
+                    }
                 }
             });
+
+            // Store instances for later use
+            if (elementId === 'dataManager') {
+                dataManagerSelect = tomSelectInstance;
+            } else if (elementId === 'country') {
+                countrySelect = tomSelectInstance;
+            }
         });
     });
 
@@ -358,7 +372,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             return false;
         }
         $(".bootstrap-select").removeClass('isRequired');
-        //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
 
         flag = deforayValidator.init({
             formId: 'addParticipantForm'
@@ -384,7 +397,6 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             $("#contactnameDiv").show();
             $("#contactnameDiv").removeClass('hide');
         }
-
     }
 
     <?php if ($directParticipantLogin) { ?>

@@ -6,8 +6,13 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
     }
 }
 ?>
-
+<style>
+    .tomselected {
+        display: none;
+    }
+</style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css" integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <style>
     .hide {
@@ -119,6 +124,10 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
 
                 <div class="col-lg-8">
                     <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
+                        <option value=""></option>
+                        <?php foreach ($this->countriesList as $cou) { ?>
+                            <option value="<?php echo $cou['id']; ?>" <?php echo (isset($this->participant["country"]) && $this->participant["country"] == $cou['id']) ? 'selected="selected"' : ''; ?>><?php echo $cou['iso_name']; ?></option>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -338,6 +347,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/js/tom-select.complete.min.js" integrity="sha512-PLbucJiSkC5G/5kCLg/tz+fDvIqDQSB92CrLn0bypi2KUmTS6Iv4l1C/eSX7RrlczdSrqzL1KVUBfcnjk9wV+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     var duplicated = false;
 
@@ -364,74 +374,81 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
         $('#enrolledProgram').selectpicker();
         // $('#country').selectpicker();
         $('#scheme').selectpicker();
-        const selectedDisplayValues = [<?= json_encode($selectedResponse); ?>, {
-            'id': '<?= $this->participant["country"]; ?>',
-            'text': '<?= $this->participant["iso_name"]; ?>'
-        }];
-        let _tables = ['data_manager', 'countries'];
-        let _elements = ['dataManager', 'country'];
-        let _returnId = ['dm_id', 'id'];
+
+        let _tables = ['data_manager'];
+        let _elements = ['dataManager'];
+        let _returnId = ['dm_id'];
         let _fieldNames = [
-            ['first_name', 'last_name', 'institute', 'primary_email'], // Array for multiple fields
-            ['iso_name'] // Array for single field (keep consistent structure)
+            ['first_name', 'last_name', 'institute', 'primary_email']
         ];
         let _concat = [
-            ['first_name', 'last_name', 'institute', 'primary_email'], // Fields to concatenate
-            ['iso_name'] // Field to concatenate
+            ['first_name', 'last_name', 'institute', 'primary_email']
         ];
 
-        $(_elements).each(function(i, e) {
-            $select2 = $("#" + _elements[i]);
-            $select2.select2({
-                placeholder: "<?= $this->translate->_("Choose one or more option(s)"); ?>",
-                minimumInputLength: 0,
-                width: '100%',
-                allowClear: true,
-                multiple: (_elements[i] === 'dataManager'),
-                id: function(bond) {
-                    return bond._id;
-                },
-                ajax: {
-                    placeholder: "<?= $this->translate->_("Type list to search"); ?>",
-                    url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return {
+        // Initialize Tom Select for each element
+        _elements.forEach(function(elementId, i) {
+            var selectElement = document.getElementById(elementId);
+            if (!selectElement) return;
+
+            // Extract pre-selected options from the existing select element
+            var preloadedOptions = [];
+            var preloadedValues = [];
+            Array.from(selectElement.options).forEach(function(option) {
+                if (option.value) {
+                    preloadedOptions.push({
+                        id: option.value,
+                        text: option.text
+                    });
+                    if (option.selected) {
+                        preloadedValues.push(option.value);
+                    }
+                }
+            });
+
+            var tomSelectInstance = new TomSelect('#' + elementId, {
+                plugins: ['remove_button'],
+                valueField: 'id',
+                labelField: 'text',
+                searchField: 'text',
+                placeholder: "<?= $this->translate->_("Choose multiple options"); ?>",
+                loadThrottle: 250,
+                preload: false,
+                allowEmptyOption: true,
+                options: preloadedOptions, // ✅ Add preloaded options
+                items: preloadedValues, // ✅ Set pre-selected values
+                load: function(query, callback) {
+                    var url = "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>";
+
+                    fetch(url + '?' + new URLSearchParams({
                             tableName: _tables[i],
                             returnId: _returnId[i],
-                            fieldNames: _fieldNames[i],
-                            concat: _concat[i],
-                            search: params.term,
-                            page: params.page
-                        };
-                    },
-                    processResults: function(data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.result,
-                            pagination: {
-                                more: (params.page * 10) < data.total_count
-                            }
-                        };
-                    }
+                            fieldNames: JSON.stringify(_fieldNames[i]),
+                            concat: JSON.stringify(_concat[i]),
+                            search: query,
+                            page: 1
+                        }))
+                        .then(response => response.json())
+                        .then(json => {
+                            callback(json.result || []);
+                        })
+                        .catch(() => {
+                            callback();
+                        });
                 },
-                escapeMarkup: function(markup) {
-                    return markup;
+                render: {
+                    option: function(item, escape) {
+                        return '<div>' + escape(item.text) + '</div>';
+                    },
+                    item: function(item, escape) {
+                        return '<div>' + escape(item.text) + '</div>';
+                    }
                 }
             });
-            // Pre-populate with selected values
-            // Append and trigger selection of pre-selected value
-            const selected = selectedDisplayValues[i];
-            const option = new Option(selected.text, selected.id, true, true);
-            $select2.append(option).trigger('change');
 
-            $select2.trigger({
-                type: 'select2:select',
-                params: {
-                    data: selected
-                }
-            });
+            // Store instances for later use
+            if (elementId === 'dataManager') {
+                dataManagerSelect = tomSelectInstance;
+            }
         });
     });
 

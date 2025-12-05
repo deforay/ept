@@ -1660,14 +1660,25 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Fix: Handle concat fields properly
+        // Fix: Decode JSON strings if needed
+        if (isset($params['concat']) && is_string($params['concat'])) {
+            $params['concat'] = json_decode($params['concat'], true);
+        }
+        if (isset($params['fieldNames']) && is_string($params['fieldNames'])) {
+            $params['fieldNames'] = json_decode($params['fieldNames'], true);
+        }
+
+        // Handle concat fields properly
         $concat = [];
         if (is_array($params['concat'])) {
             foreach ($params['concat'] as $field) {
-                $concat[] = "COALESCE($field,'')";
+                // Sanitize field name to prevent SQL injection
+                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+                $concat[] = "COALESCE(`$field`,'')";
             }
         } else {
-            $concat[] = "COALESCE(" . $params['concat'] . ",'')";
+            $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['concat']);
+            $concat[] = "COALESCE(`$field`,'')";
         }
 
         // Build the SQL query
@@ -1676,21 +1687,27 @@ class Application_Service_Common
             'concat' => new Zend_Db_Expr("CONCAT(" . implode(", ' ', ", $concat) . ")")
         ]);
 
-        // Fix: Handle search across multiple fields properly
+        // Handle search across multiple fields properly
         if (isset($params['search']) && !empty($params['search'])) {
+            // Escape the search term to prevent SQL injection
+            $searchTerm = $db->quote('%' . $params['search'] . '%');
+
             if (is_array($params['fieldNames'])) {
                 // Create OR conditions for searching across multiple fields
                 $searchConditions = [];
                 foreach ($params['fieldNames'] as $field) {
-                    $searchConditions[] = "$field LIKE '%" . $params['search'] . "%'";
+                    // Sanitize field name
+                    $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+                    $searchConditions[] = "`$field` LIKE $searchTerm";
                 }
                 $sql = $sql->where('(' . implode(' OR ', $searchConditions) . ')');
             } else {
-                $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
+                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['fieldNames']);
+                $sql = $sql->where("`$field` LIKE $searchTerm");
             }
         }
 
-        // Fix: Group by primary key to avoid duplicates
+        // Group by primary key to avoid duplicates
         $sql = $sql->group($params['returnId']);
 
         // Add ordering for better UX
@@ -1703,7 +1720,7 @@ class Application_Service_Common
             $offset = ($page - 1) * $limit;
             $sql = $sql->limit($limit, $offset);
         }
-
+        die($sql);
         return $db->fetchAll($sql);
     }
 
