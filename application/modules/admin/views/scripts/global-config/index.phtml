@@ -1,4 +1,3 @@
-
 <div class="well">
 	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
@@ -316,6 +315,57 @@
 					</div>
 				</div>
 			</div>
+			<hr>
+			<?php
+			$emailConfig = json_decode($this->mail_configuration);
+			?>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="host" class="col-lg-4 control-label"><?= $this->translate->_("Email Host"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->host ?? null; ?>" id="host" name="emailConfig[host]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the host of the email'); ?>" title="Please enter the email host" />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="port" class="col-lg-4 control-label"><?= $this->translate->_("Email Port"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->port ?? null; ?>" id="port" name="emailConfig[port]" class="form-control isRequired isValidPort" placeholder="<?= $this->translate->_('Enter the email port'); ?>" title="Please enter a valid email port (1-65535)" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="ssl" class="col-lg-4 control-label"><?= $this->translate->_("SSL type"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->ssl ?? null; ?>" id="ssl" name="emailConfig[ssl]" class="form-control isRequired isValidSSL" style="background: #fff" placeholder="<?= $this->translate->_('Enter the ssl for email (tls, ssl, starttls, or none)'); ?>" title="Please enter a valid SSL type (tls, ssl, starttls, or none)" />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="email" class="col-lg-4 control-label"><?= $this->translate->_("User Email ID"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->email ?? null; ?>" id="email" name="emailConfig[email]" class="form-control isRequired isEmail" style="background: #fff" placeholder="<?= $this->translate->_('Enter the email id'); ?>" title="Please enter a valid email address" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="passcode" class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->passcode ?? null; ?>" id="passcode" name="emailConfig[passcode]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</fieldset>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
 			<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo">
@@ -403,4 +453,3 @@
 			});
 	}
 </script>
-

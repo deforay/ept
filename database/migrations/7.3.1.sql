@@ -22,3 +22,6 @@ ALTER TABLE queue_report_generation
 ADD COLUMN previous_status VARCHAR(256) NULL,
 ADD COLUMN processing_started_at DATETIME NULL,
 ADD COLUMN last_heartbeat DATETIME NULL;
+
+-- Thana 08-Dec-2025
+INSERT INTO `global_config` (`name`, `value`) VALUES ('mail_configuration', '');
