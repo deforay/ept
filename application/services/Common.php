@@ -1038,15 +1038,57 @@ class Application_Service_Common
     /**
      * Mark a temp_mail row as not-sent with an optional failure reason.
      */
-    public static function markTempMailFailed(Zend_Db_Adapter_Abstract $adapter, int $tempId, ?string $reason = null): void
+    public static function classifyMailFailure(string $reason): string
     {
-        $adapter->update(
+        $r = strtolower($reason);
+
+        if (strpos($r, 'authentication') !== false || strpos($r, 'authenticat') !== false) {
+            return 'smtp-auth';
+        }
+        if (
+            strpos($r, 'connection timed out') !== false ||
+            strpos($r, 'unable to connect') !== false ||
+            strpos($r, 'could not connect') !== false
+        ) {
+            return 'connectivity';
+        }
+        if (
+            strpos($r, 'recipient') !== false &&
+            (strpos($r, 'rejected') !== false || strpos($r, 'invalid') !== false)
+        ) {
+            return 'bad-recipient';
+        }
+        if (strpos($r, 'quota') !== false || strpos($r, 'too many messages') !== false) {
+            return 'rate-limit';
+        }
+        if (strpos($r, 'spam') !== false || strpos($r, 'blocked') !== false) {
+            return 'content';
+        }
+
+        return 'other';
+    }
+
+
+    /**
+     * Mark a temp_mail row as failed with an optional failure reason.
+     */
+    public static function markTempMailFailed(
+        Zend_Db_Adapter_Abstract $db,
+        int $tempId,
+        string $failureReason
+    ): void {
+        $failureReason = mb_substr($failureReason, 0, 1024); // keep it bounded
+        $failureType = self::classifyMailFailure($failureReason);
+
+        $db->update(
             'temp_mail',
             [
-                'status'         => 'failed',
-                'failure_reason' => self::formatMailFailureReason($reason),
+                'status' => 'failed',
+                'failure_reason' => $failureReason,
+                'failure_type' => $failureType,
+                'updated_at' => new Zend_Db_Expr('NOW()'),
             ],
-            $adapter->quoteInto('temp_id = ?', $tempId)
+            ['temp_id = ?' => $tempId]
         );
     }
 
@@ -1792,5 +1834,140 @@ class Application_Service_Common
             $returndata[$key][] = $val;
         }
         return $returndata;
+    }
+
+
+    /**
+     * Compute email sending health from temp_mail.
+     *
+     * @param Zend_Db_Adapter_Abstract $db
+     * @param array $options {
+     *      @type int   $days             Look-back window in days (default 7)
+     *      @type int   $min_total        Min emails in window before we care (default 20)
+     *      @type float $warn_threshold   Failure ratio for "warning" (default 0.05 = 5%)
+     *      @type float $critical_threshold Failure ratio for "critical" (default 0.15 = 15%)
+     * }
+     * @return array {
+     *      @type int    window_days
+     *      @type string window_from
+     *      @type string window_to
+     *      @type int    sent
+     *      @type int    failed
+     *      @type int    pending
+     *      @type int    in_flight
+     *      @type int    total_considered   sent + failed
+     *      @type float  failure_rate       0.0–1.0
+     *      @type string severity           'ok'|'warning'|'critical'
+     *      @type string summary            Human-readable summary
+     *      @type array  breakdown          [ [ 'failure_type' => 'smtp-auth', 'count' => 10 ], ... ]
+     * }
+     */
+    public static function getEmailQueueHealth(Zend_Db_Adapter_Abstract $db, array $options = []): array
+    {
+        $days              = isset($options['days']) ? (int)$options['days'] : 7;
+        $minTotal          = isset($options['min_total']) ? (int)$options['min_total'] : 20;
+        $warnThreshold     = isset($options['warn_threshold']) ? (float)$options['warn_threshold'] : 0.05;
+        $criticalThreshold = isset($options['critical_threshold']) ? (float)$options['critical_threshold'] : 0.15;
+
+        if ($days < 1) {
+            $days = 1;
+        }
+
+        // Time window (DB-side)
+        $windowExpr = sprintf("NOW() - INTERVAL %d DAY", $days);
+
+        // Totals
+        $sqlTotals = "
+            SELECT
+                SUM(status = 'sent')                         AS sent_count,
+                SUM(status IN ('failed','not-sent'))         AS failed_count,
+                SUM(status = 'pending')                      AS pending_count,
+                SUM(status = 'picked-to-process')            AS inflight_count
+            FROM temp_mail
+            WHERE queued_on >= {$windowExpr}
+        ";
+
+        $row = $db->fetchRow($sqlTotals) ?: [];
+
+        $sent     = (int)($row['sent_count']     ?? 0);
+        $failed   = (int)($row['failed_count']   ?? 0);
+        $pending  = (int)($row['pending_count']  ?? 0);
+        $inFlight = (int)($row['inflight_count'] ?? 0);
+
+        $totalConsidered = $sent + $failed;
+        $failureRate     = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
+
+        // Breakdown by failure_type
+        $sqlBreakdown = "
+            SELECT
+                COALESCE(failure_type, 'other') AS failure_type,
+                COUNT(*) AS cnt
+            FROM temp_mail
+            WHERE status IN ('failed','not-sent')
+              AND queued_on >= {$windowExpr}
+            GROUP BY failure_type
+            ORDER BY cnt DESC
+        ";
+        $breakdown = $db->fetchAll($sqlBreakdown) ?: [];
+
+        // Determine severity
+        $severity = 'ok';
+        if ($totalConsidered >= $minTotal && $failed > 0) {
+            if ($failureRate >= $criticalThreshold) {
+                $severity = 'critical';
+            } elseif ($failureRate >= $warnThreshold) {
+                $severity = 'warning';
+            }
+        }
+
+        // Human-readable summary
+        $percent = $failureRate * 100;
+        if ($totalConsidered === 0 && $pending === 0 && $inFlight === 0) {
+            $summary = sprintf(
+                'No email activity in the last %d day(s).',
+                $days
+            );
+        } elseif ($totalConsidered === 0) {
+            $summary = sprintf(
+                'No emails completed in the last %d day(s). Pending: %d, In-flight: %d.',
+                $days,
+                $pending,
+                $inFlight
+            );
+        } else {
+            $summary = sprintf(
+                '%d of %d emails (%.1f%%) failed in the last %d day(s). Pending: %d, In-flight: %d.',
+                $failed,
+                $totalConsidered,
+                $percent,
+                $days,
+                $pending,
+                $inFlight
+            );
+        }
+
+        // Window timestamps (PHP-side, for display)
+        $now   = new DateTimeImmutable('now');
+        $from  = $now->sub(new DateInterval('P' . $days . 'D'));
+
+        return [
+            'window_days'       => $days,
+            'window_from'       => $from->format('Y-m-d H:i:s'),
+            'window_to'         => $now->format('Y-m-d H:i:s'),
+            'sent'              => $sent,
+            'failed'            => $failed,
+            'pending'           => $pending,
+            'in_flight'         => $inFlight,
+            'total_considered'  => $totalConsidered,
+            'failure_rate'      => $failureRate,
+            'severity'          => $severity,
+            'summary'           => $summary,
+            'breakdown'         => $breakdown,
+            'config'            => [
+                'min_total'          => $minTotal,
+                'warn_threshold'     => $warnThreshold,
+                'critical_threshold' => $criticalThreshold,
+            ],
+        ];
     }
 }

@@ -319,7 +319,17 @@ try {
 
             // Finalize the row
             if ($allOk) {
-                $db->delete('temp_mail', $db->quoteInto('temp_id = ?', $result['temp_id']));
+                $db->update(
+                    'temp_mail',
+                    [
+                        'status'         => 'sent',
+                        'failure_reason' => null,
+                        'failure_type'   => null,
+                        'updated_at'     => new Zend_Db_Expr('NOW()'),
+                        'sent_at'        => new Zend_Db_Expr('NOW()'),
+                    ],
+                    ['temp_id = ?' => (int) $result['temp_id']]
+                );
             } else {
                 Application_Service_Common::markTempMailFailed(
                     $db,
