@@ -27,6 +27,19 @@ class Admin_IndexController extends Zend_Controller_Action
         $this->view->pendingParticipants = $clientsServices->getPendingParticipants();
 
         $this->view->schemes = $scheme->getAllSchemes();
+
+        $health = Application_Service_Common::getEmailQueueHealth([
+            'days'              => 7,
+            'min_total'         => 20,
+            'warn_threshold'    => 0.05,  // 5%
+            'critical_threshold' => 0.15,  // 15%
+        ]);
+
+        $this->view->emailHealth = $health;
+
+        // For a big red banner only on real trouble:
+        $this->view->showEmailCriticalAlert = ($health['severity'] === 'critical');
+        $this->view->showEmailWarningAlert  = ($health['severity'] === 'warning');
     }
 
     public function getSchemeParticipantsAction()

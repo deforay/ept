@@ -1,0 +1,80 @@
+</style>
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Email Failed Data"); ?></div>
+</h4>
+
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="emailTable">
+    <thead>
+        <tr>
+            <th><?= $this->translate->_("To Email"); ?></th>
+            <th><?= $this->translate->_("Subject"); ?></th>
+            <th><?= $this->translate->_("Message"); ?></th>
+            <th><?= $this->translate->_("Status"); ?></th>
+            <th><?= $this->translate->_("Failure Type"); ?></th>
+            <th><?= $this->translate->_("Failure Reasons"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" charset="utf-8">
+    /* Table initialisation */
+    var oTable = null;
+
+    $(document).ready(function() {
+
+        oTable = $('#emailTable').dataTable({
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page"
+            },
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [{
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                },
+                {
+                    "sClass": "center",
+                }
+            ],
+            "aaSorting": [
+                [0, "desc"]
+            ],
+            "bProcessing": true,
+            "bSortClasses": false,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'alerts', 'action' => 'email', 'format' => 'html')); ?>",
+            "fnServerData": function(sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": function(json) {
+                        fnCallback(json);
+                    }
+                });
+            }
+        });
+    });
+</script>

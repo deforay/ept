@@ -103,12 +103,17 @@ try {
 
     // === App setup ===
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+
+    $globalConfigDb  = new Application_Model_DbTable_GlobalConfig();
+    $smtpJson = $globalConfigDb->getValue('mail_configuration');
+    $smtpMailDetails = json_decode($smtpJson);
+
     $db   = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
     $smtpTransportObj = new Zend_Mail_Transport_Smtp(
-        $conf->email->host,
-        array_merge($conf->email->config->toArray(), ['connection_timeout' => 30])
+        $smtpMailDetails->host,
+        array_merge((array)$smtpMailDetails, ['connection_timeout' => 30])
     );
 
     // === Pull up to N pending rows this minute ===

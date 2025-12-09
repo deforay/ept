@@ -34,6 +34,16 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 	}
 }
 ?>
+<?php if (!empty($this->showEmailCriticalAlert)): ?>
+	<div class="alert alert-danger">
+		<strong> Email issue: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+	</div>
+<?php elseif (!empty($this->showEmailWarningAlert)): ?>
+	<div class="alert alert-warning">
+		<strong> Email warning: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+	</div>
+<?php endif; ?>
+
 <div class="row">
 	<div class="col-lg-12">
 		<ol class="breadcrumb" style="margin-bottom:10px;">

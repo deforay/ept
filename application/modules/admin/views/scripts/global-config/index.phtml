@@ -350,7 +350,7 @@
 					<div class="form-group">
 						<label for="email" class="col-lg-4 control-label"><?= $this->translate->_("User Email ID"); ?> <span class="mandatory">*</span></label>
 						<div class="col-lg-8">
-							<input type="text" value="<?php echo $emailConfig->email ?? null; ?>" id="email" name="emailConfig[email]" class="form-control isRequired isEmail" style="background: #fff" placeholder="<?= $this->translate->_('Enter the email id'); ?>" title="Please enter a valid email address" />
+							<input type="text" value="<?php echo $emailConfig->username ?? null; ?>" id="email" name="emailConfig[username]" class="form-control isRequired isEmail" style="background: #fff" placeholder="<?= $this->translate->_('Enter the email id'); ?>" title="Please enter a valid email address" />
 						</div>
 					</div>
 				</div>
@@ -358,9 +358,17 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
-						<label for="passcode" class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
+						<label for="password" class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
 						<div class="col-lg-8">
-							<input type="text" value="<?php echo $emailConfig->passcode ?? null; ?>" id="passcode" name="emailConfig[passcode]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
+							<input type="text" value="<?php echo $emailConfig->password ?? null; ?>" id="password" name="emailConfig[password]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="auth" class="col-lg-4 control-label"><?= $this->translate->_("Auth Type"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->auth ?? null; ?>" id="auth" name="emailConfig[auth]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
 						</div>
 					</div>
 				</div>

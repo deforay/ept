@@ -1862,8 +1862,9 @@ class Application_Service_Common
      *      @type array  breakdown          [ [ 'failure_type' => 'smtp-auth', 'count' => 10 ], ... ]
      * }
      */
-    public static function getEmailQueueHealth(Zend_Db_Adapter_Abstract $db, array $options = []): array
+    public static function getEmailQueueHealth(array $options = []): array
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $days              = isset($options['days']) ? (int)$options['days'] : 7;
         $minTotal          = isset($options['min_total']) ? (int)$options['min_total'] : 20;
         $warnThreshold     = isset($options['warn_threshold']) ? (float)$options['warn_threshold'] : 0.05;
@@ -1969,5 +1970,11 @@ class Application_Service_Common
                 'critical_threshold' => $criticalThreshold,
             ],
         ];
+    }
+
+    public function getEmailFailureInGrid($search)
+    {
+        $db = new Application_Model_DbTable_TempMail();
+        return $db->fetchEmailFailureInGrid($search);
     }
 }
