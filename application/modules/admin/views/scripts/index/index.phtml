@@ -34,12 +34,14 @@ if (isset($this->schemes) && !empty($this->schemes)) {
 	}
 }
 ?>
-<?php if (!empty($this->showEmailCriticalAlert)): ?>
-	<div class="alert alert-danger">
+<?php if (!empty($this->showEmailCriticalAlert) && !isset($_COOKIE['email_alert_dismissed'])): ?>
+	<div class="alert alert-danger alert-dismissible">
+		<button type="button" class="close" onclick="dismissEmailAlert()" style="color: white; opacity: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-weight: bold;">&times;</button>
 		<strong> Email issue: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
 	</div>
-<?php elseif (!empty($this->showEmailWarningAlert)): ?>
-	<div class="alert alert-warning">
+<?php elseif (!empty($this->showEmailWarningAlert) && !isset($_COOKIE['email_alert_dismissed'])): ?>
+	<div class="alert alert-warning alert-dismissible">
+		<button type="button" class="close" onclick="dismissEmailAlert()" style="color: white; opacity: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-weight: bold;">&times;</button>
 		<strong> Email warning: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
 	</div>
 <?php endif; ?>
@@ -324,4 +326,12 @@ if (count($this->pendingParticipants) > 0) {
 			})
 	});
 	// $('svg').height(500);
+
+	function dismissEmailAlert() {
+		// Set cookie to remember dismissal for the entire session (browser close)
+		document.cookie = "email_alert_dismissed=1; path=/; SameSite=Strict";
+
+		// Hide the alert immediately
+		event.target.closest('.alert').style.display = 'none';
+	}
 </script>
