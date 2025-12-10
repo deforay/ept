@@ -217,8 +217,8 @@ try {
             }
 
             // Common From
-            $fromEmail    = $conf->email->config->username;
-            $fromFullName = $conf->email->fromName ?? 'ePT System';
+            $fromEmail    = $smtpMailDetails->fromEmail ?? $smtpMailDetails->username;
+            $fromFullName = $smtpMailDetails->fromName ?? 'ePT System';
 
             // Validate reply_to (single address; take first if commas/semicolons present)
             $replyToRaw = isset($result['reply_to']) ? trim((string)$result['reply_to']) : '';

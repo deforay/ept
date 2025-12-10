@@ -340,6 +340,24 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
+						<label for="fromName" class="col-lg-4 control-label"><?= $this->translate->_("From Name"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="fromName" name="emailConfig[fromName]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from name'); ?>" />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="fromEmail" class="col-lg-4 control-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
+						<div class="col-lg-8">
+							<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail" name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
 						<label for="ssl" class="col-lg-4 control-label"><?= $this->translate->_("SSL type"); ?> <span class="mandatory">*</span></label>
 						<div class="col-lg-8">
 							<input type="text" value="<?php echo $emailConfig->ssl ?? null; ?>" id="ssl" name="emailConfig[ssl]" class="form-control isRequired isValidSSL" style="background: #fff" placeholder="<?= $this->translate->_('Enter the ssl for email (tls, ssl, starttls, or none)'); ?>" title="Please enter a valid SSL type (tls, ssl, starttls, or none)" />
