@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce680cec45c59303cf8af386b6dd1971",
+    "content-hash": "3a22977111f396c8af5026764d56b3f8",
     "packages": [
         {
             "name": "amitdugar/archiveutil",
@@ -62,16 +62,16 @@
         },
         {
             "name": "amitdugar/db-tools",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amitdugar/db-tools.git",
-                "reference": "0e84b24dde8809d59dea43c8ac1084040c52028a"
+                "reference": "eb4c3d463bcff73553b82f6b1fd7613d1d33a738"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/0e84b24dde8809d59dea43c8ac1084040c52028a",
-                "reference": "0e84b24dde8809d59dea43c8ac1084040c52028a",
+                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/eb4c3d463bcff73553b82f6b1fd7613d1d33a738",
+                "reference": "eb4c3d463bcff73553b82f6b1fd7613d1d33a738",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,7 @@
                 "issues": "https://github.com/amitdugar/db-tools/issues",
                 "source": "https://github.com/amitdugar/db-tools"
             },
-            "time": "2025-12-11T11:09:36+00:00"
+            "time": "2025-12-11T15:09:11+00:00"
         },
         {
             "name": "composer/pcre",
