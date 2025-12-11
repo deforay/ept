@@ -821,7 +821,39 @@ log_action "Composer operations completed."
 
 apache2ctl -k graceful || systemctl reload apache2
 
-php "${ept_path}/bin/db-tools.php" config-test
+# Setup db-tools with config from application.ini
+print header "Configuring db-tools"
+ini_file="${ept_path}/application/configs/application.ini"
+mkdir -p "${ept_path}/backups"
+chown www-data:www-data "${ept_path}/backups"
+if [ -f "$ini_file" ]; then
+    db_host=$(extract_mysql_host_from_config "$ini_file" production)
+    db_user=$(extract_mysql_user_from_config "$ini_file" production)
+    db_name=$(extract_mysql_dbname_from_config "$ini_file" production)
+    db_pass=$(extract_mysql_password_from_config "$ini_file" production)
+
+    # Run non-interactive setup
+    sudo -u www-data "${ept_path}/vendor/bin/db-tools" setup --no-prompt \
+        --host="${db_host:-localhost}" \
+        --database="$db_name" \
+        --user="$db_user" \
+        --password="$db_pass" \
+        --output-dir="${ept_path}/backups" \
+        --retention=7 \
+        -o env
+
+    # Test the connection
+    if sudo -u www-data "${ept_path}/vendor/bin/db-tools" db:test; then
+        print success "db-tools configured and connection verified."
+        log_action "db-tools configured successfully."
+    else
+        print warning "db-tools configured but connection test failed. Please check credentials."
+        log_action "db-tools connection test failed."
+    fi
+else
+    print warning "application.ini not found. Skipping db-tools setup."
+    log_action "Skipped db-tools setup - application.ini not found."
+fi
 
 # Run the database migrations and other post-update tasks
 print header "Running database migrations and other post-update tasks"

@@ -2,9 +2,6 @@
 
 require_once __DIR__ . '/../cli-bootstrap.php';
 
-// Composer autoload for Symfony Mailer
-require_once __DIR__ . '/../vendor/autoload.php';
-
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
@@ -14,11 +11,11 @@ use Symfony\Component\Mime\Part\File;
 
 /* ========= Tunables ========= */
 
-const QUEUE_FETCH_LIMIT    = 100; // fetch up to N rows per run
+const QUEUE_FETCH_LIMIT = 100; // fetch up to N rows per run
 const RECIPIENTS_PER_EMAIL = 100; // To+Cc+Bcc cap per message
-const BATCH_SLEEP_MS       = 150; // tiny delay between batches; set 0 to disable
-const LOCK_TTL_SEC         = 600; // lock auto-expires after 10 minutes
-const ROW_SLEEP_MS         = 25; // tiny delay between rows; set 0 to disable
+const BATCH_SLEEP_MS = 150; // tiny delay between batches; set 0 to disable
+const LOCK_TTL_SEC = 600; // lock auto-expires after 10 minutes
+const ROW_SLEEP_MS = 25; // tiny delay between rows; set 0 to disable
 /* ============================ */
 
 $LOCK_FILE = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ept_mail_cron.lock';
@@ -39,7 +36,7 @@ function acquireLock(string $path, int $ttlSec): array
 
     clearstatcache(true, $path);
     $mtime = @filemtime($path) ?: 0;
-    $age   = time() - $mtime;
+    $age = time() - $mtime;
 
     // Try non-blocking exclusive lock
     if (!flock($fp, LOCK_EX | LOCK_NB)) {
@@ -114,11 +111,11 @@ try {
     // === App setup ===
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
-    $globalConfigDb  = new Application_Model_DbTable_GlobalConfig();
+    $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
     $smtpJson = $globalConfigDb->getValue('mail_configuration');
     $smtpMailDetails = json_decode($smtpJson);
 
-    $db   = Zend_Db::factory($conf->resources->db);
+    $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
     // === Create Symfony Mailer Transport ===
@@ -168,7 +165,7 @@ try {
             // Parse recipients
             $recips = Application_Service_Common::parseRecipients(
                 trim($result['to_email'] ?? ''),
-                isset($result['cc'])  ? trim($result['cc'])  : null,
+                isset($result['cc']) ? trim($result['cc']) : null,
                 isset($result['bcc']) ? trim($result['bcc']) : null
             );
 
@@ -185,10 +182,10 @@ try {
                 $batches = [];
                 while (!empty($to) || !empty($cc) || !empty($bcc)) {
                     $remaining = $cap;
-                    $takeTo  = array_splice($to, 0, min($remaining, count($to)));
+                    $takeTo = array_splice($to, 0, min($remaining, count($to)));
                     $remaining -= count($takeTo);
 
-                    $takeCc  = array_splice($cc, 0, min($remaining, count($cc)));
+                    $takeCc = array_splice($cc, 0, min($remaining, count($cc)));
                     $remaining -= count($takeCc);
 
                     $takeBcc = array_splice($bcc, 0, min($remaining, count($bcc)));
@@ -212,13 +209,13 @@ try {
             };
 
             // Start from parsed recipients
-            $to  = $recips['to']  ?? [];
-            $cc  = $recips['cc']  ?? [];
+            $to = $recips['to'] ?? [];
+            $cc = $recips['cc'] ?? [];
             $bcc = $recips['bcc'] ?? [];
 
             // Dedupe and avoid duplicate visibility across fields
-            $to  = array_values(array_unique($to));
-            $cc  = array_values(array_unique(array_diff($cc, $to)));
+            $to = array_values(array_unique($to));
+            $cc = array_values(array_unique(array_diff($cc, $to)));
             $bcc = array_values(array_unique(array_diff($bcc, $to, $cc)));
 
             // Now build capped batches
@@ -241,11 +238,11 @@ try {
             }
 
             // Common From
-            $fromEmail    = $smtpMailDetails->fromEmail ?? $smtpMailDetails->username;
+            $fromEmail = $smtpMailDetails->fromEmail ?? $smtpMailDetails->username;
             $fromFullName = $smtpMailDetails->fromName ?? 'ePT System';
 
             // Validate reply_to (single address; take first if commas/semicolons present)
-            $replyToRaw = isset($result['reply_to']) ? trim((string)$result['reply_to']) : '';
+            $replyToRaw = isset($result['reply_to']) ? trim((string) $result['reply_to']) : '';
             $replyTo = null;
             if ($replyToRaw !== '') {
                 $first = trim(preg_split('/[;,]+/', $replyToRaw)[0] ?? '');
@@ -268,8 +265,8 @@ try {
                 // Create Symfony Email
                 $email = new Email();
 
-                $subject = strip_tags(trim((string)$result['subject']));
-                $rawHtml  = (string)$result['message'];
+                $subject = strip_tags(trim((string) $result['subject']));
+                $rawHtml = (string) $result['message'];
                 $bodyHtml = function_exists('mb_strimwidth') ? mb_strimwidth($rawHtml, 0, 2_000_000, '') : substr($rawHtml, 0, 2_000_000);
                 $bodyText = strip_tags($bodyHtml) ?: '[no content]';
 
@@ -294,11 +291,11 @@ try {
 
                 // Add custom headers for diagnostics
                 $email->getHeaders()
-                    ->addTextHeader('X-Mail-Batch', (string)$batchIndex)
-                    ->addTextHeader('X-Temp-Mail-ID', (string)$result['temp_id'])
-                    ->addTextHeader('X-Batch-To', (string)count($batch['to']))
-                    ->addTextHeader('X-Batch-Cc', (string)count($batch['cc']))
-                    ->addTextHeader('X-Batch-Bcc', (string)count($batch['bcc']));
+                    ->addTextHeader('X-Mail-Batch', (string) $batchIndex)
+                    ->addTextHeader('X-Temp-Mail-ID', (string) $result['temp_id'])
+                    ->addTextHeader('X-Batch-To', (string) count($batch['to']))
+                    ->addTextHeader('X-Batch-Cc', (string) count($batch['cc']))
+                    ->addTextHeader('X-Batch-Bcc', (string) count($batch['bcc']));
 
                 // Attachments
                 if (!empty($attachments)) {
@@ -337,7 +334,8 @@ try {
                     // keep trying remaining batches; mark row 'not-sent' afterwards
                 }
                 unset($email);
-                if (function_exists('gc_collect_cycles')) gc_collect_cycles();
+                if (function_exists('gc_collect_cycles'))
+                    gc_collect_cycles();
             }
 
             // Finalize the row
@@ -345,17 +343,16 @@ try {
                 $db->update(
                     'temp_mail',
                     [
-                        'status'         => 'sent',
+                        'status' => 'sent',
                         'failure_reason' => null,
-                        'failure_type'   => null,
-                        'updated_at'     => new Zend_Db_Expr('NOW()'),
-                        'sent_at'        => new Zend_Db_Expr('NOW()'),
+                        'failure_type' => null,
+                        'updated_at' => new Zend_Db_Expr('NOW()'),
+                        'sent_at' => new Zend_Db_Expr('NOW()'),
                     ],
                     ['temp_id = ?' => (int) $result['temp_id']]
                 );
             } else {
                 Application_Service_Common::markTempMailFailed(
-                    $db,
                     (int) $result['temp_id'],
                     $failureReason ?: 'One or more batches failed to send'
                 );
@@ -367,7 +364,6 @@ try {
         } catch (Throwable $e) {
             $failureReason = $failureReason ?? $e->getMessage();
             Application_Service_Common::markTempMailFailed(
-                $db,
                 (int) $result['temp_id'],
                 $failureReason
             );

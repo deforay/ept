@@ -100,8 +100,8 @@ class Application_Service_Common
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
     {
         // Normalize scalars/arrays to strings for parseRecipients()
-        $toStr  = is_array($to)  ? implode(',', array_values($to))  : (string) $to;
-        $ccStr  = is_array($cc)  ? implode(',', array_values($cc))  : (string) $cc;
+        $toStr = is_array($to) ? implode(',', array_values($to)) : (string) $to;
+        $ccStr = is_array($cc) ? implode(',', array_values($cc)) : (string) $cc;
         $bccStr = is_array($bcc) ? implode(',', array_values($bcc)) : (string) $bcc;
 
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -146,7 +146,7 @@ class Application_Service_Common
             foreach ($attachments as $filePath) {
                 if (file_exists($filePath)) {
                     $attachment = file_get_contents($filePath);
-                    $fileName   = basename($filePath);
+                    $fileName = basename($filePath);
                     $systemMail->createAttachment(
                         $attachment,
                         Zend_Mime::TYPE_OCTETSTREAM,
@@ -214,7 +214,7 @@ class Application_Service_Common
             $db->addContact($data);
 
             $fromEmail = Application_Service_Common::getConfig('admin_email');
-            $fromName  = "Online PT Team";
+            $fromName = "Online PT Team";
 
             $toArray[] = Application_Service_Common::getConfig('admin_email');
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -277,7 +277,7 @@ class Application_Service_Common
     public function getParticipantsProvinceList($cid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from(['p' => 'participant'], ["state"])->group(["state"])->order(["state"]);
+        $sql = $db->select()->distinct()->from(['p' => 'participant'], ["state"])->group(["state"])->order(["state"]);
         if (isset($cid) && !empty($cid)) {
             $sql = $sql->where("p.country IN (?)", $cid);
         }
@@ -301,7 +301,7 @@ class Application_Service_Common
     public function getParticipantsDistrictList($sid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant', ["district"])->group(["district"])->order(["district"]);
+        $sql = $db->select()->distinct()->from('participant', ["district"])->group(["district"])->order(["district"]);
         if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("state IN (?)", $sid);
         }
@@ -331,7 +331,7 @@ class Application_Service_Common
     public function getAllInstitutes($pid = null, $did = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql =  $db->select()->distinct()->from('participant', ["institute_name"])->group(["institute_name"])->order(["institute_name"]);
+        $sql = $db->select()->distinct()->from('participant', ["institute_name"])->group(["institute_name"])->order(["institute_name"]);
         if (isset($pid) && !empty($pid)) {
             $sql = $sql->where("state like ?", $pid);
         }
@@ -396,7 +396,7 @@ class Application_Service_Common
     {
         $db = new Application_Model_DbTable_TempMail();
         $replyTo ??= $fromMail;
-        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message,  $fromMail, $fromName, $attachedFile, $replyTo);
+        return $db->insertTempMailDetails($to, $cc, $bcc, $subject, $message, $fromMail, $fromName, $attachedFile, $replyTo);
     }
 
     public function getAllModeOfReceipt()
@@ -449,7 +449,7 @@ class Application_Service_Common
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
-        $limit  = '10';
+        $limit = '10';
         $sQuery = $tempMailDb->getAdapter()->select()
             ->from(array('tm' => 'temp_mail'))
             ->where("status='pending'")
@@ -465,11 +465,11 @@ class Application_Service_Common
             // mark picked
             $tempMailDb->updateTempMailStatus($id);
 
-            $fromEmail   = $result['from_mail'];
+            $fromEmail = $result['from_mail'];
             $fromFullName = $result['from_full_name'];
-            $subject     = $result['subject'];
-            $bodyHtml    = html_entity_decode((string) $result['message'], ENT_QUOTES, 'UTF-8');
-            $bodyHtml    = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $bodyHtml);
+            $subject = $result['subject'];
+            $bodyHtml = html_entity_decode((string) $result['message'], ENT_QUOTES, 'UTF-8');
+            $bodyHtml = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $bodyHtml);
 
             $mail = new Zend_Mail();
             $mail->setSubject((string) $subject);
@@ -480,7 +480,7 @@ class Application_Service_Common
             // NEW: use parseRecipients for To/CC/BCC
             $recips = self::parseRecipients(
                 trim((string) ($result['to_email'] ?? '')),
-                isset($result['cc'])  ? trim((string) $result['cc'])  : null,
+                isset($result['cc']) ? trim((string) $result['cc']) : null,
                 isset($result['bcc']) ? trim((string) $result['bcc']) : null
             );
 
@@ -491,7 +491,6 @@ class Application_Service_Common
                 error_log("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
                 // revert status to not-sent and continue
                 self::markTempMailFailed(
-                    $tempMailDb->getAdapter(),
                     (int) $id,
                     'No valid To recipients'
                 );
@@ -519,7 +518,6 @@ class Application_Service_Common
                 error_log("===== MAIL SENDING FAILED - END =====");
                 // mark not-sent and continue to next
                 self::markTempMailFailed(
-                    $tempMailDb->getAdapter(),
                     (int) $id,
                     $exc->getMessage()
                 );
@@ -593,34 +591,34 @@ class Application_Service_Common
     {
         $osPlatform = "Unknown OS - " . $userAgent;
 
-        $osArray =  array(
-            '/windows nt 6.3/i'     =>  'Windows 8.1',
-            '/windows nt 6.2/i'     =>  'Windows 8',
-            '/windows nt 6.1/i'     =>  'Windows 7',
-            '/windows nt 6.0/i'     =>  'Windows Vista',
-            '/windows nt 5.2/i'     =>  'Windows Server 2003/XP x64',
-            '/windows nt 5.1/i'     =>  'Windows XP',
-            '/windows xp/i'         =>  'Windows XP',
-            '/windows nt 5.0/i'     =>  'Windows 2000',
-            '/windows me/i'         =>  'Windows ME',
-            '/win98/i'              =>  'Windows 98',
-            '/win95/i'              =>  'Windows 95',
-            '/win16/i'              =>  'Windows 3.11',
-            '/macintosh|mac os x/i' =>  'Mac OS X',
-            '/mac_powerpc/i'        =>  'Mac OS 9',
-            '/linux/i'              =>  'Linux',
-            '/ubuntu/i'             =>  'Ubuntu',
-            '/iphone/i'             =>  'iPhone',
-            '/ipod/i'               =>  'iPod',
-            '/ipad/i'               =>  'iPad',
-            '/android/i'            =>  'Android',
-            '/blackberry/i'         =>  'BlackBerry',
-            '/webos/i'              =>  'Mobile'
+        $osArray = array(
+            '/windows nt 6.3/i' => 'Windows 8.1',
+            '/windows nt 6.2/i' => 'Windows 8',
+            '/windows nt 6.1/i' => 'Windows 7',
+            '/windows nt 6.0/i' => 'Windows Vista',
+            '/windows nt 5.2/i' => 'Windows Server 2003/XP x64',
+            '/windows nt 5.1/i' => 'Windows XP',
+            '/windows xp/i' => 'Windows XP',
+            '/windows nt 5.0/i' => 'Windows 2000',
+            '/windows me/i' => 'Windows ME',
+            '/win98/i' => 'Windows 98',
+            '/win95/i' => 'Windows 95',
+            '/win16/i' => 'Windows 3.11',
+            '/macintosh|mac os x/i' => 'Mac OS X',
+            '/mac_powerpc/i' => 'Mac OS 9',
+            '/linux/i' => 'Linux',
+            '/ubuntu/i' => 'Ubuntu',
+            '/iphone/i' => 'iPhone',
+            '/ipod/i' => 'iPod',
+            '/ipad/i' => 'iPad',
+            '/android/i' => 'Android',
+            '/blackberry/i' => 'BlackBerry',
+            '/webos/i' => 'Mobile'
         );
 
         foreach ($osArray as $regex => $value) {
             if (preg_match($regex, $userAgent)) {
-                $osPlatform    =   $value;
+                $osPlatform = $value;
             }
         }
         return $osPlatform;
@@ -629,23 +627,23 @@ class Application_Service_Common
     public function getBrowser($userAgent = null)
     {
 
-        $browser        =   "Unknown Browser - " . $userAgent;
-        $browserArray  =   array(
-            '/msie/i'       =>  'Internet Explorer',
-            '/firefox/i'    =>  'Firefox',
-            '/safari/i'     =>  'Safari',
-            '/chrome/i'     =>  'Chrome',
-            '/opera/i'      =>  'Opera',
-            '/netscape/i'   =>  'Netscape',
-            '/maxthon/i'    =>  'Maxthon',
-            '/konqueror/i'  =>  'Konqueror',
-            '/mobile/i'     =>  'Handheld Browser'
+        $browser = "Unknown Browser - " . $userAgent;
+        $browserArray = array(
+            '/msie/i' => 'Internet Explorer',
+            '/firefox/i' => 'Firefox',
+            '/safari/i' => 'Safari',
+            '/chrome/i' => 'Chrome',
+            '/opera/i' => 'Opera',
+            '/netscape/i' => 'Netscape',
+            '/maxthon/i' => 'Maxthon',
+            '/konqueror/i' => 'Konqueror',
+            '/mobile/i' => 'Handheld Browser'
         );
 
         foreach ($browserArray as $regex => $value) {
 
             if (preg_match($regex, $userAgent)) {
-                $browser    =   $value;
+                $browser = $value;
             }
         }
 
@@ -991,11 +989,12 @@ class Application_Service_Common
     public static function parseRecipients(string $to = '', ?string $cc = null, ?string $bcc = null): array
     {
         $buckets = ['to' => $to, 'cc' => $cc, 'bcc' => $bcc];
-        $out     = ['to' => [], 'cc' => [], 'bcc' => [], 'invalid' => []];
-        $seen    = [];
+        $out = ['to' => [], 'cc' => [], 'bcc' => [], 'invalid' => []];
+        $seen = [];
 
         $split = static function (?string $list): array {
-            if ($list === null || trim($list) === '') return [];
+            if ($list === null || trim($list) === '')
+                return [];
             return preg_split('/[;,]+/', $list) ?: [];
         };
 
@@ -1073,10 +1072,10 @@ class Application_Service_Common
      * Mark a temp_mail row as failed with an optional failure reason.
      */
     public static function markTempMailFailed(
-        Zend_Db_Adapter_Abstract $db,
         int $tempId,
         string $failureReason
     ): void {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $failureReason = mb_substr($failureReason, 0, 1024); // keep it bounded
         $failureType = self::classifyMailFailure($failureReason);
 
@@ -1091,7 +1090,6 @@ class Application_Service_Common
             ['temp_id = ?' => $tempId]
         );
     }
-
 
     /**
      * Validate and normalize an email address
@@ -1127,7 +1125,7 @@ class Application_Service_Common
                 return null;
             }
 
-            $local  = substr($email, 0, $at);
+            $local = substr($email, 0, $at);
             $domain = substr($email, $at + 1);
 
             // Validate local part is not empty
@@ -1405,32 +1403,32 @@ class Application_Service_Common
     {
         // Validate input types
         if (!is_string($password)) {
-            return  $this->translator->_("Password must be a string.");
+            return $this->translator->_("Password must be a string.");
         }
 
         // Check length - use mb_strlen for proper multibyte character support
         if (mb_strlen($password, 'UTF-8') < $minLength) {
-            return  $this->translator->_("Password must be at least {$minLength} characters long.");
+            return $this->translator->_("Password must be at least {$minLength} characters long.");
         }
 
         // Check maximum length to prevent DoS attacks
         if (mb_strlen($password, 'UTF-8') > 128) {
-            return  $this->translator->_("Password must not exceed 128 characters.");
+            return $this->translator->_("Password must not exceed 128 characters.");
         }
 
         // Check for at least one letter
         if (!preg_match('/[a-zA-Z]/', $password)) {
-            return  $this->translator->_("Password must contain at least one letter.");
+            return $this->translator->_("Password must contain at least one letter.");
         }
 
         // Check for at least one number
         if (!preg_match('/[0-9]/', $password)) {
-            return  $this->translator->_("Password must contain at least one number.");
+            return $this->translator->_("Password must contain at least one number.");
         }
 
         // Check for symbols if required
         if ($requireSymbols && !preg_match('/[\W_]/', $password)) {
-            return  $this->translator->_("Password must contain at least one symbol.");
+            return $this->translator->_("Password must contain at least one symbol.");
         }
 
         // Check against name parts (minimum 3 characters to avoid false positives)
@@ -1441,7 +1439,7 @@ class Application_Service_Common
                 // Only check parts that are 3+ characters
                 if (mb_strlen($part, 'UTF-8') >= 3) {
                     if (stripos($password, $part) !== false) {
-                        return  $this->translator->_("Password must not contain parts of your name.");
+                        return $this->translator->_("Password must not contain parts of your name.");
                     }
                 }
             }
@@ -1461,7 +1459,7 @@ class Application_Service_Common
                     // Only check parts that are 3+ characters
                     if (mb_strlen($part, 'UTF-8') >= 3) {
                         if (stripos($password, $part) !== false) {
-                            return  $this->translator->_("Password must not contain parts of your email address.");
+                            return $this->translator->_("Password must not contain parts of your email address.");
                         }
                     }
                 }
@@ -1478,7 +1476,7 @@ class Application_Service_Common
 
         foreach ($weakPatterns as $pattern) {
             if (preg_match($pattern, $password)) {
-                return  $this->translator->_("Password is too weak. Please choose a more complex password.");
+                return $this->translator->_("Password is too weak. Please choose a more complex password.");
             }
         }
 
@@ -1757,7 +1755,7 @@ class Application_Service_Common
 
         // Add pagination if needed
         if (isset($params['page'])) {
-            $page = (int)$params['page'];
+            $page = (int) $params['page'];
             $limit = 10;
             $offset = ($page - 1) * $limit;
             $sql = $sql->limit($limit, $offset);
@@ -1809,11 +1807,11 @@ class Application_Service_Common
             unset($responseData['csrf_token']);
             $output = [
                 'timestamp' => time(),
-                'data'  => $responseData
+                'data' => $responseData
             ];
             /* File name creation */
             $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . '-' . time() . '-' . $data['scheme'] . '.json';
-            $filePath  = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
+            $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
             $fp = fopen($filePath, 'w');
             fwrite($fp, json_encode($output));
             fclose($fp);
@@ -1865,10 +1863,10 @@ class Application_Service_Common
     public static function getEmailQueueHealth(array $options = []): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $days              = isset($options['days']) ? (int)$options['days'] : 7;
-        $minTotal          = isset($options['min_total']) ? (int)$options['min_total'] : 20;
-        $warnThreshold     = isset($options['warn_threshold']) ? (float)$options['warn_threshold'] : 0.05;
-        $criticalThreshold = isset($options['critical_threshold']) ? (float)$options['critical_threshold'] : 0.15;
+        $days = isset($options['days']) ? (int) $options['days'] : 7;
+        $minTotal = isset($options['min_total']) ? (int) $options['min_total'] : 20;
+        $warnThreshold = isset($options['warn_threshold']) ? (float) $options['warn_threshold'] : 0.05;
+        $criticalThreshold = isset($options['critical_threshold']) ? (float) $options['critical_threshold'] : 0.15;
 
         if ($days < 1) {
             $days = 1;
@@ -1890,13 +1888,13 @@ class Application_Service_Common
 
         $row = $db->fetchRow($sqlTotals) ?: [];
 
-        $sent     = (int)($row['sent_count']     ?? 0);
-        $failed   = (int)($row['failed_count']   ?? 0);
-        $pending  = (int)($row['pending_count']  ?? 0);
-        $inFlight = (int)($row['inflight_count'] ?? 0);
+        $sent = (int) ($row['sent_count'] ?? 0);
+        $failed = (int) ($row['failed_count'] ?? 0);
+        $pending = (int) ($row['pending_count'] ?? 0);
+        $inFlight = (int) ($row['inflight_count'] ?? 0);
 
         $totalConsidered = $sent + $failed;
-        $failureRate     = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
+        $failureRate = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
 
         // Breakdown by failure_type
         $sqlBreakdown = "
@@ -1948,25 +1946,25 @@ class Application_Service_Common
         }
 
         // Window timestamps (PHP-side, for display)
-        $now   = new DateTimeImmutable('now');
-        $from  = $now->sub(new DateInterval('P' . $days . 'D'));
+        $now = new DateTimeImmutable('now');
+        $from = $now->sub(new DateInterval('P' . $days . 'D'));
 
         return [
-            'window_days'       => $days,
-            'window_from'       => $from->format('Y-m-d H:i:s'),
-            'window_to'         => $now->format('Y-m-d H:i:s'),
-            'sent'              => $sent,
-            'failed'            => $failed,
-            'pending'           => $pending,
-            'in_flight'         => $inFlight,
-            'total_considered'  => $totalConsidered,
-            'failure_rate'      => $failureRate,
-            'severity'          => $severity,
-            'summary'           => $summary,
-            'breakdown'         => $breakdown,
-            'config'            => [
-                'min_total'          => $minTotal,
-                'warn_threshold'     => $warnThreshold,
+            'window_days' => $days,
+            'window_from' => $from->format('Y-m-d H:i:s'),
+            'window_to' => $now->format('Y-m-d H:i:s'),
+            'sent' => $sent,
+            'failed' => $failed,
+            'pending' => $pending,
+            'in_flight' => $inFlight,
+            'total_considered' => $totalConsidered,
+            'failure_rate' => $failureRate,
+            'severity' => $severity,
+            'summary' => $summary,
+            'breakdown' => $breakdown,
+            'config' => [
+                'min_total' => $minTotal,
+                'warn_threshold' => $warnThreshold,
                 'critical_threshold' => $criticalThreshold,
             ],
         ];
