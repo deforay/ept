@@ -2,9 +2,6 @@
 
 require_once __DIR__ . '/../cli-bootstrap.php';
 
-// Composer autoload for Symfony Mailer
-require_once __DIR__ . '/../vendor/autoload.php';
-
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
