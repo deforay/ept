@@ -823,7 +823,7 @@ apache2ctl -k graceful || systemctl reload apache2
 
 # Setup db-tools with config from application.ini
 print header "Testing database connection"
-php "${ept_path}/vendor/bin/db-tools" db:test;
+php "${ept_path}/vendor/bin/db-tools" db:test --all
 
 # Run the database migrations and other post-update tasks
 print header "Running database migrations and other post-update tasks"
