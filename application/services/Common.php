@@ -491,7 +491,6 @@ class Application_Service_Common
                 error_log("sendTempMail(temp_id={$id}): no valid 'To' recipients; marking not-sent.");
                 // revert status to not-sent and continue
                 self::markTempMailFailed(
-                    $tempMailDb->getAdapter(),
                     (int) $id,
                     'No valid To recipients'
                 );
@@ -519,7 +518,6 @@ class Application_Service_Common
                 error_log("===== MAIL SENDING FAILED - END =====");
                 // mark not-sent and continue to next
                 self::markTempMailFailed(
-                    $tempMailDb->getAdapter(),
                     (int) $id,
                     $exc->getMessage()
                 );
@@ -1074,10 +1072,10 @@ class Application_Service_Common
      * Mark a temp_mail row as failed with an optional failure reason.
      */
     public static function markTempMailFailed(
-        Zend_Db_Adapter_Abstract $db,
         int $tempId,
         string $failureReason
     ): void {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $failureReason = mb_substr($failureReason, 0, 1024); // keep it bounded
         $failureType = self::classifyMailFailure($failureReason);
 
