@@ -4,6 +4,7 @@
  * Shipment Report Generator - Cleaned and Refactored
  * This file is imported in generate-shipment-reports.php
  */
+$participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
 
 require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
@@ -115,11 +116,11 @@ if (!empty($resultArray['shipment'])) {
 
         // Add report title
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
-        if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-            $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . ' (' . $result['shipment_code'] . ')</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        }
+        // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . ' (' . $result['shipment_code'] . ')</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        // }
 
         // Build laboratory information table
         $labInfo = '<table cellpadding="3" style="font-size:11px;">
@@ -165,7 +166,7 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo .= '</tr></table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
+        $pdf->AddPage();
         // Process test results if available
         if (!empty($result['responseResult'])) {
             // Calculate sample statistics
@@ -440,6 +441,31 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
 
+            $labTxt = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores:</span><br/>
+                <table border="1" style="font-size:12px;width:100%;">
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants Enrolled</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants That Participated</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;width:40%;">' . round($participantPerformance['total_shipped']) . '</td>
+                        <td style="text-align:center;width:40%;">' . round($participantPerformance['total_responses']) . '</td>
+                        <td style="text-align:center;width:20%;">' . (round($participantPerformance['total_responses'] / $participantPerformance['total_shipped'], 2) * 100) . '%</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants submitted results</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of participants with satisfactory performance</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;width:40%;">' . round($participantPerformance['valid_responses']) . '</td>
+                        <td style="text-align:center;width:40%;">' . round($participantPerformance['number_passed']) . '</td>
+                        <td style="text-align:center;width:20%;">' . (round($participantPerformance['number_passed'] / $participantPerformance['valid_responses'], 2) * 100) . '%</td>
+                    </tr>
+                </table>';
+            $pdf->writeHTML($labTxt, true, false, true, false, '');
+
             $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ??  null;
 
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
@@ -453,15 +479,31 @@ if (!empty($resultArray['shipment'])) {
                     <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
                 </ul><br>';
             $pdf->writeHTML($summaryNote, true, false, true, false, '');
-            // Save current position
             $currentY = $pdf->GetY();
-            // Left column
+
+            // Left column - Reviewed By
             $pdf->MultiCell(95, 5, 'Reviewed By: ' . $approveTxt . ',', 0, 'L', 0, 0, '', '', true);
 
-            // Right column
+            // Right column - Approved by
             $pdf->MultiCell(95, 5, 'Approved by: Lucia Sisya', 0, 'R', 0, 1, '', '', true);
-            $pdf->writeHTML("<br><br>", true, false, true, false, '');
-            // Next row
+
+            // Get Y position after text
+            $afterTextY = $pdf->GetY();
+
+            // Image paths
+            $sign1 = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'signatures' . DIRECTORY_SEPARATOR . 'sign-1.png';
+            $sign2 = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'signatures' . DIRECTORY_SEPARATOR . 'sign-2.png';
+
+            // Left signature - using current position
+            // $pdf->Image($sign1, 30, $afterTextY, 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+            // Right signature - positioned on the right side
+            // $pdf->Image($sign2, 140, $afterTextY, 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+            // Move cursor down after images (adjust height as needed for your signature size)
+            $pdf->SetY($afterTextY + 15); // Adjust 15 to match your signature height
+
+            // Next row - Titles
             $pdf->MultiCell(95, 5, 'Scheme Coordinator', 0, 'L', 0, 0, '', '', true);
             $pdf->MultiCell(95, 5, 'Scheme Manager', 0, 'R', 0, 1, '', '', true);
 

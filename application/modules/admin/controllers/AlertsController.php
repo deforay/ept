@@ -9,7 +9,7 @@ class Admin_AlertsController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('email', 'json')  // Changed to 'json'
             ->initContext();
-        $this->_helper->layout()->pageName = 'manageMenu';
+        $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction() {}

@@ -271,6 +271,7 @@ if ($adminSession->privileges != "") {
 									<li id="PDFReportSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>"><?= $this->translate->_("PDF Report Settings"); ?></a></li>
 									<li id="ShipmentCustomFields"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>"><?= $this->translate->_("Shipment Custom Fields"); ?></a></li>
 									<li id="CertificateTemplates"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-templates'), 'default', true); ?>"> <?= $this->translate->_("Certificate Templates"); ?></a></li>
+									<li id="FailedEmails"><a href="/admin/alerts/email"> Failed Emails</a></li>
 									<li id="MailTemplate"><a href="/admin/mail-template"> Mail Template</a></li>
 									<li class="divider"></li>
 									<li id="HomeBanner"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>"><?= $this->translate->_("Home Banner"); ?></a></li>
@@ -463,6 +464,8 @@ if ($adminSession->privileges != "") {
 				$('#ShipmentCustomFields').addClass('active');
 			} else if (splitsUrl[2] == 'certificate-templates') {
 				$('#CertificateTemplates').addClass('active');
+			} else if (splitsUrl[2] == 'alerts' && splitsUrl[3] == 'email') {
+				$('#FailedEmails').addClass('active');
 			} else if (splitsUrl[2] == 'mail-template') {
 				$('#MailTemplate').addClass('active');
 			} else if (splitsUrl[2] == 'home-banner') {
