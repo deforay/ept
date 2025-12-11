@@ -1291,6 +1291,7 @@ try {
                 return count(glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf'));
             };
             $participantProgressBar = null;
+            $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
             $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar) {
                 $lastCount = $getFileCount();
                 for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
@@ -1432,7 +1433,7 @@ try {
 
                     $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
                     $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
-                    $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
+                    // $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
                     $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
                     if (!empty($resultArray)) {
                         Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
