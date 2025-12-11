@@ -1036,37 +1036,6 @@ class Application_Service_Common
         return substr($normalized, 0, self::MAIL_FAILURE_REASON_MAX);
     }
 
-    public static function classifyMailFailure(string $reason): string
-    {
-        $r = strtolower($reason);
-
-        if (strpos($r, 'authentication') !== false || strpos($r, 'authenticat') !== false) {
-            return 'smtp-auth';
-        }
-        if (
-            strpos($r, 'connection timed out') !== false ||
-            strpos($r, 'unable to connect') !== false ||
-            strpos($r, 'could not connect') !== false
-        ) {
-            return 'connectivity';
-        }
-        if (
-            strpos($r, 'recipient') !== false &&
-            (strpos($r, 'rejected') !== false || strpos($r, 'invalid') !== false)
-        ) {
-            return 'bad-recipient';
-        }
-        if (strpos($r, 'quota') !== false || strpos($r, 'too many messages') !== false) {
-            return 'rate-limit';
-        }
-        if (strpos($r, 'spam') !== false || strpos($r, 'blocked') !== false) {
-            return 'content';
-        }
-
-        return 'other';
-    }
-
-
     /**
      * Mark a temp_mail row as not-sent with an optional failure reason.
      */
@@ -1896,10 +1865,10 @@ class Application_Service_Common
     public static function getEmailQueueHealth(array $options = []): array
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $days              = isset($options['days']) ? (int)$options['days'] : 7;
-        $minTotal          = isset($options['min_total']) ? (int)$options['min_total'] : 20;
-        $warnThreshold     = isset($options['warn_threshold']) ? (float)$options['warn_threshold'] : 0.05;
-        $criticalThreshold = isset($options['critical_threshold']) ? (float)$options['critical_threshold'] : 0.15;
+        $days = isset($options['days']) ? (int) $options['days'] : 7;
+        $minTotal = isset($options['min_total']) ? (int) $options['min_total'] : 20;
+        $warnThreshold = isset($options['warn_threshold']) ? (float) $options['warn_threshold'] : 0.05;
+        $criticalThreshold = isset($options['critical_threshold']) ? (float) $options['critical_threshold'] : 0.15;
 
         if ($days < 1) {
             $days = 1;
@@ -1921,13 +1890,13 @@ class Application_Service_Common
 
         $row = $db->fetchRow($sqlTotals) ?: [];
 
-        $sent     = (int)($row['sent_count']     ?? 0);
-        $failed   = (int)($row['failed_count']   ?? 0);
-        $pending  = (int)($row['pending_count']  ?? 0);
-        $inFlight = (int)($row['inflight_count'] ?? 0);
+        $sent = (int) ($row['sent_count'] ?? 0);
+        $failed = (int) ($row['failed_count'] ?? 0);
+        $pending = (int) ($row['pending_count'] ?? 0);
+        $inFlight = (int) ($row['inflight_count'] ?? 0);
 
         $totalConsidered = $sent + $failed;
-        $failureRate     = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
+        $failureRate = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
 
         // Breakdown by failure_type
         $sqlBreakdown = "
@@ -1979,25 +1948,25 @@ class Application_Service_Common
         }
 
         // Window timestamps (PHP-side, for display)
-        $now   = new DateTimeImmutable('now');
-        $from  = $now->sub(new DateInterval('P' . $days . 'D'));
+        $now = new DateTimeImmutable('now');
+        $from = $now->sub(new DateInterval('P' . $days . 'D'));
 
         return [
-            'window_days'       => $days,
-            'window_from'       => $from->format('Y-m-d H:i:s'),
-            'window_to'         => $now->format('Y-m-d H:i:s'),
-            'sent'              => $sent,
-            'failed'            => $failed,
-            'pending'           => $pending,
-            'in_flight'         => $inFlight,
-            'total_considered'  => $totalConsidered,
-            'failure_rate'      => $failureRate,
-            'severity'          => $severity,
-            'summary'           => $summary,
-            'breakdown'         => $breakdown,
-            'config'            => [
-                'min_total'          => $minTotal,
-                'warn_threshold'     => $warnThreshold,
+            'window_days' => $days,
+            'window_from' => $from->format('Y-m-d H:i:s'),
+            'window_to' => $now->format('Y-m-d H:i:s'),
+            'sent' => $sent,
+            'failed' => $failed,
+            'pending' => $pending,
+            'in_flight' => $inFlight,
+            'total_considered' => $totalConsidered,
+            'failure_rate' => $failureRate,
+            'severity' => $severity,
+            'summary' => $summary,
+            'breakdown' => $breakdown,
+            'config' => [
+                'min_total' => $minTotal,
+                'warn_threshold' => $warnThreshold,
                 'critical_threshold' => $criticalThreshold,
             ],
         ];
