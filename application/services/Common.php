@@ -4,6 +4,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use Symfony\Component\Filesystem\Filesystem;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 
 class Application_Service_Common
@@ -730,7 +731,7 @@ class Application_Service_Common
     public function getOptionsByValue($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array($params['table']), array($params['returnfield']))
+        $sql = $db->select()->from([$params['table']], [$params['returnfield']])
             ->where($params['returnfield'] . " IS NOT NULL")
             ->where($params['returnfield'] . " not like ''")
             ->where($params['searchfield'] . " IS NOT NULL")
@@ -747,13 +748,13 @@ class Application_Service_Common
         $generator = new RequirementPasswordGenerator();
         $generator
             ->setLength(12)
-            ->setOptionValue(RequirementPasswordGenerator::OPTION_UPPER_CASE, true)
-            ->setOptionValue(RequirementPasswordGenerator::OPTION_LOWER_CASE, true)
-            ->setOptionValue(RequirementPasswordGenerator::OPTION_NUMBERS, true)
-            ->setOptionValue(RequirementPasswordGenerator::OPTION_SYMBOLS, false)
-            ->setMinimumCount(RequirementPasswordGenerator::OPTION_UPPER_CASE, 2)
-            ->setMinimumCount(RequirementPasswordGenerator::OPTION_LOWER_CASE, 2)
-            ->setMinimumCount(RequirementPasswordGenerator::OPTION_NUMBERS, 2);
+            ->setOptionValue(ComputerPasswordGenerator::OPTION_UPPER_CASE, true)
+            ->setOptionValue(ComputerPasswordGenerator::OPTION_LOWER_CASE, true)
+            ->setOptionValue(ComputerPasswordGenerator::OPTION_NUMBERS, true)
+            ->setOptionValue(ComputerPasswordGenerator::OPTION_SYMBOLS, false)
+            ->setMinimumCount(ComputerPasswordGenerator::OPTION_UPPER_CASE, 2)
+            ->setMinimumCount(ComputerPasswordGenerator::OPTION_LOWER_CASE, 2)
+            ->setMinimumCount(ComputerPasswordGenerator::OPTION_NUMBERS, 2);
 
         $password = $generator->generatePassword();
         return $password;
@@ -1760,7 +1761,6 @@ class Application_Service_Common
             $offset = ($page - 1) * $limit;
             $sql = $sql->limit($limit, $offset);
         }
-        die($sql);
         return $db->fetchAll($sql);
     }
 
