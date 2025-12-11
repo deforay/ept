@@ -27,6 +27,7 @@
         "setasign/fpdi": "^2.6",
         "shardj/zf1-future": "^1.24",
         "symfony/console": "^7.2",
+        "symfony/mailer": "^7.4",
         "symfony/uid": "^7.4",
         "tecnickcom/tcpdf": "^6.10"
     },

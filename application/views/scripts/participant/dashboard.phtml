@@ -90,6 +90,16 @@ foreach ($this->participants as $row) {
 	<h1> <?= $this->translate->_("Dashboard"); ?> </h1>
 </section>
 <section class="content">
+
+	<?php if (!empty($this->showEmailCriticalAlert)): ?>
+		<div class="alert alert-danger">
+			<strong> Email issue: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+		</div>
+	<?php elseif (!empty($this->showEmailWarningAlert)): ?>
+		<div class="alert alert-warning">
+			<strong> Email warning: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+		</div>
+	<?php endif; ?>
 	<div class="box all" style="display: none;">
 
 		<div class="box-body">

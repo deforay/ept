@@ -1294,6 +1294,7 @@ try {
             $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar) {
                 $lastCount = $getFileCount();
                 for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
+                    Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
                     if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
@@ -1401,7 +1402,6 @@ try {
                 $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
                 if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
                     foreach ($noOfTests as $panelTestType) {
-
                         // SUMMARY REPORT
 
                         $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id'], $panelTestType);
@@ -1409,6 +1409,7 @@ try {
                         $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id'], $panelTestType);
                         $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id'], $panelTestType);
                         if (!empty($resultArray)) {
+                            Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
                             if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                                 $resultArray['shipment']['scheme_type'] = 'generic-test';
                             }
@@ -1434,6 +1435,7 @@ try {
                     $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
                     $correctivenessArray = $reportService->getCorrectiveActionReportByShipmentId($evalRow['shipment_id']);
                     if (!empty($resultArray)) {
+                        Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
                         if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
                             $resultArray['shipment']['scheme_type'] = 'generic-test';
                         }

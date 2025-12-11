@@ -1070,6 +1070,40 @@ class Application_Service_Common
     /**
      * Mark a temp_mail row as not-sent with an optional failure reason.
      */
+    public static function classifyMailFailure(string $reason): string
+    {
+        $r = strtolower($reason);
+
+        if (strpos($r, 'authentication') !== false || strpos($r, 'authenticat') !== false) {
+            return 'smtp-auth';
+        }
+        if (
+            strpos($r, 'connection timed out') !== false ||
+            strpos($r, 'unable to connect') !== false ||
+            strpos($r, 'could not connect') !== false
+        ) {
+            return 'connectivity';
+        }
+        if (
+            strpos($r, 'recipient') !== false &&
+            (strpos($r, 'rejected') !== false || strpos($r, 'invalid') !== false)
+        ) {
+            return 'bad-recipient';
+        }
+        if (strpos($r, 'quota') !== false || strpos($r, 'too many messages') !== false) {
+            return 'rate-limit';
+        }
+        if (strpos($r, 'spam') !== false || strpos($r, 'blocked') !== false) {
+            return 'content';
+        }
+
+        return 'other';
+    }
+
+
+    /**
+     * Mark a temp_mail row as failed with an optional failure reason.
+     */
     public static function markTempMailFailed(
         Zend_Db_Adapter_Abstract $db,
         int $tempId,
@@ -1699,14 +1733,25 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Fix: Handle concat fields properly
+        // Fix: Decode JSON strings if needed
+        if (isset($params['concat']) && is_string($params['concat'])) {
+            $params['concat'] = json_decode($params['concat'], true);
+        }
+        if (isset($params['fieldNames']) && is_string($params['fieldNames'])) {
+            $params['fieldNames'] = json_decode($params['fieldNames'], true);
+        }
+
+        // Handle concat fields properly
         $concat = [];
         if (is_array($params['concat'])) {
             foreach ($params['concat'] as $field) {
-                $concat[] = "COALESCE($field,'')";
+                // Sanitize field name to prevent SQL injection
+                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+                $concat[] = "COALESCE(`$field`,'')";
             }
         } else {
-            $concat[] = "COALESCE(" . $params['concat'] . ",'')";
+            $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['concat']);
+            $concat[] = "COALESCE(`$field`,'')";
         }
 
         // Build the SQL query
@@ -1715,21 +1760,27 @@ class Application_Service_Common
             'concat' => new Zend_Db_Expr("CONCAT(" . implode(", ' ', ", $concat) . ")")
         ]);
 
-        // Fix: Handle search across multiple fields properly
+        // Handle search across multiple fields properly
         if (isset($params['search']) && !empty($params['search'])) {
+            // Escape the search term to prevent SQL injection
+            $searchTerm = $db->quote('%' . $params['search'] . '%');
+
             if (is_array($params['fieldNames'])) {
                 // Create OR conditions for searching across multiple fields
                 $searchConditions = [];
                 foreach ($params['fieldNames'] as $field) {
-                    $searchConditions[] = "$field LIKE '%" . $params['search'] . "%'";
+                    // Sanitize field name
+                    $field = preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+                    $searchConditions[] = "`$field` LIKE $searchTerm";
                 }
                 $sql = $sql->where('(' . implode(' OR ', $searchConditions) . ')');
             } else {
-                $sql = $sql->where($params['fieldNames'] . " LIKE '%" . $params['search'] . "%'");
+                $field = preg_replace('/[^a-zA-Z0-9_]/', '', $params['fieldNames']);
+                $sql = $sql->where("`$field` LIKE $searchTerm");
             }
         }
 
-        // Fix: Group by primary key to avoid duplicates
+        // Group by primary key to avoid duplicates
         $sql = $sql->group($params['returnId']);
 
         // Add ordering for better UX
@@ -1742,7 +1793,7 @@ class Application_Service_Common
             $offset = ($page - 1) * $limit;
             $sql = $sql->limit($limit, $offset);
         }
-
+        die($sql);
         return $db->fetchAll($sql);
     }
 
@@ -1814,5 +1865,147 @@ class Application_Service_Common
             $returndata[$key][] = $val;
         }
         return $returndata;
+    }
+
+
+    /**
+     * Compute email sending health from temp_mail.
+     *
+     * @param Zend_Db_Adapter_Abstract $db
+     * @param array $options {
+     *      @type int   $days             Look-back window in days (default 7)
+     *      @type int   $min_total        Min emails in window before we care (default 20)
+     *      @type float $warn_threshold   Failure ratio for "warning" (default 0.05 = 5%)
+     *      @type float $critical_threshold Failure ratio for "critical" (default 0.15 = 15%)
+     * }
+     * @return array {
+     *      @type int    window_days
+     *      @type string window_from
+     *      @type string window_to
+     *      @type int    sent
+     *      @type int    failed
+     *      @type int    pending
+     *      @type int    in_flight
+     *      @type int    total_considered   sent + failed
+     *      @type float  failure_rate       0.0–1.0
+     *      @type string severity           'ok'|'warning'|'critical'
+     *      @type string summary            Human-readable summary
+     *      @type array  breakdown          [ [ 'failure_type' => 'smtp-auth', 'count' => 10 ], ... ]
+     * }
+     */
+    public static function getEmailQueueHealth(array $options = []): array
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $days              = isset($options['days']) ? (int)$options['days'] : 7;
+        $minTotal          = isset($options['min_total']) ? (int)$options['min_total'] : 20;
+        $warnThreshold     = isset($options['warn_threshold']) ? (float)$options['warn_threshold'] : 0.05;
+        $criticalThreshold = isset($options['critical_threshold']) ? (float)$options['critical_threshold'] : 0.15;
+
+        if ($days < 1) {
+            $days = 1;
+        }
+
+        // Time window (DB-side)
+        $windowExpr = sprintf("NOW() - INTERVAL %d DAY", $days);
+
+        // Totals
+        $sqlTotals = "
+            SELECT
+                SUM(status = 'sent')                         AS sent_count,
+                SUM(status IN ('failed','not-sent'))         AS failed_count,
+                SUM(status = 'pending')                      AS pending_count,
+                SUM(status = 'picked-to-process')            AS inflight_count
+            FROM temp_mail
+            WHERE queued_on >= {$windowExpr}
+        ";
+
+        $row = $db->fetchRow($sqlTotals) ?: [];
+
+        $sent     = (int)($row['sent_count']     ?? 0);
+        $failed   = (int)($row['failed_count']   ?? 0);
+        $pending  = (int)($row['pending_count']  ?? 0);
+        $inFlight = (int)($row['inflight_count'] ?? 0);
+
+        $totalConsidered = $sent + $failed;
+        $failureRate     = $totalConsidered > 0 ? ($failed / $totalConsidered) : 0.0;
+
+        // Breakdown by failure_type
+        $sqlBreakdown = "
+            SELECT
+                COALESCE(failure_type, 'other') AS failure_type,
+                COUNT(*) AS cnt
+            FROM temp_mail
+            WHERE status IN ('failed','not-sent')
+              AND queued_on >= {$windowExpr}
+            GROUP BY failure_type
+            ORDER BY cnt DESC
+        ";
+        $breakdown = $db->fetchAll($sqlBreakdown) ?: [];
+
+        // Determine severity
+        $severity = 'ok';
+        if ($totalConsidered >= $minTotal && $failed > 0) {
+            if ($failureRate >= $criticalThreshold) {
+                $severity = 'critical';
+            } elseif ($failureRate >= $warnThreshold) {
+                $severity = 'warning';
+            }
+        }
+
+        // Human-readable summary
+        $percent = $failureRate * 100;
+        if ($totalConsidered === 0 && $pending === 0 && $inFlight === 0) {
+            $summary = sprintf(
+                'No email activity in the last %d day(s).',
+                $days
+            );
+        } elseif ($totalConsidered === 0) {
+            $summary = sprintf(
+                'No emails completed in the last %d day(s). Pending: %d, In-flight: %d.',
+                $days,
+                $pending,
+                $inFlight
+            );
+        } else {
+            $summary = sprintf(
+                '%d of %d emails (%.1f%%) failed in the last %d day(s). Pending: %d, In-flight: %d.',
+                $failed,
+                $totalConsidered,
+                $percent,
+                $days,
+                $pending,
+                $inFlight
+            );
+        }
+
+        // Window timestamps (PHP-side, for display)
+        $now   = new DateTimeImmutable('now');
+        $from  = $now->sub(new DateInterval('P' . $days . 'D'));
+
+        return [
+            'window_days'       => $days,
+            'window_from'       => $from->format('Y-m-d H:i:s'),
+            'window_to'         => $now->format('Y-m-d H:i:s'),
+            'sent'              => $sent,
+            'failed'            => $failed,
+            'pending'           => $pending,
+            'in_flight'         => $inFlight,
+            'total_considered'  => $totalConsidered,
+            'failure_rate'      => $failureRate,
+            'severity'          => $severity,
+            'summary'           => $summary,
+            'breakdown'         => $breakdown,
+            'config'            => [
+                'min_total'          => $minTotal,
+                'warn_threshold'     => $warnThreshold,
+                'critical_threshold' => $criticalThreshold,
+            ],
+        ];
+    }
+
+    public function getEmailFailureInGrid($search)
+    {
+        $db = new Application_Model_DbTable_TempMail();
+        return $db->fetchEmailFailureInGrid($search);
     }
 }

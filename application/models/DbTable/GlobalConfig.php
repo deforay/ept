@@ -60,6 +60,12 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 }
             }
         }
+
+        if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
+            $this->update(array("value" => json_encode($params['emailConfig'], true)), "name = 'mail_configuration'");
+            unset($params['emailConfig']);
+        }
+
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
                 $schemeDb = new Application_Model_DbTable_SchemeList();

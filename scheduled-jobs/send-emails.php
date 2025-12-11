@@ -2,7 +2,18 @@
 
 require_once __DIR__ . '/../cli-bootstrap.php';
 
+// Composer autoload for Symfony Mailer
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\File;
+
 /* ========= Tunables ========= */
+
 const QUEUE_FETCH_LIMIT    = 100; // fetch up to N rows per run
 const RECIPIENTS_PER_EMAIL = 100; // To+Cc+Bcc cap per message
 const BATCH_SLEEP_MS       = 150; // tiny delay between batches; set 0 to disable
@@ -95,7 +106,6 @@ try {
         // Someone else is running (and not stale) — exit quietly
         return;
     }
-
     // Ensure lock is released on all exits
     registerCleanup(function () use ($lockFp, $LOCK_FILE) {
         releaseLock($lockFp, $LOCK_FILE);
@@ -103,13 +113,32 @@ try {
 
     // === App setup ===
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+
+    $globalConfigDb  = new Application_Model_DbTable_GlobalConfig();
+    $smtpJson = $globalConfigDb->getValue('mail_configuration');
+    $smtpMailDetails = json_decode($smtpJson);
+
     $db   = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
-    $smtpTransportObj = new Zend_Mail_Transport_Smtp(
-        $conf->email->host,
-        array_merge($conf->email->config->toArray(), ['connection_timeout' => 30])
+    // === Create Symfony Mailer Transport ===
+    $dsn = sprintf(
+        'smtp://%s:%s@%s:%d',
+        urlencode($smtpMailDetails->username ?? ''),
+        urlencode($smtpMailDetails->password ?? ''),
+        $smtpMailDetails->host ?? 'localhost',
+        $smtpMailDetails->port ?? 587
     );
+
+    // Add SSL/TLS if configured
+    if (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'ssl') {
+        $dsn .= '?encryption=ssl';
+    } elseif (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'tls') {
+        $dsn .= '?encryption=tls';
+    }
+
+    $transport = Transport::fromDsn($dsn);
+    $mailer = new Mailer($transport);
 
     // === Pull up to N pending rows this minute ===
     $sQuery = $db->select()->from(['tm' => 'temp_mail'])
@@ -212,8 +241,8 @@ try {
             }
 
             // Common From
-            $fromEmail    = $conf->email->config->username;
-            $fromFullName = $conf->email->fromName ?? 'ePT System';
+            $fromEmail    = $smtpMailDetails->fromEmail ?? $smtpMailDetails->username;
+            $fromFullName = $smtpMailDetails->fromName ?? 'ePT System';
 
             // Validate reply_to (single address; take first if commas/semicolons present)
             $replyToRaw = isset($result['reply_to']) ? trim((string)$result['reply_to']) : '';
@@ -236,41 +265,44 @@ try {
             foreach ($batches as $batch) {
                 $batchIndex++;
 
-                $mail = new Zend_Mail('UTF-8');
-                $mail->setHeaderEncoding(Zend_Mime::ENCODING_QUOTEDPRINTABLE);
+                // Create Symfony Email
+                $email = new Email();
+
                 $subject = strip_tags(trim((string)$result['subject']));
                 $rawHtml  = (string)$result['message'];
                 $bodyHtml = function_exists('mb_strimwidth') ? mb_strimwidth($rawHtml, 0, 2_000_000, '') : substr($rawHtml, 0, 2_000_000);
                 $bodyText = strip_tags($bodyHtml) ?: '[no content]';
 
+                $email->subject($subject !== '' ? $subject : '(no subject)')
+                    ->html($bodyHtml)
+                    ->text($bodyText);
 
-                $mail->setSubject($subject !== '' ? $subject : '(no subject)');
-                $mail->setBodyHtml($bodyHtml);
-                $mail->setBodyText($bodyText);
+                // Set From and Reply-To
+                $email->from(new Address($fromEmail, $fromFullName))
+                    ->replyTo(new Address($replyTo, $fromFullName));
 
-                $mail->setFrom($fromEmail, $fromFullName);
-                $mail->setReplyTo($replyTo, $fromFullName);
-
-                // Diagnostics (headers visible in logs)
-                $mail->addHeader('X-Mail-Batch', (string)$batchIndex);
-                $mail->addHeader('X-Temp-Mail-ID', (string)$result['temp_id']);
-                $mail->addHeader('X-Batch-To',  (string)count($batch['to']));
-                $mail->addHeader('X-Batch-Cc',  (string)count($batch['cc']));
-                $mail->addHeader('X-Batch-Bcc', (string)count($batch['bcc']));
-
+                // Add recipients
                 foreach ($batch['to'] as $toId) {
-                    $mail->addTo($toId);
+                    $email->addTo($toId);
                 }
                 foreach ($batch['cc'] as $ccId) {
-                    $mail->addCc($ccId);
+                    $email->addCc($ccId);
                 }
                 foreach ($batch['bcc'] as $bccId) {
-                    $mail->addBcc($bccId);
+                    $email->addBcc($bccId);
                 }
+
+                // Add custom headers for diagnostics
+                $email->getHeaders()
+                    ->addTextHeader('X-Mail-Batch', (string)$batchIndex)
+                    ->addTextHeader('X-Temp-Mail-ID', (string)$result['temp_id'])
+                    ->addTextHeader('X-Batch-To', (string)count($batch['to']))
+                    ->addTextHeader('X-Batch-Cc', (string)count($batch['cc']))
+                    ->addTextHeader('X-Batch-Bcc', (string)count($batch['bcc']));
 
                 // Attachments
                 if (!empty($attachments)) {
-                    $maxTotal = 22 * 1024 * 1024; // ~22 MB raw (≈ 29 MB base64)
+                    $maxTotal = 22 * 1024 * 1024; // ~22 MB raw
                     $total = 0;
                     foreach ($attachments as $filePath) {
                         if (!file_exists($filePath)) {
@@ -283,25 +315,16 @@ try {
                             continue;
                         }
                         try {
-                            $content = file_get_contents($filePath);
-                            $mail->createAttachment(
-                                $content,
-                                Zend_Mime::TYPE_OCTETSTREAM,
-                                Zend_Mime::DISPOSITION_ATTACHMENT,
-                                Zend_Mime::ENCODING_BASE64,
-                                basename($filePath)
-                            );
+                            $email->addPart(new DataPart(new File($filePath)));
                             $total += $size;
-                            unset($content);
                         } catch (Exception $e) {
                             error_log("Attachment error (temp_id={$result['temp_id']} batch={$batchIndex}): " . $e->getMessage());
                         }
                     }
                 }
 
-
                 try {
-                    $mail->send($smtpTransportObj);
+                    $mailer->send($email);
                     if (BATCH_SLEEP_MS > 0) {
                         usleep(BATCH_SLEEP_MS * 1000);
                     }
@@ -313,13 +336,23 @@ try {
                     error_log($e->getTraceAsString());
                     // keep trying remaining batches; mark row 'not-sent' afterwards
                 }
-                unset($mail);
+                unset($email);
                 if (function_exists('gc_collect_cycles')) gc_collect_cycles();
             }
 
             // Finalize the row
             if ($allOk) {
-                $db->delete('temp_mail', $db->quoteInto('temp_id = ?', $result['temp_id']));
+                $db->update(
+                    'temp_mail',
+                    [
+                        'status'         => 'sent',
+                        'failure_reason' => null,
+                        'failure_type'   => null,
+                        'updated_at'     => new Zend_Db_Expr('NOW()'),
+                        'sent_at'        => new Zend_Db_Expr('NOW()'),
+                    ],
+                    ['temp_id = ?' => (int) $result['temp_id']]
+                );
             } else {
                 Application_Service_Common::markTempMailFailed(
                     $db,

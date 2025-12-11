@@ -215,7 +215,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -227,7 +227,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -425,7 +425,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -437,7 +437,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -449,7 +449,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -461,7 +461,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -473,7 +473,7 @@ class Application_Service_Evaluation
 				// Set processing state
 				$db->update('shipment', [
 					'status' => 'processing',
-					'previous_status' => new Zend_Db_Expr('status'),
+					'previous_status' => $shipmentResult[0]['shipment_status'],
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()')
 				], "shipment_id = {$shipmentId}");
@@ -2683,7 +2683,7 @@ class Application_Service_Evaluation
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
 			$authNameSpace = new Zend_Session_Namespace('administrators');
-			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status',)))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2698,6 +2698,9 @@ class Application_Service_Evaluation
 					'report_type' => $params['type'],
 					'requested_by' => $authNameSpace->admin_id,
 					'requested_on' => new Zend_Db_Expr('now()'),
+					'previous_status' => 'evaluated',
+					'processing_started_at' => new Zend_Db_Expr('NOW()'),
+					'last_heartbeat' => new Zend_Db_Expr('NOW()'),
 					'status' => 'pending'
 				);
 				$saved = $db->insert('queue_report_generation', $data);
@@ -2711,6 +2714,9 @@ class Application_Service_Evaluation
 				'shipment_id' => $shipmentId,
 				'report_type' => $params['type'],
 				'last_updated_on' => new Zend_Db_Expr('now()'),
+				'previous_status' => 'evaluated',
+				'processing_started_at' => new Zend_Db_Expr('NOW()'),
+				'last_heartbeat' => new Zend_Db_Expr('NOW()'),
 				'status' => 'pending'
 			);
 			// Zend_Debug::dump($data);die;
