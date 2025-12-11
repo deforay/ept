@@ -51,3 +51,4 @@ scheduled-jobs/*.docx
 package-lock.json
 package.json
 rector.php
+.env

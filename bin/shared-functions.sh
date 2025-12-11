@@ -99,7 +99,7 @@ prepare_system() {
 
     print success "System preparation complete with non-interactive restarts configured."
 }
-spinner() {spinner() {
+spinner() {
     # BC signature: spinner <pid> [message]
     local pid="${1:-}"
     local message="${2:-Processing...}"
