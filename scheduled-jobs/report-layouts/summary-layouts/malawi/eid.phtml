@@ -1,6 +1,4 @@
 <?php
-require_once(CRON_PATH . '/Common.php');
-$general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -527,6 +525,6 @@ if ($trainingInstance == "yes") {
     //Watermark section
     $pdf = new PDF_Rotate();
 }
-    //============================================================+
-    // END OF FILE
-    //============================================================+
+//============================================================+
+// END OF FILE
+//============================================================+

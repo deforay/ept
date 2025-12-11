@@ -47,10 +47,12 @@
         "db-backup": "vendor/bin/db-tools backup",
         "tasks": "crunz schedule:run",
         "collation": "vendor/bin/db-tools collation",
-        "migrate": "php bin/migrate.php -yq",
-        "post-update": [
-            "@migrate",
+        "migrate": [
+            "php bin/migrate.php -yq",
             "@collation"
+        ],
+        "post-update": [
+            "@migrate"
         ]
     }
 }

@@ -4,8 +4,6 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-require_once(CRON_PATH . '/Common.php');
-$general = new Common();
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
@@ -77,7 +75,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->writeHTML($headerInfo, true, false, true, false, '');
     // PT Co-ordinator header details end
 
-    if(!empty($resultArray['shipment']['referenceResult'])) {
+    if (!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';

@@ -5,9 +5,6 @@
  * This file is imported in generate-shipment-reports.php
  */
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-
-$general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . "/configs/config.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
@@ -174,15 +171,19 @@ if (!empty($resultArray['shipment'])) {
 
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
-                if ($response['control'] == 1) $controlSamples[] = $response['sample_label'];
+                if ($response['control'] == 1)
+                    $controlSamples[] = $response['sample_label'];
 
                 if ($response['mandatory'] == 0) {
                     $nonMandatorySamples[] = $response['sample_label'];
                 } else {
                     $mandatorySampleCount++;
-                    if ($response['calculated_score'] == 'Pass') $correctSamples[] = $response['sample_label'];
-                    elseif ($response['calculated_score'] == 'Fail') $wrongSamples[] = $response['sample_label'];
-                    else $otherSamples[] = $response['sample_label'];
+                    if ($response['calculated_score'] == 'Pass')
+                        $correctSamples[] = $response['sample_label'];
+                    elseif ($response['calculated_score'] == 'Fail')
+                        $wrongSamples[] = $response['sample_label'];
+                    else
+                        $otherSamples[] = $response['sample_label'];
                 }
             }
 
@@ -236,8 +237,10 @@ if (!empty($resultArray['shipment'])) {
             $labRes .= '<tr style="background-color:#dbe4ee;">
                 <th style="text-align:center;font-weight:bold;">Specimen Panel ID</th>
                 <th style="text-align:center;font-weight:bold;">Result-1</th>';
-            if ($screeningTestDisplay == "") $labRes .= '<th style="text-align:center;font-weight:bold;">Result-2</th>';
-            if ($testThreeOptionalDisplay == "") $labRes .= '<th style="text-align:center;font-weight:bold;">Result-3</th>';
+            if ($screeningTestDisplay == "")
+                $labRes .= '<th style="text-align:center;font-weight:bold;">Result-2</th>';
+            if ($testThreeOptionalDisplay == "")
+                $labRes .= '<th style="text-align:center;font-weight:bold;">Result-3</th>';
             $labRes .= '<th style="text-align:center;font-weight:bold;">Expected Result</th>
                 <th style="text-align:center;font-weight:bold;">Your Result</th>
                 <th style="text-align:center;font-weight:bold;" colspan="2">Score</th></tr>';
@@ -440,7 +443,7 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
 
-            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ??  null;
+            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
 
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                 <ul>
@@ -569,7 +572,7 @@ if (!empty($resultArray['shipment'])) {
 
         $lastName = !empty(trim($result['last_name'])) ? "_" . $result['last_name'] : "";
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
 
         // Output PDF to file

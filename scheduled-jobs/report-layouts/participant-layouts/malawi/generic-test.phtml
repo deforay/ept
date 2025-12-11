@@ -4,8 +4,7 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 $monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
+
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -116,7 +115,7 @@ if (!empty($resultArray['shipment'])) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-        $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
+        $otherTestsPossibleResults = $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
         foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
@@ -214,7 +213,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '	<td><strong>Kit Lot Number </strong> : ' . $attributes['kit_lot_number'] . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Kit Expiry Date </strong> : ' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date'])  . '</td>';
+        $labInfo .= '	<td><strong>Kit Expiry Date </strong> : ' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date']) . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
@@ -382,7 +381,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
         // $pdf->Output($fileName, 'I');

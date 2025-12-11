@@ -1,7 +1,5 @@
 <?php
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
 $shipmentCode = '';
@@ -116,7 +114,7 @@ if (!empty($resultArray['shipment'])) {
         // );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
-        if (!$general->fileExists($flag)) {
+        if (!Application_Service_Common::fileExists($flag)) {
             $flag = null;
         }
         $testThreeOptionalDisplay = "";
@@ -154,7 +152,7 @@ if (!empty($resultArray['shipment'])) {
         /* Addition testkit field */
         $infoJson = false;
         if (isset($result['responseResult'][0]['kit_additional_info']) && !empty($result['responseResult'][0]['kit_additional_info'])) {
-            $infoJson = (array)json_decode($result['responseResult'][0]['kit_additional_info']);
+            $infoJson = (array) json_decode($result['responseResult'][0]['kit_additional_info']);
         }
         $testkit3Colspan = $testkit2Colspan = $testkit1Colspan = 1;
         if (isset($infoJson['test1']) && !empty($infoJson['test1'])) {
@@ -522,7 +520,7 @@ if (!empty($resultArray['shipment'])) {
                 /* Addition testkit field */
                 $infoInnerJson = false;
                 if (isset($response['kit_additional_info']) && !empty($response['kit_additional_info'])) {
-                    $infoInnerJson = (array)json_decode($response['kit_additional_info']);
+                    $infoInnerJson = (array) json_decode($response['kit_additional_info']);
                 }
 
                 $labRes .= '<tr>
@@ -629,7 +627,7 @@ if (!empty($resultArray['shipment'])) {
                 $totalDocumentationItems += 4;
             }
 
-            $documentationScorePerItem =  (!empty($config->evaluation->dts->documentationScore) && (int)$config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 'N.A.';
+            $documentationScorePerItem = (!empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 'N.A.';
             $scoreText = (isset($config->evaluation->dts->documentationScore) && !empty($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore == 0) ? "Your Response" : "Score";
             $img = [];
             $imgPass = ROOT_PATH . '/images/check.jpg';
@@ -870,7 +868,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 

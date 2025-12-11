@@ -4,10 +4,6 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
 
@@ -516,7 +512,7 @@ if (!empty($resultArray['shipment'])) {
 
     $pdf->AddPage('P', 'A4');
 
-    if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
+    if (isset($responseResult) && count($responseResult) > 0 && $responseResult != '') {
         $y = $pdf->getY() + 5;
         $total = $responseResult["total_shipped"];
 
@@ -562,7 +558,7 @@ if (!empty($resultArray['shipment'])) {
     }
 
 
-    if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0  && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
+    if (isset($resultArray['shipment']['participantBeforeAfterDueChart']) && count($resultArray['shipment']['participantBeforeAfterDueChart']) > 0 && $resultArray['shipment']['participantBeforeAfterDueChart'] != '') {
         $pdf->AddPage('P', 'A4');
 
         $y = $pdf->getY() + 5;
@@ -625,11 +621,11 @@ if (!empty($resultArray['shipment'])) {
             unlink($performanceBeforeAfterChart);
         }
     }
-    if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '')) {
+    if ((isset($resultArray['shipment']['participantAberrantDepartmentChart']) && count($resultArray['shipment']['participantAberrantDepartmentChart']) > 0 && $resultArray['shipment']['participantAberrantDepartmentChart'] != '') || (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0 && $resultArray['shipment']['participantAberrantChart'] != '')) {
         $pdf->AddPage('P', 'A4');
     }
 
-    if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0  && $resultArray['shipment']['participantAberrantChart'] != '') {
+    if (isset($resultArray['shipment']['participantAberrantChart']) && count($resultArray['shipment']['participantAberrantChart']) > 0 && $resultArray['shipment']['participantAberrantChart'] != '') {
         $val = $resultArray['shipment']['participantAberrantChart'];
         if (($val['number_passed'] + $val['number_failed']) > 0) {
             $y = $pdf->getY() + 5;
@@ -657,7 +653,7 @@ if (!empty($resultArray['shipment'])) {
         }
     }
 
-    if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0  && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
+    if (isset($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) && count($resultArray['shipment']['participantAberrantDepartmentChart']['department_name']) > 0 && $resultArray['shipment']['participantAberrantDepartmentChart']['department_name'] != '') {
         $val = $resultArray['shipment']['participantAberrantDepartmentChart'];
         $y = $pdf->getY() + 5;
         // JPGraph Charts

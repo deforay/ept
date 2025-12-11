@@ -255,7 +255,7 @@ class Application_Service_Common
             $table = explode("##", $fnct);
             $sql = $db->select()->from($tableName)
                 ->where("$fieldName = ?", $value)
-                ->where($table[0] . "!= '" . $table[1] . "'");
+                ->where("$table[0]!= '$table[1]'");
             $result = $db->fetchAll($sql);
             if (!empty($result)) {
                 $data = count($result);
@@ -408,12 +408,12 @@ class Application_Service_Common
 
     public function updateHomeBanner($params)
     {
-        $filterRules = array(
+        $filterRules = [
             '*' => 'StripTags',
             '*' => 'StringTrim'
-        );
+        ];
 
-        $filter = new Zend_Filter_Input($filterRules, null, $params);
+        $filter = new Zend_Filter_Input($filterRules, [], $params);
 
         if ($filter->isValid()) {
 
@@ -1974,5 +1974,29 @@ class Application_Service_Common
     {
         $db = new Application_Model_DbTable_TempMail();
         return $db->fetchEmailFailureInGrid($search);
+    }
+
+    public static function makeFileNameFriendly($str, $toLowerCase = false)
+    {
+        // Remove special characters except hyphens
+        $str = preg_replace('/[^a-zA-Z0-9\-]/', '', trim($str));
+
+        // Convert spaces to hyphens
+        $str = str_replace(' ', '-', $str);
+
+        // Convert multiple hyphens into one
+        $str = preg_replace('/-+/', '-', $str);
+
+        if ($toLowerCase === true) {
+            // Convert to lowercase
+            $str = strtolower($str);
+        }
+
+        return $str;
+    }
+
+    public static function fileExists($filePath): bool
+    {
+        return !empty($filePath) && file_exists($filePath) && !is_dir($filePath) && filesize($filePath) > 0;
     }
 }

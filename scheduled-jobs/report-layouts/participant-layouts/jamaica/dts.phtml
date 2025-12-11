@@ -1,8 +1,5 @@
 <?php
 
-
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
@@ -138,7 +135,7 @@ if (!empty($resultArray['shipment'])) {
         // );
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
-        if (!$general->fileExists($flag)) {
+        if (!Application_Service_Common::fileExists($flag)) {
             $flag = null;
         }
         $testThreeOptionalDisplay = "";
@@ -349,7 +346,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 

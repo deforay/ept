@@ -5,8 +5,6 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -103,7 +101,7 @@ if ($resultArray['shipment'] != "") {
 
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 12);
-    if(!empty($resultArray['shipment']['referenceResult'])) {
+    if (!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
@@ -339,7 +337,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->AddPage();
 
 
-    if (isset($responseResult) && count($responseResult) > 0  && $responseResult != '') {
+    if (isset($responseResult) && count($responseResult) > 0 && $responseResult != '') {
         $y = $pdf->getY() + 5;
 
         $passed = (isset($responseResult["number_passed"]) && $responseResult["number_passed"] > 0) ? $responseResult["number_passed"] : 0;
