@@ -4,8 +4,6 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'scatter'], true);
 
-require_once(CRON_PATH . '/Common.php');
-$general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
 if ($resultArray['shipment'] != "") {
@@ -162,23 +160,23 @@ if ($resultArray['shipment'] != "") {
                             $val['median'] = $val['manual_median'] ?: $val['median'];
                             $val['sd'] = $val['manual_sd'] ?: $val['sd'];
 
-                            $sample[$k]['response']       += $val['no_of_responses'];
-                            $sample[$k]['median']         = $val['median'];
-                            $sample[$k]['lowLimit']       = $val['low_limit'];
-                            $sample[$k]['highLimit']      = $val['high_limit'];
-                            $sample[$k]['sd']             = $val['sd'];
-                            $sample[$k]['NumberPassed']   += $val['NumberPassed'] ?? 0;
-                            $sample[$t]['label']          = $val['sample_label'];
+                            $sample[$k]['response'] += $val['no_of_responses'];
+                            $sample[$k]['median'] = $val['median'];
+                            $sample[$k]['lowLimit'] = $val['low_limit'];
+                            $sample[$k]['highLimit'] = $val['high_limit'];
+                            $sample[$k]['sd'] = $val['sd'];
+                            $sample[$k]['NumberPassed'] += $val['NumberPassed'] ?? 0;
+                            $sample[$t]['label'] = $val['sample_label'];
                             $t++;
                         } else {
                             if (isset($val['median']) && $val['median'] !== 0) {
-                                $sample[$k]['response']       += $val['no_of_responses'];
-                                $sample[$k]['median']         = $val['median'];
-                                $sample[$k]['lowLimit']       = $val['low_limit'];
-                                $sample[$k]['highLimit']      = $val['high_limit'];
-                                $sample[$k]['sd']             = $val['sd'];
-                                $sample[$k]['NumberPassed']   += $val['NumberPassed'] ?? 0;
-                                $sample[$t]['label']          = $val['sample_label'];
+                                $sample[$k]['response'] += $val['no_of_responses'];
+                                $sample[$k]['median'] = $val['median'];
+                                $sample[$k]['lowLimit'] = $val['low_limit'];
+                                $sample[$k]['highLimit'] = $val['high_limit'];
+                                $sample[$k]['sd'] = $val['sd'];
+                                $sample[$k]['NumberPassed'] += $val['NumberPassed'] ?? 0;
+                                $sample[$t]['label'] = $val['sample_label'];
                                 $t++;
                             }
                         }
@@ -223,7 +221,7 @@ if ($resultArray['shipment'] != "") {
                                 </tr>';
                         }
                         if (isset($val['NumberPassed']) && ($mainNoOfPaResponseTxt < $val['NumberPassed'] || $mainNoOfPaResponseTxt == "")) {
-                            $mainNoOfPaResponseTxt = (int)$val['NumberPassed'];
+                            $mainNoOfPaResponseTxt = (int) $val['NumberPassed'];
                         }
                     }
                     $assayName[] = $vlCal['vlAssay'];
@@ -296,15 +294,15 @@ if ($resultArray['shipment'] != "") {
             foreach ($resultArray['vlAssayRes'] as $key => $data) {
                 if ($methodOfEvaluation == 'iso17043') {
                     if ($data['no_of_responses'] < 18 || $data['assay_name'] == "Other") {
-                        $noOfPaResponse[$key18Last] += (int)$data['no_of_responses'];
-                        $participantScore[$key18Last] += (int)$data['numberPassed'];
-                        $scoreBelow[$key18Last] += (int)$data['numberFailed'];
+                        $noOfPaResponse[$key18Last] += (int) $data['no_of_responses'];
+                        $participantScore[$key18Last] += (int) $data['numberPassed'];
+                        $scoreBelow[$key18Last] += (int) $data['numberFailed'];
                         $avg[$key18Last] = round(($participantScore[$key18Last] / $noOfPaResponse[$key18Last]) * 100);
                         //$came = (int)1 + $came;
                     } else {
-                        $noOfPaResponse[$i] = (int)$data['no_of_responses'];
-                        $participantScore[$i] = (int)$data['numberPassed'];
-                        $scoreBelow[$i] = (int)$data['numberFailed'];
+                        $noOfPaResponse[$i] = (int) $data['no_of_responses'];
+                        $participantScore[$i] = (int) $data['numberPassed'];
+                        $scoreBelow[$i] = (int) $data['numberFailed'];
                         $avg[$i] = round(($data['numberPassed'] / $data['no_of_responses']) * 100);
                         $i++;
                     }

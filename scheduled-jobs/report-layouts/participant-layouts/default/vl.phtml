@@ -1,7 +1,5 @@
 <?php
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $shipmentCode = '';
 
@@ -569,7 +567,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 

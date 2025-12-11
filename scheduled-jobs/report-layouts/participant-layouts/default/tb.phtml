@@ -1,7 +1,5 @@
 <?php
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
 $schemeType = 'tb';
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -11,7 +9,7 @@ $shipmentCode = '';
 
 $isCli = php_sapi_name() === 'cli';
 
-if($isCli) {
+if ($isCli) {
     echo "Running in CLI mode\n";
 }
 
@@ -23,8 +21,8 @@ if (!empty($resultArray['shipment'])) {
 
     foreach ($resultArray['shipment'] as $result) {
 
-        if($isCli) {
-            echo "Processing shipment:". $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
+        if ($isCli) {
+            echo "Processing shipment:" . $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
         }
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
@@ -459,8 +457,8 @@ if (!empty($resultArray['shipment'])) {
                 $rx = 45;
                 // $rc = 60;
                 $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $previousShipment['shipment_score'] = (int)$previousShipment['shipment_score'];
-                $previousShipment['mean_shipment_score'] = (int)$previousShipment['mean_shipment_score'];
+                $previousShipment['shipment_score'] = (int) $previousShipment['shipment_score'];
+                $previousShipment['mean_shipment_score'] = (int) $previousShipment['mean_shipment_score'];
                 // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
                 $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i * $rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
                 // }x
@@ -579,7 +577,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 

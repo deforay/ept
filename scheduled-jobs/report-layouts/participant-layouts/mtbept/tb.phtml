@@ -1,7 +1,5 @@
 <?php
 
-require_once CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php';
-$general = new Common();
 $schemeType = 'tb';
 $shipmentCode = '';
 $flatten = false;
@@ -433,7 +431,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $pdf->Output($tempFilePath, "F");

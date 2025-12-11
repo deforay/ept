@@ -4,10 +4,6 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-$general = new Common();
-// Zend_Debug::dump($resultArray);die;
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
 
@@ -59,7 +55,7 @@ if ($resultArray['shipment'] != "") {
     // ---------------------------------------------------------
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', '', 12);
-    if(!empty($resultArray['shipment']['referenceResult'])) {
+    if (!empty($resultArray['shipment']['referenceResult'])) {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';

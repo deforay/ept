@@ -8,12 +8,9 @@
  * test results, scores, and evaluation comments.
  */
 
-// Initialize required dependencies
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
-
 // Initialize objects and variables
 $kitDb = new Application_Model_DbTable_Testkitnames();
-$general = new Common();
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
@@ -525,7 +522,7 @@ if (!empty($resultArray['shipment'])) {
 
             // Create final filename
             $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-            $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+            $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
             $filePath = $shipmentDir . DIRECTORY_SEPARATOR . $fileName;
 
             // Save PDF to file

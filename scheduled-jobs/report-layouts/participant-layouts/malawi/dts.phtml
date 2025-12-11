@@ -3,9 +3,7 @@
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
-$general = new Common();
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
@@ -541,7 +539,7 @@ if (!empty($resultArray['shipment'])) {
                 $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>
                             <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
                 /* $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $score . '</td>'; */
+                            <td style="text-align:center;">' . $score . '</td>'; */
                 $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
                 $labRes .= '</tr>';
             }
@@ -860,7 +858,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
-        $fileName = $general->makeFileNameFriendly($fileName) . ".pdf";
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $created = $pdf->Output($filePath, "F");
 
