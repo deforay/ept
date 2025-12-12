@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f0e550ccbae67bc2b1d4bf569609cdf",
+    "content-hash": "51b5f6168e18ad3a33bdf8c04ba273d9",
     "packages": [
         {
             "name": "amitdugar/archiveutil",
-            "version": "0.0.1",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amitdugar/archiveutil.git",
-                "reference": "f024d6697e9ba02f01d96b8f69261060a5c5e202"
+                "reference": "a80f47078c6ec90a7becab1e96af69f49ee78dd7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amitdugar/archiveutil/zipball/f024d6697e9ba02f01d96b8f69261060a5c5e202",
-                "reference": "f024d6697e9ba02f01d96b8f69261060a5c5e202",
+                "url": "https://api.github.com/repos/amitdugar/archiveutil/zipball/a80f47078c6ec90a7becab1e96af69f49ee78dd7",
+                "reference": "a80f47078c6ec90a7becab1e96af69f49ee78dd7",
                 "shasum": ""
             },
             "require": {
@@ -58,24 +58,24 @@
                 "issues": "https://github.com/amitdugar/archiveutil/issues",
                 "source": "https://github.com/amitdugar/archiveutil"
             },
-            "time": "2025-12-08T14:57:06+00:00"
+            "time": "2025-12-12T01:20:01+00:00"
         },
         {
             "name": "amitdugar/db-tools",
-            "version": "0.2.7",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amitdugar/db-tools.git",
-                "reference": "c7f4bc3f632affb4ccea7a74da6d6ab24c1faf29"
+                "reference": "0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/c7f4bc3f632affb4ccea7a74da6d6ab24c1faf29",
-                "reference": "c7f4bc3f632affb4ccea7a74da6d6ab24c1faf29",
+                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad",
+                "reference": "0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad",
                 "shasum": ""
             },
             "require": {
-                "amitdugar/archiveutil": "^0.0.1",
+                "amitdugar/archiveutil": "^1.0",
                 "php": "^8.2",
                 "psr/log": "^3.0",
                 "symfony/console": "^7.2",
@@ -117,7 +117,7 @@
                 "issues": "https://github.com/amitdugar/db-tools/issues",
                 "source": "https://github.com/amitdugar/db-tools"
             },
-            "time": "2025-12-11T19:17:37+00:00"
+            "time": "2025-12-12T01:22:26+00:00"
         },
         {
             "name": "composer/pcre",
