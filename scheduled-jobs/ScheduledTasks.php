@@ -20,16 +20,16 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/generate-shipment-repo
     ->description('Generating Shipment reports');
 
 // DB Backup
-$schedule->run(VENDOR_BIN . "/db-tools backup")
+$schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools backup")
     ->cron('45 0 * * *')
     ->timezone($timezone)
     ->preventOverlapping()
     ->description('Backing Up Database');
 
 // Daily binlog purge
-$schedule->run(VENDOR_BIN . "/db-tools purge-binlogs --days=7")
+$schedule->run($phpPath . " " . VENDOR_BIN . "/db-tools purge-binlogs --days=7")
     ->cron('5 4 * * *') // 04:05 am daily
-    ->timezone($timeZone)
+    ->timezone($timezone)
     ->preventOverlapping()
     ->description('DB Tools: purge MySQL binary logs older than 7 days');
 
