@@ -6,9 +6,8 @@
  */
 $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
 
-require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
+// require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
-$general = new Common();
 $config = new Zend_Config_Ini(APPLICATION_PATH . "/configs/config.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
@@ -166,7 +165,7 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo .= '</tr></table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-        $pdf->AddPage();
+        // $pdf->AddPage();
         // Process test results if available
         if (!empty($result['responseResult'])) {
             // Calculate sample statistics
@@ -501,13 +500,13 @@ if (!empty($resultArray['shipment'])) {
             $sign2 = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'signatures' . DIRECTORY_SEPARATOR . 'sign-2.png';
 
             // Left signature - using current position
-            // $pdf->Image($sign1, 30, $afterTextY, 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
+            $pdf->Image($sign1, 25, ($afterTextY + 5), 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
 
             // Right signature - positioned on the right side
-            // $pdf->Image($sign2, 140, $afterTextY, 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
+            $pdf->Image($sign2, 175, ($afterTextY + 5), 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
 
             // Move cursor down after images (adjust height as needed for your signature size)
-            $pdf->SetY($afterTextY + 15); // Adjust 15 to match your signature height
+            $pdf->SetY($afterTextY + 20); // Adjust 15 to match your signature height
 
             // Next row - Titles
             $pdf->MultiCell(95, 5, 'Scheme Coordinator', 0, 'L', 0, 0, '', '', true);
