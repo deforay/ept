@@ -3,7 +3,6 @@
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
 if ($resultArray['shipment'] != "") {
@@ -54,6 +53,7 @@ if ($resultArray['shipment'] != "") {
                     </tr>
                 </table>';
     }
+    $methodOfEvaluation = 'iso17043';
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
@@ -62,6 +62,7 @@ if ($resultArray['shipment'] != "") {
         $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
         // echo "<pre>";print_r($methodOfEvaluation);die;
+        $methodOfEvaluation = $methodOfEvaluation ?? 'iso17043';
 
         if ($methodOfEvaluation == 'iso17043') {
             $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);

@@ -1,10 +1,5 @@
 <?php
 
-// scheduled-jobs/report-layouts/summary-layouts/default/eid.phtml
-
-require_once CRON_PATH . '/Common.php';
-$general = new Common();
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);

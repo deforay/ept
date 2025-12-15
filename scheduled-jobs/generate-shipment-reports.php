@@ -1430,7 +1430,6 @@ try {
                     }
                 } else {
                     // SUMMARY REPORT
-
                     $resultArray = $evalService->getSummaryReportsDataForPDF($evalRow['shipment_id']);
                     $responseResult = $evalService->getResponseReports($evalRow['shipment_id']);
                     $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
