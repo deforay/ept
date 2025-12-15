@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "amitdugar/archiveutil",
-            "version": "1.0.0",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amitdugar/archiveutil.git",
-                "reference": "a80f47078c6ec90a7becab1e96af69f49ee78dd7"
+                "reference": "3ac2e86eb2a3eebf0e9946fcc538140722ab8d01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amitdugar/archiveutil/zipball/a80f47078c6ec90a7becab1e96af69f49ee78dd7",
-                "reference": "a80f47078c6ec90a7becab1e96af69f49ee78dd7",
+                "url": "https://api.github.com/repos/amitdugar/archiveutil/zipball/3ac2e86eb2a3eebf0e9946fcc538140722ab8d01",
+                "reference": "3ac2e86eb2a3eebf0e9946fcc538140722ab8d01",
                 "shasum": ""
             },
             "require": {
@@ -58,20 +58,20 @@
                 "issues": "https://github.com/amitdugar/archiveutil/issues",
                 "source": "https://github.com/amitdugar/archiveutil"
             },
-            "time": "2025-12-12T01:20:01+00:00"
+            "time": "2025-12-12T14:01:59+00:00"
         },
         {
             "name": "amitdugar/db-tools",
-            "version": "1.0.0",
+            "version": "1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amitdugar/db-tools.git",
-                "reference": "0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad"
+                "reference": "f8561757014bfaa6d57def5e3003db480f2a4fa7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad",
-                "reference": "0c6738cdfd47b3f5439b0d305d75fec7c0e8b1ad",
+                "url": "https://api.github.com/repos/amitdugar/db-tools/zipball/f8561757014bfaa6d57def5e3003db480f2a4fa7",
+                "reference": "f8561757014bfaa6d57def5e3003db480f2a4fa7",
                 "shasum": ""
             },
             "require": {
@@ -100,8 +100,7 @@
             ],
             "authors": [
                 {
-                    "name": "Amit Dugar",
-                    "email": "amitdugar@example.com"
+                    "name": "Amit Dugar"
                 }
             ],
             "description": "Database backup/restore/export/verify/pitr/collation console toolkit",
@@ -117,7 +116,7 @@
                 "issues": "https://github.com/amitdugar/db-tools/issues",
                 "source": "https://github.com/amitdugar/db-tools"
             },
-            "time": "2025-12-12T01:22:26+00:00"
+            "time": "2025-12-12T16:23:16+00:00"
         },
         {
             "name": "composer/pcre",
