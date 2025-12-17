@@ -25,8 +25,13 @@ ADD COLUMN last_heartbeat DATETIME NULL;
 
 -- Thana 08-Dec-2025
 INSERT INTO `global_config` (`name`, `value`) VALUES ('mail_configuration', '');
+
 -- Thana 09-Dec-2025
 ALTER TABLE temp_mail
     MODIFY status VARCHAR(32) NOT NULL DEFAULT 'pending',
     ADD COLUMN sent_at       DATETIME NULL AFTER updated_at,
     ADD COLUMN failure_type  VARCHAR(64) NULL AFTER failure_reason;
+
+-- Thana 17-Dec-2025
+ALTER TABLE `scheduled_jobs` ADD `initated_by` INT NULL DEFAULT NULL AFTER `status`;
+ALTER TABLE `queue_report_generation` ADD `initated_by` INT NULL DEFAULT NULL AFTER `last_heartbeat`;

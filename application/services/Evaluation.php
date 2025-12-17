@@ -2664,9 +2664,11 @@ class Application_Service_Evaluation
 
 	public function addShipmentEvaluationToQueue($shipmentId)
 	{
+		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$data = array(
 			'shipment_id' => $shipmentId,
+			'initated_by' => $authNameSpace->admin_id,
 			'requested_on' => new Zend_Db_Expr('now()'),
 			'last_updated_on' => new Zend_Db_Expr('now()'),
 			'status' => 'pending'
@@ -2697,6 +2699,7 @@ class Application_Service_Evaluation
 					'shipment_id' => $shipmentId,
 					'report_type' => $params['type'],
 					'requested_by' => $authNameSpace->admin_id,
+					'initated_by' => $authNameSpace->admin_id,
 					'requested_on' => new Zend_Db_Expr('now()'),
 					'previous_status' => 'evaluated',
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
