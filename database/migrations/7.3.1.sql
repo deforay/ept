@@ -35,3 +35,4 @@ ALTER TABLE temp_mail
 -- Thana 17-Dec-2025
 ALTER TABLE `scheduled_jobs` ADD `initated_by` INT NULL DEFAULT NULL AFTER `status`;
 ALTER TABLE `queue_report_generation` ADD `initated_by` INT NULL DEFAULT NULL AFTER `last_heartbeat`;
+INSERT INTO `global_config` (`name`, `value`) VALUES ('enable_admin_email_notification', 'yes');

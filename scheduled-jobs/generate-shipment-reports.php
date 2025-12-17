@@ -1034,6 +1034,7 @@ try {
     $schemeService = new Application_Service_Schemes();
     $shipmentService = new Application_Service_Shipments();
     $evalService = new Application_Service_Evaluation();
+    $adminService = new Application_Service_SystemAdmin();
     $header = $reportService->getReportConfigValue('report-header');
     $instituteAddressPosition = $reportService->getReportConfigValue('institute-address-postition');
     $reportComment = $reportService->getReportConfigValue('report-comment');
@@ -1052,6 +1053,7 @@ try {
     $customField1 = $commonService->getConfig('custom_field_1');
     $customField2 = $commonService->getConfig('custom_field_2');
     $haveCustom = $commonService->getConfig('custom_field_needed');
+    $enabledAdminEmailReminder = $commonService->getConfig('enable_admin_email_notification');
     $evaluatOnFinalized = $commonService->getConfig('evaluate_before_generating_reports');
     $feedbackOption = $commonService->getConfig('participant_feedback');
     $recencyAssay = $schemeService->getRecencyAssay();
@@ -1511,6 +1513,21 @@ try {
 
             if (!empty($evalRow['id'])) {
                 $db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
+            }
+            if ($enabledAdminEmailReminder == 'yes') {
+                $queueResults = $db->fetchRow($db->select()
+                    ->from('queue_report_generation')
+                    ->where("shipment_id = ?", $evalRow['shipment_id']));
+                /* Zend_Debug::dump($queueResults);
+                die; */
+                $adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
+                $link = $conf->domain . '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
+                $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
+                $message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
+                 Shipment report for ' . $evalRow['shipment_code'] . ' has been generated successfully. Kindly click the below link to check the report or copy paste into the brower address bar.<br>
+                 <a href="' . $link . '">' . $link . '</a>.';
+
+                $commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
             }
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
 

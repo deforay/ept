@@ -22,7 +22,9 @@ if (is_array($shipmentsToEvaluate)) {
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $evalService = new Application_Service_Evaluation();
+$adminService = new Application_Service_SystemAdmin();
 $commonService = new Application_Service_Common();
+$enabledAdminEmailReminder = $commonService->getConfig('enable_admin_email_notification');
 try {
 
 	$db = Zend_Db::factory($conf->resources->db);
@@ -56,6 +58,21 @@ try {
 			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
 			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
 			$commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+		}
+		if ($enabledAdminEmailReminder == 'yes') {
+			$queueResults = $db->fetchRow($db->select()
+				->from('queue_report_generation')
+				->where("shipment_id = ?", $shipmentId));
+			/* Zend_Debug::dump($queueResults);
+                die; */
+			$adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
+			$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);
+			$subject = 'Shipment for ' . $shipmentResult[0]['shipment_code'] . ' has been evalated';
+			$message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
+                 Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evalated successfully. Kindly click the below link to see the evalation or copy paste into the brower address bar.<br>
+                 <a href="' . $link . '">' . $link . '</a>.';
+
+			$commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
 		}
 	}
 } catch (Exception $e) {

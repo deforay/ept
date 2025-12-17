@@ -3617,7 +3617,7 @@ class Application_Service_Shipments
         }
 
         /* Individual column filtering */
-        for ($i = 0; $i <i count($aColumns); $i++) {
+        for ($i = 0; $i < count($aColumns); $i++) {
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
                     if ($sWhere == "") {

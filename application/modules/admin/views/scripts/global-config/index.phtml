@@ -209,8 +209,8 @@
 						<label for="enable_admin_email_notification" class="col-lg-6 control-label"><?= $this->translate->_("Enable Admin Email Notification Alert"); ?></label>
 						<div class="col-lg-6">
 							<br>
-							<input type="radio" class="" name="enable_admin_email_notification" id="enable_admin_email_notification_yes" <?php echo (isset($this->enable_cenable_admin_email_notificationapa) && $this->enable_admin_email_notification == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether admin notification enable or disable" /> <?= $this->translate->_("Yes"); ?>
-							&nbsp;<input type="radio" class="isRequired" name="enable_admin_email_notification" id="enable_admin_email_notification_no" <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether admin notification enable or disable" /> <?= $this->translate->_("No"); ?>
+							<input type="radio" name="enable_admin_email_notification" id="enable_admin_email_notification" <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether admin notification enable or disable" /> <?= $this->translate->_("Yes"); ?>
+							&nbsp;<input type="radio" name="enable_admin_email_notification" id="enable_admin_email_notification_no" <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether admin notification enable or disable" /> <?= $this->translate->_("No"); ?>
 						</div>
 					</div>
 				</div>
