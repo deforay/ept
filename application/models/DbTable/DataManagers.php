@@ -230,8 +230,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function getUserDetails($userId)
     {
-        $sql = $this->select()->from('data_manager')->where("primary_email = ?", $userId);
-        return $this->fetchRow($sql);
+        if (isset($userId) && !empty($userId) && is_numeric($userId)) {
+            $sql = $this->select()->from('data_manager')->where("primary_email = ?", $userId);
+            return $this->fetchRow($sql);
+        } else {
+            return false;
+        }
     }
 
     public function fetchUserCuntryMap($userId, $type = null, $ptcc = false)

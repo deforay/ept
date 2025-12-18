@@ -1521,13 +1521,15 @@ try {
                 /* Zend_Debug::dump($queueResults);
                 die; */
                 $adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
-                $link = $conf->domain . '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
-                $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
-                $message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
-                 Shipment report for ' . $evalRow['shipment_code'] . ' has been generated successfully. Kindly click the below link to check the report or copy paste into the brower address bar.<br>
-                 <a href="' . $link . '">' . $link . '</a>.';
+                if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
+                    $link = $conf->domain . '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
+                    $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
+                    $message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
+                     Shipment report for ' . $evalRow['shipment_code'] . ' has been generated successfully. Kindly click the below link to check the report or copy paste into the brower address bar.<br>
+                     <a href="' . $link . '">' . $link . '</a>.';
 
-                $commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
+                    $commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
+                }
             }
             $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
 

@@ -66,13 +66,15 @@ try {
 			/* Zend_Debug::dump($queueResults);
                 die; */
 			$adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
-			$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);
-			$subject = 'Shipment for ' . $shipmentResult[0]['shipment_code'] . ' has been evalated';
-			$message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
+			if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
+				$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);
+				$subject = 'Shipment for ' . $shipmentResult[0]['shipment_code'] . ' has been evalated';
+				$message = 'Hello, ' . $adminDetails['first_name'] . ', <br>
                  Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evalated successfully. Kindly click the below link to see the evalation or copy paste into the brower address bar.<br>
                  <a href="' . $link . '">' . $link . '</a>.';
 
-			$commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
+				$commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
+			}
 		}
 	}
 } catch (Exception $e) {

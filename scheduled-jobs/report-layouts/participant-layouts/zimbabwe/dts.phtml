@@ -105,7 +105,7 @@ if (!empty($resultArray['shipment'])) {
         $testThreeOptionalDisplay = (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') ? "display:none;" : "";
         $screeningTestDisplay = (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') ? "display:none;" : "";
         $sampleTypeDisplay = (isset($shipmentAttributes["sampleType"]) && in_array($shipmentAttributes["sampleType"], ['serum', 'plasma'])) ? "display:none;" : "";
-
+        $passPercentage = $config->evaluation->dts->passPercentage;
         if ($screeningTestDisplay == "display:none;") {
             $testThreeOptionalDisplay = "display:none;";
         }
