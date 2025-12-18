@@ -50,6 +50,19 @@ resolve_ept_path() {
     fi
 }
 
+# Strip surrounding quotes from secrets copied from INI files.
+sanitize_ini_secret() {
+    local val="${1-}"
+    val="$(printf '%s' "$val" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    if [ "${#val}" -ge 2 ]; then
+        case "$val" in
+            \"*\") val="${val#\"}"; val="${val%\"}" ;;
+            \'*\') val="${val#\'}"; val="${val%\'}" ;;
+        esac
+    fi
+    printf '%s' "$val"
+}
+
 # Initialize flags
 skip_ubuntu_updates=false
 skip_backup=false
@@ -304,14 +317,21 @@ if [ -n "$mysql_root_password" ]; then
     mysql_pw="$mysql_root_password"
     print info "Using user-provided MySQL root password"
 elif [ -f "${ept_path}/application/configs/application.ini" ]; then
-    mysql_pw=$(extract_mysql_password_from_config "${ept_path}/application/configs/application.ini" production)
-    print info "Extracted MySQL root password from application.ini"
+    mysql_pw="$(extract_mysql_password_from_config "${ept_path}/application/configs/application.ini" production || true)"
+    mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
+    if [ -n "$mysql_pw" ]; then
+        print info "Extracted MySQL root password from application.ini"
+    else
+        print warning "Could not extract a MySQL password from application.ini. Prompting for password..."
+        read -r -sp "MySQL root password: " mysql_pw; echo
+    fi
 else
     print error "Could not find application.ini to extract MySQL password. Please provide the MySQL root password."
     read -r -sp "MySQL root password: " mysql_pw; echo
 fi
 
 # Preflight root auth; prompt if wrong
+mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
 if ! MYSQL_PWD="${mysql_pw}" mysql -u root -e "SELECT 1" >/dev/null 2>&1; then
     print warning "Root authentication failed. Prompting for password..."
     read -r -sp "MySQL root password: " mysql_pw; echo

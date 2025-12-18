@@ -134,7 +134,7 @@ if (!$isWorker && $procs > 1) {
     }
 }
 
-if ($isCli) {
+if ($isCli && !$isWorker) {
     echo "Using $procs processes to generate reports" . PHP_EOL;
 }
 
@@ -1839,7 +1839,8 @@ try {
                 'last_heartbeat' => null
             ), "shipment_id = " . $evalRow['shipment_id']);
 
-            if ($id > 0 && $reportCompletedStatus == 'finalized') {
+            // `$evalRow['id']` is the queue_report_generation row id (null in manual mode).
+            if (!empty($evalRow['id']) && $reportCompletedStatus == 'finalized') {
                 $authNameSpace = new Zend_Session_Namespace('administrators');
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Finalized shipment - " . $evalRow['shipment_code'], "shipment");
