@@ -21,7 +21,7 @@ $isCli = php_sapi_name() === 'cli';
 
 // Flags for testing
 
-$options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:"]);
+$options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:", "force", "lockTtl:"]);
 
 // if -s then ONLY generate summary report
 
@@ -43,6 +43,8 @@ $workerShipmentId = $options['shipment'] ?? null;
 $workerOffset = isset($options['offset']) ? (int) $options['offset'] : 0;
 $workerLimit = isset($options['limit']) ? (int) $options['limit'] : 0;
 $workerReportType = $options['reportType'] ?? null;
+$force = isset($options['force']);
+$lockTtlMinutes = isset($options['lockTtl']) ? max(0, (int) $options['lockTtl']) : 0;
 $procs = isset($options['procs']) ? (int) $options['procs'] : Pt_Commons_MiscUtility::getCpuCount();
 if ($procs < 1) {
     $procs = 1;
@@ -56,17 +58,69 @@ if ($procs < 1) {
  */
 $acquireShipmentLock = static function (int $shipmentId) {
     $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
+    // Use a lock file that works even when the file is owned by another user (e.g. cron as root).
+    // Prefer read/write so we can write the PID, but fall back to read-only for locking.
     $handle = @fopen($lockPath, 'c');
     if (!is_resource($handle)) {
-        return null;
+        if (is_file($lockPath)) {
+            $handle = @fopen($lockPath, 'r');
+        }
+        if (!is_resource($handle)) {
+            return null;
+        }
     }
     if (!flock($handle, LOCK_EX | LOCK_NB)) {
         fclose($handle);
         return null;
     }
-    ftruncate($handle, 0);
-    fwrite($handle, (string) getmypid());
+    // If we have write access, store the PID for easier debugging.
+    $meta = stream_get_meta_data($handle);
+    $mode = (string) ($meta['mode'] ?? '');
+    $canWrite = str_contains($mode, '+') || str_contains($mode, 'w') || str_contains($mode, 'a') || str_contains($mode, 'x') || str_contains($mode, 'c');
+    if ($canWrite) {
+        @ftruncate($handle, 0);
+        @fwrite($handle, (string) getmypid());
+    }
     return $handle;
+};
+
+/**
+ * Read lock metadata (best-effort): PID stored in file (if writable), mtime, and path.
+ */
+$getShipmentLockInfo = static function (int $shipmentId): array {
+    $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
+    $pid = null;
+    $mtime = null;
+    if (is_file($lockPath)) {
+        $mtime = @filemtime($lockPath) ?: null;
+        $contents = @file_get_contents($lockPath);
+        if ($contents !== false) {
+            $parsed = (int) trim($contents);
+            if ($parsed > 0) {
+                $pid = $parsed;
+            }
+        }
+    }
+    return ['path' => $lockPath, 'pid' => $pid, 'mtime' => $mtime];
+};
+
+/**
+ * Check if a PID is running (best-effort, cross-platform-ish).
+ */
+$isPidRunning = static function (?int $pid): bool {
+    if (!$pid || $pid < 2) {
+        return false;
+    }
+    if (function_exists('posix_kill')) {
+        // Signal 0 does not kill; it checks for existence/permission.
+        return @posix_kill($pid, 0);
+    }
+    // Fallback: if /proc exists, check for /proc/<pid>.
+    $procPath = "/proc/{$pid}";
+    if (@is_dir($procPath)) {
+        return true;
+    }
+    return false;
 };
 
 // Parallel processing uses Symfony Process which relies on `proc_open`.
@@ -1116,10 +1170,43 @@ try {
     if ($manualShipmentMode) {
         $manualShipmentLock = $acquireShipmentLock((int) $workerShipmentId);
         if ($manualShipmentLock === null) {
-            fwrite(STDERR, "Another report generation process is already running for shipment {$workerShipmentId}. Exiting.\n");
-            exit(1);
+            $info = $getShipmentLockInfo((int) $workerShipmentId);
+            $running = $isPidRunning($info['pid']);
+            $ageMinutes = ($info['mtime'] ? (int) floor((time() - $info['mtime']) / 60) : null);
+
+            if ($force) {
+                $ttlOk = ($lockTtlMinutes > 0 && $ageMinutes !== null && $ageMinutes >= $lockTtlMinutes && !$running);
+                if ($ttlOk && is_string($info['path']) && $info['path'] !== '' && is_file($info['path'])) {
+                    // Best-effort cleanup for stale lock files (does not break a held flock).
+                    @unlink($info['path']);
+                    $manualShipmentLock = $acquireShipmentLock((int) $workerShipmentId);
+                    if (is_resource($manualShipmentLock)) {
+                        // Successfully re-acquired after removing a stale file.
+                        goto lock_acquired_manual;
+                    }
+                }
+                fwrite(
+                    STDERR,
+                    "WARNING: Shipment {$workerShipmentId} appears locked (lock file: {$info['path']}). " .
+                        "Proceeding due to --force" .
+                        ($ttlOk ? " (lockTtl={$lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
+                        " This can corrupt output if another job is actually running.\n"
+                );
+            } else {
+                $details = "lock file: {$info['path']}";
+                if ($info['pid']) {
+                    $details .= ", pid: {$info['pid']}" . ($running ? " (running)" : " (not running)");
+                }
+                if ($ageMinutes !== null) {
+                    $details .= ", age: {$ageMinutes}m";
+                }
+                fwrite(STDERR, "Another report generation process is already running for shipment {$workerShipmentId} ({$details}). Exiting.\n");
+                fwrite(STDERR, "If this is stale: check the PID (ps -fp <pid>) and remove the lock file, or rerun with --force.\n");
+                exit(1);
+            }
         }
     }
+    lock_acquired_manual:
 
     if ($isWorker) {
         if (empty($workerShipmentId) || $workerLimit < 1) {
@@ -1300,11 +1387,40 @@ try {
                 } else {
                     $shipmentLock = $acquireShipmentLock($shipmentIdForLock);
                     if ($shipmentLock === null) {
-                        fwrite(STDERR, "Shipment {$shipmentIdForLock} is already being processed by another report generation job. Skipping.\n");
-                        continue;
+                        $info = $getShipmentLockInfo($shipmentIdForLock);
+                        $running = $isPidRunning($info['pid']);
+                        $ageMinutes = ($info['mtime'] ? (int) floor((time() - $info['mtime']) / 60) : null);
+
+                        if ($force) {
+                            $ttlOk = ($lockTtlMinutes > 0 && $ageMinutes !== null && $ageMinutes >= $lockTtlMinutes && !$running);
+                            if ($ttlOk && is_string($info['path']) && $info['path'] !== '' && is_file($info['path'])) {
+                                @unlink($info['path']);
+                                $shipmentLock = $acquireShipmentLock($shipmentIdForLock);
+                                if (is_resource($shipmentLock)) {
+                                    // Continue with a clean, re-acquired lock.
+                                    goto lock_acquired_queue;
+                                }
+                            }
+                            fwrite(
+                                STDERR,
+                                "WARNING: Shipment {$shipmentIdForLock} appears locked (lock file: {$info['path']}). " .
+                                    "Proceeding due to --force. This can corrupt output if another job is actually running.\n"
+                            );
+                        } else {
+                            $details = "lock file: {$info['path']}";
+                            if ($info['pid']) {
+                                $details .= ", pid: {$info['pid']}" . ($running ? " (running)" : " (not running)");
+                            }
+                            if ($ageMinutes !== null) {
+                                $details .= ", age: {$ageMinutes}m";
+                            }
+                            fwrite(STDERR, "Shipment {$shipmentIdForLock} is already being processed by another report generation job ({$details}). Skipping.\n");
+                            continue;
+                        }
                     }
                 }
             }
+            lock_acquired_queue:
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
