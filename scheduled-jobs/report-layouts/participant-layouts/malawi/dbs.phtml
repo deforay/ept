@@ -8,6 +8,12 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
+$dtsResults = [];
+$possibleDtsResults = $schemeService->getPossibleResults('dts');
+foreach ($possibleDtsResults as $pr) {
+    $dtsResults[$pr['id']] = ucfirst(strtolower($pr['response']));
+}
+
 if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);

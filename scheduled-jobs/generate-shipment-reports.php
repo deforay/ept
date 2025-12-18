@@ -88,11 +88,15 @@ if ($isCli) {
  * Include a PHP template file with an explicit variable context.
  * This avoids relying on ambient variables from the caller scope (especially inside closures).
  */
-$includeWithContext = static function (string $__file, array $__context): void {
-    (static function (string $__file, array $__context): void {
-        extract($__context, EXTR_OVERWRITE);
-        include $__file;
-    })($__file, $__context);
+$includeWithContext = static function (string $file, array $context): void {
+    if (!is_file($file)) {
+        throw new RuntimeException("Template not found: {$file}");
+    }
+
+    (static function () use ($file, $context): void {
+        extract($context, EXTR_OVERWRITE);
+        require $file;
+    })();
 };
 
 
@@ -1213,6 +1217,12 @@ try {
                     'schemeService' => $schemeService,
                     'shipmentService' => $shipmentService,
                     'commonService' => $commonService,
+                    'config' => $customConfig,
+                    'reportFormat' => $reportService->getReportConfigValue('report-format'),
+                    'recencyAssay' => $recencyAssay,
+                    'allGeneTypes' => isset($allGeneTypes) ? $allGeneTypes : null,
+                    'downloadDirectory' => $downloadDirectory,
+                    'trainingInstance' => $trainingInstance,
                     'evalRow' => $evalRow,
                     'resultArray' => $resultArray,
                     'totParticipantsRes' => $totParticipantsRes,
@@ -1394,6 +1404,12 @@ try {
                 'schemeService' => $schemeService,
                 'shipmentService' => $shipmentService,
                 'commonService' => $commonService,
+                'config' => $customConfig,
+                'reportFormat' => $reportService->getReportConfigValue('report-format'),
+                'recencyAssay' => $recencyAssay,
+                'allGeneTypes' => isset($allGeneTypes) ? $allGeneTypes : null,
+                'downloadDirectory' => $downloadDirectory,
+                'trainingInstance' => $trainingInstance,
                 'evalRow' => $evalRow,
                 'totParticipantsRes' => $totParticipantsRes,
                 'reportsPath' => $reportsPath,
@@ -1570,6 +1586,7 @@ try {
                 'shipmentService' => $shipmentService,
                 'commonService' => $commonService,
                 'evalService' => $evalService,
+                'trainingInstance' => $trainingInstance,
                 'evalRow' => $evalRow,
                 'reportsPath' => $reportsPath,
                 'resultStatus' => $resultStatus,

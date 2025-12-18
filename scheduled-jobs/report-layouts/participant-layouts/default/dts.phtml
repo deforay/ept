@@ -45,7 +45,7 @@ if (!empty($resultArray['shipment'])) {
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
-        $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
+        $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
