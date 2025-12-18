@@ -27,6 +27,16 @@ if (!empty($resultArray['shipment'])) {
         // Parse shipment attributes
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+        $attributes = json_decode($result['attributes'] ?? '{}', true);
+
+        $sampleRehydrationDate = '';
+        if (!empty($attributes['sample_rehydration_date'])) {
+            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
+        }
+
+        $sampleTypeDisplay = (isset($shipmentAttributes["sampleType"]) && in_array($shipmentAttributes["sampleType"], ['serum', 'plasma']))
+            ? "display:none;"
+            : "";
 
         // Skip excluded or non-performed tests
         if (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes') {
@@ -38,7 +48,6 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($shipmentDir) && !is_dir($shipmentDir)) {
             mkdir($shipmentDir, 0755, true);
         }
-        $attributes = [];
         // Initialize PDF document based on report format
         $reportFormat = $reportService->getReportConfigValue('report-format');
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName']))
@@ -46,13 +55,12 @@ if (!empty($resultArray['shipment'])) {
             : $result['scheme_name'];
         if (isset($reportFormat) && !empty($reportFormat)) {
             // Use FPDI report format
-            $approveTxt = $resultArray['shipment']['issuing_authority'] ?? $evalRow['saname'];
+            $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
             $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName, $approveTxt);
         } else {
             // Use standard individual PDF format
             $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $attributes = json_decode($result['attributes'], true);
             $pdf->setSchemeName(
                 $header,
                 $panelName,

@@ -577,7 +577,7 @@ if (!empty($resultArray['shipment'])) {
             $graph->xaxis->SetTickSide(SIDE_DOWN);
             $graph->yaxis->SetTickSide(SIDE_LEFT);
 
-            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
             $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
             $graph->img->SetQuality(100); // Set the highest quality
             $graph->Stroke($image_file);

@@ -561,15 +561,31 @@ ini_get_value() {
         $v = (string)$ini[$sec][$key];
         $v = trim($v);
 
-        // strip inline comments ; or #
-        if (preg_match("/^[^;#]*/", $v, $m)) { $v = rtrim($m[0]); }
+        // Prefer quoted values as-is (don’t treat ;/# inside quotes as comments).
+        if ($v !== "" && ($v[0] === chr(34) || $v[0] === chr(39))) {
+          $q = $v[0];
+          $len = strlen($v);
+          $out = "";
+          $escaped = false;
+          for ($i = 1; $i < $len; $i++) {
+            $ch = $v[$i];
+            if ($escaped) { $out .= $ch; $escaped = false; continue; }
+            if ($ch === "\\\\") { $escaped = true; continue; }
+            if ($ch === $q) { $v = $out; break; }
+            $out .= $ch;
+          }
+        } else {
+          // strip inline comments ; or # (common INI style) from unquoted values
+          $v = preg_replace("/\\s*[;#].*$/", "", $v);
+          $v = rtrim($v);
 
-        // remove surrounding single/double quotes
-        if (strlen($v) >= 2) {
-          $dq = chr(34);  // double-quote
-          $sq = chr(39);  // single-quote
-          if ( ($v[0]===$dq && substr($v,-1)===$dq) || ($v[0]===$sq && substr($v,-1)===$sq) ) {
-            $v = substr($v, 1, -1);
+          // remove surrounding single/double quotes (simple case)
+          if (strlen($v) >= 2) {
+            $dq = chr(34);  // double-quote
+            $sq = chr(39);  // single-quote
+            if ( ($v[0]===$dq && substr($v,-1)===$dq) || ($v[0]===$sq && substr($v,-1)===$sq) ) {
+              $v = substr($v, 1, -1);
+            }
           }
         }
         echo $v; exit(0);

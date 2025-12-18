@@ -576,8 +576,8 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
         $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
     }
-    if (isset($note) && !empty($note)) {
-        $pdf->writeHTML($note, true, false, true, false, '');
+    if (isset($reportComment) && !empty($reportComment)) {
+        $pdf->writeHTML($reportComment, true, false, true, false, '');
     }
 
     // $pdf->writeHTML($html, true, false, true, false, '');

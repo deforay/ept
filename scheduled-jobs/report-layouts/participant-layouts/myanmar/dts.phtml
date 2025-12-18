@@ -212,6 +212,10 @@ if ($totalPages > 0) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
+        $screening = '';
+        if (is_array($attributes) && isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] !== '') {
+            $screening = ' - ' . ucwords((string) $attributes['dts_test_panel_type']);
+        }
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {

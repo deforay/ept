@@ -389,10 +389,8 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(3);
         $graph->Add($p1);
 
-        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-
-        $chart->setTitle("HIV Testing Algorithms used for DBS-based PT survey " . $resultArray['shipment']['distribution_code']);
-        $graph->Stroke($piechart);
+	        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+	        $graph->Stroke($piechart);
 
         $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($piechart)) {
