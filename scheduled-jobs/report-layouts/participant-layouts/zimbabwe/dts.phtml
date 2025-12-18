@@ -9,6 +9,7 @@ $participantPerformance = $reportService->getParticipantPerformanceReportByShipm
 // require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . "/configs/config.ini", APPLICATION_ENV);
+$appConfig = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
 // Initialize result mappings
@@ -479,38 +480,32 @@ if (!empty($resultArray['shipment'])) {
                     <li>A testing score of 15 is awarded for any result reported correctly</li>
                     <li>A documentation score of 0 is awarded for any result that is incorrectly reported</li>
                     <li>A documentation score of 2 is awarded for any result reported correctly.</li>
-                    <li>A grading of Satisfactory is assigned when the participant overall score is >= 95%</li>
-                    <li>A grading of Unsatisfactory is assigned when the participant overall score is < 95%</li>
+                    <li>A grading of Satisfactory is assigned when the participant overall score is >= ' . $passPercentage . '%</li>
+                    <li>A grading of Unsatisfactory is assigned when the participant overall score is < ' . $passPercentage . '%</li>
                     <li>A grading of Ungraded is assigned when the participant has not submitted PT results</li>
                 </ul><br>';
             $pdf->writeHTML($summaryNote, true, false, true, false, '');
-            $currentY = $pdf->GetY();
 
-            // Left column - Reviewed By
-            $pdf->MultiCell(95, 5, 'Reviewed By: ' . $approveTxt . ',', 0, 'L', 0, 0, '', '', true);
-
-            // Right column - Approved by
-            $pdf->MultiCell(95, 5, 'Approved by: Lucia Sisya', 0, 'R', 0, 1, '', '', true);
-
-            // Get Y position after text
-            $afterTextY = $pdf->GetY();
-
-            // Image paths
-            $sign1 = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'signatures' . DIRECTORY_SEPARATOR . 'sign-1.png';
-            $sign2 = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'signatures' . DIRECTORY_SEPARATOR . 'sign-2.png';
-
-            // Left signature - using current position
-            $pdf->Image($sign1, 25, ($afterTextY + 5), 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
-
-            // Right signature - positioned on the right side
-            $pdf->Image($sign2, 175, ($afterTextY + 5), 25, 0, '', '', '', false, 300, '', false, false, 0, false, false, false);
-
-            // Move cursor down after images (adjust height as needed for your signature size)
-            $pdf->SetY($afterTextY + 20); // Adjust 15 to match your signature height
-
-            // Next row - Titles
-            $pdf->MultiCell(95, 5, 'Scheme Coordinator', 0, 'L', 0, 0, '', '', true);
-            $pdf->MultiCell(95, 5, 'Scheme Manager', 0, 'R', 0, 1, '', '', true);
+            $sign1 = WEB_ROOT . '/uploads/signatures/sign-1.png';
+            $sign2 = WEB_ROOT . '/uploads/signatures/sign-2.png';
+            // Row 1: Names
+            $pdf->SetFont('helvetica', '', 10);
+            $html = '
+                    <table cellpadding="5" style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
+                            <td style="width: 50%; text-align: right;">Approved by: Lucia Sisya</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>
+                            <td style="width: 50%; text-align: right;"><img style="width:100px;" src="' . $sign2 . '" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;">Scheme Coordinator</td>
+                            <td style="width: 50%; text-align: right;">Scheme Manager</td>
+                        </tr>
+                    </table>';
+            $pdf->writeHTML($html, true, false, true, false, '');
 
             // Additional information
             $additionalInfo = '<br><br><span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
