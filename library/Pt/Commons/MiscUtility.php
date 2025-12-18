@@ -773,12 +773,16 @@ final class Pt_Commons_MiscUtility
         string $barChar = '█',
         string $emptyChar = '░',
         string $progressChar = '█',
-        string $color = 'cyan'
+        string $color = 'cyan',
+        bool $multiLine = true
     ): ProgressBar {
         $out = self::console();
         $bar = $maxSteps === null ? new ProgressBar($out) : new ProgressBar($out, $maxSteps);
 
-        $bar->setFormat("%message%\n <fg={$color}>[%bar%]</> %percent:3s%%  %current%/%max%  %elapsed:6s%  %memory:6s%");
+        $format = $multiLine
+            ? "%message%\n <fg={$color}>[%bar%]</> %percent:3s%%  %current%/%max%  %elapsed:6s%  %memory:6s%"
+            : "%message% <fg={$color}>[%bar%]</> %percent:3s%%  %current%/%max%  %elapsed:6s%  %memory:6s%";
+        $bar->setFormat($format);
         $bar->setBarCharacter($barChar);
         $bar->setEmptyBarCharacter($emptyChar);
         $bar->setProgressCharacter($progressChar);
@@ -841,23 +845,67 @@ final class Pt_Commons_MiscUtility
 
     public static function getCpuCount(): int
     {
-        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            $cmd = 'wmic cpu get NumberOfCores';
-            if (preg_match('/(\d+)/', shell_exec($cmd), $matches)) {
-                return (int) $matches[1];
+        $disabled = array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions'))));
+        $canShellExec = function_exists('shell_exec') && !in_array('shell_exec', $disabled, true);
+
+        $readIntFromCommand = static function (string $cmd) use ($canShellExec): ?int {
+            if (!$canShellExec) {
+                return null;
             }
-        } else {
-            // Linux / Mac / BSD
-            $cmd = 'sysctl -n hw.ncpu'; // Mac / BSD
             $output = @shell_exec($cmd);
-            if ($output !== null) {
-                return (int) $output;
+            if (!is_string($output)) {
+                return null;
+            }
+            $value = (int) trim($output);
+            return $value > 0 ? $value : null;
+        };
+
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $env = (int) getenv('NUMBER_OF_PROCESSORS');
+            if ($env > 0) {
+                return $env;
             }
 
-            $cmd = 'cat /proc/cpuinfo | grep processor | wc -l'; // Linux
-            $output = @shell_exec($cmd);
-            if ($output !== null) {
-                return (int) $output;
+            if ($canShellExec) {
+                $cmd = 'wmic cpu get NumberOfCores';
+                $out = @shell_exec($cmd);
+                if (is_string($out) && preg_match('/(\d+)/', $out, $matches)) {
+                    $value = (int) $matches[1];
+                    if ($value > 0) {
+                        return $value;
+                    }
+                }
+            }
+
+            return 2;
+        }
+
+        $osFamily = defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS;
+        $osFamily = is_string($osFamily) ? strtolower($osFamily) : '';
+
+        // Prefer commands that are native to the OS to avoid noisy stderr like:
+        // "sysctl: cannot stat /proc/sys/hw/ncpu: No such file or directory"
+        if ($osFamily === 'linux') {
+            $value = $readIntFromCommand('nproc 2>/dev/null')
+                ?? $readIntFromCommand('getconf _NPROCESSORS_ONLN 2>/dev/null');
+            if ($value !== null) {
+                return $value;
+            }
+
+            // Fallback without spawning shell pipelines.
+            $cpuinfo = @file_get_contents('/proc/cpuinfo');
+            if (is_string($cpuinfo) && $cpuinfo !== '') {
+                $count = preg_match_all('/^processor\\s*:/m', $cpuinfo);
+                if ($count > 0) {
+                    return $count;
+                }
+            }
+        } else {
+            // macOS / BSD
+            $value = $readIntFromCommand('sysctl -n hw.ncpu 2>/dev/null')
+                ?? $readIntFromCommand('getconf _NPROCESSORS_ONLN 2>/dev/null');
+            if ($value !== null) {
+                return $value;
             }
         }
 

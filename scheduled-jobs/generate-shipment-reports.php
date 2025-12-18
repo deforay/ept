@@ -48,6 +48,53 @@ if ($procs < 1) {
     $procs = 1;
 }
 
+/**
+ * Prevent concurrent master runs for the same shipment.
+ * Running two masters at once can keep deleting the same output folder and make progress appear stuck at 0.
+ *
+ * Workers are not locked (they are expected to run concurrently under a single master).
+ */
+$acquireShipmentLock = static function (int $shipmentId) {
+    $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
+    $handle = @fopen($lockPath, 'c');
+    if (!is_resource($handle)) {
+        return null;
+    }
+    if (!flock($handle, LOCK_EX | LOCK_NB)) {
+        fclose($handle);
+        return null;
+    }
+    ftruncate($handle, 0);
+    fwrite($handle, (string) getmypid());
+    return $handle;
+};
+
+// Parallel processing uses Symfony Process which relies on `proc_open`.
+// On some Ubuntu hardening configs (or in restricted shared hosting), `proc_open` can be disabled.
+if (!$isWorker && $procs > 1) {
+    $disabled = array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions'))));
+    $procOpenAvailable = function_exists('proc_open') && !in_array('proc_open', $disabled, true);
+    if (!$procOpenAvailable) {
+        fwrite(STDERR, "Parallel processing disabled: PHP function `proc_open` is not available. Falling back to 1 process.\n");
+        $procs = 1;
+    }
+}
+
+if ($isCli) {
+    echo "Using $procs processes to generate reports" . PHP_EOL;
+}
+
+/**
+ * Include a PHP template file with an explicit variable context.
+ * This avoids relying on ambient variables from the caller scope (especially inside closures).
+ */
+$includeWithContext = static function (string $__file, array $__context): void {
+    (static function (string $__file, array $__context): void {
+        extract($__context, EXTR_OVERWRITE);
+        include $__file;
+    })($__file, $__context);
+};
+
 
 class IndividualPDF extends Fpdi
 {
@@ -1061,6 +1108,14 @@ try {
     $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
 
     $manualShipmentMode = !$isWorker && !empty($workerShipmentId);
+    $manualShipmentLock = null;
+    if ($manualShipmentMode) {
+        $manualShipmentLock = $acquireShipmentLock((int) $workerShipmentId);
+        if ($manualShipmentLock === null) {
+            fwrite(STDERR, "Another report generation process is already running for shipment {$workerShipmentId}. Exiting.\n");
+            exit(1);
+        }
+    }
 
     if ($isWorker) {
         if (empty($workerShipmentId) || $workerLimit < 1) {
@@ -1093,10 +1148,11 @@ try {
             exit(1);
         }
 
-        $evalRow = array_merge($shipmentRow, [
+        $evalRow = [
+            ...$shipmentRow,
             'shipment_id' => $shipmentId,
             'report_type' => $resultStatus
-        ]);
+        ];
 
         if (isset($evalRow['scheme_type']) && $evalRow['scheme_type'] == 'covid19') {
             $allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
@@ -1108,17 +1164,17 @@ try {
         }
 
         $pQuery = $db->select()->from(
-            array('spm' => 'shipment_participant_map'),
-            array(
+            ['spm' => 'shipment_participant_map'],
+            [
                 'custom_field_1',
                 'custom_field_2',
                 'participant_count' => new Zend_Db_Expr('count("participant_id")'),
                 'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
-            )
+            ]
         )
-            ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', [])
-            ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type', 'distribution_id'))
-            ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
+            ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', [])
+            ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['scheme_type', 'distribution_id'])
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['is_user_configured'])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->group('spm.shipment_id');
 
@@ -1152,7 +1208,32 @@ try {
                         $participantLayoutFile = $customLayoutFileLocation;
                     }
                 }
-                include($participantLayoutFile);
+                $includeWithContext($participantLayoutFile, [
+                    'reportService' => $reportService,
+                    'schemeService' => $schemeService,
+                    'shipmentService' => $shipmentService,
+                    'commonService' => $commonService,
+                    'evalRow' => $evalRow,
+                    'resultArray' => $resultArray,
+                    'totParticipantsRes' => $totParticipantsRes,
+                    'reportsPath' => $reportsPath,
+                    'resultStatus' => $resultStatus,
+                    'layout' => $layout,
+                    'header' => $header,
+                    'instituteAddressPosition' => $instituteAddressPosition,
+                    'reportComment' => $reportComment,
+                    'logo' => $logo,
+                    'logoRight' => $logoRight,
+                    'templateTopMargin' => $templateTopMargin,
+                    'instance' => $instance,
+                    'passPercentage' => $passPercentage,
+                    'watermark' => $watermark,
+                    'customField1' => $customField1,
+                    'customField2' => $customField2,
+                    'haveCustom' => $haveCustom,
+                    'bulkfileNameVal' => $bulkfileNameVal,
+                    'shipmentsUnderDistro' => isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null,
+                ]);
             }
         }
         exit(0);
@@ -1200,6 +1281,20 @@ try {
         $evaluatedShipments = [];
 
         foreach ($evalResult as $evalRow) {
+            $shipmentIdForLock = isset($evalRow['shipment_id']) ? (int) $evalRow['shipment_id'] : 0;
+            $shipmentLock = null;
+            if ($shipmentIdForLock > 0) {
+                // In manual mode we already acquired a lock for this shipment; reuse it instead of trying to lock twice.
+                if ($manualShipmentMode && $shipmentIdForLock === (int) $workerShipmentId && is_resource($manualShipmentLock)) {
+                    $shipmentLock = $manualShipmentLock;
+                } else {
+                    $shipmentLock = $acquireShipmentLock($shipmentIdForLock);
+                    if ($shipmentLock === null) {
+                        fwrite(STDERR, "Shipment {$shipmentIdForLock} is already being processed by another report generation job. Skipping.\n");
+                        continue;
+                    }
+                }
+            }
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
@@ -1294,7 +1389,31 @@ try {
             };
             $participantProgressBar = null;
 
-            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar) {
+            $participantLayoutContextBase = [
+                'reportService' => $reportService,
+                'schemeService' => $schemeService,
+                'shipmentService' => $shipmentService,
+                'commonService' => $commonService,
+                'evalRow' => $evalRow,
+                'totParticipantsRes' => $totParticipantsRes,
+                'reportsPath' => $reportsPath,
+                'resultStatus' => $resultStatus,
+                'layout' => $layout,
+                'header' => $header,
+                'instituteAddressPosition' => $instituteAddressPosition,
+                'reportComment' => $reportComment,
+                'logo' => $logo,
+                'logoRight' => $logoRight,
+                'templateTopMargin' => $templateTopMargin,
+                'instance' => $instance,
+                'passPercentage' => $passPercentage,
+                'watermark' => $watermark,
+                'customField1' => $customField1,
+                'customField2' => $customField2,
+                'haveCustom' => $haveCustom,
+            ];
+
+            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar, $includeWithContext, $participantLayoutContextBase) {
                 $lastCount = $getFileCount();
                 for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
                     Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
@@ -1322,7 +1441,11 @@ try {
                             }
                         }
 
-                        include($participantLayoutFile);
+                        $context = $participantLayoutContextBase;
+                        $context['resultArray'] = $resultArray;
+                        $context['bulkfileNameVal'] = $bulkfileNameVal;
+                        $context['shipmentsUnderDistro'] = isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null;
+                        $includeWithContext($participantLayoutFile, $context);
 
                         $newCount = $getFileCount();
                         $delta = $newCount - $lastCount;
@@ -1335,7 +1458,8 @@ try {
             };
 
             if ($skipParticipantReports === false && $reportedCount > 0) {
-                $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...");
+                // Use single-line output; multi-line progress bars don't repaint reliably in some IDE consoles.
+                $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...", '█', '░', '█', 'cyan', false);
                 if ($procs <= 1) {
                     $generateParticipantChunks();
                     Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
@@ -1345,10 +1469,12 @@ try {
                         $batchSize = 1;
                     }
 
+                    $phpBinary = defined('PHP_BINARY') && is_string(PHP_BINARY) && PHP_BINARY !== '' ? PHP_BINARY : 'php';
                     $processes = [];
                     for ($offset = 0; $offset <= $reportedCount; $offset += $batchSize) {
                         try {
-                            $cmd = ["php", __FILE__, "--worker", "--shipment", $evalRow['shipment_id'], "--offset", $offset, "--limit", $batchSize, "--reportType", $resultStatus];
+                            // Use the current PHP binary to avoid PATH issues (common in cron/Ubuntu).
+                            $cmd = [$phpBinary, __FILE__, "--worker", "--shipment", $evalRow['shipment_id'], "--offset", $offset, "--limit", $batchSize, "--reportType", $resultStatus];
                             //error_log("Starting worker: " . implode(' ', $cmd));
 
                             $process = new Process($cmd);
@@ -1361,42 +1487,73 @@ try {
                         }
                     }
 
-                    $lastCount = $getFileCount();
-                    while (count($processes) > 0) {
-                        foreach ($processes as $key => $procData) {
-                            $process = $procData['process'];
-                            $offset = $procData['offset'];
-                            if (!$process->isRunning()) {
-                                try {
-                                    if (!$process->isSuccessful()) {
-                                        error_log("Worker failed (offset {$offset}): " . $process->getErrorOutput());
-                                    } else {
-                                        $out = trim($process->getOutput());
-                                        if ($out !== '') {
-                                            error_log("Worker completed (offset {$offset}) output: " . $out);
-                                        }
-                                    }
-                                } catch (Throwable $t) {
-                                    error_log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
-                                }
-                                unset($processes[$key]);
-                            }
-                        }
-                        $currentCount = $getFileCount();
-                        $delta = $currentCount - $lastCount;
-                        if ($delta > 0) {
-                            Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
-                            $lastCount = $currentCount;
-                        }
-                        usleep(150000);
-                    }
-
-                    $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
-                    if (empty($participantPdfs)) {
-                        error_log("Parallel generation produced no participant PDFs. Retrying sequentially.");
+                    if (empty($processes)) {
+                        fwrite(STDERR, "Failed to start any worker processes; falling back to sequential generation.\n");
                         $generateParticipantChunks();
+                        Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                    } else {
+                        $lastCount = $getFileCount();
+                        $lastProgressRedrawAt = microtime(true);
+                        while (count($processes) > 0) {
+                            foreach ($processes as $key => $procData) {
+                                $process = $procData['process'];
+                                $offset = $procData['offset'];
+                                if (!$process->isRunning()) {
+                                    try {
+                                        if (!$process->isSuccessful()) {
+                                            $exitCode = $process->getExitCode();
+                                            $err = trim((string) $process->getErrorOutput());
+                                            $msg = "Worker failed (offset {$offset}" . ($exitCode !== null ? ", exit {$exitCode}" : "") . ")";
+                                            if ($err !== '') {
+                                                $msg .= ": " . preg_replace('/\\s+/', ' ', $err);
+                                            }
+                                            error_log($msg);
+                                            if ($isCli && $participantProgressBar) {
+                                                Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
+                                                    fwrite(STDERR, $msg . PHP_EOL);
+                                                });
+                                            }
+                                        } else {
+                                            $out = trim($process->getOutput());
+                                            if ($out !== '') {
+                                                error_log("Worker completed (offset {$offset}) output: " . $out);
+                                            }
+                                        }
+                                    } catch (Throwable $t) {
+                                        error_log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
+                                    }
+                                    unset($processes[$key]);
+                                }
+                            }
+                            $currentCount = $getFileCount();
+                            $delta = $currentCount - $lastCount;
+                            if ($delta > 0) {
+                                Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
+                                $lastCount = $currentCount;
+                            }
+
+                            // Redraw periodically even when no new PDFs exist yet so `%elapsed%` updates.
+                            if ((microtime(true) - $lastProgressRedrawAt) >= 1.0) {
+                                $participantProgressBar->display();
+                                $lastProgressRedrawAt = microtime(true);
+                            }
+
+                            usleep(150000);
+                        }
+
+                        $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
+                        if (empty($participantPdfs)) {
+                            $msg = "Parallel generation produced no participant PDFs. Retrying sequentially.";
+                            error_log($msg);
+                            if ($isCli && $participantProgressBar) {
+                                Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
+                                    fwrite(STDERR, $msg . PHP_EOL);
+                                });
+                            }
+                            $generateParticipantChunks();
+                        }
+                        Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
                     }
-                    Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
                 }
             }
             $panelTestType = "";
@@ -1546,7 +1703,7 @@ try {
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;
@@ -1560,6 +1717,11 @@ try {
                 if ($toEmail != null && $fromEmail != null && $subject != null && $message != null) {
                     $commonService->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName);
                 }
+            }
+
+            if (is_resource($shipmentLock)) {
+                flock($shipmentLock, LOCK_UN);
+                fclose($shipmentLock);
             }
         }
     }

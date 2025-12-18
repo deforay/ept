@@ -471,17 +471,17 @@ if (!empty($resultArray['shipment'])) {
                 </table>';
             $pdf->writeHTML($labTxt, true, false, true, false, '');
 
-            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ??  null;
+            $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
 
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                 <ul>
                     <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
                     <li>A testing score of 15 is awarded for any result reported correctly</li>
-                    <li>A documentation score of 0 is awarded for any result that is incorrect;y reported</li>
+                    <li>A documentation score of 0 is awarded for any result that is incorrectly reported</li>
                     <li>A documentation score of 2 is awarded for any result reported correctly.</li>
-                    <li>A grading of satisfactory is assigned when the participant overall score is &ge; ' . $passPercentage . '%</li>
-                    <li>A grading of Unsatisfactory is assigned when the participant overall score is &lt; ' . $passPercentage . '%</li>
-                    <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
+                    <li>A grading of Satisfactory is assigned when the participant overall score is >= 95%</li>
+                    <li>A grading of Unsatisfactory is assigned when the participant overall score is < 95%</li>
+                    <li>A grading of Ungraded is assigned when the participant has not submitted PT results</li>
                 </ul><br>';
             $pdf->writeHTML($summaryNote, true, false, true, false, '');
             $currentY = $pdf->GetY();
