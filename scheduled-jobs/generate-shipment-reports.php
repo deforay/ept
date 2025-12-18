@@ -1556,6 +1556,39 @@ try {
                     }
                 }
             }
+
+            // Some layouts (e.g., Zimbabwe) expect distribution-level context even for summary generation.
+            // Compute once here so both summary branches can use it.
+            $shipmentsUnderDistro = null;
+            if ($layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
+                $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0] ?? null;
+            }
+
+            $summaryLayoutContextBase = [
+                'reportService' => $reportService,
+                'schemeService' => $schemeService,
+                'shipmentService' => $shipmentService,
+                'commonService' => $commonService,
+                'evalService' => $evalService,
+                'evalRow' => $evalRow,
+                'reportsPath' => $reportsPath,
+                'resultStatus' => $resultStatus,
+                'layout' => $layout,
+                'header' => $header,
+                'instituteAddressPosition' => $instituteAddressPosition,
+                'reportComment' => $reportComment,
+                'logo' => $logo,
+                'logoRight' => $logoRight,
+                'templateTopMargin' => $templateTopMargin,
+                'instance' => $instance,
+                'passPercentage' => $passPercentage,
+                'watermark' => $watermark,
+                'customField1' => $customField1,
+                'customField2' => $customField2,
+                'haveCustom' => $haveCustom,
+                'shipmentsUnderDistro' => $shipmentsUnderDistro,
+            ];
+
             $panelTestType = "";
             if ($skipSummaryReport === false) {
                 $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
@@ -1584,7 +1617,13 @@ try {
                                     $summaryLayoutFile = $customLayoutFileLocation;
                                 }
                             }
-                            include($summaryLayoutFile);
+                            $context = $summaryLayoutContextBase;
+                            $context['resultArray'] = $resultArray;
+                            $context['responseResult'] = $responseResult;
+                            $context['participantPerformance'] = $participantPerformance;
+                            $context['correctivenessArray'] = $correctivenessArray;
+                            $context['panelTestType'] = $panelTestType;
+                            $includeWithContext($summaryLayoutFile, $context);
                         }
                     }
                 } else {
@@ -1605,11 +1644,16 @@ try {
 
                         if (!empty($layout)) {
                             $customLayoutFileLocation = SUMMARY_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $resultArray['shipment']['scheme_type'] . '.phtml';
-                            if (file_exists($customLayoutFileLocation)) {
-                                $summaryLayoutFile = $customLayoutFileLocation;
+                                if (file_exists($customLayoutFileLocation)) {
+                                    $summaryLayoutFile = $customLayoutFileLocation;
+                                }
                             }
-                        }
-                        include($summaryLayoutFile);
+                        $context = $summaryLayoutContextBase;
+                        $context['resultArray'] = $resultArray;
+                        $context['responseResult'] = $responseResult;
+                        $context['participantPerformance'] = $participantPerformance;
+                        $context['correctivenessArray'] = $correctivenessArray;
+                        $includeWithContext($summaryLayoutFile, $context);
                     }
                 }
             }
