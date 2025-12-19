@@ -157,6 +157,20 @@ download_file() {
     local url="$2"
     local default_msg="Downloading $(basename "$output_file")..."
     local message="${3:-$default_msg}"
+    # Slow network toggle: export DOWNLOAD_MODE=slow or SLOW_NETWORK=1
+    local slow_mode=false
+    local mode_lower
+    mode_lower="$(printf '%s' "${DOWNLOAD_MODE:-}" | awk '{print tolower($0)}')"
+    if [ "$mode_lower" = "slow" ] || [ "${SLOW_NETWORK:-0}" = "1" ]; then
+        slow_mode=true
+    fi
+
+    local aria_conns
+    if [ "$slow_mode" = true ]; then
+        aria_conns="${ARIA2_CONNECTIONS:-4}"
+    else
+        aria_conns="${ARIA2_CONNECTIONS:-12}"
+    fi
 
     # Get output directory and filename
     local output_dir
@@ -172,8 +186,14 @@ download_file() {
         }
     fi
 
-    # Remove existing file if it exists
-    [ -f "$output_file" ] && rm -f "$output_file"
+    # For slow/resume mode, keep existing partial to allow resume; otherwise start clean
+    if [ "$slow_mode" = true ]; then
+        if [ -f "$output_file" ]; then
+            print info "Resuming existing download for ${filename} (slow mode)."
+        fi
+    else
+        [ -f "$output_file" ] && rm -f "$output_file"
+    fi
 
     print info "$message"
 
@@ -182,10 +202,20 @@ download_file() {
 
     # Try aria2c first
     if command -v aria2c &>/dev/null; then
-        aria2c -x 5 -s 5 \
-            --console-log-level=error \
-            --summary-interval=0 \
+        aria2c \
+            --max-connection-per-server="$aria_conns" \
+            --split="$aria_conns" \
+            --min-split-size=1M \
+            --file-allocation=none \
+            --auto-file-renaming=false \
             --allow-overwrite=true \
+            --continue=true \
+            --max-tries=$([ "$slow_mode" = true ] && printf '12' || printf '5') \
+            --retry-wait=$([ "$slow_mode" = true ] && printf '5' || printf '2') \
+            --timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
+            --connect-timeout=$([ "$slow_mode" = true ] && printf '30' || printf '15') \
+            --summary-interval=0 \
+            --console-log-level=error \
             --no-conf \
             --conditional-get=false \
             --remote-time=false \
@@ -211,8 +241,12 @@ download_file() {
     # Fallback to wget
     if command -v wget &>/dev/null; then
         wget --progress=bar:force \
-            --tries=3 \
-            --timeout=30 \
+            --tries=$([ "$slow_mode" = true ] && printf '8' || printf '5') \
+            --waitretry=$([ "$slow_mode" = true ] && printf '5' || printf '2') \
+            --timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
+            --read-timeout=$([ "$slow_mode" = true ] && printf '60' || printf '30') \
+            --retry-connrefused \
+            ${slow_mode:+--continue} \
             -O "$output_file" \
             "$url" >"$log_file" 2>&1 &
         
@@ -220,6 +254,26 @@ download_file() {
         spinner "$download_pid" "$message"
         
         # Check if wget succeeded
+        if [ -f "$output_file" ] && [ -s "$output_file" ]; then
+            print success "Download completed: $filename"
+            rm -f "$log_file"
+            return 0
+        fi
+    fi
+
+    # Fallback to curl if wget unavailable or failed
+    if command -v curl &>/dev/null; then
+        curl -L --fail \
+            --retry $([ "$slow_mode" = true ] && printf '8' || printf '5') \
+            --retry-delay $([ "$slow_mode" = true ] && printf '5' || printf '2') \
+            --connect-timeout $([ "$slow_mode" = true ] && printf '30' || printf '15') \
+            --max-time $([ "$slow_mode" = true ] && printf '900' || printf '300') \
+            ${slow_mode:+--continue-at -} \
+            -o "$output_file" "$url" >"$log_file" 2>&1 &
+
+        local download_pid=$!
+        spinner "$download_pid" "$message"
+
         if [ -f "$output_file" ] && [ -s "$output_file" ]; then
             print success "Download completed: $filename"
             rm -f "$log_file"
@@ -551,45 +605,55 @@ ini_get_value() {
     error_reporting(0);
     $f=$argv[1]; $want=$argv[2]; $key=$argv[3];
 
-    $ini=@parse_ini_file($f,true,INI_SCANNER_RAW);
-    if($ini===false){ exit(1); }
+    $lines = @file($f, FILE_IGNORE_NEW_LINES);
+    if($lines===false){ exit(1); }
 
     $candidates = [$want, "$want : production", "$want:production", strtolower($want), "production"];
+    $current = "";
 
-    foreach($candidates as $sec){
-      if(isset($ini[$sec]) && is_array($ini[$sec]) && array_key_exists($key,$ini[$sec])){
-        $v = (string)$ini[$sec][$key];
-        $v = trim($v);
+    foreach($lines as $line){
+      $trimmed = trim($line);
+      if($trimmed === "" || $trimmed[0] === ";" || $trimmed[0] === "#"){ continue; }
 
-        // Prefer quoted values as-is (don’t treat ;/# inside quotes as comments).
-        if ($v !== "" && ($v[0] === chr(34) || $v[0] === chr(39))) {
-          $q = $v[0];
-          $len = strlen($v);
-          $out = "";
-          $escaped = false;
-          for ($i = 1; $i < $len; $i++) {
-            $ch = $v[$i];
-            if ($escaped) { $out .= $ch; $escaped = false; continue; }
-            if ($ch === "\\\\") { $escaped = true; continue; }
-            if ($ch === $q) { $v = $out; break; }
-            $out .= $ch;
-          }
-        } else {
-          // strip inline comments ; or # (common INI style) from unquoted values
-          $v = preg_replace("/\\s*[;#].*$/", "", $v);
-          $v = rtrim($v);
+      if(preg_match("/^\\[(.+?)\\]/", $trimmed, $m)){
+        $current = trim($m[1]);
+        continue;
+      }
 
-          // remove surrounding single/double quotes (simple case)
-          if (strlen($v) >= 2) {
-            $dq = chr(34);  // double-quote
-            $sq = chr(39);  // single-quote
-            if ( ($v[0]===$dq && substr($v,-1)===$dq) || ($v[0]===$sq && substr($v,-1)===$sq) ) {
-              $v = substr($v, 1, -1);
-            }
+      if(!in_array($current, $candidates, true)){ continue; }
+      if(!preg_match("/^([A-Za-z0-9_.-]+)\\s*=\\s*(.*)$/", $trimmed, $m)){ continue; }
+      if($m[1] !== $key){ continue; }
+
+      $v = trim($m[2]);
+
+      // Prefer quoted values as-is (don’t treat ;/# inside quotes as comments).
+      if ($v !== "" && ($v[0] === chr(34) || $v[0] === chr(39))) {
+        $q = $v[0];
+        $len = strlen($v);
+        $out = "";
+        $escaped = false;
+        for ($i = 1; $i < $len; $i++) {
+          $ch = $v[$i];
+          if ($escaped) { $out .= $ch; $escaped = false; continue; }
+          if ($ch === "\\\\") { $escaped = true; continue; }
+          if ($ch === $q) { $v = $out; break; }
+          $out .= $ch;
+        }
+      } else {
+        // strip inline comments only when preceded by whitespace
+        $v = preg_replace("/\\s[;#].*$/", "", $v);
+        $v = rtrim($v);
+
+        // remove surrounding single/double quotes (simple case)
+        if (strlen($v) >= 2) {
+          $dq = chr(34);  // double-quote
+          $sq = chr(39);  // single-quote
+          if ( ($v[0]===$dq && substr($v,-1)===$dq) || ($v[0]===$sq && substr($v,-1)===$sq) ) {
+            $v = substr($v, 1, -1);
           }
         }
-        echo $v; exit(0);
       }
+      echo $v; exit(0);
     }
     exit(2);
   ' -- "$config_file" "$section" "$dotted_key"

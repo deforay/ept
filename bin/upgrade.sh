@@ -319,7 +319,12 @@ if [ -n "$mysql_root_password" ]; then
 elif [ -f "${ept_path}/application/configs/application.ini" ]; then
     mysql_pw="$(extract_mysql_password_from_config "${ept_path}/application/configs/application.ini" production || true)"
     mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
-    if [ -n "$mysql_pw" ]; then
+    ini_user="$(extract_mysql_user_from_config "${ept_path}/application/configs/application.ini" production || true)"
+    ini_user="$(sanitize_ini_secret "$ini_user")"
+    if [ "$ini_user" != "root" ]; then
+        print warning "application.ini contains DB user '${ini_user:-<empty>}', not 'root'. Prompting for MySQL root password..."
+        read -r -sp "MySQL root password: " mysql_pw; echo
+    elif [ -n "$mysql_pw" ]; then
         print info "Extracted MySQL root password from application.ini"
     else
         print warning "Could not extract a MySQL password from application.ini. Prompting for password..."
@@ -554,7 +559,7 @@ apt-get -y autoremove
 
 if [ "$skip_ubuntu_updates" = false ]; then
     print info "Installing basic packages..."
-    apt-get install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server libsodium-dev mosh
+    apt-get install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server mosh
 fi
 
 # SSH service enable/start
