@@ -14,6 +14,7 @@ class Application_Model_Tb
 
     private $db = null;
     public $common;
+    private $consensusCache = [];
 
     public function __construct()
     {
@@ -949,10 +950,34 @@ class Application_Model_Tb
 
     private function calculateConsensus($shipmentId)
     {
+        if (isset($this->consensusCache[$shipmentId])) {
+            return $this->consensusCache[$shipmentId];
+        }
+
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $mtbConsensusResults = [];
         $rifConsensusResults = [];
         $consolidatedConsensusResults = [];
+
+        // Precompute total responses per (sample_id, assay_id) for eligible participants to avoid repeated JSON extraction.
+        $totals = $db->fetchAll(
+            $db->select()
+                ->from(['res' => 'response_result_tb'], [
+                    'sample_id',
+                    'assay_id',
+                    'total_responses' => new Zend_Db_Expr('COUNT(*)')
+                ])
+                ->join(['spm' => 'shipment_participant_map'], 'spm.map_id = res.shipment_map_id', [])
+                ->where('spm.shipment_id = ?', $shipmentId)
+                ->where("spm.is_excluded = 'no'")
+                ->where("spm.response_status = 'responded'")
+                ->group(['res.sample_id', 'res.assay_id'])
+        );
+
+        $totalResponsesBySampleAssay = [];
+        foreach ($totals as $row) {
+            $totalResponsesBySampleAssay[$row['sample_id']][$row['assay_id']] = (int) $row['total_responses'];
+        }
 
         // Query for MTB Detection Consensus
         $consensusResultsQueryMtb = $db->select()
@@ -971,7 +996,6 @@ class Application_Model_Tb
                 ELSE CONCAT(UPPER(LEFT(res.mtb_detected, 1)), LOWER(SUBSTRING(res.mtb_detected, 2)))
             END"),
                 'mtb_occurrences' => new Zend_Db_Expr('COUNT(*)'),
-                'total_responses_mtb' => new Zend_Db_Expr('(SELECT COUNT(*) FROM response_result_tb WHERE sample_id = ref.sample_id AND assay_id = spm.attributes->>"$.assay_name")')
             ])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.is_excluded = 'no'")
@@ -985,6 +1009,7 @@ class Application_Model_Tb
 
 
         foreach ($mtbResults as $mtb) {
+            $mtbTotalResponses = $totalResponsesBySampleAssay[$mtb['sample_id']][$mtb['assay_id']] ?? 0;
             if (!isset($mtbConsensusResults[$mtb['sample_id']][$mtb['assay_id']])) {
                 $mtbConsensusResults[$mtb['sample_id']][$mtb['assay_id']] = [
                     'sample_id' => $mtb['sample_id'],
@@ -992,8 +1017,8 @@ class Application_Model_Tb
                     'mtb_detection_consensus' => $mtb['mtb_detection_consensus'],
                     'mtb_detection_consensus_raw' => $mtb['mtb_detection_consensus_raw'],
                     'mtb_occurrences' => $mtb['mtb_occurrences'],
-                    'mtb_total_responses' => $mtb['total_responses_mtb'],
-                    'mtb_consensus_percentage' => ($mtb['total_responses_mtb'] != 0) ? ($mtb['mtb_occurrences'] / $mtb['total_responses_mtb']) * 100 : 0
+                    'mtb_total_responses' => $mtbTotalResponses,
+                    'mtb_consensus_percentage' => ($mtbTotalResponses != 0) ? ($mtb['mtb_occurrences'] / $mtbTotalResponses) * 100 : 0
                 ];
             }
         }
@@ -1014,7 +1039,6 @@ class Application_Model_Tb
                 ELSE CONCAT(UPPER(LEFT(res.rif_resistance, 1)), LOWER(SUBSTRING(res.rif_resistance, 2)))
             END"),
                 'rif_occurrences' => new Zend_Db_Expr('COUNT(*)'),
-                'total_responses_rif' => new Zend_Db_Expr('(SELECT COUNT(*) FROM response_result_tb WHERE sample_id = ref.sample_id AND assay_id = spm.attributes->>"$.assay_name")')
             ])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.is_excluded = 'no'")
@@ -1026,6 +1050,7 @@ class Application_Model_Tb
 
         // Processing RIF Resistance Consensus
         foreach ($rifResults as $rif) {
+            $rifTotalResponses = $totalResponsesBySampleAssay[$rif['sample_id']][$rif['assay_id']] ?? 0;
             if (!isset($rifConsensusResults[$rif['sample_id']][$rif['assay_id']])) {
                 $rifConsensusResults[$rif['sample_id']][$rif['assay_id']] = [
                     'sample_id' => $rif['sample_id'],
@@ -1033,8 +1058,8 @@ class Application_Model_Tb
                     'rif_resistance_consensus' => $rif['rif_resistance_consensus'],
                     'rif_resistance_consensus_raw' => $rif['rif_resistance_consensus_raw'],
                     'rif_occurrences' => $rif['rif_occurrences'],
-                    'rif_total_responses' => $rif['total_responses_rif'],
-                    'rif_consensus_percentage' => ($rif['total_responses_rif'] != 0) ? ($rif['rif_occurrences'] / $rif['total_responses_rif']) * 100 : 0
+                    'rif_total_responses' => $rifTotalResponses,
+                    'rif_consensus_percentage' => ($rifTotalResponses != 0) ? ($rif['rif_occurrences'] / $rifTotalResponses) * 100 : 0
                 ];
             }
         }
@@ -1062,7 +1087,8 @@ class Application_Model_Tb
         }
 
 
-        return $consolidatedConsensusResults;
+        $this->consensusCache[$shipmentId] = $consolidatedConsensusResults;
+        return $this->consensusCache[$shipmentId];
     }
 
     public function getConsensusResults($shipmentId)
@@ -1250,6 +1276,101 @@ class Application_Model_Tb
         }
 
         return $output;
+    }
+
+    /**
+     * Fetch response data for multiple participant maps in one query to avoid repeated joins.
+     *
+     * @param array<int> $mapIds
+     * @return array<int, array> keyed by map_id
+     */
+    public function getDataForIndividualPDFBatch(array $mapIds): array
+    {
+        $mapIds = array_values(array_filter(array_map('intval', $mapIds)));
+        if (empty($mapIds)) {
+            return [];
+        }
+
+        $rows = $this->db->select()->from(
+            ['ref' => 'reference_result_tb'],
+            [
+                'sample_id',
+                'sample_label',
+                'reference_mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
+                'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
+                'ref.control',
+                'ref.mandatory',
+                'ref.sample_score'
+            ]
+        )
+            ->joinLeft(
+                ['spm' => 'shipment_participant_map'],
+                'spm.shipment_id=ref.shipment_id',
+                [
+                    'spm.shipment_id',
+                    'spm.participant_id',
+                    'spm.map_id',
+                    'spm.shipment_test_report_date',
+                    'spm.shipment_receipt_date',
+                    'spm.supervisor_approval',
+                    'spm.participant_supervisor',
+                    'spm.attributes',
+                    'spm.shipment_test_date',
+                    'spm.failure_reason',
+                    'spm.shipment_score',
+                    'spm.documentation_score',
+                    'spm.is_excluded',
+                    'spm.final_result',
+                    'spm.user_comment',
+                    'spm.custom_field_1',
+                    'spm.custom_field_2'
+                ]
+            )
+            ->joinLeft(
+                ['res' => 'response_result_tb'],
+                'res.shipment_map_id=spm.map_id and res.sample_id=ref.sample_id',
+                [
+                    'res.mtb_detected',
+                    'res.rif_resistance',
+                    'res.probe_d',
+                    'res.probe_c',
+                    'res.probe_e',
+                    'res.probe_b',
+                    'res.spc_xpert',
+                    'res.spc_xpert_ultra',
+                    'res.probe_a',
+                    'res.is1081_is6110',
+                    'res.rpo_b1',
+                    'res.rpo_b2',
+                    'res.rpo_b3',
+                    'res.rpo_b4',
+                    'res.instrument_serial_no',
+                    'res.gene_xpert_module_no',
+                    'res.test_date',
+                    'res.tester_name',
+                    'res.error_code',
+                    'responseDate' => 'res.created_on',
+                    'res.response_attributes'
+                ]
+            )
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['labName' => new Zend_Db_Expr("p.lab_name"), 'institute_name', 'department_name', 'phone', 'mobile', 'email', 'region', 'state', 'city', 'district', 'unique_identifier', 'first_name', 'last_name'])
+            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name'])
+            ->joinLeft(['resR' => 'r_results'], 'resR.result_id = spm.final_result', ['result_name'])
+            ->where('spm.map_id IN (?)', $mapIds)
+            ->order(['spm.map_id', 'ref.sample_id']);
+
+        $resultRows = $this->db->fetchAll($rows);
+
+        $grouped = [];
+        foreach ($resultRows as $row) {
+            $mapId = (int) $row['map_id'];
+            if (!isset($grouped[$mapId])) {
+                $grouped[$mapId] = [];
+            }
+            $grouped[$mapId][] = $row;
+        }
+
+        return $grouped;
     }
 
 

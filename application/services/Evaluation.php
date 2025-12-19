@@ -1541,13 +1541,13 @@ class Application_Service_Evaluation
 				$shipmentPerformance3 = $db->fetchAll($performance3Sql);
 			}
 
-			// Preload response results for DTS in one query to avoid N+1 queries per participant.
-			$mapIds = array_values(array_unique(array_map(static function ($row) {
-				return (int) ($row['map_id'] ?? 0);
-			}, $sRes)));
-			$mapIds = array_filter($mapIds);
-			$dtsResponseByMapId = [];
-			if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'dts') {
+            // Preload response results for DTS in one query to avoid N+1 queries per participant.
+            $mapIds = array_values(array_unique(array_map(static function ($row) {
+                return (int) ($row['map_id'] ?? 0);
+            }, $sRes)));
+            $mapIds = array_filter($mapIds);
+            $dtsResponseByMapId = [];
+            if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'dts') {
 				$dtsQuery = $db->select()->from(
 					['resdts' => 'response_result_dts'],
 					[
@@ -1605,8 +1605,15 @@ class Application_Service_Evaluation
 						$dtsResponseByMapId[$mid] = [];
 					}
 					$dtsResponseByMapId[$mid][] = $dtsRow;
-				}
-			}
+                }
+            }
+
+            // Preload TB response results once per chunk to avoid repeating the heavy join.
+            $tbResponseByMapId = [];
+            if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'tb') {
+                $tbModel = new Application_Model_Tb();
+                $tbResponseByMapId = $tbModel->getDataForIndividualPDFBatch($mapIds);
+            }
 
 			$mapIdsToUpdate = [];
 			foreach ($sRes as $res) {
@@ -1631,20 +1638,20 @@ class Application_Service_Evaluation
 						$mapRes[$dmId] = $dmParticipantId . "#" . $participantFileName;
 					}
 				}
-			if ($res['scheme_type'] == 'dbs') {
-				$sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result'))
-					->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.participant_supervisor', 'responseDate' => 'sp.shipment_test_report_date'))
-					->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'))
-					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
-					->where("resdbs.shipment_map_id = ?", $res['map_id']);
+            if ($res['scheme_type'] == 'dbs') {
+                $sQuery = $db->select()->from(array('resdbs' => 'response_result_dbs'), array('resdbs.shipment_map_id', 'resdbs.sample_id', 'resdbs.reported_result'))
+                    ->join(array('respr' => 'r_possibleresult'), 'respr.id=resdbs.reported_result', array('labResult' => 'respr.response'))
+                    ->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resdbs.shipment_map_id', array('sp.shipment_id', 'sp.participant_id', 'sp.participant_supervisor', 'responseDate' => 'sp.shipment_test_report_date'))
+                    ->join(array('refdbs' => 'reference_result_dbs'), 'refdbs.shipment_id=sp.shipment_id and refdbs.sample_id=resdbs.sample_id', array('refdbs.reference_result', 'refdbs.sample_label', 'resdbs.mandatory'))
+                    ->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refdbs.reference_result', array('referenceResult' => 'refpr.response'))
+                    ->where("resdbs.shipment_map_id = ?", $res['map_id']);
 
 
-				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-				} elseif ($res['scheme_type'] == 'dts') {
-					$mid = (int) ($res['map_id'] ?? 0);
-					$shipmentResult[$i]['responseResult'] = $mid > 0 && isset($dtsResponseByMapId[$mid]) ? $dtsResponseByMapId[$mid] : [];
-				} elseif ($res['scheme_type'] == 'recency') {
+                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+            } elseif ($res['scheme_type'] == 'dts') {
+                $mid = (int) ($res['map_id'] ?? 0);
+                $shipmentResult[$i]['responseResult'] = $mid > 0 && isset($dtsResponseByMapId[$mid]) ? $dtsResponseByMapId[$mid] : [];
+            } elseif ($res['scheme_type'] == 'recency') {
 
 					$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resrecency.reported_result', array('labResult' => 'respr.response'))
@@ -1652,9 +1659,9 @@ class Application_Service_Evaluation
 					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refverificationLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
 					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
-				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
-				//Zend_Debug::dump($shipmentResult);
-			} elseif ($res['scheme_type'] == 'eid') {
+                $shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
+                //Zend_Debug::dump($shipmentResult);
+            } elseif ($res['scheme_type'] == 'eid') {
 
 				$extractionAssay = $schemeService->getEidExtractionAssay();
 				$detectionAssay = $schemeService->getEidDetectionAssay();
@@ -1689,13 +1696,13 @@ class Application_Service_Evaluation
 					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']] ?? null;
 					$response[$key] = $row;
 				}
-				$shipmentResult[$i]['responseResult'] = $response;
-			} elseif ($res['scheme_type'] == 'vl') {
-				$vlModel = new Application_Model_Vl();
-				$response = $vlModel->getDataForIndividualPDF($shipmentId, $res['participant_id'], $res['attributes'], $res['shipment_attributes']);
+                $shipmentResult[$i]['responseResult'] = $response;
+            } elseif ($res['scheme_type'] == 'vl') {
+                $vlModel = new Application_Model_Vl();
+                $response = $vlModel->getDataForIndividualPDF($shipmentId, $res['participant_id'], $res['attributes'], $res['shipment_attributes']);
 
-				$shipmentResult[$i]['responseResult'] = $response;
-			} elseif ($res['scheme_type'] == 'covid19') {
+                $shipmentResult[$i]['responseResult'] = $response;
+            } elseif ($res['scheme_type'] == 'covid19') {
 
 				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
 					->join(array('respr' => 'r_possibleresult'), 'respr.id=resc19.reported_result', array('labResult' => 'respr.response'))
@@ -1714,10 +1721,10 @@ class Application_Service_Evaluation
 
 				$tbModel = new Application_Model_Tb();
 				$output = $tbModel->getDataForIndividualPDF($res['map_id'], $res['participant_id']);
-				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
-				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
-				$shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);
-			} elseif ($res['is_user_configured'] == 'yes') {
+                $shipmentResult[$i]['responseResult'] = $output['responseResult'];
+                $shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
+                $shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);
+            } elseif ($res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
 					['reseid' => 'response_result_generic_test'],

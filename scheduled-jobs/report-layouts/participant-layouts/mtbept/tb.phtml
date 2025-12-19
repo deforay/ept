@@ -432,10 +432,13 @@ if (!empty($resultArray['shipment'])) {
 
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
-        $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $tempFilePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . str_replace('.pdf', '-tmp.pdf', $fileName);
         $pdf->Output($tempFilePath, "F");
         Application_Service_Common::flattenPdf($tempFilePath, $filePath);
+        if (file_exists($tempFilePath)) {
+            @unlink($tempFilePath);
+        }
 
 
         $shipmentCode = $result['shipment_code'];

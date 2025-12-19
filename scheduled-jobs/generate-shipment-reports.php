@@ -18,14 +18,36 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 $isCli = php_sapi_name() === 'cli';
-
+// Simple logger: print to stdout in CLI for visibility, otherwise use error_log.
 // Flags for testing
 
-$options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:", "force", "lockTtl:"]);
+$options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "reportType:", "force", "lockTtl:", "debug"]);
 
 // if -s then ONLY generate summary report
 
 // if -p then ONLY generate participant reports
+
+$debug = isset($options['debug']);
+
+// Simple logger: print to stdout in CLI for visibility, otherwise use error_log.
+$log = static function (string $msg) use ($isCli): void {
+    if ($isCli) {
+        fwrite(STDOUT, $msg . PHP_EOL);
+    } else {
+        error_log($msg);
+    }
+};
+// Debug logger (noise gated by --debug and CLI).
+$debugLog = static function (string $msg) use ($isCli, $debug): void {
+    if (!$debug) {
+        return;
+    }
+    if ($isCli) {
+        fwrite(STDOUT, $msg . PHP_EOL);
+    } else {
+        error_log($msg);
+    }
+};
 
 if (isset($options['s'])) {
     $skipParticipantReports = true;
@@ -44,10 +66,22 @@ $workerOffset = isset($options['offset']) ? (int) $options['offset'] : 0;
 $workerLimit = isset($options['limit']) ? (int) $options['limit'] : 0;
 $workerReportType = $options['reportType'] ?? null;
 $force = isset($options['force']);
+$debug = isset($options['debug']);
 $lockTtlMinutes = isset($options['lockTtl']) ? max(0, (int) $options['lockTtl']) : 0;
 $procs = isset($options['procs']) ? (int) $options['procs'] : Pt_Commons_MiscUtility::getCpuCount();
 if ($procs < 1) {
     $procs = 1;
+}
+
+// In debug mode force sequential to maximize visible output.
+if (!$isWorker && $debug) {
+    $procs = 1;
+    $log("Debug mode enabled: forcing --procs=1 for verbose output.");
+}
+
+// Only print the banner in the master; workers stay silent to keep the spinner clean.
+if ($isCli && !$isWorker && $debug) {
+    echo "Using up to {$procs} parallel processes\n";
 }
 
 /**
@@ -233,7 +267,7 @@ try {
 
     if ($isWorker) {
         if (empty($workerShipmentId) || $workerLimit < 1) {
-            error_log("Worker mode requires --shipment and --limit arguments");
+            $log("Worker mode requires --shipment and --limit arguments");
             exit(1);
         }
 
@@ -258,7 +292,7 @@ try {
         );
 
         if (empty($shipmentRow)) {
-            error_log("Shipment $shipmentId not found for worker");
+            $log("Shipment $shipmentId not found for worker");
             exit(1);
         }
 
@@ -303,7 +337,10 @@ try {
                 $totParticipantsRes['scheme_type'] = 'generic-test';
             }
 
+            $debugLog("Worker fetching participants for shipment {$shipmentId} (offset {$workerOffset}, limit {$workerLimit})...");
+            $tFetchStart = microtime(true);
             $resultArray = $evalService->getIndividualReportsDataForPDF($shipmentId, $workerLimit, $workerOffset);
+            $debugLog("Worker fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []));
             if ($layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
                 $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $shipmentId)[0];
             }
@@ -322,6 +359,8 @@ try {
                         $participantLayoutFile = $customLayoutFileLocation;
                     }
                 }
+                $debugLog("Worker rendering PDFs for offset {$workerOffset} using " . basename($participantLayoutFile) . "...");
+                $tRenderStart = microtime(true);
                 $includeWithContext($participantLayoutFile, [
                     'reportService' => $reportService,
                     'schemeService' => $schemeService,
@@ -354,6 +393,7 @@ try {
                     'bulkfileNameVal' => $bulkfileNameVal,
                     'shipmentsUnderDistro' => isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null,
                 ]);
+                $debugLog("Worker rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms");
             }
         }
         exit(0);
@@ -444,7 +484,10 @@ try {
                 }
             }
             lock_acquired_queue:
-            if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
+            if (1 == 3 && ($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
+                if ($isCli) {
+                    echo "Evaluating shipment ID: " . $evalRow['shipment_id'] . PHP_EOL;
+                }
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
 
@@ -568,7 +611,7 @@ try {
                 'haveCustom' => $haveCustom,
             ];
 
-            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar, $includeWithContext, $participantLayoutContextBase) {
+            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar, $includeWithContext, $participantLayoutContextBase, $debugLog) {
                 $lastCount = $getFileCount();
                 for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
                     Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
@@ -576,7 +619,10 @@ try {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
 
+                    $debugLog("Fetching participants for shipment {$evalRow['shipment_id']} (offset {$offset}, limit {$chunkSize})...");
+                    $tFetchStart = microtime(true);
                     $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $chunkSize, $offset);
+                    $debugLog("Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []));
                     if ($layout == 'zimbabwe') {
                         $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
                     }
@@ -600,7 +646,10 @@ try {
                         $context['resultArray'] = $resultArray;
                         $context['bulkfileNameVal'] = $bulkfileNameVal;
                         $context['shipmentsUnderDistro'] = isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null;
+                        $debugLog("Rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . "...");
+                        $tRenderStart = microtime(true);
                         $includeWithContext($participantLayoutFile, $context);
+                        $debugLog("Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms");
 
                         $newCount = $getFileCount();
                         $delta = $newCount - $lastCount;
@@ -613,11 +662,19 @@ try {
             };
 
             if ($skipParticipantReports === false && $reportedCount > 0) {
-                // Use single-line output; multi-line progress bars don't repaint reliably in some IDE consoles.
-                $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...", '█', '░', '█', 'cyan', false);
+                // In debug mode, skip spinner repainting so debug logs stay visible.
+                if ($debug) {
+                    $participantProgressBar = null;
+                    $log("Generating participant reports...");
+                } else {
+                    // Use single-line output; multi-line progress bars don't repaint reliably in some IDE consoles.
+                    $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...", '█', '░', '█', 'cyan', false);
+                }
                 if ($procs <= 1) {
                     $generateParticipantChunks();
-                    Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                    if ($participantProgressBar) {
+                        Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                    }
                 } else {
                     $batchSize = (int) ceil($reportedCount / $procs);
                     if ($batchSize < 1) {
@@ -638,7 +695,7 @@ try {
 
                             $processes[] = ['process' => $process, 'offset' => $offset];
                         } catch (Throwable $t) {
-                            error_log("Failed to start worker for offset {$offset}: " . $t->getMessage());
+                            $log("Failed to start worker for offset {$offset}: " . $t->getMessage());
                         }
                     }
 
@@ -662,7 +719,7 @@ try {
                                             if ($err !== '') {
                                                 $msg .= ": " . preg_replace('/\\s+/', ' ', $err);
                                             }
-                                            error_log($msg);
+                                            $log($msg);
                                             if ($isCli && $participantProgressBar) {
                                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
                                                     fwrite(STDERR, $msg . PHP_EOL);
@@ -671,11 +728,11 @@ try {
                                         } else {
                                             $out = trim($process->getOutput());
                                             if ($out !== '') {
-                                                error_log("Worker completed (offset {$offset}) output: " . $out);
+                                                $log("Worker completed (offset {$offset}) output: " . $out);
                                             }
                                         }
                                     } catch (Throwable $t) {
-                                        error_log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
+                                        $log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
                                     }
                                     unset($processes[$key]);
                                 }
@@ -683,12 +740,14 @@ try {
                             $currentCount = $getFileCount();
                             $delta = $currentCount - $lastCount;
                             if ($delta > 0) {
-                                Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
+                                if ($participantProgressBar) {
+                                    Pt_Commons_MiscUtility::spinnerAdvance($participantProgressBar, $delta);
+                                }
                                 $lastCount = $currentCount;
                             }
 
                             // Redraw periodically even when no new PDFs exist yet so `%elapsed%` updates.
-                            if ((microtime(true) - $lastProgressRedrawAt) >= 1.0) {
+                            if ($participantProgressBar && (microtime(true) - $lastProgressRedrawAt) >= 1.0) {
                                 $participantProgressBar->display();
                                 $lastProgressRedrawAt = microtime(true);
                             }
@@ -699,7 +758,7 @@ try {
                         $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
                         if (empty($participantPdfs)) {
                             $msg = "Parallel generation produced no participant PDFs. Retrying sequentially.";
-                            error_log($msg);
+                            $log($msg);
                             if ($isCli && $participantProgressBar) {
                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
                                     fwrite(STDERR, $msg . PHP_EOL);
@@ -707,7 +766,9 @@ try {
                             }
                             $generateParticipantChunks();
                         }
-                        Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                        if ($participantProgressBar) {
+                            Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
+                        }
                     }
                 }
             }
@@ -927,6 +988,6 @@ try {
         }
     }
 } catch (Exception $e) {
-    error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+    $log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+    $log($e->getTraceAsString());
 }

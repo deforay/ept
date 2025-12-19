@@ -138,8 +138,8 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function addSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
-        $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : NULL;
+        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : NULL;
         $password = Application_Service_Common::passwordHash($params['password']);
         $data = array(
             'first_name' => $params['firstName'],
@@ -179,8 +179,8 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function updateSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] :  NULL;
-        $lastName =  isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] :  NULL;
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : NULL;
+        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : NULL;
         $data = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
