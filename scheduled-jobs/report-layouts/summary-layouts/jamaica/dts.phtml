@@ -14,10 +14,10 @@ if ($resultArray['shipment'] != "") {
     // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
     if (isset($reportFormat) && !empty($reportFormat)) {
-        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
     } else {
-        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     }
     // set default header data
     $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
@@ -401,7 +401,7 @@ if ($resultArray['shipment'] != "") {
     $pdf->Output($filePath, "F");
     if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf = new PDF_Rotate();
+        $pdf = new Pt_Reports_PdfRotate();
     }
     //============================================================+
     // END OF FILE

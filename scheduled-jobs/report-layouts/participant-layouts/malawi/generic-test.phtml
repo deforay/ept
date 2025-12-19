@@ -40,10 +40,10 @@ if (!empty($resultArray['shipment'])) {
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $result['scheme_name'];
 
         if (isset($reportFormat) && !empty($reportFormat)) {
-            $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
-            $pdf = new IndividualPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }

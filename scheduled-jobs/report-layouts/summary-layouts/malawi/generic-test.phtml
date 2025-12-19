@@ -14,10 +14,10 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
 
     if (isset($reportFormat) && !empty($reportFormat)) {
-        $pdf = new FPDIReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $panelName);
     } else {
-        $pdf = new SummaryPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
     }
 
@@ -193,7 +193,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->Output($filePath, "F");
     if ($trainingInstance == "yes") {
         //Watermark section
-        $pdf = new PDF_Rotate();
+        $pdf = new Pt_Reports_PdfRotate();
     }
     //============================================================+
     // END OF FILE
