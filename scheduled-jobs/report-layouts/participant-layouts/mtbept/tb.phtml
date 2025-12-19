@@ -104,7 +104,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . $panelName . '</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        $pdf->writeHTML($htmlTitle);
 
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
@@ -118,14 +118,14 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
-        $labInfo .= '<br><br><br><br>';
+        $labInfo .= '<br><br>';
 
-        $pdf->writeHTML($labInfo, true, false, true, false, '');
+        $pdf->writeHTML($labInfo);
         // if (!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes") {
         $participantResult = '';
         if (!empty($result['responseResult'])) {
 
-            $participantResult .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+            // $participantResult .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             $participantResult .= '<table style="font-size:11px;width:100%;" border="0" cellpadding="1">';
             $participantResult .= '<tr style="background-color:#595959;color:#FFFFFF;">';
             $participantResult .= '	<td colspan="4" style="text-align:center;width:100%;"><strong>Site Results Testing with ' . $result['assayName'] . '</strong></td>';

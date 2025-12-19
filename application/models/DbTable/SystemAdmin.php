@@ -172,7 +172,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         if (isset($adminId) && !empty($adminId) && is_numeric($adminId)) {
             return $this->fetchRow($this->select()->where("admin_id = ? ", $adminId));
         } else {
-            return false;
+            return null;
         }
     }
 
