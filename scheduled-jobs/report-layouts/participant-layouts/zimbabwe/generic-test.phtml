@@ -417,6 +417,27 @@ if (!empty($resultArray['shipment'])) {
                         </ul>';
         $pdf->writeHTML($summaryNote, true, false, true, false, '');
 
+        $sign1 = WEB_ROOT . '/uploads/signatures/sign-1.png';
+        $sign2 = WEB_ROOT . '/uploads/signatures/sign-2.png';
+        // Row 1: Names
+        $pdf->SetFont('helvetica', '', 10);
+        $html = '
+                    <table cellpadding="5" style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
+                            <td style="width: 50%; text-align: right;">Approved by: Lucia Sisya</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>
+                            <td style="width: 50%; text-align: right;"><img style="width:100px;" src="' . $sign2 . '" /></td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;">Scheme Coordinator</td>
+                            <td style="width: 50%; text-align: right;">Scheme Manager</td>
+                        </tr>
+                    </table>';
+        $pdf->writeHTML($html, true, false, true, false, '');
+
         // Additional information
         $additionalInfo = '<span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
             <ol>
