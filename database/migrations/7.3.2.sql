@@ -57,3 +57,4 @@ MODIFY COLUMN rpo_b3 DECIMAL(10,4),
 MODIFY COLUMN rpo_b4 DECIMAL(10,4);
 
 ALTER TABLE `reference_result_tb` ADD `mtbrif_probe_a_mean_stability_ct` DECIMAL(10,4) NULL DEFAULT NULL AFTER `probe_a`;
+ALTER TABLE `reference_result_tb` ADD `mtbultra_lowest_rpo_b_probe_mean_stability_ct` DECIMAL(10,4) NULL DEFAULT NULL AFTER `mtbrif_probe_a_mean_stability_ct`;

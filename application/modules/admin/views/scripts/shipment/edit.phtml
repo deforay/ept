@@ -2764,6 +2764,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 														<th style="text-align: center;vertical-align:middle;">Probe B</th>
 														<th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
 														<th style="text-align: center;vertical-align:middle;">Probe A</th>
+														<th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
 														<th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 														<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>
 													</tr>
@@ -2801,6 +2802,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 														<td>
 															<input type="text" value="<?php echo $reference['probe_a']; ?>" id="probeA<?php echo ($counter + 1); ?>" name="probeA[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
 														</td>
+														<td>
+															<input type="text" value="<?php echo $reference['mtbrif_probe_a_mean_stability_ct']; ?>" name="probeAMean[<?php echo $reference['sample_id']; ?>]" id="probeAMean<?php echo ($counter + 1); ?>" class="form-control input-sm oneDecimal input-probeAMean<?php echo ($counter + 1); ?>" title="Please enter the Probe A Mean" placeholder="A Mean" />
+														</td>
 														<td style="border-left: solid 1px gray;">
 															<input type="text" value="<?php echo $reference['sample_preparation_date']; ?>" id="sample1PreparationDate<?php echo ($counter + 1); ?>" name="sample1PreparationDate[<?php echo $reference['sample_id']; ?>]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 														</td>
@@ -2816,6 +2820,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 														<th style="text-align: center;vertical-align:middle;">rpoB3</th>
 														<th style="text-align: center;vertical-align:middle;">rpoB4</th>
 														<th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
+														<th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
 														<th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>
 														<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
 													</tr>
@@ -2852,6 +2857,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 														</td>
 														<td>
 															<input type="text" value="<?php echo $reference['spc_xpert_ultra']; ?>" id="spcXpertUltra<?php echo ($counter + 1); ?>" name="spcXpertUltra[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+														</td>
+														<td>
+															<input type="text" value="<?php echo $reference['mtbultra_lowest_rpo_b_probe_mean_stability_ct']; ?>" name="LowerstrpoBMean[<?php echo $reference['sample_id']; ?>]" id="LowerstrpoBMean<?php echo ($counter + 1); ?>" class="form-control input-sm oneDecimal input-LowerstrpoBMean<?php echo ($counter + 1); ?>" title="Please enter the Lowerst rpoB Mean" placeholder="Lowerst rpoB Mean" />
 														</td>
 														<td style=" border-left: solid 1px gray; ">
 															<select name="control[<?php echo $reference['sample_id']; ?>]" id="control<?php echo ($counter + 1); ?>" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
@@ -2895,6 +2903,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													<th style="text-align: center;vertical-align:middle;">Probe B</th>
 													<th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
 													<th style="text-align: center;vertical-align:middle;">Probe A</th>
+													<th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
 													<th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
 													<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>
 												</tr>
@@ -2932,6 +2941,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													<td>
 														<input type="text" name="probeA[]" id="probeA1" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
 													</td>
+													<td>
+														<input type="text" name="probeAMean[<?php echo $reference['sample_id']; ?>]" id="probeAMean<?php echo ($counter + 1); ?>" class="form-control input-sm oneDecimal input-probeAMean<?php echo ($counter + 1); ?>" title="Please enter the Probe A Mean" placeholder="A Mean" />
+													</td>
 													<td style=" border-left: solid 1px gray; "><input type="text" name="samplePreparationDate[]" id="samplePreparationDate1" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>
 													<td><input type="text" name="tbIsolate[]" id="tbIsolate1" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 												</tr>
@@ -2945,6 +2957,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													<th style="text-align: center;vertical-align:middle;">rpoB3</th>
 													<th style="text-align: center;vertical-align:middle;">rpoB4</th>
 													<th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
+													<th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
 													<th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>
 													<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
 												</tr>
@@ -2981,6 +2994,9 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 													</td>
 													<td>
 														<input type="text" name="spcXpertUltra[]" id="spcXpertUltra1" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+													</td>
+													<td>
+														<input type="text" name="LowerstrpoBMean[<?php echo $reference['sample_id']; ?>]" id="LowerstrpoBMean<?php echo ($counter + 1); ?>" class="form-control input-sm oneDecimal input-LowerstrpoBMean<?php echo ($counter + 1); ?>" title="Please enter the Lowerst rpoB Mean" placeholder="Lowerst rpoB Mean" />
 													</td>
 													<td style=" border-left: solid 1px gray; ">
 														<select name="control[]" id="control1" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
