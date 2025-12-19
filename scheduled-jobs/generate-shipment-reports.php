@@ -484,7 +484,7 @@ try {
                 }
             }
             lock_acquired_queue:
-            if (1 == 3 && ($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
+            if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 if ($isCli) {
                     echo "Evaluating shipment ID: " . $evalRow['shipment_id'] . PHP_EOL;
                 }
