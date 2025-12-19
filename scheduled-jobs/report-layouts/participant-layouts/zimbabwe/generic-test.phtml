@@ -404,7 +404,7 @@ if (!empty($resultArray['shipment'])) {
 
         // Add new page and performance criteria
         $pdf->AddPage();
-        $overallScore = ((int) $passPercentage == 100) ? $passPercentage : "&ge; $passPercentage";
+        $overallScore = ((int) $passPercentage == 100) ? $passPercentage : ">= $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
 
         $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
