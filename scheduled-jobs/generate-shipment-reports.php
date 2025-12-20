@@ -29,25 +29,103 @@ $options = getopt("sp", ["worker", "shipment:", "offset:", "limit:", "procs:", "
 
 $debug = isset($options['debug']);
 
-// Simple logger: print to stdout in CLI for visibility, otherwise use error_log.
-$log = static function (string $msg) use ($isCli): void {
-    if ($isCli) {
-        fwrite(STDOUT, $msg . PHP_EOL);
-    } else {
-        error_log($msg);
+/**
+ * Small utility helpers for the report job.
+ */
+class ReportJobUtil
+{
+    public static function log(string $msg, bool $isCli): void
+    {
+        if ($isCli) {
+            fwrite(STDOUT, $msg . PHP_EOL);
+        } else {
+            error_log($msg);
+        }
     }
-};
-// Debug logger (noise gated by --debug and CLI).
-$debugLog = static function (string $msg) use ($isCli, $debug): void {
-    if (!$debug) {
-        return;
+
+    public static function debugLog(string $msg, bool $isCli, bool $debug): void
+    {
+        if (!$debug) {
+            return;
+        }
+        self::log($msg, $isCli);
     }
-    if ($isCli) {
-        fwrite(STDOUT, $msg . PHP_EOL);
-    } else {
-        error_log($msg);
+
+    /**
+     * Prevent concurrent master runs for the same shipment.
+     */
+    public static function acquireShipmentLock(int $shipmentId)
+    {
+        $lockPath = self::lockPath($shipmentId);
+        $handle = @fopen($lockPath, 'c');
+        if (!is_resource($handle)) {
+            if (is_file($lockPath)) {
+                $handle = @fopen($lockPath, 'r');
+            }
+            if (!is_resource($handle)) {
+                return null;
+            }
+        }
+        if (!flock($handle, LOCK_EX | LOCK_NB)) {
+            fclose($handle);
+            return null;
+        }
+        $meta = stream_get_meta_data($handle);
+        $mode = (string) ($meta['mode'] ?? '');
+        $canWrite = str_contains($mode, '+') || str_contains($mode, 'w') || str_contains($mode, 'a') || str_contains($mode, 'x') || str_contains($mode, 'c');
+        if ($canWrite) {
+            @ftruncate($handle, 0);
+            @fwrite($handle, (string) getmypid());
+        }
+        return $handle;
     }
-};
+
+    public static function getShipmentLockInfo(int $shipmentId): array
+    {
+        $lockPath = self::lockPath($shipmentId);
+        $pid = null;
+        $mtime = null;
+        if (is_file($lockPath)) {
+            $mtime = @filemtime($lockPath) ?: null;
+            $contents = @file_get_contents($lockPath);
+            if ($contents !== false) {
+                $parsed = (int) trim($contents);
+                if ($parsed > 0) {
+                    $pid = $parsed;
+                }
+            }
+        }
+        return ['path' => $lockPath, 'pid' => $pid, 'mtime' => $mtime];
+    }
+
+    public static function isPidRunning(?int $pid): bool
+    {
+        if (!$pid || $pid < 2) {
+            return false;
+        }
+        if (function_exists('posix_kill')) {
+            return @posix_kill($pid, 0);
+        }
+        $procPath = "/proc/{$pid}";
+        return @is_dir($procPath);
+    }
+
+    public static function includeWithContext(string $file, array $context): void
+    {
+        if (!is_file($file)) {
+            throw new RuntimeException("Template not found: {$file}");
+        }
+        (static function () use ($file, $context): void{
+            extract($context, EXTR_OVERWRITE);
+            require $file;
+        })();
+    }
+
+    private static function lockPath(int $shipmentId): string
+    {
+        return rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
+    }
+}
 
 if (isset($options['s'])) {
     $skipParticipantReports = true;
@@ -76,86 +154,13 @@ if ($procs < 1) {
 // In debug mode force sequential to maximize visible output.
 if (!$isWorker && $debug) {
     $procs = 1;
-    $log("Debug mode enabled: forcing --procs=1 for verbose output.");
+    ReportJobUtil::log("Debug mode enabled: forcing --procs=1 for verbose output.", $isCli);
 }
 
 // Only print the banner in the master; workers stay silent to keep the spinner clean.
-if ($isCli && !$isWorker && $debug) {
+if ($isCli && !$isWorker) {
     echo "Using up to {$procs} parallel processes\n";
 }
-
-/**
- * Prevent concurrent master runs for the same shipment.
- * Running two masters at once can keep deleting the same output folder and make progress appear stuck at 0.
- *
- * Workers are not locked (they are expected to run concurrently under a single master).
- */
-$acquireShipmentLock = static function (int $shipmentId) {
-    $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
-    // Use a lock file that works even when the file is owned by another user (e.g. cron as root).
-    // Prefer read/write so we can write the PID, but fall back to read-only for locking.
-    $handle = @fopen($lockPath, 'c');
-    if (!is_resource($handle)) {
-        if (is_file($lockPath)) {
-            $handle = @fopen($lockPath, 'r');
-        }
-        if (!is_resource($handle)) {
-            return null;
-        }
-    }
-    if (!flock($handle, LOCK_EX | LOCK_NB)) {
-        fclose($handle);
-        return null;
-    }
-    // If we have write access, store the PID for easier debugging.
-    $meta = stream_get_meta_data($handle);
-    $mode = (string) ($meta['mode'] ?? '');
-    $canWrite = str_contains($mode, '+') || str_contains($mode, 'w') || str_contains($mode, 'a') || str_contains($mode, 'x') || str_contains($mode, 'c');
-    if ($canWrite) {
-        @ftruncate($handle, 0);
-        @fwrite($handle, (string) getmypid());
-    }
-    return $handle;
-};
-
-/**
- * Read lock metadata (best-effort): PID stored in file (if writable), mtime, and path.
- */
-$getShipmentLockInfo = static function (int $shipmentId): array {
-    $lockPath = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . "ept-generate-shipment-reports-{$shipmentId}.lock";
-    $pid = null;
-    $mtime = null;
-    if (is_file($lockPath)) {
-        $mtime = @filemtime($lockPath) ?: null;
-        $contents = @file_get_contents($lockPath);
-        if ($contents !== false) {
-            $parsed = (int) trim($contents);
-            if ($parsed > 0) {
-                $pid = $parsed;
-            }
-        }
-    }
-    return ['path' => $lockPath, 'pid' => $pid, 'mtime' => $mtime];
-};
-
-/**
- * Check if a PID is running (best-effort, cross-platform-ish).
- */
-$isPidRunning = static function (?int $pid): bool {
-    if (!$pid || $pid < 2) {
-        return false;
-    }
-    if (function_exists('posix_kill')) {
-        // Signal 0 does not kill; it checks for existence/permission.
-        return @posix_kill($pid, 0);
-    }
-    // Fallback: if /proc exists, check for /proc/<pid>.
-    $procPath = "/proc/{$pid}";
-    if (@is_dir($procPath)) {
-        return true;
-    }
-    return false;
-};
 
 // Parallel processing uses Symfony Process which relies on `proc_open`.
 // On some Ubuntu hardening configs (or in restricted shared hosting), `proc_open` can be disabled.
@@ -167,22 +172,6 @@ if (!$isWorker && $procs > 1) {
         $procs = 1;
     }
 }
-
-/**
- * Include a PHP template file with an explicit variable context.
- * This avoids relying on ambient variables from the caller scope (especially inside closures).
- */
-$includeWithContext = static function (string $file, array $context): void {
-    if (!is_file($file)) {
-        throw new RuntimeException("Template not found: {$file}");
-    }
-
-    (static function () use ($file, $context): void{
-        extract($context, EXTR_OVERWRITE);
-        require $file;
-    })();
-};
-
 
 try {
 
@@ -225,10 +214,10 @@ try {
     $manualShipmentMode = !$isWorker && !empty($workerShipmentId);
     $manualShipmentLock = null;
     if ($manualShipmentMode) {
-        $manualShipmentLock = $acquireShipmentLock((int) $workerShipmentId);
+        $manualShipmentLock = ReportJobUtil::acquireShipmentLock((int) $workerShipmentId);
         if ($manualShipmentLock === null) {
-            $info = $getShipmentLockInfo((int) $workerShipmentId);
-            $running = $isPidRunning($info['pid']);
+            $info = ReportJobUtil::getShipmentLockInfo((int) $workerShipmentId);
+            $running = ReportJobUtil::isPidRunning($info['pid']);
             $ageMinutes = ($info['mtime'] ? (int) floor((time() - $info['mtime']) / 60) : null);
 
             if ($force) {
@@ -236,7 +225,7 @@ try {
                 if ($ttlOk && is_string($info['path']) && $info['path'] !== '' && is_file($info['path'])) {
                     // Best-effort cleanup for stale lock files (does not break a held flock).
                     @unlink($info['path']);
-                    $manualShipmentLock = $acquireShipmentLock((int) $workerShipmentId);
+                    $manualShipmentLock = ReportJobUtil::acquireShipmentLock((int) $workerShipmentId);
                     if (is_resource($manualShipmentLock)) {
                         // Successfully re-acquired after removing a stale file.
                         goto lock_acquired_manual;
@@ -267,7 +256,7 @@ try {
 
     if ($isWorker) {
         if (empty($workerShipmentId) || $workerLimit < 1) {
-            $log("Worker mode requires --shipment and --limit arguments");
+            ReportJobUtil::log("Worker mode requires --shipment and --limit arguments", $isCli);
             exit(1);
         }
 
@@ -292,7 +281,7 @@ try {
         );
 
         if (empty($shipmentRow)) {
-            $log("Shipment $shipmentId not found for worker");
+            ReportJobUtil::log("Shipment $shipmentId not found for worker", $isCli);
             exit(1);
         }
 
@@ -337,10 +326,10 @@ try {
                 $totParticipantsRes['scheme_type'] = 'generic-test';
             }
 
-            $debugLog("Worker fetching participants for shipment {$shipmentId} (offset {$workerOffset}, limit {$workerLimit})...");
+            ReportJobUtil::debugLog("Worker fetching participants for shipment {$shipmentId} (offset {$workerOffset}, limit {$workerLimit})...", $isCli, $debug);
             $tFetchStart = microtime(true);
             $resultArray = $evalService->getIndividualReportsDataForPDF($shipmentId, $workerLimit, $workerOffset);
-            $debugLog("Worker fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []));
+            ReportJobUtil::debugLog("Worker fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []), $isCli, $debug);
             if ($layout == 'zimbabwe' && isset($totParticipantsRes['distribution_id'])) {
                 $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $shipmentId)[0];
             }
@@ -359,9 +348,9 @@ try {
                         $participantLayoutFile = $customLayoutFileLocation;
                     }
                 }
-                $debugLog("Worker rendering PDFs for offset {$workerOffset} using " . basename($participantLayoutFile) . "...");
+                ReportJobUtil::debugLog("Worker rendering PDFs for offset {$workerOffset} using " . basename($participantLayoutFile) . "...", $isCli, $debug);
                 $tRenderStart = microtime(true);
-                $includeWithContext($participantLayoutFile, [
+                ReportJobUtil::includeWithContext($participantLayoutFile, [
                     'reportService' => $reportService,
                     'schemeService' => $schemeService,
                     'shipmentService' => $shipmentService,
@@ -393,7 +382,7 @@ try {
                     'bulkfileNameVal' => $bulkfileNameVal,
                     'shipmentsUnderDistro' => isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null,
                 ]);
-                $debugLog("Worker rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms");
+                ReportJobUtil::debugLog("Worker rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms", $isCli, $debug);
             }
         }
         exit(0);
@@ -443,26 +432,27 @@ try {
         foreach ($evalResult as $evalRow) {
             $shipmentIdForLock = isset($evalRow['shipment_id']) ? (int) $evalRow['shipment_id'] : 0;
             $shipmentLock = null;
+            $lockAcquired = false;
             if ($shipmentIdForLock > 0) {
                 // In manual mode we already acquired a lock for this shipment; reuse it instead of trying to lock twice.
                 if ($manualShipmentMode && $shipmentIdForLock === (int) $workerShipmentId && is_resource($manualShipmentLock)) {
                     $shipmentLock = $manualShipmentLock;
+                    $lockAcquired = true;
                 } else {
-                    $shipmentLock = $acquireShipmentLock($shipmentIdForLock);
-                    if ($shipmentLock === null) {
-                        $info = $getShipmentLockInfo($shipmentIdForLock);
-                        $running = $isPidRunning($info['pid']);
+                    $shipmentLock = ReportJobUtil::acquireShipmentLock($shipmentIdForLock);
+                    if (is_resource($shipmentLock)) {
+                        $lockAcquired = true;
+                    } else {
+                        $info = ReportJobUtil::getShipmentLockInfo($shipmentIdForLock);
+                        $running = ReportJobUtil::isPidRunning($info['pid']);
                         $ageMinutes = ($info['mtime'] ? (int) floor((time() - $info['mtime']) / 60) : null);
 
                         if ($force) {
                             $ttlOk = ($lockTtlMinutes > 0 && $ageMinutes !== null && $ageMinutes >= $lockTtlMinutes && !$running);
                             if ($ttlOk && is_string($info['path']) && $info['path'] !== '' && is_file($info['path'])) {
                                 @unlink($info['path']);
-                                $shipmentLock = $acquireShipmentLock($shipmentIdForLock);
-                                if (is_resource($shipmentLock)) {
-                                    // Continue with a clean, re-acquired lock.
-                                    goto lock_acquired_queue;
-                                }
+                                $shipmentLock = ReportJobUtil::acquireShipmentLock($shipmentIdForLock);
+                                $lockAcquired = is_resource($shipmentLock);
                             }
                             fwrite(
                                 STDERR,
@@ -483,7 +473,10 @@ try {
                     }
                 }
             }
-            lock_acquired_queue:
+            // If we tried to lock (and were not forced) but failed, skip. Otherwise proceed (force-mode or no lock needed).
+            if ($shipmentIdForLock > 0 && !$lockAcquired && !$force) {
+                continue;
+            }
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 if ($isCli) {
                     echo "Evaluating shipment ID: " . $evalRow['shipment_id'] . PHP_EOL;
@@ -549,7 +542,7 @@ try {
             }
 
             if (!empty($evalRow['id'])) {
-                $db->update('queue_report_generation', array('status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')), 'id=' . $evalRow['id']);
+                $db->update('queue_report_generation', ['status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')], 'id=' . $evalRow['id']);
             }
             if (!file_exists($reportsPath)) {
                 $commonService->makeDirectory($reportsPath);
@@ -557,17 +550,17 @@ try {
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $db->select()->from(
-                array('spm' => 'shipment_participant_map'),
-                array(
+                ['spm' => 'shipment_participant_map'],
+                [
                     'custom_field_1',
                     'custom_field_2',
                     'participant_count' => new Zend_Db_Expr('count("participant_id")'),
                     'reported_count' => new Zend_Db_Expr("SUM(shipment_test_date > '1970-01-01' OR IFNULL(is_pt_test_not_performed, 'no') not like 'yes')")
-                )
+                ]
             )
-                ->joinLeft(array('res' => 'r_results'), 'res.result_id=spm.final_result', [])
-                ->joinLeft(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('scheme_type', 'distribution_id'))
-                ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
+                ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', [])
+                ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['scheme_type', 'distribution_id'])
+                ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['is_user_configured'])
                 ->where("spm.shipment_id = ?", $evalRow['shipment_id'])
                 ->group('spm.shipment_id');
             // die($pQuery);
@@ -611,7 +604,7 @@ try {
                 'haveCustom' => $haveCustom,
             ];
 
-            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar, $includeWithContext, $participantLayoutContextBase, $debugLog) {
+            $generateParticipantChunks = function () use ($evalService, $shipmentService, $totParticipantsRes, $layout, $evalRow, $reportedCount, $chunkSize, $getFileCount, &$participantProgressBar, $participantLayoutContextBase, $isCli, $debug) {
                 $lastCount = $getFileCount();
                 for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
                     Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
@@ -619,10 +612,10 @@ try {
                         $totParticipantsRes['scheme_type'] = 'generic-test';
                     }
 
-                    $debugLog("Fetching participants for shipment {$evalRow['shipment_id']} (offset {$offset}, limit {$chunkSize})...");
+                    ReportJobUtil::debugLog("Fetching participants for shipment {$evalRow['shipment_id']} (offset {$offset}, limit {$chunkSize})...", $isCli, $debug);
                     $tFetchStart = microtime(true);
                     $resultArray = $evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $chunkSize, $offset);
-                    $debugLog("Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []));
+                    ReportJobUtil::debugLog("Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []), $isCli, $debug);
                     if ($layout == 'zimbabwe') {
                         $shipmentsUnderDistro = $shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
                     }
@@ -646,10 +639,10 @@ try {
                         $context['resultArray'] = $resultArray;
                         $context['bulkfileNameVal'] = $bulkfileNameVal;
                         $context['shipmentsUnderDistro'] = isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null;
-                        $debugLog("Rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . "...");
+                        ReportJobUtil::debugLog("Rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . "...", $isCli, $debug);
                         $tRenderStart = microtime(true);
-                        $includeWithContext($participantLayoutFile, $context);
-                        $debugLog("Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms");
+                        ReportJobUtil::includeWithContext($participantLayoutFile, $context);
+                        ReportJobUtil::debugLog("Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms", $isCli, $debug);
 
                         $newCount = $getFileCount();
                         $delta = $newCount - $lastCount;
@@ -665,7 +658,7 @@ try {
                 // In debug mode, skip spinner repainting so debug logs stay visible.
                 if ($debug) {
                     $participantProgressBar = null;
-                    $log("Generating participant reports...");
+                    ReportJobUtil::log("Generating participant reports...", $isCli);
                 } else {
                     // Use single-line output; multi-line progress bars don't repaint reliably in some IDE consoles.
                     $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...", '█', '░', '█', 'cyan', false);
@@ -695,7 +688,7 @@ try {
 
                             $processes[] = ['process' => $process, 'offset' => $offset];
                         } catch (Throwable $t) {
-                            $log("Failed to start worker for offset {$offset}: " . $t->getMessage());
+                            ReportJobUtil::log("Failed to start worker for offset {$offset}: " . $t->getMessage(), $isCli);
                         }
                     }
 
@@ -719,7 +712,7 @@ try {
                                             if ($err !== '') {
                                                 $msg .= ": " . preg_replace('/\\s+/', ' ', $err);
                                             }
-                                            $log($msg);
+                                            ReportJobUtil::log($msg, $isCli);
                                             if ($isCli && $participantProgressBar) {
                                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
                                                     fwrite(STDERR, $msg . PHP_EOL);
@@ -728,11 +721,11 @@ try {
                                         } else {
                                             $out = trim($process->getOutput());
                                             if ($out !== '') {
-                                                $log("Worker completed (offset {$offset}) output: " . $out);
+                                                ReportJobUtil::log("Worker completed (offset {$offset}) output: " . $out, $isCli);
                                             }
                                         }
                                     } catch (Throwable $t) {
-                                        $log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage());
+                                        ReportJobUtil::log("Worker crashed while waiting (offset {$offset}): " . $t->getMessage(), $isCli);
                                     }
                                     unset($processes[$key]);
                                 }
@@ -758,7 +751,7 @@ try {
                         $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
                         if (empty($participantPdfs)) {
                             $msg = "Parallel generation produced no participant PDFs. Retrying sequentially.";
-                            $log($msg);
+                            ReportJobUtil::log($msg, $isCli);
                             if ($isCli && $participantProgressBar) {
                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
                                     fwrite(STDERR, $msg . PHP_EOL);
@@ -840,7 +833,7 @@ try {
                             $context['participantPerformance'] = $participantPerformance;
                             $context['correctivenessArray'] = $correctivenessArray;
                             $context['panelTestType'] = $panelTestType;
-                            $includeWithContext($summaryLayoutFile, $context);
+                            ReportJobUtil::includeWithContext($summaryLayoutFile, $context);
                         }
                     }
                 } else {
@@ -870,7 +863,7 @@ try {
                         $context['responseResult'] = $responseResult;
                         $context['participantPerformance'] = $participantPerformance;
                         $context['correctivenessArray'] = $correctivenessArray;
-                        $includeWithContext($summaryLayoutFile, $context);
+                        ReportJobUtil::includeWithContext($summaryLayoutFile, $context);
                     }
                 }
             }
@@ -903,16 +896,16 @@ try {
                 $emailContent .= "<br><br><br><small>This is a system generated email</small>";
                 $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
             }
-            $update = array(
+            $update = [
                 'status' => $reportCompletedStatus,
                 'last_updated_on' => new Zend_Db_Expr('now()')
-            );
+            ];
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
             }
             $feedbackExpiryDate = (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') ? $feedbackExpiryDate : null;
 
-            $db->update('shipment', array(
+            $db->update('shipment', [
                 'status' => $reportCompletedStatus,
                 'feedback_expiry_date' => $feedbackExpiryDate,
                 'report_in_queue' => 'no',
@@ -921,7 +914,7 @@ try {
                 'previous_status' => null,
                 'processing_started_at' => null,
                 'last_heartbeat' => null
-            ), "shipment_id = " . $evalRow['shipment_id']);
+            ], "shipment_id = " . $evalRow['shipment_id']);
 
             // `$evalRow['id']` is the queue_report_generation row id (null in manual mode).
             if (!empty($evalRow['id']) && $reportCompletedStatus == 'finalized') {
@@ -933,13 +926,9 @@ try {
             if (!empty($evalRow['id'])) {
                 $db->update('queue_report_generation', $update, 'id=' . $evalRow['id']);
             }
-            if ($enabledAdminEmailReminder == 'yes') {
-                $queueResults = $db->fetchRow($db->select()
-                    ->from('queue_report_generation')
-                    ->where("shipment_id = ?", $evalRow['shipment_id']));
-                /* Zend_Debug::dump($queueResults);
-                die; */
-                $adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
+
+            if ($enabledAdminEmailReminder == 'yes' && !empty($evalRow['initated_by'])) {
+                $adminDetails = $adminService->getSystemAdminDetails($evalRow['initated_by']);
                 if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
                     $link = $conf->domain . '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
                     $subject = 'Shipment report for ' . $evalRow['shipment_code'] . ' has been generated';
@@ -950,23 +939,23 @@ try {
                     $commonService->insertTempMail($adminDetails['primary_email'], null, null, $subject, $message, 'ePT System', 'ePT System Admin');
                 }
             }
-            $db->insert('notify', array('title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link));
+            $db->insert('notify', ['title' => 'Reports Generated', 'description' => 'Reports for Shipment ' . $evalRow['shipment_code'] . ' are ready for download', 'link' => $link]);
 
             $notifyType = ($evalRow['report_type'] = 'generateReport') ? 'individual_reports' : 'summary_reports';
             $notParticipatedMailContent = $commonService->getEmailTemplate('not_participant_report_mail');
             $subQuery = $db->select()
-                ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id'))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
-                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
-                ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email'))
+                ->from(['s' => 'shipment'], ['shipment_code', 'scheme_type'])
+                ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['map_id'])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
+                ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+                ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
                 ->where("s.shipment_id=?", $evalRow['shipment_id'])
                 ->group('dm.dm_id');
             $subResult = $db->fetchAll($subQuery);
             foreach ($subResult as $row) {
                 /* New shipment mail alert start */
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
-                $replace = array($row['participantName'], $row['shipment_code'], $row['scheme_type'], '', '');
+                $search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',];
+                $replace = [$row['participantName'], $row['shipment_code'], $row['scheme_type'], '', ''];
                 $content = !empty($notParticipatedMailContent['mail_content']) ? $notParticipatedMailContent['mail_content'] : null;
                 $message = !empty($content) ? str_replace($search, $replace, $content) : null;
                 $subject = !empty($notParticipatedMailContent['mail_subject']) ? $notParticipatedMailContent['mail_subject'] : '';
@@ -988,6 +977,6 @@ try {
         }
     }
 } catch (Exception $e) {
-    $log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-    $log($e->getTraceAsString());
+    ReportJobUtil::log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
+    ReportJobUtil::log($e->getTraceAsString(), $isCli);
 }
