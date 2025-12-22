@@ -58,3 +58,5 @@ MODIFY COLUMN rpo_b4 DECIMAL(10,4);
 
 ALTER TABLE `reference_result_tb` ADD `mtbrif_probe_a_mean_stability_ct` DECIMAL(10,4) NULL DEFAULT NULL AFTER `probe_a`;
 ALTER TABLE `reference_result_tb` ADD `mtbultra_lowest_rpo_b_probe_mean_stability_ct` DECIMAL(10,4) NULL DEFAULT NULL AFTER `mtbrif_probe_a_mean_stability_ct`;
+-- Thana 22-Dec-2025
+ALTER TABLE `r_participant_feedback_form_files_map` ADD `rpff_id` INT NULL DEFAULT NULL AFTER `rpf_id`;

@@ -12,9 +12,9 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'))
             ->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('is_response_mandatory', 'sort_order'))
-            ->join(array('sl' => 'scheme_list'), 'rpfq.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('s' => 'shipment'), 'rpfq.shipment_id=s.shipment_id', array('shipment_code'))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result'))
+            ->joinLeft(array('sl' => 'scheme_list'), 'rpfq.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->joinLeft(array('s' => 'shipment'), 'rpfq.shipment_id=s.shipment_id', array('shipment_code'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result'))
             ->where("rpfq.shipment_id =?", $sid)
             ->where("(
                     rfq.question_show_to IS NULL
@@ -29,8 +29,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form results
         $feedbackFormSql = $db->select()
             ->from(['rpf' => 'r_participant_feedback_form'], ['*'])
-            ->join(array('sl' => 'scheme_list'), 'rpf.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('s' => 'shipment'), 'rpf.shipment_id=s.shipment_id', array('shipment_code'))
+            ->joinLeft(array('sl' => 'scheme_list'), 'rpf.scheme_type=sl.scheme_id', array('scheme_name'))
+            ->joinLeft(array('s' => 'shipment'), 'rpf.shipment_id=s.shipment_id', array('shipment_code'))
             ->where('rpf.shipment_id = ?', $sid);
         $result['feedback_form_results'] = $db->fetchRow($feedbackFormSql);
 
@@ -38,7 +38,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
             ->where('rpff.shipment_id = ?', $sid)
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
+            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
             ->where("(
                     rpff.files_show_to IS NULL
                     OR rpff.files_show_to = 'all-participants' 
@@ -46,6 +46,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                     OR (rpff.files_show_to = 'failing-participants' AND spm.final_result != 1 AND rpff.files_show_to != 'passing-participants' AND rpff.files_show_to != 'all-participants')
                 )")
             ->group('rpff.rpf_id');
+
         $result['feedback_form_files_results'] = $db->fetchAll($filesMapSql);
 
         return $result;
@@ -86,9 +87,16 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form question mapping results
         $questionMapSql = $db->select()
             ->from(['rfq' => 'r_feedback_questions'], ['*'])
-            ->joinLeft(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['questionId' => 'question_id', '*'])
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpfq.shipment_id', array('spm.map_id', 'final_result'))
-            // ->where('rpfq.shipment_id = ?', $id)
+            ->joinLeft(
+                ['rpfq' => 'r_participant_feedback_form_question_map'],
+                'rfq.question_id=rpfq.question_id AND rpfq.shipment_id = ' . $id,
+                ['questionId' => 'question_id', '*']
+            )
+            ->joinLeft(
+                array('spm' => 'shipment_participant_map'),
+                'spm.shipment_id=rpfq.shipment_id',
+                array('spm.map_id', 'final_result')
+            )
             ->where("(
                     rfq.question_show_to IS NULL
                     OR rfq.question_show_to = 'all-participants' 
@@ -435,7 +443,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             }
             $clone = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '/type/clone" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Clone</a>';
             $edit = '<a href="/admin/feedback-responses/' . $file . '/id/' . base64_encode($aRow[$field]) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
-           // $downloadResponse = '<a href="javascript:void(0);" onclick="generateFeedbackResponseReports(' . $aRow['shipment_id'] . ')" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download"></i> Download Feedback</a>';
+            // $downloadResponse = '<a href="javascript:void(0);" onclick="generateFeedbackResponseReports(' . $aRow['shipment_id'] . ')" class="btn btn-success btn-xs" style="margin-right: 2px;"><i class="icon-download"></i> Download Feedback</a>';
 
             $row[] = $edit . $clone;
 
