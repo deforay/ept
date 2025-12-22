@@ -1475,7 +1475,8 @@ class Application_Model_Tb
                 'ref.shipment_id = spm.shipment_id',
                 [
                     'sample_label' => 'ref.sample_label',
-                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.probe_a ELSE 0 END")
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.probe_a ELSE 0 END"),
+                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbrif_probe_a_mean_stability_ct ELSE 0 END")
                 ]
             )
             ->joinLeft(
@@ -1490,7 +1491,6 @@ class Application_Model_Tb
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-        // die($mtbRifSummaryQuery);
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
 
 
@@ -1500,7 +1500,8 @@ class Application_Model_Tb
                 'ref.shipment_id = spm.shipment_id',
                 [
                     'sample_label' => 'ref.sample_label',
-                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END")
+                    'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END"),
+                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbultra_lowest_rpo_b_probe_mean_stability_ct ELSE 0 END")
                 ]
             )
             ->joinLeft(
@@ -1508,25 +1509,25 @@ class Application_Model_Tb
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 [
                     'average_ct' => new Zend_Db_Expr('
-                        AVG(
-                            CASE
-                                WHEN res.calculated_score IN (10, 20) AND
-                                    LEAST(
-                                        NULLIF(res.rpo_b1, 0),
-                                        NULLIF(res.rpo_b2, 0),
-                                        NULLIF(res.rpo_b3, 0),
-                                        NULLIF(res.rpo_b4, 0)
-                                    ) > 0
-                                THEN LEAST(
-                                        NULLIF(res.rpo_b1, 0),
-                                        NULLIF(res.rpo_b2, 0),
-                                        NULLIF(res.rpo_b3, 0),
-                                        NULLIF(res.rpo_b4, 0)
-                                    )
-                                ELSE NULL
-                            END
-                        )
-                    ')
+                AVG(
+                    CASE
+                        WHEN res.calculated_score IN (10, 20) AND
+                            LEAST(
+                                NULLIF(res.rpo_b1, 0),
+                                NULLIF(res.rpo_b2, 0),
+                                NULLIF(res.rpo_b3, 0),
+                                NULLIF(res.rpo_b4, 0)
+                            ) > 0
+                        THEN LEAST(
+                                NULLIF(res.rpo_b1, 0),
+                                NULLIF(res.rpo_b2, 0),
+                                NULLIF(res.rpo_b3, 0),
+                                NULLIF(res.rpo_b4, 0)
+                            )
+                        ELSE NULL
+                    END
+                )
+            ')
                 ]
             )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
@@ -1534,7 +1535,6 @@ class Application_Model_Tb
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
-        // die($mtbRifUltraSummaryQuery);
         $summaryPDFData['mtbRifUltraReportSummary'] = $this->db->fetchAll($mtbRifUltraSummaryQuery);
 
         return $summaryPDFData;

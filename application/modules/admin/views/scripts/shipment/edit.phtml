@@ -2752,7 +2752,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 											<td>
 												<table>
 													<tr>
-														<th colspan="13"><input type="text" value="<?php echo $reference['sample_label']; ?>" name="sampleName[]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>
+														<th colspan="13"><input type="text" value="<?php echo $reference['sample_label']; ?>" name="sampleName[<?php echo $reference['sample_id']; ?>]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>
 													</tr>
 													<tr>
 														<th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>
@@ -2806,7 +2806,7 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 															<input type="text" value="<?php echo $reference['mtbrif_probe_a_mean_stability_ct']; ?>" name="probeAMean[<?php echo $reference['sample_id']; ?>]" id="probeAMean<?php echo ($counter + 1); ?>" class="form-control input-sm oneDecimal input-probeAMean<?php echo ($counter + 1); ?>" title="Please enter the Probe A Mean" placeholder="A Mean" />
 														</td>
 														<td style="border-left: solid 1px gray;">
-															<input type="text" value="<?php echo $reference['sample_preparation_date']; ?>" id="sample1PreparationDate<?php echo ($counter + 1); ?>" name="sample1PreparationDate[<?php echo $reference['sample_id']; ?>]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+															<input type="text" value="<?php echo $reference['sample_preparation_date']; ?>" id="sample1PreparationDate<?php echo ($counter + 1); ?>" name="samplePreparationDate[<?php echo $reference['sample_id']; ?>]" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
 														</td>
 														<td><input type="text" value="<?php echo $reference['tb_isolate']; ?>" id="tbIsolate<?php echo ($counter + 1); ?>" name="tbIsolate[<?php echo $reference['sample_id']; ?>]" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
 													</tr>
