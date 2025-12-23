@@ -263,7 +263,7 @@ class AuthController extends Zend_Controller_Action
 				$userId = $result['dm_id']; // Set this to the logged-in user's ID
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-					$loginData = array(
+				$loginData = array(
 					'user_id' => $userId,
 					'login_context' => 'participant', // or 'failed' if login failed
 					'login_status' => 'success', // Indicate failed login
@@ -271,9 +271,18 @@ class AuthController extends Zend_Controller_Action
 				);
 
 				$loginHistoryModel->addLoginHistory($loginData);
-
-				// Successful login - redirect to current schemes
-				$this->redirect('/participant/current-schemes');
+				// To check the re-drection for participant after logged in
+				$dbUsersProfile = new Application_Service_Participants();
+				$shipmentService = new Application_Service_Shipments();
+				$authNameSpace = new Zend_Session_Namespace('datamanagers');
+				$checkPendingParticipants = $dbUsersProfile->getNotRespondedParticipantsByDmId($authNameSpace->dm_id);
+				$checkPendingReports = $shipmentService->getFinalizedShipmentReportByDmId($authNameSpace->dm_id);
+				if ($checkPendingParticipants)
+					$this->redirect('/participant/current-schemes');
+				else if ($checkPendingReports)
+					$this->redirect('/participant/report');
+				else
+					$this->redirect('/participant/dashboard');
 			} else {
 				// Failed login - handle login attempts and banning
 				if (
@@ -310,7 +319,7 @@ class AuthController extends Zend_Controller_Action
 					}
 				}
 
-					// Insert login history
+				// Insert login history
 				//$userId = $authenticatedUserId; // Set this to the logged-in user's ID
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();

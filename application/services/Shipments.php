@@ -4090,4 +4090,10 @@ class Application_Service_Shipments
             error_log($e->getTraceAsString());
         }
     }
+
+    public function getFinalizedShipmentReportByDmId($dmId)
+    {
+        $shipmentDb = new Application_Model_DbTable_Shipments();
+        return $shipmentDb->fetchFinalizedShipmentReportByDmId($dmId);
+    }
 }

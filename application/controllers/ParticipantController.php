@@ -119,7 +119,19 @@ class ParticipantController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $userService->updateUser($params);
+            $result = $userService->updateUser($params);
+            // To check the re-drection for participant after logged in
+            $dbUsersProfile = new Application_Service_Participants();
+            $shipmentService = new Application_Service_Shipments();
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            $checkPendingParticipants = $dbUsersProfile->getNotRespondedParticipantsByDmId($authNameSpace->dm_id);
+            $checkPendingReports = $shipmentService->getFinalizedShipmentReportByDmId($authNameSpace->dm_id);
+            if ($checkPendingParticipants)
+                $this->redirect('/participant/current-schemes');
+            else if ($checkPendingReports)
+                $this->redirect('/participant/report');
+            else
+                $this->redirect('/participant/dashboard');
         }
         // whether it is a GET or POST request, we always show the user info
         $this->view->rsUser = $userInfo = $userService->getUserInfo();
@@ -911,7 +923,7 @@ class ParticipantController extends Zend_Controller_Action
     }
 
     public function feedBackAction()
-    { 
+    {
         $feedbackService = new Application_Service_FeedBack();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();

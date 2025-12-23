@@ -85,10 +85,187 @@ foreach ($this->participants as $row) {
 		margin-left: 60px !important;
 		border-radius: 3%;
 	}
+
+	/* Quick Links Header Styles */
+	.quick-links-header {
+		margin-bottom: 30px;
+		animation: fadeInDown 0.6s ease-out;
+	}
+
+	.quick-links-header h2 {
+		color: #333;
+		font-size: 2rem;
+		font-weight: 700;
+		margin-bottom: 8px;
+	}
+
+	.quick-links-header p {
+		color: #666;
+		font-size: 1rem;
+		margin: 0;
+	}
+
+	/* Quick Cards Styles */
+	.quick-cards {
+		text-decoration: none;
+		display: block;
+		transition: all 0.3s ease;
+	}
+
+	.quick-cards:hover,
+	.quick-cards:focus {
+		text-decoration: none;
+		transform: translateY(-5px);
+	}
+
+	.quick-cards .info-box {
+		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		cursor: pointer;
+		position: relative;
+		overflow: hidden;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		background: #fff;
+	}
+
+	/* Shimmer Effect */
+	.quick-cards .info-box::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+		transition: left 0.6s;
+		z-index: 1;
+		pointer-events: none;
+	}
+
+	.quick-cards:hover .info-box::before {
+		left: 100%;
+	}
+
+	/* Hover Effect - Highlight Card */
+	.quick-cards:hover .info-box {
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+		border: 2px solid rgba(0, 123, 255, 0.3);
+	}
+
+	.quick-cards:hover .info-box-text {
+		color: #007bff !important;
+		font-weight: 700 !important;
+	}
+
+	/* Glow Effect on Icon Background - Info (Blue) */
+	.quick-cards:hover .info-box-icon.btn-info {
+		box-shadow: 0 0 20px rgba(23, 162, 184, 0.6);
+		background-color: #17a2b8 !important;
+	}
+
+	/* Glow Effect on Icon Background - Danger (Red) */
+	.quick-cards:hover .info-box-icon.btn-danger {
+		box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+		background-color: #dc3545 !important;
+	}
+
+	/* Glow Effect on Icon Background - Success (Green) */
+	.quick-cards:hover .info-box-icon.btn-success {
+		box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+		background-color: #28a745 !important;
+	}
+
+	/* Small Text Highlight */
+	.quick-cards:hover .info-box-content small {
+		color: #666;
+		font-weight: 500;
+	}
+
+	.quick-cards:hover .info-box {
+		/* size change */
+		transform: translateY(-5px);
+		/* reflow perception */
+	}
+
+	@media (max-width: 768px) {
+		.quick-links-header h2 {
+			font-size: 1.5rem;
+		}
+	}
 </style>
 <section class="content-header">
 	<h1> <?= $this->translate->_("Dashboard"); ?> </h1>
-</section>
+</section><br>
+<div class="quick-links-header text-center">
+	<h2><?= $this->translate->_("What do you want to do today?"); ?></h2>
+	<p><?= $this->translate->_("Choose an action to get started"); ?></p>
+</div>
+<div class="row">
+	<a href="/participant/current-schemes" style="color:#333;" class="quick-cards">
+		<div class="col-12 col-sm-6 col-md-3">
+			<div class="info-box">
+				<span class="info-box-icon btn-info elevation-1"><i class="icon icon-edit"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text" style="font-weight: 600;">Shipment Response</span>
+					<span class="">
+						<small>Submit and manage your shipments</small>
+					</span>
+				</div>
+				<!-- /.info-box-content -->
+			</div>
+			<!-- /.info-box -->
+		</div>
+	</a>
+	<a href="/participant/report" style="color:#333;" class="quick-cards">
+		<!-- /.col -->
+		<div class="col-12 col-sm-6 col-md-3">
+			<div class="info-box mb-3">
+				<span class="info-box-icon btn-danger elevation-1"><i class="icon icon-download-alt"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text" style="font-weight: 600;">individual Report</span>
+					<span class=""><small>Download and view your performance reports</small></span>
+				</div>
+				<!-- /.info-box-content -->
+			</div>
+			<!-- /.info-box -->
+		</div>
+	</a>
+	<a href="/participant/summary-report" style="color:#333;" class="quick-cards">
+		<!-- /.col -->
+		<div class="col-12 col-sm-6 col-md-3">
+			<div class="info-box mb-3">
+				<span class="info-box-icon btn-primary elevation-1"><i class="icon icon-download-alt"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text" style="font-weight: 600;">Summary Reports</span>
+					<span class=""><small>Download and view summary reports</small></span>
+				</div>
+				<!-- /.info-box-content -->
+			</div>
+			<!-- /.info-box -->
+		</div>
+	</a>
+	<a href="/participant/user-info" style="color:#333;" class="quick-cards">
+		<!-- /.col -->
+		<div class="col-12 col-sm-6 col-md-3">
+			<div class="info-box mb-3">
+				<span class="info-box-icon btn-success elevation-1"><i class="icon icon-user"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text" style="font-weight: 600;">Edit Profile</span>
+					<span class=""><small>Update your account information</small></span>
+				</div>
+				<!-- /.info-box-content -->
+			</div>
+			<!-- /.info-box -->
+		</div>
+	</a>
+	<!-- /.col -->
+</div>
+<br>
 <section class="content">
 
 	<?php if (!empty($this->showEmailCriticalAlert)): ?>

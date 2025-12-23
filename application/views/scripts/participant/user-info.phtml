@@ -92,35 +92,24 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
     function validateNow() {
 
         var blockedDomain = '<?php echo $blockedDomains; ?>';
-        var domains = blockedDomain.split(',');
-        var maildomain = $('#pemail').val().split('@');
-        console.log(jQuery.inArray(maildomain[1], domains));
-        if (jQuery.inArray(maildomain[1], domains) != -1) {
-            alert("<?= $this->translate->_("Please enter the valid mail address, We send the mail confirm information to this address."); ?>");
-            return false;
-        }
-        if ($('#pemail').val() != $('#oldpemail').val()) {
-            // if(confirm('Are you sure you want to change your email from '+$('#oldpemail').val()+' to '+$('#pemail').val()+' ?')){
-            if (confirm("<?= $this->translate->_("Please note that your primary email"); ?> (' + $('#pemail').val() + ') <?= $this->translate->_("is used to login to ePT. If you change and verify it, the new email id will become your login id"); ?>")) {
-                flag = deforayValidator.init({
-                    formId: 'userInfoForm'
-                });
-                if (flag) {
-                    if (!duplicated) {
-                        $.blockUI();
-                        document.getElementById('userInfoForm').submit();
-                    }
-                }
+        if (blockedDomain != '')
+            var domains = blockedDomain.split(',');
+        if ($('#semail').val() != '')
+            var maildomain = $('#semail').val().split('@');
+        if (domains != '' && maildomain != '') {
+            if (jQuery.inArray(maildomain[1], domains) != -1) {
+                alert("<?= $this->translate->_("Please enter the valid mail address, We send the mail confirm information to this address."); ?>");
+                return false;
             }
-        } else {
-            flag = deforayValidator.init({
-                formId: 'userInfoForm'
-            });
-            if (flag) {
-                if (!duplicated) {
-                    $.blockUI();
-                    document.getElementById('userInfoForm').submit();
-                }
+        }
+
+        flag = deforayValidator.init({
+            formId: 'userInfoForm'
+        });
+        if (flag) {
+            if (!duplicated) {
+                $.blockUI();
+                document.getElementById('userInfoForm').submit();
             }
         }
     }
