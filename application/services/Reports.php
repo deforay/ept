@@ -4682,6 +4682,8 @@ class Application_Service_Reports
             $reportData['latest_summary_report_on'] = $currentDateTime;
             $reportData['latest_summary_report_by'] = $currentUserId;
         }
+        /* To track whether the report gets downloaded or not during login redirection. */
+        $reportData['report_downloaded'] = 'yes';
 
         // Prepare data for update
         $data = [

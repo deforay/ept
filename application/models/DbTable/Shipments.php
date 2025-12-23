@@ -4986,12 +4986,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     {
         $sQuery = $this->getAdapter()->select()
             ->from(array('s' => 'shipment'), array('s.scheme_type', 's.shipment_date', 's.shipment_code', 's.lastdate_response', 's.shipment_id', 's.status', 's.response_switch', 'panelName' => new Zend_Db_Expr('shipment_attributes->>"$.panelName"')))
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "response_date" => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')"))
+            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array("spm.map_id", "spm.evaluation_status", "spm.response_status", "spm.participant_id", "response_date" => "DATE_FORMAT(spm.shipment_test_report_date,'%d-%b-%Y')", "report_download_metadata"))
             ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.department_name', 'p.address', 'p.city', 'p.district', 'p.state', 'p.institute_name', 'p.country', 'p.email', 'p.mobile'))
             ->join(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array())
             ->where("pmm.dm_id = ?", $dmId)
             ->where("s.status = 'finalized'")
-            ->where("spm.report_generated != 'yes'");
+            ->where("spm.report_generated = 'yes'")
+            ->where("COALESCE(spm.report_download_metadata->>'$.report_downloaded', 'no') = 'no'");
         return $this->getAdapter()->fetchRow($sQuery);
     }
 }
