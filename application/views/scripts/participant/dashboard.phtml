@@ -208,9 +208,9 @@ foreach ($this->participants as $row) {
 				<span class="info-box-icon btn-info elevation-1"><i class="icon icon-edit"></i></span>
 
 				<div class="info-box-content">
-					<span class="info-box-text" style="font-weight: 600;">Shipment Response</span>
+					<span class="info-box-text" style="font-weight: 600;"><?= $this->translate->_("Shipment Response"); ?></span>
 					<span class="">
-						<small>Submit and manage your shipments</small>
+						<small><?= $this->translate->_("Submit and manage your shipments"); ?></small>
 					</span>
 				</div>
 				<!-- /.info-box-content -->
@@ -225,8 +225,8 @@ foreach ($this->participants as $row) {
 				<span class="info-box-icon btn-danger elevation-1"><i class="icon icon-download-alt"></i></span>
 
 				<div class="info-box-content">
-					<span class="info-box-text" style="font-weight: 600;">individual Report</span>
-					<span class=""><small>Download and view your performance reports</small></span>
+					<span class="info-box-text" style="font-weight: 600;"><?= $this->translate->_("Individual Report"); ?></span>
+					<span class=""><small><?= $this->translate->_("Download and view your performance reports"); ?></small></span>
 				</div>
 				<!-- /.info-box-content -->
 			</div>
@@ -240,8 +240,8 @@ foreach ($this->participants as $row) {
 				<span class="info-box-icon btn-primary elevation-1"><i class="icon icon-download-alt"></i></span>
 
 				<div class="info-box-content">
-					<span class="info-box-text" style="font-weight: 600;">Summary Reports</span>
-					<span class=""><small>Download and view summary reports</small></span>
+					<span class="info-box-text" style="font-weight: 600;"><?= $this->translate->_("Summary Reports"); ?></span>
+					<span class=""><small><?= $this->translate->_("Download and view summary reports"); ?></small></span>
 				</div>
 				<!-- /.info-box-content -->
 			</div>
@@ -255,8 +255,8 @@ foreach ($this->participants as $row) {
 				<span class="info-box-icon btn-success elevation-1"><i class="icon icon-user"></i></span>
 
 				<div class="info-box-content">
-					<span class="info-box-text" style="font-weight: 600;">Edit Profile</span>
-					<span class=""><small>Update your account information</small></span>
+					<span class="info-box-text" style="font-weight: 600;"><?= $this->translate->_("Edit Profile"); ?></span>
+					<span class=""><small><?= $this->translate->_("Update your account information"); ?></small></span>
 				</div>
 				<!-- /.info-box-content -->
 			</div>
@@ -270,11 +270,11 @@ foreach ($this->participants as $row) {
 
 	<?php if (!empty($this->showEmailCriticalAlert)): ?>
 		<div class="alert alert-danger">
-			<strong> Email issue: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+			<strong> <?= $this->translate->_("Email issue"); ?>: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
 		</div>
 	<?php elseif (!empty($this->showEmailWarningAlert)): ?>
 		<div class="alert alert-warning">
-			<strong> Email warning: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
+			<strong> <?= $this->translate->_("Email warning"); ?>: </strong> <?= $this->escape($this->emailHealth['summary']); ?>
 		</div>
 	<?php endif; ?>
 	<div class="box all" style="display: none;">
