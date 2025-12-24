@@ -1656,6 +1656,7 @@ class Application_Service_Shipments
 
     public function addShipment($params)
     {
+
         try {
             $scheme = $params['schemeId'];
             $authNameSpace = new Zend_Session_Namespace('administrators');
@@ -1751,7 +1752,6 @@ class Application_Service_Shipments
 
             $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
             $size = count($params['sampleName']);
-
             $mandatorySampleCount = $this->calculateMandatorySampleCount($params['mandatory'], $params['control']);
             $perSampleScore = $mandatorySampleCount > 0 ? floatval(100 / $mandatorySampleCount) : 1;
 
@@ -2416,43 +2416,48 @@ class Application_Service_Shipments
                 }
             }
         } elseif ($scheme == 'tb') {
-
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 1; $i <= $size; $i++) {
                 $score = 0;
                 if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                     $score = $params['scorePerSample'];
                 } else {
-                    $score = ($params['mandatory'][$i] == 1) ? 20 : 0;
+                    $score = (isset($params['mandatory'][$i]) && $params['mandatory'][$i] == 1) ? 20 : 0;
                 }
+
+                // Helper function to handle empty strings
+                $getValue = function ($value) {
+                    return (isset($value) && $value !== '') ? $value : null;
+                };
+
                 $dbAdapter->insert(
                     'reference_result_tb',
                     [
                         'shipment_id' => $params['shipmentId'] ?? null,
                         'sample_id' => ($i),
-                        'sample_label' => $params['sampleName'][$i] ?? null,
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
-                        'tb_isolate' => $params['tbIsolate'][$i] ?? null,
-                        'mtb_detected' => $params['mtbDetected'][$i] ?? null,
-                        'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i] ?? $params['mtbDetected'][$i] ?? null,
-                        'rif_resistance' => $params['rifResistance'][$i] ?? null,
-                        'rif_resistance_ultra' => $params['rifResistanceUltra'][$i] ?? $params['rifResistance'][$i] ?? null,
-                        'probe_d' => $params['probeD'][$i] ?? null,
-                        'probe_c' => $params['probeC'][$i] ?? null,
-                        'probe_e' => $params['probeE'][$i] ?? null,
-                        'probe_b' => $params['probeB'][$i] ?? null,
-                        'spc_xpert' => $params['spcXpert'][$i],
-                        'spc_xpert_ultra' => $params['spcXpertUltra'][$i],
-                        'probe_a' => $params['probeA'][$i] ?? null,
-                        'mtbrif_probe_a_mean_stability_ct' => $params['probeAMean'][$i],
-                        'mtbultra_lowest_rpo_b_probe_mean_stability_ct' => $params['LowerstrpoBMean'][$i],
-                        'is1081_is6110' => (isset($params['ISI'][$i]) && !empty($params['ISI'][$i])) ? $params['ISI'][$i] : null,
-                        'rpo_b1' => (isset($params['rpoB1'][$i]) && !empty($params['rpoB1'][$i])) ? $params['rpoB1'][$i] : null,
-                        'rpo_b2' => (isset($params['rpoB2'][$i]) && !empty($params['rpoB2'][$i])) ? $params['rpoB2'][$i] : null,
-                        'rpo_b3' => (isset($params['rpoB3'][$i]) && !empty($params['rpoB3'][$i])) ? $params['rpoB3'][$i] : null,
-                        'rpo_b4' => (isset($params['rpoB4'][$i]) && !empty($params['rpoB4'][$i])) ? $params['rpoB4'][$i] : null,
-                        'control' => $params['control'][$i],
-                        'mandatory' => $params['mandatory'][$i],
+                        'sample_label' => $getValue($params['sampleName'][$i] ?? null),
+                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i] ?? null),
+                        'tb_isolate' => $getValue($params['tbIsolate'][$i] ?? null),
+                        'mtb_detected' => $getValue($params['mtbDetected'][$i] ?? null),
+                        'mtb_detected_ultra' => $getValue($params['mtbDetectedUltra'][$i] ?? $params['mtbDetected'][$i] ?? null),
+                        'rif_resistance' => $getValue($params['rifResistance'][$i] ?? null),
+                        'rif_resistance_ultra' => $getValue($params['rifResistanceUltra'][$i] ?? $params['rifResistance'][$i] ?? null),
+                        'probe_d' => $getValue($params['probeD'][$i] ?? null),
+                        'probe_c' => $getValue($params['probeC'][$i] ?? null),
+                        'probe_e' => $getValue($params['probeE'][$i] ?? null),
+                        'probe_b' => $getValue($params['probeB'][$i] ?? null),
+                        'spc_xpert' => $getValue($params['spcXpert'][$i] ?? null),
+                        'spc_xpert_ultra' => $getValue($params['spcXpertUltra'][$i] ?? null),
+                        'probe_a' => $getValue($params['probeA'][$i] ?? null),
+                        'mtbrif_probe_a_mean_stability_ct' => $getValue($params['probeAMean'][$i] ?? null),
+                        'mtbultra_lowest_rpo_b_probe_mean_stability_ct' => $getValue($params['LowerstrpoBMean'][$i] ?? null),
+                        'is1081_is6110' => $getValue($params['ISI'][$i] ?? null),
+                        'rpo_b1' => $getValue($params['rpoB1'][$i] ?? null),
+                        'rpo_b2' => $getValue($params['rpoB2'][$i] ?? null),
+                        'rpo_b3' => $getValue($params['rpoB3'][$i] ?? null),
+                        'rpo_b4' => $getValue($params['rpoB4'][$i] ?? null),
+                        'control' => isset($params['control'][$i]) ? $params['control'][$i] : 0,
+                        'mandatory' => isset($params['mandatory'][$i]) ? $params['mandatory'][$i] : 0,
                         'sample_score' => $score
                     ]
                 );

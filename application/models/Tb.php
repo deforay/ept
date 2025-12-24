@@ -458,7 +458,6 @@ class Application_Model_Tb
         if (isset($type) && $type == "shipment") {
             $sql = $sql->group("ref.sample_id");
         }
-        // die($sql);
         return $db->fetchAll($sql);
     }
 
