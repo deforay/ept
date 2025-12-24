@@ -6,7 +6,7 @@ $answers = $this->ans;
         <div class="row mb-2">
             <div class="col-sm-12">
                 <h1 class="m-0">
-                    <?= $this->translate->_($this->questions['feedback_form_results']['scheme_name'] . " (" . $this->questions['feedback_form_results']['shipment_code'] . ")"); ?>
+                    <?= $this->questions['feedback_form_results']['scheme_name'] . " (" . $this->questions['feedback_form_results']['shipment_code'] . ")"; ?>
                 </h1>
                 <p class="text-muted mt-2">
                     <?= $this->translate->_("Please complete the satisfaction survey and provide feedback for this shipment"); ?>
@@ -35,7 +35,8 @@ $answers = $this->ans;
                             </div>
                         <?php } ?>
 
-                        <form name="feedbackForm" id="feedbackForm" method="post" action="<?php echo $this->url(["controller" => "participant", "action" => "feed-back"], null, true) ?>">
+                        <form name="feedbackForm" id="feedbackForm" method="post"
+                            action="<?php echo $this->url(["controller" => "participant", "action" => "feed-back"], null, true) ?>">
 
                             <?php foreach ($this->questions['result'] as $key => $question) { ?>
                                 <div class="form-group mb-4">
@@ -45,21 +46,18 @@ $answers = $this->ans;
                                         <?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? '<span class="text-danger ml-1">*</span>' : ""; ?>
                                     </label>
 
-                                    <input type="hidden" name="questionId[]" value="<?php echo $question['question_id']; ?>" />
+                                    <input type="hidden" name="questionId[]"
+                                        value="<?php echo $question['question_id']; ?>" />
 
                                     <?php if ($question['question_type'] == 'text') { ?>
-                                        <textarea
-                                            rows="4"
-                                            name="answer[<?php echo $key; ?>]"
+                                        <textarea rows="4" name="answer[<?php echo $key; ?>]"
                                             id="answer<?php echo ($key + 1); ?>"
                                             class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control"
                                             title="Please enter your response"
                                             placeholder="Enter your response here..."><?php echo $answers[$question['question_id']] ?? null; ?></textarea>
 
                                     <?php } elseif ($question['question_type'] == 'dropdown') { ?>
-                                        <select
-                                            name="answer[<?php echo $key; ?>]"
-                                            id="answer<?php echo ($key + 1); ?>"
+                                        <select name="answer[<?php echo $key; ?>]" id="answer<?php echo ($key + 1); ?>"
                                             title="Please select your response"
                                             class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control custom-select">
                                             <option value="">-- Select an option --</option>
@@ -71,23 +69,16 @@ $answers = $this->ans;
                                         </select>
 
                                     <?php } elseif ($question['question_type'] == 'numeric') { ?>
-                                        <input
-                                            value="<?php echo $answers[$question['question_id']] ?? null; ?>"
-                                            placeholder="Enter numeric value"
-                                            type="number"
-                                            name="answer[<?php echo $key; ?>]"
-                                            id="answer<?php echo ($key + 1); ?>"
-                                            title="Please enter your response"
+                                        <input value="<?php echo $answers[$question['question_id']] ?? null; ?>"
+                                            placeholder="Enter numeric value" type="number" name="answer[<?php echo $key; ?>]"
+                                            id="answer<?php echo ($key + 1); ?>" title="Please enter your response"
                                             class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control">
 
                                     <?php } elseif ($question['question_type'] == 'datetime') { ?>
                                         <input
                                             value="<?php echo Pt_Commons_General::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>"
-                                            type="text"
-                                            readonly
-                                            name="answer[<?php echo $key; ?>][date]"
-                                            id="answer<?php echo ($key + 1); ?>"
-                                            placeholder="Select date"
+                                            type="text" readonly name="answer[<?php echo $key; ?>][date]"
+                                            id="answer<?php echo ($key + 1); ?>" placeholder="Select date"
                                             title="Please select your response"
                                             class="<?php echo (isset($question['is_response_mandatory']) && $question['is_response_mandatory'] == 'yes') ? "isRequired" : ""; ?> form-control datepicker"
                                             style="background: white; cursor: pointer;">
@@ -100,10 +91,13 @@ $answers = $this->ans;
                             <input type="hidden" name="mapId" value="<?php echo $this->mID; ?>" />
 
                             <div class="form-group mt-4 pt-3 border-top">
-                                <button type="button" class="btn btn-primary btn-lg px-5" onclick="validateNow();return false;" tabindex="7">
-                                    <i class="fas fa-paper-plane mr-2"></i><?= $this->translate->_("Submit Feedback"); ?>
+                                <button type="button" class="btn btn-primary btn-lg px-5"
+                                    onclick="validateNow();return false;" tabindex="7">
+                                    <i
+                                        class="fas fa-paper-plane mr-2"></i><?= $this->translate->_("Submit Feedback"); ?>
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-lg px-4 ml-2" onclick="document.location.href='/participant/report'" tabindex="8">
+                                <button type="button" class="btn btn-outline-secondary btn-lg px-4 ml-2"
+                                    onclick="document.location.href='/participant/report'" tabindex="8">
                                     <i class="fas fa-times mr-2"></i><?= $this->translate->_("Cancel"); ?>
                                 </button>
                             </div>
@@ -155,7 +149,8 @@ $answers = $this->ans;
                             <i class="fas fa-question-circle text-warning mr-2"></i>Need Help?
                         </h5>
                         <p class="text-muted small mb-2">
-                            Fields marked with <span class="text-danger">*</span> are required. Please ensure all mandatory questions are answered before submitting.
+                            Fields marked with <span class="text-danger">*</span> are required. Please ensure all
+                            mandatory questions are answered before submitting.
                         </p>
                     </div>
                 </div>
@@ -262,13 +257,13 @@ $answers = $this->ans;
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         objValue = $(obj).val();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-                tableName: tableName,
-                fieldName: fieldName,
-                value: objValue,
-                fnct: fnct,
-                format: "html"
-            },
-            function(data) {
+            tableName: tableName,
+            fieldName: fieldName,
+            value: objValue,
+            fnct: fnct,
+            format: "html"
+        },
+            function (data) {
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
