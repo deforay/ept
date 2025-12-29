@@ -60,3 +60,17 @@ ALTER TABLE `reference_result_tb` ADD `mtbrif_probe_a_mean_stability_ct` DECIMAL
 ALTER TABLE `reference_result_tb` ADD `mtbultra_lowest_rpo_b_probe_mean_stability_ct` DECIMAL(10,4) NULL DEFAULT NULL AFTER `mtbrif_probe_a_mean_stability_ct`;
 -- Thana 22-Dec-2025
 ALTER TABLE `r_participant_feedback_form_files_map` ADD `rpff_id` INT NULL DEFAULT NULL AFTER `rpf_id`;
+
+-- Thana 29-Dec-2025
+INSERT INTO `global_config` (`name`, `value`) VALUES 
+('institute_name', 'GHC/DGHT-International Laboratory Branch, Atlanta, GA'), 
+('institute_address', 'North veli street'), 
+('additional_institute_details', 'Additional'), 
+('theme_color', 'Blue'), 
+('job_completion_alert_status', 'yes'), 
+('job_completion_alert_mails', 'Text 2'), 
+('covid19_configuration', ''), 
+('vl_configuration', ''), 
+('recency_configuration', ''), 
+('tb_configuration', ''),
+('home_configuration', ''),;

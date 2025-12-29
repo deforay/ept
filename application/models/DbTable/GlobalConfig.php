@@ -65,6 +65,26 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $this->update(array("value" => json_encode($params['emailConfig'], true)), "name = 'mail_configuration'");
             unset($params['emailConfig']);
         }
+        if (isset($params['covid19']) && !empty($params['covid19'])) {
+            $this->update(array("value" => json_encode($params['covid19'], true)), "name = 'covid19_configuration'");
+            unset($params['covid19']);
+        }
+        if (isset($params['vl']) && !empty($params['vl'])) {
+            $this->update(array("value" => json_encode($params['vl'], true)), "name = 'vl_configuration'");
+            unset($params['vl']);
+        }
+        if (isset($params['recency']) && !empty($params['recency'])) {
+            $this->update(array("value" => json_encode($params['recency'], true)), "name = 'recency_configuration'");
+            unset($params['recency']);
+        }
+        if (isset($params['tb']) && !empty($params['tb'])) {
+            $this->update(array("value" => json_encode($params['tb'], true)), "name = 'tb_configuration'");
+            unset($params['tb']);
+        }
+        if (isset($params['home']) && !empty($params['home'])) {
+            $this->update(array("value" => json_encode($params['home'], true)), "name = 'home_configuration'");
+            unset($params['home']);
+        }
 
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
@@ -77,7 +97,6 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $this->update(array('value' => $fieldValue), "name='" . $fieldName . "'");
             }
         }
-        $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog("Updated global config ", "config");
     }

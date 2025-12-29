@@ -30,9 +30,9 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
         $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 
         if ($request->isPost()) {
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            $params = $this->getAllParams();
+            /* $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $sec = APPLICATION_ENV;
-
             $config->$sec->instituteName = $request->getPost('instituteName');
             $config->$sec->instituteAddress = $request->getPost('instituteAddress');
             $config->$sec->additionalInstituteDetails = $request->getPost('additionalInstituteDetails');
@@ -42,11 +42,9 @@ class Admin_GlobalConfigController extends Zend_Controller_Action
             $config->$sec->locale = new Zend_Config([], true);
             $config->$sec->locale = $request->getPost('locale');
             $writer = new Zend_Config_Writer_Ini();
-            $writer->write($file, $config);
+            $writer->write($file, $config); */
 
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
-            $params = $this->getAllParams();
+            // $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $commonServices->updateConfig($params);
         }
 
