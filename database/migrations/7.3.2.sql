@@ -73,4 +73,7 @@ INSERT INTO `global_config` (`name`, `value`) VALUES
 ('vl_configuration', ''), 
 ('recency_configuration', ''), 
 ('tb_configuration', ''),
-('home_configuration', ''),;
+('home_configuration', '');
+
+-- Thana 30-Dec-2025
+INSERT INTO `global_config` (`name`, `value`) VALUES ('faq_configurations', '');

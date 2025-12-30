@@ -85,6 +85,15 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             $this->update(array("value" => json_encode($params['home'], true)), "name = 'home_configuration'");
             unset($params['home']);
         }
+        if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
+            $faqResponse = [];
+            foreach ($params['faqQuestions'] as $key => $faq) {
+                $faqResponse[$faq] = $params['faqAnswers'][$key];
+            }
+            $this->update(array("value" => json_encode($faqResponse, true)), "name = 'faq_configurations'");
+            unset($params['faqQuestions']);
+            unset($params['faqAnswers']);
+        }
 
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {

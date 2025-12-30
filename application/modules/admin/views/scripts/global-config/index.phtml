@@ -3,8 +3,9 @@ $emailConfig = json_decode($this->mail_configuration);
 $covid19 = json_decode($this->covid19_configuration);
 $vl = json_decode($this->vl_configuration);
 $recency = json_decode($this->recency_configuration);
-$recency = json_decode($this->tb_configuration);
+$tb = json_decode($this->tb_configuration);
 $home = json_decode($this->home_configuration);
+$faqResults = json_decode($this->faq_configurations);
 ?>
 <style>
 	/* Style the button that is used to open and close the collapsible content */
@@ -40,7 +41,7 @@ $home = json_decode($this->home_configuration);
 	}
 </style>
 <div class="well">
-	<form name="addDistributionForm" id="addDistributionForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
+	<form name="globalConfigForm" id="globalConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
 			<legend><?= $this->translate->_("ePT Global Settings"); ?>
 				<!-- <a href="javascript:void(0);" onclick="exportConfigFile();" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
@@ -399,32 +400,32 @@ $home = json_decode($this->home_configuration);
 			<div class="collapse-content" id="covid19Config">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="covid19PassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->passPercentage ?? null; ?>" id="covid19PassPercentage" name="covid19[passPercentage]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 pass percantage'); ?>" title="Please enter the covid-19 pass percentage" />
+						<label for="covid19PassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
+						<input type="text" value="<?php echo $covid19->passPercentage ?? null; ?>" id="covid19PassPercentage" name="covid19[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 pass percantage'); ?>" title="Please enter the covid-19 pass percentage" />
 					</div>
 					<div class="col-md-6">
-						<label for="covid19DocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->documentationScore ?? null; ?>" id="covid19DocumentationScore" name="covid19[documentationScore]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="covid19SampleRehydrateDays" class="control-label"><?= $this->translate->_("Sample Rehydrate Days"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19SampleRehydrateDays" name="covid19[sampleRehydrateDays]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 sample rehydrate days'); ?>" title="Please enter the covid-19 sample rehydrate days" />
-					</div>
-					<div class="col-md-6">
-						<label for="covid19AllowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->allowedAlgorithms ?? null; ?>" id="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter by comma seperated'); ?>" title="Please enter a covid-19 allowed algorithms" />
+						<label for="covid19DocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?></label>
+						<input type="text" value="<?php echo $covid19->documentationScore ?? null; ?>" id="covid19DocumentationScore" name="covid19[documentationScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="covid19MaximumTestAllowed" class="control-label"><?= $this->translate->_("Maximum Test Allowed"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19MaximumTestAllowed" name="covid19[maximumTestAllowed]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 maximum test allowed'); ?>" title="Please enter the covid-19 maximum test allowed" />
+						<label for="covid19SampleRehydrateDays" class="control-label"><?= $this->translate->_("Sample Rehydrate Days"); ?></label>
+						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19SampleRehydrateDays" name="covid19[sampleRehydrateDays]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 sample rehydrate days'); ?>" title="Please enter the covid-19 sample rehydrate days" />
 					</div>
 					<div class="col-md-6">
-						<label for="covid19EnforceAlgorithmCheck" class="control-label"><?= $this->translate->_("Enforce Algorithm Check"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $covid19->enforceAlgorithmCheck ?? null; ?>" id="covid19EnforceAlgorithmCheck" name="covid19[enforceAlgorithmCheck]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the covid-19 enforce algorithm check'); ?>" title="Please enter a covid-19 enforce algorithm check" />
+						<label for="covid19AllowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?></label>
+						<input type="text" value="<?php echo $covid19->allowedAlgorithms ?? null; ?>" id="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control" placeholder="<?= $this->translate->_('Enter by comma seperated'); ?>" title="Please enter a covid-19 allowed algorithms" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="covid19MaximumTestAllowed" class="control-label"><?= $this->translate->_("Maximum Test Allowed"); ?></label>
+						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19MaximumTestAllowed" name="covid19[maximumTestAllowed]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 maximum test allowed'); ?>" title="Please enter the covid-19 maximum test allowed" />
+					</div>
+					<div class="col-md-6">
+						<label for="covid19EnforceAlgorithmCheck" class="control-label"><?= $this->translate->_("Enforce Algorithm Check"); ?></label>
+						<input type="text" value="<?php echo $covid19->enforceAlgorithmCheck ?? null; ?>" id="covid19EnforceAlgorithmCheck" name="covid19[enforceAlgorithmCheck]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 enforce algorithm check'); ?>" title="Please enter a covid-19 enforce algorithm check" />
 					</div>
 				</div>
 			</div>
@@ -432,12 +433,12 @@ $home = json_decode($this->home_configuration);
 			<div class="collapse-content" id="vlConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="vlPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $vl->passPercentage ?? null; ?>" id="vlPassPercentage" name="vl[passPercentage]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the VL pass percantage'); ?>" title="Please enter the VL pass percentage" />
+						<label for="vlPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
+						<input type="text" value="<?php echo $vl->passPercentage ?? null; ?>" id="vlPassPercentage" name="vl[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the VL pass percantage'); ?>" title="Please enter the VL pass percentage" />
 					</div>
 					<div class="col-md-6">
-						<label for="vlDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $vl->documentationScore ?? null; ?>" id="vlDocumentationScore" name="vl[documentationScore]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
+						<label for="vlDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?></label>
+						<input type="text" value="<?php echo $vl->documentationScore ?? null; ?>" id="vlDocumentationScore" name="vl[documentationScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
 					</div>
 				</div>
 			</div>
@@ -445,22 +446,22 @@ $home = json_decode($this->home_configuration);
 			<div class="collapse-content" id="recencyConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $recency->passPercentage ?? null; ?>" id="recencyPassPercentage" name="recency[passPercentage]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the recency pass percantage'); ?>" title="Please enter the recency pass percentage" />
+						<label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
+						<input type="text" value="<?php echo $recency->passPercentage ?? null; ?>" id="recencyPassPercentage" name="recency[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the recency pass percantage'); ?>" title="Please enter the recency pass percentage" />
 					</div>
 					<div class="col-md-6">
-						<label for="recencyDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $recency->documentationScore ?? null; ?>" id="recencyDocumentationScore" name="recency[documentationScore]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the recency documentation score'); ?>" title="Please enter a recency documentation score" />
+						<label for="recencyDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?></label>
+						<input type="text" value="<?php echo $recency->documentationScore ?? null; ?>" id="recencyDocumentationScore" name="recency[documentationScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the recency documentation score'); ?>" title="Please enter a recency documentation score" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="recencySampleRehydrateDays" class="control-label"><?= $this->translate->_("Sample Rehydrate Days"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $recency->sampleRehydrateDays ?? null; ?>" id="recencySampleRehydrateDays" name="recency[sampleRehydrateDays]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the recency sample rehydrate days'); ?>" title="Please enter the recency sample rehydrate days" />
+						<label for="recencySampleRehydrateDays" class="control-label"><?= $this->translate->_("Sample Rehydrate Days"); ?></label>
+						<input type="text" value="<?php echo $recency->sampleRehydrateDays ?? null; ?>" id="recencySampleRehydrateDays" name="recency[sampleRehydrateDays]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the recency sample rehydrate days'); ?>" title="Please enter the recency sample rehydrate days" />
 					</div>
 					<div class="col-md-6">
-						<label for="recencyPanelScore" class="control-label"><?= $this->translate->_("Panel Score"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $recency->panelScore ?? null; ?>" id="recencyPanelScore" name="recency[panelScore]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the recency panel score'); ?>" title="Please enter a recency panel score" />
+						<label for="recencyPanelScore" class="control-label"><?= $this->translate->_("Panel Score"); ?></label>
+						<input type="text" value="<?php echo $recency->panelScore ?? null; ?>" id="recencyPanelScore" name="recency[panelScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the recency panel score'); ?>" title="Please enter a recency panel score" />
 					</div>
 				</div>
 			</div>
@@ -468,12 +469,12 @@ $home = json_decode($this->home_configuration);
 			<div class="collapse-content" id="tbConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="tbPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $tb->passPercentage ?? null; ?>" id="tbPassPercentage" name="recency[passPercentage]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the tb pass percantage'); ?>" title="Please enter the tb pass percentage" />
+						<label for="tbPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
+						<input type="text" value="<?php echo $tb->passPercentage ?? null; ?>" id="tbPassPercentage" name="tb[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the tb pass percantage'); ?>" title="Please enter the tb pass percentage" />
 					</div>
 					<div class="col-md-6">
-						<label for="tbContactInfo" class="control-label"><?= $this->translate->_("Contact Info"); ?> <span class="mandatory">*</span></label>
-						<textarea value="<?php echo $tb->contactInfo ?? null; ?>" id="tbContactInfo" name="recency[contactInfo]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the tb contact info'); ?>" title="Please enter a tb contact info"></textarea>
+						<label for="tbContactInfo" class="control-label"><?= $this->translate->_("Contact Info"); ?></label>
+						<textarea name="tb[contactInfo]" class="form-control" placeholder="<?= $this->translate->_('Enter the tb contact info'); ?>" title="Please enter a tb contact info"><?php echo $tb->contactInfo ?? null; ?></textarea>
 					</div>
 				</div>
 			</div>
@@ -545,6 +546,46 @@ $home = json_decode($this->home_configuration);
 						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link text'); ?>" title=" Please enter a home additional link text"><?php echo $home->additionalLinkText ?? null; ?></textarea>
 					</div>
 				</div>
+				<div class="row">
+					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix" id="faqTable">
+						<thead>
+							<tr>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Questions"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Answeres"); ?></th>
+								<th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+							</tr>
+						</thead>
+						<tbody id="faqTable">
+							<?php if (isset($faqResults) && !empty($faqResults)) {
+								foreach ((array)$faqResults as $faq => $answer) { ?>
+									<tr>
+										<td>
+											<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"><?php echo $faq; ?></textarea>
+										</td>
+										<td>
+											<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"><?php echo $answer; ?></textarea>
+										</td>
+										<td>
+											<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+										</td>
+									</tr>
+								<?php }
+							} else { ?>
+								<tr>
+									<td>
+										<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"></textarea>
+									</td>
+									<td>
+										<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"></textarea>
+									</td>
+									<td>
+										<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+									</td>
+								</tr>
+							<?php } ?>
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<br>
 		</fieldset>
@@ -568,11 +609,11 @@ $home = json_decode($this->home_configuration);
 		}
 		//checkDuplicate('distributions', 'distribution_code',$("#distributionCode"),null, 'This Code already exists for another PT Survey. Please try something else.')
 		flag = deforayValidator.init({
-			formId: 'addDistributionForm'
+			formId: 'globalConfigForm'
 		});
 		if (flag) {
 			$.blockUI();
-			document.getElementById('addDistributionForm').submit();
+			document.getElementById('globalConfigForm').submit();
 		}
 	}
 
@@ -643,4 +684,31 @@ $home = json_decode($this->home_configuration);
 		$('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive').addClass('active');
 	}
 	// $('.radioBtn a').on('click', function() {})
+
+	function addTbRow(obj) {
+		let rowCount = document.querySelectorAll('#faqtable tr').length;
+		let html = '<tr>\
+			<td>\
+				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"></textarea>\
+			</td>\
+			<td>\
+				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"></textarea>\
+			</td>\
+			<td>\
+				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>\
+				&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>\
+			</td>\
+		</tr>';
+		$(obj.parentNode.parentNode).after(html);
+	}
+
+	function removeRow(obj) {
+		let rowCount = document.querySelectorAll('#faqtable tr').length;
+		if (rowCount < 1) {
+			addTbRow(obj);
+		}
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+			$(this).remove();
+		});
+	}
 </script>
