@@ -38,12 +38,12 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
     $heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
     $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1 != "" ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
 
-    $resourceIcon1 = $this->homeContent->homeSectionIcon1;
-    $resourceIcon2 = $this->homeContent->homeSectionIcon2;
-    $resourceIcon3 = $this->homeContent->homeSectionIcon3;
-    $resourceHeading1 = $this->homeContent->homeSectionHeading1;
-    $resourceHeading2 = $this->homeContent->homeSectionHeading2;
-    $resourceHeading3 = $this->homeContent->homeSectionHeading3;
+    $resourceIcon1 = $this->homeContent->icon1;
+    $resourceIcon2 = $this->homeContent->icon2;
+    $resourceIcon3 = $this->homeContent->icon3;
+    $resourceHeading1 = $this->homeContent->subHeading1;
+    $resourceHeading2 = $this->homeContent->subHeading2;
+    $resourceHeading3 = $this->homeContent->subHeading3;
     $showResource = false;
     $showResource1 = false;
     $showResource2 = false;
@@ -80,9 +80,9 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
             <p style="font-size:18px;font-weight:bold;color:#fff;">
                 <?= $heading3; ?>
             </p>
-            <?php if (!empty($this->homeContent->video)) { ?>
+            <?php if (!empty($this->homeContent->videoUrl)) { ?>
                 <div class="d-flex">
-                    <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->video; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
+                    <a style="margin-left:0;margin-right:2em;" href="<?= $this->homeContent->videoUrl; ?>" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span style="color:#ffffff;">Watch Video</span></a>
                     <?php if (!empty($this->homeContent->additionalLinkText) && !empty($this->homeContent->additionalLink)) { ?>
                         <a href="<?= $this->homeContent->additionalLink; ?>" target="_blank" class="btn-get-started"><?= $this->homeContent->additionalLinkText; ?></a>
                     <?php } ?>

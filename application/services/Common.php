@@ -1999,4 +1999,10 @@ class Application_Service_Common
     {
         return !empty($filePath) && file_exists($filePath) && !is_dir($filePath) && filesize($filePath) > 0;
     }
+
+    public function saveConfigByName($value, $name)
+    {
+        $gc = new Application_Model_DbTable_GlobalConfig();
+        return $gc->saveConfigByName($value, $name);
+    }
 }

@@ -119,4 +119,9 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     {
         return $this->fetchRow('name = "pt_program_short_name"');
     }
+
+    public function saveConfigByName($value, $name)
+    {
+        return $this->update(array("value" => $value), "name = '" . $name . "'");
+    }
 }
