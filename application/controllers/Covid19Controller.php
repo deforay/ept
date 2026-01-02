@@ -105,11 +105,13 @@ class Covid19Controller extends Zend_Controller_Action
 		$this->view->header = $reportService->getReportConfigValue('report-header');
 		$this->view->logo = $reportService->getReportConfigValue('logo');
 		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
+		
+		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+		$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+		$covid19ConfJson = $globalConfigDb->getValue('covid19_configuration');
+		$this->view->covid19Config = json_decode($covid19ConfJson);
 
 		$participantService = new Application_Service_Participants();
 		$this->view->participant = $participantService->getParticipantDetails($pID);
