@@ -1,12 +1,11 @@
 <?php
-$faqs = htmlspecialchars_decode($this->config->home->content->faq);
-$faqs = json_decode($faqs);
-$fileLink = htmlspecialchars_decode($this->config->home->content->fileLink);
-$fileLink = json_decode($fileLink);
 
 $heading1 = !empty($this->homeContent->heading1) && $this->homeContent->heading1 != "" ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
 $heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
 $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1 != "" ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
+$home = $this->home;
+$fileLink = (array)json_decode($home->fileLinks);
+$faqResults = $this->faq;
 
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -24,114 +23,142 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 			<div class="form-group">
 				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Home Page"); ?><span class="mandatory">*</span></label>
 				<div class="col-lg-6">
-					<select type="text" class="form-control isRequired" id="customHomePage" name="customHomePage" title="Please select the home page option" onchange="showHideCustomPage(this.value)">
-						<option value="no" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'no') ? 'selected="selected"' : ''; ?>>System Design</option>
-						<option value="yes" <?php echo (isset($this->config->home->content->customHomePage) && $this->config->home->content->customHomePage == 'yes') ? 'selected="selected"' : ''; ?>>Custom Design</option>
+					<select type="text" class="form-control isRequired" id="customHomePage" name="home[customHomePage]" title="Please select the home page option" onchange="showHideCustomPage(this.value)">
+						<option value="no" <?php echo (isset($home->customHomePage) && $home->customHomePage == 'no') ? 'selected="selected"' : ''; ?>>System Design</option>
+						<option value="yes" <?php echo (isset($home->customHomePage) && $home->customHomePage == 'yes') ? 'selected="selected"' : ''; ?>>Custom Design</option>
 					</select>
 				</div>
 			</div>
 			<div class="system-design">
-				<div class="form-group">
-					<label for="title" class="col-lg-3 control-label"><?= $this->translate->_("Title"); ?><span class="mandatory">*</span></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control system-input isRequired" id="title" name="title" placeholder="Enter Page Title" title="Please enter home page title" value="<?php echo $this->config->home->content->title; ?>" />
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeTitle" class="control-label"><?= $this->translate->_("Title"); ?> <span class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the home section title'); ?>" title="Please enter the home section title" />
+					</div>
+					<div class="col-md-6">
+						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading 1"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeHeading1" name="home[heading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 1'); ?>" title="Please enter a home heading 1"><?php echo $home->heading1 ?? null; ?></textarea>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="heading1" class="col-lg-3 control-label"><?= $this->translate->_("Heading 1"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="heading1" name="heading1" placeholder="Enter Heading 1" title="Enter Heading 1" value="<?php echo $heading1; ?>" />
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading 2"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeHeading2" name="home[heading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 2'); ?>" title="Please enter a home heading 2"><?php echo $home->heading2 ?? null; ?></textarea>
+					</div>
+					<div class="col-md-6">
+						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading 3"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeHeading3" name="home[heading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 3'); ?>" title="Please enter a home heading 3"><?php echo $home->heading3 ?? null; ?></textarea>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="heading2" class="col-lg-3 control-label"><?= $this->translate->_("Heading 2"); ?></label>
-					<div class="col-lg-6">
-						<textarea class="form-control" id="heading2" name="heading2" placeholder="Enter Heading 2" title="Please enter heading 2"><?php echo $heading2; ?></textarea>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Sub Heading 1"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 1'); ?>" title="Please enter a home sub heading 1"><?php echo $home->subHeading1 ?? null; ?></textarea>
+					</div>
+					<div class="col-md-6">
+						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Sub Heading 2"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 2'); ?>" title="Please enter a home sub heading 2"><?php echo $home->subHeading2 ?? null; ?></textarea>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="heading3" class="col-lg-3 control-label"><?= $this->translate->_("Heading 3"); ?></label>
-					<div class="col-lg-6">
-						<textarea class="form-control" id="heading3" name="heading3" placeholder="Enter Heading 3" title="Please enter heading 3"><?php echo $heading3; ?></textarea>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Sub Heading 3"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 3'); ?>" title="Please enter a home sub heading 3"><?php echo $home->subHeading3 ?? null; ?></textarea>
 					</div>
-				</div>
-				<div class="form-group">
-					<label for="video" class="col-lg-3 control-label"><?= $this->translate->_("YouTube URL"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="video" name="video" placeholder="Enter YT URL" title="Please enter YT URL" value="<?php echo $this->config->home->content->video; ?>" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="additionalLinkText" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="additionalLinkText" name="additionalLinkText" placeholder="Enter additional link text" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLink; ?>" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="additionalLink" class="col-lg-3 control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="additionalLink" name="additionalLink" placeholder="Enter additional URL" title="Please enter additional link" value="<?php echo $this->config->home->content->additionalLinkText; ?>" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="homeSectionHeading1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Heading"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionHeading1" name="homeSectionHeading1" placeholder="Enter home section heading 1" title="Please enter home section heading 1" value="<?php echo $this->config->home->content->homeSectionHeading1; ?>" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="homeSectionIcon1" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 1 Icon"); ?></label>
-					<div class="col-lg-6">
-						<select name="homeSectionIcon1" id="homeSectionIcon1" class="form-control homeSectionIcon">
+					<div class="col-md-6">
+						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?> <span class="mandatory">*</span></label>
+						<select id="homeIcon1" name="home[icon1]" class="form-control isRequired homeSectionIcon">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon1 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon1 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon1 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon1 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon1 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
 						</select>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="homeSectionHeading2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Heading"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionHeading2" name="homeSectionHeading2" placeholder="Enter home section heading 2" title="Please enter home section heading 2" value="<?php echo $this->config->home->content->homeSectionHeading2; ?>" />
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="homeSectionIcon2" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 2 Icon"); ?></label>
-					<div class="col-lg-6">
-						<select name="homeSectionIcon2" id="homeSectionIcon2" class="form-control homeSectionIcon">
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?> <span class="mandatory">*</span></label>
+						<select id="homeIcon2" name="home[icon2]" class="form-control isRequired homeSectionIcon">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon2 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon2 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon2 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon2 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon2 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?> <span class="mandatory">*</span></label>
+						<select id="homeIcon3" name="home[icon3]" class="form-control isRequired homeSectionIcon">
+							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
+							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
+							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
+							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon3 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
+							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon3 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
+							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon3 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
+							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon3 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
 						</select>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="homeSectionHeading3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Heading"); ?></label>
-					<div class="col-lg-6">
-						<input type="text" class="form-control" id="homeSectionHeading3" name="homeSectionHeading3" placeholder="Enter home section heading 3" title="Please enter home section heading 3" value="<?php echo $this->config->home->content->homeSectionHeading3; ?>" />
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeVideoUrl" name="home[videoUrl]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home section video URL'); ?>" title=" Please enter a home section video URL"><?php echo $home->videoUrl ?? null; ?></textarea>
+					</div>
+					<div class="col-md-6">
+						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeAdditionalLink" name="home[additionalLink]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link'); ?>" title=" Please enter a home additional link"><?php echo $home->additionalLink ?? null; ?></textarea>
 					</div>
 				</div>
-				<div class="form-group">
-					<label for="homeSectionIcon3" class="col-lg-3 control-label"><?= $this->translate->_("Home Section 3 Icon"); ?></label>
-					<div class="col-lg-6">
-						<select name="homeSectionIcon3" id="homeSectionIcon3" class="form-control homeSectionIcon">
-							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($this->config->home->content->homeSectionIcon3 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
-						</select>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?> <span class="mandatory">*</span></label>
+						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link text'); ?>" title=" Please enter a home additional link text"><?php echo $home->additionalLinkText ?? null; ?></textarea>
 					</div>
+				</div>
+				<div class="row">
+					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix" id="faqTable">
+						<thead>
+							<tr>
+								<th style="width:30%;"><?= $this->translate->_("Question"); ?></th>
+								<th style="width:60%;"><?= $this->translate->_("Answer"); ?></th>
+								<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+							</tr>
+						</thead>
+						<tbody id="faqTable">
+							<?php if (isset($faqResults) && !empty($faqResults)) {
+								foreach ((array)$faqResults as $faq => $answer) { ?>
+									<tr>
+										<td>
+											<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"><?php echo $faq; ?></textarea>
+										</td>
+										<td>
+											<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"><?php echo $answer; ?></textarea>
+										</td>
+										<td>
+											<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+										</td>
+									</tr>
+								<?php }
+							} else { ?>
+								<tr>
+									<td>
+										<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"></textarea>
+									</td>
+									<td>
+										<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"></textarea>
+									</td>
+									<td>
+										<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+									</td>
+								</tr>
+							<?php } ?>
+						</tbody>
+					</table>
 				</div>
 			</div>
 			<div class="custom-design" style="display: none;">
@@ -154,45 +181,6 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 				</div>
 			</div>
 			<div class="system-design">
-				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
-					<thead>
-						<tr align="center">
-							<th style="width:30%;"><?= $this->translate->_("Question"); ?></th>
-							<th style="width:60%;"><?= $this->translate->_("Answer"); ?></th>
-							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
-						</tr>
-					</thead>
-					<tbody id="faqTable">
-						<?php if (isset($faqs) && !empty($faqs)) {
-							foreach ($faqs as $q => $ans) { ?>
-								<tr align="CENTER">
-									<td>
-										<textarea id="question<?php echo ($key + 1); ?>" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"><?php echo $q; ?></textarea>
-									</td>
-									<td>
-										<textarea id="answer<?php echo ($key + 1); ?>" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"><?php echo $ans; ?></textarea>
-									</td>
-									<td>
-										<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-									</td>
-								</tr>
-							<?php }
-						} else { ?>
-							<tr align="CENTER">
-								<td>
-									<textarea id="question1" name="question[]" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>
-								</td>
-								<td>
-									<textarea id="answer1" name="answer[]" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>
-								</td>
-								<td>
-									<a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
-								</td>
-							</tr>
-						<?php } ?>
-					</tbody>
-				</table>
-				<hr>
 				<h4>Hom Page Links</h4>
 				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
 					<thead>
@@ -223,6 +211,7 @@ $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1
 											if (isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])) {
 												echo '<div id="replace' . $key . '" style=" display: flex; height: 38px; ">
 														<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/' . $link['file'] . '" type="application/pdf">
+														<a href="/uploads/home-links/' . $link['file'] . '" target="_blank" class="btn btn-sm btn-primary" title="Replace this file" style=" position: absolute; text-align: right; float: right; "><i class="icon icon-external-link" aria-hidden="true"></i></a>
 														<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile(' . $key . ');">Replace File Link</a>
 													</div>';
 											} else {
