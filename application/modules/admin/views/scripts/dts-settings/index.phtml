@@ -1,147 +1,143 @@
 <?php
 // Zend_Debug::dump($this->allSchemes);die;
-
-$allowedAlgorithms = !empty($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : null;
-$disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestkit) && !empty($this->config->evaluation->dts->disableOtherTestkit)) ? $this->config->evaluation->dts->disableOtherTestkit : 'no';
+$dts = json_decode($this->dtsConfig);
+$allowedAlgorithms = $dts->allowedAlgorithms ?? null;
+$disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disableOtherTestkit)) ? $dts->disableOtherTestkit : 'no';
 
 ?>
+<style>
+    .radioBtn .notActive {
+        color: #3276b1;
+        background-color: #fff;
+    }
+</style>
 <div class="well">
     <form name="dtsSettingsForm" id="dtsSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "dts-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend><?= $this->translate->_("HIV Serology Settings"); ?>
                 <!-- <a href="javascript:void(0);" onclick="exportConfig('dtsSettingsForm', 'dts');" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
             </legend>
-
-            <div class="form-group">
-                <label for="dtsPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsPassPercentage" name="dtsPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->dts->passPercentage ?? null; ?>" />
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="dtsPassPercentage" class="control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
+                    <input type="number" id="dtsPassPercentage" name="dts[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $dts->passPercentage ?? null; ?>" />
+                </div>
+                <div class="col-md-6">
+                    <label for="dtsPanelScore" class="control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
+                    <input type="number" id="dtsPanelScore" name="dts[panelScore]" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the Panel Score breakup"); ?>" value="<?php echo $dts->panelScore ?? null; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="dtsPanelScore" class="col-lg-3 control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsPanelScore" name="dtsPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the Panel Score breakup"); ?>" value="<?php echo $this->config->evaluation->dts->panelScore ?? null; ?>" oninput="$('#dtsDocumentationScore').val(100 - $(this).val());">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="dtsDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
+                    <input type="number" id="dtsDocumentationScore" name="dts[documentationScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the Documentation Score breakup"); ?>" value="<?php echo $dts->documentationScore ?? null; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
+                </div>
+                <div class="col-md-6">
+                    <label for="dtsAlgorithmScore" class="control-label"><?= $this->translate->_("Algorithm %"); ?><span class="mandatory">*</span></label>
+                    <input type="number" id="dtsAlgorithmScore" name="dts[dtsAlgorithmScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the if you want to award score for Algorithm"); ?>" value="<?php echo $dts->dtsAlgorithmScore ?? null; ?>">
                 </div>
             </div>
-            <div class="form-group">
-                <label for="dtsDocumentationScore" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsDocumentationScore" name="dtsDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the Documentation Score breakup"); ?>" value="<?php echo $this->config->evaluation->dts->documentationScore ?? null; ?>" oninput="$('#dtsPanelScore').val(100 - $(this).val());">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="dtsAlgorithmScore" class="col-lg-3 control-label"><?= $this->translate->_("Algorithm %"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="dtsAlgorithmScore" name="dtsAlgorithmScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="<?= $this->translate->_("Please enter the if you want to award score for Algorithm"); ?>" value="<?php echo $this->config->evaluation->dts->dtsAlgorithmScore ?? null; ?>">
-                </div>
-            </div>
-
-            <div class="form-group dtsOptionalTest3Div">
-                <label for="dtsOptionalTest3" class="col-lg-3 control-label"><?= $this->translate->_("Disable Test-3"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control isRequired" id="dtsOptionalTest3" name="dtsOptionalTest3" title="<?= $this->translate->_("Please select if test 3 is optional"); ?>">
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->dtsOptionalTest3) && $this->config->evaluation->dts->dtsOptionalTest3 == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="sampleRehydrateDays" class="control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="dts[sampleRehydrateDays]" title="<?= $this->translate->_("Please select number of days for sample rehydration"); ?>">
+                        <option value="0" <?php echo (isset($dts->sampleRehydrateDays) && $dts->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($dts->sampleRehydrateDays) && $dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($dts->sampleRehydrateDays) && $dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
-                    <small class="mandatory"><?= $this->translate->_("Note: Optional Test 3 functionality is applicable only for Serial and Parallel algorithms"); ?></small>
                 </div>
             </div>
 
             <!-- <div class="form-group">
                 <label for="dtsEnforceAlgorithmCheck" class="col-lg-3 control-label">Algorithm required in reporting ?<span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?" /> Yes
-                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->dts->dtsEnforceAlgorithmCheck) && $this->config->evaluation->dts->dtsEnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($dts->dtsEnforceAlgorithmCheck) && $dts->dtsEnforceAlgorithmCheck == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?" /> Yes
+                    <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($dts->dtsEnforceAlgorithmCheck) && $dts->dtsEnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
                 </div>
             </div> -->
-            <div class="form-group">
-                <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="<?= $this->translate->_("Please select number of days for sample rehydration"); ?>">
-                        <option value="0" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->dts->sampleRehydrateDays) && $this->config->evaluation->dts->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
-                    </select>
+            <div class="row malawi-allowed" style="display: none;">
+                <div class="col-md-6 malawi-allowed" style="display: none;">
+                    <label for="displaySampleConditionFields" class="control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
+                    <div class="input-group">
+                        <div class="btn-group radioBtn">
+                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "yes") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="no" onclick="toggleRadios(this);">NO</a>
+                        </div>
+                        <input type="hidden" name="dts[displaySampleConditionFields]" id="displaySampleConditionFields" value="<?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " yes " : "no"; ?>">
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-group malawi-allowed" style="display: none;">
-                <label for="conditionOfPtSample" class="col-lg-3 control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control malawi-inputs" id="conditionOfPtSample" name="conditionOfPtSample" title="<?= $this->translate->_("Please select sample condition fields on participant result form"); ?>">
-                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->displaySampleConditionFields) && $this->config->evaluation->dts->displaySampleConditionFields == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group malawi-allowed" style="display: none;">
-                <label for="allowRepeatTest" class="col-lg-3 control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control malawi-inputs" id="allowRepeatTest" name="allowRepeatTest" title="<?= $this->translate->_("Allow Repeat Tests?"); ?></select>">
-                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->allowRepeatTests) && $this->config->evaluation->dts->allowRepeatTests == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="dtsSchemeType" class="col-lg-3 control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
+                <div class="col-md-6">
+                    <label for="dtsSchemeType" class="control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
                     <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type" onchange="changeAlg(this);">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <optgroup label="Standard Types">
-                            <option value="standard" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
-                            <option value="updated-3-tests" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
+                            <option value="standard" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
+                            <option value="updated-3-tests" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
                         </optgroup>
                         <optgroup label="Country Specific">
-                            <option value="ghana" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
-                            <option value="malawi" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
-                            <option value="myanmar" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
-                            <option value="sierraLeone" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "sierraLeone") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
-                            <option value="cotedivoire" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "cotedivoire") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Côte d'Ivoire"); ?></option>
-                            <option value="drc" <?php echo (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType == "drc") ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC"); ?></option>
+                            <option value="ghana" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
+                            <option value="malawi" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
+                            <option value="myanmar" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
+                            <option value="sierraLeone" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "sierraLeone") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
+                            <option value="cotedivoire" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "cotedivoire") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Côte d'Ivoire"); ?></option>
+                            <option value="drc" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "drc") ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC"); ?></option>
                         </optgroup>
                     </select>
                 </div>
-            </div>
-
-
-            <div class="form-group rtrifields" style="display: none;">
-                <label for="rtriEnabled" class="col-lg-3 control-label"><?= $this->translate->_("Do you want to enable RTRI?"); ?> </label>
-                <div class="col-lg-6">
-                    <select class="form-control" id="rtriEnabled" name="rtriEnabled" title="Please select DTS Scheme Type">
-                        <option value="">--Select--</option>
-                        <option value="no" <?php echo (isset($this->config->evaluation->dts->rtriEnabled) && $this->config->evaluation->dts->rtriEnabled == "no") ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->rtriEnabled) && $this->config->evaluation->dts->rtriEnabled == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    </select>
+                <div class="col-md-6 malawi-allowed" style="display: none;">
+                    <label for="allowRepeatTest" class="control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[allowRepeatTest]" id="allowRepeatTest" value="<?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " yes " : "no"; ?>">
                 </div>
             </div>
-            <div class="form-group">
-                <label for="collectAdditionalTestkits" class="col-lg-3 control-label"><?= $this->translate->_("Collect Additional Testkits"); ?> </label>
-                <div class="col-lg-6">
-                    <select class="form-control" id="collectAdditionalTestkits" name="collectAdditionalTestkits" title="Please select show collect additional testkits or not?">
-                        <option value="">--Select--</option>
-                        <option value="no" <?php echo (!isset($this->config->evaluation->dts->collectAdditionalTestkits) || $this->config->evaluation->dts->collectAdditionalTestkits == "no" || empty($this->config->evaluation->dts->collectAdditionalTestkits)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("No"); ?></option>
-                        <option value="yes" <?php echo (isset($this->config->evaluation->dts->collectAdditionalTestkits) && $this->config->evaluation->dts->collectAdditionalTestkits == "yes") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="disableOtherTestkit" class="col-lg-3 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
+            <div class="row">
+                <div class="col-md-6 rtrifields" style="display: none;">
+                    <label for="rtriEnabled" class="control-label"><?= $this->translate->_("Do you want to enable RTRI?"); ?> </label>
                     <br>
-                    <input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkitY" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether other test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
-                    &nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkitN" <?php echo (isset($disableOtherTestkit) && $disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether other test kits enable or disable" /> <?= $this->translate->_("No"); ?>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->rtriEnabled) && $dts->rtriEnabled == "yes") ? " active " : "notActive"; ?>" data-toggle="rtriEnabled" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->rtriEnabled) && $dts->rtriEnabled == "no") ? " active " : "notActive"; ?>" data-toggle="rtriEnabled" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[rtriEnabled]" id="rtriEnabled" value="<?php echo $dts->rtriEnabled ?? "no"; ?>">
+                </div>
+                <div class="col-md-6">
+                    <label for="collectAdditionalTestkits" class="control-label"><?= $this->translate->_("Collect Additional Testkits"); ?> </label>
+                    <br>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->collectAdditionalTestkits) && $dts->collectAdditionalTestkits == "yes") ? " active " : "notActive"; ?>" data-toggle="collectAdditionalTestkits" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->collectAdditionalTestkits) && $dts->collectAdditionalTestkits == "no") ? " active " : "notActive"; ?>" data-toggle="collectAdditionalTestkits" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[collectAdditionalTestkits]" id="collectAdditionalTestkits" value="<?php echo $dts->collectAdditionalTestkits ?? "no"; ?>">
                 </div>
             </div>
-            <div class="form-group" id="allowedAlgorithmsDiv">
-                <label for="allowedAlgorithms" class="col-lg-3 control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
-                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="allowedAlgorithms[]" multiple="multiple" title="Please select allowed algorithms">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="disableOtherTestkit" class="control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+                    <br>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->disableOtherTestkit) && $dts->disableOtherTestkit == "yes") ? " active " : "notActive"; ?>" data-toggle="disableOtherTestkit" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->disableOtherTestkit) && $dts->disableOtherTestkit == "no") ? " active " : "notActive"; ?>" data-toggle="disableOtherTestkit" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[disableOtherTestkit]" id="disableOtherTestkit" value="<?php echo $dts->disableOtherTestkit ?? "no"; ?>">
+                </div>
+                <div class="col-md-6">
+                    <label for="allowRepeatTests" class="control-label"><?= $this->translate->_("Allow Repeat Tests"); ?> </label>
+                    <br>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTests" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTests" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[allowRepeatTests]" id="allowRepeatTests" value="<?php echo $dts->allowRepeatTests ?? "no"; ?>">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" id="allowedAlgorithmsDiv">
+                    <label for="allowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
+                    <br>
+                    <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="dts[allowedAlgorithms][]" multiple="multiple" title="Please select allowed algorithms">
                         <option value="serial" <?php echo (!empty($allowedAlgorithms) && in_array("serial", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Serial"); ?></option>
                         <option value="parallel" <?php echo (!empty($allowedAlgorithms) && in_array("parallel", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Parallel"); ?></option>
                         <option value="myanmarNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("myanmarNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar National Algorithm"); ?></option>
@@ -436,5 +432,14 @@ $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestki
         } else {
             $('.rtrifields').show();
         }
+    }
+
+    function toggleRadios(obj) {
+        var sel = $(obj).data('title');
+        var tog = $(obj).data('toggle');
+        $('#' + tog).prop('value', sel);
+
+        $('a[data-toggle="' + tog + '"]').not('[data-title="' + sel + '"]').removeClass('active').addClass('notActive');
+        $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive').addClass('active');
     }
 </script>

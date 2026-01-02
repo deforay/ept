@@ -77,3 +77,6 @@ INSERT INTO `global_config` (`name`, `value`) VALUES
 
 -- Thana 30-Dec-2025
 INSERT INTO `global_config` (`name`, `value`) VALUES ('faq_configurations', '');
+
+-- Thana 02-Jan-2026
+INSERT INTO `global_config` (`name`, `value`) VALUES ('dts_configuration', '');
