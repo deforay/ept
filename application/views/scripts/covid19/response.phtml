@@ -9,8 +9,8 @@ $testThreeHidden = false;
 $testTwoHidden = false;
 $screeningTest = false;
 
-$allowedAlgorithms = isset($this->config->evaluation->covid19->allowedAlgorithms) ? explode(",", $this->config->evaluation->covid19->allowedAlgorithms) : array();
-$maximumAllowed = $this->config->evaluation->covid19->covid19MaximumTestAllowed;
+$allowedAlgorithms = isset($this->covid19Config->allowedAlgorithms) ? explode(",", $this->covid19Config->allowedAlgorithms) : array();
+$maximumAllowed = $this->covid19Config->maximumTestAllowed;
 if (isset($maximumAllowed) && ($maximumAllowed == '1' || $maximumAllowed == '2')) {
     $testThreeHidden = true;
 }

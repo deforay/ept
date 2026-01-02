@@ -37,6 +37,7 @@ class Covid19Controller extends Zend_Controller_Action
 			$uc = $request->getParam('uc');
 			$this->view->comingFrom = $request->getParam('comingFrom');
 			$access = $shipmentService->checkParticipantAccess($pID);
+			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 
 			$reqFrom = $request->getParam('from');
 			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
@@ -47,10 +48,12 @@ class Covid19Controller extends Zend_Controller_Action
 				$this->redirect("/participant/current-schemes");
 			}
 
-			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
-
+			//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+			//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+			
+			$covid19ConfJson = $globalConfigDb->getValue('covid19_configuration');
+			$this->view->covid19Config = json_decode($covid19ConfJson);
+			
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			$response = $schemeService->getCovid19Samples($sID, $pID);
@@ -73,7 +76,7 @@ class Covid19Controller extends Zend_Controller_Action
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
-			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+			
 			$this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
 			$this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
 			$this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
