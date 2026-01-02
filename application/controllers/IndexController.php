@@ -36,13 +36,8 @@ class IndexController extends Zend_Controller_Action
             $scheme = new Application_Service_Schemes();
             $homeSec = new Application_Service_HomeSection();
 
-
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            // $this->view->homeContent = $config->home->content;
-            $this->view->homeContent = json_decode($commonServices->getConfig('home_configuration'));
+            $this->view->homeContent = $home =  json_decode($commonServices->getConfig('home_configuration'));
             $this->view->faqs = $commonServices->getConfig('faq_configurations');
-            // $this->view->faqs = htmlspecialchars_decode($config->home->content->faq);
             $this->view->countriesList = $commonServices->getcountriesList();
             $this->view->banner = $commonServices->getHomeBanner();
             $this->view->partners = $partnerService->getAllActivePartners();
@@ -50,7 +45,7 @@ class IndexController extends Zend_Controller_Action
             $this->view->homeSection = $homeSec->getAllHomeSection();
             $htmlHomePage = $homeSec->getActiveHtmlHomePage();
 
-            if (isset($htmlHomePage) && !empty($htmlHomePage) && isset($config->home->content->customHomePage) && $config->home->content->customHomePage == 'yes') {
+            if (isset($htmlHomePage) && !empty($htmlHomePage) && isset($home->customHomePage) && $home->customHomePage == 'yes') {
                 $this->_helper->layout()->disableLayout();
                 $this->view->htmlHomePage = $htmlHomePage;
             } else {
