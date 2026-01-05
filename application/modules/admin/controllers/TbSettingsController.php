@@ -25,27 +25,18 @@ class Admin_TbSettingsController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $common = new Application_Service_Common();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($request->isPost()) {
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-            $sec = APPLICATION_ENV;
-
-            $config->$sec->evaluation->tb = [];
-            $config->$sec->evaluation->tb->passPercentage = $request->getPost('tbPassPercentage') ?? 95;
-            $config->$sec->evaluation->tb->contactInfo = htmlspecialchars($request->getPost('contactInfo'));
-
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->write($file, $config);
-
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+            $params = $this->getAllParams();
+            if (isset($params['tb']) && !empty($params['tb'])) {
+                $tb = json_encode($params['tb']);
+                $common->saveConfigByName($tb, 'tb_configuration');
+            }
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated TB Settings", "config");
         }
-
-
-        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->tbConfig = $common->getConfig('tb_configuration');
     }
 }

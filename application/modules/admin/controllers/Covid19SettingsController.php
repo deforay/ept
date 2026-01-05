@@ -21,10 +21,10 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
 
     public function indexAction()
     {
+        $common = new Application_Service_Common();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         if ($request->isPost()) {
             // Zend_Debug::dump($this->getAllParams());die;
             $testPlatforms[1] = $request->getPost('testPlatform1');
@@ -32,34 +32,14 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $testPlatforms[3] = $request->getPost('testPlatform3');
 
             $schemeService->setRecommededCovid19TestTypes($testPlatforms);
-            $config = new Zend_Config_Ini($file, null, array('skipExtends' => true, 'allowModifications' => true));
-            $sec = APPLICATION_ENV;
 
-
-            $config->$sec->evaluation->covid19 = [];
-            $config->$sec->evaluation->covid19->passPercentage = $request->getPost('covid19PassPercentage');
-            $config->$sec->evaluation->covid19->documentationScore = $request->getPost('covid19DocumentationScore');
-            $config->$sec->evaluation->covid19->covid19MaximumTestAllowed = $request->getPost('covid19MaximumTestAllowed');
-            $config->$sec->evaluation->covid19->covid19EnforceAlgorithmCheck = $request->getPost('covid19EnforceAlgorithmCheck');
-            $config->$sec->evaluation->covid19->sampleRehydrateDays = $request->getPost('sampleRehydrateDays');
-
-            $writer = new Zend_Config_Writer_Ini(array(
-                'config'   => $config,
-                'filename' => $file
-            ));
-
-            $writer->write();
-
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $cehck = $config->$sec->evaluation->covid19->toArray();
-            if (isset($cehck) && count($cehck) > 0) {
-                $alertMsg->message = 'Settings Saved';
+            $params = $this->getAllParams();
+            if (isset($params['covid19']) && !empty($params['covid19'])) {
+                $covid19 = json_encode($params['covid19']);
+                $common->saveConfigByName($covid19, 'covid19_configuration');
             }
         }
-
-
-        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->covid19Config = $common->getConfig('covid19_configuration');
         $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
         $this->view->recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
     }

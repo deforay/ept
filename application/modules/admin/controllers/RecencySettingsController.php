@@ -23,24 +23,14 @@ class Admin_RecencySettingsController extends Zend_Controller_Action
     {
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
-
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        $common = new Application_Service_Common();
         if ($request->isPost()) {
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
-            $sec = APPLICATION_ENV;
-
-            $config->$sec->evaluation->recency = [];
-            $config->$sec->evaluation->recency->passPercentage = $request->getPost('recencyPassPercentage');
-            $config->$sec->evaluation->recency->panelScore = $request->getPost('recencyPanelScore');
-            $config->$sec->evaluation->recency->documentationScore = $request->getPost('recencyDocumentationScore');
-            $config->$sec->evaluation->recency->sampleRehydrateDays = $request->getPost('sampleRehydrateDays');
-
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->write($file, $config);
-
-            $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+            $params = $this->getAllParams();
+            if (isset($params['recency']) && !empty($params['recency'])) {
+                $recency = json_encode($params['recency']);
+                $common->saveConfigByName($recency, 'recency_configuration');
+            }
         }
-
-        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->recencyConfig = $common->getConfig('recency_configuration');
     }
 }

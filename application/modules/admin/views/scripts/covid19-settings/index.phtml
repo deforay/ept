@@ -1,3 +1,4 @@
+<?php $covid19 = json_decode($this->covid19Config); ?>
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
@@ -8,15 +9,22 @@
             <div class="form-group">
                 <label for="covid19PassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Percentage"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="covid19PassPercentage" name="covid19PassPercentage" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($this->config->evaluation->covid19->passPercentage) && $this->config->evaluation->covid19->passPercentage != "") ? $this->config->evaluation->covid19->passPercentage : 0; ?>" />
+                    <input type="text" id="covid19PassPercentage" name="covid19[passPercentage]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Pass Percentage" value="<?php echo (isset($covid19->passPercentage) && $covid19->passPercentage != "") ? $covid19->passPercentage : 0; ?>" />
                     <span class="input-group-addon">%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="covid19AllowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms</label>
+                <div class="col-lg-1 input-group">
+                    <textarea="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control" placeholder="Please enter the Documentation Score Percentage"><?php echo $covid19->allowedAlgorithms; ?>"</textarea>
                 </div>
             </div>
 
             <!-- <div class="form-group">
                 <label for="covid19PassPercentage" class="col-lg-3 control-label">Covid-19 Documentation Score (Percentage)<span class="mandatory">*</span></label>
                 <div class="col-lg-1 input-group" style="width:140px;">
-                    <input type="text" id="covid19DocumentationScore" name="covid19DocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $this->config->evaluation->covid19->documentationScore; ?>" />
+                    <input type="text" id="covid19DocumentationScore" name="covid19[documentationScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="Please enter the Documentation Score Percentage" value="<?php echo $covid19->documentationScore; ?>" />
                     <span class="input-group-addon">%</span>
                 </div>
             </div> -->
@@ -24,11 +32,11 @@
             <div class="form-group covid19MaximumTestAllowedDiv">
                 <label for="covid19MaximumTestAllowed" class="col-lg-3 control-label"><?= $this->translate->_("Maximum Tests Allowed"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19MaximumTestAllowed" title="Please select if test 3 is optional">
+                    <select class="form-control isRequired" id="covid19MaximumTestAllowed" name="covid19[covid19MaximumTestAllowed]" title="Please select if test 3 is optional">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "1") ? " selected='selected' " : ""; ?>>1</option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "2") ? " selected='selected' " : ""; ?>>2</option>
-                        <option value="3" <?php echo (isset($this->config->evaluation->covid19->covid19MaximumTestAllowed) && $this->config->evaluation->covid19->covid19MaximumTestAllowed == "3") ? " selected='selected' " : ""; ?>>3</option>
+                        <option value="1" <?php echo (isset($covid19->covid19MaximumTestAllowed) && $covid19->covid19MaximumTestAllowed == "1") ? " selected='selected' " : ""; ?>>1</option>
+                        <option value="2" <?php echo (isset($covid19->covid19MaximumTestAllowed) && $covid19->covid19MaximumTestAllowed == "2") ? " selected='selected' " : ""; ?>>2</option>
+                        <option value="3" <?php echo (isset($covid19->covid19MaximumTestAllowed) && $covid19->covid19MaximumTestAllowed == "3") ? " selected='selected' " : ""; ?>>3</option>
                     </select>
 
                 </div>
@@ -37,18 +45,18 @@
             <!-- <div class="form-group">
                 <label for="covid19EnforceAlgorithmCheck" class="col-lg-3 control-label">Algorithm required in reporting ?<span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <input type="radio" name="covid19EnforceAlgorithmCheck" id="covid19EnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($this->config->evaluation->covid19->covid19EnforceAlgorithmCheck) && $this->config->evaluation->covid19->covid19EnforceAlgorithmCheck == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?" /> Yes
-                    <input type="radio" name="covid19EnforceAlgorithmCheck" id="covid19EnforceAlgorithmCheck_no" <?php echo (isset($this->config->evaluation->covid19->covid19EnforceAlgorithmCheck) && $this->config->evaluation->covid19->covid19EnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
+                    <input type="radio" name="covid19[covid19EnforceAlgorithmCheck]" id="covid19EnforceAlgorithmCheck_yes" class="isRequired" <?php echo (isset($covid19->covid19EnforceAlgorithmCheck) && $covid19->covid19EnforceAlgorithmCheck == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Is algorithm required in reporting ?" /> Yes
+                    <input type="radio" name="covid19EnforceAlgorithmCheck" id="covid19EnforceAlgorithmCheck_no" <?php echo (isset($covid19->covid19EnforceAlgorithmCheck) && $covid19->covid19EnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
                 </div>
             </div> -->
             <div class="form-group">
                 <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="covid19[sampleRehydrateDays]" title="Please select no. of days for sample rehydration">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <option value="0" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->covid19->sampleRehydrateDays) && $this->config->evaluation->covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 -<?= $this->translate->_("Testing after 2 days only"); ?></option>
+                        <option value="0" <?php echo (isset($covid19->sampleRehydrateDays) && $covid19->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($covid19->sampleRehydrateDays) && $covid19->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($covid19->sampleRehydrateDays) && $covid19->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 -<?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
                 </div>
             </div>

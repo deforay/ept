@@ -1,6 +1,4 @@
-<?php
-// Zend_Debug::dump($this->allSchemes);die;
-?>
+<?php $recency = json_decode($this->recencyConfig); ?>
 <div class="well">
     <form name="recencySettingsForm" id="recencySettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "recency-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
@@ -9,30 +7,30 @@
             <div class="form-group">
                 <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyPassPercentage" name="recencyPassPercentage" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $this->config->evaluation->recency->passPercentage; ?>" />
+                    <input type="number" id="recencyPassPercentage" name="recency[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $recency->passPercentage; ?>" />
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyPanelScore" name="recencyPanelScore" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $this->config->evaluation->recency->panelScore; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
+                    <input type="number" id="recencyPanelScore" name="recency[panelScore]" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $recency->panelScore; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
             <div class="form-group">
                 <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyDocumentationScore" name="recencyDocumentationScore" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $this->config->evaluation->recency->documentationScore; ?>" oninput="$('#recencyPanelScore').val(100 - $(this).val());">
+                    <input type="number" id="recencyDocumentationScore" name="recency[documentationScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $recency->documentationScore; ?>" oninput="$('#recencyPanelScore').val(100 - $(this).val());">
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-6">
-                    <select class="form-control isRequired" id="sampleRehydrateDays" name="sampleRehydrateDays" title="Please select no. of days for sample rehydration">
-                        <option value="0" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
-                        <option value="1" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
-                        <option value="2" <?php echo (isset($this->config->evaluation->recency->sampleRehydrateDays) && $this->config->evaluation->recency->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
+                    <select class="form-control isRequired" id="sampleRehydrateDays" name="recency[sampleRehydrateDays]" title="Please select no. of days for sample rehydration">
+                        <option value="0" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
                 </div>
             </div>

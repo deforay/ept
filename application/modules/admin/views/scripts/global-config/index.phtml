@@ -1,9 +1,6 @@
 <?php
 $emailConfig = json_decode($this->mail_configuration);
-$covid19 = json_decode($this->covid19_configuration);
-$vl = json_decode($this->vl_configuration);
 $recency = json_decode($this->recency_configuration);
-$tb = json_decode($this->tb_configuration);
 $home = json_decode($this->home_configuration);
 $faqResults = json_decode($this->faq_configurations);
 ?>
@@ -396,52 +393,6 @@ $faqResults = json_decode($this->faq_configurations);
 					</div>
 				</div>
 			</div><br>
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#covid19Config" aria-expanded="false" aria-controls="collapseExample">Covid-19 Scheme Configs <b class="caret pull-right" style="text-align:right;"></b></button>
-			<div class="collapse-content" id="covid19Config">
-				<div class="row">
-					<div class="col-md-6">
-						<label for="covid19PassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
-						<input type="text" value="<?php echo $covid19->passPercentage ?? null; ?>" id="covid19PassPercentage" name="covid19[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 pass percantage'); ?>" title="Please enter the covid-19 pass percentage" />
-					</div>
-					<div class="col-md-6">
-						<label for="covid19DocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?></label>
-						<input type="text" value="<?php echo $covid19->documentationScore ?? null; ?>" id="covid19DocumentationScore" name="covid19[documentationScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="covid19SampleRehydrateDays" class="control-label"><?= $this->translate->_("Sample Rehydrate Days"); ?></label>
-						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19SampleRehydrateDays" name="covid19[sampleRehydrateDays]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 sample rehydrate days'); ?>" title="Please enter the covid-19 sample rehydrate days" />
-					</div>
-					<div class="col-md-6">
-						<label for="covid19AllowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?></label>
-						<input type="text" value="<?php echo $covid19->allowedAlgorithms ?? null; ?>" id="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control" placeholder="<?= $this->translate->_('Enter by comma seperated'); ?>" title="Please enter a covid-19 allowed algorithms" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="covid19MaximumTestAllowed" class="control-label"><?= $this->translate->_("Maximum Test Allowed"); ?></label>
-						<input type="text" value="<?php echo $covid19->sampleRehydrateDays ?? null; ?>" id="covid19MaximumTestAllowed" name="covid19[maximumTestAllowed]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the covid-19 maximum test allowed'); ?>" title="Please enter the covid-19 maximum test allowed" />
-					</div>
-					<div class="col-md-6">
-						<label for="covid19EnforceAlgorithmCheck" class="control-label"><?= $this->translate->_("Enforce Algorithm Check"); ?></label>
-						<input type="text" value="<?php echo $covid19->enforceAlgorithmCheck ?? null; ?>" id="covid19EnforceAlgorithmCheck" name="covid19[enforceAlgorithmCheck]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 enforce algorithm check'); ?>" title="Please enter a covid-19 enforce algorithm check" />
-					</div>
-				</div>
-			</div>
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#vlConfig" aria-expanded="false" aria-controls="collapseExample">VL Scheme Configs <b class="caret pull-right" style="text-align:right;"></b></button>
-			<div class="collapse-content" id="vlConfig">
-				<div class="row">
-					<div class="col-md-6">
-						<label for="vlPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
-						<input type="text" value="<?php echo $vl->passPercentage ?? null; ?>" id="vlPassPercentage" name="vl[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the VL pass percantage'); ?>" title="Please enter the VL pass percentage" />
-					</div>
-					<div class="col-md-6">
-						<label for="vlDocumentationScore" class="control-label"><?= $this->translate->_("Documentation Score"); ?></label>
-						<input type="text" value="<?php echo $vl->documentationScore ?? null; ?>" id="vlDocumentationScore" name="vl[documentationScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the covid-19 documentation score'); ?>" title="Please enter a covid-19 documentation score" />
-					</div>
-				</div>
-			</div>
 			<button type="button" class="collapsible" data-toggle="collapse" data-target="#recencyConfig" aria-expanded="false" aria-controls="collapseExample">Recency Scheme Configs <b class="caret pull-right" style="text-align:right;"></b></button>
 			<div class="collapse-content" id="recencyConfig">
 				<div class="row">
@@ -462,19 +413,6 @@ $faqResults = json_decode($this->faq_configurations);
 					<div class="col-md-6">
 						<label for="recencyPanelScore" class="control-label"><?= $this->translate->_("Panel Score"); ?></label>
 						<input type="text" value="<?php echo $recency->panelScore ?? null; ?>" id="recencyPanelScore" name="recency[panelScore]" class="form-control" placeholder="<?= $this->translate->_('Enter the recency panel score'); ?>" title="Please enter a recency panel score" />
-					</div>
-				</div>
-			</div>
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#tbConfig" aria-expanded="false" aria-controls="collapseExample">TB Scheme Configs <b class="caret pull-right" style="text-align:right;"></b></button>
-			<div class="collapse-content" id="tbConfig">
-				<div class="row">
-					<div class="col-md-6">
-						<label for="tbPassPercentage" class="control-label"><?= $this->translate->_("Pass percentage"); ?></label>
-						<input type="text" value="<?php echo $tb->passPercentage ?? null; ?>" id="tbPassPercentage" name="tb[passPercentage]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the tb pass percantage'); ?>" title="Please enter the tb pass percentage" />
-					</div>
-					<div class="col-md-6">
-						<label for="tbContactInfo" class="control-label"><?= $this->translate->_("Contact Info"); ?></label>
-						<textarea name="tb[contactInfo]" class="form-control" placeholder="<?= $this->translate->_('Enter the tb contact info'); ?>" title="Please enter a tb contact info"><?php echo $tb->contactInfo ?? null; ?></textarea>
 					</div>
 				</div>
 			</div>
