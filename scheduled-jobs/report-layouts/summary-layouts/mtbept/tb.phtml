@@ -379,7 +379,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if (trim($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '') != "") {
-        $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+        $comment = '<br><br><table border="0" style="width:100%;font-size:12px;" cellpadding="3">';
 
         /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
             $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
@@ -400,8 +400,8 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         } */
 
         if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
-            $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            $comment .= '	<td style="text-align:center;"><strong>Additional Information</strong></td>';
+            $comment .= '<tr>';
+            $comment .= '	<td><strong>Additional Information:</strong></td>';
             $comment .= '</tr>';
             $comment .= '<tr>';
             $comment .= '   <td style="text-align:justify;font-size:11px;">' . nl2br($resultArray['shipment']['summaryResult']['shipment_comment']) . '</td>';
