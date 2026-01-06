@@ -4,7 +4,6 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 {
 
     protected $_name = 'scheme_config';
-    protected $_primary = 'scheme_config_name';
 
     public function getValue($name)
     {
@@ -52,27 +51,27 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
     public function updateConfigDetails($params)
     {
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['emailConfig'], true)), "scheme_config_name = 'mail'");
+            $this->insertOrUpdate('mail', json_encode($params['emailConfig'], true));
             unset($params['emailConfig']);
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['covid19'], true)), "scheme_config_name = 'covid19'");
+            $this->insertOrUpdate('covid19', json_encode($params['covid19'], true));
             unset($params['covid19']);
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['vl'], true)), "scheme_config_name = 'vl'");
+            $this->insertOrUpdate('vl', json_encode($params['vl'], true));
             unset($params['vl']);
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['recency'], true)), "scheme_config_name = 'recency'");
+            $this->insertOrUpdate('recency', json_encode($params['recency'], true));
             unset($params['recency']);
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['tb'], true)), "scheme_config_name = 'tb'");
+            $this->insertOrUpdate('tb', json_encode($params['tb'], true));
             unset($params['tb']);
         }
         if (isset($params['home']) && !empty($params['home'])) {
-            $this->update(array("scheme_config_value" => json_encode($params['home'], true)), "scheme_config_name = 'home'");
+            $this->insertOrUpdate('home', json_encode($params['home'], true));
             unset($params['home']);
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
@@ -80,20 +79,43 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
             foreach ($params['faqQuestions'] as $key => $faq) {
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
-            $this->update(array("scheme_config_value" => json_encode($faqResponse, true)), "scheme_config_name = 'faqs'");
+            $this->insertOrUpdate('faqs', json_encode($faqResponse, true));
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
         }
 
         foreach ($params as $fieldName => $fieldValue) {
-            $this->update(array('scheme_config_value' => $fieldValue), "scheme_config_name='" . $fieldName . "'");
+            $this->insertOrUpdate($fieldName, $fieldValue);
         }
+
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated scheme config ", "config");
+        $auditDb->addNewAuditLog("Updated scheme config", "config");
     }
 
     public function saveConfigByName($value, $name)
     {
-        return $this->update(array("scheme_config_value" => $value), "scheme_config_name = '" . $name . "'");
+        return $this->insertOrUpdate($name, $value);
+    }
+
+    protected function insertOrUpdate($configName, $configValue)
+    {
+        // Check if config exists
+        $row = $this->fetchRow(
+            $this->select()->where('scheme_config_name = ?', $configName)
+        );
+
+        if ($row) {
+            // Update existing
+            $this->update(
+                array('scheme_config_value' => $configValue),
+                $this->getAdapter()->quoteInto('scheme_config_name = ?', $configName)
+            );
+        } else {
+            // Insert new
+            $this->insert(array(
+                'scheme_config_name' => $configName,
+                'scheme_config_value' => $configValue
+            ));
+        }
     }
 }

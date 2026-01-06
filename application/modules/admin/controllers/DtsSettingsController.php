@@ -63,7 +63,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             $auditDb->addNewAuditLog("Updated HIV Serology Settings", "config");
         }
 
-        $this->view->dtsConfig = $common->getConfig('dts');
+        $this->view->dtsConfig = $common->getSchemeConfig('dts');
 
         $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(true);
         $this->view->dtsRecommendedTestkits = $dtsModel->getRecommededDtsTestkits('dts');

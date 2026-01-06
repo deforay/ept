@@ -37,6 +37,6 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated TB Settings", "config");
         }
-        $this->view->tbConfig = $common->getConfig('tb');
+        $this->view->tbConfig = $common->getSchemeConfig('tb');
     }
 }
