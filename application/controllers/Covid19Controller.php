@@ -50,10 +50,10 @@ class Covid19Controller extends Zend_Controller_Action
 
 			//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-			
-			$covid19ConfJson = $globalConfigDb->getValue('covid19_configuration');
+
+			$covid19ConfJson = $globalConfigDb->getValue('covid19');
 			$this->view->covid19Config = json_decode($covid19ConfJson);
-			
+
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
 			$response = $schemeService->getCovid19Samples($sID, $pID);
@@ -76,7 +76,7 @@ class Covid19Controller extends Zend_Controller_Action
 			//
 			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
-			
+
 			$this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
 			$this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
 			$this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -105,12 +105,12 @@ class Covid19Controller extends Zend_Controller_Action
 		$this->view->header = $reportService->getReportConfigValue('report-header');
 		$this->view->logo = $reportService->getReportConfigValue('logo');
 		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-		
+
 		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
 		$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-		$covid19ConfJson = $globalConfigDb->getValue('covid19_configuration');
+		$covid19ConfJson = $globalConfigDb->getValue('covid19');
 		$this->view->covid19Config = json_decode($covid19ConfJson);
 
 		$participantService = new Application_Service_Participants();

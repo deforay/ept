@@ -62,27 +62,27 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         }
 
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->update(array("value" => json_encode($params['emailConfig'], true)), "name = 'mail_configuration'");
+            $this->update(array("value" => json_encode($params['emailConfig'], true)), "name = 'mail'");
             unset($params['emailConfig']);
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
-            $this->update(array("value" => json_encode($params['covid19'], true)), "name = 'covid19_configuration'");
+            $this->update(array("value" => json_encode($params['covid19'], true)), "name = 'covid19'");
             unset($params['covid19']);
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
-            $this->update(array("value" => json_encode($params['vl'], true)), "name = 'vl_configuration'");
+            $this->update(array("value" => json_encode($params['vl'], true)), "name = 'vl'");
             unset($params['vl']);
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
-            $this->update(array("value" => json_encode($params['recency'], true)), "name = 'recency_configuration'");
+            $this->update(array("value" => json_encode($params['recency'], true)), "name = 'recency'");
             unset($params['recency']);
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
-            $this->update(array("value" => json_encode($params['tb'], true)), "name = 'tb_configuration'");
+            $this->update(array("value" => json_encode($params['tb'], true)), "name = 'tb'");
             unset($params['tb']);
         }
         if (isset($params['home']) && !empty($params['home'])) {
-            $this->update(array("value" => json_encode($params['home'], true)), "name = 'home_configuration'");
+            $this->update(array("value" => json_encode($params['home'], true)), "name = 'home'");
             unset($params['home']);
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
@@ -90,7 +90,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             foreach ($params['faqQuestions'] as $key => $faq) {
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
-            $this->update(array("value" => json_encode($faqResponse, true)), "name = 'faq_configurations'");
+            $this->update(array("value" => json_encode($faqResponse, true)), "name = 'faqs'");
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
         }

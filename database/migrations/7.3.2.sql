@@ -80,3 +80,9 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('faq_configurations', '');
 
 -- Thana 02-Jan-2026
 INSERT INTO `global_config` (`name`, `value`) VALUES ('dts_configuration', '');
+
+CREATE TABLE `scheme_config` (
+  `scheme_config_name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+  `scheme_config_value` json DEFAULT NULL,
+  PRIMARY KEY (`scheme_config_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

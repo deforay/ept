@@ -112,7 +112,7 @@ try {
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-    $smtpJson = $globalConfigDb->getValue('mail_configuration');
+    $smtpJson = $globalConfigDb->getValue('mail');
     $smtpMailDetails = json_decode($smtpJson);
 
     $db = Zend_Db::factory($conf->resources->db);

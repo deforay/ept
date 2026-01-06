@@ -62,7 +62,7 @@ class Admin_HomeConfigController extends Zend_Controller_Action
 
                 if (isset($params['home']) && !empty($params['home'])) {
                     $home = json_encode($params['home']);
-                    $common->saveConfigByName($home, 'home_configuration');
+                    $common->saveConfigByName($home, 'home');
                 }
                 $customHomePage = $request->getPost('customHomePage') ?? null;
                 if (isset($customHomePage) && $customHomePage == 'yes') {
@@ -71,8 +71,8 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 }
             }
             $common = new Application_Service_Common();
-            $this->view->home = json_decode($common->getConfig('home_configuration'));
-            $this->view->faq = json_decode($common->getConfig('faq_configurations'));
+            $this->view->home = json_decode($common->getConfig('home'));
+            $this->view->faq = json_decode($common->getConfig('faqs'));
 
             $this->view->sections = $homeSection->getAllHtmlHomePage();
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();

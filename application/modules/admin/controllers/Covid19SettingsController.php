@@ -36,10 +36,10 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             if (isset($params['covid19']) && !empty($params['covid19'])) {
                 $covid19 = json_encode($params['covid19']);
-                $common->saveConfigByName($covid19, 'covid19_configuration');
+                $common->saveConfigByName($covid19, 'covid19');
             }
         }
-        $this->view->covid19Config = $common->getConfig('covid19_configuration');
+        $this->view->covid19Config = $common->getSchemeConfig('covid19');
         $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
         $this->view->recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
     }

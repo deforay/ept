@@ -36,8 +36,8 @@ class IndexController extends Zend_Controller_Action
             $scheme = new Application_Service_Schemes();
             $homeSec = new Application_Service_HomeSection();
 
-            $this->view->homeContent = $home =  json_decode($commonServices->getConfig('home_configuration'));
-            $this->view->faqs = $commonServices->getConfig('faq_configurations');
+            $this->view->homeContent = $home =  json_decode($commonServices->getConfig('home'));
+            $this->view->faqs = $commonServices->getConfig('faqs');
             $this->view->countriesList = $commonServices->getcountriesList();
             $this->view->banner = $commonServices->getHomeBanner();
             $this->view->partners = $partnerService->getAllActivePartners();

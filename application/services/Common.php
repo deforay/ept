@@ -2002,7 +2002,13 @@ class Application_Service_Common
 
     public function saveConfigByName($value, $name)
     {
-        $gc = new Application_Model_DbTable_GlobalConfig();
-        return $gc->saveConfigByName($value, $name);
+        $sc = new Application_Model_DbTable_SchemeConfig();
+        return $sc->saveConfigByName($value, $name);
+    }
+
+    public static function getSchemeConfig($name)
+    {
+        $sc = new Application_Model_DbTable_SchemeConfig();
+        return $sc->getValue($name);
     }
 }

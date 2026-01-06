@@ -50,8 +50,8 @@ class DtsController extends Zend_Controller_Action
 				}
 			}
 
-			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+			// $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+			$this->view->config = $commonService->getSchemeConfig('dts');
 
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);

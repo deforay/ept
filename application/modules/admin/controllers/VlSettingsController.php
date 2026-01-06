@@ -34,12 +34,12 @@ class Admin_VlSettingsController extends Zend_Controller_Action
                 $params = $this->getAllParams();
                 if (isset($params['vl']) && !empty($params['vl'])) {
                     $vl = json_encode($params['vl']);
-                    $common->saveConfigByName($vl, 'vl_configuration');
+                    $common->saveConfigByName($vl, 'vl');
                 }
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Updated VL Settings", "config");
             }
-            $this->view->vlConfig = $common->getConfig('vl_configuration');
+            $this->view->vlConfig = $common->getConfig('vl');
         } catch (Exception $exc) {
 
             error_log("VL-SETTINGS-" . $exc->getMessage());
