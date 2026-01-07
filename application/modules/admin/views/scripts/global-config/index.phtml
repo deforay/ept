@@ -96,8 +96,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="locale" class="control-label"><?= $this->translate->_("Language"); ?></label>
 						<select class="form-control" id="locale" name="locale" title="Please select the locale for translation">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="en_US" <?php echo ($this->config->locale == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
-							<option value="fr_FR" <?php echo ($this->config->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
+							<option value="en_US" <?php echo ($this->locale == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
+							<option value="fr_FR" <?php echo ($this->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
 						</select>
 					</div>
 					<div class="col-md-6">

@@ -41,20 +41,22 @@ class Admin_GenericTestController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $sec = APPLICATION_ENV;
+        $common = new Application_Service_Common();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $schemeCode = $params['schemeCode'];
-            $config->$sec->evaluation->$schemeCode = [];
-            $config->$sec->evaluation->$schemeCode->disableOtherTestkit = $params['disableOtherTestkit'] ?? 'no';
-            $config->$sec->evaluation->$schemeCode->passPercentage = $params['genericConfig']['passingScore'] ?? '80';
-            $writer = new Zend_Config_Writer_Ini(array(
-                'config'   => $config,
-                'filename' => $file
-            ));
-            $writer->write();
+
+            $generic = [];
+            if (isset($params['genericConfig']['passingScore']) && !empty($params['genericConfig']['passingScore'])) {
+                $generic['passingScore'] = $params['genericConfig']['passingScore'];
+            }
+            if (isset($params['genericConfig']['disableOtherTestkit']) && !empty($params['genericConfig']['disableOtherTestkit'])) {
+                $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
+            }
+            if (isset($generic) && !empty($generic)) {
+                $common->saveConfigByName(json_encode($generic), $schemeCode);
+            }
+
             $schemeService->saveGenericTest($params);
             $schemeService->setRecommededCustomTestTypes($params);
             $this->redirect("/admin/generic-test");
@@ -68,35 +70,34 @@ class Admin_GenericTestController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
+        $common = new Application_Service_Common();
         $this->view->schemeList = $schemeService->getFullSchemeList();
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $sec = APPLICATION_ENV;
         if ($request->isPost()) {
             $params = $request->getPost();
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
             $schemeCode = $params['schemeCode'];
-            $config->$sec->evaluation->$schemeCode = [];
-            $config->$sec->evaluation->$schemeCode->disableOtherTestkit = $params['disableOtherTestkit'] ?? 'no';
-            $config->$sec->evaluation->$schemeCode->passPercentage = $params['genericConfig']['passingScore'] ?? '80';
-            $writer = new Zend_Config_Writer_Ini(array(
-                'config'   => $config,
-                'filename' => $file
-            ));
-            $writer->write();
-            $config1 = new Zend_Config_Ini($file, APPLICATION_ENV);
+            $generic = [];
+            if (isset($params['genericConfig']['passingScore']) && !empty($params['genericConfig']['passingScore'])) {
+                $generic['passingScore'] = $params['genericConfig']['passingScore'];
+            }
+            if (isset($params['genericConfig']['disableOtherTestkit']) && !empty($params['genericConfig']['disableOtherTestkit'])) {
+                $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
+            }
+            if (isset($generic) && !empty($generic)) {
+                $common->saveConfigByName(json_encode($generic), $schemeCode);
+            }
             $schemeService->saveGenericTest($params);
             $schemeService->setRecommededCustomTestTypes($params);
             $this->redirect('admin/generic-test');
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
             $this->view->result = $result =  $schemeService->getGenericTest($id);
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $schemeCode = $result['schemeResult']['scheme_id'];
             $dtsModel = new Application_Model_Dts();
             $db = new Application_Model_GenericTest();
             $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
             $this->view->customTestsRecommendedTestkits = $db->getRecommededGenericTestkits($schemeCode);
-            $this->view->disableOtherTestkit = $config->evaluation->$schemeCode->disableOtherTestkit ?? 'no';
         }
+        $this->view->disableOtherTestkit = $common->getSchemeConfig($schemeCode . '.disableOtherTestkit');
+        $this->view->passingScore = $common->getSchemeConfig($schemeCode . '.passingScore');
     }
 }

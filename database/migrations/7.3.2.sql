@@ -86,3 +86,13 @@ CREATE TABLE `scheme_config` (
   `scheme_config_value` json DEFAULT NULL,
   PRIMARY KEY (`scheme_config_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Thana 07-Jan-2026
+DELETE FROM global_config WHERE `global_config`.`name` = 'covid19_configuration';
+DELETE FROM global_config WHERE `global_config`.`name` = 'vl_configuration';
+DELETE FROM global_config WHERE `global_config`.`name` = 'recency_configuration';
+DELETE FROM global_config WHERE `global_config`.`name` = 'tb_configuration';
+UPDATE `global_config` SET `name` = 'home' WHERE `global_config`.`name` = 'home_configuration';
+UPDATE `global_config` SET `name` = 'mail' WHERE `global_config`.`name` = 'mail_configuration';
+UPDATE `global_config` SET `name` = 'faqs' WHERE `global_config`.`name` = 'faq_configurations';
+
