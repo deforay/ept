@@ -41,8 +41,7 @@ class Application_Service_ApiServices
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
         $response = [];
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $sql = $this->db->select()->from(array('dm' => 'data_manager'), array(''))
             ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('*'))
@@ -60,7 +59,7 @@ class Application_Service_ApiServices
         /* Started DTS (HIV Serology) References */
         $dtsModel = new Application_Model_Dts();
         // Load dts configuration into a init as array
-        $response['dts']['config'] = $config->evaluation->dts->toArray();
+        $response['dts']['config'] = $this->common->getSchemeConfig('dts');
 
         // Load dts testing kit into a init as separate tests
         $allTestKits = $dtsModel->getAllDtsTestKitList();

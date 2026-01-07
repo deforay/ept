@@ -581,11 +581,8 @@ class Application_Service_Evaluation
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 
-
 		$participantData = $participantService->getParticipantDetails($participantId);
 		$shipmentData = $schemeService->getShipmentData($shipmentId, $participantId);
-
-
 
 		if ($scheme == 'eid') {
 			$possibleResults = $schemeService->getPossibleResults('eid');
@@ -627,13 +624,12 @@ class Application_Service_Evaluation
 				}
 			}
 		}
-
-
+		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
+		$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 		$sql = $db->select()->from(array('s' => 'shipment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= " . $config->evaluation->dts->passPercentage . ", 1, 0))")))
+			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('fullscore' => new Zend_Db_Expr("(if((sp.shipment_score+sp.documentation_score) >= " . $dtsPasspercentage . ", 1, 0))")))
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id')
 			->where("sp.shipment_id = ?", $shipmentId)
 			//->where("substring(sp.evaluation_status,4,1) != '0'")
@@ -667,8 +663,8 @@ class Application_Service_Evaluation
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->admin_id;
 		$size = count($params['sampleId']);
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
+
 		$failureReason = [];
 		/* Manual result override changes */
 		if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
@@ -796,9 +792,8 @@ class Application_Service_Evaluation
 			}
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
-
 				$grandTotal = ($shipmentScore + $docScore);
-				if ($grandTotal < $config->evaluation->dts->passPercentage) {
+				if ($grandTotal < $dtsPasspercentage) {
 					$finalResult = 2;
 				} else {
 					$finalResult = 1;
@@ -834,7 +829,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'dts') {
 
-
+			$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
@@ -895,9 +890,8 @@ class Application_Service_Evaluation
 			}
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
-
 				$grandTotal = number_format($shipmentScore + $docScore);
-				if ($grandTotal < $config->evaluation->dts->passPercentage) {
+				if ($grandTotal < $dtsPasspercentage) {
 					$finalResult = 2;
 				} else {
 					$finalResult = 1;
@@ -1040,7 +1034,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'recency') {
 
-
+			$recencyPassPercentage = $schemeConfig->getSchemeConfig('recency.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = array(
@@ -1083,14 +1077,14 @@ class Application_Service_Evaluation
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = ($shipmentScore + $docScore);
-				if ($grandTotal < $config->evaluation->recency->passPercentage) {
+				if ($grandTotal < $recencyPassPercentage) {
 					$finalResult = 2;
 				} else {
 					$finalResult = 1;
 				}
 			}
 		} elseif ($params['scheme'] == 'covid19') {
-
+			$covid19PassPercentage = $schemeConfig->getSchemeConfig('covid19.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
@@ -1155,7 +1149,7 @@ class Application_Service_Evaluation
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = $shipmentScore + $docScore;
-				if ($grandTotal < $config->evaluation->covid19->passPercentage) {
+				if ($grandTotal < $covid19PassPercentage) {
 					$finalResult = 2;
 				} else {
 					$finalResult = 1;
@@ -1461,12 +1455,14 @@ class Application_Service_Evaluation
 			];
 		}
 
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
+		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
 		$meanScore = [];
 		$testType = $shipmentResult[0]['scheme_type'];
 		$tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
-		$score = (isset($config->evaluation->$testType->passPercentage) && !empty($config->evaluation->$testType->passPercentage) && $config->evaluation->$testType->passPercentage > 0) ? $config->evaluation->$testType->passPercentage : '100';
+
+		$passPercentage = $schemeConfig->getSchemeConfig($testType . '.passPercentage');
+		$score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '100';
 		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
 			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
 			$q = $db->select()->from(['spm' => 'shipment_participant_map'], [
@@ -1836,8 +1832,9 @@ class Application_Service_Evaluation
 	public function getSummaryReportsDataForPDF($shipmentId, $testType = "")
 	{
 		$vlCalculation = $penResult = $shipmentResult = [];
-		$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-		$pass = $config->evaluation->dts->passPercentage ?? 95;
+		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
+		$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
+		$pass = $dtsPasspercentage ?? 95;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', 's.lastdate_response', 's.max_score', 'shipment_attributes', 's.pt_co_ordinator_name', 's.pt_co_ordinator_phone', 's.pt_co_ordinator_email', 'shipment_comment', 's.issuing_authority'])
@@ -1960,7 +1957,7 @@ class Application_Service_Evaluation
 				}
 				//die;
 			} elseif ($shipmentResult['scheme_type'] == 'dts') {
-				$pass = $config->evaluation->dts->passPercentage ?? 100;
+				$pass = $dtsPasspercentage ?? 100;
 				$sql = $db->select()->from(
 					array('refdts' => 'reference_result_dts'),
 					array(
