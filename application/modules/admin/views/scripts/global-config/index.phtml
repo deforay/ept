@@ -93,6 +93,10 @@ $faqResults = json_decode($this->faqs);
 			<div class="collapse-content" id="generalConfig">
 				<div class="row">
 					<div class="col-md-6">
+						<label for="host" class="control-label"><?= $this->translate->_("Domain"); ?> <span class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $this->domain ?? null; ?>" id="domain" name="emailConfig[domain]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the domain address'); ?>" title="Please enter the domain address" />
+					</div>
+					<div class="col-md-6">
 						<label for="locale" class="control-label"><?= $this->translate->_("Language"); ?></label>
 						<select class="form-control" id="locale" name="locale" title="Please select the locale for translation">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
@@ -100,27 +104,29 @@ $faqResults = json_decode($this->faqs);
 							<option value="fr_FR" <?php echo ($this->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
 						</select>
 					</div>
-					<div class="col-md-6">
-						<label for="aggregate_insights_url" class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
-						<input type="text" class="form-control" id="aggregate_insights_url" name="aggregate_insights_url" placeholder="Enter aggregate insights URL" title="Please enter aggregate insights URL" value="<?php echo $this->aggregate_insights_url; ?>" />
-					</div>
 				</div>
 				<!-- Rest of general config fields... -->
 				<div class="row">
 					<div class="col-md-6">
-						<label for="admin_email" class="control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
-						<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?= $this->admin_email; ?>" />
+						<label for="aggregate_insights_url" class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
+						<input type="text" class="form-control" id="aggregate_insights_url" name="aggregate_insights_url" placeholder="Enter aggregate insights URL" title="Please enter aggregate insights URL" value="<?php echo $this->aggregate_insights_url; ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="pt_program_name" class="control-label"><?= $this->translate->_("PT Program Name"); ?></label>
-						<input type="text" class="form-control" id="pt_program_name" name="pt_program_name" placeholder="Enter PT Program Name" title="Please enter PT Program Name" value="<?php echo $this->pt_program_name; ?>" />
+						<label for="admin_email" class="control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
+						<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?= $this->admin_email; ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
+						<label for="pt_program_name" class="control-label"><?= $this->translate->_("PT Program Name"); ?></label>
+						<input type="text" class="form-control" id="pt_program_name" name="pt_program_name" placeholder="Enter PT Program Name" title="Please enter PT Program Name" value="<?php echo $this->pt_program_name; ?>" />
+					</div>
+					<div class="col-md-6">
 						<label for="pt_program_short_name" class="control-label"><?= $this->translate->_("PT Program Short Name"); ?></label>
 						<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name" placeholder="Enter PT Program Short Name" title="Please enter the PT Program Short Name" value="<?php echo $this->pt_program_short_name; ?>" />
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="training_instance" class="control-label"><?= $this->translate->_("Is this installation of ePT used for training purposes?"); ?></label>
 						<select class="form-control" id="training_instance" name="training_instance" title="Is this installation of ePT used for training purposes?">
@@ -128,8 +134,6 @@ $faqResults = json_decode($this->faqs);
 							<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 						</select>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="schemeId" class="control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
 						<br><select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here" style="width: 100%;">
@@ -138,12 +142,12 @@ $faqResults = json_decode($this->faqs);
 							<?php } ?>
 						</select>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6 trainingText">
 						<label for="training_instance_text" class="control-label"><?= $this->translate->_("For training instances, use this Watermark in reports"); ?></label>
 						<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Watermark to show in reports" title="Please enter the Watermark to show in reports" value="<?php echo $this->training_instance_text; ?>" />
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="response_after_evaluate" class="control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?> <span class="mandatory">*</span></label>
 						<div class="input-group">
@@ -154,6 +158,8 @@ $faqResults = json_decode($this->faqs);
 							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate">
 						</div>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="generic_test_config" class="control-label"><?= $this->translate->_("Custom Tests Config"); ?> <span class="mandatory">*</span></label>
 						<div class="input-group">
@@ -164,8 +170,6 @@ $faqResults = json_decode($this->faqs);
 							<input type="hidden" name="generic_test_config" id="generic_test_config">
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="evaluate_before_generating_reports" class="control-label"><?= $this->translate->_("Re-evaluate before Finalizing"); ?> <span class="mandatory">*</span></label>
 						<div class="input-group">
@@ -176,6 +180,8 @@ $faqResults = json_decode($this->faqs);
 							<input type="hidden" name="evaluate_before_generating_reports" id="evaluate_before_generating_reports">
 						</div>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="enable_capa" class="control-label"><?= $this->translate->_("Enable CAPA"); ?> <span class="mandatory">*</span></label>
 						<div class="input-group">
@@ -186,8 +192,6 @@ $faqResults = json_decode($this->faqs);
 							<input type="hidden" name="enable_capa" id="enable_capa">
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="enable_admin_email_notification" class="control-label"><?= $this->translate->_("Enable Admin Email Notification Alert"); ?> <span class="mandatory">*</span></label>
 						<div class="input-group">
@@ -198,22 +202,22 @@ $faqResults = json_decode($this->faqs);
 							<input type="hidden" name="enable_capa" id="enable_capa">
 						</div>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="institute_name" class="control-label"><?= $this->translate->_("Institute Name"); ?></label>
 						<textarea class="form-control" id="institute_name" name="institute_name" placeholder="Enter institute name" title="Please enter institute name"><?php echo $this->institute_name; ?></textarea>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="institute_address" class="control-label"><?= $this->translate->_("Institute Address"); ?></label>
 						<textarea class="form-control" id="institute_address" name="institute_address" placeholder="Enter institute address" title="Please enter institute address"><?php echo $this->institute_address; ?></textarea>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="additional_institute_details" class="control-label"><?= $this->translate->_("Additional Institute Details"); ?> <span class="mandatory">*</span></label>
 						<textarea class="form-control isRequired" id="additional_institute_details" name="additional_institute_details" placeholder="Enter additional institute details" title="Please enter additional institute details"><?php echo $this->additional_institute_details; ?></textarea>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="theme_color" class="control-label"><?= $this->translate->_("Theme Color"); ?></label>
 						<select class="form-control" id="theme_color" name="theme_color" title="Please select the theme color">
@@ -226,6 +230,8 @@ $faqResults = json_decode($this->faqs);
 							<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black') ? 'selected="selected"' : ""; ?>>Black</option>
 						</select>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="instance" class="control-label"><?= $this->translate->_("Instance"); ?></label>
 						<select class="form-control" id="instance" name="instance" title="Please select the instance">
@@ -240,8 +246,6 @@ $faqResults = json_decode($this->faqs);
 							<option value="cdc-ilb-hiv" <?php echo (isset($this->instance) && $this->instance == 'cdc-ilb-hiv') ? 'selected="selected"' : ""; ?>>CDC-ILB-HIV</option>
 						</select>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="job_completion_alert_status" class="control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
 						<select class="form-control" id="job_completion_alert_status" name="job_completion_alert_status" title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
@@ -250,6 +254,8 @@ $faqResults = json_decode($this->faqs);
 							<option value="no" <?php echo ($this->job_completion_alert_status == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 						</select>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="auto_generate_pt_survey_code" class="control-label"><?= $this->translate->_("Auto generate PT Survey code"); ?></label>
 						<select class="form-control" id="auto_generate_pt_survey_code" name="auto_generate_pt_survey_code" title="Please select auto generate PT survey code">
@@ -258,19 +264,17 @@ $faqResults = json_decode($this->faqs);
 							<option value="no" <?php echo ($this->auto_generate_pt_survey_code == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 						</select>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="footer_text" class="control-label"><?= $this->translate->_("Footer Text"); ?></label>
 						<input type="text" class="form-control" id="footer_text" value="<?php echo $this->footer_text ?? null; ?>" placeholder="Enter the footer text" name="footer_text" title="Please enter the footer text" />
 					</div>
-					<div class="col-md-6 mail-box" style="display: <?php echo (isset($this->job_completion_alert_mails) && $this->job_completion_alert_mails == "yes") ? 'block' : 'none'; ?>;">
+				</div>
+				<div class="row">
+					<div class="col-md-6 mail-box" style="display: <?php echo (isset($this->job_completion_alert_status) && ($this->job_completion_alert_status == "yes")) ? 'block' : 'none'; ?>;">
 						<label for="job_completion_alert_mails" class="control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
 						<textarea class="form-control" id="job_completion_alert_mails" name="job_completion_alert_mails" placeholder="Emails To Send Job Completion Alert" title="Please enter Emails To Send Job Completion Alert"><?php echo $this->job_completion_alert_mails; ?></textarea>
 						<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma separated emails to send to multiple recepients</span>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Home Logo 1"); ?> </label>
 						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
@@ -286,6 +290,8 @@ $faqResults = json_decode($this->faqs);
 							<?= $this->translate->_("Please make sure logo image size is 80x80 px") ?>
 						</div>
 					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="" class="control-label"><?= $this->translate->_("Home Logo 2"); ?> </label>
 						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
@@ -397,6 +403,18 @@ $faqResults = json_decode($this->faqs);
 						<div class="form-group">
 							<label for="fromEmail" class="ccontrol-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
 							<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail" name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="cc" class="control-label"><?= $this->translate->_("CC"); ?></label>
+						<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="cc" name="emailConfig[cc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="bcc" class="control-label"><?= $this->translate->_("BCC"); ?></label>
+							<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
 						</div>
 					</div>
 				</div>

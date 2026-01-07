@@ -973,9 +973,8 @@ class Application_Service_Participants
 		$commonServices = new Application_Service_Common();
 		$alertMsg = new Zend_Session_Namespace('alertSpace');
 
-		$file   = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+		$mail = json_decode($commonServices->getConfig('mail'));
+		$domain = $commonServices->getConfig('domain');
 		// Fetch recipients (already filtered by SQL if skipEmail was on)
 		$results = $this->getAllPTDetails($data);
 
@@ -989,13 +988,13 @@ class Application_Service_Participants
 		]);
 
 		// Runtime “belt-and-suspenders” guard for skipping + subdomains
-		$host = strtolower(parse_url($config->domain, PHP_URL_HOST) ?: '');
+		$host = strtolower(parse_url($domain, PHP_URL_HOST) ?: '');
 		$skip = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
 
-		$fromEmail    = $config->email->participant->fromMail;
-		$fromFullName = $config->email->participant->fromName;
-		$cc           = $config->email->participant->cc;
-		$bcc          = $config->email->participant->bcc;
+		$fromEmail    = $mail->fromEmail;
+		$fromFullName = $mail->fromName;
+		$cc           = $mail->cc;
+		$bcc          = $mail->bcc;
 
 		$status = false;
 		$seen   = []; // cross-role de-dupe (participant/datamanager/ptcc)
