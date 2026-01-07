@@ -409,12 +409,12 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="cc" class="control-label"><?= $this->translate->_("CC"); ?></label>
-						<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="cc" name="emailConfig[cc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
+						<input type="text" value="<?php echo $emailConfig->cc ?? null; ?>" id="cc" name="emailConfig[cc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
 					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 							<label for="bcc" class="control-label"><?= $this->translate->_("BCC"); ?></label>
-							<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
+							<input type="text" value="<?php echo $emailConfig->bcc ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
 						</div>
 					</div>
 				</div>
