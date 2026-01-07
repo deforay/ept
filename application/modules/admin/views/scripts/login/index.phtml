@@ -116,11 +116,10 @@ $eptLogo = implode('', $logos);
 </div>
 
 <div class="container">
-	<?php $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV); ?>
 	<form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(["module" => "admin", "controller" => "login", "action" => "index"], null, true) ?>">
 
 		<div style="text-align:center;">
-			<h3 class="form-signin-heading"><span><?php echo $config->instituteName; ?></span><br><br><?= $this->translate->_("PT Administrator"); ?></h3>
+			<h3 class="form-signin-heading"><span><?php echo $this->instituteName; ?></span><br><br><?= $this->translate->_("PT Administrator"); ?></h3>
 			<?php if ($isTrainingInstance) { ?>
 
 				<h5 class="form-signin-heading"><span><?= $this->translate->_("TRAINING INSTANCE"); ?></h5>

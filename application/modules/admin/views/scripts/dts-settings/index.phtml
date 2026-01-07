@@ -55,44 +55,6 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                     <input type="radio" name="dtsEnforceAlgorithmCheck" id="dtsEnforceAlgorithmCheck_no" <?php echo (isset($dts->dtsEnforceAlgorithmCheck) && $dts->dtsEnforceAlgorithmCheck == "no") ? " checked='checked' " : ""; ?> value="no" /> No
                 </div>
             </div> -->
-            <div class="row malawi-allowed" style="display: none;">
-                <div class="col-md-6 malawi-allowed" style="display: none;">
-                    <label for="displaySampleConditionFields" class="control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
-                    <div class="input-group">
-                        <div class="btn-group radioBtn">
-                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "yes") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="yes" onclick="toggleRadios(this);">YES</a>
-                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="no" onclick="toggleRadios(this);">NO</a>
-                        </div>
-                        <input type="hidden" name="dts[displaySampleConditionFields]" id="displaySampleConditionFields" value="<?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " yes " : "no"; ?>">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label for="dtsSchemeType" class="control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
-                    <select class="form-control" id="dtsSchemeType" name="dtsSchemeType" title="Please select DTS Scheme Type" onchange="changeAlg(this);">
-                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <optgroup label="Standard Types">
-                            <option value="standard" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
-                            <option value="updated-3-tests" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
-                        </optgroup>
-                        <optgroup label="Country Specific">
-                            <option value="ghana" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
-                            <option value="malawi" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
-                            <option value="myanmar" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
-                            <option value="sierraLeone" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "sierraLeone") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
-                            <option value="cotedivoire" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "cotedivoire") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Côte d'Ivoire"); ?></option>
-                            <option value="drc" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "drc") ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC"); ?></option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div class="col-md-6 malawi-allowed" style="display: none;">
-                    <label for="allowRepeatTest" class="control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
-                    <div class="btn-group radioBtn">
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);">YES</a>
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);">NO</a>
-                    </div>
-                    <input type="hidden" name="dts[allowRepeatTest]" id="allowRepeatTest" value="<?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " yes " : "no"; ?>">
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-6 rtrifields" style="display: none;">
                     <label for="rtriEnabled" class="control-label"><?= $this->translate->_("Do you want to enable RTRI?"); ?> </label>
@@ -147,6 +109,45 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                         <option value="cotedivoireNationalDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("cotedivoireNationalDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("Côte d'Ivoire National Algorithm"); ?></option>
                         <option value="drcDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("drcDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC National Algorithm"); ?></option>
                     </select>
+                </div>
+            </div>
+            <div class="row malawi-allowed" style="display: <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType)  && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
+                <div class="col-md-6 malawi-allowed" style="display: <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType)  && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
+                    <label for="displaySampleConditionFields" class="control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
+                    <div class="input-group">
+                        <div class="btn-group radioBtn">
+                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "yes") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                            <a class="btn btn-primary btn-sm <?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " active " : "notActive"; ?>" data-toggle="displaySampleConditionFields" data-title="no" onclick="toggleRadios(this);">NO</a>
+                        </div>
+                        <input type="hidden" name="dts[displaySampleConditionFields]" id="displaySampleConditionFields" value="<?php echo (isset($dts->displaySampleConditionFields) && $dts->displaySampleConditionFields == "no") ? " yes " : "no"; ?>">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="dtsSchemeType" class="control-label"><?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span></label>
+                    <select class="form-control" id="dtsSchemeType" name="dts[dtsSchemeType]" title="Please select DTS Scheme Type" onchange="changeAlg(this);">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <optgroup label="Standard Types">
+                            <option value="standard" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "standard") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Standard"); ?></option>
+                            <option value="updated-3-tests" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "updated-3-tests") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Updated 3-Tests"); ?></option>
+                        </optgroup>
+                        <optgroup label="Country Specific">
+                            <option value="ghana" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "ghana") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Ghana"); ?></option>
+                            <option value="malawi" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "malawi") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Malawi"); ?></option>
+                            <option value="myanmar" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "myanmar") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Myanmar"); ?></option>
+                            <option value="sierraLeone" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "sierraLeone") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Sierra Leone"); ?></option>
+                            <option value="cotedivoire" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "cotedivoire") ? " selected='selected' " : ""; ?>><?= $this->translate->_("Côte d'Ivoire"); ?></option>
+                            <option value="drc" <?php echo (isset($dts->dtsSchemeType) && $dts->dtsSchemeType == "drc") ? " selected='selected' " : ""; ?>><?= $this->translate->_("DRC"); ?></option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="col-md-6 malawi-allowed" style="display:  <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType) && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
+                    <label for="allowRepeatTest" class="control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
+                    <br>
+                    <div class="btn-group radioBtn">
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);">NO</a>
+                    </div>
+                    <input type="hidden" name="dts[allowRepeatTest]" id="allowRepeatTest" value="<?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " yes " : "no"; ?>">
                 </div>
             </div>
             <br>

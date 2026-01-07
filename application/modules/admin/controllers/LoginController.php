@@ -66,7 +66,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				$userId = $result['admin_id']; // Set this to the logged-in user's ID
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-					$loginData = array(
+				$loginData = array(
 					'user_id' => $userId,
 					'login_context' => 'admin', // or 'failed' if login failed
 					'login_status' => 'success', // Indicate failed login
@@ -80,7 +80,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				// Insert login history
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-					$loginData = array(
+				$loginData = array(
 					'user_id' => NULL,
 					'login_context' => 'admin', // or 'failed' if login failed
 					'login_status' => 'failed', // Indicate failed login
@@ -93,6 +93,8 @@ class Admin_LoginController extends Zend_Controller_Action
 				$sessionAlert->status = "failure";
 			}
 		} else {
+			$commonServices = new Application_Service_Common();
+			$this->view->instituteName = $commonServices->getConfig('institute_name');
 			// We are destroying the session here in case this person has
 			// logged in as a User as well..
 			// We don't want that

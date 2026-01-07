@@ -1,7 +1,7 @@
 <?php
-$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-$dtsSchemeType = isset($this->config->evaluation->dts->dtsSchemeType) ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
-$rtriEnabled = isset($this->config->evaluation->dts->rtriEnabled) ? $this->config->evaluation->dts->rtriEnabled : 'no';
+$allowedAlgorithms = isset($this->dtsConfig->allowedAlgorithms) ? explode(",", $this->dtsConfig->allowedAlgorithms) : array();
+$dtsSchemeType = isset($this->dtsConfig->dtsSchemeType) ? $this->dtsConfig->dtsSchemeType : 'standard';
+$rtriEnabled = isset($this->dtsConfig->rtriEnabled) ? $this->dtsConfig->rtriEnabled : 'no';
 
 $possibleTestResults = '<select name="possibleTestResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->dtsPossibleResults as $pr) {

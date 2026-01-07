@@ -102,7 +102,8 @@ class Admin_ShipmentController extends Zend_Controller_Action
 
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+                $common = new Application_Service_Common();
+                $this->view->dtsConfig = $common->getSchemeConfig('dts');
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
