@@ -5,7 +5,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 
     protected $_name = 'scheme_config';
 
-    public function getValue($name)
+    public function getSchemeConfig(?string $name = null)
     {
         $result = null;
 
@@ -59,23 +59,6 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
         }
 
         return $result;
-    }
-
-    public function getSchemeConfig(?string $configName = null)
-    {
-        if ($configName !== null) {
-            $row = $this->fetchRow(['scheme_config_name = ?' => $configName]);
-            return $row ? $row->value : null;
-        }
-
-        $configValues = $this->fetchAll()->toArray();
-
-        $arr = [];
-        foreach ($configValues as $config) {
-            $arr[$config['scheme_config_name']] = $config['scheme_config_value'];
-        }
-
-        return $arr;
     }
 
 

@@ -17,7 +17,6 @@ class  Pt_Helper_View_DateFormat extends Zend_View_Helper_Abstract
 
 		// $config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications'=>true, 'nestSeparator'=>"#"));
 		$config = new Zend_Config_Ini($file, APPLICATION_ENV, array('allowModifications' => false));
-
 		return $config->participant->dateformat;
 	}
 }

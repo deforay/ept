@@ -1663,8 +1663,9 @@ class Application_Service_Shipments
             $db = new Application_Model_DbTable_Shipments();
             $distroService = new Application_Service_Distribution();
             $distro = $distroService->getDistribution($params['distribution']);
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+            // To get scheme config
+            $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
+            $dtsSchemeType = $schemeConfigDb->getSchemeConfig('dts.dtsSchemeType');
             $sec = APPLICATION_ENV;
             $controlCount = 0;
             foreach ($params['control'] as $control) {
@@ -1718,13 +1719,12 @@ class Application_Service_Shipments
             if (isset($params['tbTest']) && $params['tbTest'] != "") {
                 $shipmentAttributes['tb_test_type'] = $params['tbTest'];
             }
-            if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "" && $params['schemeId'] == 'dts') {
-                $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
+            if (isset($dtsSchemeType) && $dtsSchemeType != "" && $params['schemeId'] == 'dts') {
+                $shipmentAttributes['dtsSchemeType'] = $dtsSchemeType;
             } elseif ($params['schemeId'] == 'dts') {
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
-            // Zend_Debug::dump($shipmentAttributes);die;
             $data = array(
                 'shipment_code' => $params['shipmentCode'],
                 'allow_editing_response' => $params['allowEditingResponse'],
@@ -1792,8 +1792,7 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                        ;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2340,8 +2339,9 @@ class Application_Service_Shipments
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, null, array('allowModifications' => true));
+        // To get scheme config
+        $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
+        $dtsSchemeType = $schemeConfigDb->getSchemeConfig('dts.dtsSchemeType');
         $sec = APPLICATION_ENV;
         $scheme = $shipmentRow['scheme_type'];
 
@@ -2400,8 +2400,7 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                    ;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -2768,8 +2767,8 @@ class Application_Service_Shipments
         if (isset($params['enableSyphilis']) && !empty($params['enableSyphilis'])) {
             $shipmentAttributes['enableSyphilis'] = $params['enableSyphilis'];
         }
-        if (isset($config->$sec->evaluation->dts->dtsSchemeType) && $config->$sec->evaluation->dts->dtsSchemeType != "") {
-            $shipmentAttributes['dtsSchemeType'] = $config->$sec->evaluation->dts->dtsSchemeType;
+        if (isset($dtsSchemeType) && $dtsSchemeType != "") {
+            $shipmentAttributes['dtsSchemeType'] = $dtsSchemeType;
         } else {
             $shipmentAttributes['dtsSchemeType'] = "standard";
         }
@@ -3021,7 +3020,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3060,7 +3059,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3353,8 +3352,9 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         // Updated manually overrided
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+            // To get scheme config
+            $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
+            $dtsPassPercentage = $schemeConfigDb->getSchemeConfig('dts.passPercentage');
             $shipmentDB = new Application_Model_DbTable_Shipments();
 
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
@@ -3370,7 +3370,7 @@ class Application_Service_Shipments
                 }
             }
             $grandTotal = number_format($shipmentScore + $docScore);
-            if ($grandTotal < $config->evaluation->dts->passPercentage) {
+            if ($grandTotal < $dtsPassPercentage) {
                 $finalResult = 2;
             } else {
                 $finalResult = 1;
@@ -3459,9 +3459,9 @@ class Application_Service_Shipments
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        //Admin edit sections
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        // To get scheme config
+        $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
+        $dtsPassPercentage = $schemeConfigDb->getSchemeConfig('dts.passPercentage');
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             $shipmentDB = new Application_Model_DbTable_Shipments();
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
@@ -3492,7 +3492,7 @@ class Application_Service_Shipments
         /* Manual result override changes */
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             $grandTotal = number_format($shipmentScore + $docScore);
-            if ($grandTotal < $config->evaluation->dts->passPercentage) {
+            if ($grandTotal < $dtsPassPercentage) {
                 $finalResult = 2;
             } else {
                 $finalResult = 1;
@@ -3640,8 +3640,6 @@ class Application_Service_Shipments
             }
         }
 
-
-
         $sQuery = $db->select()->from(
             array('spm' => 'shipment_participant_map'),
             array(
@@ -3733,11 +3731,9 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
             $output['aaData'][] = $row;
         }
