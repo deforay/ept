@@ -26,6 +26,8 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 foreach ($keys as $key) {
                     if (isset($configValue->$key)) {
                         $configValue = $configValue->$key;
+                        if (!$configValue)
+                            $configValue = $configValue->evaluation->$key;
                     } else {
                         $configValue = null;
                         break;

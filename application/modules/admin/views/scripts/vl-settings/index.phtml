@@ -1,4 +1,9 @@
-<?php $vl = json_decode($this->vlConfig); ?>
+<?php
+if (Application_Service_Common::isJSON($this->vlConfig))
+    $vl = json_decode($this->vlConfig);
+else
+    $vl = $this->vlConfig;
+?>
 <div class="well">
     <form name="vlSettingsForm" id="vlSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "vl-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>

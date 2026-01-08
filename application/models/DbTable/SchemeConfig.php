@@ -8,7 +8,6 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
     public function getSchemeConfig(?string $name = null)
     {
         $result = null;
-
         // Check if we're requesting a nested JSON value
         if (strpos($name, '.') !== false) {
             list($configName, $jsonKey) = explode('.', $name, 2);
@@ -33,7 +32,6 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
                 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
                 if (file_exists($file)) {
                     $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
                     // Handle nested config values (e.g., "evaluation.dts.passPercentage")
                     if (strpos($name, '.') !== false) {
                         $keys = explode('.', $name);
@@ -50,6 +48,8 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
                     } else {
                         // Direct config key
                         $result = isset($config->$name) ? $config->$name : null;
+                        if (!$result)
+                            $result = isset($config->evaluation->$name) ? $config->evaluation->$name : null;
                     }
                 }
             } catch (Exception $e) {

@@ -1,4 +1,9 @@
-<?php $tb = json_decode($this->tbConfig); ?>
+<?php
+if (Application_Service_Common::isJSON($this->tbConfig))
+    $tb = json_decode($this->tbConfig);
+else
+    $tb = $this->tbConfig;
+?>
 <style>
     .modal-backdrop.in {
         z-index: -1 !important;

@@ -1,4 +1,9 @@
-<?php $covid19 = json_decode($this->covid19Config); ?>
+<?php
+if (Application_Service_Common::isJSON($this->covid19Config))
+    $covid19 = json_decode($this->covid19Config);
+else
+    $covid19 = $this->covid19Config;
+?>
 <div class="well">
     <form name="covid19SettingsForm" id="covid19SettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "covid19-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
