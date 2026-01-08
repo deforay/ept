@@ -32,7 +32,8 @@ try {
 
 
 	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
-
+	$jobCompletionAlertStatus = $commonService->getConfig('job_completion_alert_status');
+	$jobCompletionAlertMails = $commonService->getConfig('job_completion_alert_mails');
 
 	foreach ($shipmentsToEvaluate as $shipmentId) {
 		// Do evaluation
@@ -49,15 +50,15 @@ try {
 			'link' => $link
 		]);
 		if (
-			isset($customConfig->jobCompletionAlert->status)
-			&& $customConfig->jobCompletionAlert->status == "yes"
-			&& isset($customConfig->jobCompletionAlert->mails)
-			&& !empty($customConfig->jobCompletionAlert->mails)
+			isset($jobCompletionAlertStatus)
+			&& $jobCompletionAlertStatus == "yes"
+			&& isset($jobCompletionAlertMails)
+			&& !empty($jobCompletionAlertMails)
 		) {
 			$emailSubject = "ePT | Shipment Evaluated";
 			$emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
 			$emailContent .= "<br><br><br><small>This is a system generated email</small>";
-			$commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+			$commonService->insertTempMail($jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
 		}
 		if ($enabledAdminEmailReminder == 'yes') {
 			$queueResults = $db->fetchRow($db->select()

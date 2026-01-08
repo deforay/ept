@@ -96,3 +96,5 @@ UPDATE `global_config` SET `name` = 'home' WHERE `global_config`.`name` = 'home_
 UPDATE `global_config` SET `name` = 'mail' WHERE `global_config`.`name` = 'mail_configuration';
 UPDATE `global_config` SET `name` = 'faqs' WHERE `global_config`.`name` = 'faq_configurations';
 INSERT INTO `global_config` (`name`, `value`) VALUES ('domain', 'http://ept/');
+-- Thana 08-Jan-2026
+INSERT INTO `global_config` (`name`, `value`) VALUES ('date_format', '');

@@ -62,8 +62,6 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
     public function updateConfigDetails($params)
     {
-        // Zend_Debug::dump($params);die;
-        $common = new Application_Service_Common();
         $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
         if (!is_dir($logosDir)) {
             mkdir($logosDir, 0777, true);

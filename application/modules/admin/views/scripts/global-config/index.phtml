@@ -247,8 +247,8 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="job_completion_alert_status" class="control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
-						<select class="form-control" id="job_completion_alert_status" name="job_completion_alert_status" title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
+						<label for="jobCompletionAlertStatus" class="control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
+						<select class="form-control" id="jobCompletionAlertStatus" name="job_completion_alert_status" title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo ($this->job_completion_alert_status == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="no" <?php echo ($this->job_completion_alert_status == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
@@ -271,10 +271,16 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6 mail-box" style="display: <?php echo (isset($this->job_completion_alert_status) && ($this->job_completion_alert_status == "yes")) ? 'block' : 'none'; ?>;">
-						<label for="job_completion_alert_mails" class="control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
-						<textarea class="form-control" id="job_completion_alert_mails" name="job_completion_alert_mails" placeholder="Emails To Send Job Completion Alert" title="Please enter Emails To Send Job Completion Alert"><?php echo $this->job_completion_alert_mails; ?></textarea>
+						<label for="jobCompletionAlertMails" class="control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
+						<textarea class="form-control" id="jobCompletionAlertMails" name="job_completion_alert_mails" placeholder="Emails To Send Job Completion Alert" title="Please enter Emails To Send Job Completion Alert"><?php echo $this->job_completion_alert_mails; ?></textarea>
 						<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma separated emails to send to multiple recepients</span>
 					</div>
+					<div class="col-md-6">
+						<label for="date_format" class="control-label"><?= $this->translate->_("Date Format"); ?></label>
+						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control" id="date_format" name="date_format" placeholder="Enter the date format" title="Please enter date format">
+					</div>
+				</div>
+				<div class="row">
 					<div class="col-md-6">
 						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Home Logo 1"); ?> </label>
 						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
@@ -290,8 +296,6 @@ $faqResults = json_decode($this->faqs);
 							<?= $this->translate->_("Please make sure logo image size is 80x80 px") ?>
 						</div>
 					</div>
-				</div>
-				<div class="row">
 					<div class="col-md-6">
 						<label for="" class="control-label"><?= $this->translate->_("Home Logo 2"); ?> </label>
 						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
