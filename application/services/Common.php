@@ -2009,6 +2009,6 @@ class Application_Service_Common
     public static function getSchemeConfig($name)
     {
         $sc = new Application_Model_DbTable_SchemeConfig();
-        return $sc->getValue($name);
+        return $sc->getSchemeConfig($name);
     }
 }
