@@ -34,8 +34,12 @@ class Application_Model_Recency
         }
 
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
+        $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
+        $recencyPassPercentage = $schemeConfig->getSchemeConfig('recency.passPercentage');
+
 
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
@@ -150,7 +154,7 @@ class Application_Model_Recency
                 }
 
 
-                $configuredDocScore = ((isset($config->evaluation->recency->documentationScore) && $config->evaluation->recency->documentationScore != "" && $config->evaluation->recency->documentationScore != null) ? $config->evaluation->recency->documentationScore : 10);
+                $configuredDocScore = ((isset($recencyDocumentationScore) && $recencyDocumentationScore != "" && $recencyDocumentationScore != null) ? $recencyDocumentationScore: 10);
 
                 // Response Score
                 if ($maxScore == 0 || $totalScore == 0) {
@@ -160,11 +164,11 @@ class Application_Model_Recency
                 }
 
                 $grandTotal = ($responseScore + $documentationScore);
-                if ($grandTotal < $config->evaluation->recency->passPercentage) {
+                if ($grandTotal < $recencyPassPercentage) {
                     $scoreResult = 'Fail';
                     $this->failureReason[] = array(
-                        'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
-                        'correctiveAction' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->recency->passPercentage . "</strong>)",
+                        'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $recencyPassPercentage . "</strong>)",
+                        'correctiveAction' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $recencyPassPercentage . "</strong>)",
                     );
                     $correctiveActionList[] = 15;
                 } else {
@@ -270,15 +274,14 @@ class Application_Model_Recency
     public function getDocumentationScore($results, $attributes, $shipmentAttributes)
     {
 
-
         $failureReasonsArray = [];
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
+        $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
 
         //Let us now calculate documentation score
         $documentationScore = 0;
-        $documentationPercentage = !empty($config->evaluation->recency->documentationScore) ? $config->evaluation->recency->documentationScore : 10;
+        $documentationPercentage = !empty($recencyDocumentationScore) ? $recencyDocumentationScore : 10;
 
 
         if (empty($shipmentAttributes['sampleType'])) {
@@ -338,10 +341,10 @@ class Application_Model_Recency
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-            $sampleRehydrateDays = $config->evaluation->recency->sampleRehydrateDays;
+            $recencySampleRehydrateDays = $schemeConfig->getSchemeConfig('recency.sampleRehydrateDays');;
 
             // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
-            if (empty($attributes['sample_rehydration_date']) || $interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+            if (empty($attributes['sample_rehydration_date']) || $interval->days < $recencySampleRehydrateDays || $interval->days > ($recencySampleRehydrateDays + 1)) {
                 $failureReason[] = array(
                     'warning' => "Testing not done within specified time of rehydration as per SOP.",
                     'correctiveAction' => "Review and refer to National SOP for testing. Testing should be done within specified time of rehydration."
@@ -367,6 +370,7 @@ class Application_Model_Recency
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
 
         $excel = new Spreadsheet();
 
@@ -794,9 +798,8 @@ class Application_Model_Recency
         //<-------- Document Score Sheet Heading (Sheet Four)-------
 
         if ($result['scheme_type'] == 'recency') {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-            $documentationScorePerItem = ($config->evaluation->recency->documentationScore / 5);
+            $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
+            $documentationScorePerItem = ($recencyDocumentationScore / 5);
         }
 
         $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
@@ -957,16 +960,18 @@ class Application_Model_Recency
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
-                    $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+                    //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
                     $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
                     $interval = $sampleRehydrationDate->diff($testedOnDate);
 
                     // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-                    $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-                    $rehydrateHours = $sampleRehydrateDays * 24;
+                    //$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+                    $dtsSampleRehydrateDays = $schemeConfig->getSchemeConfig('dts.sampleRehydrateDays');
+                    $dtsDocumentationScore = $schemeConfig->getSchemeConfig('dts.documentationScore');
+                    $rehydrateHours = $dtsSampleRehydrateDays * 24;
 
-                    if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
+                    if ($interval->days < $dtsSampleRehydrateDays || $interval->days > ($dtsSampleRehydrateDays + 1)) {
 
                         $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                     } else {
@@ -976,7 +981,7 @@ class Application_Model_Recency
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                 }
 
-                $documentScore = !empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0 ? (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100) : 0;
+                $documentScore = !empty($dtsDocumentationScore) && (int) $dtsDocumentationScore > 0 ? (($aRow['documentation_score'] / $dtsDocumentationScore) * 100) : 0;
                 $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($documentScore);
 
                 //-------------Document score sheet------------>
