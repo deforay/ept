@@ -1583,6 +1583,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         // Build cache for performance
         $countryCache = $this->buildCountryCache();
         $duplicateChecks = $this->batchCheckDuplicates($sheetData);
+        $duplicateChecks['fileParticipants'] = [];
+        $duplicateChecks['fileDataManagers'] = [];
 
         // Process data in single transaction
         $db->beginTransaction();
@@ -1616,6 +1618,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
 
                 // Check duplicates
+                if (isset($duplicateChecks['fileParticipants'][$row['B']])) {
+                    $this->addError($response, $row, "Unique ID {$row['B']} is duplicated in the upload file.");
+                    continue;
+                }
                 $participantExists = $duplicateChecks['participants'][$row['B']] ?? null;
                 if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates' && $participantExists) {
                     $this->addError($response, $row, "Unique ID {$row['B']} already exists.");
@@ -1623,6 +1629,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
 
                 // Check data manager email duplicates
+                if (isset($duplicateChecks['fileDataManagers'][$originalEmail])) {
+                    $this->addError($response, $row, "Data Manager email $originalEmail is duplicated in the upload file.");
+                    continue;
+                }
                 $dataManagerExists = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
                 if (isset($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && $dataManagerExists) {
                     $this->addError($response, $row, "Data Manager email $originalEmail already exists. Skipping for participant {$row['B']}.");
@@ -1773,6 +1783,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         ];
                     } else {
                         $this->addError($response, $row, 'Could not add Participant Login');
+                    }
+
+                    // Track seen records to catch duplicates within the same upload
+                    $duplicateChecks['fileParticipants'][$row['B']] = true;
+                    $duplicateChecks['participants'][$row['B']] = [
+                        'unique_identifier' => $row['B'],
+                        'participant_id' => $lastInsertedId,
+                    ];
+                    $duplicateChecks['fileDataManagers'][$originalEmail] = true;
+                    $duplicateChecks['dataManagers'][$originalEmail] = ['dm_id' => $dmId];
+                    if ($dmId2 > 0) {
+                        $duplicateChecks['fileDataManagers'][$dataManagerData2['primary_email']] = true;
+                        $duplicateChecks['dataManagers'][$dataManagerData2['primary_email']] = ['dm_id' => $dmId2];
                     }
                 } else {
                     $this->addError($response, $row, 'Could not add Participant');
