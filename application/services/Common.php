@@ -23,7 +23,7 @@ class Application_Service_Common
     }
     public static function isDateValid($date): bool
     {
-        $date = trim($date);
+        $date = trim($date ?? '');
 
         if (empty($date) || 'undefined' === $date || 'null' === $date || '0000-00-00' === $date) {
             $response = false;

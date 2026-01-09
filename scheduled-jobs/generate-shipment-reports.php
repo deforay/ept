@@ -159,7 +159,7 @@ if (!$isWorker && $debug) {
 
 // Only print the banner in the master; workers stay silent to keep the spinner clean.
 if ($isCli && !$isWorker) {
-    echo "Using up to {$procs} parallel processes\n";
+    echo "Report Generation : Using up to {$procs} parallel processes\n";
 }
 
 // Parallel processing uses Symfony Process which relies on `proc_open`.
