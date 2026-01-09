@@ -4,8 +4,12 @@
 
 final class Pt_Commons_SchemeConfig
 {
-    public static function get($name)
+    public static function get($name, bool $useCache = true)
     {
+        static $cache = [];
+        if ($useCache && array_key_exists($name, $cache)) {
+            return $cache[$name];
+        }
         $sc = new Application_Model_DbTable_SchemeConfig();
         $result = $sc->getSchemeConfig($name);
 
@@ -41,6 +45,9 @@ final class Pt_Commons_SchemeConfig
             }
         }
 
+        if ($useCache) {
+            $cache[$name] = $result;
+        }
         return $result;
     }
 }
