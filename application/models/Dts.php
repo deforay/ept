@@ -1223,8 +1223,8 @@ final class Application_Model_Dts
 			$this->translator->_('QC Done #1'),
 			$this->translator->_('QC Expiry Date #1'),
 		];
-			if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-				$reportHeadings = [
+		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+			$reportHeadings = [
 				$this->translator->_('Participant Code'),
 				$this->translator->_('Participant Name'),
 				$this->translator->_('Institute Name'),
@@ -1243,14 +1243,14 @@ final class Application_Model_Dts
 				$this->translator->_('Expiry Date #1'),
 				$this->translator->_('QC Done #1'),
 				$this->translator->_('QC Expiry Date #1')
-				];
-			}
+			];
+		}
 
-			$sampleLabels = $this->getSampleLabels($shipmentId);
-			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-			if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
-				// To search the kit name postion
-				$index = array_search('QC Expiry Date#1', $reportHeadings);
+		$sampleLabels = $this->getSampleLabels($shipmentId);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+		if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
+			// To search the kit name postion
+			$index = array_search('QC Expiry Date#1', $reportHeadings);
 			// Insert the value after this index
 			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
 				$reportHeadings[] = $kit1Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
@@ -1260,34 +1260,34 @@ final class Application_Model_Dts
 			$reportHeadings,
 			$this->translator->_('Test #2 Kit Name'),
 			$this->translator->_('Kit Lot #2'),
-				$this->translator->_('Expiry Date #2'),
-				$this->translator->_('QC Done #2'),
-				$this->translator->_('QC Expiry Date #2')
-			);
-			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-			if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
-				// To search the kit name postion
-				$index = array_search('QC Expiry Date#2', $reportHeadings);
+			$this->translator->_('Expiry Date #2'),
+			$this->translator->_('QC Done #2'),
+			$this->translator->_('QC Expiry Date #2')
+		);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+		if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
+			// To search the kit name postion
+			$index = array_search('QC Expiry Date#2', $reportHeadings);
 			// Insert the value after this index
 			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
 				$reportHeadings[] = $kit2Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 			}
 		}
 
-			$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
-			$participantAttributes = [];
-			if (!empty($shipmentResult[0]['attributes'])) {
-				$participantAttributes = is_array($shipmentResult[0]['attributes'])
-					? $shipmentResult[0]['attributes']
-					: (json_decode($shipmentResult[0]['attributes'], true) ?? []);
-			}
+		$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+		$participantAttributes = [];
+		if (!empty($shipmentResult[0]['attributes'])) {
+			$participantAttributes = is_array($shipmentResult[0]['attributes'])
+				? $shipmentResult[0]['attributes']
+				: (json_decode($shipmentResult[0]['attributes'], true) ?? []);
+		}
 
-			$panelSettings = $this->getDtsPanelSettings(
-				$config,
-				$shipmentAttributes,
-				$participantAttributes,
-				$dtsSchemeType
-			);
+		$panelSettings = $this->getDtsPanelSettings(
+			$config,
+			$shipmentAttributes,
+			$participantAttributes,
+			$dtsSchemeType
+		);
 		$testThreeHidden = $panelSettings['testThreeHidden'];
 
 		if ($testThreeHidden !== true) {
@@ -1296,40 +1296,40 @@ final class Application_Model_Dts
 				$this->translator->_('Test#3 Kit Name'),
 				$this->translator->_('Kit Lot #3'),
 				$this->translator->_('Expiry Date #3'),
-					$this->translator->_('QC Done #3'),
-					$this->translator->_('QC Expiry Date #3')
-				);
-				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-				if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
-					// To search the kit name postion
-					$index = array_search('QC Expiry Date#3', $reportHeadings);
+				$this->translator->_('QC Done #3'),
+				$this->translator->_('QC Expiry Date #3')
+			);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
+				// To search the kit name postion
+				$index = array_search('QC Expiry Date#3', $reportHeadings);
 				// Insert the value after this index
 				foreach (range($index + 1, count($reportHeadings) - 1) as $row) {
 					$reportHeadings[] = $kit3Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 				}
 			}
 		}
-			$addWithFinalResultCol = 2;
-			/* Repeat test section */
-			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
-				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-				// $addWithFinalResultCol = 0;
-				if ($testThreeHidden !== true) {
-					$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-					// $addWithFinalResultCol = -1;
-				}
-			}
-			// For final result
-			$finalResultsStartIndex = count($reportHeadings);
+		$addWithFinalResultCol = 2;
+		/* Repeat test section */
+		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
-			// For RTRI and test results final result
-			$rtriPanelStartIndex = null;
-			$rtriPanelEndIndex = null;
-			$rtriFinalStartIndex = null;
-			$rtriFinalEndIndex = null;
-			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-				$rtriPanelStartIndex = count($reportHeadings);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			// $addWithFinalResultCol = 0;
+			if ($testThreeHidden !== true) {
+				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+				// $addWithFinalResultCol = -1;
+			}
+		}
+		// For final result
+		$finalResultsStartIndex = count($reportHeadings);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+		// For RTRI and test results final result
+		$rtriPanelStartIndex = null;
+		$rtriPanelEndIndex = null;
+		$rtriFinalStartIndex = null;
+		$rtriFinalEndIndex = null;
+		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+			$rtriPanelStartIndex = count($reportHeadings);
 			// foreach ($sampleLabels as $label) {
 			// 	$reportHeadings[] = $label;
 			// }
@@ -1366,15 +1366,6 @@ final class Application_Model_Dts
 			$finalResultStartCellCount += $result['number_of_controls'];
 
 
-		$common = new Common();
-		$feedbackOption = $common->getConfig('participant_feedback');
-		if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-			/* Feed Back Response Section */
-			// $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
-			// if(isset($questions) && count($questions['question']) > 0){
-			// 	$reportHeadings = $questions['heading'];
-			// }
-		}
 		$colNo = 0;
 		$repeatCellNo = 0;
 		$rtriCellNo = 0;
@@ -1450,20 +1441,6 @@ final class Application_Model_Dts
 			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
 			$resultsReportedSheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
-		}
-		if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-			/* Feed Back Response Section */
-			// if (isset($questions) && count($questions['question']) > 0) {
-			// 	$lastCol = count($reportHeadings) - count($questions['question']);
-			// 	$feedbackHeadingColumn = ($lastCol + 1);
-			// 	$endFeedbackMergeCell =  count($reportHeadings);
-			// 	$feedbackFirstCellName = Coordinate::stringFromColumnIndex($feedbackHeadingColumn);
-			// 	$feedbackSecondCellName = Coordinate::stringFromColumnIndex($endFeedbackMergeCell);
-			// 	$resultsReportedSheet->mergeCells($feedbackFirstCellName . "1:" . $feedbackSecondCellName . "1");
-			// 	$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
-			// 	$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->applyFromArray($borderStyle, true);
-			// 	$resultsReportedSheet->getStyle($feedbackSecondCellName . "1")->applyFromArray($borderStyle, true);
-			// }
 		}
 		foreach ($reportHeadings as $field => $value) {
 			$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
@@ -1904,16 +1881,6 @@ final class Application_Model_Dts
 					}
 
 					$resultReportRow[] = $aRow['user_comment'];
-					if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-						/* Feed Back Response Section */
-						// $feedbackDb = new Application_Model_DbTable_FeedBackTable();
-						// $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-						// if (isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0) {
-						// 	foreach ($questions['question'] as $q) {
-						// 		$resultReportRow[] = $answers[$q];
-						// 	}
-						// }
-					}
 
 					$panelScoreRow[] = $countCorrectResult;
 					$panelScoreRow[] = $aRow['shipment_score'];
