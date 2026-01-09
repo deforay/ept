@@ -89,18 +89,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                     </div>
                     <input type="hidden" name="dts[disableOtherTestkit]" id="disableOtherTestkit" value="<?php echo $dts->disableOtherTestkit ?? "no"; ?>">
                 </div>
-                <div class="col-md-6">
-                    <label for="allowRepeatTests" class="control-label"><?= $this->translate->_("Allow Repeat Tests"); ?> </label>
-                    <br>
-                    <div class="btn-group radioBtn">
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTests" data-title="yes" onclick="toggleRadios(this);">YES</a>
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTests" data-title="no" onclick="toggleRadios(this);">NO</a>
-                    </div>
-                    <input type="hidden" name="dts[allowRepeatTests]" id="allowRepeatTests" value="<?php echo $dts->allowRepeatTests ?? "no"; ?>">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12" id="allowedAlgorithmsDiv">
+                <div class="col-md-6" id="allowedAlgorithmsDiv">
                     <label for="allowedAlgorithms" class="control-label"><?= $this->translate->_("Allowed Algorithms"); ?> <span class="mandatory">*</span></label>
                     <br>
                     <select class="form-control multipleSelect isRequired" id="allowedAlgorithms" name="dts[allowedAlgorithms][]" multiple="multiple" title="Please select allowed algorithms">
@@ -115,6 +104,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                     </select>
                 </div>
             </div>
+            <hr>
             <div class="row malawi-allowed" style="display: <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType)  && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
                 <div class="col-md-6 malawi-allowed" style="display: <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType)  && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
                     <label for="displaySampleConditionFields" class="control-label"><?= $this->translate->_("Display Sample Condition Fields on Participant Result Form"); ?> <span class="mandatory">*</span></label>
@@ -145,13 +135,13 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                     </select>
                 </div>
                 <div class="col-md-6 malawi-allowed" style="display:  <?php echo (isset($dts->dtsSchemeType) && !empty($dts->dtsSchemeType) && in_array($dts->dtsSchemeType, ['updated-3-tests', 'malawi'])) ? 'display' : 'none'; ?>;">
-                    <label for="allowRepeatTest" class="control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
+                    <label for="allowRepeatTests" class="control-label"><?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span></label>
                     <br>
                     <div class="btn-group radioBtn">
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);">YES</a>
-                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);">NO</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "yes") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "no") ? " active " : "notActive"; ?>" data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);">NO</a>
                     </div>
-                    <input type="hidden" name="dts[allowRepeatTest]" id="allowRepeatTest" value="<?php echo (isset($dts->allowRepeatTest) && $dts->allowRepeatTest == "no") ? " yes " : "no"; ?>">
+                    <input type="hidden" name="dts[allowRepeatTests]" id="allowRepeatTests" value="<?php echo (isset($dts->allowRepeatTests) && $dts->allowRepeatTests == "no") ? " yes " : "no"; ?>">
                 </div>
             </div>
             <br>
