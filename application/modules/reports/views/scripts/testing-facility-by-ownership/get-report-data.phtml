@@ -1,6 +1,7 @@
 <?php if (isset($this->result) && !empty($this->result)): ?>
     <div class="table-container">
-        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover report-table" id="shipmentTable">
+        <table cellpadding="0" cellspacing="0" border="0"
+            class="table table-striped table-bordered table-hover report-table" id="shipmentTable">
             <thead>
                 <tr>
                     <th style="text-align: center;" rowspan="2"><?= $this->translate->_("Type of Testing Facility"); ?></th>
@@ -22,7 +23,7 @@
                 <?php foreach ($this->result['fundingSources'] as $fundingSource): ?>
                     <?php $fundingSourceName = $fundingSource['funding_source']; ?>
                     <tr>
-                        <td class="font-weight-bold"><?= ucfirst(htmlspecialchars($fundingSourceName)); ?></td>
+                        <td class="font-weight-bold"><?= htmlspecialchars($fundingSourceName); ?></td>
                         <td class="text-center">
                             <?= isset($this->result['overallStats'][$fundingSourceName]['count']) ? $this->result['overallStats'][$fundingSourceName]['count'] : 0; ?>
                         </td>
