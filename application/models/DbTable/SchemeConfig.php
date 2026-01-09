@@ -9,11 +9,15 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
     {
         $result = null;
         // Check if we're requesting a nested JSON value
-        if (strpos($name, '.') !== false) {
-            list($configName, $jsonKey) = explode('.', $name, 2);
+        if (str_contains($name, '.')) {
+            [$configName, $jsonKey] = explode('.', $name, 2);
+            $jsonExpr = $this->getAdapter()->quoteInto(
+                "JSON_UNQUOTE(JSON_EXTRACT(scheme_config_value, CONCAT('$.', JSON_QUOTE(?))))",
+                $jsonKey
+            );
             $select = $this->select()
                 ->from($this->_name, array(
-                    'value' => new Zend_Db_Expr("JSON_UNQUOTE(JSON_EXTRACT(scheme_config_value, '$.$jsonKey'))")
+                    'value' => new Zend_Db_Expr($jsonExpr)
                 ))
                 ->where("scheme_config_name = ?", $configName);
             $res = $this->getAdapter()->fetchCol($select);
@@ -24,38 +28,6 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
                 ->from($this->_name, array('scheme_config_value'))
                 ->where("scheme_config_name = ?", $name));
             $result = !empty($res[0]) ? $res[0] : null;
-        }
-
-        // If no result from database, check config.ini
-        if ($result === null) {
-            try {
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                if (file_exists($file)) {
-                    $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-                    // Handle nested config values (e.g., "evaluation.dts.passPercentage")
-                    if (strpos($name, '.') !== false) {
-                        $keys = explode('.', $name);
-                        $value = $config;
-                        foreach ($keys as $key) {
-                            if (isset($value->$key)) {
-                                $value = $value->$key;
-                            } else {
-                                $value = null;
-                                break;
-                            }
-                        }
-                        $result = $value;
-                    } else {
-                        // Direct config key
-                        $result = isset($config->$name) ? $config->$name : null;
-                        if (!$result)
-                            $result = isset($config->evaluation->$name) ? $config->evaluation->$name : null;
-                    }
-                }
-            } catch (Exception $e) {
-                // Log error if needed
-                error_log("Error reading config.ini: " . $e->getMessage());
-            }
         }
 
         return $result;
@@ -116,7 +88,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
         if ($row) {
             // Update existing
             $this->update(
-                array('scheme_config_value' => $configValue),
+                ['scheme_config_value' => $configValue],
                 $this->getAdapter()->quoteInto('scheme_config_name = ?', $configName)
             );
         } else {

@@ -2008,7 +2008,6 @@ class Application_Service_Common
 
     public static function getSchemeConfig($name)
     {
-        $sc = new Application_Model_DbTable_SchemeConfig();
-        return $sc->getSchemeConfig($name);
+        return Pt_Commons_SchemeConfig::get($name);
     }
 }
