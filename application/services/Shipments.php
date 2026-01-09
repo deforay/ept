@@ -2019,7 +2019,7 @@ class Application_Service_Shipments
                     // ------------------>
                 }
             } elseif ($params['schemeId'] == 'tb') {
-                for ($i = 0; $i < $size; $i++) {
+                foreach ($params['sampleName'] as $i => $value) {
                     $score = 0;
                     if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                         $score = $params['scorePerSample'];
@@ -2418,7 +2418,8 @@ class Application_Service_Shipments
             }
         } elseif ($scheme == 'tb') {
             $dbAdapter->delete('reference_result_tb', 'shipment_id = ' . $params['shipmentId']);
-            for ($i = 1; $i <= $size; $i++) {
+            // for ($i = 1; $i <= $size; $i++) {
+            foreach ($params['sampleName'] as $i => $value) {
                 $score = 0;
                 if (isset($params['scorePerSample']) && !empty($params['scorePerSample']) && $params['control'][$i] == 0 && $params['mandatory'][$i] == 1) {
                     $score = $params['scorePerSample'];
