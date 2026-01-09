@@ -1223,8 +1223,8 @@ final class Application_Model_Dts
 			$this->translator->_('QC Done #1'),
 			$this->translator->_('QC Expiry Date #1'),
 		];
-		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
-			$reportHeadings = [
+			if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+				$reportHeadings = [
 				$this->translator->_('Participant Code'),
 				$this->translator->_('Participant Name'),
 				$this->translator->_('Institute Name'),
@@ -1243,13 +1243,14 @@ final class Application_Model_Dts
 				$this->translator->_('Expiry Date #1'),
 				$this->translator->_('QC Done #1'),
 				$this->translator->_('QC Expiry Date #1')
-			];
-		}
+				];
+			}
 
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-		if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
-			// To search the kit name postion
-			$index = array_search('QC Expiry Date#1', $reportHeadings);
+			$sampleLabels = $this->getSampleLabels($shipmentId);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
+				// To search the kit name postion
+				$index = array_search('QC Expiry Date#1', $reportHeadings);
 			// Insert the value after this index
 			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
 				$reportHeadings[] = $kit1Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
@@ -1259,29 +1260,34 @@ final class Application_Model_Dts
 			$reportHeadings,
 			$this->translator->_('Test #2 Kit Name'),
 			$this->translator->_('Kit Lot #2'),
-			$this->translator->_('Expiry Date #2'),
-			$this->translator->_('QC Done #2'),
-			$this->translator->_('QC Expiry Date #2')
-		);
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-		if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
-			// To search the kit name postion
-			$index = array_search('QC Expiry Date#2', $reportHeadings);
+				$this->translator->_('Expiry Date #2'),
+				$this->translator->_('QC Done #2'),
+				$this->translator->_('QC Expiry Date #2')
+			);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
+				// To search the kit name postion
+				$index = array_search('QC Expiry Date#2', $reportHeadings);
 			// Insert the value after this index
 			foreach (range(($index + 1), (count($reportHeadings) - 1)) as $row) {
 				$reportHeadings[] = $kit2Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 			}
 		}
 
-		$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
-		$attributes = json_decode($aRow['attributes'], true);
+			$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+			$participantAttributes = [];
+			if (!empty($shipmentResult[0]['attributes'])) {
+				$participantAttributes = is_array($shipmentResult[0]['attributes'])
+					? $shipmentResult[0]['attributes']
+					: (json_decode($shipmentResult[0]['attributes'], true) ?? []);
+			}
 
-		$panelSettings = $this->getDtsPanelSettings(
-			$config,
-			$shipmentAttributes,
-			$attributes,
-			$dtsSchemeType
-		);
+			$panelSettings = $this->getDtsPanelSettings(
+				$config,
+				$shipmentAttributes,
+				$participantAttributes,
+				$dtsSchemeType
+			);
 		$testThreeHidden = $panelSettings['testThreeHidden'];
 
 		if ($testThreeHidden !== true) {
@@ -1290,41 +1296,40 @@ final class Application_Model_Dts
 				$this->translator->_('Test#3 Kit Name'),
 				$this->translator->_('Kit Lot #3'),
 				$this->translator->_('Expiry Date #3'),
-				$this->translator->_('QC Done #3'),
-				$this->translator->_('QC Expiry Date #3')
-			);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
-				// To search the kit name postion
-				$index = array_search('QC Expiry Date#3', $reportHeadings);
+					$this->translator->_('QC Done #3'),
+					$this->translator->_('QC Expiry Date #3')
+				);
+				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+				if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
+					// To search the kit name postion
+					$index = array_search('QC Expiry Date#3', $reportHeadings);
 				// Insert the value after this index
 				foreach (range($index + 1, count($reportHeadings) - 1) as $row) {
 					$reportHeadings[] = $kit3Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 				}
 			}
 		}
-		$addWithFinalResultCol = 2;
-		/* Repeat test section */
-		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			// $addWithFinalResultCol = 0;
-			if ($testThreeHidden !== true) {
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-				// $addWithFinalResultCol = -1;
+			$addWithFinalResultCol = 2;
+			/* Repeat test section */
+			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+				// $addWithFinalResultCol = 0;
+				if ($testThreeHidden !== true) {
+					$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+					// $addWithFinalResultCol = -1;
+				}
 			}
-		}
-		// For final result
-		$finalResultsStartIndex = count($reportHeadings);
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-		// For RTRI and test results final result
-		$rtriPanelStartIndex = null;
-		$rtriPanelEndIndex = null;
-		$rtriFinalStartIndex = null;
-		$rtriFinalEndIndex = null;
-		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-			$sampleLabels = $this->getSampleLabels($shipmentId);
-			$rtriPanelStartIndex = count($reportHeadings);
+			// For final result
+			$finalResultsStartIndex = count($reportHeadings);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			// For RTRI and test results final result
+			$rtriPanelStartIndex = null;
+			$rtriPanelEndIndex = null;
+			$rtriFinalStartIndex = null;
+			$rtriFinalEndIndex = null;
+			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
+				$rtriPanelStartIndex = count($reportHeadings);
 			// foreach ($sampleLabels as $label) {
 			// 	$reportHeadings[] = $label;
 			// }
@@ -2171,6 +2176,14 @@ final class Application_Model_Dts
 			->where("shipment_id = ?", $shipmentId)->order("sample_id");
 		$result = $db->fetchAll($query);
 		return array_column($result, 'sample_label');
+	}
+
+	private function appendSampleLabels(array $headings, array $sampleLabels): array
+	{
+		foreach ($sampleLabels as $label) {
+			$headings[] = $label;
+		}
+		return $headings;
 	}
 
 	// Returns an array:
