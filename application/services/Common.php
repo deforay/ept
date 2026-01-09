@@ -23,7 +23,7 @@ class Application_Service_Common
     }
     public static function isDateValid($date): bool
     {
-        $date = trim($date);
+        $date = trim($date ?? '');
 
         if (empty($date) || 'undefined' === $date || 'null' === $date || '0000-00-00' === $date) {
             $response = false;
@@ -2008,7 +2008,6 @@ class Application_Service_Common
 
     public static function getSchemeConfig($name)
     {
-        $sc = new Application_Model_DbTable_SchemeConfig();
-        return $sc->getSchemeConfig($name);
+        return Pt_Commons_SchemeConfig::get($name);
     }
 }

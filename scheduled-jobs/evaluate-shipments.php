@@ -65,7 +65,7 @@ try {
 				->from('queue_report_generation')
 				->where("shipment_id = ?", $shipmentId));
 			/* Zend_Debug::dump($queueResults);
-                die; */
+				die; */
 			$adminDetails = $adminService->getSystemAdminDetails($queueResults['initated_by']);
 			if (isset($adminDetails) && !empty($adminDetails) && $adminDetails['primary_email'] != "") {
 				$link = $conf->domain . '/admin/evaluate/shipment/sid/' . base64_encode($shipmentId);

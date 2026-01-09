@@ -1,10 +1,11 @@
 <?php
-// Zend_Debug::dump($this->allSchemes);die;
 if (Application_Service_Common::isJSON($this->dtsConfig))
     $dts = json_decode($this->dtsConfig);
 else
     $dts = $this->dtsConfig;
 $allowedAlgorithms = $dts->allowedAlgorithms ?? null;
+if (!is_array($allowedAlgorithms))
+    $allowedAlgorithms = explode(',', $allowedAlgorithms);
 $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disableOtherTestkit)) ? $dts->disableOtherTestkit : 'no';
 
 ?>

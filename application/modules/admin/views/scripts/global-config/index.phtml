@@ -404,10 +404,8 @@ $faqResults = json_decode($this->faqs);
 						<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="fromName" name="emailConfig[fromName]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from name'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<div class="form-group">
-							<label for="fromEmail" class="ccontrol-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
-							<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail" name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
-						</div>
+						<label for="fromEmail" class="ccontrol-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail" name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
 					</div>
 				</div>
 				<div class="row">
@@ -416,10 +414,8 @@ $faqResults = json_decode($this->faqs);
 						<input type="text" value="<?php echo $emailConfig->cc ?? null; ?>" id="cc" name="emailConfig[cc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<div class="form-group">
-							<label for="bcc" class="control-label"><?= $this->translate->_("BCC"); ?></label>
-							<input type="text" value="<?php echo $emailConfig->bcc ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
-						</div>
+						<label for="bcc" class="control-label"><?= $this->translate->_("BCC"); ?></label>
+						<input type="text" value="<?php echo $emailConfig->bcc ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
 					</div>
 				</div>
 				<div class="row">

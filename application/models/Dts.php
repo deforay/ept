@@ -156,7 +156,10 @@ final class Application_Model_Dts
 		$rtriEnabled = $context['rtriEnabled'];
 		$possibleRecencyResults = $context['possibleRecencyResults'];
 
-		if (empty($results)) {
+		// dump($results[0]['map_id']);
+		// dump($results[0]['response_status']);
+		// dump(empty($results) || $results[0]['is_pt_test_not_performed'] == 'yes' || $results[0]['response_status'] == 'noresponse');
+		if (empty($results) || $results[0]['is_pt_test_not_performed'] == 'yes' || $results[0]['response_status'] == 'noresponse') {
 			$shipment['is_excluded'] = 'yes';
 			return [
 				'shouldSkip' => true,
@@ -171,9 +174,8 @@ final class Application_Model_Dts
 		$shipment['is_followup'] = 'no';
 		$mapWhere = $this->db->quoteInto('map_id = ?', $shipment['map_id']);
 
-		$shipmentTestReportDateUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-		if (Common::isDateValid($shipmentTestReportDateUser[0])) {
-			$shipmentTestReportDate = new DateTimeImmutable($shipmentTestReportDateUser[0]);
+		if (Common::isDateValid($shipment['shipment_test_report_date'])) {
+			$shipmentTestReportDate = new DateTimeImmutable($shipment['shipment_test_report_date']);
 		} else {
 			$shipmentTestReportDate = new DateTimeImmutable('1970-01-01');
 		}
@@ -197,8 +199,8 @@ final class Application_Model_Dts
 		$attributes['algorithm'] ??= null;
 		//$attributes['sample_rehydration_date'] = $attributes['sample_rehydration_date'] ?: null;
 
-		$isScreening =  ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
-		$isConfirmatory =  (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'confirmatory') ? true : false;
+		$isScreening = ((isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes') || (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'screening')) ? true : false;
+		$isConfirmatory = (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] === 'confirmatory') ? true : false;
 
 		//Response was submitted after the last response date.
 		$lastDate = new DateTimeImmutable($shipment['lastdate_response']);
@@ -225,6 +227,11 @@ final class Application_Model_Dts
 
 		// 3 tests algo added for Myanmar initally, might be used in other places eventually
 		//$threeTestCorrectResponses = ['NXX','PPP'];
+
+
+		if (empty($results[0]['shipment_test_date'])) {
+			echo "Shipment Test Date is missing for shipment map id: " . $shipment['map_id'] . ". Cannot evaluate DTS results.\n";
+		}
 
 		$testedOn = new DateTimeImmutable($results[0]['shipment_test_date'] ?? $shipment['shipment_test_report_date']);
 
@@ -264,9 +271,9 @@ final class Application_Model_Dts
 
 			// Resolve kit ID by scanning all result rows for the first non-empty value
 			$resolvedKitId = $results[0][$fields['nameField']] ?? null;
-			if (empty($resolvedKitId) || trim((string)$resolvedKitId) === '') {
+			if (empty($resolvedKitId) || trim((string) $resolvedKitId) === '') {
 				foreach ($results as $rRow) {
-					if (!empty($rRow[$fields['nameField']]) && trim((string)$rRow[$fields['nameField']]) !== '') {
+					if (!empty($rRow[$fields['nameField']]) && trim((string) $rRow[$fields['nameField']]) !== '') {
 						$resolvedKitId = $rRow[$fields['nameField']];
 						break;
 					}
@@ -275,7 +282,7 @@ final class Application_Model_Dts
 
 			// Lookup human-readable test kit name if we have an ID (string per schema)
 			if (!empty($resolvedKitId)) {
-				$kitName = $testKitDb->getTestKitNameById((string)$resolvedKitId);
+				$kitName = $testKitDb->getTestKitNameById((string) $resolvedKitId);
 				if (isset($kitName[0])) {
 					$testKitNames[$kitIndex] = $kitName[0];
 				}
@@ -300,7 +307,7 @@ final class Application_Model_Dts
 				if ($expDate instanceof DateTimeInterface) {
 					if ($testedOn > $expDate) {
 						$difference = $testedOn->diff($expDate);
-						$daysExpired = (int)$difference->format('%a');
+						$daysExpired = (int) $difference->format('%a');
 						$failureReason[] = [
 							'warning' => "Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . "</strong>) expired " . $daysExpired . " days before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
@@ -430,9 +437,10 @@ final class Application_Model_Dts
 				$result1 = $this->getResultCodeFromId($result['test_result_1'] ?? '');
 				$result2 = $this->getResultCodeFromId($result['test_result_2'] ?? '');
 
-				// getting repeat results from repeat_test_result_1 and repeat_test_result_2 : R, NR, I or -
-				$repeatResult1 = $this->getResultCodeFromId($result['repeat_test_result_1'] ?? '');
-				$repeatResult2 = $this->getResultCodeFromId($result['repeat_test_result_2'] ?? '');
+
+				// getting results from test_result_1 and test_result_2 : R, NR, I or -
+				$result1 = $this->getResultCodeFromId($result['test_result_1'] ?? '');
+				$result2 = $this->getResultCodeFromId($result['test_result_2'] ?? '');
 
 
 				if (!empty($attributes['algorithm']) && $attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
@@ -453,13 +461,13 @@ final class Application_Model_Dts
 				$correctiveActionList = $correctiveActionList ?? [];
 
 				// derive RTRI context locally from $result
-				$rtriEnabled         = $rtriEnabled ?? false; // keep existing flag if already set
-				$didReportRTRI       = (($result['dts_rtri_is_editable'] ?? '') === 'yes');
-				$rtriReportedResult  = $result['dts_rtri_reported_result']  ?? null;
+				$rtriEnabled ??= false; // keep existing flag if already set
+				$didReportRTRI = (($result['dts_rtri_is_editable'] ?? '') === 'yes');
+				$rtriReportedResult = $result['dts_rtri_reported_result'] ?? null;
 				$rtriReferenceResult = $result['dts_rtri_reference_result'] ?? null;
 
 				// line visibility used later
-				$verificationLine    = $result['dts_rtri_diagnosis_line']   ?? null;
+				$verificationLine = $result['dts_rtri_diagnosis_line'] ?? null;
 
 				$algo = [
 					'algoResult' => 'Fail',
@@ -471,9 +479,9 @@ final class Application_Model_Dts
 				];
 
 				// pull from the algo dispatcher (if available)
-				$rtriAlgoResult      = $algo['rtriAlgoResult'] ?? null;
+				$rtriAlgoResult = $algo['rtriAlgoResult'] ?? null;
 
-				$correctiveActionList    = $correctiveActionList ?? [];
+				$correctiveActionList ??= [];
 
 
 				$algo = $this->evaluateAlgorithm(
@@ -497,12 +505,12 @@ final class Application_Model_Dts
 					$possibleRecencyResults
 				);
 
-				$algoResult                   = $algo['algoResult'];
-				$scorePercentageForAlgorithm  = $algo['scorePct'];            // 0 or 0.5 for Myanmar
-				$sypAlgoResult                = $algo['sypAlgoResult'];
-				$rtriAlgoResult               = $algo['rtriAlgoResult'];
-				$failureReason                = array_merge($failureReason, $algo['failureReason']);
-				$correctiveActionList         = array_merge($correctiveActionList, $algo['correctiveActionList']);
+				$algoResult = $algo['algoResult'];
+				$scorePercentageForAlgorithm = $algo['scorePct'];            // 0 or 0.5 for Myanmar
+				$sypAlgoResult = $algo['sypAlgoResult'];
+				$rtriAlgoResult = $algo['rtriAlgoResult'];
+				$failureReason = [...$failureReason, ...$algo['failureReason']];
+				$correctiveActionList = [...$correctiveActionList, ...$algo['correctiveActionList']];
 			} else {
 				// CONTROLS
 				// If there are two kits used for the participants then the control
@@ -655,7 +663,7 @@ final class Application_Model_Dts
 
 			foreach ($testKitMeta as $kitIndex => $fields) {
 				$kitResultValue = $result[$fields['resultField']] ?? null;
-				if (isset($kitResultValue) && !empty($kitResultValue) && trim((string)$kitResultValue) != false && trim((string)$kitResultValue) != '24') {
+				if (isset($kitResultValue) && !empty($kitResultValue) && trim((string) $kitResultValue) != false && trim((string) $kitResultValue) != '24') {
 					//T.1 Ensure test kit name is reported for all performed tests.
 					if ($testKitNames[$kitIndex] === "") {
 						$failureReason[] = [
@@ -731,7 +739,7 @@ final class Application_Model_Dts
 
 
 		// Myanmar does not have Supervisor scoring so it has one less documentation item
-		if ($dtsSchemeType == 'myanmar' ||   $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
+		if ($dtsSchemeType == 'myanmar' || $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
 			$totalDocumentationItems -= 1;
 		}
 
@@ -862,6 +870,7 @@ final class Application_Model_Dts
 
 		$documentationScore = round($documentationScore);
 		$grandTotal = $responseScore + $documentationScore;
+		$passPercentage = $config->evaluation->dts->passPercentage ?? 100;
 		if ($grandTotal < $config->evaluation->dts->passPercentage) {
 			$scoreResult = 'Fail';
 			$failureReason[] = [
@@ -984,7 +993,7 @@ final class Application_Model_Dts
 	}
 	public function getDtsSamples($sId, $pId = null)
 	{
-		$sql = $this->db->select()->from(array('ref' => 'reference_result_dts'))
+		$sql = $this->db->select()->from(['ref' => 'reference_result_dts'])
 			->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
 			->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
 			->joinLeft(['res' => 'response_result_dts'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
@@ -1154,9 +1163,9 @@ final class Application_Model_Dts
 			->where("(JSON_EXTRACT(rtd1.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd2.attributes, '$.additional_info') = 'yes' OR JSON_EXTRACT(rtd3.attributes, '$.additional_info') = 'yes' OR rrd.kit_additional_info != '')")
 			->where("s.shipment_id = ?", $shipmentId);
 		$kitResult = $db->fetchRow($kitQuery);
-		$kit1Result = (array)json_decode($kitResult['kit1Attributes']);
-		$kit2Result = (array)json_decode($kitResult['kit2Attributes']);
-		$kit3Result = (array)json_decode($kitResult['kit3Attributes']);
+		$kit1Result = (array) json_decode($kitResult['kit1Attributes']);
+		$kit2Result = (array) json_decode($kitResult['kit2Attributes']);
+		$kit3Result = (array) json_decode($kitResult['kit3Attributes']);
 		$query = $db->select()
 			->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'number_of_controls'])
 			->where("shipment_id = ?", $shipmentId);
@@ -1179,7 +1188,7 @@ final class Application_Model_Dts
 
 			$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 
-			foreach ($shipmentResult as  $aRow) {
+			foreach ($shipmentResult as $aRow) {
 				$participantRow = [];
 				$participantRow[] = $aRow['unique_identifier'];
 				$participantRow[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
@@ -1237,7 +1246,8 @@ final class Application_Model_Dts
 			];
 		}
 
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		$sampleLabels = $this->getSampleLabels($shipmentId);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 		if (isset($kit1Result['additional_info_label']) && !empty($kit1Result['additional_info_label'])) {
 			// To search the kit name postion
 			$index = array_search('QC Expiry Date#1', $reportHeadings);
@@ -1254,7 +1264,7 @@ final class Application_Model_Dts
 			$this->translator->_('QC Done #2'),
 			$this->translator->_('QC Expiry Date #2')
 		);
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 		if (isset($kit2Result['additional_info_label']) && !empty($kit2Result['additional_info_label'])) {
 			// To search the kit name postion
 			$index = array_search('QC Expiry Date#2', $reportHeadings);
@@ -1263,7 +1273,24 @@ final class Application_Model_Dts
 				$reportHeadings[] = $kit2Result['additional_info_label'] . ' for (' . $reportHeadings[$row] . ')';
 			}
 		}
-		if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+
+		$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+		$participantAttributes = [];
+		if (!empty($shipmentResult[0]['attributes'])) {
+			$participantAttributes = is_array($shipmentResult[0]['attributes'])
+				? $shipmentResult[0]['attributes']
+				: (json_decode($shipmentResult[0]['attributes'], true) ?? []);
+		}
+
+		$panelSettings = $this->getDtsPanelSettings(
+			$config,
+			$shipmentAttributes,
+			$participantAttributes,
+			$dtsSchemeType
+		);
+		$testThreeHidden = $panelSettings['testThreeHidden'];
+
+		if ($testThreeHidden !== true) {
 			array_push(
 				$reportHeadings,
 				$this->translator->_('Test#3 Kit Name'),
@@ -1272,7 +1299,7 @@ final class Application_Model_Dts
 				$this->translator->_('QC Done #3'),
 				$this->translator->_('QC Expiry Date #3')
 			);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 			if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
 				// To search the kit name postion
 				$index = array_search('QC Expiry Date#3', $reportHeadings);
@@ -1285,25 +1312,38 @@ final class Application_Model_Dts
 		$addWithFinalResultCol = 2;
 		/* Repeat test section */
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
+			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 			// $addWithFinalResultCol = 0;
-			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
-				$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			if ($testThreeHidden !== true) {
+				$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 				// $addWithFinalResultCol = -1;
 			}
 		}
 		// For final result
-		$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+		$finalResultsStartIndex = count($reportHeadings);
+		$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 		// For RTRI and test results final result
+		$rtriPanelStartIndex = null;
+		$rtriPanelEndIndex = null;
+		$rtriFinalStartIndex = null;
+		$rtriFinalEndIndex = null;
 		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-			foreach (range(1, $result['number_of_samples']) as $key => $row) {
-				$reportHeadings[] = "Is Editable";
+			$rtriPanelStartIndex = count($reportHeadings);
+			// foreach ($sampleLabels as $label) {
+			// 	$reportHeadings[] = $label;
+			// }
+			for ($i = 0; $i < 3; $i++) {
+				foreach ($sampleLabels as $label) {
+					$reportHeadings[] = $label;
+				}
 			}
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
-			$reportHeadings = $this->addSampleNameInArray($shipmentId, $reportHeadings);
+			$rtriFinalStartIndex = count($reportHeadings);
+			foreach ($sampleLabels as $label) {
+				$reportHeadings[] = $label;
+			}
+			$rtriPanelEndIndex = $rtriFinalStartIndex - 1;
+			$rtriFinalEndIndex = count($reportHeadings) - 1;
 		}
 		$finalResultStartCellCount = 0;
 		if (!empty($haveCustom) && $haveCustom == 'yes') {
@@ -1326,15 +1366,6 @@ final class Application_Model_Dts
 			$finalResultStartCellCount += $result['number_of_controls'];
 
 
-		$common = new Common();
-		$feedbackOption = $common->getConfig('participant_feedback');
-		if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-			/* Feed Back Response Section */
-			// $questions = $common->getFeedBackQuestions($shipmentId, $reportHeadings);
-			// if(isset($questions) && count($questions['question']) > 0){
-			// 	$reportHeadings = $questions['heading'];
-			// }
-		}
 		$colNo = 0;
 		$repeatCellNo = 0;
 		$rtriCellNo = 0;
@@ -1350,7 +1381,7 @@ final class Application_Model_Dts
 		} else {
 			$finalResColoumn = $n - ($result['number_of_samples'] + $result['number_of_controls'] + $addWithFinalResultCol);
 		} */
-		$finalResColoumn = $n - $finalResultStartCellCount;
+		$finalResColoumn = $finalResultsStartIndex;
 
 		$c = 1;
 		$z = 1;
@@ -1375,8 +1406,11 @@ final class Application_Model_Dts
 
 		/* RTRI Panel section */
 		if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-			$rtriHeadingColumn = $endMergeCell + 2;
-			$endRtriMergeCell = $endMergeCell + ($result['number_of_samples'] * 4) + 1;
+			$totalSamples = $result['number_of_samples'] + $result['number_of_controls'];
+			$rtriHeadingColumn = $rtriPanelStartIndex + 1;
+			$endRtriMergeCell = $rtriPanelEndIndex + 1;
+			$rtriFinalStartColumn = $rtriFinalStartIndex + 1;
+			$rtriFinalEndColumn = $rtriFinalEndIndex + 1;
 			$rtriFirstCellName = Coordinate::stringFromColumnIndex($rtriHeadingColumn);
 			$rtriSecondCellName = Coordinate::stringFromColumnIndex($endRtriMergeCell);
 			$resultsReportedSheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
@@ -1384,8 +1418,8 @@ final class Application_Model_Dts
 			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
 			$resultsReportedSheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
 			/* RTRI Final result merge section */
-			$rtriFirstCellName = Coordinate::stringFromColumnIndex($endRtriMergeCell);
-			$rtriSecondCellName = Coordinate::stringFromColumnIndex($n - 1);
+			$rtriFirstCellName = Coordinate::stringFromColumnIndex($rtriFinalStartColumn);
+			$rtriSecondCellName = Coordinate::stringFromColumnIndex($rtriFinalEndColumn);
 			$resultsReportedSheet->mergeCells($rtriFirstCellName . "1:" . $rtriSecondCellName . "1");
 			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 			$resultsReportedSheet->getStyle($rtriFirstCellName . "1")->applyFromArray($borderStyle, true);
@@ -1394,11 +1428,11 @@ final class Application_Model_Dts
 		/* Repeat test section */
 		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
 			$repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
-			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+			if ($testThreeHidden !== true) {
 				$repeatHeadingColumn = $n - ($result['number_of_samples'] * 4 + $result['number_of_controls'] + 1);
 			}
 			$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 2) + $result['number_of_controls']);
-			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+			if ($testThreeHidden !== true) {
 				$endRepeatMergeCell = ($repeatHeadingColumn + ($result['number_of_samples'] * 3) + $result['number_of_controls']);
 			}
 			$repeatFirstCellName = Coordinate::stringFromColumnIndex($repeatHeadingColumn + 1);
@@ -1407,20 +1441,6 @@ final class Application_Model_Dts
 			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 			$resultsReportedSheet->getStyle($repeatFirstCellName . "1")->applyFromArray($borderStyle, true);
 			$resultsReportedSheet->getStyle($repeatSecondCellName . "1")->applyFromArray($borderStyle, true);
-		}
-		if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-			/* Feed Back Response Section */
-			// if (isset($questions) && count($questions['question']) > 0) {
-			// 	$lastCol = count($reportHeadings) - count($questions['question']);
-			// 	$feedbackHeadingColumn = ($lastCol + 1);
-			// 	$endFeedbackMergeCell =  count($reportHeadings);
-			// 	$feedbackFirstCellName = Coordinate::stringFromColumnIndex($feedbackHeadingColumn);
-			// 	$feedbackSecondCellName = Coordinate::stringFromColumnIndex($endFeedbackMergeCell);
-			// 	$resultsReportedSheet->mergeCells($feedbackFirstCellName . "1:" . $feedbackSecondCellName . "1");
-			// 	$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFAB00');
-			// 	$resultsReportedSheet->getStyle($feedbackFirstCellName . "1")->applyFromArray($borderStyle, true);
-			// 	$resultsReportedSheet->getStyle($feedbackSecondCellName . "1")->applyFromArray($borderStyle, true);
-			// }
 		}
 		foreach ($reportHeadings as $field => $value) {
 			$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow, $value);
@@ -1462,31 +1482,21 @@ final class Application_Model_Dts
 			}
 			/* RTRI Final Result Section */
 			if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
-				if ($colNo >= ($endRtriMergeCell + 1)) {
+				if ($colNo >= $rtriFinalStartColumn) {
 					if ($z <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "RTRI Final Results");
 						$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . $currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 						$l = $z - 1;
-						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['referenceResult']);
+						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '3', $refResult[$l]['rtriReferenceResult'] ?? '');
 					}
 					$z++;
 				}
-			}
-			if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-				/* Feed Back Response Section */
-				// if (isset($questions) && count($questions['question']) > 0) {
-				// 	$lastCol = count($reportHeadings) - count($questions['question']);
-				// 	if ($colNo >= ($lastCol + 1)) {
-				// 		$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($colNo) . '1', "Feedback Questions/Response");
-				// 		$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo) . 1)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-				// 	}
-				// }
 			}
 			$colNo++;
 		}
 
 		//$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
-		$attributes = json_decode($aRow['attributes'], true);
+
 		if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
 			// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
 			$totalDocumentationItems = 5;
@@ -1532,7 +1542,7 @@ final class Application_Model_Dts
 							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($kitId++) . '3', $row['kitReference'][1]['expiry_date']);
 						}
 
-						if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+						if ($testThreeHidden !== true) {
 							$kitId = $kitId + $aRow['number_of_samples'] + $aRow['number_of_controls'];
 							if (isset($row['kitReference'][2]['referenceKitResult'])) {
 								//In Excel Third row added the Test kit name3,kit lot,exp date
@@ -1554,7 +1564,7 @@ final class Application_Model_Dts
 						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][1]['referenceKitResult']);
 						$ktr = ($aRow['number_of_samples'] + $aRow['number_of_controls'] - $keyv) + $ktr + 3;
 					}
-					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+					if ($testThreeHidden !== true) {
 						if (isset($row['kitReference'][2]['referenceKitResult'])) {
 							$ktr = $ktr + $keyv;
 							$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($ktr + 1) . '3', $row['kitReference'][2]['referenceKitResult']);
@@ -1568,7 +1578,13 @@ final class Application_Model_Dts
 		if (!empty($shipmentResult)) {
 
 			foreach ($shipmentResult as $aRow) {
-				$r = 1;
+				$rtriEnabled = (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes');
+				if ($rtriEnabled) {
+					$totalSamples = $result['number_of_samples'] + $result['number_of_controls'];
+					$r = $rtriHeadingColumn + $totalSamples;
+				} else {
+					$r = 1;
+				}
 				$k = 0;
 				$rehydrationDate = "";
 				$shipmentTestDate = "";
@@ -1601,11 +1617,11 @@ final class Application_Model_Dts
 				}
 
 				if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
-					$resultReportRow[] =  $rehydrationDate;
+					$resultReportRow[] = $rehydrationDate;
 				}
 
 				$resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
-				$resultReportRow[] =  Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
+				$resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
 
 				if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
 
@@ -1726,7 +1742,7 @@ final class Application_Model_Dts
 						}
 						if ($kitResultCheck) {
 							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-								$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);
+								$additionalValue = (array) json_decode($participantResponse[$k]['kit_additional_info']);
 								$resultReportRow[] = $additionalValue['test' . $no];
 							}
 						}
@@ -1758,7 +1774,7 @@ final class Application_Model_Dts
 					}*/
 
 					// TEST 3
-					if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+					if ($testThreeHidden !== true) {
 						$resultReportRow[] = $participantResponse[0]['testKitName3'];
 						$resultReportRow[] = $participantResponse[0]['lot_no_3'];
 						$resultReportRow[] = Pt_Commons_General::excelDateFormat($participantResponse[0]['exp_date_3']);
@@ -1769,7 +1785,7 @@ final class Application_Model_Dts
 						}
 						if (isset($kit3Result['additional_info_label']) && !empty($kit3Result['additional_info_label'])) {
 							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-								$additionalValue = (array)json_decode($participantResponse[$k]['kit_additional_info']);
+								$additionalValue = (array) json_decode($participantResponse[$k]['kit_additional_info']);
 								$resultReportRow[] = $additionalValue['test3'];
 							}
 						}
@@ -1783,7 +1799,7 @@ final class Application_Model_Dts
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['repeatTestResult2'];
 						}
-						if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+						if ($testThreeHidden !== true) {
 							for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 								$resultReportRow[] = $participantResponse[$k]['repeatTestResult3'];
 							}
@@ -1802,24 +1818,22 @@ final class Application_Model_Dts
 					// RTRI Panel
 					if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 						/* -- RTRI SECTION STARTED -- */
-						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
-							$participantResponse[$k]['dts_rtri_is_editable'] = (isset($participantResponse[$k]['dts_rtri_is_editable']) && $participantResponse[$k]['dts_rtri_is_editable']) ? $participantResponse[$k]['dts_rtri_is_editable'] : null;
-							$rr = $r++;
-							$resultReportRow[] = $participantResponse[$k]['dts_rtri_is_editable'];
-							/* For showing samples labels */
-							$resultReportRow[] = $refResult[$k]['sample_label'];
-						}
+						// for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
+						// 	/* For showing samples labels */
+						// 	$resultReportRow[] = $refResult[$k]['sample_label'];
+						// }
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$participantResponse[$k]['dts_rtri_control_line'] = (isset($participantResponse[$k]['dts_rtri_control_line']) && $participantResponse[$k]['dts_rtri_control_line']) ? $participantResponse[$k]['dts_rtri_control_line'] : null;
 							$rr = $r++;
 							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_control_line']);
 							/* Merge titiles */
 							if ($k == 0) {
+								$controlStart = $rtriHeadingColumn;
 								/* For showing which sample for wich tittle */
-								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
-								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
+								$rtriFirstCellName = Coordinate::stringFromColumnIndex($controlStart);
+								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($controlStart + $totalSamples - 1));
 								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Control Line");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($controlStart) . '3', "Control Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
@@ -1828,11 +1842,12 @@ final class Application_Model_Dts
 							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_diagnosis_line']);
 							/* Merge titiles */
 							if ($k == 0) {
+								$verificationStart = $rtriHeadingColumn + $totalSamples;
 								/* For showing which sample for wich tittle */
-								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
-								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
+								$rtriFirstCellName = Coordinate::stringFromColumnIndex($verificationStart);
+								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($verificationStart + $totalSamples - 1));
 								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Verification Line");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($verificationStart) . '3', "Verification Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
@@ -1841,11 +1856,12 @@ final class Application_Model_Dts
 							$resultReportRow[] = ucwords($participantResponse[$k]['dts_rtri_longterm_line']);
 							/* Merge titiles */
 							if ($k == 0) {
+								$longtermStart = $rtriHeadingColumn + ($totalSamples * 2);
 								/* For showing which sample for wich tittle */
-								$rtriFirstCellName = Coordinate::stringFromColumnIndex($rr);
-								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($rr + ($aRow['number_of_samples'] - 1)));
+								$rtriFirstCellName = Coordinate::stringFromColumnIndex($longtermStart);
+								$rtriSecondCellName = Coordinate::stringFromColumnIndex(($longtermStart + $totalSamples - 1));
 								$resultsReportedSheet->mergeCells($rtriFirstCellName . "3:" . $rtriSecondCellName . "3");
-								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($rr) . '3', "Longterm Line");
+								$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($longtermStart) . '3', "Longterm Line");
 							}
 						}
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
@@ -1865,16 +1881,6 @@ final class Application_Model_Dts
 					}
 
 					$resultReportRow[] = $aRow['user_comment'];
-					if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
-						/* Feed Back Response Section */
-						// $feedbackDb = new Application_Model_DbTable_FeedBackTable();
-						// $answers = $feedbackDb->fetchFeedBackAnswers($aRow['shipment_id'], $aRow['participant_id'], $aRow['map_id']);
-						// if (isset($questions['question']) && count($questions['question']) > 0 && isset($answers) && count($answers) > 0) {
-						// 	foreach ($questions['question'] as $q) {
-						// 		$resultReportRow[] = $answers[$q];
-						// 	}
-						// }
-					}
 
 					$panelScoreRow[] = $countCorrectResult;
 					$panelScoreRow[] = $aRow['shipment_score'];
@@ -2020,7 +2026,7 @@ final class Application_Model_Dts
 			$this->translator->_('District'),
 			$this->translator->_('City'),
 			$this->translator->_('Country'),
-			$this->translator->_('No. of Correct Samples') .  ' (N=' . $result['number_of_samples'] . ')',
+			$this->translator->_('No. of Correct Samples') . ' (N=' . $result['number_of_samples'] . ')',
 			$this->translator->_('Panel Score'),
 			$this->translator->_('Documentation Score'),
 			$this->translator->_('Total Score'),
@@ -2093,8 +2099,9 @@ final class Application_Model_Dts
 	private function getShipmentReferenceResults($shipmentId)
 	{
 
-		$referenceResultsQuery = $this->db->select()->from(array('refRes' => 'reference_result_dts'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score'))
+		$referenceResultsQuery = $this->db->select()->from(array('refRes' => 'reference_result_dts'), array('refRes.sample_label', 'sample_id', 'refRes.sample_score', 'refRes.dts_rtri_reference_result'))
 			->joinLeft(array('r' => 'r_possibleresult'), 'r.id=refRes.reference_result', array('referenceResult' => 'r.response'))
+			->joinLeft(array('rtri' => 'r_possibleresult'), 'rtri.id=refRes.dts_rtri_reference_result', array('rtriReferenceResult' => 'rtri.response'))
 			->where("refRes.shipment_id = ?", $shipmentId);
 		$refResult = $this->db->fetchAll($referenceResultsQuery);
 		if (!empty($refResult)) {
@@ -2123,12 +2130,25 @@ final class Application_Model_Dts
 
 	public function addSampleNameInArray($shipmentId, $headings)
 	{
+		foreach ($this->getSampleLabels($shipmentId) as $label) {
+			$headings[] = $label;
+		}
+		return $headings;
+	}
+
+	private function getSampleLabels($shipmentId)
+	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$query = $db->select()->from('reference_result_dts', array('sample_label'))
+		$query = $db->select()->from('reference_result_dts', ['sample_label'])
 			->where("shipment_id = ?", $shipmentId)->order("sample_id");
 		$result = $db->fetchAll($query);
-		foreach ($result as $res) {
-			array_push($headings, $res['sample_label']);
+		return array_column($result, 'sample_label');
+	}
+
+	private function appendSampleLabels(array $headings, array $sampleLabels): array
+	{
+		foreach ($sampleLabels as $label) {
+			$headings[] = $label;
 		}
 		return $headings;
 	}
@@ -2179,6 +2199,7 @@ final class Application_Model_Dts
 
 		// Confirmatory / updated-3-tests
 		if ((isset($dtsSchemeType) && $dtsSchemeType === 'updated-3-tests') || $isConfirmatory) {
+
 			$this->algoUpdatedThreeTests(
 				$result,
 				$result1,
@@ -2198,25 +2219,25 @@ final class Application_Model_Dts
 		}
 
 		// Serial
-		if (($attributes['algorithm'] ?? '') === 'serial') {
+		elseif (($attributes['algorithm'] ?? '') === 'serial') {
 			$this->algoSerial($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
 			return $out;
 		}
 
 		// Parallel
-		if (($attributes['algorithm'] ?? '') === 'parallel') {
+		elseif (($attributes['algorithm'] ?? '') === 'parallel') {
 			$this->algoParallel($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
 			return $out;
 		}
 
 		// Sierra Leone
-		if ($dtsSchemeType === 'sierraLeone' || ($attributes['algorithm'] ?? '') === 'sierraLeoneNationalDtsAlgo') {
+		elseif ($dtsSchemeType === 'sierraLeone' || ($attributes['algorithm'] ?? '') === 'sierraLeoneNationalDtsAlgo') {
 			$this->algoSierraLeone($result, $result1, $result2, $result3, $reportedResultCode, $correctiveActions, $out);
 			return $out;
 		}
 
 		// Cote d'Ivoire
-		if ($dtsSchemeType === 'cotedivoire' || ($attributes['algorithm'] ?? '') === 'cotedivoireNationalDtsAlgo') {
+		elseif ($dtsSchemeType === 'cotedivoire' || ($attributes['algorithm'] ?? '') === 'cotedivoireNationalDtsAlgo') {
 			$this->algoCoteDivoire(
 				$result,
 				$result1,
@@ -2232,7 +2253,7 @@ final class Application_Model_Dts
 
 
 		// Myanmar (50% score weight if algorithm right)
-		if ($dtsSchemeType === 'myanmar' || ($attributes['algorithm'] ?? '') === 'myanmarNationalDtsAlgo') {
+		elseif ($dtsSchemeType === 'myanmar' || ($attributes['algorithm'] ?? '') === 'myanmarNationalDtsAlgo') {
 			$this->algoMyanmar(
 				$result,
 				$result1,
@@ -2247,7 +2268,7 @@ final class Application_Model_Dts
 		}
 
 		// Malawi
-		if ($dtsSchemeType === 'malawi' || ($attributes['algorithm'] ?? '') === 'malawiNationalDtsAlgo') {
+		elseif ($dtsSchemeType === 'malawi' || ($attributes['algorithm'] ?? '') === 'malawiNationalDtsAlgo') {
 			$this->algoMalawi(
 				$result,
 				$result1,
@@ -2262,7 +2283,7 @@ final class Application_Model_Dts
 		}
 
 		// Ghana (+ optional syphilis)
-		if ($dtsSchemeType === 'ghana') {
+		elseif ($dtsSchemeType === 'ghana') {
 			if ($syphilisEnabled) {
 				$out['sypAlgoResult'] = $this->algoGhanaSyphilis($syphilisResult, $reportedSyphilisResultCode);
 			}
@@ -2296,6 +2317,11 @@ final class Application_Model_Dts
 		$out['correctiveActionList'][] = 2;
 	}
 
+	private function normalizeAlgoResult(?string $result): string
+	{
+		return (in_array(trim($result), [null, '', 'X', 'x'], true)) ? '-' : $result;
+	}
+
 	/** Updated-3-tests / confirmatory path */
 	private function algoUpdatedThreeTests(
 		array $result,
@@ -2307,19 +2333,25 @@ final class Application_Model_Dts
 		array $correctiveActions,
 		array &$out
 	) {
-		if ($result1 === 'NR' && $reportedResultCode === 'N') {
-			if ($result2 === '-' && $result3 === '-' && $repeatResult1 === '-') {
+
+		$result1 = $this->normalizeAlgoResult($result1);
+		$result2 = $this->normalizeAlgoResult($result2);
+		$result3 = $this->normalizeAlgoResult($result3);
+		$repeatResult1 = $this->normalizeAlgoResult($repeatResult1);
+
+		if ($result1 == 'NR' && $reportedResultCode == 'N') {
+			if ($result2 == '-' && $result3 == '-' && $repeatResult1 == '-') {
 				$out['algoResult'] = 'Pass';
 			} else {
 				$this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
 			}
-		} elseif ($result1 === 'R') {
-			if ($result2 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-') {
+		} elseif ($result1 == 'R') {
+			if ($result2 == 'R' && $reportedResultCode == 'P' && $repeatResult1 == '-') {
 				$out['algoResult'] = 'Pass';
-			} elseif ($result2 === 'NR') {
-				if ($repeatResult1 === 'NR' && $reportedResultCode === 'N') {
+			} elseif ($result2 == 'NR') {
+				if ($repeatResult1 == 'NR' && $reportedResultCode == 'N') {
 					$out['algoResult'] = 'Pass';
-				} elseif ($repeatResult1 === 'R' && $reportedResultCode === 'I') {
+				} elseif ($repeatResult1 == 'R' && $reportedResultCode == 'I') {
 					$out['algoResult'] = 'Pass';
 				} else {
 					$this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
@@ -2327,16 +2359,18 @@ final class Application_Model_Dts
 			} else {
 				$this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
 			}
+		} else {
+			$this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
 		}
 	}
 
 	/** RTRI rule-check, only sets rtriAlgoResult; leaves HIV algo as-is */
 	private function algoRTRI(array $result, array $possibleRecencyResults, array &$out)
 	{
-		$control     = $result['dts_rtri_control_line']     ?? '';
-		$verify      = $result['dts_rtri_diagnosis_line']   ?? '';
-		$longterm    = $result['dts_rtri_longterm_line']    ?? '';
-		$refRes      = $result['dts_rtri_reference_result'] ?? null;
+		$control = $result['dts_rtri_control_line'] ?? '';
+		$verify = $result['dts_rtri_diagnosis_line'] ?? '';
+		$longterm = $result['dts_rtri_longterm_line'] ?? '';
+		$refRes = $result['dts_rtri_reference_result'] ?? null;
 
 		$r = 'Pass'; // optimistic; fail on rule breaks
 
@@ -2466,7 +2500,8 @@ final class Application_Model_Dts
 			$out['algoResult'] = 'Pass';
 			return;
 		}
-		if (($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && $reportedResultCode === 'I')
+		if (
+			($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && $reportedResultCode === 'I')
 			|| ($result1 === 'R' && $result2 === 'R' && $result3 === 'I' && $reportedResultCode === 'I')
 		) {
 			$out['algoResult'] = 'Pass';
@@ -2532,12 +2567,18 @@ final class Application_Model_Dts
 	) {
 		$pass = false;
 
-		if ($result1 === 'NR' && $result2 === '-' && $result3 === '-' && $expectedResultCode === 'N' && $reportedResultCode === 'N') $pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && in_array($result3, ['R', '-'], true) && $expectedResultCode === 'P' && $reportedResultCode === 'P') $pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'R' && $expectedResultCode === 'R' && $reportedResultCode === 'R') $pass = true;
-		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR' && $expectedResultCode === 'N' && $reportedResultCode === 'N') $pass = true;
-		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'R' && $expectedResultCode === 'I' && $reportedResultCode === 'I') $pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && in_array($expectedResultCode, ['P', 'I'], true) && $reportedResultCode === $expectedResultCode) $pass = true;
+		if ($result1 === 'NR' && $result2 === '-' && $result3 === '-' && $expectedResultCode === 'N' && $reportedResultCode === 'N')
+			$pass = true;
+		elseif ($result1 === 'R' && $result2 === 'R' && in_array($result3, ['R', '-'], true) && $expectedResultCode === 'P' && $reportedResultCode === 'P')
+			$pass = true;
+		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'R' && $expectedResultCode === 'R' && $reportedResultCode === 'R')
+			$pass = true;
+		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR' && $expectedResultCode === 'N' && $reportedResultCode === 'N')
+			$pass = true;
+		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'R' && $expectedResultCode === 'I' && $reportedResultCode === 'I')
+			$pass = true;
+		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && in_array($expectedResultCode, ['P', 'I'], true) && $reportedResultCode === $expectedResultCode)
+			$pass = true;
 
 		if ($pass) {
 			$out['algoResult'] = 'Pass';
@@ -2576,15 +2617,15 @@ final class Application_Model_Dts
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'R'  && $repeatResult2 === 'R'  && $reportedResultCode === 'P') {
+				if ($repeatResult1 === 'R' && $repeatResult2 === 'R' && $reportedResultCode === 'P') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'R'  && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
+				if ($repeatResult1 === 'R' && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'NR' && $repeatResult2 === 'N'  && $reportedResultCode === 'I') {
+				if ($repeatResult1 === 'NR' && $repeatResult2 === 'N' && $reportedResultCode === 'I') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
@@ -2624,15 +2665,15 @@ final class Application_Model_Dts
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'R'  && $repeatResult2 === 'R'  && $reportedResultCode === 'P') {
+				if ($repeatResult1 === 'R' && $repeatResult2 === 'R' && $reportedResultCode === 'P') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'R'  && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
+				if ($repeatResult1 === 'R' && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'NR' && $repeatResult2 === 'N'  && $reportedResultCode === 'I') {
+				if ($repeatResult1 === 'NR' && $repeatResult2 === 'N' && $reportedResultCode === 'I') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
@@ -2648,8 +2689,95 @@ final class Application_Model_Dts
 		if ($syphilisResult === null || $reportedSyphilisResultCode === null) {
 			return null;
 		}
-		if ($syphilisResult === 'R' && $reportedSyphilisResultCode === 'P') return 'Pass';
-		if ($syphilisResult === 'NR' && $reportedSyphilisResultCode === 'N') return 'Pass';
+		if ($syphilisResult === 'R' && $reportedSyphilisResultCode === 'P')
+			return 'Pass';
+		if ($syphilisResult === 'NR' && $reportedSyphilisResultCode === 'N')
+			return 'Pass';
 		return 'Fail';
+	}
+
+	public function getDtsPanelSettings($config, array $shipmentAttributes = [], array $participantAttributes = [], ?string $dtsSchemeType = null, ?array $allowedAlgorithms = null): array
+	{
+		$allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : 'no';
+		$allowRepeatTests = ($allowRepeatTests === 'yes');
+		$repeatTest1 = false;
+		$testThreeHidden = false;
+		$testTwoHidden = false;
+		$screeningTest = false;
+		$syphilisActive = false;
+		$displaySampleConditionFields = false;
+		$isThisRetestField = false;
+
+		if ($allowedAlgorithms === null) {
+			$allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : [];
+		}
+		if ($dtsSchemeType === null) {
+			$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+		}
+
+		if (isset($participantAttributes['dts_test_panel_type']) && $participantAttributes['dts_test_panel_type'] == 'confirmatory') {
+			$testThreeHidden = false;
+		} elseif (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+			$testThreeHidden = true;
+		}
+		if ($dtsSchemeType == 'updated-3-tests') {
+			$allowedAlgorithms = ['dts-3-tests'];
+			$allowRepeatTests = $repeatTest1 = true;
+			$testThreeHidden = false;
+			$testTwoHidden = false;
+		} elseif ($dtsSchemeType == 'malawi') {
+			$displaySampleConditionFields = true;
+			$allowRepeatTests = $repeatTest1 = true;
+			$testThreeHidden = false;
+			$testTwoHidden = false;
+		} elseif ($dtsSchemeType == 'myanmar') {
+			$testThreeHidden = false;
+			$testTwoHidden = false;
+		} elseif ($dtsSchemeType == 'ghana') {
+			$testThreeHidden = false;
+			$testTwoHidden = false;
+			if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
+				$syphilisActive = true;
+				$isThisRetestField = true;
+			}
+		}
+
+		if (isset($shipmentAttributes['noOfTestsInPanel']) && !empty($shipmentAttributes['noOfTestsInPanel'])) {
+			if ($shipmentAttributes['noOfTestsInPanel'] == 2) {
+				$testTwoHidden = false;
+				$testThreeHidden = true;
+			} elseif ($shipmentAttributes['noOfTestsInPanel'] == 3) {
+				$testTwoHidden = $testThreeHidden = false;
+			}
+		}
+
+		if (
+			(isset($shipmentAttributes['screeningTest']) && $shipmentAttributes['screeningTest'] == 'yes')
+			|| (isset($participantAttributes['dts_test_panel_type']) && $participantAttributes['dts_test_panel_type'] === 'screening')
+		) {
+			$testTwoHidden = true;
+			$testThreeHidden = true;
+			$screeningTest = true;
+			$allowRepeatTests = $repeatTest1 = false;
+			if (isset($participantAttributes["algorithm"]) && $participantAttributes["algorithm"] != 'myanmarNationalDtsAlgo') {
+				$allowedAlgorithms = ['screening'];
+			}
+		}
+
+		$noTest = $testTwoHidden ? 1 : ($testThreeHidden ? 2 : 3);
+
+		return [
+			'allowRepeatTests' => $allowRepeatTests,
+			'repeatTest1' => $repeatTest1,
+			'testThreeHidden' => $testThreeHidden,
+			'testTwoHidden' => $testTwoHidden,
+			'screeningTest' => $screeningTest,
+			'syphilisActive' => $syphilisActive,
+			'displaySampleConditionFields' => $displaySampleConditionFields,
+			'isThisRetestField' => $isThisRetestField,
+			'allowedAlgorithms' => $allowedAlgorithms,
+			'dtsSchemeType' => $dtsSchemeType,
+			'noTest' => $noTest,
+		];
 	}
 }

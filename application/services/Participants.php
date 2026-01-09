@@ -2,6 +2,7 @@
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Application_Service_Participants
 {
@@ -593,20 +594,20 @@ class Application_Service_Participants
 					if (!isset($value)) {
 						$value = "";
 					}
-					$sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
+					$sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
 						->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
 					$rRowCount = $rowNo + 5;
-					$cellName = $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
+					$cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5)
 						->getColumn();
 					$sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle, true);
 					$sheet->getDefaultRowDimension()->setRowHeight(18);
 					$sheet->getColumnDimensionByColumn($colNo)->setWidth(22);
-					$sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
+					$sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 5, null, null)->getAlignment()->setWrapText(true);
 					$colNo++;
 				}
 			}
 
-
+			$authNameSpace = new Zend_Session_Namespace('datamanagers');
 			$firstName = $authNameSpace->first_name;
 			$lastName = $authNameSpace->last_name;
 			$name = $firstName . " " . $lastName;
@@ -705,7 +706,7 @@ class Application_Service_Participants
 				$tempUploadDirectory = realpath(UPLOAD_PATH);
 				if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
 					if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-						$response = $participantDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+						$response = $participantDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName, false, $params);
 					} else {
 						$alertMsg->message = 'Data import failed';
 						return false;
@@ -897,7 +898,7 @@ class Application_Service_Participants
 	}
 	public function getAllPTDetails($data)
 	{
-		$db   = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
 		$host = strtolower(parse_url($conf->domain, PHP_URL_HOST) ?: '');
@@ -915,49 +916,49 @@ class Application_Service_Participants
 
 		$result = [];
 
-		if (in_array('participant', (array)$data['sendMail'], true)) {
+		if (in_array('participant', (array) $data['sendMail'], true)) {
 			$sql = $db->select()->from(['p' => 'participant'], [
 				'p.email',
 				'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,' ',p.last_name ORDER BY p.first_name SEPARATOR ', ')")
 			])
 				->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
-				->joinLeft(['s'   => 'shipment'],               's.shipment_id=spm.shipment_id', ['s.shipment_code'])
-				->joinLeft(['d'   => 'distributions'],          'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-				->joinLeft(['sl'  => 'scheme_list'],            'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-				->where('s.shipment_id IN(?)', (array)$data['shipments'])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+				->where('s.shipment_id IN(?)', (array) $data['shipments'])
 				->group('p.email');
 
 			$result[] = $db->fetchAll($applySkip($sql, 'p.email'));
 		}
 
-		if (in_array('datamanager', (array)$data['sendMail'], true)) {
+		if (in_array('datamanager', (array) $data['sendMail'], true)) {
 			$sql = $db->select()->from(['dm' => 'data_manager'], [
 				'email' => 'dm.primary_email',
-				'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")
+				'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")
 			])
 				->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
 				->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-				->joinLeft(['s'   => 'shipment'],                 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
-				->joinLeft(['d'   => 'distributions'],            'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-				->joinLeft(['sl'  => 'scheme_list'],              'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-				->where('s.shipment_id IN(?)', (array)$data['shipments'])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+				->where('s.shipment_id IN(?)', (array) $data['shipments'])
 				->where('data_manager_type LIKE "manager"')
 				->group('dm.primary_email');
 
 			$result[] = $db->fetchAll($applySkip($sql, 'dm.primary_email'));
 		}
 
-		if (in_array('ptcc', (array)$data['sendMail'], true)) {
+		if (in_array('ptcc', (array) $data['sendMail'], true)) {
 			$sql = $db->select()->from(['dm' => 'data_manager'], [
 				'email' => 'dm.primary_email',
-				'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")
+				'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')")
 			])
 				->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
 				->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
-				->joinLeft(['s'   => 'shipment'],                 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
-				->joinLeft(['d'   => 'distributions'],            'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-				->joinLeft(['sl'  => 'scheme_list'],              'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
-				->where('s.shipment_id IN(?)', (array)$data['shipments'])
+				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+				->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+				->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+				->where('s.shipment_id IN(?)', (array) $data['shipments'])
 				->where('data_manager_type LIKE "ptcc"')
 				->group('dm.primary_email');
 
@@ -983,24 +984,24 @@ class Application_Service_Participants
 		$emailParticipantDb->saveEmailParticipants([
 			'subject' => $data['subject'],
 			'message' => $data['message'],
-			'email'   => implode(",", (array)$data['sendMail']),
-			'scode'   => implode(",", (array)$data['shipments'])
+			'email' => implode(",", (array) $data['sendMail']),
+			'scode' => implode(",", (array) $data['shipments'])
 		]);
 
 		// Runtime “belt-and-suspenders” guard for skipping + subdomains
 		$host = strtolower(parse_url($domain, PHP_URL_HOST) ?: '');
 		$skip = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
 
-		$fromEmail    = $mail->fromEmail;
+		$fromEmail = $mail->fromEmail;
 		$fromFullName = $mail->fromName;
-		$cc           = $mail->cc;
-		$bcc          = $mail->bcc;
+		$cc = $mail->cc;
+		$bcc = $mail->bcc;
 
 		$status = false;
-		$seen   = []; // cross-role de-dupe (participant/datamanager/ptcc)
+		$seen = []; // cross-role de-dupe (participant/datamanager/ptcc)
 		foreach ($results as $row) {
 			foreach ($row as $pt) {
-				$toMail = trim((string)($pt['email'] ?? ''));
+				$toMail = trim((string) ($pt['email'] ?? ''));
 				if ($toMail === '') {
 					continue;
 				}
@@ -1027,9 +1028,9 @@ class Application_Service_Participants
 
 				// Personalize subject/message
 				$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
-				$search     = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##'];
+				$search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##'];
 
-				$replace    = [
+				$replace = [
 					$pt['name'],
 					$pt['shipment_code'],
 					$pt['SCHEME'],
@@ -1037,8 +1038,8 @@ class Application_Service_Participants
 					$surveyDate
 				];
 
-				$message = str_replace($search, $replace, (string)$data['message']);
-				$subject = str_replace($search, $replace, (string)$data['subject']);
+				$message = str_replace($search, $replace, (string) $data['message']);
+				$subject = str_replace($search, $replace, (string) $data['subject']);
 				// Queue email
 				$status = $commonServices->insertTempMail($toEmail, $cc, $bcc, $subject, $message, $fromEmail, $fromFullName) || $status;
 				// Mark as seen after successful queue attempt to avoid duplicates
@@ -1067,7 +1068,7 @@ class Application_Service_Participants
 	public function excludeParticipantById($params)
 	{
 		$participantDb = new Application_Model_DbTable_Participants();
-		$result =  $participantDb->excludeUnrollParticipantById($params);
+		$result = $participantDb->excludeUnrollParticipantById($params);
 		if ($result) {
 			$alertMsg = new Zend_Session_Namespace('alertSpace');
 			$alertMsg->message = 'Participant was excluded from the shipment';
