@@ -1,4 +1,5 @@
 <?php
+echo $this->config['rtriEnabled']; die;
 $rtriEnabled = $this->config->evaluation->dts->rtriEnabled ?? 'no';
 $disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestkit) && !empty($this->config->evaluation->dts->disableOtherTestkit)) ? $this->config->evaluation->dts->disableOtherTestkit : 'no';
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();

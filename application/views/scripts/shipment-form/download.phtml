@@ -155,12 +155,14 @@ $labInfo .= '</tr>';
 
 $labInfo .= '</table><br/><br/>';
 
+$config = json_decode($this->customConfig);
+
 if ($this->shipment["scheme_type"] == 'dts') {
 	$shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
-	$allowedAlgorithms = isset($this->customConfig->evaluation->dts->allowedAlgorithms) ? explode(",", $this->customConfig->evaluation->dts->allowedAlgorithms) : array();
+	$allowedAlgorithms = isset(config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : array();
 	$width = 25;
-	$optionalTest3 = $this->customConfig->evaluation->dts->dtsOptionalTest3;
-	$allowRepeatTests = isset($this->customConfig->evaluation->dts->allowRepeatTests) ? $this->customConfig->evaluation->dts->allowRepeatTests : 'no';
+	$optionalTest3 = $this->config['dtsOptionalTest3'];
+	$allowRepeatTests = isset($config['allowRepeatTests']) ? $config['allowRepeatTests'] : 'no';
 
 	$syphilisActive = false;
 	if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->shipment['anc']) && $this->shipment['anc'] == "yes" && in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
@@ -598,7 +600,8 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
 } elseif ($this->shipment["scheme_type"] == 'covid19') {
-	$maximumAllowed = $this->customConfig->evaluation->covid19->covid19MaximumTestAllowed;
+	$covidConfig = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
+	$maximumAllowed = $covidConfig['covid19MaximumTestAllowed'];
 	if ($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null & $this->shipment['number_of_tests'] != "") {
 		$maximumAllowed = $this->shipment['number_of_tests'];
 	}

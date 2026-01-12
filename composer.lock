@@ -4537,5 +4537,5 @@
         "php": "8.2",
         "php-64bit": "8.2"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
