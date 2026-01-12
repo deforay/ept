@@ -216,6 +216,9 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="additional_institute_details" class="control-label"><?= $this->translate->_("Additional Institute Details"); ?> <span class="mandatory">*</span></label>
+						<!-- <div id="additionalInstituteDetailsEditor" name="additionalInstituteDetailsEditor" class="richtextarea form-control" title="Please enter a institute details" placeholder="<?= $this->translate->_('Enter the institute details'); ?>">
+						</div>
+						<textarea style="display:none;" id="additional_institute_details" name="additional_institute_details"></textarea> -->
 						<textarea class="form-control isRequired" id="additional_institute_details" name="additional_institute_details" placeholder="Enter additional institute details" title="Please enter additional institute details"><?php echo $this->additional_institute_details; ?></textarea>
 					</div>
 					<div class="col-md-6">
@@ -278,6 +281,10 @@ $faqResults = json_decode($this->faqs);
 					<div class="col-md-6">
 						<label for="date_format" class="control-label"><?= $this->translate->_("Date Format"); ?></label>
 						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control" id="date_format" name="date_format" placeholder="Enter the date format" title="Please enter date format">
+					</div>
+					<div class="col-md-6">
+						<label for="certificates" class="control-label"><?= $this->translate->_("Certificate Mail"); ?></label>
+						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control" id="certificates" name="certificates" placeholder="Enter the certificate mail" title="Please enter the certificate mail">
 					</div>
 				</div>
 				<div class="row">
@@ -559,7 +566,6 @@ $faqResults = json_decode($this->faqs);
 		</div>
 	</form>
 </div>
-
 <script type="text/javascript">
 	// Existing functions...
 	function validateNow() {

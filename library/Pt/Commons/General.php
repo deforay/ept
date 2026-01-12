@@ -254,4 +254,10 @@ class Pt_Commons_General
     {
         return Pt_Commons_MiscUtility::generateULID($attachExtraString);
     }
+    // Fetch Global Config
+    public static function getConfig($name)
+    {
+        $gc = new Application_Model_DbTable_GlobalConfig();
+        return $gc->getValue($name);
+    }
 }

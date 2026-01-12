@@ -80,34 +80,27 @@ class Pt_Reports_SummaryPdf extends Fpdi
             $screening = " - " . ucwords($this->dtsPanelType);
         }
         $html = $htmlTitle = '';
-        if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
-            $instituteAddress = nl2br(trim($this->config->instituteAddress));
-        } else {
-            $instituteAddress = null;
-        }
-        if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != "") {
-            $additionalInstituteDetails = nl2br(trim($this->config->additionalInstituteDetails));
-        } else {
-            $additionalInstituteDetails = null;
-        }
+        $instituteName = $this->generalModel->getConfig('institute_name') ?? null;
+        $instituteAddress = $this->generalModel->getConfig('institute_address') ?? null;
+        $additionalInstituteDetails = $this->generalModel->getConfig('additional_institute_details') ?? null;
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
-            if (isset($this->config) && $this->config != "") {
+            if (isset($instituteName) && $instituteName != "") {
                 if ($this->layout == 'myanmar') {
-                    $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+                    $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . nl2br(stripcslashes(trim($instituteName))) . '</span>
 
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
+                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
                     }
                     $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                     $html = '<hr/>';
                     $this->writeHTMLCell(0, 0, 10, 35, $html, 0, 0, 0, true, 'J', true);
                 } else {
-                    $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+                    $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . nl2br(stripcslashes(trim($instituteName))) . '</span>
 
                     <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                     if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+                        $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                     }
                     $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
                     $html = '<hr/>';
@@ -124,12 +117,12 @@ class Pt_Reports_SummaryPdf extends Fpdi
         } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
-            if (isset($this->config) && $this->config != "") {
-                $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
+            if (isset($instituteName) && $instituteName != "") {
+                $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . nl2br(stripcslashes(trim($instituteName))) . '</span>
 
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                 }
             } else {
                 $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Program for HIV-1 Early Infant Diagnosis using ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Results Report</span>';
@@ -145,11 +138,11 @@ class Pt_Reports_SummaryPdf extends Fpdi
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                    $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
+                    $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                     $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
                 }
                 if ($this->instituteAddressPosition == "header" && isset($additionalInstituteDetails) && $additionalInstituteDetails != "") {
-                    $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
+                    $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . nl2br(stripcslashes(trim($additionalInstituteDetails))) . '</span>';
                     $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
                 }
                 $html = '<span style="font-weight: bold;text-align:center;">Proficiency Testing Program -' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report</span>';
@@ -171,7 +164,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
         } elseif ($this->schemeType == 'dts' && $this->layout == 'myanmar') {
             $this->writeHTMLCell(0, 0, 20, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
+                $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 12, $htmlInAdd, 0, 0, 0, true, 'J', true);
             }
             $this->SetFont('freesans', '', 10, '', true);
@@ -182,7 +175,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
         } elseif ($this->schemeType == 'dts' && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->writeHTMLCell(0, 0, 10, 25, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program - ' . $this->scheme_name . ' </span><br><span style="font-weight: bold; font-size:11;text-align:center;">All Participants Summary Report ' . $screening . '</span>', 0, 0, 0, true, 'J', true);
             if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . $instituteAddress . '</span>';
+                $htmlInAdd = '<span style="font-weight: normal;text-align:center;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                 $this->writeHTMLCell(0, 0, 15, 15, $htmlInAdd, 0, 0, 0, true, 'J', true);
             }
             $this->SetFont('freesans', '', 10, '', true);
@@ -195,11 +188,11 @@ class Pt_Reports_SummaryPdf extends Fpdi
             $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);
             if ($this->schemeType != 'tb') {
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                    $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . $instituteAddress . '</span>';
+                    $htmlInAdd = '<span style="font-weight: normal;text-align:right;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                     $this->writeHTMLCell(0, 0, 15, 20, $htmlInAdd, 0, 0, 0, true, 'J', true);
                 }
                 if ($this->instituteAddressPosition == "header" && isset($additionalInstituteDetails) && $additionalInstituteDetails != "") {
-                    $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . $additionalInstituteDetails . '</span>';
+                    $htmlInDetails = '<span style="font-weight: normal;text-align:left;">' . nl2br(stripcslashes(trim($additionalInstituteDetails))) . '</span>';
                     $this->writeHTMLCell(0, 0, 10, 20, $htmlInDetails, 0, 0, 0, true, 'J', true);
                 }
             }
@@ -217,7 +210,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
             } elseif ($this->schemeType == 'generic-test') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>' . $this->scheme_name . '</span>';
                 if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
-                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
+                    $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($instituteAddress))) . '</span>';
                 }
                 $this->writeHTMLCell(0, 0, 10, 20, $html, 0, 0, 0, true, 'J', true);
             }

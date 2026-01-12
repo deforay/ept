@@ -248,7 +248,7 @@ $vlModel = new Application_Model_Vl();
 $vlAssayArray = $vlModel->getVlAssay();
 $eidAssayArray = $schemeService->getEidExtractionAssay();
 
-$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
+$certificates = Application_Service_Common::getConfig('certificates');
 
 /* ---------- Template resolver that supports both modes ---------- */
 
@@ -686,7 +686,7 @@ try {
 		}
 
 		sendNotification(
-			$customConfig->email->certificates ?? null,
+			$certificates ?? null,
 			array_unique($allShipmentsProcessed),
 			$downloadUrlForNotification
 		);
