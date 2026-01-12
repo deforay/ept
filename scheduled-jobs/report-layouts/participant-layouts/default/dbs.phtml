@@ -32,6 +32,7 @@ if (!empty($resultArray['shipment'])) {
         // Extend the TCPDF class to create custom Header and Footer
 
         // create new PDF document
+        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -84,15 +85,14 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-
+        $dbsOptionalTest3 = Pt_Commons_SchemeConfig::get('dbs.dbsOptionalTest3');
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($dbsOptionalTest3) && $dbsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
         }
         /* for Shipment attributes functionality start */
@@ -268,10 +268,10 @@ if (!empty($resultArray['shipment'])) {
                     $otherSamples[] = $response['sample_label'];
                 }
             }
-
+            $documentationScore = Pt_Commons_SchemeConfig::get('dbs.documentationScore');
             $correctSamplesCount = count($correctSamples);
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+            $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore) : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
 
@@ -317,7 +317,7 @@ if (!empty($resultArray['shipment'])) {
 
             //Let us now calculate documentation score
             $documentationScore = 0;
-            $documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
+            $documentationScorePerItem = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore / 5) : 0;
             $attributes = json_decode($result['attributes'], true);
 
             $img = [];
@@ -387,13 +387,12 @@ if (!empty($resultArray['shipment'])) {
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
 
-            $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
             $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
             $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-            // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-            $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+            // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
+            $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dbs.sampleRehydrateDays');
             $rehydrateHours = $sampleRehydrateDays * 24;
 
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {

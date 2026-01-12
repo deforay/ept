@@ -118,10 +118,11 @@ if (!empty($resultArray['shipment'])) {
             $flag = null;
         }
         $testThreeOptionalDisplay = "";
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] == 'confirmatory') {
             $testThreeOptionalDisplay = "";
             $testThreeHidden = false;
-        } elseif (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        } elseif (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
             $noOfCol = 7;
@@ -142,7 +143,7 @@ if (!empty($resultArray['shipment'])) {
             $noOfCol = 7;
         }
 
-        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests') ?? 'no';
         if ($allowRepeatTests == "yes") {
             $noOfCol = 9;
             if ($shipmentAttributesScreeningTestDisplay != "" || $testThreeOptionalDisplay != "") {
@@ -205,15 +206,14 @@ if (!empty($resultArray['shipment'])) {
             $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $srDate = new DateTime($attributes['sample_rehydration_date']);
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
         $interval = $srDate->diff($testedOnDate);
-
-        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $displaySampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
+        // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : 'no';
+        $sampleConditionFields = $displaySampleConditionFields ?? 'no';
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
@@ -344,10 +344,10 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</table>';
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
+        $panelScore = Pt_Commons_SchemeConfig::get('dts.panelScore');
 
         if (!empty($result['responseResult'])) {
-            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->panelScore . ')</span><br/></span>
+            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $panelScore . ')</span><br/></span>
             <table border="1" style="font-size:12px;">';
 
             /* Addition testkit field */
@@ -495,8 +495,9 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
             $correctSamplesCount = count($correctSamples);
+            $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+            $maxDocumentationPoints = $documentationScore ??  0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
@@ -605,7 +606,6 @@ if (!empty($resultArray['shipment'])) {
             }
 
             //Let us now calculate documentation score
-            $documentationScore = 0;
             $totalDocumentationItems = 0;
 
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
@@ -627,12 +627,12 @@ if (!empty($resultArray['shipment'])) {
                 $totalDocumentationItems += 4;
             }
 
-            $documentationScorePerItem = (!empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2) : 'N.A.';
-            $scoreText = (isset($config->evaluation->dts->documentationScore) && !empty($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore == 0) ? "Your Response" : "Score";
+            $documentationScorePerItem = (!empty($documentationScore) && (int) $documentationScore > 0) ? round(($documentationScore / $totalDocumentationItems), 2) : 'N.A.';
+            $scoreText = (isset($documentationScore) && !empty($documentationScore) && $documentationScore == 0) ? "Your Response" : "Score";
             $img = [];
             $imgPass = ROOT_PATH . '/images/check.jpg';
             $imgFail = ROOT_PATH . '/images/cross.jpg';
-            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score <span style="font-size:11px;">(maximum possible score : ' . $config->evaluation->dts->documentationScore . ')</span></span> <br/>
+            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score <span style="font-size:11px;">(maximum possible score : ' . $documentationScore . ')</span></span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
 							<td style="text-align:center;font-weight:bold;width:70%;">Documentation Item</td>
