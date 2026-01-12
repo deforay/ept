@@ -15,6 +15,8 @@ class DtsController extends Zend_Controller_Action
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 		$dtsModel = new Application_Model_Dts();
+		$common = new Application_Service_Common();
+
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
@@ -50,8 +52,10 @@ class DtsController extends Zend_Controller_Action
 				}
 			}
 
+			
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+			//$this->view->config = json_decode($common->getSchemeConfig('dts'));
 
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
