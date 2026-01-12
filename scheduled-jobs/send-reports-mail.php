@@ -27,7 +27,6 @@ try {
 
 	$db = Zend_Db::factory($conf->resources->db);
 	Zend_Db_Table::setDefaultAdapter($db);
-	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 	foreach ($shipmentToSendReport as $shipmentId) {
 		$timeStart = microtime(true);
 		$shipmentResult = $shipmentService->fetchReportsMail($shipmentId, $conf);

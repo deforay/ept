@@ -22,7 +22,6 @@ $procs = $cliOptions['procs'] ?? Pt_Commons_MiscUtility::getCpuCount();
 $generalModel = new Pt_Commons_General();
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 try {
     $db = Zend_Db::factory($conf->resources->db);
@@ -201,7 +200,6 @@ try {
             echo "Done. File generated at: $finalPdfPath\n";
         }
     }
-
 } catch (Exception $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());

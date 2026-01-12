@@ -9,7 +9,6 @@ require_once __DIR__ . '/../cli-bootstrap.php';
 $generalModel = new Pt_Commons_General();
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 try {
     $db = Zend_Db::factory($conf->resources->db);
@@ -73,7 +72,6 @@ try {
 
             // Add to CSV data
             $csvData[] = [$primaryEmail, $tempPassword, $firstName, $lastName, $country, $state, $district, $status];
-
         } catch (Exception $e) {
             $status = 'Failed - ' . $e->getMessage();
             $errorCount++;
@@ -115,7 +113,6 @@ try {
     echo "Failed resets: $errorCount\n";
     echo "CSV file created: $csvFilePath\n";
     echo str_repeat("=", 50) . "\n";
-
 } catch (Exception $e) {
     error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
     error_log($e->getTraceAsString());

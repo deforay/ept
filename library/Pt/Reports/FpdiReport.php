@@ -25,7 +25,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config, $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "")
+    public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
