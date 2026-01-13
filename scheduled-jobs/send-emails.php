@@ -113,6 +113,9 @@ try {
 
     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
     $smtpJson = $globalConfigDb->getValue('mail');
+    if ($smtpJson === null || trim($smtpJson) === '') {
+        throw new Exception('Email SMTP Settings not done in System Config');
+    }
     $smtpMailDetails = json_decode($smtpJson);
 
     $db = Zend_Db::factory($conf->resources->db);
@@ -376,7 +379,12 @@ try {
         }
     }
 } catch (Throwable $e) {
-    error_log("CRON FATAL: {$e->getMessage()}");
-    error_log($e->getTraceAsString());
+    error_log("Unable to send emails: {$e->getMessage()}");
+    Pt_Commons_LoggerUtility::logError($e->getFile() . ":" . $e->getLine() . " - " . $e->getMessage(), [
+        'line' => $e->getLine(),
+        'file' => $e->getFile(),
+        'trace' => $e->getTraceAsString()
+    ]);
+    exit(0);
     // lock is released by registered shutdown handler
 }
