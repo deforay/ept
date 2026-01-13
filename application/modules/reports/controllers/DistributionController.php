@@ -22,6 +22,8 @@ class Reports_DistributionController extends Zend_Controller_Action
             ->addActionContext('get-shipments', 'html')
             ->addActionContext('generate-reports', 'html')
             ->addActionContext('generate-summary-reports', 'html')
+            ->addActionContext('get-job-progress', 'json')
+            ->addActionContext('cancel-job', 'json')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -94,6 +96,56 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->result = $evalService->queueReportsGeneration($params);
         } else {
             return false;
+        }
+    }
+
+    public function getJobProgressAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        header('Content-Type: application/json');
+
+        if ($this->hasParam('sid')) {
+            $shipmentId = (int) base64_decode($this->_getParam('sid'));
+            $evalService = new Application_Service_Evaluation();
+            $progress = $evalService->getJobProgress($shipmentId);
+            echo json_encode($progress);
+        } else {
+            echo json_encode(['error' => 'Missing shipment ID', 'in_progress' => false]);
+        }
+    }
+
+    public function cancelJobAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        header('Content-Type: application/json');
+
+        if ($this->hasParam('sid')) {
+            $shipmentId = (int) base64_decode($this->_getParam('sid'));
+
+            // Get the queue job ID for this shipment
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $job = $db->fetchRow(
+                $db->select()
+                    ->from('queue_report_generation', ['id'])
+                    ->where('shipment_id = ?', $shipmentId)
+                    ->where("status IN ('pending', 'not-evaluated', 'not-finalized')")
+                    ->order('id DESC')
+                    ->limit(1)
+            );
+
+            if ($job) {
+                $evalService = new Application_Service_Evaluation();
+                $result = $evalService->cancelJob((int) $job['id'], 'report_generation');
+                echo json_encode($result);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'No active job found for this shipment']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Missing shipment ID']);
         }
     }
 }
