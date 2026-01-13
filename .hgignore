@@ -22,6 +22,7 @@ syntax: regexp
 ^cypress/
 ^vendor/
 ^\.vscode/
+^\.claude/
 .*\.vendor$
 .*\.vscode$
 .*\.idea$
