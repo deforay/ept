@@ -16,8 +16,9 @@ class Application_Model_Covid19
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
         $correctiveActions = $schemeService->getCovid19CorrectiveActions();
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
 
@@ -337,7 +338,7 @@ class Application_Model_Covid19
                 }
             }
 
-            $configuredDocScore = ((isset($config->evaluation->covid19->documentationScore) && $config->evaluation->covid19->documentationScore != "" && $config->evaluation->covid19->documentationScore != null) ? $config->evaluation->covid19->documentationScore : 0);
+            $configuredDocScore = ((isset($config['documentationScore']) && $config['documentationScore'] != "" && $config['documentationScore'] != null) ? $config['documentationScore'] : 0);
             // Response Score
             if ($maxScore == 0 || $totalScore == 0) {
                 $responseScore = 0;
@@ -348,7 +349,7 @@ class Application_Model_Covid19
 
             //Let us now calculate documentation score
             $documentationScore = 0;
-            $documentationScorePerItem = ($config->evaluation->covid19->documentationScore / 3);
+            $documentationScorePerItem = ($config['documentationScore'] / 3);
 
             // D.1
             if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
@@ -390,7 +391,7 @@ class Application_Model_Covid19
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-            $sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
+            $sampleRehydrateDays = $config['sampleRehydrateDays'];
             //$rehydrateHours = $sampleRehydrateDays * 24;
 
             // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
@@ -406,10 +407,10 @@ class Application_Model_Covid19
 
             //D.8
             $grandTotal = ($responseScore + $documentationScore);
-            if ($grandTotal < $config->evaluation->covid19->passPercentage) {
+            if ($grandTotal < $config['passPercentage']) {
                 $scoreResult = 'Fail';
                 $failureReason[] = array(
-                    'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config->evaluation->covid19->passPercentage . "</strong>)",
+                    'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $config['passPercentage'] . "</strong>)",
                     'correctiveAction' => $correctiveActions[15]
                 );
                 $correctiveActionList[] = 15;
@@ -495,7 +496,8 @@ class Application_Model_Covid19
 
     public function generateCovid19ExcelReport($shipmentId)
     {
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
@@ -707,7 +709,7 @@ class Application_Model_Covid19
 
         //<-------- Second sheet start
         $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date', 'Test#1 Name', 'Name of PCR reagent #1', 'PCR reagent Lot #1', 'PCR reagent expiry date #1', 'Type Lot #1', 'Expiry Date');
-        $maximumAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
+        $maximumAllowed = $config['covid19MaximumTestAllowed'];
         if ($result['scheme_type'] == 'covid19') {
             $reportHeadings = $this->addCovid19SampleNameInArray($shipmentId, $reportHeadings);
             if ($maximumAllowed >= 2) {
@@ -1047,7 +1049,7 @@ class Application_Model_Covid19
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 */
-                $documentScore = (($aRow['documentation_score'] / $config->evaluation->covid19->documentationScore) * 100);
+                $documentScore = (($aRow['documentation_score'] / $config['documentationScore']) * 100);
                 /*
                 $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
                 */
