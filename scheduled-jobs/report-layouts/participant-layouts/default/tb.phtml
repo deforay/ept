@@ -195,8 +195,8 @@ if (!empty($resultArray['shipment'])) {
                 foreach ($result['responseResult'] as $key => $response) {
                     $labRes .= '    <tr>';
                     $labRes .= '        <td style="font-size:11px;width:20%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-right-color:white;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['mtb_detected'])) . '</td>';
                     $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . $response['calculated_score'] . '</td>';
                     $labRes .= '    </tr>';
                 }

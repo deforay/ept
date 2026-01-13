@@ -95,44 +95,6 @@ if (!empty($this->shipment)) {
     </div>
     <hr>
 
-    <!-- Job Progress Tracker (hidden by default, shown via JS when job active) -->
-    <div id="job-progress-tracker" style="display: none; margin: 15px 0;">
-        <div class="panel panel-info" style="border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <div class="panel-heading" style="background: linear-gradient(135deg, #5bc0de 0%, #31b0d5 100%); color: white; border-radius: 4px 4px 0 0;">
-                <strong><i class="icon-spinner icon-spin"></i> Report Generation Progress</strong>
-                <span class="status-badge pull-right" style="padding: 3px 10px; border-radius: 3px; font-size: 12px; background: rgba(255,255,255,0.2);">Queued</span>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <label style="font-weight: 600; margin-bottom: 8px;">Participant Reports</label>
-                        <div class="progress" style="height: 28px; margin-bottom: 8px; border-radius: 4px; background-color: #e9ecef;">
-                            <div class="progress-bar progress-bar-info progress-bar-striped active"
-                                 role="progressbar"
-                                 aria-valuenow="0"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"
-                                 style="width: 0%; line-height: 28px; font-size: 14px; font-weight: 600; transition: width 0.3s ease;">
-                                0%
-                            </div>
-                        </div>
-                        <small class="progress-text text-muted">0 of 0 participant reports generated</small>
-                    </div>
-                    <div class="col-md-4">
-                        <label style="font-weight: 600; margin-bottom: 8px;">Summary Report</label>
-                        <p style="margin-bottom: 5px;"><strong>Status:</strong> <span class="summary-status">Pending</span></p>
-                        <small class="elapsed-time text-muted"></small>
-                        <div style="margin-top: 15px;">
-                            <button class="btn btn-danger btn-sm cancel-job-btn" onclick="cancelReportJob('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>')">
-                                <i class="icon-remove"></i> Cancel Job
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <?php $reportQueue = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'disabled' : '';
     $reportTitle = (isset($this->shipmentStatus['status']) && $this->shipmentStatus['status'] == 'pending') ? 'Generating Participant Reports ...' : 'Generate Participant Reports';
     if ($this->shipment[0]['report_generated'] == 'yes') {
@@ -420,17 +382,6 @@ if (!empty($this->shipment)) {
                 });
         }
 
-        // Auto-initialize progress tracker if job is in progress
-        <?php
-        $jobInProgress = isset($this->shipmentStatus['status']) &&
-            in_array($this->shipmentStatus['status'], ['pending', 'not-evaluated', 'not-finalized']);
-        if ($jobInProgress): ?>
-        $(document).ready(function() {
-            if (typeof JobProgressTracker !== 'undefined') {
-                JobProgressTracker.init('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>');
-            }
-        });
-        <?php endif; ?>
     </script>
 
 <?php } else { ?>

@@ -114,7 +114,7 @@ try {
     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
     $smtpJson = $globalConfigDb->getValue('mail');
     if ($smtpJson === null || trim($smtpJson) === '') {
-        throw new Exception('Email SMTP Settings not done in System Config');
+        throw new Exception('Email SMTP Settings not set in System Config');
     }
     $smtpMailDetails = json_decode($smtpJson);
 
