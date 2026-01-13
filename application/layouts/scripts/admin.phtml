@@ -280,6 +280,7 @@ if ($adminSession->privileges != "") {
 									<li class="divider"></li>
 									<li id="AuditLog"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>"><?= $this->translate->_("Audit Log"); ?></a></li>
 									<li id="ApiSyncHistory"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history'), 'default', true); ?>"><?= $this->translate->_("API Sync History"); ?></a></li>
+									<li id="JobTracking"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking'), 'default', true); ?>"><?= $this->translate->_("Job Tracking"); ?></a></li>
 								<?php } ?>
 							</ul>
 						</li>
@@ -490,6 +491,8 @@ if ($adminSession->privileges != "") {
 				$('#ViewFinalizedShipments').addClass('active');
 			} else if (splitsUrl[2] == 'finalize') {
 				$('#FinalizeReports').addClass('active');
+			} else if (splitsUrl[2] == 'job-tracking') {
+				$('#JobTracking').addClass('active');
 			} else if (splitsUrl[2] == 'shipment-response-report') {
 				$('#ShipmentResponseReport').addClass('active');
 			} else if (splitsUrl[2] == 'testing-facility-by-ownership') {

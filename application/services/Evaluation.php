@@ -2836,7 +2836,13 @@ class Application_Service_Evaluation
 				'status' => 'pending'
 			);
 			// Zend_Debug::dump($data);die;
-			return $db->update('queue_report_generation', $data, "id = " . $existData['id']);
+			$updated = $db->update('queue_report_generation', $data, "id = " . $existData['id']);
+			if ($updated > 0) {
+				// Reset report_generated flags so progress starts from 0%
+				$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
+				$db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
+			}
+			return $updated;
 		}
 	}
 
@@ -2847,4 +2853,385 @@ class Application_Service_Evaluation
 	}
 
 	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
+
+	/**
+	 * Get job progress for a specific shipment (for AJAX polling)
+	 * @param int $shipmentId
+	 * @return array
+	 */
+	public function getJobProgress($shipmentId)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		// Get queue status
+		$queueRow = $db->fetchRow(
+			$db->select()
+				->from('queue_report_generation')
+				->where('shipment_id = ?', $shipmentId)
+				->order('id DESC')
+				->limit(1)
+		);
+
+		if (!$queueRow) {
+			return [
+				'status' => 'idle',
+				'in_progress' => false,
+				'participant_reports' => ['total' => 0, 'completed' => 0, 'percentage' => 0],
+				'summary_report' => ['status' => 'not_started']
+			];
+		}
+
+		// Get participant progress (only count participants who are not excluded and have final_result in 1,2)
+		$progressRow = $db->fetchRow(
+			$db->select()
+				->from('shipment_participant_map', [
+					'total' => new Zend_Db_Expr("SUM(CASE WHEN IFNULL(is_excluded, 'no') != 'yes' AND final_result IN (1, 2) THEN 1 ELSE 0 END)"),
+					'completed' => new Zend_Db_Expr("SUM(CASE WHEN report_generated = 'yes' AND IFNULL(is_excluded, 'no') != 'yes' AND final_result IN (1, 2) THEN 1 ELSE 0 END)")
+				])
+				->where('shipment_id = ?', $shipmentId)
+		);
+
+		$total = (int) ($progressRow['total'] ?? 0);
+		$completed = (int) ($progressRow['completed'] ?? 0);
+		$percentage = $total > 0 ? round(($completed / $total) * 100, 1) : 0;
+
+		// Determine overall status
+		$inProgress = in_array($queueRow['status'], ['pending', 'not-evaluated', 'not-finalized']);
+
+		// Get shipment info for summary status
+		$shipmentRow = $db->fetchRow(
+			$db->select()
+				->from('shipment', ['status', 'shipment_code'])
+				->where('shipment_id = ?', $shipmentId)
+		);
+
+		// Check if summary report exists
+		$summaryStatus = 'pending';
+		if ($shipmentRow) {
+			$summaryPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR .
+				$shipmentRow['shipment_code'] . DIRECTORY_SEPARATOR .
+				$shipmentRow['shipment_code'] . "-summary.pdf";
+
+			if (file_exists($summaryPath)) {
+				$summaryStatus = 'completed';
+			} else {
+				// Check for DTS-style summary reports
+				$screeningPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR .
+					$shipmentRow['shipment_code'] . DIRECTORY_SEPARATOR .
+					$shipmentRow['shipment_code'] . "-screening-summary.pdf";
+				$confirmatoryPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR .
+					$shipmentRow['shipment_code'] . DIRECTORY_SEPARATOR .
+					$shipmentRow['shipment_code'] . "-confirmatory-summary.pdf";
+
+				if (file_exists($screeningPath) || file_exists($confirmatoryPath)) {
+					$summaryStatus = 'completed';
+				} elseif (!$inProgress) {
+					$summaryStatus = 'not_started';
+				}
+			}
+		}
+
+		return [
+			'status' => $queueRow['status'],
+			'report_type' => $queueRow['report_type'],
+			'in_progress' => $inProgress,
+			'shipment_status' => $shipmentRow['status'] ?? 'unknown',
+			'shipment_code' => $shipmentRow['shipment_code'] ?? '',
+			'participant_reports' => [
+				'total' => $total,
+				'completed' => $completed,
+				'percentage' => $percentage
+			],
+			'summary_report' => [
+				'status' => $summaryStatus
+			],
+			'started_at' => $queueRow['processing_started_at'],
+			'last_heartbeat' => $queueRow['last_heartbeat'],
+			'requested_by' => $queueRow['requested_by']
+		];
+	}
+
+	/**
+	 * Get all active jobs from both queues (unified view for job tracking page)
+	 * @param array $params DataTables parameters
+	 * @return array
+	 */
+	public function getAllActiveJobs($params)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		// Parse DataTables parameters
+		$sOffset = isset($params['iDisplayStart']) ? (int) $params['iDisplayStart'] : 0;
+		$sLimit = isset($params['iDisplayLength']) && $params['iDisplayLength'] != '-1'
+			? (int) $params['iDisplayLength'] : 25;
+
+		$filterJobType = $params['jobType'] ?? '';
+		$filterStatus = $params['status'] ?? '';
+
+		// Date range filter - default to last 6 months
+		// Handle DD-MMM-YYYY format from daterangepicker (e.g., "13-Jul-2025")
+		$dateFrom = date('Y-m-d', strtotime('-6 months'));
+		$dateTo = date('Y-m-d');
+		if (!empty($params['dateFrom'])) {
+			$parsed = date_create_from_format('d-M-Y', $params['dateFrom']);
+			if ($parsed) {
+				$dateFrom = $parsed->format('Y-m-d');
+			}
+		}
+		if (!empty($params['dateTo'])) {
+			$parsed = date_create_from_format('d-M-Y', $params['dateTo']);
+			if ($parsed) {
+				$dateTo = $parsed->format('Y-m-d');
+			}
+		}
+
+		$allJobs = [];
+
+		// Query report generation jobs
+		if (empty($filterJobType) || $filterJobType === 'Report Generation') {
+			$reportJobsQuery = $db->select()
+				->from(['qrg' => 'queue_report_generation'], [
+					'job_id' => 'id',
+					'queue_type' => new Zend_Db_Expr("'report_generation'"),
+					'job_type' => new Zend_Db_Expr("'Report Generation'"),
+					'status',
+					'report_type',
+					'started_at' => 'processing_started_at',
+					'last_heartbeat',
+					'requested_on'
+				])
+				->joinLeft(['s' => 'shipment'], 'qrg.shipment_id = s.shipment_id', ['shipment_code', 'shipment_id'])
+				->joinLeft(['sa' => 'system_admin'], 'qrg.requested_by = sa.admin_id', [
+					'requested_by_name' => new Zend_Db_Expr("CONCAT(sa.first_name, ' ', sa.last_name)")
+				])
+				->order('qrg.id DESC');
+
+			// Apply status filter
+			if (!empty($filterStatus)) {
+				if ($filterStatus === 'processing') {
+					$reportJobsQuery->where("qrg.status IN ('not-evaluated', 'not-finalized')");
+				} elseif ($filterStatus === 'completed') {
+					$reportJobsQuery->where("qrg.status IN ('evaluated', 'finalized')");
+				} else {
+					$reportJobsQuery->where("qrg.status = ?", $filterStatus);
+				}
+			}
+
+			// Apply date range filter
+			$reportJobsQuery->where("DATE(COALESCE(qrg.processing_started_at, qrg.requested_on)) >= ?", $dateFrom);
+			$reportJobsQuery->where("DATE(COALESCE(qrg.processing_started_at, qrg.requested_on)) <= ?", $dateTo);
+
+			$reportJobsResult = $db->fetchAll($reportJobsQuery);
+
+			// Add progress for report generation jobs
+			foreach ($reportJobsResult as $job) {
+				if (isset($job['shipment_id'])) {
+					$progress = $this->getJobProgress($job['shipment_id']);
+					$job['progress'] = $progress['participant_reports']['percentage'];
+					$job['progress_completed'] = $progress['participant_reports']['completed'];
+					$job['progress_total'] = $progress['participant_reports']['total'];
+					$job['summary_status'] = $progress['summary_report']['status'];
+				} else {
+					$job['progress'] = 0;
+					$job['progress_completed'] = 0;
+					$job['progress_total'] = 0;
+					$job['summary_status'] = 'unknown';
+				}
+				$allJobs[] = $job;
+			}
+		}
+
+		// Query scheduled jobs
+		if (empty($filterJobType) || $filterJobType !== 'Report Generation') {
+			$scheduledJobsQuery = $db->select()
+				->from(['sj' => 'scheduled_jobs'], [
+					'job_id',
+					'queue_type' => new Zend_Db_Expr("'scheduled_jobs'"),
+					'job_type' => new Zend_Db_Expr("CASE
+						WHEN sj.job LIKE '%evaluate%' THEN 'Evaluation'
+						WHEN sj.job LIKE '%certificate%' THEN 'Certificate Generation'
+						WHEN sj.job LIKE '%send-reports-mail%' THEN 'Email Reports'
+						WHEN sj.job LIKE '%send-emails%' THEN 'Send Emails'
+						ELSE 'Scheduled Job'
+					END"),
+					'status',
+					'report_type' => new Zend_Db_Expr('NULL'),
+					'started_at' => 'requested_on',
+					'last_heartbeat' => new Zend_Db_Expr('NULL'),
+					'requested_on',
+					'job'
+				])
+				->joinLeft(['sa' => 'system_admin'], 'sj.requested_by = sa.admin_id', [
+					'requested_by_name' => new Zend_Db_Expr("CONCAT(sa.first_name, ' ', sa.last_name)")
+				])
+				->order('sj.job_id DESC');
+
+			// Apply job type filter
+			if (!empty($filterJobType)) {
+				switch ($filterJobType) {
+					case 'Evaluation':
+						$scheduledJobsQuery->where("sj.job LIKE '%evaluate%'");
+						break;
+					case 'Certificate Generation':
+						$scheduledJobsQuery->where("sj.job LIKE '%certificate%'");
+						break;
+					case 'Email Reports':
+						$scheduledJobsQuery->where("sj.job LIKE '%send-reports-mail%'");
+						break;
+				}
+			}
+
+			// Apply status filter
+			if (!empty($filterStatus)) {
+				$scheduledJobsQuery->where("sj.status = ?", $filterStatus);
+			}
+
+			// Apply date range filter
+			$scheduledJobsQuery->where("DATE(sj.requested_on) >= ?", $dateFrom);
+			$scheduledJobsQuery->where("DATE(sj.requested_on) <= ?", $dateTo);
+
+			$scheduledJobsResult = $db->fetchAll($scheduledJobsQuery);
+
+			foreach ($scheduledJobsResult as $job) {
+				$job['shipment_code'] = $this->extractShipmentFromJob($job['job'] ?? '');
+				$job['shipment_id'] = null;
+				$job['progress'] = null;
+				$job['progress_completed'] = null;
+				$job['progress_total'] = null;
+				$job['summary_status'] = null;
+				$allJobs[] = $job;
+			}
+		}
+
+		// Sort by started_at/requested_on descending
+		usort($allJobs, function ($a, $b) {
+			$aTime = $a['started_at'] ?? $a['requested_on'] ?? '';
+			$bTime = $b['started_at'] ?? $b['requested_on'] ?? '';
+			return strcmp($bTime, $aTime);
+		});
+
+		$iTotal = count($allJobs);
+		$pagedJobs = array_slice($allJobs, $sOffset, $sLimit);
+
+		return [
+			'sEcho' => isset($params['sEcho']) ? (int) $params['sEcho'] : 0,
+			'iTotalRecords' => $iTotal,
+			'iTotalDisplayRecords' => $iTotal,
+			'aaData' => $pagedJobs
+		];
+	}
+
+	/**
+	 * Extract shipment reference from job command string
+	 * @param string $jobCommand
+	 * @return string|null
+	 */
+	private function extractShipmentFromJob($jobCommand)
+	{
+		// Try to extract shipment ID from job command like "send-reports-mail.php -s 123"
+		if (preg_match('/-s\s+(\d+)/', $jobCommand, $matches)) {
+			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+			$shipment = $db->fetchRow(
+				$db->select()
+					->from('shipment', ['shipment_code'])
+					->where('shipment_id = ?', $matches[1])
+			);
+			return $shipment['shipment_code'] ?? null;
+		}
+		return null;
+	}
+
+	/**
+	 * Cancel a job in the queue
+	 * @param int $jobId
+	 * @param string $queueType - 'report_generation' or 'scheduled_jobs'
+	 * @return array
+	 */
+	public function cancelJob($jobId, $queueType)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		try {
+			if ($queueType === 'report_generation') {
+				// Get the job details first
+				$job = $db->fetchRow(
+					$db->select()
+						->from('queue_report_generation')
+						->where('id = ?', $jobId)
+				);
+
+				if (!$job) {
+					return ['success' => false, 'message' => 'Job not found'];
+				}
+
+				// Check if job can be cancelled (only pending or processing jobs)
+				$cancellableStatuses = ['pending', 'not-evaluated', 'not-finalized'];
+				if (!in_array($job['status'], $cancellableStatuses)) {
+					return ['success' => false, 'message' => 'Job cannot be cancelled - already completed or not in progress'];
+				}
+
+				// Update queue status to cancelled
+				$db->update(
+					'queue_report_generation',
+					[
+						'status' => 'cancelled',
+						'previous_status' => $job['status'],
+						'last_updated_on' => new Zend_Db_Expr('NOW()'),
+						'processing_started_at' => null,
+						'last_heartbeat' => null
+					],
+					'id = ' . (int) $jobId
+				);
+
+				// Reset shipment report_in_queue flag so it can be re-queued
+				$db->update(
+					'shipment',
+					['report_in_queue' => 'no'],
+					'shipment_id = ' . (int) $job['shipment_id']
+				);
+
+				// Try to remove lock file if it exists
+				$lockFile = '/tmp/ept-generate-shipment-reports-' . $job['shipment_id'] . '.lock';
+				if (file_exists($lockFile)) {
+					@unlink($lockFile);
+				}
+
+				return ['success' => true, 'message' => 'Job cancelled successfully'];
+
+			} elseif ($queueType === 'scheduled_jobs') {
+				// Get the job details first
+				$job = $db->fetchRow(
+					$db->select()
+						->from('scheduled_jobs')
+						->where('job_id = ?', $jobId)
+				);
+
+				if (!$job) {
+					return ['success' => false, 'message' => 'Job not found'];
+				}
+
+				// Check if job can be cancelled
+				if (!in_array($job['status'], ['pending', 'processing'])) {
+					return ['success' => false, 'message' => 'Job cannot be cancelled - already completed'];
+				}
+
+				// Update job status to cancelled
+				$db->update(
+					'scheduled_jobs',
+					[
+						'status' => 'cancelled',
+						'completed_on' => new Zend_Db_Expr('NOW()')
+					],
+					'job_id = ' . (int) $jobId
+				);
+
+				return ['success' => true, 'message' => 'Job cancelled successfully'];
+
+			} else {
+				return ['success' => false, 'message' => 'Invalid queue type'];
+			}
+		} catch (Exception $e) {
+			return ['success' => false, 'message' => 'Error cancelling job: ' . $e->getMessage()];
+		}
+	}
 }

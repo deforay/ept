@@ -1,0 +1,441 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+
+<style>
+    .job-progress {
+        min-width: 120px;
+    }
+    .job-progress .progress {
+        margin-bottom: 0;
+        height: 20px;
+        border-radius: 3px;
+    }
+    .job-progress .progress-bar {
+        line-height: 20px;
+        font-size: 11px;
+    }
+    .job-status-pending { color: #f0ad4e; }
+    .job-status-processing { color: #5bc0de; }
+    .job-status-completed { color: #5cb85c; }
+    .job-status-cancelled { color: #d9534f; }
+    .btn-cancel-job {
+        padding: 2px 8px;
+        font-size: 11px;
+    }
+    .job-type-badge {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        background: #eee;
+    }
+    .auto-refresh-indicator {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #d9edf7;
+        border-radius: 3px;
+        font-size: 12px;
+        color: #31708f;
+    }
+    .auto-refresh-indicator i {
+        margin-right: 5px;
+    }
+</style>
+
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <i class="icon-tasks"></i> <?= $this->translate->_("Job Tracking"); ?>
+    </div>
+    <div class="pull-right" style="margin-top: 5px;">
+        <span class="auto-refresh-indicator">
+            <i class="icon-refresh icon-spin"></i> Auto-refreshing every 5 seconds
+        </span>
+        <button class="btn btn-sm btn-info" onclick="refreshJobs()" style="margin-left: 10px;">
+            <i class="icon-refresh"></i> Refresh Now
+        </button>
+    </div>
+</h4>
+
+<!-- Filter Controls -->
+<table style="margin:20px 0;" class="table table-bordered">
+    <tr>
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Job Type"); ?>
+        </td>
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Status"); ?>
+        </td>
+        <td style="width:250px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Date Range"); ?>
+        </td>
+        <td style="width:40px;text-align: center;font-weight:bold;"></td>
+    </tr>
+    <tr>
+        <td>
+            <select id="filterJobType" name="filterJobType" class="form-control input-sm" onchange="applyFilters();">
+                <option value="">-- All Job Types --</option>
+                <option value="Report Generation">Report Generation</option>
+                <option value="Evaluation">Evaluation</option>
+                <option value="Certificate Generation">Certificate Generation</option>
+                <option value="Email Reports">Email Reports</option>
+            </select>
+        </td>
+        <td>
+            <select id="filterStatus" name="filterStatus" class="form-control input-sm" onchange="applyFilters();">
+                <option value="">-- All Statuses --</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click to select date range" />
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="resetFilters()">
+                <span><?= $this->translate->_("Reset"); ?></span>
+            </button>
+        </td>
+    </tr>
+</table>
+
+<!-- Jobs Table -->
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="jobsTable">
+    <thead>
+        <tr>
+            <th><?= $this->translate->_("Job Type"); ?></th>
+            <th><?= $this->translate->_("Reference"); ?></th>
+            <th><?= $this->translate->_("Status"); ?></th>
+            <th><?= $this->translate->_("Progress"); ?></th>
+            <th><?= $this->translate->_("Requested By"); ?></th>
+            <th><?= $this->translate->_("Started At"); ?></th>
+            <th><?= $this->translate->_("Last Activity"); ?></th>
+            <th><?= $this->translate->_("Actions"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="8" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" charset="utf-8">
+var oTable = null;
+var autoRefreshInterval = null;
+var startDate = "";
+var endDate = "";
+
+$(document).ready(function() {
+    initDateRangePicker();
+    initJobsTable();
+    startAutoRefresh();
+});
+
+function initDateRangePicker() {
+    // Default: last 6 months to today
+    var defaultStart = moment().subtract(6, 'months');
+    var defaultEnd = moment();
+
+    startDate = defaultStart.format('DD-MMM-YYYY');
+    endDate = defaultEnd.format('DD-MMM-YYYY');
+    $('#dateRange').val(startDate + ' to ' + endDate);
+
+    $('#dateRange').daterangepicker({
+        locale: {
+            cancelLabel: 'Clear',
+            format: 'DD-MMM-YYYY',
+            separator: ' to ',
+        },
+        autoApply: true,
+        showDropdowns: true,
+        alwaysShowCalendars: true,
+        autoUpdateInput: true,
+        startDate: defaultStart,
+        endDate: defaultEnd,
+        ranges: {
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'Last 3 Months': [moment().subtract(3, 'months'), moment()],
+            'Last 6 Months': [moment().subtract(6, 'months'), moment()],
+            'Last 12 Months': [moment().subtract(12, 'months'), moment()],
+            'This Year': [moment().startOf('year'), moment()],
+            'All Time': [moment('2020-01-01'), moment()]
+        }
+    }, function(start, end) {
+        startDate = start.format('DD-MMM-YYYY');
+        endDate = end.format('DD-MMM-YYYY');
+        $('#dateRange').val(startDate + ' to ' + endDate);
+        applyFilters();
+    });
+
+    $('#dateRange').on('cancel.daterangepicker', function() {
+        startDate = "";
+        endDate = "";
+        $(this).val('');
+        applyFilters();
+    });
+}
+
+function initJobsTable() {
+    oTable = $('#jobsTable').dataTable({
+        "oLanguage": {
+            "sLengthMenu": "_MENU_ records per page"
+        },
+        "bJQueryUI": false,
+        "bAutoWidth": false,
+        "bInfo": true,
+        "bScrollCollapse": true,
+        "sPaginationType": "bootstrap",
+        "bRetrieve": true,
+        "aoColumns": [
+            { "sClass": "center" },
+            { "sClass": "center" },
+            { "sClass": "center" },
+            { "sClass": "center", "bSortable": false },
+            { "sClass": "center" },
+            { "sClass": "center" },
+            { "sClass": "center" },
+            { "sClass": "center", "bSortable": false }
+        ],
+        "aaSorting": [[5, "desc"]],
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking', 'action' => 'get-all-jobs')); ?>",
+        "fnServerParams": function(aoData) {
+            aoData.push({ "name": "jobType", "value": $('#filterJobType').val() });
+            aoData.push({ "name": "status", "value": $('#filterStatus').val() });
+            aoData.push({ "name": "dateFrom", "value": startDate });
+            aoData.push({ "name": "dateTo", "value": endDate });
+        },
+        "fnServerData": function(sSource, aoData, fnCallback) {
+            $.ajax({
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": aoData,
+                "success": function(json) {
+                    // Transform data for display
+                    if (json.aaData) {
+                        json.aaData = json.aaData.map(function(row) {
+                            return [
+                                formatJobType(row),
+                                formatReference(row),
+                                formatStatusBadge(row.status),
+                                formatProgress(row),
+                                row.requested_by_name || 'System',
+                                formatDateTime(row.started_at || row.requested_on),
+                                formatDateTime(row.last_heartbeat),
+                                formatActions(row)
+                            ];
+                        });
+                    }
+                    fnCallback(json);
+                }
+            });
+        }
+    });
+}
+
+function formatJobType(row) {
+    var jobType = row.job_type;
+    var icons = {
+        'Report Generation': 'icon-file-text',
+        'Evaluation': 'icon-check',
+        'Certificate Generation': 'icon-certificate',
+        'Email Reports': 'icon-envelope',
+        'Send Emails': 'icon-envelope',
+        'Scheduled Job': 'icon-cog'
+    };
+    var icon = icons[jobType] || 'icon-cog';
+
+    // Build tooltip content with job details
+    var tooltipContent = '';
+    if (row.queue_type === 'report_generation') {
+        tooltipContent = 'Report Generation\n';
+        tooltipContent += 'Shipment: ' + (row.shipment_code || 'N/A') + '\n';
+        tooltipContent += 'Type: ' + (row.report_type || 'All');
+    } else if (row.job) {
+        // For scheduled jobs, show the full command/script
+        tooltipContent = row.job;
+    }
+
+    return '<span class="job-type-badge" title="' + escapeHtml(tooltipContent) + '" style="cursor: help;"><i class="' + icon + '"></i> ' + jobType + '</span>';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function formatReference(row) {
+    if (row.shipment_code) {
+        if (row.queue_type === 'report_generation') {
+            return '<a href="/reports/distribution/shipment/sid/' + btoa(row.shipment_id) + '">' +
+                   row.shipment_code + '</a>';
+        }
+        return row.shipment_code;
+    }
+    return '<span class="text-muted">-</span>';
+}
+
+function formatStatusBadge(status) {
+    var statusConfig = {
+        'pending': { cls: 'job-status-pending', icon: 'icon-clock', label: 'Pending' },
+        'not-evaluated': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Generating' },
+        'not-finalized': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Finalizing' },
+        'processing': { cls: 'job-status-processing', icon: 'icon-spinner icon-spin', label: 'Processing' },
+        'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
+        'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Finalized' },
+        'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
+        'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
+    };
+
+    var config = statusConfig[status] || { cls: 'job-status-pending', icon: 'icon-question', label: status };
+    return '<span class="' + config.cls + '"><i class="' + config.icon + '"></i> ' + config.label + '</span>';
+}
+
+function formatActions(row) {
+    // Only show cancel button for cancellable statuses
+    var cancellableStatuses = ['pending', 'not-evaluated', 'not-finalized', 'processing'];
+    if (cancellableStatuses.indexOf(row.status) === -1) {
+        return '<span class="text-muted">-</span>';
+    }
+
+    return '<button class="btn btn-danger btn-xs btn-cancel-job" ' +
+           'onclick="cancelJob(' + row.job_id + ', \'' + row.queue_type + '\')" ' +
+           'title="Cancel this job">' +
+           '<i class="icon-remove"></i> Cancel</button>';
+}
+
+function cancelJob(jobId, queueType) {
+    if (!confirm('Are you sure you want to cancel this job?')) {
+        return;
+    }
+
+    $.ajax({
+        url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking', 'action' => 'cancel-job')); ?>',
+        type: 'POST',
+        data: {
+            jobId: jobId,
+            queueType: queueType
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                alert('Job cancelled successfully');
+                refreshJobs();
+            } else {
+                alert('Failed to cancel job: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Error cancelling job. Please try again.');
+        }
+    });
+}
+
+function formatProgress(row) {
+    if (row.progress === null || row.progress === undefined) {
+        return '<span class="text-muted">N/A</span>';
+    }
+
+    var percent = Math.round(row.progress);
+    var barClass = percent >= 100 ? 'progress-bar-success' : 'progress-bar-info progress-bar-striped active';
+
+    var html = '<div class="job-progress">' +
+               '<div class="progress">' +
+               '<div class="progress-bar ' + barClass + '" style="width: ' + percent + '%;">' +
+               percent + '%</div></div>';
+
+    if (row.progress_completed !== null && row.progress_total !== null) {
+        html += '<small class="text-muted">' + row.progress_completed + '/' + row.progress_total + ' reports</small>';
+    }
+
+    // Add summary status if available
+    if (row.summary_status) {
+        var summaryLabel = row.summary_status === 'completed' ?
+            '<span style="color:#5cb85c;"><i class="icon-ok"></i> Summary done</span>' :
+            '<span class="text-muted"><i class="icon-clock"></i> Summary pending</span>';
+        html += '<br>' + summaryLabel;
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function formatDateTime(dateStr) {
+    if (!dateStr) return '<span class="text-muted">-</span>';
+
+    var date = new Date(dateStr.replace(' ', 'T'));
+    var now = new Date();
+    var diff = Math.floor((now - date) / 1000);
+
+    var timeAgo = '';
+    if (diff < 60) {
+        timeAgo = diff + 's ago';
+    } else if (diff < 3600) {
+        timeAgo = Math.floor(diff / 60) + 'm ago';
+    } else if (diff < 86400) {
+        timeAgo = Math.floor(diff / 3600) + 'h ago';
+    } else {
+        timeAgo = Math.floor(diff / 86400) + 'd ago';
+    }
+
+    // Format as readable date
+    var options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    var formatted = date.toLocaleDateString('en-US', options);
+
+    return '<span title="' + formatted + '">' + timeAgo + '</span>';
+}
+
+function refreshJobs() {
+    if (oTable) {
+        oTable.fnDraw(false); // false = don't reset pagination
+    }
+}
+
+function applyFilters() {
+    if (oTable) {
+        oTable.fnDraw();
+    }
+}
+
+function resetFilters() {
+    $('#filterJobType').val('');
+    $('#filterStatus').val('');
+    // Reset date range to default (last 6 months)
+    var defaultStart = moment().subtract(6, 'months');
+    var defaultEnd = moment();
+    startDate = defaultStart.format('DD-MMM-YYYY');
+    endDate = defaultEnd.format('DD-MMM-YYYY');
+    $('#dateRange').val(startDate + ' to ' + endDate);
+    $('#dateRange').data('daterangepicker').setStartDate(defaultStart);
+    $('#dateRange').data('daterangepicker').setEndDate(defaultEnd);
+    applyFilters();
+}
+
+function startAutoRefresh() {
+    autoRefreshInterval = setInterval(function() {
+        refreshJobs();
+    }, 5000); // Refresh every 5 seconds
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Clean up on page leave
+$(window).on('beforeunload', function() {
+    stopAutoRefresh();
+});
+</script>
