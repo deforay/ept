@@ -1806,11 +1806,8 @@ class Application_Service_Evaluation
 			$mapIdsToUpdate[] = (int) $res['map_id'];
 		}
 
-		// Mark as generated in a single update per chunk instead of N updates.
-		if (!empty($mapIdsToUpdate)) {
-			$mapIdsToUpdate = array_values(array_unique(array_map('intval', $mapIdsToUpdate)));
-			$db->update('shipment_participant_map', ['report_generated' => 'yes'], 'map_id IN (' . implode(',', $mapIdsToUpdate) . ')');
-		}
+		// NOTE: report_generated is now updated in generate-shipment-reports.php
+		// AFTER the actual PDF files are created, not here during data fetch.
 
 		// Update shipment status once (was previously executed per participant).
 		$db->update('shipment', [

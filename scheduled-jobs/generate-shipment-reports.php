@@ -542,7 +542,11 @@ try {
             }
 
             if (!empty($evalRow['id'])) {
-                $db->update('queue_report_generation', ['status' => $reportTypeStatus, 'last_updated_on' => new Zend_Db_Expr('now()')], 'id=' . $evalRow['id']);
+                $db->update('queue_report_generation', [
+                    'status' => $reportTypeStatus,
+                    'last_updated_on' => new Zend_Db_Expr('now()'),
+                    'processing_started_at' => new Zend_Db_Expr('now()')
+                ], 'id=' . $evalRow['id']);
             }
             if (!file_exists($reportsPath)) {
                 $commonService->makeDirectory($reportsPath);
@@ -643,6 +647,18 @@ try {
                         $tRenderStart = microtime(true);
                         ReportJobUtil::includeWithContext($participantLayoutFile, $context);
                         ReportJobUtil::debugLog("Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms", $isCli, $debug);
+
+                        // Mark reports as generated AFTER PDFs are actually created
+                        if (!empty($resultArray['shipment'])) {
+                            $mapIds = array_map(function ($row) {
+                                return (int) $row['map_id'];
+                            }, $resultArray['shipment']);
+                            $mapIds = array_values(array_unique(array_filter($mapIds)));
+                            if (!empty($mapIds)) {
+                                $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+                                $dbAdapter->update('shipment_participant_map', ['report_generated' => 'yes'], 'map_id IN (' . implode(',', $mapIds) . ')');
+                            }
+                        }
 
                         $newCount = $getFileCount();
                         $delta = $newCount - $lastCount;
