@@ -21,7 +21,12 @@ class Pt_Reports_SummaryPdf extends Fpdi
     public $dtsPanelType = "";
     public $generalModel = null;
     public $tbTestType = null;
+    public $preHeaderText = "";
 
+    public function setPreHeaderText($text)
+    {
+        $this->preHeaderText = $text;
+    }
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "", $tbTestType = "")
     {
@@ -132,8 +137,14 @@ class Pt_Reports_SummaryPdf extends Fpdi
             $this->writeHTMLCell(0, 0, 10, 40, $html, 0, 0, 0, true, 'J', true);
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             if (isset($this->tbTestType) && !empty($this->tbTestType) && $this->tbTestType != 'microscopy') {
-                $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL SUMMARY REPORT</span></div>';
-                $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+                $yPosition = 10;
+                if (isset($this->preHeaderText) && !empty($this->preHeaderText)) {
+                    $preHtml = '<span style="text-align:center;color:#777777;">' . $this->preHeaderText . '</span>';
+                    $this->writeHTMLCell(0, 0, 15, 5, $preHtml, 0, 0, 0, true, 'J', true);
+                    $yPosition = 12;
+                }
+                $html = '<div style="font-weight: bold;text-align:center;background-color:#777777;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ': FINAL SUMMARY REPORT</span></div>';
+                $this->writeHTMLCell(0, 0, 15, $yPosition, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->tbTestType == 'microscopy') {
                 $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span></span>';
                 $this->writeHTMLCell(0, 0, 15, 05, $html, 0, 0, 0, true, 'J', true);

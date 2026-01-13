@@ -22,6 +22,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
+        $pdf->setPreHeaderText("GHC/DGHT-International Laboratory Branch- Atlanta, GA");
     }
 
     // set default header data
@@ -33,13 +34,9 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    if ($layout == 'zimbabwe') {
-        $mt = 55;
-    } else {
-        $mt = 18;
-        if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
-            $mt = 48;
-        }
+    $mt = 18;
+    if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
+        $mt = 48;
     }
     if (isset($templateTopMargin) && !empty($templateTopMargin)) {
         $mt = $templateTopMargin;
@@ -57,13 +54,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('helvetica', '', 10);
 
-    if ($layout == 'zimbabwe') {
-        if (isset($reportFormat) && !empty($reportFormat)) {
-        } else {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">Summary Results Report</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        }
-    }
+
     if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy') {
         $htmlTitle = '<span style="font-weight: bold;text-align:left;font-size:10;">PT Panel Name : ' . ucwords($panelName) . '</span><br>';
     } else {
@@ -199,7 +190,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             // $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
 
             // Setup the titles
-            $graph->title->Set("XTPT Site Enrollment, Participation, and Performance for " . $resultArray['shipment']['shipment_code']);
+            $graph->title->Set("mTB-PT Site Enrollment, Participation, and Performance for " . $resultArray['shipment']['shipment_code']);
             // $graph->xaxis->title->Set('% Score');
             $graph->yaxis->title->Set('Number of Sites', 'center');
 
@@ -427,19 +418,17 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $panelPerformanceMtbRifSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert MTB/RIF</text>';
         $panelPerformanceMtbRifSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
 
-        // Calculate max Y-axis value
+        // Calculate max Y-axis value (check each value independently)
         $ctMaxYAxisValueMtbRif = 0;
         foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
-            if ($sampleSummary['ref_expected_ct'] > 0) {
-                if ($ctMaxYAxisValueMtbRif < $sampleSummary['ref_expected_ct']) {
-                    $ctMaxYAxisValueMtbRif = $sampleSummary['ref_expected_ct'];
-                }
-                if ($ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
-                    $ctMaxYAxisValueMtbRif = $sampleSummary['average_ct'];
-                }
-                if ($ctMaxYAxisValueMtbRif < $sampleSummary['ref_stability_ct']) {
-                    $ctMaxYAxisValueMtbRif = $sampleSummary['ref_stability_ct'];
-                }
+            if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['ref_expected_ct']) {
+                $ctMaxYAxisValueMtbRif = $sampleSummary['ref_expected_ct'];
+            }
+            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
+                $ctMaxYAxisValueMtbRif = $sampleSummary['average_ct'];
+            }
+            if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['ref_stability_ct']) {
+                $ctMaxYAxisValueMtbRif = $sampleSummary['ref_stability_ct'];
             }
         }
         if ($ctMaxYAxisValueMtbRif == 0) {
@@ -470,60 +459,44 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $barSpaceCenter = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.125) + ($barWidthMtbRif * 1.5));
             $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
 
-            if ($sampleSummary['ref_expected_ct'] > 0) {
-                // Bar 1: Expected (Validation Testing) - Blue
+            // Bar 1: Expected (Validation Testing) - Blue
+            if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0) {
                 $bar1X = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.125));
                 $bar1Y = ((($ctMaxYAxisValueMtbRif - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbRif) + 40);
                 $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif) . '" x="' . $bar1X . '" y="' . $bar1Y . '" fill="#156082" />';
                 $panelPerformanceMtbRifSvg .= '    <text x="' . ($bar1X + ($barWidthMtbRif / 2)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+            }
 
-                // Bar 2: Field Testing - Red
+            // Bar 2: Field Testing - Red
+            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0) {
                 $bar2X = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.125) + $barWidthMtbRif);
                 $bar2Y = ((($ctMaxYAxisValueMtbRif - $sampleSummary['average_ct']) * $yAxis1UnitMtbRif) + 40);
                 $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif) . '" x="' . $bar2X . '" y="' . $bar2Y . '" fill="#C00000" />';
-                $panelPerformanceMtbRifSvg .= '    <text x="' . ($bar2X + ($barWidthMtbRif / 2)) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['average_ct'] ?? 0, 1) . '</text>';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . ($bar2X + ($barWidthMtbRif / 2)) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+            }
 
-                // Bar 3: Stability Testing - Green
-                if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0) {
-                    $bar3X = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.125) + ($barWidthMtbRif * 2));
-                    $bar3Y = ((($ctMaxYAxisValueMtbRif - $sampleSummary['ref_stability_ct']) * $yAxis1UnitMtbRif) + 40);
-                    $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbRif) . '" x="' . $bar3X . '" y="' . $bar3Y . '" fill="#196B24" />';
-                    $panelPerformanceMtbRifSvg .= '    <text x="' . ($bar3X + ($barWidthMtbRif / 2)) . '" y="' . (267 - ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_stability_ct'], 1) . '</text>';
-                }
-
-                // Delta indicators
-                if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
-                    $panelPerformanceMtbRifSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . '" fill="#156082" stroke="#385D8A" stroke-width="1" />';
-                    $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
-                } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
-                    $panelPerformanceMtbRifSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbRif * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbRif) . ',' . (40 + $yAxis1UnitMtbRif) . '" fill="#C00000" stroke="#BF1411" stroke-width="1" />';
-                    $panelPerformanceMtbRifSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbRif * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
-                }
+            // Bar 3: Stability Testing - Green
+            if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0) {
+                $bar3X = (35 + ($sampleIndexMtbRif * $barSpaceMtbRif) + ($barSpaceMtbRif * 0.125) + ($barWidthMtbRif * 2));
+                $bar3Y = ((($ctMaxYAxisValueMtbRif - $sampleSummary['ref_stability_ct']) * $yAxis1UnitMtbRif) + 40);
+                $panelPerformanceMtbRifSvg .= '    <rect width="' . $barWidthMtbRif . '" height="' . ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbRif) . '" x="' . $bar3X . '" y="' . $bar3Y . '" fill="#196B24" />';
+                $panelPerformanceMtbRifSvg .= '    <text x="' . ($bar3X + ($barWidthMtbRif / 2)) . '" y="' . (267 - ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbRif)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_stability_ct'], 1) . '</text>';
             }
             $sampleIndexMtbRif++;
         }
 
-        // Legend - Row 1: Three colored indicators
+        // Legend - Three colored indicators for Probe A
         $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="276" fill="#156082" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="45" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Validation) Mean</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="160" y="276" fill="#C00000" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="170" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Field Testing Mean</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="275" y="276" fill="#196B24" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="285" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Stability Testing Mean</text>';
-        // Legend - Row 2: Delta indicator (centered)
-        $panelPerformanceMtbRifSvg .= '    <polygon points="168,289 164,296 172,296" fill="#156082" stroke="#385D8A" stroke-width="1" />';
-        $panelPerformanceMtbRifSvg .= '    <polygon points="172,289 176,296 180,289" fill="#C00000" stroke="#BF1411" stroke-width="1" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="184" y="295" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Change in Ct (delta)</text>';
+        $panelPerformanceMtbRifSvg .= '    <text x="45" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Validation Testing) Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="286" fill="#C00000" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="45" y="293" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Field Testing Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="230" y="286" fill="#196B24" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="240" y="293" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Stability Testing) Mean for Probe A</text>';
         $panelPerformanceMtbRifSvg .= '</svg>';
 
         if ($assayName && $tbTestType != 'microscopy') {
-            if ($layout == 'zimbabwe') {
-                $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 65, 180, 135, '', '', '', 0, false);
-                $pdf->SetY(210);
-            } else {
-                $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 25, 180, 135, '', '', '', 0, false);
-                $pdf->SetY(170);
-            }
+            $pdf->ImageSVG('@' . $panelPerformanceMtbRifSvg, 15, 25, 180, 135, '', '', '', 0, false);
+            $pdf->SetY(170);
         }
 
         $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch, the mean calculated from results submitted by testing sites, and the mean achieved during stability testing (CDC/ILB) post submission deadline. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
@@ -542,19 +515,17 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $panelPerformanceMtbUltraSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert Ultra</text>';
         $panelPerformanceMtbUltraSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
 
-        // Calculate max Y-axis value
+        // Calculate max Y-axis value (check each value independently)
         $ctMaxYAxisValueMtbUltra = 0;
         foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
-            if ($sampleSummary['ref_expected_ct'] > 0) {
-                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['ref_expected_ct']) {
-                    $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_expected_ct'];
-                }
-                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
-                    $ctMaxYAxisValueMtbUltra = $sampleSummary['average_ct'];
-                }
-                if ($ctMaxYAxisValueMtbUltra < $sampleSummary['ref_stability_ct']) {
-                    $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_stability_ct'];
-                }
+            if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['ref_expected_ct']) {
+                $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_expected_ct'];
+            }
+            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
+                $ctMaxYAxisValueMtbUltra = $sampleSummary['average_ct'];
+            }
+            if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['ref_stability_ct']) {
+                $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_stability_ct'];
             }
         }
         if ($ctMaxYAxisValueMtbUltra == 0) {
@@ -581,50 +552,39 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $barSpaceCenter = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.125) + ($barWidthMtbUltra * 1.5));
             $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="270" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $sampleSummary['sample_label'] . '</text>';
 
-            if ($sampleSummary['ref_expected_ct'] > 0) {
-                // Bar 1: Expected (Validation Testing) - Blue
+            // Bar 1: Expected (Validation Testing) - Blue
+            if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0) {
                 $bar1X = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.125));
                 $bar1Y = ((($ctMaxYAxisValueMtbUltra - $sampleSummary['ref_expected_ct']) * $yAxis1UnitMtbUltra) + 40);
                 $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $bar1X . '" y="' . $bar1Y . '" fill="#156082" />';
                 $panelPerformanceMtbUltraSvg .= '    <text x="' . ($bar1X + ($barWidthMtbUltra / 2)) . '" y="' . (267 - ($sampleSummary['ref_expected_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_expected_ct'], 1) . '</text>';
+            }
 
-                // Bar 2: Field Testing - Red
+            // Bar 2: Field Testing - Red
+            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0) {
                 $bar2X = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.125) + $barWidthMtbUltra);
                 $bar2Y = ((($ctMaxYAxisValueMtbUltra - $sampleSummary['average_ct']) * $yAxis1UnitMtbUltra) + 40);
                 $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $bar2X . '" y="' . $bar2Y . '" fill="#C00000" />';
                 $panelPerformanceMtbUltraSvg .= '    <text x="' . ($bar2X + ($barWidthMtbUltra / 2)) . '" y="' . (267 - ($sampleSummary['average_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['average_ct'], 1) . '</text>';
+            }
 
-                // Bar 3: Stability Testing - Green
-                if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0) {
-                    $bar3X = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.125) + ($barWidthMtbUltra * 2));
-                    $bar3Y = ((($ctMaxYAxisValueMtbUltra - $sampleSummary['ref_stability_ct']) * $yAxis1UnitMtbUltra) + 40);
-                    $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $bar3X . '" y="' . $bar3Y . '" fill="#196B24" />';
-                    $panelPerformanceMtbUltraSvg .= '    <text x="' . ($bar3X + ($barWidthMtbUltra / 2)) . '" y="' . (267 - ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_stability_ct'], 1) . '</text>';
-                }
-
-                // Delta indicators
-                if ($sampleSummary['average_ct'] > $sampleSummary['ref_expected_ct']) {
-                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . $barSpaceCenter . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . '" fill="#156082" stroke="#385D8A" stroke-width="1" />';
-                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 3)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
-                } elseif ($sampleSummary['ref_expected_ct'] > $sampleSummary['average_ct']) {
-                    $panelPerformanceMtbUltraSvg .= '    <polygon points="' . ($barSpaceCenter - $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . ' ' . $barSpaceCenter . ',' . (40 + ($yAxis1UnitMtbUltra * 4)) . ' ' . ($barSpaceCenter + $barWidthMtbUltra) . ',' . (40 + $yAxis1UnitMtbUltra) . '" fill="#C00000" stroke="#BF1411" stroke-width="1" />';
-                    $panelPerformanceMtbUltraSvg .= '    <text x="' . $barSpaceCenter . '" y="' . (40 + ($yAxis1UnitMtbUltra * 2.5)) . '" text-anchor="middle" style="fill:#ffffff;font-family:helvetica;font-size:4pt;font-weight:bold;">' . abs(round($sampleSummary['average_ct'] - $sampleSummary['ref_expected_ct'], 1)) . '</text>';
-                }
+            // Bar 3: Stability Testing - Green
+            if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0) {
+                $bar3X = (35 + ($sampleIndexMtbUltra * $barSpaceMtbUltra) + ($barSpaceMtbUltra * 0.125) + ($barWidthMtbUltra * 2));
+                $bar3Y = ((($ctMaxYAxisValueMtbUltra - $sampleSummary['ref_stability_ct']) * $yAxis1UnitMtbUltra) + 40);
+                $panelPerformanceMtbUltraSvg .= '    <rect width="' . $barWidthMtbUltra . '" height="' . ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbUltra) . '" x="' . $bar3X . '" y="' . $bar3Y . '" fill="#196B24" />';
+                $panelPerformanceMtbUltraSvg .= '    <text x="' . ($bar3X + ($barWidthMtbUltra / 2)) . '" y="' . (267 - ($sampleSummary['ref_stability_ct'] * $yAxis1UnitMtbUltra)) . '" dominant-baseline="hanging" text-anchor="middle" style="fill:#FFFFFF;font-family:helvetica;font-size:4.5pt">' . round($sampleSummary['ref_stability_ct'], 1) . '</text>';
             }
             $sampleIndexMtbUltra++;
         }
 
-        // Legend - Row 1: Three colored indicators
+        // Legend - Three colored indicators for first probe detected
         $panelPerformanceMtbUltraSvg .= '    <rect width="7" height="7" x="35" y="276" fill="#156082" />';
-        $panelPerformanceMtbUltraSvg .= '    <text x="45" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Validation) Mean</text>';
-        $panelPerformanceMtbUltraSvg .= '    <rect width="7" height="7" x="160" y="276" fill="#C00000" />';
-        $panelPerformanceMtbUltraSvg .= '    <text x="170" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Field Testing Mean</text>';
-        $panelPerformanceMtbUltraSvg .= '    <rect width="7" height="7" x="275" y="276" fill="#196B24" />';
-        $panelPerformanceMtbUltraSvg .= '    <text x="285" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Stability Testing Mean</text>';
-        // Legend - Row 2: Delta indicator (centered)
-        $panelPerformanceMtbUltraSvg .= '    <polygon points="168,289 164,296 172,296" fill="#156082" stroke="#385D8A" stroke-width="1" />';
-        $panelPerformanceMtbUltraSvg .= '    <polygon points="172,289 176,296 180,289" fill="#C00000" stroke="#BF1411" stroke-width="1" />';
-        $panelPerformanceMtbUltraSvg .= '    <text x="184" y="295" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Change in Ct (delta)</text>';
+        $panelPerformanceMtbUltraSvg .= '    <text x="45" y="283" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Validation Testing) Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="7" height="7" x="35" y="286" fill="#C00000" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="45" y="293" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Field Testing Mean for first probe detected</text>';
+        $panelPerformanceMtbUltraSvg .= '    <rect width="7" height="7" x="230" y="286" fill="#196B24" />';
+        $panelPerformanceMtbUltraSvg .= '    <text x="240" y="293" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Stability Testing) Mean for first probe detected</text>';
         $panelPerformanceMtbUltraSvg .= '</svg>';
 
         if ($assayName && $tbTestType != 'microscopy') {
