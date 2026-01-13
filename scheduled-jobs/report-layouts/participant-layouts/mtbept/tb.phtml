@@ -407,7 +407,7 @@ if (!empty($resultArray['shipment'])) {
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
+        $address = Pt_Commons_SchemeConfig::get('tb.contactInfo');
         if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
         }

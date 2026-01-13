@@ -115,22 +115,12 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
-        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
-        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
-        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
-        $passPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays');
+        $documentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
+        $passPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
 
-        $testThreeOptionalDisplay = "";
-        if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
-            $testThreeOptionalDisplay = "display:none;";
-        }
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-        $shipmentAttributesScreeningTestDisplay = "";
-        if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
-            $shipmentAttributesScreeningTestDisplay = "display:none;";
-            $testThreeOptionalDisplay = "display:none;";
-        }
         $shipmentAttributesSampleTypeDisplay = "";
         if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
             $shipmentAttributesSampleTypeDisplay = "display:none;";
