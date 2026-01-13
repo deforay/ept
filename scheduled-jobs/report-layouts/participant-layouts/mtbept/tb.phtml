@@ -408,7 +408,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Appeal information text
-        $appealText = '<p style="color:red;font-size:10;text-align:justify;">An appeal can be submitted by PT participants who disagree with a PT result, score, or other PT-related decision, by email within 15 days of report finalization. Information concerning the PT complaint/ appeal process can be found at https://mtbept.com/ under the Resource menu in the Downloads column.</p>';
+        $appealText = '<p style="color:red;font-size:10;text-align:justify;">An appeal can be submitted by PT participants who disagree with a PT result, score, or other PT-related decision, by email within 15 days of report finalization. Information concerning the PT complaint/ appeal process can be found at https://mtbept.com/ under the Resource menu in the Downloads column.</p><br>';
         $pdf->writeHTML($appealText, true, false, true, false, '');
 
         $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;

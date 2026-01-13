@@ -383,6 +383,17 @@ try {
                     'shipmentsUnderDistro' => isset($shipmentsUnderDistro) ? $shipmentsUnderDistro : null,
                 ]);
                 ReportJobUtil::debugLog("Worker rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms", $isCli, $debug);
+
+                // Mark reports as generated AFTER PDFs are actually created (worker process)
+                if (!empty($resultArray['shipment'])) {
+                    $mapIds = array_map(function ($row) {
+                        return (int) $row['map_id'];
+                    }, $resultArray['shipment']);
+                    $mapIds = array_values(array_unique(array_filter($mapIds)));
+                    if (!empty($mapIds)) {
+                        $db->update('shipment_participant_map', ['report_generated' => 'yes'], 'map_id IN (' . implode(',', $mapIds) . ')');
+                    }
+                }
             }
         }
         exit(0);
@@ -914,7 +925,10 @@ try {
             }
             $update = [
                 'status' => $reportCompletedStatus,
-                'last_updated_on' => new Zend_Db_Expr('now()')
+                'last_updated_on' => new Zend_Db_Expr('now()'),
+                'processing_started_at' => null,
+                'last_heartbeat' => null,
+                'previous_status' => null
             ];
             if ($evalRow['report_type'] == 'finalized' && $evalRow['date_finalised'] == '') {
                 $update['date_finalised'] = new Zend_Db_Expr('now()');
