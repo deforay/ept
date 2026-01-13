@@ -41,8 +41,9 @@ final class Application_Model_Dts
 		$maxScore = 0;
 		$scoreHolder = [];
 
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		//$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		$config = json_decode(Pt_Commons_SchemeConfig::get('dts'));
 		$schemeService = new Application_Service_Schemes();
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
@@ -443,7 +444,7 @@ final class Application_Model_Dts
 				$result2 = $this->getResultCodeFromId($result['test_result_2'] ?? '');
 
 
-				if (!empty($attributes['algorithm']) && $attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+				if (!empty($attributes['algorithm']) && $attributes['algorithm'] != 'myanmarNationalDtsAlgo' && isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == 'yes') {
 					$result3 = 'X';
 					$repeatResult3 = 'X';
 				} else {
@@ -532,7 +533,7 @@ final class Application_Model_Dts
 
 				// END OF CONTROLS
 			}
-			$algScore = $config->evaluation->dts->dtsAlgorithmScore ?? 0;
+			$algScore = $config['dtsAlgorithmScore'] ?? 0;
 			// Ensure $scorePercentageForAlgorithm is always between 0 and 1 (as a fraction)
 			if (isset($algScore) && !empty($algScore) && $algScore > 0) {
 				$scorePercentageForAlgorithm = ($algScore > 1) ? ($algScore / 100) : $algScore;
@@ -704,7 +705,7 @@ final class Application_Model_Dts
 			);
 		}
 
-		$configuredDocScore = (isset($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0) ? $config->evaluation->dts->documentationScore : 0;
+		$configuredDocScore = (isset($config['documentationScore']) && (int) $config['documentationScore'] > 0) ? $config['documentationScore'] : 0;
 
 
 		// Response Score
@@ -747,7 +748,7 @@ final class Application_Model_Dts
 			// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
 			$totalDocumentationItems += 4;
 		}
-		$docScore = $config->evaluation->dts->documentationScore ?? 0;
+		$docScore = $config['documentationScore'] ?? 0;
 		$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
 		// D.1
 		if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
@@ -795,7 +796,7 @@ final class Application_Model_Dts
 				$sampleRehydrationDate = new DateTimeImmutable($attributes['sample_rehydration_date']);
 				$testedOnDate = new DateTimeImmutable($results[0]['shipment_test_date']);
 				$interval = $sampleRehydrationDate->diff($testedOnDate);
-				$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+				$sampleRehydrateDays = $config['sampleRehydrateDays'];
 			}
 			//$rehydrateHours = $sampleRehydrateDays * 24;
 			// we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
@@ -870,8 +871,8 @@ final class Application_Model_Dts
 
 		$documentationScore = round($documentationScore);
 		$grandTotal = $responseScore + $documentationScore;
-		$passPercentage = $config->evaluation->dts->passPercentage ?? 100;
-		if ($grandTotal < $config->evaluation->dts->passPercentage) {
+		$passPercentage = $config['passPercentage'] ?? 100;
+		if ($grandTotal < $config['passPercentage']) {
 			$scoreResult = 'Fail';
 			$failureReason[] = [
 				'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($config->evaluation->dts->passPercentage) . "</strong>)",
@@ -1135,8 +1136,9 @@ final class Application_Model_Dts
 		$customField2 = $globalConfigDb->getValue('custom_field_2') ?? null;
 		$haveCustom = $globalConfigDb->getValue('custom_field_needed') ?? null;
 
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+		//$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+		$config = json_decode(Pt_Commons_SchemeConfig::get('dts'));
 
 		$finalResultArray = $this->getFinalResults();
 
@@ -1223,7 +1225,7 @@ final class Application_Model_Dts
 			$this->translator->_('QC Done #1'),
 			$this->translator->_('QC Expiry Date #1'),
 		];
-		if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+		if ((isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == "yes")) {
 			$reportHeadings = [
 				$this->translator->_('Participant Code'),
 				$this->translator->_('Participant Name'),
@@ -1274,7 +1276,7 @@ final class Application_Model_Dts
 			}
 		}
 
-		$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+		$dtsSchemeType = (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : 'standard';
 		$participantAttributes = [];
 		if (!empty($shipmentResult[0]['attributes'])) {
 			$participantAttributes = is_array($shipmentResult[0]['attributes'])
@@ -1311,7 +1313,7 @@ final class Application_Model_Dts
 		}
 		$addWithFinalResultCol = 2;
 		/* Repeat test section */
-		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+		if (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == 'yes') {
 			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 			$reportHeadings = $this->appendSampleLabels($reportHeadings, $sampleLabels);
 			// $addWithFinalResultCol = 0;
@@ -1426,7 +1428,7 @@ final class Application_Model_Dts
 			$resultsReportedSheet->getStyle($rtriSecondCellName . "1")->applyFromArray($borderStyle, true);
 		}
 		/* Repeat test section */
-		if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+		if (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == 'yes') {
 			$repeatHeadingColumn = $n - (($result['number_of_samples'] * 3) + $result['number_of_controls'] + 1);
 			if ($testThreeHidden !== true) {
 				$repeatHeadingColumn = $n - ($result['number_of_samples'] * 4 + $result['number_of_controls'] + 1);
@@ -1452,7 +1454,7 @@ final class Application_Model_Dts
 			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFA0A0A0');
 			$resultsReportedSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . '3')->getFont()->getColor()->setARGB('FFFFFF00');
 			/* Repeat test section */
-			if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+			if (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == 'yes') {
 				if ($repeatCellNo >= $repeatHeadingColumn) {
 					if ($repeatCell <= ($result['number_of_samples'] + $result['number_of_controls'])) {
 						$resultsReportedSheet->setCellValue(Coordinate::stringFromColumnIndex($repeatCellNo + 1) . 1, "Repeat Tests");
@@ -1509,7 +1511,7 @@ final class Application_Model_Dts
 				$totalDocumentationItems -= 1;
 			}
 		}
-		$docScore = $config->evaluation->dts->documentationScore ?? 0;
+		$docScore = $config['documentationScore'] ?? 0;
 		$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;
 
 
@@ -1616,14 +1618,14 @@ final class Application_Model_Dts
 					$rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
 				}
 
-				if (!isset($config->evaluation->dts->displaySampleConditionFields) || $config->evaluation->dts->displaySampleConditionFields != 'yes') {
+				if (!isset($config['displaySampleConditionFields']) || $config['displaySampleConditionFields'] != 'yes') {
 					$resultReportRow[] = $rehydrationDate;
 				}
 
 				$resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
 				$resultReportRow[] = Pt_Commons_General::excelDateFormat($aRow['shipment_test_report_date']);
 
-				if (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == 'yes') {
+				if (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == 'yes') {
 
 					$conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
 					$refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
@@ -1691,7 +1693,7 @@ final class Application_Model_Dts
 					$interval = $sampleRehydrationDate->diff($testedOnDate);
 
 					// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-					$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+					$sampleRehydrateDays = $config['sampleRehydrateDays'];
 					//$rehydrateHours = $sampleRehydrateDays * 24;
 
 					if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
@@ -1704,7 +1706,7 @@ final class Application_Model_Dts
 				}
 
 				//$panelScore = !empty($config->evaluation->dts->panelScore) && (int) $config->evaluation->dts->panelScore > 0 ? ($config->evaluation->dts->panelScore/100) : 0.9;
-				$documentScore = !empty($config->evaluation->dts->documentationScore) && (int) $config->evaluation->dts->documentationScore > 0 ? (($aRow['documentation_score'] / $config->evaluation->dts->documentationScore) * 100) : 0;
+				$documentScore = !empty($config['documentationScore']) && (int) $config['documentationScore'] > 0 ? (($aRow['documentation_score'] / $config['documentationScore']) * 100) : 0;
 				$docScoreRow[] = $documentScore;
 
 
@@ -1792,7 +1794,7 @@ final class Application_Model_Dts
 					}
 
 					// Repeat Tests
-					if (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') {
+					if (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == 'yes') {
 						for ($k = 0; $k < ($aRow['number_of_samples'] + $aRow['number_of_controls']); $k++) {
 							$resultReportRow[] = $participantResponse[$k]['repeatTestResult1'];
 						}
@@ -2698,7 +2700,7 @@ final class Application_Model_Dts
 
 	public function getDtsPanelSettings($config, array $shipmentAttributes = [], array $participantAttributes = [], ?string $dtsSchemeType = null, ?array $allowedAlgorithms = null): array
 	{
-		$allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : 'no';
+		$allowRepeatTests = (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] != "") ? $config['allowRepeatTests'] : 'no';
 		$allowRepeatTests = ($allowRepeatTests === 'yes');
 		$repeatTest1 = false;
 		$testThreeHidden = false;
@@ -2709,15 +2711,15 @@ final class Application_Model_Dts
 		$isThisRetestField = false;
 
 		if ($allowedAlgorithms === null) {
-			$allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : [];
+			$allowedAlgorithms = isset($config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : [];
 		}
 		if ($dtsSchemeType === null) {
-			$dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+			$dtsSchemeType = (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : 'standard';
 		}
 
 		if (isset($participantAttributes['dts_test_panel_type']) && $participantAttributes['dts_test_panel_type'] == 'confirmatory') {
 			$testThreeHidden = false;
-		} elseif (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+		} elseif (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == 'yes') {
 			$testThreeHidden = true;
 		}
 		if ($dtsSchemeType == 'updated-3-tests') {
