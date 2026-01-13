@@ -4,17 +4,17 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'scatter'], true);
 
-	$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-	if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
-	    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-	    $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'iso17043';
+$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'iso17043';
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
 
-	    $reportFormat = $reportService->getReportConfigValue('report-format');
-	    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
+    $reportFormat = $reportService->getReportConfigValue('report-format');
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['scheme_name'];
 
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -276,10 +276,10 @@ MtJpGraph::load(['bar', 'line', 'scatter'], true);
         // $calRes .= '<small><span style="text-align:justify;font-size:10;font-weight:bolt;color:gray;"><em>** Assigned Value : Pre-Determined Assigned Value of Reference Laboratory (Platform - Abbott RealTime) <br>Sample set notes: Sample B and D are duplicate samples.</em></span></small>';
         $pdf->writeHTML($calRes, true, false, true, false, '');
     }
-	    if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
-	        $note = $note ?? '';
-	        // $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each platform (Total ):</span><br><span style="font-weight: normal;text-align:left;font-size:10;">' . $maninAssay . '(n=' . $mainNoOfPaResponseTxt . '),</span>';
-	        $note .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Other platforms: ' . $assayNameTxt . '</span>';
+    if (isset($noOfPaResponseTxt) && !empty($noOfPaResponseTxt)) {
+        $note = $note ?? '';
+        // $note = '<br><span style="font-weight: bold;text-align:left;font-size:10;">Number of Participants for each platform (Total ):</span><br><span style="font-weight: normal;text-align:left;font-size:10;">' . $maninAssay . '(n=' . $mainNoOfPaResponseTxt . '),</span>';
+        $note .= '<br><span style="text-align:justify;font-size:10;font-weight:normal;">Other platforms: ' . $assayNameTxt . '</span>';
 
         $pdf->writeHTML($note, true, false, true, false, '');
     }

@@ -48,7 +48,7 @@ if ($resultArray['shipment'] != "") {
 
     // ---------------------------------------------------------
     $y = 0;
-
+    $passPercentage = Pt_Commons_SchemeConfig::get('covid19.passPercentage');
     if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
         $dataX = [];
         $dataY = [];
@@ -115,7 +115,7 @@ if ($resultArray['shipment'] != "") {
 
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $labCounter = 1;
-        $pass = $config->evaluation->covid19->passPercentage;
+        $pass = $passPercentage;
         $barPoints["0 - 59"] = 0;
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
@@ -138,11 +138,11 @@ if ($resultArray['shipment'] != "") {
                     $barPoints["60 - 69"]++;
                 } elseif ($totalScore > 69 && $totalScore <= $pass) {
                     $barPoints["70 - $pass"]++;
-                } elseif ($totalScore > $config->evaluation->covid19->passPercentage) {
+                } elseif ($totalScore > $passPercentage) {
                     $barPoints[$abovePass]++;
                 } else {
                 }
-                if (($totalScore) >= $config->evaluation->covid19->passPercentage) {
+                if (($totalScore) >= $passPercentage) {
                     $maxScore++;
                 } else {
                     $belowScore++;
@@ -209,8 +209,8 @@ if ($resultArray['shipment'] != "") {
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->covid19->passPercentage . '"</td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->covid19->passPercentage . '" </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $passPercentage . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $passPercentage . '" </td>';
         $overview .= '</tr>';
 
 

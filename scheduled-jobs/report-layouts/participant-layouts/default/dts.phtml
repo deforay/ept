@@ -143,7 +143,7 @@ if (!empty($resultArray['shipment'])) {
             $noOfCol = 7;
         }
 
-        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests') ?? 'no';
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         if ($allowRepeatTests == "yes") {
             $noOfCol = 9;
             if ($shipmentAttributesScreeningTestDisplay != "" || $testThreeOptionalDisplay != "") {

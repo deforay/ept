@@ -105,12 +105,17 @@ if ($totalPages > 0) {
         $noTest = 1;
         $width = 12.5;
 
-        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
-        $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
-        $dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+        $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
+        if (!is_array($allowedAlgorithms))
+            $allowedAlgorithms = explode(',', $allowedAlgorithms);
+        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
             $width = 14.3;
@@ -222,13 +227,12 @@ if ($totalPages > 0) {
             $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $srDate = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? new DateTime($attributes['sample_rehydration_date']) : null;
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
         $interval = (isset($attributes['sample_rehydration_date']) && !empty($attributes['sample_rehydration_date'])) ? $srDate->diff($testedOnDate) : null;
 
-        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
+        $sampleRehydrateDays = $sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
 
         $shipmentReceiptDate = "";
@@ -481,7 +485,7 @@ if ($totalPages > 0) {
 
             $correctSamplesCount = count($correctSamples);
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+            $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore) : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
             // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
@@ -556,7 +560,7 @@ if ($totalPages > 0) {
                 $totalDocumentationItems += 4;
             }
 
-            $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
+            $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
 
             $attributes = json_decode($result['attributes'], true);
 
