@@ -133,7 +133,9 @@ if (!empty($resultArray['shipment'])) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-        $passPercentage = $config->evaluation->vl->passPercentage;
+        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage');
+        $contentForIndividualVlReports = Pt_Commons_SchemeConfig::get('vl.contentForIndividualVlReports');
+
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
@@ -347,7 +349,7 @@ if (!empty($resultArray['shipment'])) {
                 $note .= '<h5 style="margin-bottom: 0px;">Confidentiality:</h5>';
                 $note .= '<span style="text-align:justify;font-size:11px;font-weight:normal;">The identities of participants are kept confidential and known only to the staff involved in the implementation of the Proficiency Testing.  Each participant has been assigned a unique identification number for the purposes of database management.</span>';
 
-                $contentForReport = !empty($config->evaluation->vl->contentForIndividualVlReports) ? htmlspecialchars_decode($config->evaluation->vl->contentForIndividualVlReports) : null;
+                $contentForReport = !empty($contentForIndividualVlReports) ? htmlspecialchars_decode($contentForIndividualVlReports) : null;
                 $contentForReport = str_replace("'", '"', $contentForReport);
                 if (isset($contentForReport) && !empty(trim($contentForReport)) && !empty(trim(strip_tags($contentForReport)))) {
                     $pdf->writeHTML($contentForReport, true, false, true, false, '');
