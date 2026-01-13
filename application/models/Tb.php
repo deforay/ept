@@ -451,7 +451,7 @@ class Application_Model_Tb
             ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("spm.shipment_id = ?", $sId)
             // ->where("spm.participant_id = ?", $pId)
-            ->order(['ref.sample_id']);
+            ->order(['ref.sample_label ASC']);
         if (!empty($pId)) {
             $sql = $sql->where("spm.participant_id = ?", $pId);
         }
