@@ -133,7 +133,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Build laboratory information table
-        $labInfo = '<br><br><table cellpadding="3" style="font-size:11px;">
+        $labInfo = '<table cellpadding="3" style="font-size:11px;">
             <tr>
                 <td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>
                 <td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>
@@ -146,12 +146,12 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>
-                <td><strong>Shipment Date</strong><br>' . $shipmentDate . '</td>
-                <td><strong>Result Due Date</strong><br>' . $lastResponseDate . '</td>
+                <td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>
+                <td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>
             </tr>
             <tr>
                 <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
-                <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . ($sampleRehydrationDate ?? 'N.A.') . '</td>
+                <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>
                 <td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>
             </tr>
             <tr>
@@ -161,11 +161,10 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
-                <td><strong>Report Authorised By</strong><br>' . $evalRow['saname'] . '</td>
-                <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $shipmentDate . ')</td>
+                <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>
+                <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>
             </tr>
-            <tr>
-                <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
+            <tr>';
 
         // Add custom fields if available
         if (isset($haveCustom) && $haveCustom == 'yes') {
@@ -333,32 +332,6 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
             }
-
-            // Add failure reasons if available
-            if (
-                isset($result['responseResult'][0]['failure_reason']) &&
-                $result['responseResult'][0]['failure_reason'] != "" &&
-                $result['responseResult'][0]['failure_reason'] != "[]" &&
-                $result['responseResult'][0]['failure_reason'] != null
-            ) {
-
-                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
-                $failRes .= '<table border="1" style="font-size:11px;">
-                    <tr style="background-color:#dbe4ee;">
-                        <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
-                        <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
-                    </tr>';
-
-                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
-                foreach ($warnings as $warning) {
-                    $failRes .= '<tr>
-                        <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
-                        <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
-                    </tr>';
-                }
-                $failRes .= '</table>';
-                $pdf->writeHTML($failRes, true, false, true, false, '');
-            }
         }
 
         // Overall score table
@@ -400,6 +373,32 @@ if (!empty($resultArray['shipment'])) {
                     </tr>
                 </table>';
             $pdf->writeHTML($summaryCount, true, false, true, false, '');
+        }
+
+        // Add failure reasons if available
+        if (
+            isset($result['responseResult'][0]['failure_reason']) &&
+            $result['responseResult'][0]['failure_reason'] != "" &&
+            $result['responseResult'][0]['failure_reason'] != "[]" &&
+            $result['responseResult'][0]['failure_reason'] != null
+        ) {
+
+            $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+            $failRes .= '<table border="1" style="font-size:11px;">
+                    <tr style="background-color:#dbe4ee;">
+                        <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
+                        <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
+                    </tr>';
+
+            $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+            foreach ($warnings as $warning) {
+                $failRes .= '<tr>
+                        <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
+                        <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
+                    </tr>';
+            }
+            $failRes .= '</table>';
+            $pdf->writeHTML($failRes, true, false, true, false, '');
         }
 
         // Add new page and performance criteria
