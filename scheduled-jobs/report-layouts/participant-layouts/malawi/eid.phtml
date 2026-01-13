@@ -22,7 +22,7 @@ if (!empty($resultArray['shipment'])) {
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         if (
-                /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+            /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
@@ -116,9 +116,9 @@ if (!empty($resultArray['shipment'])) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
         }
         /* for Shipment attributes functionality start */

@@ -113,7 +113,6 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -138,8 +137,13 @@ if (!empty($resultArray['shipment'])) {
         if (!Application_Service_Common::fileExists($flag)) {
             $flag = null;
         }
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
+
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
             $width = 20;
@@ -157,7 +161,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
 
-        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
+        $allowRepeatTests = isset($allowRepeatTests) ? $allowRepeatTests : 0;
         if ($allowRepeatTests == "yes") {
             $width = 11.11;
             if ($shipmentAttributesScreeningTestDisplay != "") {
@@ -195,15 +199,13 @@ if (!empty($resultArray['shipment'])) {
             $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $srDate = new DateTime($attributes['sample_rehydration_date']);
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
         $interval = $srDate->diff($testedOnDate);
 
-        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : 'no';
+        $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');;
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {

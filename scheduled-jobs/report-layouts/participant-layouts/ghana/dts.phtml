@@ -7,7 +7,6 @@ $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
-
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
 $dtsResults = [];
@@ -118,15 +117,17 @@ if (!empty($resultArray['shipment'])) {
         $screeningTest = false;
         $noTest = 1;
 
-
-
-
-        $allowRepeatTests = isset($config->evaluation->dts->allowRepeatTests) ? $config->evaluation->dts->allowRepeatTests : 0;
-        $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
-        $dtsSchemeType = (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : 'standard';
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+        $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
+        if (!is_array($allowedAlgorithms))
+            $allowedAlgorithms = explode(',', $allowedAlgorithms);
+        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
         }
@@ -210,13 +211,12 @@ if (!empty($resultArray['shipment'])) {
             $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $srDate = new DateTime($attributes['sample_rehydration_date']);
         $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
         $interval = $srDate->diff($testedOnDate);
 
-        // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-        $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+        // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
+        $sampleRehydrateDays = $sampleRehydrateDays;
         $rehydrateHours = $sampleRehydrateDays * 24;
         $rehydrateHours = ($rehydrateHours > 0) ? $rehydrateHours : 4;
 
@@ -459,7 +459,7 @@ if (!empty($resultArray['shipment'])) {
 
             $correctSamplesCount = count($correctSamples);
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+            $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore) : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
             foreach ($result['responseResult'] as $response) {
@@ -548,7 +548,7 @@ if (!empty($resultArray['shipment'])) {
                 $totalDocumentationItems += 4;
             }
 
-            $documentationScorePerItem = round(($config->evaluation->dts->documentationScore / $totalDocumentationItems), 2);
+            $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
 
             $attributes = json_decode($result['attributes'], true);
 

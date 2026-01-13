@@ -1,6 +1,4 @@
 <?php
-
-
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 // Zend_Debug::dump($resultArray['shipment']);die;
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testPlatform1']);die;
@@ -20,7 +18,7 @@ if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-
+    $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
     foreach ($resultArray['shipment'] as $result) {
         // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
@@ -106,7 +104,7 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -114,12 +112,14 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
         $testThreeOptionalDisplay = "";
         $testTwoDisplay = "";
+        $covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
+        $documentationScore = Pt_Commons_SchemeConfig::get('covid19.documentationScore');
 
-        if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && ($config->evaluation->covid19->covid19MaximumTestAllowed == '1' || $config->evaluation->covid19->covid19MaximumTestAllowed == '2')) {
+        if (isset($covid19MaximumTestAllowed) && ($covid19MaximumTestAllowed == '1' || $covid19MaximumTestAllowed == '2')) {
             $testThreeOptionalDisplay = "display:none;";
         }
 
-        if (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != '3' && $config->evaluation->covid19->covid19MaximumTestAllowed != '2') {
+        if (isset($covid19MaximumTestAllowed) && $covid19MaximumTestAllowed != '3' && $covid19MaximumTestAllowed != '2') {
             $testTwoDisplay = "display:none;";
         }
 
@@ -285,7 +285,7 @@ if (!empty($resultArray['shipment'])) {
 
             $correctSamplesCount = count($correctSamples);
             $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($config->evaluation->covid19->documentationScore) && $config->evaluation->covid19->documentationScore > 0) ? ($config->evaluation->covid19->documentationScore) : 0;
+            $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore) : 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
 

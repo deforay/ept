@@ -91,7 +91,7 @@ if (!empty($resultArray['shipment'])) {
         $shipmentScore = 0;
         $documentationScore = 0;
         $score = 0;
-        $passPercentage = $config->evaluation->vl->passPercentage;
+        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage');
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
@@ -496,7 +496,7 @@ if (!empty($resultArray['shipment'])) {
         }
         //----------------Summary Statistics for this survey  start----------------
         if (isset($result['statistics']) && !empty($result['statistics'])) {
-            $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
+            $score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '80';
             $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
             $ppOverview .= '<table border="1" style="font-size:12px;">';
             $ppOverview .= '<tr style="background-color:#dbe4ee;">';
