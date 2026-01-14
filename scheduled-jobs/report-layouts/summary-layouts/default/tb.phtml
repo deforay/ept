@@ -355,7 +355,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         }
         if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
             $aggregateCountsContent .= '<tr>';
-            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, no result or N/A</td>';
+            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, or no result</td>';
             $aggregateCountsContent .= '</tr>';
         }
         $aggregateCountsContent .= '</table>';
@@ -478,7 +478,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         }
 
 
-        $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
+        $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of <i>Mycobacterium tuberculosis</i> complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first <i>rpoB</i> probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch to the mean calculated from results submitted by field testing sites. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
     }
     if (isset($resultArray['shipment']['mtbRifUltraReportSummary']) && !empty($resultArray['shipment']['mtbRifUltraReportSummary'])) {
         if ($assayName && $tbTestType != 'microscopy') {

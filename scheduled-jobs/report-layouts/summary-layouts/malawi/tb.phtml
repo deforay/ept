@@ -376,7 +376,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         }
         if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
             $aggregateCountsContent .= '<tr>';
-            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, no result or N/A</td>';
+            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, or no result</td>';
             $aggregateCountsContent .= '</tr>';
         }
         $aggregateCountsContent .= '</table>';
