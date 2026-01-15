@@ -126,39 +126,28 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
         $labInfo .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
         $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '</table>';
-        $labInfo .= '<br><br>';
-
-
-        $labInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
         if (!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy') {
             $labInfo .= '	<td style="text-align:center;"><strong>Instrument SN</strong></td>';
             $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
             $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
         } else {
             $labInfo .= '	<td style="text-align:center;"><strong>Result Submission Date </strong></td>';
-            $labInfo .= '<td style="text-align:center;"></td>
-                        <td style="text-align:center;"></td>';
         }
         $labInfo .= '</tr>';
 
-        $serialSN = (isset($attributes['instrument_sn']) && !empty($attributes['instrument_sn']) && trim($attributes['instrument_sn']) != '') ? $attributes['instrument_sn'] : "NO SERIAL ENTERED";
         $labInfo .= '<tr>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
+
+
         if (!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy') {
+            $serialSN = (isset($attributes['instrument_sn']) && !empty($attributes['instrument_sn']) && trim($attributes['instrument_sn']) != '') ? $attributes['instrument_sn'] : "NO SERIAL ENTERED";
             $labInfo .= '	<td style="text-align:center;">' . $serialSN . '</td>';
             $labInfo .= '	<td style="text-align:center;">' . $attributes['date_of_xpert_instrument_calibration'] ?? null . '</td>';
             $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
         } else {
             $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
-            $labInfo .= '	<td style="text-align:center;"></td>';
-            $labInfo .= '	<td style="text-align:center;"></td>';
         }
         $labInfo .= '</tr>';
         $result['assayName'] = $result['assayName'] ?? 'Unspecified';
@@ -195,9 +184,9 @@ if (!empty($resultArray['shipment'])) {
                 foreach ($result['responseResult'] as $key => $response) {
                     $labRes .= '    <tr>';
                     $labRes .= '        <td style="font-size:11px;width:20%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-right-color:white;">' . ($response['sample_label'] ?? '') . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['mtb_detected'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . ($response['calculated_score'] ?? '') . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . strtoupper(str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . strtoupper(str_replace("-", " ", $response['mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . round($response['calculated_score'] ?? '') . '</td>';
                     $labRes .= '    </tr>';
                 }
                 $labRes .= '</table>';
@@ -512,21 +501,18 @@ if (!empty($resultArray['shipment'])) {
             $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
 
-        $html = '<br><table cellpadding="4" style="width:100%;">
-                <tr>
-                    <td colspan="2">All PT material is produced in line with the standard ISO17043:2023</td>
-                </tr>';
+        $html = '<br><table cellpadding="4" style="width:100%;">';
         $html .= '<tr>';
         $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
         $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
         $html .= '</tr>';
 
-        $html .= '<tr><td colspan="2" style="width:100%;">';
-        $html .= '<h5>Documentation of Report Review:</h5>';
-        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
-        $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, the PT Provider. Questions or comments concerning this report may be submitted to the PTCC or to the PT Provider using the Contact Information listed below.</p>';
-        $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
-        $html .= '</td></tr>';
+        // $html .= '<tr><td colspan="2" style="width:100%;">';
+        // $html .= '<h5>Documentation of Report Review:</h5>';
+        // $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
+        // $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, the PT Provider. Questions or comments concerning this report may be submitted to the PTCC or to the PT Provider using the Contact Information listed below.</p>';
+        // $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
+        // $html .= '</td></tr>';
         /* $authorised = $evalRow['saname'] ?? $result['participant_supervisor'];
         if (isset($result['shipment_test_date']) && !empty($result['shipment_test_date']) && isset($testerName) && !empty($testerName)) {
             $html .= '<tr>';
