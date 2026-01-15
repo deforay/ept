@@ -145,29 +145,29 @@ if (!empty($resultArray['shipment'])) {
                 $participantResult .= '        <td colspan="4" style="font-size:11px;text-align:left;background-color:lightgray;width:100%;font-weight:bold;">Sample ID : ' . $response['sample_label'] . '</td>';
                 $participantResult .= '</tr>';
                 $participantResult .= '<tr style="width:100%;">';
-                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-MTB/RIF</td>';
+                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results</td>';
                 $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
                 $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                 $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
                 $participantResult .= '    </tr>';
+                // $participantResult .= '<tr style="width:100%;">';
+                // $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
+                // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
+                // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
+                // $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
+                // $participantResult .= '    </tr>';
                 $participantResult .= '<tr style="width:100%;">';
-                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
-                $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
-                $participantResult .= '    </tr>';
-                $participantResult .= '<tr style="width:100%;">';
-                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-MTB/RIF</td>';
+                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results</td>';
                 $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['mtb_detection_consensus'])) . '</td>';
                 $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['rif_resistance_consensus'])) . '</td>';
                 $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
                 $participantResult .= '    </tr>';
-                $participantResult .= '<tr style="width:100%;">';
-                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'])) . '</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['rif_resistance_consensus'])) . '</td>';
-                $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
-                $participantResult .= '</tr>';
+                // $participantResult .= '<tr style="width:100%;">';
+                // $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
+                // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'])) . '</td>';
+                // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['rif_resistance_consensus'])) . '</td>';
+                // $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
+                // $participantResult .= '</tr>';
 
                 $mtdResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['mtb_detected'];
                 $rifResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['rif_resistance'];
@@ -185,7 +185,7 @@ if (!empty($resultArray['shipment'])) {
                 $participantResult .= '        <td style="color:' . $cellColor . ';font-size:11px;width:40%;text-align:left;font-weight:bold;">' . $testerName . '</td>';
                 $participantResult .= '        <td style="color:' . $cellColor . ';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $mtdResponse)) . '</td>';
                 $participantResult .= '        <td style="color:' . $cellColor . ';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $rifResponse)) . '</td>';
-                $participantResult .= '        <td style="color:' . $cellColor . ';font-size:11px;width:10%;text-align:center;font-weight:bold;">' . $resScore . '</td>';
+                $participantResult .= '        <td style="color:' . $cellColor . ';font-size:11px;width:10%;text-align:center;font-weight:bold;">' . round($resScore) . '</td>';
                 $participantResult .= '    </tr>';
             }
             $participantResult .= '</table>';
@@ -199,9 +199,9 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $finalScore = (isset($result['final_result']) && !empty($result['final_result']) && $result['final_result'] == 1) ? 'Satisfactory' : 'Unsatisfactory';
-        $finalInfo = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<table cellpadding="4" style="font-size:11px;width:100%;">';
+        $finalInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
         $finalInfo .= '<tr style="text-align:center;">';
-        $finalInfo .= '	<th style="width:40%;font-size:11px;"></th>';
+        $finalInfo .= '	<th style="width:40%;font-size:11px;border-bottom:1px solid black;"></th>';
         $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Percentage</strong></td>';
         $finalInfo .= '	<td style="width:25%;font-size:11px;border-bottom:1px solid black;"><strong>Satisfactory/Unsatisfactory</strong></td>';
         $finalInfo .= '	<td style="width:10%;font-size:11px;border-bottom:1px solid black;"></td>';
@@ -218,24 +218,24 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($finalInfo, true, false, true, false, '');
         // }
         // add a page
-        $pdf->AddPage();
+        // $pdf->AddPage();
 
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . $panelName . '</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        // $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . $panelName . '</span><br>';
+        // $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-        $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
-        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
-        $htmlSubTitle .= '</tr>';
-        $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '</tr>';
-        $htmlSubTitle .= '</table>';
-        $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
+        // $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+        // $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
+        // $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
+        // $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
+        // $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
+        // $htmlSubTitle .= '</tr>';
+        // $htmlSubTitle .= '<tr>';
+        // $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
+        // $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
+        // $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
+        // $htmlSubTitle .= '</tr>';
+        // $htmlSubTitle .= '</table>';
+        // $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
         if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
             $notTestedInfo = '<hr>';
@@ -284,14 +284,14 @@ if (!empty($resultArray['shipment'])) {
                 $comment .= '</tr>';
             }
 
-            if (trim($result['shipment_comment'] ?? '') != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
-                $comment .= '</tr>';
-                $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
-                $comment .= '</tr>';
-            }
+            // if (trim($result['shipment_comment'] ?? '') != "") {
+            //     $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            //     $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
+            //     $comment .= '</tr>';
+            //     $comment .= '<tr>';
+            //     $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
+            //     $comment .= '</tr>';
+            // }
 
             $comment .= '</table>';
             $pdf->writeHTML($comment, true, false, true, false, '');
@@ -411,7 +411,7 @@ if (!empty($resultArray['shipment'])) {
         $appealText = '<p style="color:red;font-size:10;text-align:justify;">An appeal can be submitted by PT participants who disagree with a PT result, score, or other PT-related decision, by email within 15 days of report finalization. Information concerning the PT complaint/ appeal process can be found at https://mtbept.com/ under the Resource menu in the Downloads column.</p><br>';
         $pdf->writeHTML($appealText, true, false, true, false, '');
 
-        $address = !empty($config->evaluation->tb->contactInfo) ? htmlspecialchars_decode($config->evaluation->tb->contactInfo) : null;
+        $address = Pt_Commons_SchemeConfig::get('tb.contactInfo');
         if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
             $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
         }

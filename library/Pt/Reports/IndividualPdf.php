@@ -285,9 +285,9 @@ class Pt_Reports_IndividualPdf extends Fpdi
         }
 
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
-        // Position at 15 mm from bottom
-
-        $this->SetY(-15);
+        // Position from bottom - TB needs more space for additional footer content
+        $footerPosition = ($this->schemeType == 'tb') ? -25 : -15;
+        $this->SetY($footerPosition);
         // Set font
 
         $this->SetFont('freesans', '', 7);
