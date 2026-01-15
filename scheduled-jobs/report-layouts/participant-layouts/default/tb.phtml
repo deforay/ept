@@ -194,10 +194,10 @@ if (!empty($resultArray['shipment'])) {
                 $labRes .= '    </tr>';
                 foreach ($result['responseResult'] as $key => $response) {
                     $labRes .= '    <tr>';
-                    $labRes .= '        <td style="font-size:11px;width:20%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-right-color:white;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . $response['calculated_score'] . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:20%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-right-color:white;">' . ($response['sample_label'] ?? '') . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . (str_replace("-", " ", $response['mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . ($response['calculated_score'] ?? '') . '</td>';
                     $labRes .= '    </tr>';
                 }
                 $labRes .= '</table>';
@@ -219,26 +219,26 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
                     $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-MTB/RIF</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'] ?? '')) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
                     $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results-Ultra</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'] ?? '')) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
                     $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-MTB/RIF</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['mtb_detection_consensus'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['rif_resistance_consensus'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['mtb_detection_consensus'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['rif_resistance_consensus'] ?? '')) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
                     $labRes .= '    <tr style="width:100%;">';
                     $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'])) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['rif_resistance_consensus'])) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'] ?? '')) . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['rif_resistance_consensus'] ?? '')) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
 
