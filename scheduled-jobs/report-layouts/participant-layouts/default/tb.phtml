@@ -22,7 +22,7 @@ if (!empty($resultArray['shipment'])) {
     foreach ($resultArray['shipment'] as $result) {
 
         if ($isCli) {
-            echo "Processing shipment:" . $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
+            echo "Processing for:" . $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
         }
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
@@ -123,9 +123,9 @@ if (!empty($resultArray['shipment'])) {
 
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
         $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-        $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
-        $labInfo .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
-        $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Country </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Testing Site </strong></td>';
+        $labInfo .= '	<td style="text-align:center;"><strong>Participant ID </strong></td>';
         if (!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy') {
             $labInfo .= '	<td style="text-align:center;"><strong>Instrument SN</strong></td>';
             $labInfo .= '	<td style="text-align:center;"><strong>Last Calibration Date </strong></td>';
@@ -143,11 +143,11 @@ if (!empty($resultArray['shipment'])) {
 
         if (!isset($result['assayShortName']) || $result['assayShortName'] != 'microscopy') {
             $serialSN = (isset($attributes['instrument_sn']) && !empty($attributes['instrument_sn']) && trim($attributes['instrument_sn']) != '') ? $attributes['instrument_sn'] : "NO SERIAL ENTERED";
-            $labInfo .= '	<td style="text-align:center;">' . $serialSN . '</td>';
-            $labInfo .= '	<td style="text-align:center;">' . $attributes['date_of_xpert_instrument_calibration'] ?? null . '</td>';
-            $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $serialSN . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $attributes['date_of_xpert_instrument_calibration'] ?? null . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
         } else {
-            $labInfo .= '	<td style="text-align:center;">' . $result['lastdate_response'] . '</td>';
+            $labInfo .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['lastdate_response'] . '</td>';
         }
         $labInfo .= '</tr>';
         $result['assayName'] = $result['assayName'] ?? 'Unspecified';
@@ -186,7 +186,7 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '        <td style="font-size:11px;width:20%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-right-color:white;">' . ($response['sample_label'] ?? '') . '</td>';
                     $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . strtoupper(str_replace("-", " ", $response['reference_mtb_detected'] ?? '')) . '</td>';
                     $labRes .= '        <td style="font-size:11px;width:35%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;border-right-color:white;">' . strtoupper(str_replace("-", " ", $response['mtb_detected'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . round($response['calculated_score'] ?? '') . '</td>';
+                    $labRes .= '        <td style="font-size:11px;width:10%;text-align:center;border-bottom-color:#b7dde7;border-top-color:white;border-left-color:white;">' . round($response['calculated_score'] ?? 0) . '</td>';
                     $labRes .= '    </tr>';
                 }
                 $labRes .= '</table>';
@@ -247,7 +247,7 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:40%;text-align:left;font-weight:bold;">' . $testerName . '</td>';
                     $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $mtdResponse)) . '</td>';
                     $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:25%;text-align:center;font-weight:bold;">' . ucwords(str_replace("-", " ", $rifResponse)) . '</td>';
-                    $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:10%;text-align:center;font-weight:bold;">' . $resScore . '</td>';
+                    $labRes .= '        <td style="color:' . $nameColor . ';font-size:11px;width:10%;text-align:center;font-weight:bold;">' . round($resScore) . '</td>';
                     $labRes .= '    </tr>';
                 }
                 $labRes .= '</table>';
@@ -332,24 +332,6 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($finalInfo, true, false, true, false, '');
         // }
         // add a page
-        $pdf->AddPage();
-
-        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ucwords($panelName) . '</span><br>';
-        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-
-        $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
-        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
-        $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
-        $htmlSubTitle .= '</tr>';
-        $htmlSubTitle .= '<tr>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['iso_name'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        $htmlSubTitle .= '	<td style="text-align:center;border-bottom:solid 2px;">' . $result['unique_identifier'] . '</td>';
-        $htmlSubTitle .= '</tr>';
-        $htmlSubTitle .= '</table>';
-        $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
         if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
             $notTestedInfo = '<hr>';
@@ -424,7 +406,7 @@ if (!empty($resultArray['shipment'])) {
         if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
 
             $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
-            $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10">';
+            $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">';
             $longitudinalPerformanceSvg .= '    <rect x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
             $longitudinalPerformanceSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . htmlspecialchars($result['lab_name'] ?? '', ENT_XML1) . ' Performance Over Time</text>';
             $longitudinalPerformanceSvg .= '    <text x="15" y="22" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100</text>';
@@ -457,7 +439,9 @@ if (!empty($resultArray['shipment'])) {
                     $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
                 }
                 // }
-                $longitudinalPerformanceSvg .= '    <text x="' . abs(($i * $rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
+                $labelX = abs(($i * $rx) + 15);
+                $labelY = 125;
+                $longitudinalPerformanceSvg .= '    <text transform="rotate(-45, ' . $labelX . ', ' . $labelY . ')" x="' . $labelX . '" y="' . $labelY . '" text-anchor="end" style="fill:#666666;font-family:helvetica;font-size:5pt">' . htmlspecialchars($previousShipment['shipment_code'], ENT_XML1) . '</text>';
 
                 $x1[] = abs(($i * $rx) + 15);
                 $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
@@ -466,12 +450,26 @@ if (!empty($resultArray['shipment'])) {
                 $longitudinalPerformanceSvg .= '<line x1="' . $x1[$lineCount] . '" y1="' . $y1[$lineCount] . '" x2="' . $x1[($lineCount + 1)] . '" y2="' . $y1[($lineCount + 1)] . '" style="stroke:red;stroke-width:1;" />';
             }
 
-            $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
-            $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
-            $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
+            $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="175" fill="#4F81BD"  />';
+            $longitudinalPerformanceSvg .= '    <text x="125" y="179" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
+            $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="177" y2="177" stroke="#C0504D" stroke-width="2" />';
+            $longitudinalPerformanceSvg .= '    <text x="168" y="179" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
             $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130, 'SVG', 'B');
+
+            // Get current Y position and add some spacing
+            $currentY = $pdf->GetY() + 5;
+            $svgHeight = 90; // Height to match SVG viewBox aspect ratio (400:200 = 2:1, so 180/2 = 90)
+
+            // Check if there's enough space on the page, otherwise add a new page
+            $pageHeight = $pdf->getPageHeight();
+            $bottomMargin = $pdf->getBreakMargin();
+            if (($currentY + $svgHeight) > ($pageHeight - $bottomMargin)) {
+                $pdf->AddPage();
+                $currentY = $pdf->GetY();
+            }
+
+            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, $currentY, 180, $svgHeight, 'SVG', 'B');
+            $pdf->SetY($currentY + $svgHeight);
         }
 
         $pdf->AddPage();

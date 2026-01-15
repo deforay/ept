@@ -14,12 +14,13 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     // create new PDF document
     $reportFormat = $reportService->getReportConfigValue('report-format');
+    $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name']);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
+
         $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
     }
 
@@ -365,7 +366,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $pdf->writeHTML($aggregateCountsContent, true, false, true, false, '');
 
     // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
-    if (trim($resultArray['shipment']['summaryResult']['shipment_comment']) != "") {
+    if (trim($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '') != "") {
         $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 
         /*   if (trim($resultArray['shipment']['summaryResult']['evaluationComments']) != "") {
