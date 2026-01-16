@@ -86,9 +86,10 @@ if ($resultArray['shipment'] != "") {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
+    $passPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $labCounter = 1;
-        $pass = $config->evaluation->recency->passPercentage;
+        $pass = $passPercentage;
         $barPoints["0 - 59"] = 0;
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
@@ -111,11 +112,11 @@ if ($resultArray['shipment'] != "") {
                     $barPoints["60 - 69"]++;
                 } elseif ($totalScore > 69 && $totalScore <= $pass) {
                     $barPoints["70 - $pass"]++;
-                } elseif ($totalScore > $config->evaluation->recency->passPercentage) {
+                } elseif ($totalScore > $passPercentage) {
                     $barPoints[$abovePass]++;
                 } else {
                 }
-                if (($totalScore) >= $config->evaluation->recency->passPercentage) {
+                if (($totalScore) >= $passPercentage) {
                     $maxScore++;
                 } else {
                     $belowScore++;
@@ -203,8 +204,8 @@ if ($resultArray['shipment'] != "") {
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->recency->passPercentage . '"</td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->recency->passPercentage . '" </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $passPercentage . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $passPercentage . '" </td>';
         $overview .= '</tr>';
 
 

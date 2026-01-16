@@ -71,8 +71,9 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->writeHTML($referenceRes, true, false, true, false, '');
     }
+    $passPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
-        $pass = $config->evaluation->dts->passPercentage;
+        $pass = $passPercentage;
         $abovePass = sprintf("above $pass");
         /* declare variables */
         $barPoints["0 - 59"] = 0;
@@ -162,8 +163,8 @@ if (!empty($resultArray['shipment'])) {
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $passPercentage . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $passPercentage . '" </td>';
         $overview .= '</tr>';
 
 

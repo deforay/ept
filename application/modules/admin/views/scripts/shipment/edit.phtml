@@ -1,5 +1,5 @@
 <?php
-
+$dtsConfig = json_decode($this->dtsConfig);
 $shipmentData = $this->shipmentData;
 $shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');
@@ -8,6 +8,12 @@ $style = '';
 if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 	$style = 'style=" width: 1550px; margin-left: -208px; "';
 }
+
+$allowedAlgorithms = $dtsConfig->allowedAlgorithms;
+if (!is_array($allowedAlgorithms))
+	$allowedAlgorithms = explode(',', $allowedAlgorithms);
+$dtsSchemeType = $dtsConfig->dtsSchemeType ?? 'standard';
+$rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
 ?>
 
 <style type="text/css">
@@ -152,9 +158,6 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 						}
 					}
 
-					$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-					$dtsSchemeType = isset($this->config->evaluation->dts->dtsSchemeType) ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
-					$rtriEnabled = isset($this->config->evaluation->dts->rtriEnabled) ? $this->config->evaluation->dts->rtriEnabled : 'no';
 
 					if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests' && isset($rtriEnabled) && !empty($rtriEnabled) && $rtriEnabled == 'yes') { ?>
 						<div class="form-group">

@@ -1,11 +1,16 @@
 <?php
-echo $this->config['rtriEnabled']; die;
-$rtriEnabled = $this->config->evaluation->dts->rtriEnabled ?? 'no';
-$disableOtherTestkit = (isset($this->config->evaluation->dts->disableOtherTestkit) && !empty($this->config->evaluation->dts->disableOtherTestkit)) ? $this->config->evaluation->dts->disableOtherTestkit : 'no';
+$dtsConfig = json_decode($this->dtsConfig);
+$allowedAlgorithms = $dtsConfig->allowedAlgorithms;
+if (!is_array($allowedAlgorithms))
+    $allowedAlgorithms = explode(',', $allowedAlgorithms);
+$optionalTest3 = $dtsConfig->dtsOptionalTest3 ?? 'no';
+$allowRepeatTests = $dtsConfig->allowRepeatTests ?? 0;
+$rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
+$disableOtherTestkit = $$dtsConfig->disableOtherTestkit ?? 'no';
+$dtsSchemeType = $dtsConfig->dtsSchemeType ?? 'standard';
+$collectAdditionalTestkits = $dtsConfig->collectAdditionalTestkits ?? 'no';
+
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
-$allowedAlgorithms = isset($this->config->evaluation->dts->allowedAlgorithms) ? explode(",", $this->config->evaluation->dts->allowedAlgorithms) : array();
-$dtsSchemeType = (isset($this->config->evaluation->dts->dtsSchemeType) && $this->config->evaluation->dts->dtsSchemeType != "") ? $this->config->evaluation->dts->dtsSchemeType : 'standard';
-$collectAdditionalTestkits = (isset($this->config->evaluation->dts->collectAdditionalTestkits) && $this->config->evaluation->dts->collectAdditionalTestkits != "") ? $this->config->evaluation->dts->collectAdditionalTestkits : 'no';
 $participantAttributes = [];
 if (!empty($this->shipment['attributes'])) {
     $participantAttributes = is_array($this->shipment['attributes'])
@@ -23,7 +28,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 }
 
 $panelSettings = (new Application_Model_Dts())->getDtsPanelSettings(
-    $this->config,
+    (array)$dtsConfig,
     $shipmentAttributes,
     $participantAttributes,
     $dtsSchemeType,
@@ -773,7 +778,8 @@ foreach ($this->allTestKits as $kit) {
                                     <i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date1')">
-                                        <?= $this->translate->_("Clear"); ?></i></td>
+                                        <?= $this->translate->_("Clear"); ?></i>
+                                </td>
                                 <td class='testTwo testTwoSpan'><input id="exp_date2" type="text" id="exp_date2"
                                         name="exp_date_2" style="float: left;width:85%;"
                                         value="<?php echo $expDate2; ?>" placeholder="Select expiry date 2"
@@ -782,7 +788,8 @@ foreach ($this->allTestKits as $kit) {
                                     <i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date2')">
-                                        <?= $this->translate->_("Clear"); ?></i></td>
+                                        <?= $this->translate->_("Clear"); ?></i>
+                                </td>
                                 <td class='testThree testThreeSpan'><input id="exp_date3" type="text" id="exp_date3"
                                         name="exp_date_3" style="float: left;width:85%;"
                                         value="<?php echo $expDate3; ?>" placeholder="Select expiry date 3"
@@ -791,7 +798,8 @@ foreach ($this->allTestKits as $kit) {
                                     <i class="icon-remove-sign"
                                         style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                         alt="Clear Date" title="Clear Date" onclick="clearDate('exp_date3')">
-                                        <?= $this->translate->_("Clear"); ?></i></td>
+                                        <?= $this->translate->_("Clear"); ?></i>
+                                </td>
                                 <?php if ($allowRepeatTests) { ?>
                                     <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_exp_date_1"
                                             name="repeat_exp_date_1" style="float: left;width:85%;"
@@ -932,7 +940,8 @@ foreach ($this->allTestKits as $kit) {
                                         <i class="icon-remove-sign"
                                             style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                             alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date1')">
-                                            <?= $this->translate->_("Clear"); ?></i></td>
+                                            <?= $this->translate->_("Clear"); ?></i>
+                                    </td>
                                     <td class='testTwo testTwoSpan'><input type="text" id="qc_date_2"
                                             placeholder="Select QC Date 2" name="qc_date_2" style="float: left;width:85%;"
                                             value="<?php echo $qcDate2; ?>" size="11" maxlength="11"
@@ -940,7 +949,8 @@ foreach ($this->allTestKits as $kit) {
                                         <i class="icon-remove-sign"
                                             style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                             alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date2')">
-                                            <?= $this->translate->_("Clear"); ?></i></td>
+                                            <?= $this->translate->_("Clear"); ?></i>
+                                    </td>
                                     <td class='testThree testThreeSpan'><input type="text" id="qc_date_3"
                                             placeholder="Select QC Date 3" name="qc_date_3" style="float: left;width:85%;"
                                             value="<?php echo $qcDate3; ?>" size="11" maxlength="11"
@@ -948,7 +958,8 @@ foreach ($this->allTestKits as $kit) {
                                         <i class="icon-remove-sign"
                                             style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;"
                                             alt="Clear Date" title="Clear Date" onclick="clearDate('qc_date3')">
-                                            <?= $this->translate->_("Clear"); ?></i></td>
+                                            <?= $this->translate->_("Clear"); ?></i>
+                                    </td>
                                     <?php if ($allowRepeatTests) { ?>
                                         <td class="repeatTestOne testOneRepeatSpan"><input type="text" id="repeat_qc_date_1"
                                                 placeholder="Select Repeat QC Date 1" name="repeat_qc_date_1"
@@ -1331,9 +1342,9 @@ foreach ($this->allTestKits as $kit) {
                                     title="Please select if Supervisor Approval was conducted or not">
                                     <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                                     <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
-                                        echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
+                                                            echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
                                     <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
-                                        echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
+                                                            echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
                                 </select></td>
                             <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
@@ -1440,7 +1451,7 @@ foreach ($this->allTestKits as $kit) {
                                                     value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label
                                                     for="manualCorrective<?php echo $i; ?>"> </label></td>
                                         </tr>
-                                        <?php $i++;
+                                    <?php $i++;
                                     } ?>
                                 </table>
                             </td>
@@ -1568,13 +1579,13 @@ foreach ($this->allTestKits as $kit) {
         window.history.back();
     }
 
-    $(function () {
+    $(function() {
         $("#avilableTestKit").select2({
             placeholder: $(this).attr('title'),
             minimumInputLength: 0,
             width: '100%',
             allowClear: true,
-            id: function (bond) {
+            id: function(bond) {
                 return bond._id;
             },
             ajax: {
@@ -1582,13 +1593,13 @@ foreach ($this->allTestKits as $kit) {
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'testkit-list'), 'default', true); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
+                data: function(params) {
                     return {
                         q: params.term, // search term
                         page: params.page
                     };
                 },
-                processResults: function (data, params) {
+                processResults: function(data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -1599,7 +1610,7 @@ foreach ($this->allTestKits as $kit) {
                 },
                 //cache: true
             },
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }
         });
@@ -1615,7 +1626,7 @@ foreach ($this->allTestKits as $kit) {
         <?php } ?>
 
         // $('#isPtTestNotPerformed').trigger("change");
-        $('#receivedPtPanel').on("change", function () {
+        $('#receivedPtPanel').on("change", function() {
             if ($(this).val() == 'yes') {
                 $('#receiptDate').addClass('isRequired');
             } else {
@@ -1639,14 +1650,14 @@ foreach ($this->allTestKits as $kit) {
             dateFormat: '<?php echo $dtFormat; ?>'
         });
         <?php if (!$this->isEditable && !$adminAccess) {
-            ?>
+        ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
             $(".icon-remove-sign").remove();
-            <?php
+        <?php
         }
         ?>
 
-        $('#supervisorApproval').change(function () {
+        $('#supervisorApproval').change(function() {
 
             if ($('#supervisorApproval').val() == 'yes') {
                 $('#labSupervisor').show();
@@ -1706,7 +1717,7 @@ foreach ($this->allTestKits as $kit) {
             $("#retest_test_kit_other_name_update_3").val('');
         }
 
-        $('.testkit-change').change(function () {
+        $('.testkit-change').change(function() {
             var id = $(this).attr("id");
             // $("#repeat_" + id).val(this.value);
             /* Screening and Confirmatory changes */
@@ -1720,10 +1731,10 @@ foreach ($this->allTestKits as $kit) {
         var kitNoList = ["test_kit_name_1", "test_kit_name_2", "test_kit_name_3", "repeat_test_kit_name_1", "repeat_test_kit_name_2", "repeat_test_kit_name_3"];
         var kitIdList = ["One", "Two", "Three", "OneRepeat", "TwoRepeat", "ThreeRepeat"];
         var kitKeyList = ["1", "2", "3", "R1", "R2", "R3"];
-        $.each(kitNoList, function (index, idx) {
+        $.each(kitNoList, function(index, idx) {
             testKitInfo($('#' + idx), kitIdList[index], kitKeyList[index]);
         });
-        $('#isExcluded').change(function () {
+        $('#isExcluded').change(function() {
             if (this.value == 'yes') {
                 if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
                     showdefModal('removeParticipant', 500, 250);
@@ -1743,14 +1754,14 @@ foreach ($this->allTestKits as $kit) {
     function removeParticipantConfirmation() {
         if ($('#removeParticipantPassword').val() != '') {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-                participantId: $('#participantId').val(),
-                shipmentId: $('#shipmentId').val(),
-                smid: $('#smid').val(),
-                password: $('#removeParticipantPassword').val(),
-                testType: 'dts',
-                format: "html"
-            },
-                function (data) {
+                    participantId: $('#participantId').val(),
+                    shipmentId: $('#shipmentId').val(),
+                    smid: $('#smid').val(),
+                    password: $('#removeParticipantPassword').val(),
+                    testType: 'dts',
+                    format: "html"
+                },
+                function(data) {
                     if (!data) {
                         alert('Entered Password was wrong please try again later');
                         return false;
@@ -1818,7 +1829,7 @@ foreach ($this->allTestKits as $kit) {
     }
 
     //PT not performed case
-    $('#isPtTestNotPerformed').change(function () {
+    $('#isPtTestNotPerformed').change(function() {
         if ($(this).is(':checked')) {
             $('.vlResultSection').hide();
             $('.vlResultValues').val('');
@@ -1970,7 +1981,7 @@ foreach ($this->allTestKits as $kit) {
         var len = $('.autoWidth th').length;
         if (len > 0) {
             colwidth = 100 / len;
-            $('.autoWidth th').each(function (index, e) {
+            $('.autoWidth th').each(function(index, e) {
                 $(e).css('width', colwidth + '%');
             });
             $('.autoWidthSub th').css('width', colwidth + '%');

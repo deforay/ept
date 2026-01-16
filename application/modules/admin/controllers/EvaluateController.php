@@ -135,9 +135,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $pid = (int)base64_decode($this->_getParam('pid'));
                 $this->view->scheme = $scheme = base64_decode($this->_getParam('scheme'));
 
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
                 $evalService = new Application_Service_Evaluation();
                 $this->view->evaluateData = $evaluateData = $evalService->editEvaluation($sid, $pid, $scheme);
 

@@ -52,10 +52,7 @@ class DtsController extends Zend_Controller_Action
 				}
 			}
 
-			
-			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-			//$this->view->config = json_decode($common->getSchemeConfig('dts'));
+			$this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
 
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
@@ -109,10 +106,7 @@ class DtsController extends Zend_Controller_Action
 		$this->view->logo = $reportService->getReportConfigValue('logo');
 		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-
-		$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
+		$this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
 
 		$participantService = new Application_Service_Participants();
 		$this->view->participant = $participantService->getParticipantDetails($pID);

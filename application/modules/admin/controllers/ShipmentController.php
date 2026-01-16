@@ -216,8 +216,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
                     $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                    $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                    $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+                    $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
                 } elseif ($response['shipment']['scheme_type'] == 'covid19') {
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
