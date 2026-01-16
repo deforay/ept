@@ -8,7 +8,6 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
 
     public function updateReportDetails($params)
     {
-        // Zend_Debug::dump($_FILES);die;
         $data = array('value' => $params['content']);
 
         if (isset($_FILES['logo_image']['tmp_name']) && file_exists($_FILES['logo_image']['tmp_name']) && is_uploaded_file($_FILES['logo_image']['tmp_name'])) {

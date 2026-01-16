@@ -66,8 +66,6 @@ class VlController extends Zend_Controller_Action
 				$_SESSION['confirmForm'] = "yes";
 				$this->redirect("/vl/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
 			}
-
-			//die;
 		} else {
 			$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			$sID = $request->getParam('sid');

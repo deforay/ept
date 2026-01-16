@@ -1,6 +1,3 @@
-<?php
-// Zend_Debug::dump($this->questions);die;
-?>
 <div class="well">
 	<form name="addFeedbackQuestionsForm" id="addFeedbackQuestionsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "feedback-responses", "action" => ($this->type == 'clone') ? "add" : "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>

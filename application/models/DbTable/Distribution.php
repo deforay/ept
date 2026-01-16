@@ -101,8 +101,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
 
@@ -322,7 +320,6 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
 
         $sQuery = $dbAdapter->select()->from(array('temp' => $sQuery))->where("not_finalized_count>0");
 
-        //die($sQuery);
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */

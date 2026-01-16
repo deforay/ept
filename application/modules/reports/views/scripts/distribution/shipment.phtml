@@ -1,5 +1,4 @@
 <?php
-// Zend_Debug::dump($this->shipment);die;
 if (!empty($this->shipment)) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] == 'finalized') {
         header('Location: /reports/distribution');
@@ -381,7 +380,6 @@ if (!empty($this->shipment)) {
                     $.unblockUI();
                 });
         }
-
     </script>
 
 <?php } else { ?>

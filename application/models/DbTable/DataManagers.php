@@ -13,7 +13,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function addUser($params)
     {
-        // echo '<pre>'; print_r($params); die;
         $db = Zend_Db_Table_Abstract::getAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
@@ -170,7 +169,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -480,7 +478,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         //}
 
-        die($sql);
         return $db->fetchAll($sql);
     }
 
@@ -525,7 +522,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 return false;
             }
         }
-        // die;
         return false;
     }
 
@@ -734,7 +730,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
             ->where("dm.auth_token=?", $params['authToken']);
         $aResult = $db->fetchRow($sQuery);
-        // Zend_Debug::dump($sQuery->assemble());die;
         if (!isset($aResult['dm_id'])) {
             return false;
         }
@@ -1401,8 +1396,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function dmParticipantMap($params, $dmId, bool $isPtcc = false, bool $participantSide = false)
     {
-        // echo '<pre>'; print_r($params); die;
-
         try {
             $db = Zend_Db_Table_Abstract::getAdapter();
             if (!isset($dmId) || empty($dmId)) {

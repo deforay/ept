@@ -90,7 +90,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email'))
                 ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
                 ->group('dm.dm_id')->setIntegrityCheck(false);
-            // echo $subQuery;die;
             $subResult = $this->fetchAll($subQuery);
             foreach ($subResult as $dm) {
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
@@ -345,7 +344,6 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['synced'] = 'yes';
         $data['synced_on'] = new Zend_Db_Expr('now()');
         $data['mode_of_response'] = 'app';
-        // Zend_Debug::dump($data);die;
 
         return $this->update($data, "map_id = " . $params['mapId']);
     }
@@ -394,8 +392,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $data['synced'] = 'yes';
             $data['synced_on'] = new Zend_Db_Expr('now()');
             $data['mode_of_response'] = 'app';
-                // echo '<pre>'; print_r($data); die;
-                return $this->update($data, "map_id = " . $params['mapId']);
+            return $this->update($data, "map_id = " . $params['mapId']);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

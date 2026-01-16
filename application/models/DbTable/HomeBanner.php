@@ -10,7 +10,6 @@ class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
     public function updateHomeBannerDetails($params)
     {
         $result = 0;
-        // print_r($_FILES);die;
         if (isset($_FILES['home_banner']['name']) && trim($_FILES['home_banner']['name']) != '') {
             $uploadDirectory = realpath(UPLOAD_PATH);
             //Remove exist img.
@@ -20,9 +19,10 @@ class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
                     $this->update(array('image' => ''), "banner_id = 1");
                 }
             }
-
+            $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['home_banner']['name']);
+            $fileName = str_replace(" ", "-", $fileName);
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
-            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $_FILES['home_banner']['name'], PATHINFO_EXTENSION));
+            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileName, PATHINFO_EXTENSION));
             $imageName = "home_banner." . $extension;
             if (in_array($extension, $allowedExtensions)) {
                 $result = 1;

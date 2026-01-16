@@ -309,7 +309,6 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     'test_type_3'     => ($type == 3) ? '1' : '0',
                     'created_on'    => new Zend_Db_Expr('now()')
                 );
-                // Zend_Debug::dump($data);die;
                 $saveId = $this->insert($data);
                 return $tkId;
             } else {

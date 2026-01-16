@@ -178,7 +178,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo ($sQuery);die;
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -468,7 +467,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function addParticipantForDataManager($params)
     {
-        //Zend_Debug::dump($params);die;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $data = array(
@@ -507,8 +505,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
 
-        //Zend_Debug::dump($data);die;
-        //Zend_Debug::dump($data);die;
         $participantId = $this->insert($data);
 
 
@@ -812,7 +808,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         ini_set('max_execution_time', -1);
         $alertMsg = new Zend_Session_Namespace('alertSpace');
         try {
-            // Zend_Debug::dump($_FILES);die;
             $db = Zend_Db_Table_Abstract::getAdapter();
 
             $dataForStatistics = [];
@@ -1495,7 +1490,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             $schemeDb = new Application_Model_DbTable_SchemeList();
             $schemeList =  $schemeDb->getFullSchemeList();
-            // Zend_Debug::dump($schemeList);die;
             if (count($schemeList) > 0) {
                 foreach ($schemeList as $scheme) {
                     if ($scheme['status'] == 'active') {
@@ -2078,7 +2072,6 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         /* Data set length after filtering */

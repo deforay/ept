@@ -12,7 +12,6 @@ class Application_Service_Announcement
 
             $announcmentdb = new Application_Model_DbTable_Announcement();
             $lastId =  $announcmentdb->saveNewAnnouncement($params);
-            // Zend_Debug::dump($params);die;
             if ($lastId > 0) {
                 $commonServices = new Application_Service_Common();
                 $notParticipatedMailContent = $commonServices->getEmailTemplate('announcement');

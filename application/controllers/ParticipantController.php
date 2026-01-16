@@ -457,8 +457,6 @@ class ParticipantController extends Zend_Controller_Action
             $pId = $this->_getParam('pid');
             $shipmentService = new Application_Service_Shipments();
             $this->view->certificate = $shipmentService->getParticipantShipments($pId);
-            //$this->view->psId='5001';
-            //echo "came";die;
         } else {
             $this->redirect("/participant/dashboard");
         }
@@ -475,7 +473,6 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         if ($this->hasParam('file')) {
             $params = $this->getAllParams();
-            // die(base64_decode($file['file']));
             $file = base64_decode($params['file']);
             if (!isset($params['file']) || empty($params['file']) || !file_exists($file)) {
                 $shipmentService = new Application_Service_Shipments();
@@ -814,7 +811,6 @@ class ParticipantController extends Zend_Controller_Action
         $this->_helper->layout()->activeMenu = 'ptcc-reports';
         $this->_helper->layout()->activeSubMenu = 'shipments-reports';
         if ($this->hasParam('id')) {
-            //Zend_Debug::dump(base64_decode($this->_getParam('shipmentCode')));die;
             $shipmentId = (int) base64_decode($this->_getParam('id'));
             $reportService = new Application_Service_Reports();
             $this->view->responseCount = $reportService->getShipmentResponseCount($shipmentId, base64_decode($this->_getParam('shipmentDate')));

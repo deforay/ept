@@ -566,7 +566,6 @@ class Application_Service_Participants
 			$sQuerySession = new Zend_Session_Namespace('notRespondedParticipantsExcel');
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$rResult = $db->fetchAll($sQuerySession->shipmentRespondedParticipantQuery);
-			//  Zend_Debug::dump($rResult);die;
 
 			foreach ($rResult as $aRow) {
 				$row = [];
@@ -586,7 +585,6 @@ class Application_Service_Participants
 
 				$output[] = $row;
 			}
-			//Zend_Debug::dump($output);die;
 
 			foreach ($output as $rowNo => $rowData) {
 				$colNo = 0;

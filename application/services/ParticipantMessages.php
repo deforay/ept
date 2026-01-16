@@ -7,7 +7,7 @@ class Application_Service_ParticipantMessages
     {
         $this->tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
     }
-   
+
     public function addParticipantMessage($params)
     {
         $userDb = new Application_Model_DbTable_ParticipantMessages();
@@ -21,12 +21,11 @@ class Application_Service_ParticipantMessages
     }
 
     public function getParticipantMessageById($pmId)
-	{
-		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('pm' => 'participant_messages'))
-			->where("id = ?", $pmId);
-		$res = $db->fetchAll($sql);
-        // echo '<pre>'; print_r($res); die;
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sql = $db->select()->from(array('pm' => 'participant_messages'))
+            ->where("id = ?", $pmId);
+        $res = $db->fetchAll($sql);
         return $res[0];
-	}
+    }
 }

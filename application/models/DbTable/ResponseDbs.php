@@ -8,7 +8,6 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
 
     public function updateResults($params)
     {
-        //Zend_Debug::dump($params);die;
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {

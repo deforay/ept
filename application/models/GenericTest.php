@@ -436,7 +436,6 @@ class Application_Model_GenericTest
         //<-------- Second sheet start
         $reportHeadings = ['Participant Code', 'Participant Name', 'Region', 'Shipment Receipt Date', 'Testing Date', 'Kit Name', 'Kit Lot Number', 'Kit Expiry Date'];
         $shipmentAttributes = Zend_Json_Decoder::decode($result['shipment_attributes'], true);
-        // Zend_Debug::dump($shipmentAttributes);die;
         if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);
             $reportHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $reportHeadings);

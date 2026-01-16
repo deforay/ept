@@ -49,7 +49,6 @@ class Reports_ShipmentsController extends Zend_Controller_Action
     public function responseChartAction()
     {
         if ($this->hasParam('id')) {
-            //Zend_Debug::dump(base64_decode($this->_getParam('shipmentCode')));die;
             $shipmentId = (int) base64_decode($this->_getParam('id'));
             $reportService = new Application_Service_Reports();
             $this->view->responseCount = $reportService->getShipmentResponseCount($shipmentId, base64_decode($this->_getParam('shipmentDate')));

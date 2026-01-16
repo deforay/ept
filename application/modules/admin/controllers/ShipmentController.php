@@ -46,7 +46,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            //Zend_Debug::dump($params);die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getAllShipments($params);
         } elseif ($this->hasParam('searchString')) {

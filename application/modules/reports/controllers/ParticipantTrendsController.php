@@ -39,7 +39,6 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
             $reportService = new Application_Service_Reports();
             $response = $reportService->getParticipantTrendsReport($params);
             $labPerformanceReport = $reportService->getLabPerformanceReportWithScore($params);
-           // echo '<pre>';print_r($labPerformanceReport); die;
             $this->view->labPerformanceReport = $labPerformanceReport;
             $this->view->response = $response;
         }

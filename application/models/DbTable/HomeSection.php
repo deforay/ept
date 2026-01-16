@@ -17,7 +17,6 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             $link = $params['link'];
         }
 
-        // echo "<pre>";print_r($_FILES); die;
         if (isset($params['pre_section_image']) && $params['pre_section_image'] != '' && $_FILES['section_file']['tmp_name'] == '') {
             $sectionImage = $params['pre_section_image'];
         }

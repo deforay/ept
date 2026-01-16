@@ -65,7 +65,6 @@ class Application_Model_Vl
 
             $lastDate = new DateTime($shipment['lastdate_response']);
 
-            //Zend_Debug::dump($createdOn->isEarlier($lastDate));die;
             if (!empty($createdOn) && $createdOn <= $lastDate) {
 
                 $results = $schemeService->getVlSamples($shipmentId, $shipment['participant_id']);
@@ -256,7 +255,6 @@ class Application_Model_Vl
                         }
                         $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        // Zend_Debug::dump($shipmentResult);die;
                         $db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                     }
                 } else {
@@ -573,7 +571,6 @@ class Application_Model_Vl
             //$firstSheet->getCell(Coordinate::stringFromColumnIndex(8) . $row)
             //->setValueExplicit(html_entity_decode($specimenVolume, ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
 
-            // Zend_Debug::dump($resultResponse);die;
             $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
@@ -678,7 +675,6 @@ class Application_Model_Vl
             $firstSheet->getColumnDimension($columnID, true)
                 ->setAutoSize(true);
         }
-        //Zend_Debug::dump($assayWiseData);die;
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $assayRes = $db->fetchAll($db->select()->from('r_vl_assay')->where("`status` like 'active'"));
@@ -1193,7 +1189,6 @@ class Application_Model_Vl
             //
 
             $assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
-            //var_dump($assayData);die;
             $newsheet->setTitle(strtoupper($assayRow['short_name']), true);
             $row = $startAt; // $row 1-$startAt already occupied
 
@@ -1252,8 +1247,6 @@ class Application_Model_Vl
             ->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
             ->where('sp.shipment_id = ? ', $shipmentId);
 
-        //echo $sql;die;
-
         $spmResult = $db->fetchAll($sql);
 
         $vlGraphResult = [];
@@ -1299,7 +1292,6 @@ class Application_Model_Vl
             $responseAssay = $responseAssay['vl_assay'];
 
             $vlGraphResult[$result['sample_label']]['pVal'] = $result['reported_viral_load'];
-            //print_r($vlGraphResult[$result['sample_label']]['vl']);die;
 
             $toReturn[$counter]['sample_label'] = $result['sample_label'];
             $toReturn[$counter]['shipment_map_id'] = $result['map_id'];

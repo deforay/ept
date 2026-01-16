@@ -152,7 +152,6 @@ class Application_Model_Eid
         }
         $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
 
-        //Zend_Debug::dump($shipmentResult);die;
 
         return $shipmentResult;
     }
@@ -297,8 +296,6 @@ class Application_Model_Eid
         $schemeService = new Application_Service_Schemes();
         $extractionAssayList = $schemeService->getEidExtractionAssay();
         $detectionAssayList = $schemeService->getEidDetectionAssay();
-
-        //Zend_Debug::dump($extractionAssayList);die;
 
         foreach ($resultOverAll as $rowOverAll) {
             //Zend_Debug::dump($rowOverAll);

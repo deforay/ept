@@ -366,7 +366,6 @@ class Application_Service_ApiServices
                         'participant_id = ' . $param['participantId']
                     );
                 }
-                // echo '<pre>'; print_r($data); die;
                 $shipmentUpdate = $this->mapDb->updateShipmentByAPIV2($data, $param['dmId'], $param);
                 $resultUpdate = $this->updateResults($param);
                 if ($shipmentUpdate || $resultUpdate) {
@@ -563,7 +562,6 @@ class Application_Service_ApiServices
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo ($sQuery);die;
         $rResult = $db->fetchAll($sQuery);
 
         /* Data set length after filtering */

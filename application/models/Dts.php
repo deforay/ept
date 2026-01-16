@@ -134,7 +134,6 @@ final class Application_Model_Dts
 			$averageScore = 0;
 		}
 
-		//die('here');
 		// if ($shipment['is_excluded'] == 'yes' && $shipment['is_pt_test_not_performed'] == 'yes') {
 		// 	$this->db->update('shipment', array('max_score' => 0, 'average_score' => 0, 'status' => 'not-evaluated'), $this->db->quoteInto('shipment_id = ?', $shipmentId));
 		// } else {

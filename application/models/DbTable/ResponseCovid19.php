@@ -62,7 +62,6 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 'reported_result'           => $params['reported_result'][$key],
             );
 
-            // Zend_Debug::dump($params);die;
             if ($res == null || $res === 0) {
                 $data['shipment_map_id'] = $params['smid'];
                 $data['sample_id'] = $sampleId;
@@ -106,12 +105,11 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         if (isset($params['covid19Data']->Section3->data->isPtTestNotPerformedRadio) && $params['covid19Data']->Section3->data->isPtTestNotPerformedRadio == 'yes') {
             return $this->removeShipmentResults($params['mapId']);
         }
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $testThreeOptional = false;
         $testTwoOptional = false;
 
-        $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
+        $testAllowed =  Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
         if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
             $testThreeOptional = true;
         }
@@ -178,7 +176,6 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
                 'test_result_3'     => (isset($noOfTest) && $noOfTest >= 3) ? $result3 : null,
                 'reported_result'   => $reportedResult,
             );
-            // Zend_Debug::dump($data);die;
             $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
             if ($res == null || $res === FALSE) {
                 $data['shipment_map_id'] = $params['mapId'];

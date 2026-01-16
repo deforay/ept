@@ -154,7 +154,7 @@ class Application_Model_Recency
                 }
 
 
-                $configuredDocScore = ((isset($recencyDocumentationScore) && $recencyDocumentationScore != "" && $recencyDocumentationScore != null) ? $recencyDocumentationScore: 10);
+                $configuredDocScore = ((isset($recencyDocumentationScore) && $recencyDocumentationScore != "" && $recencyDocumentationScore != null) ? $recencyDocumentationScore : 10);
 
                 // Response Score
                 if ($maxScore == 0 || $totalScore == 0) {
@@ -231,7 +231,6 @@ class Application_Model_Recency
                         }
                         $fRes = $this->db->fetchCol($this->db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        // Zend_Debug::dump($shipmentResult);die;
                         $nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
                     }
                 } else {
@@ -597,9 +596,7 @@ class Application_Model_Recency
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
-        //echo $sql;die;
         $shipmentResult = $db->fetchAll($sql);
-        //die;
         $colNo = 0;
         $currentRow = 1;
         $sheet->getDefaultColumnDimension()->setWidth(24);
@@ -687,8 +684,6 @@ class Application_Model_Recency
 
         // To get the sample list
         $samples = $this->addRecencySampleNameInArray($shipmentId);
-        // Zend_Debug::dump($n);
-        // Zend_Debug::dump($finalResColoumn);die;
         foreach ($reportHeadings as $value) {
 
             $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)

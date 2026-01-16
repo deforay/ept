@@ -9,19 +9,15 @@
 		}
 	}
 </style>
-<?php
-/* Zend_Debug::dump($this->countries);
-die; */
-?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-<h3><?= $this->translate->_("Shipment Response Report"); ?></h3>
+	<h3><?= $this->translate->_("Shipment Response Report"); ?></h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
-<tr>
+	<tr>
 		<td style="width:20%"><?= $this->translate->_("Date Range"); ?></td>
 		<td style="width:20%"><?= $this->translate->_("Scheme Type"); ?></td>
 		<td style="width:25%"><?= $this->translate->_("Shipment"); ?></td>
@@ -49,7 +45,7 @@ die; */
 		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="country" name="country" title="Please select the country to filter" onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
-				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<?php foreach ($this->countries as $country) { ?>
 						<option value="<?php echo $country['id']; ?>"><?php echo ucwords($country['iso_name']); ?></option>
 					<?php } ?>
@@ -58,7 +54,7 @@ die; */
 		<?php } ?>
 	</tr>
 	<tr>
-	<?php
+		<?php
 		if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%"><?= $this->translate->_("Region"); ?></td>
 		<?php }
@@ -75,7 +71,7 @@ die; */
 		if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="region" name="region" title="Please select the region to filter" onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
-				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->regions as $region) { ?>
 						<option value="<?php echo $region['region']; ?>"><?php echo ucwords($region['region']); ?></option>
 					<?php } ?> -->
@@ -85,7 +81,7 @@ die; */
 		if (isset($this->states) && !empty($this->states)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="state" name="state" title="Please select the province to filter" onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
-				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->states as $state) { ?>
 						<option value="<?php echo $state['state']; ?>"><?php echo ucwords($state['state']); ?></option>
 					<?php } ?> -->
@@ -95,7 +91,7 @@ die; */
 		if (isset($this->districts) && !empty($this->districts)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="district" name="district" title="Please select the district to filter">
-				<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->districts as $district) { ?>
 						<option value="<?php echo $district['district']; ?>"><?php echo ucwords($district['district']); ?></option>
 					<?php } ?> -->
@@ -111,7 +107,7 @@ die; */
 <div id="participant" style="margin: 0 auto"></div>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
 	<thead>
-	<tr>
+		<tr>
 			<th style="text-align: center;"># <?= $this->translate->_("of Participants"); ?></th>
 			<th style="text-align: center;"># <?= $this->translate->_("Responded"); ?></th>
 			<th style="text-align: center;"># <?= $this->translate->_("Not Responded"); ?></th>

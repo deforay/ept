@@ -6,7 +6,6 @@ if ($this->filename != "") {
 		$files = glob(PARTICIPANT_REPORTS_LAYOUT . DIRECTORY_SEPARATOR . $this->filename . '.pdf');
 		$file = (isset($files[0]) && trim($files[0]) != '') ? $files[0] : '';
 	}
-	// Zend_Debug::dump($file);die;
 
 	if (file_exists($file)) {
 		header('Content-Description: File Transfer');

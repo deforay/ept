@@ -612,7 +612,6 @@ class Application_Model_Tb
                             ]
                         )
                             ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
-                        // die($resQuery);
                         $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                     }
                     $participantRow = [];
@@ -807,7 +806,6 @@ class Application_Model_Tb
                         ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                     //------------ Total score sheet ------------>
-                    // Zend_Debug::dump($aRow);die;
                     if (count($aRow['response']) > 0) {
                         $countCorrectResult = 0;
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
@@ -883,8 +881,6 @@ class Application_Model_Tb
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($finalResult)->getStyle()->getFont()->getColor()->setARGB($txtColor);
                         /* Feed Back Response Section */
-                        /* Zend_Debug::dump($aRow);
-                        die; */
                         /* if (isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                             $feedbackDb = new Application_Model_DbTable_FeedBackTable();
                             }
@@ -1245,7 +1241,6 @@ class Application_Model_Tb
             ->group('s.shipment_id')
             ->order("s.shipment_date DESC")
             ->limit(6);
-        // die($previousSixShipmentsSql);
         $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
 
         $participantPreviousSixShipments = [];
@@ -1410,7 +1405,6 @@ class Application_Model_Tb
 				FROM shipment_participant_map as `spm`
                 INNER JOIN `shipment` as `s` ON `spm`.shipment_id = `s`.shipment_id
                 WHERE `spm`.shipment_id = $shipmentId";
-        // die($sQuery);
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
 
@@ -1676,7 +1670,6 @@ class Application_Model_Tb
                 ->where("p.participant_id = ?", $participantId)
                 ->group('ref.sample_id');
         }
-        // die($query);
         $result = $this->db->fetchAll($query);
 
         $fileName = "TB-FORM-" . $result[0]['shipment_code'];
@@ -1956,7 +1949,6 @@ class Application_Model_Tb
                 $errorCodesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
             $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
-            // die($errorCodesQuery);
             $errorCodes = $db->query($errorCodesQuery, [$params['shipmentId']])->fetchAll();
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Error Codes Encountered', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
@@ -2015,7 +2007,6 @@ class Application_Model_Tb
                 $discordantResultsInnerQuery
                 GROUP BY rifDetect.sample_id
                 ORDER BY rifDetect.sample_id ASC;";
-            // die($discordantResultsQuery);
             $discordantResults = $db->query($discordantResultsQuery, [$params['shipmentId']])->fetchAll();
             $rowIndex++;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Discordant Results", ENT_QUOTES, 'UTF-8'));
@@ -2093,7 +2084,6 @@ class Application_Model_Tb
                 $discordantCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
             }
             $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
-            // die($discordantCountriesQuery);
             $discordantCountries = $db->query($discordantCountriesQuery, [$params['shipmentId']])->fetchAll();
             $rowIndex++;
             $rowIndex++;
@@ -2187,7 +2177,6 @@ class Application_Model_Tb
             OR (rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1)
             OR (rifDetect.res_rif_resistance_detected = 1 AND rifDetect.ref_rif_resistance_not_detected = 1)
             ORDER BY sorting_unique_identifier ASC, sample_id ASC;";
-            // die($discordantResultsParticipantsQuery);
             $discordantParticipants = $db->query($discordantResultsParticipantsQuery, [$params['shipmentId']])->fetchAll();
             $rowIndex++;
             $rowIndex++;

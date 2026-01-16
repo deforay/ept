@@ -636,8 +636,6 @@ class Application_Service_Evaluation
 			->group('sp.map_id');
 
 		$shipmentOverall = $db->fetchAll($sql);
-		//     Zend_Debug::dump($shipmentOverall);die;
-
 		$noOfParticipants = count($shipmentOverall);
 		$numScoredFull = 0;
 		foreach ($shipmentOverall as $shipment) {
@@ -658,7 +656,6 @@ class Application_Service_Evaluation
 
 	public function updateShipmentResults($params)
 	{
-		// Zend_Debug::dump($params);die;
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->admin_id;
@@ -1613,7 +1610,6 @@ class Application_Service_Evaluation
 
 		$mapIdsToUpdate = [];
 		foreach ($sRes as $res) {
-			// Zend_Debug::dump($res['shipment_test_report_date']);die;
 			$pid = (int) ($res['participant_id'] ?? 0);
 			$dmResult = ($pid > 0 && isset($dmByParticipant[$pid])) ? $dmByParticipant[$pid] : [];
 			if (isset($res['last_name']) && trim($res['last_name']) != "") {
@@ -1952,7 +1948,6 @@ class Application_Service_Evaluation
 					$shipmentResult['dbsPieChart']['EIA/WB'] = $eiaWb;
 					$shipmentResult['dbsPieChart']['EIA'] = $eia;
 				}
-				//die;
 			} elseif ($shipmentResult['scheme_type'] == 'dts') {
 				$pass = $dtsPasspercentage ?? 100;
 				$sql = $db->select()->from(
@@ -2369,7 +2364,6 @@ class Application_Service_Evaluation
 				$totParticipantsRes = $db->fetchRow($pQuery);
 				if ($totParticipantsRes != "") {
 					$shipmentResult['participant_count'] = $totParticipantsRes['participant_count'];
-					//Zend_Debug::dump($shipmentResult);die;
 				}
 
 				$sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'))
@@ -2382,8 +2376,6 @@ class Application_Service_Evaluation
 					->group('spm.map_id');
 
 				$sQueryRes = $db->fetchAll($sQuery);
-
-				//echo($sQuery);die;
 
 				if (!empty($sQueryRes)) {
 					$shipmentResult['summaryResult'][] = $sQueryRes;
@@ -2424,7 +2416,6 @@ class Application_Service_Evaluation
 
 				foreach ($sQueryRes as $sVal) {
 					$valAttributes = json_decode($sVal['attributes'], true);
-					//Zend_Debug::dump($extractionAssay);die;
 
 					$cQuery = $db->select()->from(array('refeid' => 'reference_result_eid'), array('refeid.sample_id', 'refeid.sample_label', 'refeid.reference_result', 'refeid.mandatory'))
 						->joinLeft(array('reseid' => 'response_result_eid'), 'reseid.sample_id = refeid.sample_id', array('reported_result'))
@@ -2529,9 +2520,6 @@ class Application_Service_Evaluation
 				$smpleResult = $db->fetchAll($query);
 				$shipmentResult['no_of_samples'] = count($smpleResult);
 
-
-
-				//print_r($shipmentResult);die;
 				$refVlQuery = $db->select()->from(array('ref' => 'reference_vl_calculation'), array('ref.vl_assay'))
 					->where('ref.shipment_id = ? ', $shipmentId)
 					->group('vl_assay');
@@ -2555,8 +2543,6 @@ class Application_Service_Evaluation
 					->where("(spm.is_excluded LIKE 'yes') IS NOT TRUE")
 					->where("(spm.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
 					->where("spm.shipment_id = ?", $shipmentId);
-				//error_log($vlQuery);
-				// echo($vlQuery);die;
 				$pendingResult = $db->fetchAll($vlQuery);
 
 
@@ -2612,7 +2598,6 @@ class Application_Service_Evaluation
 				// 	->group('rvla.name')
 				// 	->order('vlCal.no_of_responses DESC');
 				// $vlAssayRes = $db->fetchAll($vlAssayQuery);
-				// Zend_Debug::dump($vlAssayRes);die;
 
 				foreach ($vlAssayResultSet as $vlAssayRow) {
 					$vlQuery = $db->select()->from(array('vlCal' => 'reference_vl_calculation'), ['*'])
@@ -2653,8 +2638,6 @@ class Application_Service_Evaluation
 								}
 							}
 						}
-						//var_dump($otherAssayCounter);
-						// Zend_Debug::dump($vlAssayRow['id']);die;
 					}
 					if (isset($vlCalRes) && !empty($vlCalRes)) {
 						$vlCalculation[$vlAssayRow['id']] = $vlCalRes;
@@ -2832,7 +2815,6 @@ class Application_Service_Evaluation
 				'last_heartbeat' => new Zend_Db_Expr('NOW()'),
 				'status' => 'pending'
 			);
-			// Zend_Debug::dump($data);die;
 			$updated = $db->update('queue_report_generation', $data, "id = " . $existData['id']);
 			if ($updated > 0) {
 				// Reset report_generated flags so progress starts from 0%
@@ -3194,7 +3176,6 @@ class Application_Service_Evaluation
 				}
 
 				return ['success' => true, 'message' => 'Job cancelled successfully'];
-
 			} elseif ($queueType === 'scheduled_jobs') {
 				// Get the job details first
 				$job = $db->fetchRow(
@@ -3223,7 +3204,6 @@ class Application_Service_Evaluation
 				);
 
 				return ['success' => true, 'message' => 'Job cancelled successfully'];
-
 			} else {
 				return ['success' => false, 'message' => 'Invalid queue type'];
 			}

@@ -61,7 +61,6 @@ class RecencyController extends Zend_Controller_Action
 				$_SESSION['confirmForm'] = "yes";
 				$this->redirect("/recency/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
 			}
-			//die;
 		} else {
 			$sID = $request->getParam('sid');
 			$pID = $request->getParam('pid');

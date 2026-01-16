@@ -55,7 +55,6 @@ class Api_ParticipantController extends Zend_Controller_Action
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($params = $this->getAllParams()) {
-            // Zend_Debug::dump($params);die;
             $defaultParams = array('module', 'controller', 'action');
             foreach ($params as $link => $mapId) {
                 if (!in_array($link, $defaultParams)) {

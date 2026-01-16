@@ -41,7 +41,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                     $otherRepeatTestkitId3 = $testkitsDb->addTestkitInParticipant($params['retest_test_kit_other_name_update_3'], $params['repeat_test_kit_name_3'], 'dts', 3);
                     $params['repeat_test_kit_name_3'] = $otherRepeatTestkitId3;
                 }
-                // Zend_Debug::dump($params);die;
                 $data = array(
                     'shipment_map_id'           => $params['smid'],
                     'sample_id'                 => $sampleId,
@@ -152,7 +151,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->dm_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
-        // Zend_Debug::dump($mapId);die;
         return $this->update($data, "shipment_map_id = " . $mapId);
     }
 
@@ -160,10 +158,10 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
     {
         try {
             $res = [];
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
             $testThreeOptional = false;
-            if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+            if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
                 if (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected == 'myanmarNationalDtsAlgo') {
                     $testThreeOptional = false;
                 } else {
@@ -171,7 +169,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 }
             }
             $sampleIds = $params['dtsData']->Section4->data->samples->id;
-            // Zend_Debug::dump($key);die;
 
             foreach ($sampleIds as $key => $sampleId) {
                 $res = $this->fetchRow("shipment_map_id = " . $params['mapId'] . " and sample_id = " . $sampleId);
@@ -283,8 +280,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
 
     public function updateResultsByAPIV2($params)
     {
-        // Zend_Debug::dump($params);
-        // die;
         $status = false;
         $res = [];
         $sampleIds = $params['sample_id'];
@@ -316,7 +311,6 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
                 $otherRepeatTestkitId3 = $testkitsDb->addTestkitInParticipant(null, $params['repeat_test_kit_name_3'], 'dts', 3);
                 $params['repeat_test_kit_name_3'] = $otherRepeatTestkitId3;
             }
-            // Zend_Debug::dump($params);die;
             $data = array(
                 'shipment_map_id'           => $params['mapId'],
                 'sample_id'                 => $sampleId,

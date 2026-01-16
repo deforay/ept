@@ -1,105 +1,100 @@
-<?php 
-// Zend_Debug::dump($this->result);die;
-?>
 <script>
-
-Highcharts.chart('aberraantContainer', {
-    rangeSelector: {
-        selected: 1
-    },
-    /* scrollbar: {
-        enabled: true
-    }, */
-    title: {
-        text: 'Aberrant Test Results'
-    },
-    xAxis: {
-        categories: [<?php echo implode(",",$this->result['failed']['network_name']);?>],
-        labels: {
-            overflow: 'justify'
-        }
-    },
-    yAxis: [{ // Primary yAxis
-        labels: {
-            formatter: function() {
-                return this.value +'';
-            },
-            style: {
-                
-            }
+    Highcharts.chart('aberraantContainer', {
+        rangeSelector: {
+            selected: 1
         },
+        /* scrollbar: {
+            enabled: true
+        }, */
         title: {
-            text: ' Number of Participants',
-            style: {
-                color: '#89A54E'
+            text: 'Aberrant Test Results'
+        },
+        xAxis: {
+            categories: [<?php echo implode(",", $this->result['failed']['network_name']); ?>],
+            labels: {
+                overflow: 'justify'
             }
         },
-        min: 0, 
-        max: 2000,
-        // tickInterval: 50,
-        opposite: true
+        yAxis: [{ // Primary yAxis
+            labels: {
+                formatter: function() {
+                    return this.value + '';
+                },
+                style: {
 
-    }],
-    credits: {
-        enabled: false
-    },
-    tooltip: {
-        borderRadius: 2,
-        borderWidth: 1,
-        borderColor: '#999',
-        shadow: false,
-        shared: true,
-        useHTML: true,
-        yDecimals: 0,
-        valueDecimale: 0,
-        headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>'+'<tbody>',
-        pointFormat: '<tr><td>{series.name}:</td>'+'<td style="text-align:right">{point.y}</td></tr>',
-        footerFormat: '</tbody></table>'
-    },
-    labels: {
-        items: [{
-            html: 'Total Pass / Fail Report',
-            style: {
-                left: '50px',
-                top: '18px',
-                color: ( // theme
-                    Highcharts.defaultOptions.title.style &&
-                    Highcharts.defaultOptions.title.style.color
-                ) || 'black'
-            }
-        }]
-    },
-    plotOptions: {
-        column: {
-            dataLabels: {
-                enabled: true
+                }
             },
-        }
-    },
-    series: [
-        {
+            title: {
+                text: ' Number of Participants',
+                style: {
+                    color: '#89A54E'
+                }
+            },
+            min: 0,
+            max: 2000,
+            // tickInterval: 50,
+            opposite: true
+
+        }],
+        credits: {
+            enabled: false
+        },
+        tooltip: {
+            borderRadius: 2,
+            borderWidth: 1,
+            borderColor: '#999',
+            shadow: false,
+            shared: true,
+            useHTML: true,
+            yDecimals: 0,
+            valueDecimale: 0,
+            headerFormat: '<table class="tip"><caption><b>{point.key}</b></caption>' + '<tbody>',
+            pointFormat: '<tr><td>{series.name}:</td>' + '<td style="text-align:right">{point.y}</td></tr>',
+            footerFormat: '</tbody></table>'
+        },
+        labels: {
+            items: [{
+                html: 'Total Pass / Fail Report',
+                style: {
+                    left: '50px',
+                    top: '18px',
+                    color: ( // theme
+                        Highcharts.defaultOptions.title.style &&
+                        Highcharts.defaultOptions.title.style.color
+                    ) || 'black'
+                }
+            }]
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: true
+                },
+            }
+        },
+        series: [{
             type: 'column',
             name: 'Network Tier',
             color: 'red',
-            data: [<?php echo implode(",",$this->result['failed']['network_id']);?>]
+            data: [<?php echo implode(",", $this->result['failed']['network_id']); ?>]
         }, {
-        type: 'pie',
-        name: 'Total Pass / Fail Report',
-        data: [{
-            name: 'Failed',
-            y: <?php echo $this->result['fail_percentage'];?>,
-            color: 'red'
-        }, {
-            name: 'Passed',
-            y: <?php echo $this->result['pass_percentage'];?>,
-            color: 'green'
-        }],
-        center: [100, 80],
-        size: 100,
-        showInLegend: false,
-        dataLabels: {
-            enabled: false
-        }
-    }]
-});
+            type: 'pie',
+            name: 'Total Pass / Fail Report',
+            data: [{
+                name: 'Failed',
+                y: <?php echo $this->result['fail_percentage']; ?>,
+                color: 'red'
+            }, {
+                name: 'Passed',
+                y: <?php echo $this->result['pass_percentage']; ?>,
+                color: 'green'
+            }],
+            center: [100, 80],
+            size: 100,
+            showInLegend: false,
+            dataLabels: {
+                enabled: false
+            }
+        }]
+    });
 </script>

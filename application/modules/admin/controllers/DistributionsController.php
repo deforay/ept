@@ -48,7 +48,6 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $this->getAllParams();
-            // Zend_Debug::dump($params);die;
             $distributionId = $distributionService->addDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
                 $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));

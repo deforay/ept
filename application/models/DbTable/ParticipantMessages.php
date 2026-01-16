@@ -44,7 +44,6 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 "attached_file" => (!empty($files)) ? json_encode($files) : null,
                 "created_at" => new Zend_Db_Expr('now()')
             ];
-            // echo '<pre>'; print_r($data); die;
 
             $db->insert('participant_messages', $data);
             $insertId = $db->lastInsertId();
@@ -155,7 +154,6 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
@@ -196,7 +194,6 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['created_at']);
             $row[] = '<a class="btn btn-primary btn-xs" href="/admin/participant-messages/view/d8s5_8d/' . base64_encode($aRow['id']) . '"><span><i class="fa fa-eye"></i> view</span></a>';
             $output['aaData'][] = $row;
-            // print_r($output); die;
         }
 
         // Add this code block for debugging and safe JSON encoding

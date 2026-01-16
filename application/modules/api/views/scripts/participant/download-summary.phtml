@@ -1,5 +1,4 @@
 <?php
-//Zend_Debug::dump($this->result);die;
 if ($this->result != "") {
 	$file = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . DIRECTORY_SEPARATOR . $this->result['shipment_code'] . "-summary.pdf";
 	if (!file_exists($file)) {

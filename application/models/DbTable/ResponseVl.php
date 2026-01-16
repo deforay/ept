@@ -35,7 +35,6 @@ class Application_Model_DbTable_ResponseVl extends Zend_Db_Table_Abstract
                 'module_number' => $params['moduleNumber'][$key] ?? null,
                 'comment' => $params['comment'][$key] ?? null
             ];
-            // Zend_Debug::dump($data);die;
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             if (empty($res)) {
                 $data['created_by'] = $authNameSpace->dm_id;

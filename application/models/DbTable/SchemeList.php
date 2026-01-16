@@ -135,7 +135,6 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo $sQuery;die;
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 

@@ -9,7 +9,6 @@ class Application_Model_DbTable_ResponseRecency extends Zend_Db_Table_Abstract
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
-        // Zend_Debug::dump($params);die;
         foreach ($sampleIds as $key => $sampleId) {
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');

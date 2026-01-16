@@ -314,8 +314,6 @@ class Application_Service_DataManagers
         $select = $db->select()
             ->union(array($sql, $sql2));
 
-        // echo $select;die;
-
         return $db->fetchAll($select);
     }
 

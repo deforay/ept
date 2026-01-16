@@ -26,7 +26,6 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
         $request = $this->getRequest();
         $schemeService = new Application_Service_Schemes();
         if ($request->isPost()) {
-            // Zend_Debug::dump($this->getAllParams());die;
             $testPlatforms[1] = $request->getPost('testPlatform1');
             $testPlatforms[2] = $request->getPost('testPlatform2');
             $testPlatforms[3] = $request->getPost('testPlatform3');

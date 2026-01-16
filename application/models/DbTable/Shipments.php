@@ -89,10 +89,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
             ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
             ->group('dm.dm_id')->setIntegrityCheck(false);
-        // echo $subQuery;die;
         $subResult = $this->fetchAll($subQuery);
         foreach ($subResult as $dm) {
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             if (isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])) {
                 $content = $notParticipatedMailContent['mail_content'];
@@ -1126,10 +1125,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> Corrective Actions</a>';
             }
-            //  echo $aRow['feedback_expiry_date']; die;
             if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['response_status'] == 'responded' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $result = $db->fetchRow($db->select()->from(array('participant_feedback_answer'))->where("shipment_id =?", $aRow['shipment_id'])->where("participant_id =?", $aRow['participant_id'])->where("map_id =?", $aRow['map_id']));
-                //echo "<pre>"; print_r($result); die;
                 if ($result) {
                     $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
                 } else {
@@ -1857,7 +1854,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
-        // echo $sQuery;die;
         if (!empty($aResult['dm_id'])) {
             $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $aResult['dm_id']);
@@ -1990,7 +1986,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->where("(s.status='shipped' OR s.status='evaluated' OR s.status='finalized')")
             ->order('spm.created_on_admin DESC')
             ->order('spm.created_on_user DESC');
-        // echo $sQuery;die;
         if (!empty($aResult['dm_id'])) {
             $sQuery = $sQuery->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('*'))
                 ->where("pmm.dm_id = ?", $aResult['dm_id']);
@@ -2275,19 +2270,18 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $isEditable = $spMap->isShipmentEditable($params['shipment_id'], $params['participant_id']);
         $lastDate = new Zend_Date($shipment['lastdate_response']);
         $responseAccess = $date->compare($lastDate, Zend_Date::DATES);
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
         if ($params['scheme_type'] == 'dts') {
             $dts = [];
+            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
             $dtsModel = new Application_Model_Dts();
             $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
             $testThreeOptional = false;
-            if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+            if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
                 $testThreeOptional = true;
             }
-
-            $allowRepeatTests = (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == 'yes') ? true : false;
+            $allowRepeatTest = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+            $allowRepeatTests = (isset($allowRepeatTest) && $allowRepeatTest == 'yes') ? true : false;
             if ($dtsSchemeType == 'updated-3-tests') {
                 $allowRepeatTests = true;
                 $testThreeOptional = false;
@@ -2348,7 +2342,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 );
             }
             // Shipement Result end // For algorithmUsed start
-            $allowedAlgorithms = isset($config->evaluation->dts->allowedAlgorithms) ? explode(",", $config->evaluation->dts->allowedAlgorithms) : array();
+            $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
+            if (!is_array($allowedAlgorithms))
+                $allowedAlgorithms = explode(',', $allowedAlgorithms);
             $algorithmUsedSelect = [];
             $algorithmUsedSelectOptions = [];
 
@@ -2417,7 +2413,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'screeningTest' => (isset($shipment['shipment_attributes']["screeningTest"]) && $shipment['shipment_attributes']["screeningTest"] != '') ? $shipment['shipment_attributes']["screeningTest"] : '',
                     'dtsSchemeType' => $dtsSchemeType,
                 );
-                if ($dtsSchemeType == 'malawi' || (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+                if ($dtsSchemeType == 'malawi' || (isset($displaySampleConditionFields) && $displaySampleConditionFields == "yes")) {
                     $section2['conditionOfPTSamples'] = (isset($shipment['attributes']["condition_pt_samples"]) && $shipment['attributes']["condition_pt_samples"] != '') ? $shipment['attributes']["condition_pt_samples"] : '';
                     $section2['refridgerator'] = (isset($shipment['attributes']["refridgerator"]) && $shipment['attributes']["refridgerator"] != '') ? $shipment['attributes']["refridgerator"] : '';
                     $section2['roomTemperature'] = (isset($shipment['attributes']["room_temperature"]) && $shipment['attributes']["room_temperature"] != '') ? $shipment['attributes']["room_temperature"] : '';
@@ -3321,7 +3317,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $section3['data']['yes']['supportText'] = 'Do you need any support from the PT Provider ?';
             $section3['data']['yes']['supportTextArea'] = $shipment['pt_support_comments'];
             // return $allSamples;
-            // Zend_Debug::dump($allSamples);die;
             foreach ($allSamples as $key => $sample) {
                 if (isset($shipment['is_pt_test_not_performed']) && $shipment['is_pt_test_not_performed'] == 'yes') {
                     $sample['mandatory'] = 0;
@@ -3844,7 +3839,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $covid19 = [];
             $testThreeOptional = false;
             $testTwoOptional = false;
-            $testAllowed = $config->evaluation->covid19->covid19MaximumTestAllowed;
+
+            $testAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
             if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
                 $testThreeOptional = true;
             }
@@ -4111,7 +4107,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             } else {
                 $covid19['Section4']['status'] = false;
             }
-            // Zend_Debug::dump($allSamples);die;
             // Section 4 end // Section 5 Start
             $covid19PossibleResults = $schemeService->getPossibleResults('covid19');
             $covid19PossibleResponse['code'] = array();
@@ -4428,7 +4423,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function saveShipmentsFormDetailsByAPI($params)
     {
-        // Zend_Debug::dump($params);die;
         /* Check the app versions & parameters */
         /* if (!isset($params['appVersion'])) {
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
@@ -4483,9 +4477,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
     public function saveShipmentByType($params, $dm)
     {
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
         /* Save shipments form details */
         $schemeService = new Application_Service_Schemes();
         $spMap = new Application_Model_DbTable_ShipmentParticipantMap();
@@ -4514,10 +4505,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         try {
             $eidResponseStatus = 0;
             $updateShipmentParticipantStatus = 0;
-            $ptGeneral = new Pt_Commons_General();
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             if ($params['schemeType'] == 'vl') {
-                // Zend_Debug::dump($params["vlData"]->Section2->data->sampleRhdDate);die;
                 if (isset($params["vlData"]->Section2->data->sampleRhdDate) && trim($params["vlData"]->Section2->data->sampleRhdDate) != "") {
                     $params["vlData"]->Section2->data->sampleRhdDate = date('Y-m-d', strtotime($params["vlData"]->Section2->data->sampleRhdDate));
                 }
@@ -4579,8 +4568,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                         $data['qc_created_on'] = '';
                     }
                 }
-                // Zend_Debug::dump($params['mapId']);
-                // die;
 
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $haveCustom = $globalConfigDb->getValue('custom_field_needed');
@@ -4621,10 +4608,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             if ($params['schemeType'] == 'dts') {
-                // Zend_Debug::dump($params);die;
+                $displaySampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
                 $attributes["sample_rehydration_date"] = (isset($params['dtsData']->Section2->data->sampleRehydrationDate) && $params['dtsData']->Section2->data->sampleRehydrationDate != '') ? date('Y-m-d', strtotime($params['dtsData']->Section2->data->sampleRehydrationDate)) : '';
                 $attributes["algorithm"] = (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected != '') ? $params['dtsData']->Section2->data->algorithmUsedSelected : '';
-                if ((isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes")) {
+                if ((isset($displaySampleConditionFields) && $displaySampleConditionFields == "yes")) {
                     $attributes["condition_pt_samples"] = (isset($params['dtsData']->Section2->data->conditionOfPTSamples) && $params['dtsData']->Section2->data->conditionOfPTSamples != '') ? $params['dtsData']->Section2->data->conditionOfPTSamples : '';
                     $attributes["refridgerator"] = (isset($params['dtsData']->Section2->data->refridgerator) && $params['dtsData']->Section2->data->refridgerator != '') ? $params['dtsData']->Section2->data->refridgerator : '';
                     $attributes["room_temperature"] = (isset($params['dtsData']->Section2->data->roomTemperature) && $params['dtsData']->Section2->data->roomTemperature != '') ? $params['dtsData']->Section2->data->roomTemperature : '';
@@ -4701,7 +4688,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             if ($params['schemeType'] == 'eid') {
-                // Zend_Debug::dump($params);die;
                 $attributes = array(
                     "sample_rehydration_date" => date('Y-m-d', strtotime($params['eidData']->Section2->data->sampleRehydrationDate)),
                     "extraction_assay" => (isset($params['eidData']->Section2->data->extractionAssaySelected) && $params['eidData']->Section2->data->extractionAssaySelected != "") ? $params['eidData']->Section2->data->extractionAssaySelected : '',
@@ -4796,7 +4782,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             if ($params['schemeType'] == 'recency') {
-                // Zend_Debug::dump($params['recencyData']->Section2->data->recencyAssayLotNumber);die;
                 $attributes = array(
                     "sample_rehydration_date" => date('Y-m-d', strtotime($params['recencyData']->Section2->data->sampleRehydrationDate)),
                     "recency_assay" => (isset($params['recencyData']->Section2->data->recencyAssaySelected) && $params['recencyData']->Section2->data->recencyAssaySelected != "") ? $params['recencyData']->Section2->data->recencyAssaySelected : '',
@@ -4866,7 +4851,6 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 return true;
             }
             if ($params['schemeType'] == 'covid19') {
-                // Zend_Debug::dump($params['covid19Data']->Section6->data->supervisorReviewSelected);die;
                 $attributes["sample_rehydration_date"] = (isset($params['covid19Data']->Section2->data->sampleRehydrationDate) && $params['covid19Data']->Section2->data->sampleRehydrationDate != '') ? date('Y-m-d', strtotime($params['covid19Data']->Section2->data->sampleRehydrationDate)) : '';
                 $attributes = json_encode($attributes);
 

@@ -78,7 +78,6 @@ class Application_Service_FeedBack
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        // Zend_Debug::dump($params);die;
         foreach ($params['questionId'] as $key => $q) {
             if (isset($params['answer'][$key]['date']) && !empty($params['answer'][$key]['date'])) {
                 $answer = Pt_Commons_General::isoDateFormat($params['answer'][$key]['date']);
@@ -87,17 +86,15 @@ class Application_Service_FeedBack
             }
 
             $dataArr = [
-                    'shipment_id' => $params["shipmentId"],
-                    'question_id' => $q,
-                    'participant_id' => $params['participantId'],
-                    'map_id' => $params['mapId'],
-                    'answer' => $answer,
-                    'updated_datetime' => Pt_Commons_General::getDateTime(),
-                    'modified_by' => $authNameSpace->admin_id
+                'shipment_id' => $params["shipmentId"],
+                'question_id' => $q,
+                'participant_id' => $params['participantId'],
+                'map_id' => $params['mapId'],
+                'answer' => $answer,
+                'updated_datetime' => Pt_Commons_General::getDateTime(),
+                'modified_by' => $authNameSpace->admin_id
             ];
 
-       //     echo "<pre>"; print_r($dataArr); die;
-          
             $db->insert(
                 'participant_feedback_answer',
                 $dataArr

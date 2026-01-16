@@ -55,7 +55,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $result = $userService->addUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
-            } else if(isset($params['btnName']) && $params['btnName'] == 'save_and_map'){
+            } else if (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
                 $this->redirect("/admin/participants/participant-manager-map");
             }
             $this->redirect("/admin/data-managers");
@@ -86,7 +86,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $userService->updateUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
                 $this->redirect("/admin/data-managers/index/ptcc/1");
-            } else if(isset($params['btnName']) && $params['btnName'] == 'save_and_map'){
+            } else if (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
                 $this->redirect("/admin/participants/participant-manager-map");
             } else {
                 $this->redirect("/admin/data-managers");
@@ -104,8 +104,6 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->countriesList = $commonService->getcountriesList();
                 $this->view->provinceList = $commonService->getParticipantsProvinceList();
                 $this->view->districtList = $commonService->getParticipantsDistrictList();
-// echo '<pre>'; print_r($commonService->getcountriesList()); die;
-
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }
