@@ -521,12 +521,11 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
         // Legend - Three colored indicators for Probe A (single line)
         $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="278" fill="#156082" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="45" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Validation)</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="145" y="278" fill="#C00000" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="155" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Field Testing</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="225" y="278" fill="#196B24" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="235" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Stability)</text>';
-        $panelPerformanceMtbRifSvg .= '    <text x="200" y="295" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <text x="45" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Validation) Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="165" y="278" fill="#C00000" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="175" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Field Testing Mean for Probe A</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="275" y="278" fill="#196B24" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="285" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Stability) Mean for Probe A</text>';
         $panelPerformanceMtbRifSvg .= '</svg>';
 
         if ($assayName && $tbTestType != 'microscopy') {
