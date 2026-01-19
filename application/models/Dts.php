@@ -714,8 +714,6 @@ final class Application_Model_Dts
 			$responseScore = round(($totalScore / $maxScore) * 100 * (100 - $configuredDocScore) / 100, 2);
 		}
 
-
-		//if ((isset($config->evaluation->dts->dtsEnforceAlgorithmCheck) && $config->evaluation->dts->dtsEnforceAlgorithmCheck == 'yes')) {
 		if (empty($attributes['algorithm']) || strtolower($attributes['algorithm']) == 'not-reported') {
 			$failureReason[] = [
 				'warning' => "Result not evaluated. Testing algorithm not reported.",
