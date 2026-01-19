@@ -16,7 +16,8 @@ if (!empty($resultArray['shipment'])) {
     foreach ($resultArray['shipment'] as $result) {
 
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-
+        $effectiveDate = (isset($shipmentAttributes['effective_date']) && !empty($shipmentAttributes['effective_date'])) ? $shipmentAttributes['effective_date'] : 'October 2025';
+        $formVersion = (isset($shipmentAttributes['form_version']) && !empty($shipmentAttributes['form_version'])) ? $shipmentAttributes['form_version'] : 'FRM-000214-ILB	';
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
@@ -30,7 +31,23 @@ if (!empty($resultArray['shipment'])) {
             $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
+            $pdf->setSchemeName(
+                header: $header,
+                schemeName: $panelName,
+                logo: $logo,
+                logoRight: $logoRight,
+                resultStatus: $resultStatus,
+                schemeType: $schemeType,
+                layout: $layout,
+                effectiveDate: $effectiveDate,
+                config: $config,
+                watermark: $watermark,
+                dateFinalised: $evalRow['date_finalised'],
+                instituteAddressPosition: $instituteAddressPosition,
+                issuingAuthority: $resultArray['shipment'][0]['issuing_authority'],
+                formVersion: $formVersion
+
+            );
             $pdf->setPreHeaderText("GHC/DGHT-International Laboratory Branch- Atlanta, GA");
         }
 

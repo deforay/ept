@@ -10,6 +10,8 @@ $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs"
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
+    $effectiveDate = (isset($shipmentAttributes['effective_date']) && !empty($shipmentAttributes['effective_date'])) ? $shipmentAttributes['effective_date'] : 'October 2025';
+    $formVersion = (isset($shipmentAttributes['form_version']) && !empty($shipmentAttributes['form_version'])) ? $shipmentAttributes['form_version'] : 'FRM-000214-ILB	';
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
     }
@@ -22,7 +24,24 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $panelName = (isset($shipmentAttributes['panelName']) && !empty($shipmentAttributes['panelName'])) ? $shipmentAttributes['panelName'] : $resultArray['shipment']['shipment_code'];
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout, $resultArray['shipment']['issuing_authority'], "", $tbTestType);
+        $pdf->setSchemeName(
+            header: $header,
+            schemeName: $resultArray['shipment']['scheme_name'],
+            logo: $logo,
+            logoRight: $logoRight,
+            resultStatus: $resultStatus,
+            schemeType: $resultArray['shipment']['scheme_type'],
+            effectiveDate: $effectiveDate,
+            config: $config,
+            watermark: $watermark,
+            dateFinalised: $evalRow['date_finalised'],
+            instituteAddressPosition: $instituteAddressPosition,
+            layout: $layout,
+            issuingAuthority: $resultArray['shipment']['issuing_authority'],
+            dtsPanelType: "",
+            tbTestType: $tbTestType,
+            formVersion: $formVersion
+        );
         $pdf->setPreHeaderText("GHC/DGHT-International Laboratory Branch- Atlanta, GA");
     }
 

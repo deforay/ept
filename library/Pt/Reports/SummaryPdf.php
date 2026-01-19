@@ -12,7 +12,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
     public $resultStatus = "";
     public $schemeType = "";
     public $layout = "";
-    public $dateTime = "";
+    public $effectiveDate = "";
     public $config = null;
     public $watermark = "";
     public $dateFinalised = "";
@@ -22,13 +22,14 @@ class Pt_Reports_SummaryPdf extends Fpdi
     public $generalModel = null;
     public $tbTestType = null;
     public $preHeaderText = "";
+    public $formVersion = "";
 
     public function setPreHeaderText($text)
     {
         $this->preHeaderText = $text;
     }
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "", $tbTestType = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $effectiveDate = "", $config = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $layout = "", $issuingAuthority = "", $dtsPanelType = "", $tbTestType = "", $formVersion = "")
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -38,14 +39,15 @@ class Pt_Reports_SummaryPdf extends Fpdi
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
         $this->layout = $layout;
-        $this->dateTime = $datetime;
-        $this->config = $conf;
+        $this->effectiveDate = $effectiveDate;
+        $this->config = $config;
         $this->watermark = $watermark ?? '';
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
         $this->dtsPanelType = $dtsPanelType;
         $this->tbTestType = $tbTestType;
+        $this->formVersion = $formVersion;
     }
 
     //Page header
@@ -321,10 +323,10 @@ class Pt_Reports_SummaryPdf extends Fpdi
         } else {
             $finalizeReport = ' | SUMMARY REPORT ';
         }
-        if (isset($this->dateTime) && $this->dateTime != '') {
-            $showTime = $this->dateTime;
+        if (isset($this->effectiveDate) && $this->effectiveDate != '') {
+            $effectiveDateToShow = $this->effectiveDate;
         } else {
-            $showTime = date("Y-m-d H:i:s");
+            $effectiveDateToShow = date("Y-m-d H:i:s");
         }
         // Position at 15 mm from bottom
 
@@ -339,17 +341,17 @@ class Pt_Reports_SummaryPdf extends Fpdi
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
-            $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
+            $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
             $effectiveMonthYear = (!empty($effectiveDate) || $effectiveDate != '') ? $effectiveDate->format('M Y') : '';
             $this->SetFont('freesans', '', 10, '', true);
             $this->Cell(0, 10, 'Effective Date:' . $effectiveMonthYear, 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
-            $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
+            $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
             $effectiveMonthYear = (!empty($effectiveDate) || $effectiveDate != '') ? $effectiveDate->format('M Y') : '';
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
                 $this->SetFont('freesans', '', 9, '', true);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = "<table><tr><td><span style=\"text-align:left;\">Form : ILB-500-F29A</span></td><td><span style=\"text-align:center;\">Issuing Authority : {$this->issuingAuthority}</span></td><td><span style=\"text-align:right;\">Effective Date : $effectiveMonthYear</span></td></tr></table>";
+                    $html = "<table><tr><td><span style=\"text-align:left;\">Form : {$this->formVersion}</span></td><td><span style=\"text-align:center;\">Issuing Authority : {$this->issuingAuthority}</span></td><td><span style=\"text-align:right;\">Effective Date : $effectiveMonthYear</span></td></tr></table>";
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
@@ -357,7 +359,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
             if (isset($this->layout) && $isLayoutZimbabwe) {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } elseif ($this->schemeType != 'tb') {
-                $this->Cell(0, 10, "Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+                $this->Cell(0, 10, "Report generated on " . $this->generalModel->humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
         if ($this->schemeType != 'tb') {

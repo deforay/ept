@@ -12,7 +12,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
     public $resultStatus = '';
     public $schemeType = '';
     public $layout = '';
-    public $dateTime = '';
+    public $effectiveDate = '';
     public $config = null;
     public $watermark = '';
     public $dateFinalised = '';
@@ -21,9 +21,10 @@ class Pt_Reports_IndividualPdf extends Fpdi
     public $dtsPanelType = '';
     public $generalModel = null;
     public $preHeaderText = '';
+    public $formVersion = '';
 
 
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "", $dtsPanelType = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $effectiveDate = "", $config = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "", $dtsPanelType = "", $formVersion = "")
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -33,13 +34,14 @@ class Pt_Reports_IndividualPdf extends Fpdi
         $this->resultStatus = $resultStatus;
         $this->schemeType = $schemeType;
         $this->layout = $layout;
-        $this->dateTime = $datetime;
-        $this->config = $conf;
+        $this->effectiveDate = $effectiveDate;
+        $this->config = $config;
         $this->watermark = $watermark ?? '';
         $this->dateFinalised = $dateFinalised;
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
         $this->dtsPanelType = $dtsPanelType;
+        $this->formVersion = $formVersion;
     }
 
     public function setPreHeaderText($text)
@@ -296,7 +298,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             $finalizeReport = ' | INDIVIDUAL REPORT ';
         }
 
-        $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
+        $effectiveDateToShow = $this->effectiveDate ?? date("Y-m-d H:i:s");
         // Position from bottom - TB needs more space for additional footer content
         $footerPosition = ($this->schemeType == 'tb') ? -25 : -15;
         $this->SetY($footerPosition);
@@ -311,7 +313,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
                 $this->writeHTML($instituteAddress, true, false, true, false, "L");
             }
         }
-        $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
+        $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
 
@@ -322,7 +324,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             if ($this->schemeType == 'tb') {
                 $this->SetFont('freesans', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ILB-500-F29A</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
+                    $html = '<table><tr><td><span style="text-align:left;">Form : ' . $this->formVersion . '</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
@@ -342,7 +344,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
-                $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($showTime) . $finalizeReport, true, false, true, false, 'C');
+                $this->writeHTML("Report generated on " . $this->generalModel->humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, true, false, true, false, 'C');
             }
         }
         if ($this->schemeType != 'tb') {
