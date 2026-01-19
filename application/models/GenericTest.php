@@ -367,8 +367,8 @@ class Application_Model_GenericTest
         $refResult = $db->fetchAll($refQuery);
 
 
-        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('sl.user_test_config'))
+        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
+            ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['sl.user_test_config'])
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
             ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
@@ -731,28 +731,30 @@ class Application_Model_GenericTest
 
     public function getDataForSummaryPDF($shipmentId)
     {
+        $shipmentResult = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $pQuery = $db->select()->from(
-            array('spm' => 'shipment_participant_map'),
-            array(
-                'spm.map_id',
-                'spm.shipment_id',
-                'spm.documentation_score',
-                'participant_count' => new Zend_Db_Expr('count("participant_id")'),
-                'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")
-            )
+        $shipmentQuery = $db->select()->from(
+            ['spm' => 'shipment_participant_map'],
+            [
+                'participant_count' => new Zend_Db_Expr('COUNT(spm.participant_id)'),
+                'reported_count' => new Zend_Db_Expr(
+                    "SUM(CASE WHEN spm.response_status IS NOT NULL AND spm.response_status LIKE 'responded' THEN 1 ELSE 0 END)"
+                )
+            ]
         )
-            ->joinLeft(
-                ['res' => 'r_results'],
-                'res.result_id=spm.final_result',
-                ['result_name']
-            )
-            ->where("spm.shipment_id = ?", $shipmentId)
-            ->group('spm.shipment_id');
-        $totParticipantsRes = $db->fetchRow($pQuery);
-        if ($totParticipantsRes != "") {
-            $shipmentResult['participant_count'] = $totParticipantsRes['participant_count'];
+            ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'shipment_date', 'scheme_type'])
+            ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.user_test_config'])
+
+            ->where("spm.shipment_id = ?", $shipmentId);
+        $metadataResult = $db->fetchRow($shipmentQuery);
+        if ($metadataResult != "") {
+            $shipmentResult['participant_count'] = $metadataResult['participant_count'];
+            $shipmentResult['reported_count'] = $metadataResult['reported_count'];
         }
+
+        $testConfig = json_decode($metadataResult['user_test_config'], true);
+        $testType = $testConfig['testType'];
+        $shipmentResult['testType'] = $testType;
 
         // To get shipment related information from model
         $sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'])
@@ -800,7 +802,7 @@ class Application_Model_GenericTest
         $shipmentResult['correctRes'] = $correctResult;
 
         foreach ($sQueryRes as $sVal) {
-            $cQuery = $db->select()->from(array('refGenTest' => 'reference_result_generic_test'), array('refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'))
+            $cQuery = $db->select()->from(['refGenTest' => 'reference_result_generic_test'], ['refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'])
                 ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
                 ->where('refGenTest.shipment_id = ? ', $shipmentId)
                 ->where("refGenTest.control = 0")
@@ -817,104 +819,106 @@ class Application_Model_GenericTest
         $smpleResult = $db->fetchAll($query);
         $shipmentResult['no_of_samples'] = count($smpleResult);
 
-        /* To get total number of kit name from reference calculation model */
-        $refVlQuery = $db->select()->from(array('ref' => 'reference_generic_test_calculations'), array('ref.testkit_id'))
-            ->where('ref.shipment_id = ? ', $shipmentId)
-            ->group('testkit_id');
-        $countedAssayResult = $db->fetchAll($refVlQuery);
-        $regexpArray = [];
-        $regexp = '';
-        foreach ($countedAssayResult as $crow) {
-            $regexpArray[] = '\'%"kit_name":"' . $crow['testkit_id'] . '"%\'';
-        }
-        if (isset($regexpArray) && !empty($regexpArray)) {
-            $regexp = implode(' AND `attributes` NOT LIKE ', $regexpArray);
-        } else {
-            $regexp = '""';
-        }
-
-        /* To get the pending participant results */
-        $vlQuery = $db->select()->from(array('spm' => 'shipment_participant_map'))
-            ->where("`attributes` NOT LIKE  $regexp ")
-            ->where("(spm.is_excluded LIKE 'yes') IS NOT TRUE")
-            ->where("(spm.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
-            ->where("spm.shipment_id = ?", $shipmentId);
-        $pendingResult = $db->fetchAll($vlQuery);
-
-        $kitDb = new Application_Model_DbTable_Testkitnames();
-        $kitArray = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type'], false, true);
-        $penResult = [];
-        foreach ($pendingResult as $pendingRow) {
-            $valAttributes = json_decode($pendingRow['attributes'], true);
-            if (isset($kitArray[$valAttributes['kit_name']])) {
-                if ($valAttributes['kit_name'] == 6) {
-                    $penResult['assayNames'][] = $valAttributes['other_assay'];
-                } else {
-                    $penResult['assayNames'][] = $kitArray[$valAttributes['kit_name']];
-                }
+        if ($testType == 'quantitative') {
+            /* To get total number of kit name from reference calculation model */
+            $refVlQuery = $db->select()->from(['ref' => 'reference_generic_test_calculations'], ['ref.testkit_id'])
+                ->where('ref.shipment_id = ? ', $shipmentId)
+                ->group('testkit_id');
+            $countedAssayResult = $db->fetchAll($refVlQuery);
+            $regexpArray = [];
+            $regexp = '';
+            foreach ($countedAssayResult as $crow) {
+                $regexpArray[] = '\'%"kit_name":"' . $crow['testkit_id'] . '"%\'';
             }
-        }
-        if (isset($penResult['assayNames']) && count($penResult['assayNames']) > 0) {
-            $penResult['assayNames'] = array_unique($penResult['assayNames']);
-            sort($penResult['assayNames']);
-        }
-        $penResult['count'] = count($pendingResult);
+            if (isset($regexpArray) && !empty($regexpArray)) {
+                $regexp = implode(' AND `attributes` NOT LIKE ', $regexpArray);
+            } else {
+                $regexp = '""';
+            }
 
-        $vlCalculation = [];
-        $otherAssayCounter = [];
+            /* To get the pending participant results */
+            $vlQuery = $db->select()->from(['spm' => 'shipment_participant_map'])
+                ->where("`attributes` NOT LIKE  $regexp ")
+                ->where("(spm.is_excluded LIKE 'yes') IS NOT TRUE")
+                ->where("(spm.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
+                ->where("spm.shipment_id = ?", $shipmentId);
+            $pendingResult = $db->fetchAll($vlQuery);
 
-        $vlAssayResultSet = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type']);
-        foreach ($vlAssayResultSet as $vlAssayRow) {
-            $vlQuery = $db->select()->from(['vlCal' => 'reference_generic_test_calculations'], ['*'])
-                ->join(['refVl' => 'reference_result_generic_test'], 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', ['refVl.sample_label', 'refVl.mandatory'])
-                ->join(['sp' => 'shipment_participant_map'], 'vlCal.shipment_id=sp.shipment_id', [])
-                ->join(
-                    ['res' => 'response_result_generic_test'],
-                    'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
-                    [
-                        'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
-                    ]
-                )
-                ->where("vlCal.shipment_id=?", $shipmentId)
-                ->where("vlCal.testkit_id=?", $vlAssayRow['TESTKITNAMEID'])
-                ->where("refVl.control!=1")
-                ->where('sp.attributes->>"$.kit_name" = "' . $vlAssayRow['TESTKITNAMEID'] . '"')
-                ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
-                ->where("sp.final_result = 1 OR sp.final_result = 2")
-                ->group('refVl.sample_id');
-            $vlCalRes = $db->fetchAll($vlQuery);
-
-            if ($vlAssayRow['id'] == 6) {
-                $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
-                    ->where("sp.is_excluded not like 'yes'")
-                    ->where('sp.attributes->>"$.kit_name" = 6')
-                    ->where('sp.shipment_id = ? ', $shipmentId);
-                $cResult = $db->fetchAll($cQuery);
-
-
-                foreach ($cResult as $val) {
-                    $valAttributes = json_decode($val['attributes'], true);
-                    if (isset($valAttributes['other_assay'])) {
-                        if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
-                            $otherAssayCounter[$valAttributes['other_assay']]++;
-                        } else {
-                            $otherAssayCounter[$valAttributes['other_assay']] = 1;
-                        }
+            $kitDb = new Application_Model_DbTable_Testkitnames();
+            $kitArray = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type'], false, true);
+            $penResult = [];
+            foreach ($pendingResult as $pendingRow) {
+                $valAttributes = json_decode($pendingRow['attributes'], true);
+                if (isset($kitArray[$valAttributes['kit_name']])) {
+                    if ($valAttributes['kit_name'] == 6) {
+                        $penResult['assayNames'][] = $valAttributes['other_assay'];
+                    } else {
+                        $penResult['assayNames'][] = $kitArray[$valAttributes['kit_name']];
                     }
                 }
             }
-            if (isset($vlCalRes) && !empty($vlCalRes)) {
-                $vlCalculation[$vlAssayRow['id']] = $vlCalRes;
-                $vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['TESTKITNAME'];
-                $vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['TestKit_Name_Short'];
-                $vlCalculation[$vlAssayRow['id']]['participant_response_count'] = $vlCalRes[0]['no_of_responses'];
+            if (isset($penResult['assayNames']) && count($penResult['assayNames']) > 0) {
+                $penResult['assayNames'] = array_unique($penResult['assayNames']);
+                sort($penResult['assayNames']);
+            }
+            $penResult['count'] = count($pendingResult);
+
+            $vlCalculation = [];
+            $otherAssayCounter = [];
+
+            $vlAssayResultSet = $kitDb->getAllTestKitList($sQueryRes[0]['scheme_type']);
+            foreach ($vlAssayResultSet as $vlAssayRow) {
+                $vlQuery = $db->select()->from(['vlCal' => 'reference_generic_test_calculations'], ['*'])
+                    ->join(['refVl' => 'reference_result_generic_test'], 'refVl.shipment_id=vlCal.shipment_id and vlCal.sample_id=refVl.sample_id', ['refVl.sample_label', 'refVl.mandatory'])
+                    ->join(['sp' => 'shipment_participant_map'], 'vlCal.shipment_id=sp.shipment_id', [])
+                    ->join(
+                        ['res' => 'response_result_generic_test'],
+                        'res.shipment_map_id = sp.map_id and res.sample_id = refVl.sample_id',
+                        [
+                            'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
+                        ]
+                    )
+                    ->where("vlCal.shipment_id=?", $shipmentId)
+                    ->where("vlCal.testkit_id=?", $vlAssayRow['TESTKITNAMEID'])
+                    ->where("refVl.control!=1")
+                    ->where('sp.attributes->>"$.kit_name" = "' . $vlAssayRow['TESTKITNAMEID'] . '"')
+                    ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
+                    ->where("sp.final_result = 1 OR sp.final_result = 2")
+                    ->group('refVl.sample_id');
+                $vlCalRes = $db->fetchAll($vlQuery);
+
                 if ($vlAssayRow['id'] == 6) {
-                    $vlCalculation[$vlAssayRow['id']]['otherAssayName'] = $otherAssayCounter;
+                    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+                        ->where("sp.is_excluded not like 'yes'")
+                        ->where('sp.attributes->>"$.kit_name" = 6')
+                        ->where('sp.shipment_id = ? ', $shipmentId);
+                    $cResult = $db->fetchAll($cQuery);
+
+
+                    foreach ($cResult as $val) {
+                        $valAttributes = json_decode($val['attributes'], true);
+                        if (isset($valAttributes['other_assay'])) {
+                            if (!empty($otherAssayCounter[$valAttributes['other_assay']])) {
+                                $otherAssayCounter[$valAttributes['other_assay']]++;
+                            } else {
+                                $otherAssayCounter[$valAttributes['other_assay']] = 1;
+                            }
+                        }
+                    }
+                }
+                if (isset($vlCalRes) && !empty($vlCalRes)) {
+                    $vlCalculation[$vlAssayRow['id']] = $vlCalRes;
+                    $vlCalculation[$vlAssayRow['id']]['vlAssay'] = $vlAssayRow['TESTKITNAME'];
+                    $vlCalculation[$vlAssayRow['id']]['shortName'] = $vlAssayRow['TestKit_Name_Short'];
+                    $vlCalculation[$vlAssayRow['id']]['participant_response_count'] = $vlCalRes[0]['no_of_responses'];
+                    if ($vlAssayRow['id'] == 6) {
+                        $vlCalculation[$vlAssayRow['id']]['otherAssayName'] = $otherAssayCounter;
+                    }
                 }
             }
+            array_multisort(array_column($vlCalculation, 'participant_response_count'), SORT_DESC, $vlCalculation);
+            $shipmentResult["quantCalculation"] = $vlCalculation;
         }
-        array_multisort(array_column($vlCalculation, 'participant_response_count'), SORT_DESC, $vlCalculation);
-        $shipmentResult["vlCalculation"] = $vlCalculation;
 
         return $shipmentResult;
     }

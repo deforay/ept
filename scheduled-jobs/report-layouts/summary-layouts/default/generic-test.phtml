@@ -155,7 +155,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $noOfPaResponseTxt = "";
     $maninAssay = "";
     $mainNoOfPaResponseTxt = "";
-    foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
+    foreach ($resultArray['shipment']['quantCalculation'] as $vlCal) {
         if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
             $t = 0;
 
