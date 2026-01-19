@@ -67,7 +67,7 @@ $faqResults = $this->faq;
 					</div>
 					<div class="col-md-6">
 						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon1" name="home[icon1]" class="form-control isRequired homeSectionIcon">
+						<select id="homeIcon1" name="home[icon1]" class="form-control isRequired homeSectionIcon" title="Please select the icon 1">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
@@ -81,7 +81,7 @@ $faqResults = $this->faq;
 				<div class="row">
 					<div class="col-md-6">
 						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon2" name="home[icon2]" class="form-control isRequired homeSectionIcon">
+						<select id="homeIcon2" name="home[icon2]" class="form-control isRequired homeSectionIcon" title="Please select the icon 2">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
@@ -93,7 +93,7 @@ $faqResults = $this->faq;
 					</div>
 					<div class="col-md-6">
 						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon3" name="home[icon3]" class="form-control isRequired homeSectionIcon">
+						<select id="homeIcon3" name="home[icon3]" class="form-control isRequired homeSectionIcon" title="Please select the icon 3">
 							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
 							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
 							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>

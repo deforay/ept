@@ -73,7 +73,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
         $auditDb->addNewAuditLog("Updated scheme config", "config");
     }
 
-    public function saveConfigByName($value, $name)
+    public function saveSchemeConfigByName($value, $name)
     {
         return $this->insertOrUpdate($name, $value);
     }

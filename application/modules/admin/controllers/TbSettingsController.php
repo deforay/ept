@@ -32,7 +32,7 @@ class Admin_TbSettingsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             if (isset($params['tb']) && !empty($params['tb'])) {
                 $tb = json_encode($params['tb']);
-                $common->saveConfigByName($tb, 'tb');
+                $common->saveSchemeConfigByName($tb, 'tb');
             }
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated TB Settings", "config");

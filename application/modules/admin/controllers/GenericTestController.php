@@ -54,7 +54,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
                 $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
             }
             if (isset($generic) && !empty($generic)) {
-                $common->saveConfigByName(json_encode($generic), $schemeCode);
+                $common->saveSchemeConfigByName(json_encode($generic), $schemeCode);
             }
 
             $schemeService->saveGenericTest($params);
@@ -83,7 +83,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
                 $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
             }
             if (isset($generic) && !empty($generic)) {
-                $common->saveConfigByName(json_encode($generic), $schemeCode);
+                $common->saveSchemeConfigByName(json_encode($generic), $schemeCode);
             }
             $schemeService->saveGenericTest($params);
             $schemeService->setRecommededCustomTestTypes($params);

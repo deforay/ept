@@ -28,7 +28,7 @@ class Admin_RecencySettingsController extends Zend_Controller_Action
             $params = $this->getAllParams();
             if (isset($params['recency']) && !empty($params['recency'])) {
                 $recency = json_encode($params['recency']);
-                $common->saveConfigByName($recency, 'recency');
+                $common->saveSchemeConfigByName($recency, 'recency');
             }
         }
         $this->view->recencyConfig = $common->getSchemeConfig('recency');

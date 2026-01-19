@@ -66,7 +66,6 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 }
                 $customHomePage = $request->getPost('customHomePage') ?? null;
                 if (isset($customHomePage) && $customHomePage == 'yes') {
-                    $params = $this->getAllParams();
                     $homeSection->saveHomePageHtmlContent($params);
                 }
             }

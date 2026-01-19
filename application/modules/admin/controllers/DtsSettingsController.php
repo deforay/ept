@@ -57,7 +57,7 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
             }
             if (isset($params['dts']) && !empty($params['dts'])) {
                 $dts = json_encode($params['dts']);
-                $common->saveConfigByName($dts, 'dts');
+                $common->saveSchemeConfigByName($dts, 'dts');
             }
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog("Updated HIV Serology Settings", "config");

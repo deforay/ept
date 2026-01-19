@@ -198,7 +198,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="response_after_evaluate" data-title="no"
 									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate">
+							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate" value="<?php echo $this->response_after_evaluate ?? ""; ?>">
 						</div>
 					</div>
 				</div>
@@ -216,7 +216,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="generic_test_config" data-title="no"
 									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="generic_test_config" id="generic_test_config">
+							<input type="hidden" name="generic_test_config" id="generic_test_config" value="<?php echo $this->generic_test_config ?? ""; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -233,7 +233,7 @@ $faqResults = json_decode($this->faqs);
 									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="evaluate_before_generating_reports"
-								id="evaluate_before_generating_reports">
+								id="evaluate_before_generating_reports" value="<?php echo $this->evaluate_before_generating_reports ?? ""; ?>">
 						</div>
 					</div>
 				</div>
@@ -248,7 +248,7 @@ $faqResults = json_decode($this->faqs);
 								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "no") ? " active " : "notActive"; ?>"
 									data-toggle="enable_capa" data-title="no" onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="enable_capa" id="enable_capa">
+							<input type="hidden" name="enable_capa" id="enable_capa" value="<?php echo $this->enable_capa ?? ""; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -264,7 +264,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="enable_admin_email_notification" data-title="no"
 									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="enable_admin_email_notification" id="enable_admin_email_notification">
+							<input type="hidden" name="enable_admin_email_notification" id="enable_admin_email_notification" value="<?php echo $this->enable_admin_email_notification ?? ""; ?>">
 						</div>
 					</div>
 				</div>
@@ -484,7 +484,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="participant_feedback" data-title="no"
 									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="participant_feedback" id="participant_feedback">
+							<input type="hidden" name="participant_feedback" id="participant_feedback" value="<?php echo $this->participant_feedback ?? ""; ?>">
 						</div>
 					</div>
 				</div>
@@ -502,7 +502,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="direct_participant_login" data-title="no"
 									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="direct_participant_login" id="direct_participant_login">
+							<input type="hidden" name="direct_participant_login" id="direct_participant_login" value="<?php echo $this->direct_participant_login ?? ""; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -518,7 +518,7 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="enable_login_attempt_ban" data-title="no"
 									onclick="toggleRadios(this);participantLoginBan();">NO</a>
 							</div>
-							<input type="hidden" name="enable_login_attempt_ban" id="enable_login_attempt_ban">
+							<input type="hidden" name="enable_login_attempt_ban" id="enable_login_attempt_ban" value="<?php echo $this->enable_login_attempt_ban ?? ""; ?>">
 						</div>
 					</div>
 				</div>
@@ -845,9 +845,9 @@ $faqResults = json_decode($this->faqs);
 		}
 	}
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 		// Collapsible functionality
-		$('.collapsible').on('click', function () {
+		$('.collapsible').on('click', function() {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -858,19 +858,19 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Expand All functionality
-		$('#expandAll').on('click', function () {
+		$('#expandAll').on('click', function() {
 			$('.collapse-content').slideDown();
 			$('.collapsible').addClass('active');
 		});
 
 		// Collapse All functionality
-		$('#collapseAll').on('click', function () {
+		$('#collapseAll').on('click', function() {
 			$('.collapse-content').slideUp();
 			$('.collapsible').removeClass('active');
 		});
 
 		// Jump to section functionality
-		$('#jumpToSection').on('change', function () {
+		$('#jumpToSection').on('change', function() {
 			var sectionId = $(this).val();
 			if (sectionId) {
 				// Open the selected section
@@ -885,7 +885,7 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Search functionality
-		$('#searchSettings').on('keyup', function () {
+		$('#searchSettings').on('keyup', function() {
 			var searchTerm = $(this).val().toLowerCase();
 
 			if (searchTerm === '') {
@@ -897,11 +897,11 @@ $faqResults = json_decode($this->faqs);
 			}
 
 			// Search through all form fields
-			$('.collapse-content').each(function () {
+			$('.collapse-content').each(function() {
 				var section = $(this);
 				var hasMatch = false;
 
-				section.find('label, input, textarea, select').each(function () {
+				section.find('label, input, textarea, select').each(function() {
 					var text = $(this).text().toLowerCase() || $(this).attr('placeholder')?.toLowerCase() || '';
 
 					if (text.includes(searchTerm)) {
@@ -928,7 +928,7 @@ $faqResults = json_decode($this->faqs);
 			includeSelectAllOption: true
 		});
 
-		$('#training_instance').on('change', function () {
+		$('#training_instance').on('change', function() {
 			if ($(this).val() == 'no') {
 				$('#training_instance_text').removeClass('isRequired');
 				$('#training_instance_text').val('');
@@ -999,7 +999,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function () {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
 	}
