@@ -199,7 +199,7 @@ $faqResults = json_decode($this->faqs);
 								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "yes") ? " active " : "notActive"; ?>" data-toggle="enable_admin_email_notification" data-title="yes" onclick="toggleRadios(this);">YES</a>
 								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "no") ? " active " : "notActive"; ?>" data-toggle="enable_admin_email_notification" data-title="no" onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="enable_capa" id="enable_capa">
+							<input type="hidden" name="enable_admin_email_notification" id="enable_admin_email_notification">
 						</div>
 					</div>
 				</div>

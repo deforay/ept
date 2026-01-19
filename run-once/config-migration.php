@@ -72,7 +72,6 @@ try {
             $existingGlobalLookup[$snakeKey] = true;
         }
     }
-
 } catch (Exception $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),

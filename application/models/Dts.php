@@ -43,7 +43,7 @@ final class Application_Model_Dts
 
 		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		//$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-		$config = json_decode(Pt_Commons_SchemeConfig::get('dts'));
+		$config = (array)json_decode(Pt_Commons_SchemeConfig::get('dts'));
 		$schemeService = new Application_Service_Schemes();
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
 		$dtsSchemeType = (isset($shipmentAttributes["dtsSchemeType"]) && $shipmentAttributes["dtsSchemeType"] != '') ? $shipmentAttributes["dtsSchemeType"] : null;
