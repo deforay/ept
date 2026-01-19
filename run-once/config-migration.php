@@ -32,6 +32,47 @@ try {
         ));
     }
 
+    unset($envConfig['evaluation']);
+
+    $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+    $existingGlobalKeys = $globalConfigDb->getAdapter()->fetchCol(
+        $globalConfigDb->select()->from($globalConfigDb->info('name'), array('name'))
+    );
+    $existingGlobalLookup = array_flip($existingGlobalKeys);
+
+    $toSnakeCase = static function ($value) {
+        $value = str_replace('.', '_', $value);
+        $value = preg_replace('/([a-z0-9])([A-Z])/', '$1_$2', $value);
+        $value = preg_replace('/_+/', '_', $value);
+        return strtolower($value);
+    };
+
+    foreach ($envConfig as $key => $value) {
+        $queue = array(array($key, $value));
+
+        while (!empty($queue)) {
+            [$currentKey, $currentValue] = array_pop($queue);
+
+            if (is_array($currentValue)) {
+                foreach ($currentValue as $childKey => $childValue) {
+                    $queue[] = array($currentKey . '_' . $childKey, $childValue);
+                }
+                continue;
+            }
+
+            $snakeKey = $toSnakeCase($currentKey);
+            if (isset($existingGlobalLookup[$snakeKey])) {
+                continue;
+            }
+
+            $globalConfigDb->insert(array(
+                'name' => $snakeKey,
+                'value' => is_array($currentValue) ? json_encode($currentValue, true) : $currentValue
+            ));
+            $existingGlobalLookup[$snakeKey] = true;
+        }
+    }
+
 } catch (Exception $e) {
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),
