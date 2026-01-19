@@ -34,7 +34,7 @@ try {
     $reportResetCount = $db->update(
         'queue_report_generation',
         [
-            'status' => new Zend_Db_Expr("CASE WHEN previous_status IN ('queued','processing') THEN 'shipped' ELSE previous_status END"),
+            'status' => new Zend_Db_Expr("CASE WHEN previous_status IN ('queued','processing') THEN 'evaluated' ELSE previous_status END"),
             'processing_started_at' => null,
             'previous_status' => null,
             'last_heartbeat' => null
