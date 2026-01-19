@@ -28,9 +28,10 @@ class Application_Model_Vl
 
 
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passPercentage = $config->evaluation->vl->passPercentage;
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('vl'));
+        $passPercentage = $config['passPercentage'];
 
         if ($reEvaluate) {
             //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));

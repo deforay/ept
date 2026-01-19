@@ -535,8 +535,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $apiService = new Application_Service_ApiServices();
         $transactionId = Pt_Commons_General::generateULID();
         $payload = [];
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('dts'));
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
@@ -620,9 +621,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'enableChoosingModeOfReceipt' => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] != "") ? $aResult['enable_choosing_mode_of_receipt'] : 'no',
             'forcePasswordReset' => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? 'yes' : 'no',
             'forceProfileCheck' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != "") ? $aResult['force_profile_check'] : 'no',
-            'dtsOptionalTest3' => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 != "") ? $config->evaluation->dts->dtsOptionalTest3 : "no",
-            'displaySampleConditionFields' => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields != "") ? $config->evaluation->dts->displaySampleConditionFields : "no",
-            'allowRepeatTests' => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests != "") ? $config->evaluation->dts->allowRepeatTests : "no",
+            'dtsOptionalTest3' => (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] != "") ? $config['dtsOptionalTest3'] : "no",
+            'displaySampleConditionFields' => (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] != "") ? $config['displaySampleConditionFields'] : "no",
+            'allowRepeatTests' => (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] != "") ? $config['allowRepeatTests'] : "no",
             'covid19MaximumTestAllowed' => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
             'name' => $result['first_name'] . ' ' . $result['last_name'],
             'phone' => $result['phone'],

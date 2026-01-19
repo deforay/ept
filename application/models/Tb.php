@@ -27,9 +27,10 @@ class Application_Model_Tb
         $counter = 0;
         $maxScore = 0;
         $finalResult = null;
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passingScore = $config->evaluation->tb->passPercentage ?? 80;
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
+        $passingScore = $config['passPercentage'] ?? 80;
 
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -489,7 +490,8 @@ class Application_Model_Tb
     {
         try {
             ini_set('memory_limit', '-1');
-            $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+            //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+            $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -792,8 +794,8 @@ class Application_Model_Tb
                     $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn++) . $sheetThreeRow)
                         ->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
-                    if (isset($config->evaluation->tb->documentationScore) && $config->evaluation->tb->documentationScore > 0) {
-                        $documentScore = (($aRow['documentation_score'] / $config->evaluation->tb->documentationScore) * 100);
+                    if (isset($config['documentationScore']) && $config['documentationScore'] > 0) {
+                        $documentScore = (($aRow['documentation_score'] / $config['documentationScore']) * 100);
                     } else {
                         $documentScore = 0;
                     }
@@ -1654,7 +1656,8 @@ class Application_Model_Tb
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
         //$applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
         $dataManagerService = new Application_Service_DataManagers();
         $query = $this->db->select()
             ->from(['s' => 'shipment'])
