@@ -45,6 +45,18 @@ final class Pt_Commons_SchemeConfig
             }
         }
 
+        $result = Pt_Commons_JsonUtility::isJSON($result) ? Pt_Commons_JsonUtility::decodeJson($result, true) : $result;
+
+        if ($result instanceof Zend_Config) {
+            $resultArray = $result->toArray();
+            if (count($resultArray) === 1) {
+                $firstValue = reset($resultArray);
+                $result = (is_scalar($firstValue) || $firstValue === null) ? $firstValue : $resultArray;
+            } else {
+                $result = $resultArray;
+            }
+        }
+
         if ($useCache) {
             $cache[$name] = $result;
         }

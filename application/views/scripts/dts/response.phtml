@@ -1,5 +1,10 @@
 <?php
-$dtsConfig = json_decode($this->dtsConfig);
+$dtsConfig = $this->dtsConfig;
+if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
+    $dtsConfig = json_decode($dtsConfig);
+} elseif (is_array($dtsConfig)) {
+    $dtsConfig = (object) $dtsConfig;
+}
 $allowedAlgorithms = $dtsConfig->allowedAlgorithms;
 if (!is_array($allowedAlgorithms))
     $allowedAlgorithms = explode(',', $allowedAlgorithms);

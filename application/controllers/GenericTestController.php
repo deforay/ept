@@ -63,7 +63,7 @@ class GenericTestController extends Zend_Controller_Action
             $this->view->reqFrom = $reqFrom;
             $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
             $commonService = new Application_Service_Common();
-            
+
             $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
             $kitDb = new Application_Model_DbTable_Testkitnames();
@@ -72,8 +72,7 @@ class GenericTestController extends Zend_Controller_Action
             //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
             $config = Pt_Commons_SchemeConfig::get('custom');
-            $data = json_decode($json, true); 
-            $disableOtherTestkit = $data['disableOtherTestkit'];
+            $disableOtherTestkit = $config['disableOtherTestkit'];
 
             $schemeCode = $shipment['scheme_type'];
             $this->view->disableOtherTestkit = $disableOtherTestkit ?? 'no';

@@ -2,12 +2,25 @@
 
 class Application_Service_Evaluation
 {
+	protected function setShipmentProcessingState($db, $shipmentId, array $shipmentResult)
+	{
+		$previousStatus = $shipmentResult[0]['shipment_status'];
+		if (in_array($previousStatus, ['queued', 'processing'], true)) {
+			$previousStatus = 'shipped';
+		}
+		$db->update('shipment', [
+			'status' => 'processing',
+			'previous_status' => $previousStatus,
+			'processing_started_at' => new Zend_Db_Expr('NOW()'),
+			'last_heartbeat' => new Zend_Db_Expr('NOW()')
+		], "shipment_id = {$shipmentId}");
+	}
 
 	public function getAllDistributions($parameters)
 	{
 
-		$aColumns = array("DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status');
-		$orderColumns = array('distribution_date', 'distribution_code', 's.shipment_code', 'd.status');
+		$aColumns = ["DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status'];
+		$orderColumns = ['distribution_date', 'distribution_code', 's.shipment_code', 'd.status'];
 
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = 'distribution_id';
@@ -213,24 +226,14 @@ class Application_Service_Evaluation
 		if ($shipmentResult[0]['scheme_type'] == 'eid') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$eidModel = new Application_Model_Eid();
 				$shipmentResult = $eidModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'recency') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$recencyModel = new Application_Model_Recency($db);
 				$shipmentResult = $recencyModel->evaluate($shipmentResult, $shipmentId);
 			}
@@ -423,60 +426,35 @@ class Application_Service_Evaluation
 		} elseif ($shipmentResult[0]['scheme_type'] == 'dts') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$dtsModel = new Application_Model_Dts();
 				$shipmentResult = $dtsModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'vl') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$vlModel = new Application_Model_Vl();
 				$shipmentResult = $vlModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'covid19') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$covid19Model = new Application_Model_Covid19();
 				$shipmentResult = $covid19Model->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'tb') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$tbModel = new Application_Model_Tb();
 				$shipmentResult = $tbModel->evaluate($shipmentResult, $shipmentId);
 			}
 		} elseif ($shipmentResult[0]['scheme_type'] == 'generic-test' || $shipmentResult[0]['is_user_configured'] == 'yes') {
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
-				$db->update('shipment', [
-					'status' => 'processing',
-					'previous_status' => $shipmentResult[0]['shipment_status'],
-					'processing_started_at' => new Zend_Db_Expr('NOW()'),
-					'last_heartbeat' => new Zend_Db_Expr('NOW()')
-				], "shipment_id = {$shipmentId}");
+				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
 				$genericTestModel = new Application_Model_GenericTest();
 				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}

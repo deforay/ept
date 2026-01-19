@@ -1,5 +1,10 @@
 <?php
-$dtsConfig = json_decode($this->dtsConfig);
+$dtsConfig = $this->dtsConfig;
+if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
+	$dtsConfig = json_decode($dtsConfig);
+} elseif (is_array($dtsConfig)) {
+	$dtsConfig = (object) $dtsConfig;
+}
 $shipmentData = $this->shipmentData;
 $shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');

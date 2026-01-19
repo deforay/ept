@@ -129,7 +129,7 @@ class Application_Model_GenericTest
                             continue;
                         }
                         if (isset($result['attributes']) && !empty($result['attributes'])) {
-                            $attributes = (array)json_decode($result['attributes']);
+                            $attributes = (array) json_decode($result['attributes']);
                             $testkitId = $attributes['kit_name'] ?? '';
                         } else {
                             $testkitId = '';
@@ -335,12 +335,12 @@ class Application_Model_GenericTest
     public function generateGenericTestExcelReport($shipmentId, $schemeType = 'generic-test')
     {
         //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
+        $config = Pt_Commons_SchemeConfig::get('covid19');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new Spreadsheet();
         //$sheet = $excel->getActiveSheet();
         $schemeService = new Application_Service_Schemes();
-        $otherTestsPossibleResults =  $schemeService->getPossibleResults($schemeType);
+        $otherTestsPossibleResults = $schemeService->getPossibleResults($schemeType);
         $otherTestPossibleResults = [];
         foreach ($otherTestsPossibleResults as $row) {
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
@@ -500,10 +500,10 @@ class Application_Model_GenericTest
 
             $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
             $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getFont()->setBold(true);
-            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)->getColumn();
+            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
             $resultReportSheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
-            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  3)->getColumn();
+            $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->getColumn();
             $resultReportSheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
             if ($additionalDetails) {
                 if ($colNo >= $additionalColoumn) {
@@ -519,12 +519,12 @@ class Application_Model_GenericTest
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
                     $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
-                    $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  $currentRow)->getColumn();
+                    $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                     $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) .  3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
                 }
                 $c++;
             }
@@ -1168,7 +1168,7 @@ class Application_Model_GenericTest
             // then we use the ranges of the Assay with maximum responses
 
             foreach ($sampleWise[$testKitId] as $sample => $reportedResult) {
-                if ($testKitId != 6  && !empty($reportedResult) && count($reportedResult) > $minimumRequiredResponses) {
+                if ($testKitId != 6 && !empty($reportedResult) && count($reportedResult) > $minimumRequiredResponses) {
                     $responseCounter[$testKitId] = count($reportedResult);
 
                     $inputArray = $reportedResult;
