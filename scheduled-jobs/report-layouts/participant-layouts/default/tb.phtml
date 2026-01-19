@@ -218,18 +218,6 @@ if (!empty($resultArray['shipment'])) {
                     $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'] ?? '')) . '</td>';
                     $labRes .= '        <td style="width:10%;text-align:center;"></td>';
                     $labRes .= '    </tr>';
-                    $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-MTB/RIF</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['mtb_detection_consensus'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['rif_resistance_consensus'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="width:10%;text-align:center;"></td>';
-                    $labRes .= '    </tr>';
-                    $labRes .= '    <tr style="width:100%;">';
-                    $labRes .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['rif_resistance_consensus'] ?? '')) . '</td>';
-                    $labRes .= '        <td style="width:10%;text-align:center;"></td>';
-                    $labRes .= '    </tr>';
 
                     $mtdResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['mtb_detected'];
                     $rifResponse = ($result['is_pt_test_not_performed'] == 'yes') ? '' : $response['rif_resistance'];
@@ -362,40 +350,28 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
 
-        if (trim($result['shipment_comment'] ?? '') != "" || trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
-            $comment = '<br><hr><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+        // Comments section - always show heading (no border, just header bar)
+        $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
+        $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
+        $comment .= '</tr>';
 
-            if (trim($result['evaluationComments']) != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Evaluation Comments</strong></td>';
-                $comment .= '</tr>';
+        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
+            if (trim($result['evaluationComments'] ?? '') != "") {
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
                 $comment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment']) != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Specific Comments</strong></td>';
-                $comment .= '</tr>';
+            if (trim($result['optional_eval_comment'] ?? '') != "") {
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
                 $comment .= '</tr>';
             }
-
-            if (trim($result['shipment_comment']) != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
-                $comment .= '</tr>';
-                $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
-                $comment .= '</tr>';
-            }
-
-            $comment .= '</table>';
-            //$pdf->SetTopMargin(13);
-            $pdf->writeHTML($comment, true, false, true, false, '');
         }
+
+        $comment .= '</table>';
+        $pdf->writeHTML($comment, true, false, true, false, '');
 
         /* if ($result['is_excluded'] == 'yes') {
             $wishes = '<p style="color:red;">Your response was not considered for evaluation</p>';
@@ -472,6 +448,26 @@ if (!empty($resultArray['shipment'])) {
             $pdf->SetY($currentY + $svgHeight);
         }
 
+        // Report Issued by - at bottom of page 1
+        $authorised = "_____________________";
+        $datetxt = "_____________________";
+
+        if ($evalRow['report_type'] == 'finalized') {
+            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
+        }
+
+        // Position at bottom of page 1
+        $pdf->SetY(-40);
+
+        $reportIssuedHtml = '<table cellpadding="4" style="width:100%;">';
+        $reportIssuedHtml .= '<tr>';
+        $reportIssuedHtml .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
+        $reportIssuedHtml .= '	<td style="width:40%;"><strong>Date : </strong>' . $datetxt . '</td>';
+        $reportIssuedHtml .= '</tr>';
+        $reportIssuedHtml .= '</table>';
+        $pdf->writeHTML($reportIssuedHtml, true, false, true, false, '');
+
         $pdf->AddPage();
 
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ($panelName) . '</span><br>';
@@ -491,49 +487,22 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
-        $authorised = "_____________________";
-        $datetxt = "_____________________";
-
-        if ($evalRow['report_type'] == 'finalized') {
-            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
-        }
-
         $html = '<br><table cellpadding="4" style="width:100%;">';
         $html .= '<tr>';
-        $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
-        $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
-        $html .= '</tr>';
-
-        // $html .= '<tr><td colspan="2" style="width:100%;">';
-        // $html .= '<h5>Documentation of Report Review:</h5>';
-        // $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">We the undersigned, have read and reviewed the above Xpert TB Proficiency Test Individual Performance Report. Expected results for which testing site\'s submitted results are scored against are determined by the US Centers for Disease Control and Prevention (CDC)/ International Laboratory Branch (ILB) sample validation testing procedures prior to panel shipment. If the final score was less than 100%, we completed a root cause analysis. * The Individual Final Report and any attachments must be filed and retained as documentation. If needed, corrective action documentation should also be completed and filed alongside the Individual Performance Report for reference.</p>';
-        // $html .= '<p style="text-align:justify;font-size:10;font-weight:normal;">Our identifiable individual site results are confidential and are only shared with our Proficiency Test Country Coordinators (PTCC) at the National or Regional level, the testing site, or other PTCC-designated stakeholders. Each PTCC serves as a subcontractor to the Xpert TB Proficiency Test Program for the following duties: site enrollment, panel receipt, panel distribution to individual testing sites, result submission assistance, report distribution assistance and corrective action follow-up in accordance with the country’s National TB Program guidelines. Unidentified site results may be shared for XTPT program review and improvement purposes upon request to, and with approval from, the PT Provider. Questions or comments concerning this report may be submitted to the PTCC or to the PT Provider using the Contact Information listed below.</p>';
-        // $html .= '<p style="text-align:justify;font-size:10:font-weight:normal;">* If corrective action forms are not available from your country’s National TB or Quality Assurance Program, corrective action forms may be downloaded from mTB-ePT (https://www.mtbept.com/)</p>';
-        // $html .= '</td></tr>';
-        /* $authorised = $evalRow['saname'] ?? $result['participant_supervisor'];
-        if (isset($result['shipment_test_date']) && !empty($result['shipment_test_date']) && isset($testerName) && !empty($testerName)) {
-            $html .= '<tr>';
-            $html .= '	<td style="width:60%;"><strong>Testing Personnel : </strong>' . ucwords($testerName) . '</td>';
-            $html .= '	<td style="width:60%;"><strong>Date : </strong>' . Pt_Commons_General::humanReadableDateFormat($result['shipment_test_date']) . '</td>';
-            $html .= '</tr>';
-        }
-        if (isset($result['shipment_test_report_date']) && !empty($result['shipment_test_report_date']) && isset($result['participant_supervisor']) && !empty($result['participant_supervisor'])) {
-            $html .= '<tr>';
-            $html .= '	<td style="width:60%;"><strong>Laboratory Manager (or Designee) : </strong>' . ucwords($result['participant_supervisor']) . '</td>';
-            $html .= '	<td style="width:60%;"><strong>Date : </strong>' . Pt_Commons_General::humanReadableDateFormat($result['shipment_test_report_date']) . '</td>';
-            $html .= '</tr>';
-        } */
-        $html .= '<tr>';
-        $html .= '	<td style="width:70%;"><strong>Testing Personnel : </strong>_______________________________________</td>';
-        $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
+        $html .= '	<td style="width:40%;"><strong>Testing Personnel : </strong></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
         $html .= '</tr>';
         $html .= '<tr>';
-        $html .= '	<td style="width:70%;"><strong>Laboratory Manager (or Designee) : </strong>_________________________</td>';
-        $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
+        $html .= '	<td style="width:40%;"></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
         $html .= '</tr>';
-        /* if(isset($authorised) && !empty($authorised)){
-        } */
+        $html .= '<tr>';
+        $html .= '	<td style="width:40%;"><strong>Laboratory Manager (or Designee) : </strong></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
+        $html .= '</tr>';
         $html .= '</table>';
         $pdf->writeHTML($html, true, false, true, false, '');
 

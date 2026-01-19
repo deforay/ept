@@ -29,6 +29,7 @@ if (!empty($resultArray['shipment'])) {
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
+            $pdf->setPreHeaderText("GHC/DGHT-International Laboratory Branch- Atlanta, GA");
         }
 
 
@@ -156,12 +157,6 @@ if (!empty($resultArray['shipment'])) {
                 // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                 // $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
                 // $participantResult .= '    </tr>';
-                $participantResult .= '<tr style="width:100%;">';
-                $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['mtb_detection_consensus'])) . '</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][1]['rif_resistance_consensus'])) . '</td>';
-                $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
-                $participantResult .= '    </tr>';
                 // $participantResult .= '<tr style="width:100%;">';
                 // $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">All Participants&#39; Consensus Results-Ultra</td>';
                 // $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $result['consensusResult'][$response['sample_id']][2]['mtb_detection_consensus'])) . '</td>';
@@ -263,94 +258,48 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
         }
 
-        if (trim($result['shipment_comment'] ?? '') != "" || trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
-            $comment = '<br><hr><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+        // Comments section - always show heading (no border, just header bar)
+        $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
+        $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
+        $comment .= '</tr>';
 
-            if (trim($result['evaluationComments']) != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Evaluation Comments</strong></td>';
-                $comment .= '</tr>';
+        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
+            if (trim($result['evaluationComments'] ?? '') != "") {
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
                 $comment .= '</tr>';
             }
 
             if (trim($result['optional_eval_comment'] ?? '') != "") {
-                $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-                $comment .= '	<td style="text-align:center;"><strong>Specific Comments</strong></td>';
-                $comment .= '</tr>';
                 $comment .= '<tr>';
                 $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
                 $comment .= '</tr>';
             }
-
-            // if (trim($result['shipment_comment'] ?? '') != "") {
-            //     $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            //     $comment .= '	<td style="text-align:center;"><strong>Shipment Comments</strong></td>';
-            //     $comment .= '</tr>';
-            //     $comment .= '<tr>';
-            //     $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['shipment_comment']) . '</td>';
-            //     $comment .= '</tr>';
-            // }
-
-            $comment .= '</table>';
-            $pdf->writeHTML($comment, true, false, true, false, '');
         }
 
+        $comment .= '</table>';
+        $pdf->writeHTML($comment, true, false, true, false, '');
 
-        $result['previous_six_shipments'] = array_reverse($result['previous_six_shipments']);
-        if (isset($result['previous_six_shipments']) && !empty($result['previous_six_shipments']) && $result['is_excluded'] != 'yes') {
+        // Report Issued by - at bottom of page 1
+        $authorised = "_____________________";
+        $datetxt = "_____________________";
 
-            $longitudinalPerformanceSvg = '<?xml version="1.0" encoding="UTF-8"?>';
-            $longitudinalPerformanceSvg .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10">';
-            $longitudinalPerformanceSvg .= '    <rect x="0" y="0" stroke="#E4E4E4" stroke-width="1" fill="white" />';
-            $longitudinalPerformanceSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:8pt">' . htmlspecialchars($result['lab_name'] ?? '', ENT_XML1) . ' Performance Over Time</text>';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="22" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">100</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="20" y2="20" stroke="#E4E4E4" stroke-width="1" />';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="42" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">80</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="40" y2="40" stroke="#E4E4E4" stroke-width="1" />';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="62" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">60</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="60" y2="60" stroke="#E4E4E4" stroke-width="1" />';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="82" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">40</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="80" y2="80" stroke="#E4E4E4" stroke-width="1" />';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="102" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">20</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="100" y2="100" stroke="#E4E4E4" stroke-width="1" />';
-            $longitudinalPerformanceSvg .= '    <text x="15" y="122" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">0</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="30" x2="390" y1="120" y2="120" stroke="#E4E4E4" stroke-width="1" />';
-            $x1 = $y1 = [];
-
-            for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex < count($result['previous_six_shipments']); $participantPreviousSixShipmentIndex++) {
-                $i = ($participantPreviousSixShipmentIndex + 1);
-                $rx = 45;
-                // $rc = 60;
-                $previousShipment = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                $previousShipment['shipment_score'] = (int) $previousShipment['shipment_score'];
-                $previousShipment['mean_shipment_score'] = (int) $previousShipment['mean_shipment_score'];
-                // if ($previousShipment['shipment_score'] != null && $previousShipment['shipment_score'] > 0) {
-                $longitudinalPerformanceSvg .= '    <rect width="30" height="' . $previousShipment['shipment_score'] . '" x="' . abs($i * $rx) . '" y="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['shipment_score']) . '" fill="#4F81BD" />';
-                // }x
-                // if ($participantPreviousSixShipmentIndex) {
-                $previousShipmentBefore = $result['previous_six_shipments'][$participantPreviousSixShipmentIndex];
-                if (count($result['previous_six_shipments']) == 1) {
-                    $longitudinalPerformanceSvg .= '<circle cx="' . abs(($i * $rx) + 15) . '" cy="' . $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']) . '" r="2" stroke="black" stroke-width="0" fill="red" />';
-                }
-                // }
-                $longitudinalPerformanceSvg .= '    <text x="' . abs(($i * $rx) + 15) . '" y="130" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">' . $previousShipment['shipment_code'] . '</text>';
-
-                $x1[] = abs(($i * $rx) + 15);
-                $y1[] = $commonService->svgRectPertangeToHeightConverter($previousShipment['mean_shipment_score']);
-            }
-            for ($lineCount = 0; $lineCount < (count($x1) - 1); $lineCount++) {
-                $longitudinalPerformanceSvg .= '<line x1="' . $x1[$lineCount] . '" y1="' . $y1[$lineCount] . '" x2="' . $x1[($lineCount + 1)] . '" y2="' . $y1[($lineCount + 1)] . '" style="stroke:red;stroke-width:1;" />';
-            }
-
-            $longitudinalPerformanceSvg .= '    <rect width="4" height="4" x="120" y="139" fill="#4F81BD"  />';
-            $longitudinalPerformanceSvg .= '    <text x="125" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Site Score</text>';
-            $longitudinalPerformanceSvg .= '    <line x1="160" x2="166" y1="141" y2="141" stroke="#C0504D" stroke-width="2" />';
-            $longitudinalPerformanceSvg .= '    <text x="168" y="143" dominant-baseline="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean Score of All Participating Sites</text>';
-            $longitudinalPerformanceSvg .= '</svg>';
-            $pdf->ImageSVG('@' . $longitudinalPerformanceSvg, 15, 142, 180, 130, 'SVG', 'B');
+        if ($evalRow['report_type'] == 'finalized') {
+            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
+
+        // Position at bottom of page 1
+        $pdf->SetY(-40);
+
+        $reportIssuedHtml = '<table cellpadding="4" style="width:100%;">';
+        $reportIssuedHtml .= '<tr>';
+        $reportIssuedHtml .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
+        $reportIssuedHtml .= '	<td style="width:40%;"><strong>Date : </strong>' . $datetxt . '</td>';
+        $reportIssuedHtml .= '</tr>';
+        $reportIssuedHtml .= '</table>';
+        $pdf->writeHTML($reportIssuedHtml, true, false, true, false, '');
 
         $pdf->AddPage();
 
@@ -371,20 +320,7 @@ if (!empty($resultArray['shipment'])) {
 
         $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
-        $authorised = "_____________________";
-        $datetxt = "_____________________";
-
-        if ($evalRow['report_type'] == 'finalized') {
-            $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
-        }
-
         $html = '<table cellpadding="4" style="width:100%;">';
-
-        /* $html .= '<tr>';
-        $html .= '	<td style="width:60%;"><strong>Report Issued by : </strong>' . $authorised . '</td>';
-        $html .= '	<td style="width:40%;"><strong>Date: : </strong>' . $datetxt . '</td>';
-        $html .= '</tr>'; */
 
         $html .= '<tr><td colspan="2" style="width:100%;">';
         $html .= '<h5>Documentation of Report Review:</h5>';
@@ -395,12 +331,19 @@ if (!empty($resultArray['shipment'])) {
         $html .= '</td></tr>';
 
         $html .= '<tr>';
-        $html .= '	<td style="width:70%;"><strong>Testing Personnel : </strong>_______________________________________</td>';
-        $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
+        $html .= '	<td style="width:40%;"><strong>Testing Personnel : </strong></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
         $html .= '</tr>';
         $html .= '<tr>';
-        $html .= '	<td style="width:70%;"><strong>Laboratory Manager (or Designee) : </strong>_________________________</td>';
-        $html .= '	<td style="width:30%;"><strong>Date : </strong>__________________</td>';
+        $html .= '	<td style="width:40%;"></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
+        $html .= '</tr>';
+        $html .= '<tr>';
+        $html .= '	<td style="width:40%;"><strong>Laboratory Manager (or Designee) : </strong></td>';
+        $html .= '	<td style="width:28%;">____________________</td>';
+        $html .= '	<td style="width:32%;"><strong>Date : </strong>__________________</td>';
         $html .= '</tr>';
         /* if(isset($authorised) && !empty($authorised)){
         } */

@@ -20,6 +20,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
     public $issuingAuthority = '';
     public $dtsPanelType = '';
     public $generalModel = null;
+    public $preHeaderText = '';
 
 
     public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $datetime = "", $conf = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "", $dtsPanelType = "")
@@ -39,6 +40,11 @@ class Pt_Reports_IndividualPdf extends Fpdi
         $this->instituteAddressPosition = $instituteAddressPosition;
         $this->issuingAuthority = $issuingAuthority;
         $this->dtsPanelType = $dtsPanelType;
+    }
+
+    public function setPreHeaderText($text)
+    {
+        $this->preHeaderText = $text;
     }
 
     //Page header
@@ -116,7 +122,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10, '', true);
-            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | INDIVIDUAL FINAL REPORT</span></div>';
+            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL INDIVIDUAL REPORT</span></div>';
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
@@ -205,7 +211,13 @@ class Pt_Reports_IndividualPdf extends Fpdi
             $this->writeHTMLCell(0, 0, 10, 50, $html, 0, 0, 0, true, 'J', true);
         } else {
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
-                $this->writeHTMLCell(0, 0, 15, 10, $html, 0, 0, 0, true, 'J', true);
+                $yPosition = 10;
+                if (isset($this->preHeaderText) && !empty($this->preHeaderText)) {
+                    $preHtml = '<span style="text-align:center;color:#777777;">' . $this->preHeaderText . '</span>';
+                    $this->writeHTMLCell(0, 0, 15, 5, $preHtml, 0, 0, 0, true, 'J', true);
+                    $yPosition = 12;
+                }
+                $this->writeHTMLCell(0, 0, 15, $yPosition, $html, 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType != 'tb' && ($this->schemeType != 'dts' && $this->layout != 'myanmar')) {
                 $this->writeHTMLCell(0, 0, 27, 20, $html, 0, 0, 0, true, 'J', true);
                 $html = '<hr/>';
