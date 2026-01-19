@@ -174,8 +174,8 @@ class Application_Model_Tb
                     } else {
                         // Assay is Xpert MTB/RIF
 
-                        $result['mtb_detected'] = $this->checkAndSetMTBDetected($result['mtb_detected']);
-                        $result['reference_mtb_detected'] = $this->checkAndSetMTBDetected($result['reference_mtb_detected']);
+                        $result['mtb_detected'] = self::normalizeMTBDetection($result['mtb_detected']);
+                        $result['reference_mtb_detected'] = self::normalizeMTBDetection($result['reference_mtb_detected']);
 
 
                         $notAControl = $result['control'] == 0;
@@ -395,7 +395,7 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
-    private function checkAndSetMTBDetected($value)
+    public static function normalizeMTBDetection($value)
     {
         return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
     }

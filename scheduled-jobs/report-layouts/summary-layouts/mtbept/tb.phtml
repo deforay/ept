@@ -1,6 +1,7 @@
 <?php
 
 use mitoteam\jpgraph\MtJpGraph;
+use Application_Model_Tb as TbModel;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
@@ -92,7 +93,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
                 $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . $ref['tb_isolate'] . '</td>';
             }
-            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['mtb_detected'])) . '</td>';
+            $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", TbModel::normalizeMTBDetection($ref['mtb_detected']))) . '</td>';
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
                 $referenceResultContent .= '<td style="border:solid 1px #000000;text-align:center;font-weight:normal;">' . ucwords(str_replace("-", " ", $ref['rif_resistance'])) . '</td>';
             }
@@ -332,35 +333,36 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         }
         $i = 0;
         foreach ($aggregateTableContent as $assayName => $assayData) {
+            if ($i > 0) {
+                $aggregateCountsContent .= '<br>';
+            }
             if (isset($tbTestType) && !empty($tbTestType) && $tbTestType == 'microscopy' && $i == 0) {
-                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing Microscopy</div>';
+                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:20px;padding-top:8px;padding-bottom:8px;font-size:10px;">Summary of All Reporting Sites Testing Microscopy</div>';
             } else {
-                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:15px;padding-top:5px;padding-bottom:5px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
+                $aggregateCountsContent .= '<div style="border:1px solid black;text-align:center;background-color:#777777;color:#ffffff;font-weight:bold;line-height:20px;padding-top:8px;padding-bottom:8px;font-size:10px;">Summary of All Reporting Sites Testing ' . $assayName . '</div>';
             }
             $aggregateCountsContent .= '<table border="0" cellpadding="3" style="width:100%;">';
             foreach ($assayData as $thContent => $tdContent) {
 
                 $bgColor = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'background-color:lightgray;' : '';
-                $fontBolt = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bolt;' : '';
+                $fontBold = (trim($thContent) == 'TB Detection' || trim($thContent) == 'RIF Detection') ? 'font-weight:bold;' : '';
                 $headWidth = (empty($thContent) && $thContent == '') ? 'width:40%' : '';
                 $aggregateCountsContent .= '<tr style="' . $bgColor . '">';
-                $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBolt . $headWidth . '">' . $thContent . '</td>';
+                $aggregateCountsContent .= '    <td style="font-size:10px;' . $fontBold . $headWidth . '">' . $thContent . '</td>';
                 foreach ($tdContent as $td) {
-                    $fontBolt = (empty($thContent) && $thContent == '') ? 'font-weight:bolt;width:12%' : '';
+                    $fontBold = (empty($thContent) && $thContent == '') ? 'font-weight:bold;width:12%' : '';
 
-                    $aggregateCountsContent .= '<td style="font-size:8px;text-align:center;' . $fontBolt . '">' . $td . '</td>';
+                    $aggregateCountsContent .= '<td style="font-size:8px;text-align:center;' . $fontBold . '">' . $td . '</td>';
                 }
 
                 $aggregateCountsContent .= '</tr>';
             }
+            $aggregateCountsContent .= '</table>';
             $i++;
         }
         if (isset($tbTestType) && !empty($tbTestType) && $tbTestType != 'microscopy') {
-            $aggregateCountsContent .= '<tr>';
-            $aggregateCountsContent .= '    <td colspan="' . (1 + count($tdContent)) . '" style="font-size:8px;">*Uninterpretable result = invalid, error, or no result</td>';
-            $aggregateCountsContent .= '</tr>';
+            $aggregateCountsContent .= '<p style="font-size:8px;">*Uninterpretable result = invalid, error, or no result</p>';
         }
-        $aggregateCountsContent .= '</table>';
         // $aggregateCountsContent .= '<span style="font-weight:bolt;text-align:center;font-size:10px;">Summary of All Reporting Sites Testing Xpert MTB/RIF Ultra</span></div>';
         $aggregateCountsContent .= '</div>';
     }
@@ -424,13 +426,18 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $panelPerformanceMtbRifSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert MTB/RIF</text>';
         $panelPerformanceMtbRifSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
 
-        // Calculate max Y-axis value (check each value independently)
+        // Calculate max Y-axis value (only consider values that will be displayed)
         $ctMaxYAxisValueMtbRif = 0;
         foreach ($resultArray['shipment']['mtbRifReportSummary'] as $sampleSummary) {
+            // Check if this sample's field testing bar will be skipped
+            $skipFieldTesting = isset($expectedTbResults[$sampleSummary['sample_label']]) &&
+                strtolower($expectedTbResults[$sampleSummary['sample_label']]) === 'not-detected';
+
             if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['ref_expected_ct']) {
                 $ctMaxYAxisValueMtbRif = $sampleSummary['ref_expected_ct'];
             }
-            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
+            // Only include average_ct if the bar will be displayed
+            if (!$skipFieldTesting && isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['average_ct']) {
                 $ctMaxYAxisValueMtbRif = $sampleSummary['average_ct'];
             }
             if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0 && $ctMaxYAxisValueMtbRif < $sampleSummary['ref_stability_ct']) {
@@ -493,13 +500,14 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $sampleIndexMtbRif++;
         }
 
-        // Legend - Three colored indicators for Probe A (stacked vertically)
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="273" fill="#156082" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="45" y="280" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Validation Testing) Mean for Probe A</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="282" fill="#C00000" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="45" y="289" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Field Testing Mean for Probe A</text>';
-        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="291" fill="#196B24" />';
-        $panelPerformanceMtbRifSvg .= '    <text x="45" y="298" style="fill:#666666;font-family:helvetica;font-size:5.5pt">Expected (Stability Testing) Mean for Probe A</text>';
+        // Legend - Three colored indicators for Probe A (single line)
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="35" y="278" fill="#156082" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="45" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Validation)</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="145" y="278" fill="#C00000" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="155" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Field Testing</text>';
+        $panelPerformanceMtbRifSvg .= '    <rect width="7" height="7" x="225" y="278" fill="#196B24" />';
+        $panelPerformanceMtbRifSvg .= '    <text x="235" y="285" style="fill:#666666;font-family:helvetica;font-size:5pt">Expected (Stability)</text>';
+        $panelPerformanceMtbRifSvg .= '    <text x="200" y="295" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:5pt">Mean for Probe A</text>';
         $panelPerformanceMtbRifSvg .= '</svg>';
 
         if ($assayName && $tbTestType != 'microscopy') {
@@ -507,7 +515,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
             $pdf->SetY(170);
         }
 
-        $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of Mycobacterium tuberculosis complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first rpoB probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch, the mean calculated from results submitted by testing sites, and the mean achieved during stability testing (CDC/ILB) post submission deadline. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
+        $pdf->writeHTML('<p style="font-size:10pt;text-align:justify;">Xpert MTB/RIF and Ultra are both real time polymerase chain reaction (RT-PCR) assays that utilize fluorescent probes to signal presence of <i>Mycobacterium tuberculosis</i> complex (MTBC) DNA. Each GeneXpert instrument module detects an accumulation of fluorescent signal produced by the RT-PCR reactions over time. The cycle threshold (Ct) is defined as the number of RT-PCR cycles required for the fluorescent signal to cross the threshold needed for the instrument to determine positivity. This analysis examines the Ct for Probe A for Xpert MTB/RIF, or the first <i>rpoB</i> probe to be detected for Ultra, comparing the mean achieved during panel verification (CDC/ILB) prior to panel dispatch, the mean calculated from results submitted by testing sites, and the mean achieved during stability testing (CDC/ILB) post submission deadline. An increase in Ct value represents a decrease in the quantity of MTBC DNA detected, while a decrease in Ct value represents an increase in the quantity of MTBC DNA detected.</p>', true, false, true, false, '');
     }
 
     // MTB Ultra Chart
@@ -523,13 +531,18 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $panelPerformanceMtbUltraSvg .= '    <text x="200" y="12" dominant-baseline="middle" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">' . $resultArray['shipment']['distribution_code'] . ' Panel Performance Determined by Testing with Xpert Ultra</text>';
         $panelPerformanceMtbUltraSvg .= '    <text x="15" y="150" transform="rotate(-90, 15, 150)" text-anchor="middle" style="fill:#666666;font-family:helvetica;font-size:6pt">Cycle Thresholds (Ct)</text>';
 
-        // Calculate max Y-axis value (check each value independently)
+        // Calculate max Y-axis value (only consider values that will be displayed)
         $ctMaxYAxisValueMtbUltra = 0;
         foreach ($resultArray['shipment']['mtbRifUltraReportSummary'] as $sampleSummary) {
+            // Check if this sample's field testing bar will be skipped
+            $skipFieldTesting = isset($expectedTbResults[$sampleSummary['sample_label']]) &&
+                strtolower($expectedTbResults[$sampleSummary['sample_label']]) === 'not-detected';
+
             if (isset($sampleSummary['ref_expected_ct']) && $sampleSummary['ref_expected_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['ref_expected_ct']) {
                 $ctMaxYAxisValueMtbUltra = $sampleSummary['ref_expected_ct'];
             }
-            if (isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
+            // Only include average_ct if the bar will be displayed
+            if (!$skipFieldTesting && isset($sampleSummary['average_ct']) && $sampleSummary['average_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['average_ct']) {
                 $ctMaxYAxisValueMtbUltra = $sampleSummary['average_ct'];
             }
             if (isset($sampleSummary['ref_stability_ct']) && $sampleSummary['ref_stability_ct'] > 0 && $ctMaxYAxisValueMtbUltra < $sampleSummary['ref_stability_ct']) {
