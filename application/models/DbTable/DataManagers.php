@@ -49,8 +49,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
-            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  null;
-            $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  null;
+            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
+            $lastName = isset($params['lname']) && $params['lname'] != '' ? $params['lname'] : null;
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
@@ -239,7 +239,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function fetchUserCuntryMap($userId, $type = null, $ptcc = false)
     {
         $sql = $this->getAdapter()->select()->from('ptcc_countries_map')->where("ptcc_id = ?", $userId);
-        $response =  $this->getAdapter()->fetchAll($sql);
+        $response = $this->getAdapter()->fetchAll($sql);
         if ($type == "implode") {
             $countryList = [];
             foreach ($response as $cu) {
@@ -335,8 +335,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
-            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] :  NULL;
-            $lastName =  isset($params['lname']) && $params['lname'] != '' ? $params['lname'] :  NULL;
+            $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : NULL;
+            $lastName = isset($params['lname']) && $params['lname'] != '' ? $params['lname'] : NULL;
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $name = "$firstName $lastName";
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
@@ -468,13 +468,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         if (isset($searchParams) && !empty($searchParams))
-            $sql =  $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
+            $sql = $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
-            $sql =  $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', ['pmm.dm_id'])
+            $sql = $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', ['pmm.dm_id'])
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         } else {
-            $sql =  $sql->where("data_manager_type != 'ptcc'");
+            $sql = $sql->where("data_manager_type != 'ptcc'");
         }
         //}
 
@@ -537,7 +537,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $payload = [];
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('dts'));
+        $config = Pt_Commons_SchemeConfig::get('dts');
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
@@ -737,21 +737,21 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Return the response data */
         $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
-        return  array(
-            'dm_id'                             => $aResult['dm_id'],
-            'view_only_access'                  => $aResult['view_only_access'],
-            'qc_access'                         => $aResult['qc_access'],
-            'enable_adding_test_response_date'  => $aResult['enable_adding_test_response_date'],
-            'enable_choosing_mode_of_receipt'   => $aResult['enable_choosing_mode_of_receipt'],
-            'participant_id'                    => $aResult['participant_id'],
-            'unique_identifier'                 => $aResult['unique_identifier'],
-            'first_name'                        => $aResult['first_name'],
-            'last_name'                         => $aResult['last_name'],
-            'state'                             => $aResult['state'],
-            'force_password_reset'              => $aResult['force_password_reset'],
-            'force_profile_check'               => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
-            'app_version'                       => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
-            'profileInfo'                       => $this->checkTokenExpired($params['authToken'])
+        return array(
+            'dm_id' => $aResult['dm_id'],
+            'view_only_access' => $aResult['view_only_access'],
+            'qc_access' => $aResult['qc_access'],
+            'enable_adding_test_response_date' => $aResult['enable_adding_test_response_date'],
+            'enable_choosing_mode_of_receipt' => $aResult['enable_choosing_mode_of_receipt'],
+            'participant_id' => $aResult['participant_id'],
+            'unique_identifier' => $aResult['unique_identifier'],
+            'first_name' => $aResult['first_name'],
+            'last_name' => $aResult['last_name'],
+            'state' => $aResult['state'],
+            'force_password_reset' => $aResult['force_password_reset'],
+            'force_profile_check' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
+            'app_version' => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
+            'profileInfo' => $this->checkTokenExpired($params['authToken'])
         );
     }
 
@@ -936,11 +936,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* check old data */
         $fetchOldMail = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
         $updateData = array(
-            'first_name'        => $params['firstName'],
-            'last_name'         => $params['lastName'],
-            'secondary_email'   => $params['secondaryEmail'],
-            'mobile'            => $params['mobile'],
-            'phone'             => $params['phone']
+            'first_name' => $params['firstName'],
+            'last_name' => $params['lastName'],
+            'secondary_email' => $params['secondaryEmail'],
+            'mobile' => $params['mobile'],
+            'phone' => $params['phone']
         );
         /* check primary email already exist or not */
         $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email LIKE '" . $params['primaryEmail'] . "' AND (new_email NOT LIKE '" . $params['primaryEmail'] . "' OR new_email IS NULL)");
@@ -986,7 +986,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $password = Common::passwordHash($params['dmPassword']);
-        $newDmId =  $this->insert([
+        $newDmId = $this->insert([
             'primary_email' => $params['pemail'],
             'password' => $password,
             'data_manager_type' => 'manager',
@@ -1054,7 +1054,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $select = $select->orWhere($field . " LIKE '" . $value . "'");
         }
-        return  $db->fetchCol($select);
+        return $db->fetchCol($select);
     }
 
     public function mapDataManagerToParticipants($dmIds, $participant, $locations)
@@ -1146,19 +1146,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $password = Common::passwordHash($password);
 
                 $dataManagerData = [
-                    'first_name'        => ($sheetData[$i]['C']),
-                    'last_name'         => ($sheetData[$i]['D']),
-                    'institute'         => ($sheetData[$i]['E']),
-                    'mobile'            => ($sheetData[$i]['H']),
-                    'secondary_email'   => MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['F']),
-                    'view_only_access'  => ($sheetData[$i]['I']),
-                    'country_id'        => $countryId,
-                    'primary_email'     => MiscUtility::sanitizeAndValidateEmail($originalEmail),
-                    'password'          => $password,
-                    'created_by'        => $authNameSpace->admin_id,
-                    'created_on'        => new Zend_Db_Expr('now()'),
+                    'first_name' => ($sheetData[$i]['C']),
+                    'last_name' => ($sheetData[$i]['D']),
+                    'institute' => ($sheetData[$i]['E']),
+                    'mobile' => ($sheetData[$i]['H']),
+                    'secondary_email' => MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['F']),
+                    'view_only_access' => ($sheetData[$i]['I']),
+                    'country_id' => $countryId,
+                    'primary_email' => MiscUtility::sanitizeAndValidateEmail($originalEmail),
+                    'password' => $password,
+                    'created_by' => $authNameSpace->admin_id,
+                    'created_on' => new Zend_Db_Expr('now()'),
                     'data_manager_type' => $type ?? 'ptcc',
-                    'status'            => 'active'
+                    'status' => 'active'
                 ];
 
                 // Use cached duplicate check instead of individual query
@@ -1182,7 +1182,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     $sheetData[$i]['L'] = Common::removeEmpty(explode(",", $sheetData[$i]['L'])) ?? [];
                 }
 
-                if ((isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
+                if (
+                    (isset($sheetData[$i]['J']) && !empty($sheetData[$i]['J'])) ||
                     (isset($sheetData[$i]['K']) && count($sheetData[$i]['K']) > 0) ||
                     (isset($countryId) && !empty($countryId))
                 ) {
@@ -1426,9 +1427,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
                 $common->insertMultiple('participant_manager_map', $data, true);
             } elseif ($isPtcc) {
-                $params['district'] = isset($params['district']) ? $common->removeEmpty((array)$params['district']) : [];
-                $params['province'] = isset($params['province']) ? $common->removeEmpty((array)$params['province']) : [];
-                $params['country'] = isset($params['country']) ? $common->removeEmpty((array)$params['country']) : [];
+                $params['district'] = isset($params['district']) ? $common->removeEmpty((array) $params['district']) : [];
+                $params['province'] = isset($params['province']) ? $common->removeEmpty((array) $params['province']) : [];
+                $params['country'] = isset($params['country']) ? $common->removeEmpty((array) $params['country']) : [];
                 $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
                 $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
 

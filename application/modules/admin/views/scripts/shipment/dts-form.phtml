@@ -1,7 +1,13 @@
 <?php
-$allowedAlgorithms = isset($this->dtsConfig->allowedAlgorithms) ? explode(",", $this->dtsConfig->allowedAlgorithms) : array();
-$dtsSchemeType = isset($this->dtsConfig->dtsSchemeType) ? $this->dtsConfig->dtsSchemeType : 'standard';
-$rtriEnabled = isset($this->dtsConfig->rtriEnabled) ? $this->dtsConfig->rtriEnabled : 'no';
+$dtsConfig = $this->dtsConfig;
+if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
+	$dtsConfig = json_decode($dtsConfig);
+} elseif (is_array($dtsConfig)) {
+	$dtsConfig = (object) $dtsConfig;
+}
+$allowedAlgorithms = isset($dtsConfig->allowedAlgorithms) ? explode(",", $dtsConfig->allowedAlgorithms) : array();
+$dtsSchemeType = isset($dtsConfig->dtsSchemeType) ? $dtsConfig->dtsSchemeType : 'standard';
+$rtriEnabled = isset($dtsConfig->rtriEnabled) ? $dtsConfig->rtriEnabled : 'no';
 
 $possibleTestResults = '<select name="possibleTestResults[]" class="isRequired form-control input-sm"><option value="">--Select--</option>';
 foreach ($this->dtsPossibleResults as $pr) {

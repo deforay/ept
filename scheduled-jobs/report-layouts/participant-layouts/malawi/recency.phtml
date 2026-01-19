@@ -115,9 +115,9 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
-        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays') ?? 0;
         $documentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
-        $passPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
+        $passPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage') ?? 100;
 
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);

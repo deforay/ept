@@ -29,8 +29,7 @@ class Application_Model_Tb
         $finalResult = null;
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
-        $passingScore = $config['passPercentage'] ?? 80;
+        $passingScore = Pt_Commons_SchemeConfig::get('tb.passPercentage') ?? 80;
 
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -493,7 +492,7 @@ class Application_Model_Tb
         try {
             ini_set('memory_limit', '-1');
             //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-            $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
+            $config = Pt_Commons_SchemeConfig::get('tb');
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -1660,7 +1659,7 @@ class Application_Model_Tb
         // ini_set('display_startup_errors', 0);
         //$applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('tb'));
+        $config = Pt_Commons_SchemeConfig::get('tb');
         $dataManagerService = new Application_Service_DataManagers();
         $query = $this->db->select()
             ->from(['s' => 'shipment'])

@@ -155,11 +155,11 @@ $labInfo .= '</tr>';
 
 $labInfo .= '</table><br/><br/>';
 
-$config = json_decode($this->customConfig);
+$config = ($this->customConfig);
 
 if ($this->shipment["scheme_type"] == 'dts') {
 	$shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
-	$allowedAlgorithms = isset(config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : array();
+	$allowedAlgorithms = isset($config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : array();
 	$width = 25;
 	$optionalTest3 = $config['dtsOptionalTest3'];
 	$allowRepeatTests = isset($config['allowRepeatTests']) ? $config['allowRepeatTests'] : 'no';
@@ -600,9 +600,9 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	$labInfo .= '</tr>';
 	$labInfo .= '</table>';
 } elseif ($this->shipment["scheme_type"] == 'covid19') {
-	$covidConfig = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
-	$maximumAllowed = $covidConfig['covid19MaximumTestAllowed'];
-	if ($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null & $this->shipment['number_of_tests'] != "") {
+
+	$maximumAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
+	if ($this->shipment['number_of_tests'] > 0 && $this->shipment['number_of_tests'] != null && $this->shipment['number_of_tests'] != "") {
 		$maximumAllowed = $this->shipment['number_of_tests'];
 	}
 	$test1Text = "Test-1";

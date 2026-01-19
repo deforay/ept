@@ -91,7 +91,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->group('dm.dm_id')->setIntegrityCheck(false);
         $subResult = $this->fetchAll($subQuery);
         foreach ($subResult as $dm) {
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             if (isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])) {
                 $content = $notParticipatedMailContent['mail_content'];
@@ -2343,8 +2343,9 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             // Shipement Result end // For algorithmUsed start
             $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
-            if (!is_array($allowedAlgorithms))
+            if (!empty($allowedAlgorithms) && !is_array($allowedAlgorithms)) {
                 $allowedAlgorithms = explode(',', $allowedAlgorithms);
+            }
             $algorithmUsedSelect = [];
             $algorithmUsedSelectOptions = [];
 

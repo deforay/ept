@@ -5,7 +5,9 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 class Application_Model_Covid19
 {
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function evaluate($shipmentResult, $shipmentId)
     {
@@ -18,7 +20,7 @@ class Application_Model_Covid19
 
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
+        $config = Pt_Commons_SchemeConfig::get('covid19');
         $correctiveActions = $schemeService->getCovid19CorrectiveActions();
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
 
@@ -472,10 +474,10 @@ class Application_Model_Covid19
                 $nofOfRowsUpdated = $db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => 0, 'final_result' => $finalResult, "is_followup" => $shipmentResult[$counter]['is_followup'], 'is_excluded' => $shipment['is_excluded'], 'failure_reason' => null), "map_id = " . $shipment['map_id']);
             }
             /* $nofOfRowsDeleted = $db->delete('covid19_shipment_corrective_action_map', "shipment_map_id = " . $shipment['map_id']);
-			$correctiveActionList = array_unique($correctiveActionList);
-			foreach ($correctiveActionList as $ca) {
-				$db->insert('covid19_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
-			} */
+            $correctiveActionList = array_unique($correctiveActionList);
+            foreach ($correctiveActionList as $ca) {
+                $db->insert('covid19_shipment_corrective_action_map', array('shipment_map_id' => $shipment['map_id'], 'corrective_action_id' => $ca), "map_id = " . $shipment['map_id']);
+            } */
 
             $counter++;
         }
@@ -494,7 +496,7 @@ class Application_Model_Covid19
     public function generateCovid19ExcelReport($shipmentId)
     {
         //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $config = json_decode(Pt_Commons_SchemeConfig::get('covid19'));
+        $config = Pt_Commons_SchemeConfig::get('covid19');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         //$sheet = $excel->getActiveSheet();
@@ -624,7 +626,7 @@ class Application_Model_Covid19
         }
         //<------------ Participant List Details Start -----
 
-        $headings = array('Participant Code', 'Participant Name',  'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
+        $headings = array('Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);

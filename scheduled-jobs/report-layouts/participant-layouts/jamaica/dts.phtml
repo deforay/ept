@@ -139,7 +139,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
-        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
         $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
         $testThreeOptionalDisplay = "";
@@ -205,7 +205,8 @@ if (!empty($resultArray['shipment'])) {
 
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
-        $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');;
+        $sampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
+        ;
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {

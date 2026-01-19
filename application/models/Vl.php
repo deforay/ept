@@ -756,13 +756,13 @@ class Application_Model_Vl
 
                         if (isset($val['median'])) {
 
-                            $sample[$k]['response']       += $val['no_of_responses'];
-                            $sample[$k]['median']         = $val['median'];
-                            $sample[$k]['lowLimit']       = $val['low_limit'];
-                            $sample[$k]['highLimit']      = $val['high_limit'];
-                            $sample[$k]['sd']             = $val['sd'];
-                            $sample[$k]['NumberPassed']   += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
-                            $sample[$t]['label']          = $val['sample_label'];
+                            $sample[$k]['response'] += $val['no_of_responses'];
+                            $sample[$k]['median'] = $val['median'];
+                            $sample[$k]['lowLimit'] = $val['low_limit'];
+                            $sample[$k]['highLimit'] = $val['high_limit'];
+                            $sample[$k]['sd'] = $val['sd'];
+                            $sample[$k]['NumberPassed'] += !empty($val['NumberPassed']) ? $val['NumberPassed'] : 0;
+                            $sample[$t]['label'] = $val['sample_label'];
                             $t++;
                         }
                     }
@@ -1468,7 +1468,7 @@ class Application_Model_Vl
 
             foreach ($sampleWise[$vlAssayId] as $sample => $reportedVl) {
 
-                if ($vlAssayId != 6  && !empty($reportedVl) && count($reportedVl) > $minimumRequiredResponses) {
+                if ($vlAssayId != 6 && !empty($reportedVl) && count($reportedVl) > $minimumRequiredResponses) {
                     $responseCounter[$vlAssayId] = count($reportedVl);
 
                     $inputArray = $reportedVl;
