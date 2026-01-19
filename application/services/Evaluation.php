@@ -1646,10 +1646,10 @@ class Application_Service_Evaluation
 			} elseif ($res['scheme_type'] == 'recency') {
 
 				$sQuery = $db->select()->from(array('resrecency' => 'response_result_recency'), array('resrecency.shipment_map_id', 'resrecency.sample_id', 'resrecency.reported_result', 'calculated_score', 'control_line', 'diagnosis_line', 'longterm_line'))
-					->join(array('respr' => 'r_possibleresult'), 'respr.id=resrecency.reported_result', array('labResult' => 'respr.response'))
-					->join(array('sp' => 'shipment_participant_map'), 'sp.map_id=resrecency.shipment_map_id', array('sp.shipment_score', 'sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'))
-					->join(array('refrecency' => 'reference_result_recency'), 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', array('refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refverificationLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'))
-					->join(array('refpr' => 'r_possibleresult'), 'refpr.id=refrecency.reference_result', array('referenceResult' => 'refpr.response'))
+					->join(['respr' => 'r_possibleresult'], 'respr.id=resrecency.reported_result', ['labResult' => 'respr.response'])
+					->join(['sp' => 'shipment_participant_map'], 'sp.map_id=resrecency.shipment_map_id', ['sp.shipment_score', 'sp.shipment_id', 'sp.shipment_receipt_date', 'sp.participant_id', 'responseDate' => 'sp.shipment_test_report_date', 'sp.attributes', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_test_date', 'sp.failure_reason'])
+					->join(['refrecency' => 'reference_result_recency'], 'refrecency.shipment_id=sp.shipment_id and refrecency.sample_id=resrecency.sample_id', ['refrecency.reference_result', 'refControlLine' => 'refrecency.reference_control_line', 'refverificationLine' => 'refrecency.reference_diagnosis_line', 'refLongTermLine' => 'refrecency.reference_longterm_line', 'refrecency.sample_label', 'refrecency.mandatory', 'refrecency.sample_score', 'refrecency.control'])
+					->join(['refpr' => 'r_possibleresult'], 'refpr.id=refrecency.reference_result', ['referenceResult' => 'refpr.response'])
 					->where("resrecency.shipment_map_id = ?", $res['map_id']);
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
@@ -2778,7 +2778,7 @@ class Application_Service_Evaluation
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
 			$authNameSpace = new Zend_Session_Namespace('administrators');
-			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status',)))
+			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status', )))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2831,7 +2831,9 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
+	{
+	}
 
 	/**
 	 * Get job progress for a specific shipment (for AJAX polling)

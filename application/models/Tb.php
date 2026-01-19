@@ -1189,7 +1189,7 @@ class Application_Model_Tb
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
-            ->order(['ref.sample_id']);
+            ->order(['ref.sample_label ASC']);
         $result = $this->db->fetchAll($sQuery);
         $response = [];
         foreach ($result as $key => $row) {
