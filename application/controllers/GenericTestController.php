@@ -71,8 +71,7 @@ class GenericTestController extends Zend_Controller_Action
             //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-            $config = Pt_Commons_SchemeConfig::get('custom');
-            $disableOtherTestkit = $config['disableOtherTestkit'];
+            $disableOtherTestkit = Pt_Commons_SchemeConfig::get('custom.disableOtherTestkit');
 
             $schemeCode = $shipment['scheme_type'];
             $this->view->disableOtherTestkit = $disableOtherTestkit ?? 'no';

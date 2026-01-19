@@ -109,7 +109,7 @@ if (!empty($resultArray['shipment'])) {
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
         $documentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
-        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays') ?? 0;
 
         /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);

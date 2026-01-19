@@ -392,7 +392,7 @@ if (!empty($resultArray['shipment'])) {
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
             // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-            $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dbs.sampleRehydrateDays');
+            $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dbs.sampleRehydrateDays') ?? 0;
             $rehydrateHours = $sampleRehydrateDays * 24;
 
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {

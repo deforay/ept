@@ -100,7 +100,7 @@ if (!empty($resultArray['shipment'])) {
 
 
         $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
-        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+        $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
         $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
         if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
