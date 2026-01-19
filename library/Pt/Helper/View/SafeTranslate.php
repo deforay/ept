@@ -59,15 +59,14 @@ class Pt_Helper_View_SafeTranslate extends Zend_View_Helper_Abstract
     }
 
     /**
-     * Get the translated text using Zend_Translate.
+     * Get the translated text using the shared translation utility.
      *
      * @param string $text The text to translate
      * @return string The translated text
      */
     protected function getTranslatedText(string $text): string
     {
-        $translator = $this->view->translate ?? Zend_Registry::get('translate');
-        return $translator->_($text);
+        return Pt_Commons_TranslateUtility::safeTranslate($text);
     }
 
     /**

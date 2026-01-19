@@ -227,20 +227,20 @@ if (!empty($resultArray['shipment'])) {
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '	<td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
-        $labInfo .= '	<td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Participant Code') . '</strong><br>' . $result['unique_identifier'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Performing Participant') . '</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('PT Panel Name and Date') . '</strong><br>' . $result['distribution_code'] . '(' . $result['shipment_date'] . ')</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>';
-        $labInfo .= '	<td><strong>Shipment Type</strong><br>' . $result['scheme_name'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Date') . '</strong><br>' . $result['shipment_date'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Code') . '</strong><br>' . $result['shipment_code'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Type') . '</strong><br>' . $result['scheme_name'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Panel Receipt Date') . '</strong><br>' . $shipmentReceiptDate . '</td>';
+        $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Rehydration Date') . '</strong>';
         if (!empty($flag) && (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)))) {
             $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
         }
@@ -249,30 +249,30 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $labInfo .= '</td>';
-        $labInfo .= '	<td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Result Due Date') . '</strong><br>' . $result['lastdate_response'] . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
-        $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Response Date') . '</strong><br>' . $responseDate . '</td>';
+        $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Test Date') . '</strong><br>' . $shipmentTestDate . '</td>';
         if ($attributes['dts_test_panel_type'] != "screening") {
             $labInfo .= '	<td>';
             if (isset($attributes['algorithm'])) {
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
+                    $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Algorithm') . '</strong><br>' . Pt_Commons_TranslateUtility::safeTranslate('Myanmar National Algorithm');
                 } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong><br>Malawi National Algorithm';
+                    $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Algorithm') . '</strong><br>' . Pt_Commons_TranslateUtility::safeTranslate('Malawi National Algorithm');
                 } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong><br>Ghana National Algorithm';
+                    $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Algorithm') . '</strong><br>' . Pt_Commons_TranslateUtility::safeTranslate('Ghana National Algorithm');
                 } else {
-                    $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
+                    $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Algorithm') . '</strong><br>' . ucwords($attributes['algorithm']);
                 }
             }
             $labInfo .= ' </td>';
         } else {
             if (isset($attributes['dts_test_panel_type']) && $attributes['dts_test_panel_type'] != "") {
                 $labInfo .= '<td>';
-                $labInfo .= '	<strong>Test Type</strong>';
+                $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Test Type') . '</strong>';
                 $labInfo .= '<br>' . ucwords($attributes['dts_test_panel_type']);
                 $labInfo .= '</td>';
             } else {
@@ -288,20 +288,20 @@ if (!empty($resultArray['shipment'])) {
             $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Condition of PT Samples</strong><br>' . $conditionOfPTSamples . '</td>';
-            $labInfo .= '	<td><strong>Refridgerator</strong><br>' . $refridgerator . '</td>';
-            $labInfo .= '	<td><strong>Room Temperature</strong><br>' . $roomTemperature . '</td>';
+            $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Condition of PT Samples') . '</strong><br>' . $conditionOfPTSamples . '</td>';
+            $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Refridgerator') . '</strong><br>' . $refridgerator . '</td>';
+            $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Room Temperature') . '</strong><br>' . $roomTemperature . '</td>';
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Stop Watch</strong><br>' . $stopWatch . '</td>';
+            $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Stop Watch') . '</strong><br>' . $stopWatch . '</td>';
         } else {
             $labInfo .= '<tr>';
         }
 
 
         $labInfo .= '	<td>';
-        $labInfo .= '<strong>Supervisor Review</strong>';
+        $labInfo .= '<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Supervisor Review') . '</strong>';
         if (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "yes") {
             $labInfo .= '<br>' . ucwords($result['supervisor_approval']);
         } elseif (isset($result['supervisor_approval']) && $result['supervisor_approval'] == "no") {
@@ -316,7 +316,7 @@ if (!empty($resultArray['shipment'])) {
             }
         }
         $labInfo .= '</td><td>';
-        $labInfo .= '	<strong>Supervisor Name</strong>';
+        $labInfo .= '	<strong>' . Pt_Commons_TranslateUtility::safeTranslate('Supervisor Name') . '</strong>';
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<br>' . ($result['participant_supervisor']);
         } else {
@@ -347,7 +347,7 @@ if (!empty($resultArray['shipment'])) {
         $panelScore = Pt_Commons_SchemeConfig::get('dts.panelScore');
 
         if (!empty($result['responseResult'])) {
-            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results <span style="font-size:11px;">(maximum possible score : ' . $panelScore . ')</span><br/></span>
+            $labRes = '<span style="font-weight: bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Your HIV Proficiency results') . ' <span style="font-size:11px;">(' . Pt_Commons_TranslateUtility::safeTranslate('maximum possible score') . ' : ' . $panelScore . ')</span><br/></span>
             <table border="1" style="font-size:12px;">';
 
             /* Addition testkit field */
@@ -363,12 +363,12 @@ if (!empty($resultArray['shipment'])) {
             }
             $labRes .= '<tr style="background-color:#dbe4ee;">
                                 <td style="width:' . $width . '%;"></td>
-                                <th colspan="' . $testkit1Colspan . '" style="text-align:center;font-weight:bold;width:' . $testkit1W . '%;">Test-1</th>';
+                                <th colspan="' . $testkit1Colspan . '" style="text-align:center;font-weight:bold;width:' . $testkit1W . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Test-1') . '</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th colspan="' . $testkit2Colspan . '" style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $testkit2W . '%;">Test-2</th>';
+                $labRes .= '<th colspan="' . $testkit2Colspan . '" style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $testkit2W . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Test-2') . '</th>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th colspan="' . $testkit3Colspan . '" style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $testkit3W . '%;">Test-3</th>';
+                $labRes .= '<th colspan="' . $testkit3Colspan . '" style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $testkit3W . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Test-3') . '</th>';
             }
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<th colspan="' . ($noTest + 2) . '" style="border:none;width:' . ($width * ($noTest + 2)) . '%;"></th>';
@@ -377,7 +377,7 @@ if (!empty($resultArray['shipment'])) {
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>
+                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">' . Pt_Commons_TranslateUtility::safeTranslate('Kit Name') . '</td>
                                 <td colspan="' . $testkit1Colspan . '">' . $result['responseResult'][0]['testkit1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<td colspan="' . $testkit2Colspan . '" style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['testkit2'] . '</td>';
@@ -392,7 +392,7 @@ if (!empty($resultArray['shipment'])) {
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
+                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">' . Pt_Commons_TranslateUtility::safeTranslate('Lot No.') . '</td>
                                 <td colspan="' . $testkit1Colspan . '">' . $result['responseResult'][0]['lot_no_1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<td colspan="' . $testkit2Colspan . '" style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
@@ -407,7 +407,7 @@ if (!empty($resultArray['shipment'])) {
             }
             $labRes .= '</tr>';
             $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
+                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">' . Pt_Commons_TranslateUtility::safeTranslate('Expiry Date') . '</td>
                                 <td colspan="' . $testkit1Colspan . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
                 $labRes .= '<td colspan="' . $testkit2Colspan . '" style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
@@ -425,45 +425,45 @@ if (!empty($resultArray['shipment'])) {
             if ($allowRepeatTests == 'yes') {
                 $labRes .= '<tr style="background-color:#dbe4ee;">
                             <th colspan="' . ($noTest + 1) . '" style="width:' . ($width * ($noTest + 1)) . '%;"></th>
-                            <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>Repeat Test</b></th>
+                            <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>' . Pt_Commons_TranslateUtility::safeTranslate('Repeat Test') . '</b></th>
                             <th colspan="4" style="width:' . $width . '%;"></th>
                         </tr>';
             }
 
             $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Specimen Panel ID </th>
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Specimen Panel ID') . ' </th>
+                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-1') . '</th>';
             /* Addition testkit field */
             if (isset($infoJson['test1']) && !empty($infoJson['test1'])) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $kitAttributes[$result['responseResult'][0]['test_kit_name_1']]['additional_info_label'] . '</th>';
             }
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
+                $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-2') . '</th>';
             }
             /* Addition testkit field */
             if (isset($infoJson['test2']) && !empty($infoJson['test2'])) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $kitAttributes[$result['responseResult'][0]['test_kit_name_2']] . '-2</th>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
+                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-3') . '</th>';
             }
             /* Addition testkit field */
             if (isset($infoJson['test3']) && !empty($infoJson['test3'])) {
                 $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . $kitAttributes[$result['responseResult'][0]['test_kit_name_3']] . '-3</th>';
             }
             if ($allowRepeatTests == 'yes') {
-                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-1') . '</th>';
                 if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
+                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-2') . '</th>';
                 }
                 if ($testThreeOptionalDisplay == "") {
-                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
+                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Result-3') . '</th>';
                 }
             }
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Reference Result</th>
-                        <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Your Result</th>';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Evaluation</th>';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Score</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</th>
+                        <th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Your Result') . '</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Evaluation') . '</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Score') . '</th>';
             $labRes .= '</tr>';
 
             $nonMandatorySamples = [];
@@ -564,21 +564,21 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
             $labRes .= '</table>';
-            $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
+            $labRes .= '<span style="font-size:10px;">' . Pt_Commons_TranslateUtility::safeTranslate('(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)') . '</span><br/>';
 
             /* Zend_Debug::dump($rtriResultsMap);
             die; */
             if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes' && $dtsRtriIsEditable) {
                 /* RTRI Panel section */
-                $labRes .= '<br><span style="font-weight: bold;font-size:12px;"> RTRI Results : <br/></span>
+                $labRes .= '<br><span style="font-weight: bold;font-size:12px;"> ' . Pt_Commons_TranslateUtility::safeTranslate('RTRI Results') . ' : <br/></span>
                 <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                                    <th style="text-align:center;font-weight:bold;">Control/Sample</th>
-                                    <th style="text-align:center;font-weight:bold;">Control Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Verification Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Longterm Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Expected Result</th>
-                                    <th style="text-align:center;font-weight:bold;">Your RTRI Interpretation</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Control/Sample') . '</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Control Line') . '</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Verification Line') . '</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Longterm Line') . '</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Expected Result') . '</th>
+                                    <th style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Your RTRI Interpretation') . '</th>
                             </tr>';
                 foreach ($result['responseResult'] as $response) {
                     if (isset($response['dts_rtri_is_editable']) && $response['dts_rtri_is_editable'] == 'yes') {
@@ -600,7 +600,7 @@ if (!empty($resultArray['shipment'])) {
 
             if (!empty($nonMandatorySamples)) {
 
-                $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+                $nmsTable = Pt_Commons_TranslateUtility::safeTranslate("The following samples have been excluded from this evaluation") . " : " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
@@ -628,15 +628,15 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $documentationScorePerItem = (!empty($documentationScore) && (int) $documentationScore > 0) ? round(($documentationScore / $totalDocumentationItems), 2) : 'N.A.';
-            $scoreText = (isset($documentationScore) && !empty($documentationScore) && $documentationScore == 0) ? "Your Response" : "Score";
+            $scoreText = (isset($documentationScore) && !empty($documentationScore) && $documentationScore == 0) ? Pt_Commons_TranslateUtility::safeTranslate("Your Response") : Pt_Commons_TranslateUtility::safeTranslate("Score");
             $img = [];
             $imgPass = ROOT_PATH . '/images/check.jpg';
             $imgFail = ROOT_PATH . '/images/cross.jpg';
-            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score <span style="font-size:11px;">(maximum possible score : ' . $documentationScore . ')</span></span> <br/>
+            $docRes = '<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Your documentation score') . ' <span style="font-size:11px;">(' . Pt_Commons_TranslateUtility::safeTranslate('maximum possible score') . ' : ' . $documentationScore . ')</span></span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">
-							<td style="text-align:center;font-weight:bold;width:70%;">Documentation Item</td>
-							<td style="text-align:center;font-weight:bold;width:15%;">Response</td>';
+							<td style="text-align:center;font-weight:bold;width:70%;">' . Pt_Commons_TranslateUtility::safeTranslate('Documentation Item') . '</td>
+							<td style="text-align:center;font-weight:bold;width:15%;">' . Pt_Commons_TranslateUtility::safeTranslate('Response') . '</td>';
             $docRes .= '<td style="text-align:center;font-weight:bold;width:15%;">' . $scoreText . '</td>';
             $docRes .= '</tr>';
 
@@ -650,7 +650,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
+							<td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Panel/Shipment Receipt Date Specified') . '</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
             <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
@@ -664,7 +664,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
+							<td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting of the Sample Rehydration Date') . '</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
             <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
@@ -678,7 +678,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
+							<td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting of the Shipment Test Date') . '</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
             <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
@@ -693,7 +693,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
+							<td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Testing to be done within') . ' ' . $rehydrateHours . ' ' . Pt_Commons_TranslateUtility::safeTranslate('hours of rehydration.') . '</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
             <td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
@@ -709,7 +709,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
+                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Supervisor Approval') . '</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
@@ -725,7 +725,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
+                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting the Condition of PT Samples') . '</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
@@ -739,7 +739,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
+                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting the availability of Refridgerator') . '</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
@@ -753,7 +753,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
+                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting the Room Temperature') . '</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
@@ -768,7 +768,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
+                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting the availability of Stop Watch') . '</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
                 <td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
@@ -779,9 +779,9 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
-                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes = '<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Suggested Corrective actions for your response') . ' :</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
-                $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
+                $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Failure Reasons (or) Warnings') . '</td><td style="text-align:center;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Actions (if any)') . '</td></tr>';
                 $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>';
@@ -796,17 +796,17 @@ if (!empty($resultArray['shipment'])) {
 
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
+            $wishes = '<p>' . Pt_Commons_TranslateUtility::safeTranslate('Your response was not considered for evaluation') . '</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } elseif ($schemeType == 'dts' && $result['is_excluded'] != 'yes') {
 
             if ($totalScore >= $passPercentage && $instance != 'philippines') {
-                $wishes = '<p style="font-size:14px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes = '<p style="font-size:14px;">' . Pt_Commons_TranslateUtility::safeTranslate('Congratulations! You have received a satisfactory score of') . ' ' . round($totalScore, 2) . '%.</p>';
             } elseif ($totalScore == 0 || $totalScore == '') {
-                $wishes = '<p style="font-size:14px;">Your response was not evaluated</p>';
+                $wishes = '<p style="font-size:14px;">' . Pt_Commons_TranslateUtility::safeTranslate('Your response was not evaluated') . '</p>';
             } else {
-                $wishes = '<p style="font-size:14px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
+                $wishes = '<p style="font-size:14px;">' . Pt_Commons_TranslateUtility::safeTranslate('You have received a score of') . ' ' . round($totalScore, 2) . '%.</p>';
             }
 
             $pdf->SetLeftMargin(15);
@@ -822,14 +822,14 @@ if (!empty($resultArray['shipment'])) {
 
             if (trim($result['evaluationComments']) != "") {
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+                $comment .= '<td style="font-weight:bold;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Evaluation Comments') . ' </td>';
                 $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
                 $comment .= '</tr>';
             }
 
             if (trim($result['optional_eval_comment']) != "") {
                 $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+                $comment .= '<td style="font-weight:bold;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Specific Comments/Feedback') . '</td>';
                 $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
                 $comment .= '</tr>';
             }

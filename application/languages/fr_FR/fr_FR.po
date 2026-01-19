@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
-"POT-Creation-Date: 2026-01-19 16:17+0530\n"
-"PO-Revision-Date: 2026-01-19 16:18+0530\n"
+"POT-Creation-Date: 2026-01-19 17:19+0530\n"
+"PO-Revision-Date: 2026-01-19 17:21+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
 "Language: fr\n"
@@ -682,6 +682,7 @@ msgid "Manage"
 msgstr "Gérer"
 
 #: application/layouts/scripts/admin.phtml:293
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:60
 msgid "PT Survey"
 msgstr "Enquête sur les PT"
 
@@ -3096,16 +3097,19 @@ msgstr "Parallèle"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:139
 #: application/views/scripts/dts/response.phtml:253
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:262
 msgid "Myanmar National Algorithm"
 msgstr "Algorithme national du Myanmar"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:141
 #: application/views/scripts/dts/response.phtml:261
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:264
 msgid "Malawi National Algorithm"
 msgstr "Algorithme national du Malawi"
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:143
 #: application/views/scripts/dts/response.phtml:265
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:266
 msgid "Ghana National Algorithm"
 msgstr "Algorithme national du Ghana"
 
@@ -3518,6 +3522,7 @@ msgstr "Inscrit le"
 
 #: application/modules/admin/views/scripts/enrollments/view.phtml:12
 #: application/views/scripts/participant/response-report.phtml:64
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:238
 msgid "Shipment Type"
 msgstr "Type d'envoi"
 
@@ -3721,6 +3726,7 @@ msgid "Comments (if any)"
 msgstr "Commentaires (le cas échéant)"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:47
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:137
 msgid "Sample ID"
 msgstr "ID de l'échantillon"
 
@@ -4014,6 +4020,7 @@ msgstr "Quantitative"
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:259
 #: application/modules/admin/views/scripts/generic-test/edit.phtml:447
 #: application/views/scripts/generic-test/response.phtml:214
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:580
 msgid "Expected Result"
 msgstr "Résultat attendu"
 
@@ -4555,7 +4562,7 @@ msgstr "URL de la vidéo"
 #: application/modules/admin/views/scripts/global-config/index.phtml:738
 #: application/modules/admin/views/scripts/home-config/index.phtml:110
 msgid "Enter the home section video URL"
-msgstr "Entrez l'URL de la vidéo de la section Accueil."
+msgstr "Entrez l'URL de la vidéo de la section Accueil"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:743
 #: application/modules/admin/views/scripts/home-config/index.phtml:113
@@ -4882,6 +4889,7 @@ msgstr "Noms des régimes"
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:35
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:104
 #: application/views/scripts/participant/tb-participants-per-country.phtml:58
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:433
 msgid "Number of Participants"
 msgstr "Nombre de participants"
 
@@ -4896,6 +4904,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:126
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:171
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:417
 msgid "Number of participants"
 msgstr "Nombre de participants"
 
@@ -5930,6 +5939,8 @@ msgstr "Options"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:2662
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:76
 #: application/views/scripts/participant/tb-results.phtml:47
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:466
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:631
 msgid "Score"
 msgstr "Score"
 
@@ -6075,6 +6086,7 @@ msgstr "DÉPISTAGE RAPIDE DU VIH"
 #: application/modules/admin/views/scripts/shipment/edit.phtml:1035
 #: application/views/scripts/dts/response.phtml:517
 #: application/views/scripts/generic-test/response.phtml:160
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:380
 msgid "Kit Name"
 msgstr "Nom du kit"
 
@@ -6107,6 +6119,7 @@ msgstr "Code de distribution"
 #: application/views/scripts/participant/shipments-reports.phtml:54
 #: application/views/scripts/recency/response.phtml:101
 #: application/views/scripts/vl/response.phtml:162
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:252
 msgid "Result Due Date"
 msgstr "Résultat Date d'échéance"
 
@@ -6155,6 +6168,7 @@ msgstr "Obligatoire"
 #: application/views/scripts/recency/response.phtml:247
 #: application/views/scripts/shipment-form/download.phtml:365
 #: application/views/scripts/vl/response.phtml:373
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:576
 msgid "Control/Sample"
 msgstr "Contrôle/échantillon"
 
@@ -6310,6 +6324,7 @@ msgstr "MTB Ultra"
 #: application/views/scripts/dts/response.phtml:1236
 #: application/views/scripts/recency/response.phtml:248
 #: application/views/scripts/shipment-form/download.phtml:366
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:577
 msgid "Control Line"
 msgstr "Ligne de contrôle"
 
@@ -6318,6 +6333,7 @@ msgstr "Ligne de contrôle"
 #: application/views/scripts/dts/response.phtml:1238
 #: application/views/scripts/recency/response.phtml:249
 #: application/views/scripts/shipment-form/download.phtml:367
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:578
 msgid "Verification Line"
 msgstr "Ligne de vérification"
 
@@ -6326,6 +6342,7 @@ msgstr "Ligne de vérification"
 #: application/views/scripts/dts/response.phtml:1240
 #: application/views/scripts/recency/response.phtml:250
 #: application/views/scripts/shipment-form/download.phtml:368
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:579
 msgid "Longterm Line"
 msgstr "Ligne à long terme"
 
@@ -6463,6 +6480,7 @@ msgstr "Répondu"
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:38
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:113
 #: application/views/scripts/participant/shipment-response-report.phtml:117
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:540
 msgid "Not Responded"
 msgstr "Pas de réponse"
 
@@ -6832,16 +6850,20 @@ msgstr "Choisissez un numéro de test pour cartographier le kit de test"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:68
 #: application/modules/admin/views/scripts/testkit/edit.phtml:73
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:279
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:282
 msgid "Test 1"
 msgstr "Test 1"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:69
 #: application/modules/admin/views/scripts/testkit/edit.phtml:74
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:282
 msgid "Test 2"
 msgstr "Test 2"
 
 #: application/modules/admin/views/scripts/testkit/add.phtml:70
 #: application/modules/admin/views/scripts/testkit/edit.phtml:75
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:282
 msgid "Test 3"
 msgstr "Test 3"
 
@@ -7069,6 +7091,7 @@ msgstr "Imprimer"
 #: application/views/scripts/participant/all-schemes.phtml:45
 #: application/views/scripts/participant/dashboard.phtml:526
 #: application/views/scripts/participant/defaulted-schemes.phtml:18
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:639
 msgid "Response"
 msgstr "Réponse"
 
@@ -7126,6 +7149,7 @@ msgstr "Enquête PT - Rapports finalisés"
 #: application/modules/reports/views/scripts/participant-performance/index.phtml:58
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:57
 #: application/views/scripts/participant/participant-performance.phtml:57
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:189
 msgid "Participant Performance Overview"
 msgstr "Aperçu des performances des participants"
 
@@ -7164,11 +7188,13 @@ msgstr "nombre de participants"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:114
 #: application/views/scripts/participant/shipment-response-report.phtml:118
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:540
 msgid "Passed"
 msgstr "Réussi"
 
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:115
 #: application/views/scripts/participant/shipment-response-report.phtml:119
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:540
 msgid "Failed"
 msgstr "Echec"
 
@@ -7722,6 +7748,7 @@ msgstr "QC Fait"
 #: application/views/scripts/tb/assay-formats.ajax.phtml:619
 #: application/views/scripts/tb/response.phtml:221
 #: application/views/scripts/vl/response.phtml:283
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:256
 msgid "Response Date"
 msgstr "Date de réponse"
 
@@ -7758,16 +7785,19 @@ msgstr "PT Panel non techniqué"
 
 #: application/views/scripts/covid19/response.phtml:296
 #: application/views/scripts/dts/response.phtml:491
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:366
 msgid "Test-1"
 msgstr "Test-1"
 
 #: application/views/scripts/covid19/response.phtml:297
 #: application/views/scripts/dts/response.phtml:493
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:368
 msgid "Test-2"
 msgstr "Test-2"
 
 #: application/views/scripts/covid19/response.phtml:298
 #: application/views/scripts/dts/response.phtml:495
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:371
 msgid "Test-3"
 msgstr "Test-3"
 
@@ -7790,12 +7820,14 @@ msgstr "Date d'expiration du réactif PCR"
 #: application/views/scripts/covid19/response.phtml:436
 #: application/views/scripts/dbs/response.phtml:206
 #: application/views/scripts/dts/response.phtml:709
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:395
 msgid "Lot No."
 msgstr "N° de lot."
 
 #: application/views/scripts/covid19/response.phtml:456
 #: application/views/scripts/dbs/response.phtml:214
 #: application/views/scripts/dts/response.phtml:769
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:410
 msgid "Expiry Date"
 msgstr "Date d'expiration"
 
@@ -7805,16 +7837,22 @@ msgstr "Numéro de l'échantillon"
 
 #: application/views/scripts/covid19/response.phtml:464
 #: application/views/scripts/dts/response.phtml:1023
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:435
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:455
 msgid "Result-1"
 msgstr "Résultat-1"
 
 #: application/views/scripts/covid19/response.phtml:465
 #: application/views/scripts/dts/response.phtml:1025
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:441
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:457
 msgid "Result-2"
 msgstr "Résultat-2"
 
 #: application/views/scripts/covid19/response.phtml:466
 #: application/views/scripts/dts/response.phtml:1027
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:448
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:460
 msgid "Result-3"
 msgstr "Résultat-3"
 
@@ -7859,6 +7897,7 @@ msgstr "Avez-vous besoin d'un soutien de la part du PT Provider?"
 #: application/views/scripts/recency/response.phtml:350
 #: application/views/scripts/tb/response.phtml:284
 #: application/views/scripts/vl/response.phtml:588
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:304
 msgid "Supervisor Review"
 msgstr "Contrôle du superviseur"
 
@@ -7886,6 +7925,7 @@ msgstr "NON"
 #: application/views/scripts/recency/response.phtml:358
 #: application/views/scripts/tb/response.phtml:292
 #: application/views/scripts/vl/response.phtml:596
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:319
 msgid "Supervisor Name"
 msgstr "Nom du superviseur"
 
@@ -9417,10 +9457,12 @@ msgid "Notes"
 msgstr "Notes"
 
 #: application/views/scripts/tb/response.phtml:345
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:784
 msgid "Failure Reasons (or) Warnings"
 msgstr "Raisons de l'échec (ou) avertissements"
 
 #: application/views/scripts/tb/response.phtml:346
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:784
 msgid "Corrective Actions (if any)"
 msgstr "Actions correctives (le cas échéant)"
 
@@ -9606,6 +9648,269 @@ msgstr "Contrôler étroitement les performances"
 msgid "Perform corrective action"
 msgstr "Mise en œuvre d'une action corrective"
 
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:231
+msgid "Performing Participant"
+msgstr "Participant actif"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:232
+msgid "PT Panel Name and Date"
+msgstr "Nom et date du panel PT"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:243
+msgid "Rehydration Date"
+msgstr "Date de réhydratation"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:257
+msgid "Shipment Test Date"
+msgstr "Date du test d'expédition"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:262
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:264
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:266
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:268
+msgid "Algorithm"
+msgstr "Algorithme"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:291
+msgid "Condition of PT Samples"
+msgstr "État des échantillons PT"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:350
+msgid "Your HIV Proficiency results"
+msgstr "Vos résultats au test de compétence sur le VIH"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:350
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:635
+msgid "maximum possible score"
+msgstr "score maximal possible"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:428
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:279
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:282
+msgid "Repeat Test"
+msgstr "Répéter le test"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:434
+msgid "Specimen Panel ID"
+msgstr "Identifiant du panel d'échantillons"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:464
+msgid "Your Result"
+msgstr "Votre résultat"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:465
+msgid "Evaluation"
+msgstr "Évaluation"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:567
+msgid ""
+"(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, "
+"Ind = Indeterminate)"
+msgstr ""
+"(R = Réactif, NR = Non réactif, P = Positif, N = Négatif, I = Non valide, "
+"Ind = Indéterminé)"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:573
+msgid "RTRI Results"
+msgstr "Résultats RTRI"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:581
+msgid "Your RTRI Interpretation"
+msgstr "Votre interprétation RTRI"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:603
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:183
+msgid "The following samples have been excluded from this evaluation"
+msgstr "Les échantillons suivants ont été exclus de cette évaluation"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:631
+msgid "Your Response"
+msgstr "Votre réponse"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:635
+msgid "Your documentation score"
+msgstr "Votre score en matière de documentation"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:638
+msgid "Documentation Item"
+msgstr "Documentations"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:653
+msgid "Panel/Shipment Receipt Date Specified"
+msgstr "Date de réception du panneau/de l'expédition spécifiée"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:667
+msgid "Reporting of the Sample Rehydration Date"
+msgstr "Déclaration de la date de réhydratation de l'échantillon"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:681
+msgid "Reporting of the Shipment Test Date"
+msgstr "Rapport sur la date du test d'expédition"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:696
+msgid "Testing to be done within"
+msgstr "Test à effectuer dans les"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:696
+msgid "hours of rehydration."
+msgstr "heures de réhydratation."
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:712
+msgid "Supervisor Approval"
+msgstr "Approbation du superviseur"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:728
+msgid "Reporting the Condition of PT Samples"
+msgstr "Rapport sur l'état des échantillons PT"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:742
+msgid "Reporting the availability of Refridgerator"
+msgstr "Signaler la disponibilité du réfrigérateur"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:756
+msgid "Reporting the Room Temperature"
+msgstr "Signaler la température ambiante"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:771
+msgid "Reporting the availability of Stop Watch"
+msgstr "Signaler la disponibilité du chronomètre"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:782
+msgid "Suggested Corrective actions for your response"
+msgstr "Mesures correctives suggérées pour votre réponse"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:799
+msgid "Your response was not considered for evaluation"
+msgstr "Votre réponse n'a pas été prise en compte pour l'évaluation."
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:805
+msgid "Congratulations! You have received a satisfactory score of"
+msgstr "Félicitations ! Vous avez obtenu un score satisfaisant de"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:807
+msgid "Your response was not evaluated"
+msgstr "Votre réponse n'a pas été évaluée."
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:809
+msgid "You have received a score of"
+msgstr "Vous avez obtenu un score de"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:825
+msgid "Evaluation Comments"
+msgstr "Commentaires d'évaluation"
+
+#: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:832
+msgid "Specific Comments/Feedback"
+msgstr "Commentaires/retours spécifiques"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:115
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:192
+msgid "# of Responses"
+msgstr "Nombre de réponses"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:116
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:117
+msgid "# of Participants Scoring"
+msgstr "Nombre de participants ayant obtenu un score"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:146
+msgid "Average"
+msgstr "Moyen"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:166
+msgid "Correctly Reported"
+msgstr "Correctement signalé"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:191
+msgid "# of Participants"
+msgstr "Nombre de participants"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:193
+msgid "# of Valid Responses"
+msgstr "Nombre de réponses valides"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:194
+msgid "Average Score"
+msgstr "Score moyen"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:211
+msgid "Corrective Action Overview"
+msgstr "Aperçu des mesures correctives"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:214
+msgid "Responses having Corrective Action"
+msgstr "Réponses comportant des mesures correctives"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:284
+msgid "Testkit Usage by Test Number"
+msgstr "Utilisation du kit de test par numéro de test"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:287
+msgid "Testkit Name"
+msgstr "Nom du kit de test"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:288
+msgid "Total Usage"
+msgstr "Utilisation totale"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:347
+msgid "Satisfactory Score"
+msgstr "Note satisfaisante"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:349
+msgid "Unsatisfactory Score"
+msgstr "Note insatisfaisante"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:371
+msgid "Testkit Evaluation Report"
+msgstr "Rapport d'évaluation du kit de test"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:431
+msgid "Comparison of test performance between participating laboratories"
+msgstr ""
+"Comparaison des performances des tests entre les laboratoires participants"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:432
+msgid "% Score"
+msgstr "% Score"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:451
+msgid "No screening participants there"
+msgstr "Aucun participant au dépistage présent"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:534
+msgid "Shipment Participant Result Report"
+msgstr "Rapport sur les résultats des participants à l'expédition"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:540
+msgid "Excluded"
+msgstr "Exclu"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:565
+msgid "All PT material is produced in line with the standard ISO17043:2023"
+msgstr "Tout le matériel PT est produit conformément à la norme ISO17043:2023."
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:567
+msgid "Report approved by"
+msgstr "Rapport approuvé par"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:568
+msgid "Date of approval"
+msgstr "Date d'approbation"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:570
+msgid "This is a system generated report. No signature required"
+msgstr ""
+"Ceci est un rapport généré par le système. Aucune signature n'est requise."
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:571
+msgid "End of report"
+msgstr "Fin du rapport"
+
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:573
+msgid "End of final report"
+msgstr "Fin du rapport final"
+
 #~ msgid "Enter the to CC"
 #~ msgstr "Entrez le CC"
 
@@ -9668,9 +9973,6 @@ msgstr "Mise en œuvre d'une action corrective"
 
 #~ msgid "Question/Statement"
 #~ msgstr "Question/affirmation"
-
-#~ msgid "Your Response"
-#~ msgstr "Votre réponse"
 
 #~ msgid "Please note that your primary email"
 #~ msgstr "Veuillez noter que votre adresse électronique principale"
@@ -9774,11 +10076,6 @@ msgstr "Mise en œuvre d'une action corrective"
 
 #~ msgid "index"
 #~ msgstr "index"
-
-#, fuzzy
-#~| msgid "Report"
-#~ msgid "report"
-#~ msgstr "Rapport"
 
 #, fuzzy
 #~| msgid "Shipments"
@@ -10079,11 +10376,6 @@ msgstr "Mise en œuvre d'une action corrective"
 
 #~ msgid "Login"
 #~ msgstr "Connexion"
-
-#, fuzzy
-#~| msgid "Online Lab Proficiency Testing"
-#~ msgid "Proficiency Testing"
-#~ msgstr "Tests de compétence en laboratoire en ligne"
 
 #, fuzzy
 #~ msgid "What Can We Do For You Through ePT?"

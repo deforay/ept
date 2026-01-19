@@ -87,6 +87,15 @@ final class Pt_Commons_MiscUtility
         return filter_var($sanitized, FILTER_VALIDATE_EMAIL) ?: null;
     }
 
+    public static function sortBySampleLabelNatural(array $rows, $key = 'sample_label'): array
+    {
+        usort($rows, function ($left, $right) use ($key) {
+            return strnatcasecmp((string) ($left[$key] ?? ''), (string) ($right[$key] ?? ''));
+        });
+
+        return $rows;
+    }
+
     public static function slugify(string $input): string
     {
         // Replace non-alphanumeric (excluding hyphen) with hyphen

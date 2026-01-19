@@ -57,8 +57,8 @@ if ($resultArray['shipment'] != "") {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
-        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('PT Survey') . '</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Shipment Code') . '</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
 
@@ -112,9 +112,9 @@ if ($resultArray['shipment'] != "") {
 
         $psoringTxt = ($passPercentage == 100) ? ' = "100"' : '>= "' . $passPercentage . '"';
         $overview = '<table border="1" style="font-size:13px;"><tr>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring ' . $psoringTxt . '</td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $passPercentage . '" </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Responses') . ' </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants Scoring') . ' ' . $psoringTxt . '</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants Scoring') . ' < "' . $passPercentage . '" </td>';
         $overview .= '</tr>';
 
 
@@ -134,7 +134,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode = '<table border="1" style="font-size:13px;">';
         $sampleCode .= '<tr>';
         $sampleCode .= '<td rowspan="2"></td>';
-        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">Sample ID</td>';
+        $sampleCode .= '<td colspan="' . $sampleCount . '" style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('Sample ID') . '</td>';
         $sampleCode .= '<td></td>';
         $sampleCode .= '</tr>';
 
@@ -143,10 +143,10 @@ if ($resultArray['shipment'] != "") {
         foreach ($result['correctCount'] as $sample) {
             $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">' . $sample['sample_label'] . '</td>';
         }
-        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Average</td>';
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('Average') . '</td>';
         $sampleCode .= '</tr>';
         $sampleCode .= '<tr>';
-        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">Reference Result</td>';
+        $sampleCode .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('Reference Result') . '</td>';
 
         $nonMandatorySamples = [];
 
@@ -163,7 +163,7 @@ if ($resultArray['shipment'] != "") {
         $sampleCode .= '<tr>';
         $sampAvg = '0';
         $sampPerAvg = '0';
-        $sampleCode .= '<td style="background-color:#BCD7EC;text-align:center;">Correctly Reported</td>';
+        $sampleCode .= '<td style="background-color:#BCD7EC;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('Correctly Reported') . '</td>';
 
         foreach ($result['correctCount'] as $sample) {
             $sampAvg += $sample["correctRes"];
@@ -180,18 +180,18 @@ if ($resultArray['shipment'] != "") {
 
         if (!empty($nonMandatorySamples)) {
             $nmsTable = '<span style="font-size:13px;">';
-            $nmsTable .= "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+            $nmsTable .= Pt_Commons_TranslateUtility::safeTranslate("The following samples have been excluded from this evaluation") . " : " . implode(", ", $nonMandatorySamples);
             $nmsTable .= "</span><br/>";
             $pdf->writeHTML($nmsTable, true, false, true, false, '');
         }
 
         //----------------Participant Performance Overview  start----------------
-        $ppOverview = '<span style="font-size:14px;font-weight:bold;">Participant Performance Overview</span><br/>';
+        $ppOverview = '<span style="font-size:14px;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Participant Performance Overview') . '</span><br/>';
         $ppOverview .= '<table border="1"  style="font-size:13px;"><tr>';
-        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants</td>';
-        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses</td>';
-        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Valid Responses</td>';
-        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">Average Score</td></tr>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Participants') . '</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Responses') . '</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('# of Valid Responses') . '</td>';
+        $ppOverview .= '<td style="background-color:#dbe4ee;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('Average Score') . '</td></tr>';
 
         $ppOverview .= '<tr>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_shipped'] . '</td>';
@@ -208,10 +208,10 @@ if ($resultArray['shipment'] != "") {
 
         if (!empty($correctivenessArray)) {
             //----------------Participant Corrective Action Overview  start----------------
-            $correctiveActionStuff = '<span style="font-size:14px;font-weight:bold;">Corrective Action Overview </span><br/>
+            $correctiveActionStuff = '<span style="font-size:14px;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action Overview') . ' </span><br/>
             <table border="1" style="font-weight:normal;font-size:13px;"><tr style="font-weight:bold;">';
-            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:75%;">Corrective Action</td>';
-            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:25%;">Responses having Corrective Action</td>';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:75%;">' . Pt_Commons_TranslateUtility::safeTranslate('Corrective Action') . '</td>';
+            $correctiveActionStuff .= '<td style="background-color:#dbe4ee;text-align:center;width:25%;">' . Pt_Commons_TranslateUtility::safeTranslate('Responses having Corrective Action') . '</td>';
 
             $correctiveActionStuff .= '</tr>';
             foreach ($correctivenessArray as $correctiveness) {
@@ -276,16 +276,16 @@ if ($resultArray['shipment'] != "") {
             if (isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])) {
                 $w = 14;
                 if (isset($panelTestType) && !empty($panelTestType) && $panelTestType == 'screening') {
-                    $kitTnTests = ['Test 1', 'Repeat Test'];
+                    $kitTnTests = [Pt_Commons_TranslateUtility::safeTranslate('Test 1'), Pt_Commons_TranslateUtility::safeTranslate('Repeat Test')];
                     $w = 23.3;
                 } else {
-                    $kitTnTests = ['Test 1', 'Test 2', 'Test 3', 'Repeat Test'];
+                    $kitTnTests = [Pt_Commons_TranslateUtility::safeTranslate('Test 1'), Pt_Commons_TranslateUtility::safeTranslate('Test 2'), Pt_Commons_TranslateUtility::safeTranslate('Test 3'), Pt_Commons_TranslateUtility::safeTranslate('Repeat Test')];
                 }
-                $testkit .= '<br><br><span style="font-size:14px;font-weight:bold;">Testkit Usage by Test Number</span><br>';
+                $testkit .= '<br><br><span style="font-size:14px;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Testkit Usage by Test Number') . '</span><br>';
                 $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
                 $testkit .= '<tr style="font-weight:bold;">';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">Testkit Name</th>';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">Total Usage</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">' . Pt_Commons_TranslateUtility::safeTranslate('Testkit Name') . '</th>';
+                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">' . Pt_Commons_TranslateUtility::safeTranslate('Total Usage') . '</th>';
                 foreach ($kitTnTests as $test) {
                     $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">' . $test . '</th>';
                 }
@@ -344,9 +344,9 @@ if ($resultArray['shipment'] != "") {
 
                 // Create the bar plots
                 $b1plot = new BarPlot($passedTestKits);
-                $b1plot->SetLegend('Satisfactory Score');
+                $b1plot->SetLegend(Pt_Commons_TranslateUtility::safeTranslate('Satisfactory Score'));
                 $b2plot = new BarPlot($failedTestKits);
-                $b2plot->SetLegend('Unsatisfactory Score');
+                $b2plot->SetLegend(Pt_Commons_TranslateUtility::safeTranslate('Unsatisfactory Score'));
 
                 $b1plot->SetShadow();
                 $b2plot->SetShadow();
@@ -368,7 +368,7 @@ if ($resultArray['shipment'] != "") {
                 $graph->xaxis->SetTickLabels($testkitname);
                 $graph->legend->SetShadow('gray@0.4', 5);
                 $graph->legend->SetPos(0.5, 0.98, 'center', 'bottom');
-                $graph->title->Set("Testkit Evaluation Report");
+                $graph->title->Set(Pt_Commons_TranslateUtility::safeTranslate("Testkit Evaluation Report"));
                 //$graph->title->SetFont(FF_ARIAL, FS_BOLD);
 
                 // Display the graph
@@ -414,7 +414,7 @@ if ($resultArray['shipment'] != "") {
 
         // Create the bar plots
         $b1plot = new BarPlot($dataX);
-        $b1plot->SetLegend("Number of participants");
+        $b1plot->SetLegend(Pt_Commons_TranslateUtility::safeTranslate("Number of participants"));
         $graph->legend->SetPos(0.5, 0.99, 'center', 'bottom');
         $graph->legend->SetColumns(3);
         // Create the grouped bar plot
@@ -428,9 +428,9 @@ if ($resultArray['shipment'] != "") {
         // $b1plot->SetFillColor("#cc1111");
         $b1plot->SetFillColor($monochromaticColors[2]);
         // Setup the titles
-        $graph->title->Set("Comparison of test performance between participating laboratories");
-        $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of Participants', 'center');
+        $graph->title->Set(Pt_Commons_TranslateUtility::safeTranslate("Comparison of test performance between participating laboratories"));
+        $graph->xaxis->title->Set(Pt_Commons_TranslateUtility::safeTranslate('% Score'));
+        $graph->yaxis->title->Set(Pt_Commons_TranslateUtility::safeTranslate('Number of Participants'), 'center');
 
         $graph->yaxis->SetTitleMargin(30);
         $graph->xaxis->SetTitleMargin(30);
@@ -448,7 +448,7 @@ if ($resultArray['shipment'] != "") {
         }
         //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
     } else {
-        $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
+        $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">' . Pt_Commons_TranslateUtility::safeTranslate('No screening participants there') . '</span>', true, false, true, false, '');
     }
 
     /* if (isset($resultArray['shipment']['pieChart']) && count($resultArray['shipment']['pieChart']) > 0) {
@@ -531,13 +531,13 @@ if ($resultArray['shipment'] != "") {
         $graph->SetShadow();
 
         // Set A title for the plot
-        $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
+        $graph->title->Set(Pt_Commons_TranslateUtility::safeTranslate("Shipment Participant Result Report") . " (N=" . $total . ")");
         // $graph->title->SetFont(FF_FONT2,FS_BOLD);
         // Enable anti-aliasing
         $graph->img->SetAntiAliasing();
         $p1 = new PiePlot($data);
         $p1->value->SetColor('black');
-        $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
+        $p1->SetLegends(array(Pt_Commons_TranslateUtility::safeTranslate("Passed") . " (N=" . $passedN . ")", Pt_Commons_TranslateUtility::safeTranslate("Failed") . " (N=" . $failedN . ")", Pt_Commons_TranslateUtility::safeTranslate("Not Responded") . " (N=" . $notRespondedN . ")", Pt_Commons_TranslateUtility::safeTranslate("Excluded") . " (N=" . $excludedN . ")"));
         $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
         $graph->legend->SetColumns(3);
 
@@ -562,15 +562,15 @@ if ($resultArray['shipment'] != "") {
         if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
             $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
             if ($layout == 'zimbabwe') {
-                $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+                $html .= '<span style="text-align:center;font-weight:normal;"><small>' . Pt_Commons_TranslateUtility::safeTranslate('All PT material is produced in line with the standard ISO17043:2023') . '</small></span><br/>';
             }
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small></span>';
-            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . date('d M Y') . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>' . Pt_Commons_TranslateUtility::safeTranslate('Report approved by') . ' ' . $approveTxt . '</small></span>';
+            $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>' . Pt_Commons_TranslateUtility::safeTranslate('Date of approval') . ': ' . date('d M Y') . '</small></span>';
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-        $eodReportText = "End of report";
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>' . Pt_Commons_TranslateUtility::safeTranslate('This is a system generated report. No signature required') . '</small></span>';
+        $eodReportText = Pt_Commons_TranslateUtility::safeTranslate("End of report");
         if ($evalRow['report_type'] == 'finalized') {
-            $eodReportText = "End of final report";
+            $eodReportText = Pt_Commons_TranslateUtility::safeTranslate("End of final report");
         }
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');

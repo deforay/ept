@@ -1792,7 +1792,8 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2302,14 +2303,15 @@ class Application_Service_Shipments
             $returnArray['vlReferenceMethods'] = $db->fetchAll($db->select()->from('reference_vl_methods')->where("shipment_id = ?", $sid));
         } elseif ($shipment['scheme_type'] == 'tb') {
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
-                ->join(array('ref' => 'reference_result_tb'), 'ref.shipment_id=s.shipment_id')
+                ->join(['ref' => 'reference_result_tb'], 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
+            $reference = Pt_Commons_MiscUtility::sortBySampleLabelNatural($reference);
             $possibleResults = "";
         } elseif ($shipment['scheme_type'] == 'recency') {
             $recencyAssay = $db->fetchAll($db->select()->from('reference_recency_assay')->where("shipment_id = ?", $sid));
             $returnArray['recencyAssay'] = $recencyAssay;
             $reference = $db->fetchAll($db->select()->from(array('s' => 'shipment'))
-                ->join(array('ref' => 'reference_result_recency'), 'ref.shipment_id=s.shipment_id')
+                ->join(['ref' => 'reference_result_recency'], 'ref.shipment_id=s.shipment_id')
                 ->where("s.shipment_id = ?", $sid));
             $schemeService = new Application_Service_Schemes();
             $possibleResults = $schemeService->getPossibleResults('recency');
@@ -2400,7 +2402,8 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                    ;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -3021,7 +3024,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3060,7 +3063,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3732,9 +3735,11 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             }
             $output['aaData'][] = $row;
         }
