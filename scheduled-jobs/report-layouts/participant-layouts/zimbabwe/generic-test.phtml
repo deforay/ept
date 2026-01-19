@@ -178,8 +178,9 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
         // Parse user test configuration
-        $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
-        $passPercentage = $userTestConfig['passingScore'] ?? 100;
+        // $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
+        // $passPercentage = $userTestConfig['passingScore'] ?? 100;
+        $passPercentage = Pt_Commons_SchemeConfig::get($evalRow['scheme_type'] . '.passingScore');
 
         // Generate results table based on test type
         if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') {
