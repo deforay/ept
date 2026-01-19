@@ -2,6 +2,8 @@
 function generateReports(sId, checkReportDate, surveyDate, _type) {
     if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
+
+        document.location.reload(true);
         var individual = null;
         $.when(
             $.post("/reports/distribution/queue-reports-generation", {
@@ -18,7 +20,6 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
                     $.unblockUI();
                     JobProgressTracker.init(sId);
                 } else {
-                    document.location.reload(true);
                     $.unblockUI();
                 }
             } else {
@@ -35,7 +36,7 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
  * Job Progress Tracker Module
  * Polls for report generation progress and updates the UI
  */
-var JobProgressTracker = (function() {
+var JobProgressTracker = (function () {
     var pollInterval = null;
     var POLL_DELAY = 2000; // 2 seconds
     var currentShipmentId = null;
@@ -51,7 +52,7 @@ var JobProgressTracker = (function() {
             type: 'POST',
             data: { sid: shipmentId },
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 updateProgressUI(data);
 
                 if (data.in_progress) {
@@ -64,10 +65,10 @@ var JobProgressTracker = (function() {
                     }
                 }
             },
-            error: function() {
+            error: function () {
                 console.error('Failed to fetch job progress');
                 // Retry after delay on error
-                setTimeout(function() {
+                setTimeout(function () {
                     if (currentShipmentId) {
                         checkProgress(currentShipmentId);
                     }
@@ -79,7 +80,7 @@ var JobProgressTracker = (function() {
     function startPolling(shipmentId) {
         if (pollInterval) return; // Already polling
 
-        pollInterval = setInterval(function() {
+        pollInterval = setInterval(function () {
             checkProgress(shipmentId);
         }, POLL_DELAY);
     }
@@ -100,7 +101,7 @@ var JobProgressTracker = (function() {
         $tracker.find('.status-badge')
             .text(statusText)
             .css('background', statusClass === 'processing' ? 'rgba(255,255,255,0.3)' :
-                             statusClass === 'completed' ? '#5cb85c' : 'rgba(255,255,255,0.2)');
+                statusClass === 'completed' ? '#5cb85c' : 'rgba(255,255,255,0.2)');
 
         // Update progress bar
         var percent = data.participant_reports ? data.participant_reports.percentage : 0;
@@ -160,7 +161,7 @@ var JobProgressTracker = (function() {
         $tracker.find('.status-badge').text('Completed').css('background', '#5cb85c');
 
         // Reload page after short delay to show updated reports
-        setTimeout(function() {
+        setTimeout(function () {
             location.reload();
         }, 1500);
     }
@@ -232,7 +233,7 @@ function cancelReportJob(shipmentId) {
         type: 'POST',
         data: { sid: shipmentId },
         dataType: 'json',
-        success: function(response) {
+        success: function (response) {
             if (response.success) {
                 alert('Job cancelled successfully');
                 // Stop polling and reload page
@@ -244,7 +245,7 @@ function cancelReportJob(shipmentId) {
                 alert('Failed to cancel job: ' + response.message);
             }
         },
-        error: function() {
+        error: function () {
             alert('Error cancelling job. Please try again.');
         }
     });

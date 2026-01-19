@@ -174,8 +174,8 @@ class Application_Model_Tb
                     } else {
                         // Assay is Xpert MTB/RIF
 
-                        $result['mtb_detected'] = $this->checkAndSetMTBDetected($result['mtb_detected']);
-                        $result['reference_mtb_detected'] = $this->checkAndSetMTBDetected($result['reference_mtb_detected']);
+                        $result['mtb_detected'] = self::normalizeMTBDetection($result['mtb_detected']);
+                        $result['reference_mtb_detected'] = self::normalizeMTBDetection($result['reference_mtb_detected']);
 
 
                         $notAControl = $result['control'] == 0;
@@ -395,7 +395,7 @@ class Application_Model_Tb
         return $shipmentResult;
     }
 
-    private function checkAndSetMTBDetected($value)
+    public static function normalizeMTBDetection($value)
     {
         return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
     }
@@ -451,15 +451,17 @@ class Application_Model_Tb
             )
             ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("spm.shipment_id = ?", $sId)
-            // ->where("spm.participant_id = ?", $pId)
-            ->order(['ref.sample_label ASC']);
+            ->order('ref.sample_id ASC');
+        // ->where("spm.participant_id = ?", $pId)
         if (!empty($pId)) {
             $sql = $sql->where("spm.participant_id = ?", $pId);
         }
         if (isset($type) && $type == "shipment") {
             $sql = $sql->group("ref.sample_id");
         }
-        return $db->fetchAll($sql);
+        $rows = $db->fetchAll($sql);
+
+        return Pt_Commons_MiscUtility::sortBySampleLabelNatural($rows);
     }
 
     public function getAllTbAssays()
@@ -1189,8 +1191,9 @@ class Application_Model_Tb
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
-            ->order(['ref.sample_id']);
+            ->order('ref.sample_id ASC');
         $result = $this->db->fetchAll($sQuery);
+        $result = Pt_Commons_MiscUtility::sortBySampleLabelNatural($result);
         $response = [];
         foreach ($result as $key => $row) {
             $attributes = [];

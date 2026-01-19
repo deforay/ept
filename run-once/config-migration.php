@@ -26,10 +26,10 @@ try {
             continue;
         }
 
-        $schemeConfigDb->insert(array(
+        $schemeConfigDb->insert([
             'scheme_config_name' => $key,
             'scheme_config_value' => is_array($value) ? json_encode($value, true) : $value
-        ));
+        ]);
     }
 
     unset($envConfig['evaluation']);
@@ -55,7 +55,7 @@ try {
 
             if (is_array($currentValue)) {
                 foreach ($currentValue as $childKey => $childValue) {
-                    $queue[] = array($currentKey . '_' . $childKey, $childValue);
+                    $queue[] = ["{$currentKey}_$childKey", $childValue];
                 }
                 continue;
             }
@@ -65,10 +65,10 @@ try {
                 continue;
             }
 
-            $globalConfigDb->insert(array(
+            $globalConfigDb->insert([
                 'name' => $snakeKey,
                 'value' => is_array($currentValue) ? json_encode($currentValue, true) : $currentValue
-            ));
+            ]);
             $existingGlobalLookup[$snakeKey] = true;
         }
     }

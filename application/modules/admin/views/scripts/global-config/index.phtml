@@ -52,7 +52,9 @@ $faqResults = json_decode($this->faqs);
 </style>
 
 <div class="well">
-	<form name="globalConfigForm" id="globalConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
+	<form name="globalConfigForm" id="globalConfigForm" method="post"
+		action="<?php echo $this->url(array("module" => "admin", "controller" => "global-config", "action" => "index"), 'default', true) ?>"
+		class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
 			<legend><?= $this->translate->_("ePT Global Settings"); ?></legend>
 
@@ -60,14 +62,17 @@ $faqResults = json_decode($this->faqs);
 			<div class="search-jump-container">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="searchSettings" class="control-label"><?= $this->translate->_("Search settings by keyword"); ?></label>
+						<label for="searchSettings"
+							class="control-label"><?= $this->translate->_("Search settings by keyword"); ?></label>
 						<div class="input-group">
 							<span class="input-group-addon"><i class="icon-search"></i></span>
-							<input type="text" class="form-control" id="searchSettings" placeholder="Search settings by keyword" />
+							<input type="text" class="form-control" id="searchSettings"
+								placeholder="Search settings by keyword" />
 						</div>
 					</div>
 					<div class="col-md-6">
-						<label for="jumpToSection" class="control-label"><?= $this->translate->_("Jump to a section"); ?></label>
+						<label for="jumpToSection"
+							class="control-label"><?= $this->translate->_("Jump to a section"); ?></label>
 						<select class="form-control" id="jumpToSection">
 							<option value="">-- Select Section --</option>
 							<option value="generalConfig">General Configs</option>
@@ -89,71 +94,109 @@ $faqResults = json_decode($this->faqs);
 				</button>
 			</div>
 
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#generalConfig" aria-expanded="false" aria-controls="collapseExample">General Configs <b class="caret pull-right" style="text-align:right;"></b></button>
+			<button type="button" class="collapsible" data-toggle="collapse" data-target="#generalConfig"
+				aria-expanded="false" aria-controls="collapseExample">General Configs <b class="caret pull-right"
+					style="text-align:right;"></b></button>
 			<div class="collapse-content" id="generalConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="host" class="control-label"><?= $this->translate->_("Domain"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $this->domain ?? null; ?>" id="domain" name="emailConfig[domain]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the domain address'); ?>" title="Please enter the domain address" />
+						<label for="host" class="control-label"><?= $this->translate->_("Domain"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $this->domain ?? null; ?>" id="domain"
+							name="emailConfig[domain]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the domain address'); ?>"
+							title="Please enter the domain address" />
 					</div>
 					<div class="col-md-6">
 						<label for="locale" class="control-label"><?= $this->translate->_("Language"); ?></label>
-						<select class="form-control" id="locale" name="locale" title="Please select the locale for translation">
+						<select class="form-control" id="locale" name="locale"
+							title="Please select the locale for translation">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="en_US" <?php echo ($this->locale == "en_US") ? "selected='selected'" : ""; ?>><?= $this->translate->_("English"); ?></option>
-							<option value="fr_FR" <?php echo ($this->locale == "fr_FR") ? "selected='selected'" : ""; ?>><?= $this->translate->_("French"); ?></option>
+							<option value="en_US" <?php echo ($this->locale == "en_US") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("English"); ?></option>
+							<option value="fr_FR" <?php echo ($this->locale == "fr_FR") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("French"); ?></option>
 						</select>
 					</div>
 				</div>
 				<!-- Rest of general config fields... -->
 				<div class="row">
 					<div class="col-md-6">
-						<label for="aggregate_insights_url" class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
-						<input type="text" class="form-control" id="aggregate_insights_url" name="aggregate_insights_url" placeholder="Enter aggregate insights URL" title="Please enter aggregate insights URL" value="<?php echo $this->aggregate_insights_url; ?>" />
+						<label for="aggregate_insights_url"
+							class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
+						<input type="text" class="form-control" id="aggregate_insights_url"
+							name="aggregate_insights_url" placeholder="Enter aggregate insights URL"
+							title="Please enter aggregate insights URL"
+							value="<?php echo $this->aggregate_insights_url; ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="admin_email" class="control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span class="mandatory">*</span></label>
-						<input type="text" class="form-control isRequired" id="admin_email" name="admin_email" placeholder="Enter Admin Email" title="Please enter admin email" value="<?= $this->admin_email; ?>" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="pt_program_name" class="control-label"><?= $this->translate->_("PT Program Name"); ?></label>
-						<input type="text" class="form-control" id="pt_program_name" name="pt_program_name" placeholder="Enter PT Program Name" title="Please enter PT Program Name" value="<?php echo $this->pt_program_name; ?>" />
-					</div>
-					<div class="col-md-6">
-						<label for="pt_program_short_name" class="control-label"><?= $this->translate->_("PT Program Short Name"); ?></label>
-						<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name" placeholder="Enter PT Program Short Name" title="Please enter the PT Program Short Name" value="<?php echo $this->pt_program_short_name; ?>" />
+						<label for="admin_email"
+							class="control-label"><?= $this->translate->_("Admininstrator Email"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" class="form-control isRequired" id="admin_email" name="admin_email"
+							placeholder="Enter Admin Email" title="Please enter admin email"
+							value="<?= $this->admin_email; ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="training_instance" class="control-label"><?= $this->translate->_("Is this installation of ePT used for training purposes?"); ?></label>
-						<select class="form-control" id="training_instance" name="training_instance" title="Is this installation of ePT used for training purposes?">
+						<label for="pt_program_name"
+							class="control-label"><?= $this->translate->_("PT Program Name"); ?></label>
+						<input type="text" class="form-control" id="pt_program_name" name="pt_program_name"
+							placeholder="Enter PT Program Name" title="Please enter PT Program Name"
+							value="<?php echo $this->pt_program_name; ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="pt_program_short_name"
+							class="control-label"><?= $this->translate->_("PT Program Short Name"); ?></label>
+						<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name"
+							placeholder="Enter PT Program Short Name" title="Please enter the PT Program Short Name"
+							value="<?php echo $this->pt_program_short_name; ?>" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<label for="training_instance"
+							class="control-label"><?= $this->translate->_("Is this installation of ePT used for training purposes?"); ?></label>
+						<select class="form-control" id="training_instance" name="training_instance"
+							title="Is this installation of ePT used for training purposes?">
 							<option value="no" <?php echo ($this->training_instance == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 							<option value="yes" <?php echo ($this->training_instance == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="schemeId" class="control-label"><?= $this->translate->_("Choose Active Schemes"); ?> <span class="mandatory">*</span></label>
-						<br><select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple" title="Please select scheme here" style="width: 100%;">
+						<label for="schemeId" class="control-label"><?= $this->translate->_("Choose Active Schemes"); ?>
+							<span class="mandatory">*</span></label>
+						<br><select class="form-control isRequired" id="schemeId" name="schemeId[]" multiple="multiple"
+							title="Please select scheme here" style="width: 100%;">
 							<?php foreach ($this->allSchemes as $schemes) { ?>
-								<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>><?php echo ucwords($schemes["scheme_name"]); ?></option>
+								<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected='selected'" : ""; ?>>
+									<?php echo ucwords($schemes["scheme_name"]); ?></option>
 							<?php } ?>
 						</select>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6 trainingText">
-						<label for="training_instance_text" class="control-label"><?= $this->translate->_("For training instances, use this Watermark in reports"); ?></label>
-						<input type="text" class="form-control" id="training_instance_text" name="training_instance_text" placeholder="Watermark to show in reports" title="Please enter the Watermark to show in reports" value="<?php echo $this->training_instance_text; ?>" />
+						<label for="training_instance_text"
+							class="control-label"><?= $this->translate->_("For training instances, use this Watermark in reports"); ?></label>
+						<input type="text" class="form-control" id="training_instance_text"
+							name="training_instance_text" placeholder="Watermark to show in reports"
+							title="Please enter the Watermark to show in reports"
+							value="<?php echo $this->training_instance_text; ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="response_after_evaluate" class="control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?> <span class="mandatory">*</span></label>
+						<label for="response_after_evaluate"
+							class="control-label"><?= $this->translate->_("Accept responses after shipment is finalized?"); ?>
+							<span class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " active " : "notActive"; ?>" data-toggle="response_after_evaluate" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " active " : "notActive"; ?>" data-toggle="response_after_evaluate" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="response_after_evaluate" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->response_after_evaluate) && $this->response_after_evaluate == "no") ? " active " : "notActive"; ?>"
+									data-toggle="response_after_evaluate" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate">
 						</div>
@@ -161,43 +204,65 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="generic_test_config" class="control-label"><?= $this->translate->_("Custom Tests Config"); ?> <span class="mandatory">*</span></label>
+						<label for="generic_test_config"
+							class="control-label"><?= $this->translate->_("Custom Tests Config"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "yes") ? " active " : "notActive"; ?>" data-toggle="generic_test_config" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "no") ? " active " : "notActive"; ?>" data-toggle="generic_test_config" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="generic_test_config" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->generic_test_config) && $this->generic_test_config == "no") ? " active " : "notActive"; ?>"
+									data-toggle="generic_test_config" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="generic_test_config" id="generic_test_config">
 						</div>
 					</div>
 					<div class="col-md-6">
-						<label for="evaluate_before_generating_reports" class="control-label"><?= $this->translate->_("Re-evaluate before Finalizing"); ?> <span class="mandatory">*</span></label>
+						<label for="evaluate_before_generating_reports"
+							class="control-label"><?= $this->translate->_("Re-evaluate before Finalizing"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "yes") ? " active " : "notActive"; ?>" data-toggle="evaluate_before_generating_reports" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "no") ? " active " : "notActive"; ?>" data-toggle="evaluate_before_generating_reports" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="evaluate_before_generating_reports" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->evaluate_before_generating_reports) && $this->evaluate_before_generating_reports == "no") ? " active " : "notActive"; ?>"
+									data-toggle="evaluate_before_generating_reports" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="evaluate_before_generating_reports" id="evaluate_before_generating_reports">
+							<input type="hidden" name="evaluate_before_generating_reports"
+								id="evaluate_before_generating_reports">
 						</div>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="enable_capa" class="control-label"><?= $this->translate->_("Enable CAPA"); ?> <span class="mandatory">*</span></label>
+						<label for="enable_capa" class="control-label"><?= $this->translate->_("Enable CAPA"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "yes") ? " active " : "notActive"; ?>" data-toggle="enable_capa" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "no") ? " active " : "notActive"; ?>" data-toggle="enable_capa" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="enable_capa" data-title="yes" onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "no") ? " active " : "notActive"; ?>"
+									data-toggle="enable_capa" data-title="no" onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="enable_capa" id="enable_capa">
 						</div>
 					</div>
 					<div class="col-md-6">
-						<label for="enable_admin_email_notification" class="control-label"><?= $this->translate->_("Enable Admin Email Notification Alert"); ?> <span class="mandatory">*</span></label>
+						<label for="enable_admin_email_notification"
+							class="control-label"><?= $this->translate->_("Enable Admin Email Notification Alert"); ?>
+							<span class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "yes") ? " active " : "notActive"; ?>" data-toggle="enable_admin_email_notification" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "no") ? " active " : "notActive"; ?>" data-toggle="enable_admin_email_notification" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="enable_admin_email_notification" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_admin_email_notification) && $this->enable_admin_email_notification == "no") ? " active " : "notActive"; ?>"
+									data-toggle="enable_admin_email_notification" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="enable_admin_email_notification" id="enable_admin_email_notification">
 						</div>
@@ -205,25 +270,37 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="institute_name" class="control-label"><?= $this->translate->_("Institute Name"); ?></label>
-						<textarea class="form-control" id="institute_name" name="institute_name" placeholder="Enter institute name" title="Please enter institute name"><?php echo $this->institute_name; ?></textarea>
+						<label for="institute_name"
+							class="control-label"><?= $this->translate->_("Institute Name"); ?></label>
+						<textarea class="form-control" id="institute_name" name="institute_name"
+							placeholder="Enter institute name"
+							title="Please enter institute name"><?php echo $this->institute_name; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="institute_address" class="control-label"><?= $this->translate->_("Institute Address"); ?></label>
-						<textarea class="form-control" id="institute_address" name="institute_address" placeholder="Enter institute address" title="Please enter institute address"><?php echo $this->institute_address; ?></textarea>
+						<label for="institute_address"
+							class="control-label"><?= $this->translate->_("Institute Address"); ?></label>
+						<textarea class="form-control" id="institute_address" name="institute_address"
+							placeholder="Enter institute address"
+							title="Please enter institute address"><?php echo $this->institute_address; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="additional_institute_details" class="control-label"><?= $this->translate->_("Additional Institute Details"); ?> <span class="mandatory">*</span></label>
+						<label for="additional_institute_details"
+							class="control-label"><?= $this->translate->_("Additional Institute Details"); ?> <span
+								class="mandatory">*</span></label>
 						<!-- <div id="additionalInstituteDetailsEditor" name="additionalInstituteDetailsEditor" class="richtextarea form-control" title="Please enter a institute details" placeholder="<?= $this->translate->_('Enter the institute details'); ?>">
 						</div>
 						<textarea style="display:none;" id="additional_institute_details" name="additional_institute_details"></textarea> -->
-						<textarea class="form-control isRequired" id="additional_institute_details" name="additional_institute_details" placeholder="Enter additional institute details" title="Please enter additional institute details"><?php echo $this->additional_institute_details; ?></textarea>
+						<textarea class="form-control isRequired" id="additional_institute_details"
+							name="additional_institute_details" placeholder="Enter additional institute details"
+							title="Please enter additional institute details"><?php echo $this->additional_institute_details; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="theme_color" class="control-label"><?= $this->translate->_("Theme Color"); ?></label>
-						<select class="form-control" id="theme_color" name="theme_color" title="Please select the theme color">
+						<label for="theme_color"
+							class="control-label"><?= $this->translate->_("Theme Color"); ?></label>
+						<select class="form-control" id="theme_color" name="theme_color"
+							title="Please select the theme color">
 							<option value="">-- Select --</option>
 							<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green') ? 'selected="selected"' : ""; ?>>Green</option>
 							<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue') ? 'selected="selected"' : ""; ?>>Blue</option>
@@ -250,8 +327,10 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="jobCompletionAlertStatus" class="control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
-						<select class="form-control" id="jobCompletionAlertStatus" name="job_completion_alert_status" title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
+						<label for="jobCompletionAlertStatus"
+							class="control-label"><?= $this->translate->_("Send Alerts On Job Completion"); ?></label>
+						<select class="form-control" id="jobCompletionAlertStatus" name="job_completion_alert_status"
+							title="Please select Send Alerts On Job Completion" onchange="showMailBox(this.value);">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo ($this->job_completion_alert_status == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="no" <?php echo ($this->job_completion_alert_status == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
@@ -260,43 +339,67 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="auto_generate_pt_survey_code" class="control-label"><?= $this->translate->_("Auto generate PT Survey code"); ?></label>
-						<select class="form-control" id="auto_generate_pt_survey_code" name="auto_generate_pt_survey_code" title="Please select auto generate PT survey code">
+						<label for="auto_generate_pt_survey_code"
+							class="control-label"><?= $this->translate->_("Auto generate PT Survey code"); ?></label>
+						<select class="form-control" id="auto_generate_pt_survey_code"
+							name="auto_generate_pt_survey_code" title="Please select auto generate PT survey code">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo ($this->auto_generate_pt_survey_code == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="no" <?php echo ($this->auto_generate_pt_survey_code == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="footer_text" class="control-label"><?= $this->translate->_("Footer Text"); ?></label>
-						<input type="text" class="form-control" id="footer_text" value="<?php echo $this->footer_text ?? null; ?>" placeholder="Enter the footer text" name="footer_text" title="Please enter the footer text" />
+						<label for="footer_text"
+							class="control-label"><?= $this->translate->_("Footer Text"); ?></label>
+						<input type="text" class="form-control" id="footer_text"
+							value="<?php echo $this->footer_text ?? null; ?>" placeholder="Enter the footer text"
+							name="footer_text" title="Please enter the footer text" />
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-6 mail-box" style="display: <?php echo (isset($this->job_completion_alert_status) && ($this->job_completion_alert_status == "yes")) ? 'block' : 'none'; ?>;">
-						<label for="jobCompletionAlertMails" class="control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
-						<textarea class="form-control" id="jobCompletionAlertMails" name="job_completion_alert_mails" placeholder="Emails To Send Job Completion Alert" title="Please enter Emails To Send Job Completion Alert"><?php echo $this->job_completion_alert_mails; ?></textarea>
-						<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma separated emails to send to multiple recepients</span>
+					<div class="col-md-6 mail-box"
+						style="display: <?php echo (isset($this->job_completion_alert_status) && ($this->job_completion_alert_status == "yes")) ? 'block' : 'none'; ?>;">
+						<label for="jobCompletionAlertMails"
+							class="control-label"><?= $this->translate->_("Emails To Send Job Completion Alert"); ?></label>
+						<textarea class="form-control" id="jobCompletionAlertMails" name="job_completion_alert_mails"
+							placeholder="Emails To Send Job Completion Alert"
+							title="Please enter Emails To Send Job Completion Alert"><?php echo $this->job_completion_alert_mails; ?></textarea>
+						<span style=" margin-top: 7px !important; display: block;color: #e83838ad; ">Please enter comma
+							separated emails to send to multiple recepients</span>
 					</div>
 					<div class="col-md-6">
-						<label for="date_format" class="control-label"><?= $this->translate->_("Date Format"); ?></label>
-						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control" id="date_format" name="date_format" placeholder="Enter the date format" title="Please enter date format">
+						<label for="date_format"
+							class="control-label"><?= $this->translate->_("Date Format"); ?></label>
+						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control"
+							id="date_format" name="date_format" placeholder="Enter the date format"
+							title="Please enter date format">
 					</div>
 					<div class="col-md-6">
-						<label for="certificates" class="control-label"><?= $this->translate->_("Certificate Mail"); ?></label>
-						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control" id="certificates" name="certificates" placeholder="Enter the certificate mail" title="Please enter the certificate mail">
+						<label for="certificates"
+							class="control-label"><?= $this->translate->_("Certificate Mail"); ?></label>
+						<input type="text" value="<?php echo $this->date_format; ?>" class="form-control"
+							id="certificates" name="certificates" placeholder="Enter the certificate mail"
+							title="Please enter the certificate mail">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Home Logo 1"); ?> </label>
+						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Home Logo 1"); ?>
+						</label>
 						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
 							<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="Logo image" class="home_left_logo_pic" style=" width: 150px; ">
-								<a href="javascript:void(0);" onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');" class="mandatory home_left_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo" title="<?= $this->translate->_('Please select home left logo image'); ?>" accept="image/png, image/jpeg, image/gif" style="display: none;">
+								<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="Logo image"
+									class="home_left_logo_pic" style=" width: 150px; ">
+								<a href="javascript:void(0);"
+									onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
+									class="mandatory home_left_logo_pic">x</a>
+								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+									title="<?= $this->translate->_('Please select home left logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif" style="display: none;">
 							<?php } else { ?>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo" title="<?= $this->translate->_('Please select home left logo image'); ?>" accept="image/png, image/jpeg, image/gif">
+								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+									title="<?= $this->translate->_('Please select home left logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif">
 							<?php } ?>
 						</div>
 						<div class="box-body">
@@ -307,11 +410,18 @@ $faqResults = json_decode($this->faqs);
 						<label for="" class="control-label"><?= $this->translate->_("Home Logo 2"); ?> </label>
 						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
 							<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="Logo image" class="home_right_logo_pic" style=" width: 150px; ">
-								<a href="javascript:void(0);" onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');" class="mandatory home_right_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo" title="<?= $this->translate->_('Please select home right logo image'); ?>" style="display: none;" accept="image/png, image/jpeg, image/gif">
+								<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="Logo image"
+									class="home_right_logo_pic" style=" width: 150px; ">
+								<a href="javascript:void(0);"
+									onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
+									class="mandatory home_right_logo_pic">x</a>
+								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+									title="<?= $this->translate->_('Please select home right logo image'); ?>"
+									style="display: none;" accept="image/png, image/jpeg, image/gif">
 							<?php } else { ?>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo" title="<?= $this->translate->_('Please select home right logo image'); ?>" accept="image/png, image/jpeg, image/gif">
+								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+									title="<?= $this->translate->_('Please select home right logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif">
 							<?php } ?>
 						</div>
 						<div class="box-body">
@@ -321,35 +431,58 @@ $faqResults = json_decode($this->faqs);
 				</div>
 			</div><br>
 
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#participantConfig" aria-expanded="false" aria-controls="collapseExample">Participant Configs <b class="caret pull-right" style="text-align:right;"></b></button>
+			<button type="button" class="collapsible" data-toggle="collapse" data-target="#participantConfig"
+				aria-expanded="false" aria-controls="collapseExample">Participant Configs <b class="caret pull-right"
+					style="text-align:right;"></b></button>
 			<div class="collapse-content" id="participantConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="participant_login_prefix" class="control-label"><?= $this->translate->_("Participant Login Prefix"); ?></label>
-						<input type="text" class="form-control" id="participant_login_prefix" name="participant_login_prefix" placeholder="Enter participant login prefix" title="Please enter participant login prefix" value="<?php echo $this->participant_login_prefix; ?>" />
+						<label for="participant_login_prefix"
+							class="control-label"><?= $this->translate->_("Participant Login Prefix"); ?></label>
+						<input type="text" class="form-control" id="participant_login_prefix"
+							name="participant_login_prefix" placeholder="Enter participant login prefix"
+							title="Please enter participant login prefix"
+							value="<?php echo $this->participant_login_prefix; ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="participant_login_password_length" class="control-label"><?= $this->translate->_("Participant Login Password Length"); ?></label>
-						<input type="text" class="form-control" id="participant_login_password_length" name="participant_login_password_length" placeholder="Enter participant login password length" title="Please enter participant login password length" value="<?php echo $this->participant_login_password_length; ?>" />
+						<label for="participant_login_password_length"
+							class="control-label"><?= $this->translate->_("Participant Login Password Length"); ?></label>
+						<input type="text" class="form-control" id="participant_login_password_length"
+							name="participant_login_password_length"
+							placeholder="Enter participant login password length"
+							title="Please enter participant login password length"
+							value="<?php echo $this->participant_login_password_length; ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="participants_can_edit_name" class="control-label"><?= $this->translate->_("Participant Can Edit Name"); ?> <span class="mandatory">*</span></label>
+						<label for="participants_can_edit_name"
+							class="control-label"><?= $this->translate->_("Participant Can Edit Name"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "yes") ? " active " : "notActive"; ?>" data-toggle="participants_can_edit_name" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "no") ? " active " : "notActive"; ?>" data-toggle="participants_can_edit_name" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="participants_can_edit_name" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "no") ? " active " : "notActive"; ?>"
+									data-toggle="participants_can_edit_name" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
-							<input type="hidden" name="participants_can_edit_name" id="participants_can_edit_name" value="<?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "no") ? " yes " : "no"; ?>">
+							<input type="hidden" name="participants_can_edit_name" id="participants_can_edit_name"
+								value="<?php echo (isset($this->participants_can_edit_name) && $this->participants_can_edit_name == "no") ? " yes " : "no"; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
-						<label for="participant_feedback" class="control-label"><?= $this->translate->_("Participant Feedback"); ?></label>
+						<label for="participant_feedback"
+							class="control-label"><?= $this->translate->_("Participant Feedback"); ?></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "yes") ? " active " : "notActive"; ?>" data-toggle="participant_feedback" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "no") ? " active " : "notActive"; ?>" data-toggle="participant_feedback" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="participant_feedback" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->participant_feedback) && $this->participant_feedback == "no") ? " active " : "notActive"; ?>"
+									data-toggle="participant_feedback" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="participant_feedback" id="participant_feedback">
 						</div>
@@ -357,198 +490,323 @@ $faqResults = json_decode($this->faqs);
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="direct_participant_login" class="control-label"><?= $this->translate->_("Direct Participant Login"); ?> <span class="mandatory">*</span></label>
+						<label for="direct_participant_login"
+							class="control-label"><?= $this->translate->_("Direct Participant Login"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "yes") ? " active " : "notActive"; ?>" data-toggle="direct_participant_login" data-title="yes" onclick="toggleRadios(this);">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "no") ? " active " : "notActive"; ?>" data-toggle="direct_participant_login" data-title="no" onclick="toggleRadios(this);">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="direct_participant_login" data-title="yes"
+									onclick="toggleRadios(this);">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->direct_participant_login) && $this->direct_participant_login == "no") ? " active " : "notActive"; ?>"
+									data-toggle="direct_participant_login" data-title="no"
+									onclick="toggleRadios(this);">NO</a>
 							</div>
 							<input type="hidden" name="direct_participant_login" id="direct_participant_login">
 						</div>
 					</div>
 					<div class="col-md-6">
-						<label for="enable_login_attempt_ban" class="control-label"><?= $this->translate->_("Enable Login Attempt Ban"); ?> <span class="mandatory">*</span></label>
+						<label for="enable_login_attempt_ban"
+							class="control-label"><?= $this->translate->_("Enable Login Attempt Ban"); ?> <span
+								class="mandatory">*</span></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? " active " : "notActive"; ?>" data-toggle="enable_login_attempt_ban" data-title="yes" onclick="toggleRadios(this);participantLoginBan();">YES</a>
-								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "no") ? " active " : "notActive"; ?>" data-toggle="enable_login_attempt_ban" data-title="no" onclick="toggleRadios(this);participantLoginBan();">NO</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? " active " : "notActive"; ?>"
+									data-toggle="enable_login_attempt_ban" data-title="yes"
+									onclick="toggleRadios(this);participantLoginBan();">YES</a>
+								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "no") ? " active " : "notActive"; ?>"
+									data-toggle="enable_login_attempt_ban" data-title="no"
+									onclick="toggleRadios(this);participantLoginBan();">NO</a>
 							</div>
 							<input type="hidden" name="enable_login_attempt_ban" id="enable_login_attempt_ban">
 						</div>
 					</div>
 				</div>
-				<div class="row banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
-					<div class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
-						<label for="temporary_login_ban_time" class="control-label"><?= $this->translate->_("Temporary Login Ban Time in Minutes:Seconds"); ?> <span class="mandatory">*</span></label>
-						<input type="number" class="form-control" id="temporary_login_ban_time" name="temporary_login_ban_time" placeholder="Enter temporary login ban time" title="Please enter temporary login ban time" value="<?php echo $this->temporary_login_ban_time ?? null; ?>" />
+				<div
+					class="row banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
+					<div
+						class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
+						<label for="temporary_login_ban_time"
+							class="control-label"><?= $this->translate->_("Temporary Login Ban Time in Minutes:Seconds"); ?>
+							<span class="mandatory">*</span></label>
+						<input type="number" class="form-control" id="temporary_login_ban_time"
+							name="temporary_login_ban_time" placeholder="Enter temporary login ban time"
+							title="Please enter temporary login ban time"
+							value="<?php echo $this->temporary_login_ban_time ?? null; ?>" />
 					</div>
-					<div class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
-						<label for=" max_attempts_for_temp_ban" class="control-label"><?= $this->translate->_("Maximum attempts For Temporary Ban"); ?> <span class="mandatory">*</span></label>
-						<input type="number" class="form-control" id="max_attempts_for_temp_ban" name="max_attempts_for_temp_ban" placeholder="Enter maximum attempts for temporary ban" title="Please enter maximum attempts for temporary ban" value="<?php echo $this->max_attempts_for_temp_ban ?? null; ?>" />
+					<div
+						class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
+						<label for=" max_attempts_for_temp_ban"
+							class="control-label"><?= $this->translate->_("Maximum attempts For Temporary Ban"); ?>
+							<span class="mandatory">*</span></label>
+						<input type="number" class="form-control" id="max_attempts_for_temp_ban"
+							name="max_attempts_for_temp_ban" placeholder="Enter maximum attempts for temporary ban"
+							title="Please enter maximum attempts for temporary ban"
+							value="<?php echo $this->max_attempts_for_temp_ban ?? null; ?>" />
 					</div>
-					<div class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
-						<label for=" max_attempts_for_perm_ban" class="control-label"><?= $this->translate->_("Maximum Attempts for Permanently Ban"); ?> <span class="mandatory">*</span></label>
-						<input type="number" class="form-control" id="max_attempts_for_perm_ban" name="max_attempts_for_perm_ban" placeholder="Enter maximum attempts for permanetly ban" title="Please enter maximum attempts for permanetly ban" value="<?php echo $this->max_attempts_for_perm_ban ?? null; ?>" />
+					<div
+						class="col-md-6 banTimer <?php echo (isset($this->enable_login_attempt_ban) && $this->enable_login_attempt_ban == "yes") ? "  " : "hide"; ?>">
+						<label for=" max_attempts_for_perm_ban"
+							class="control-label"><?= $this->translate->_("Maximum Attempts for Permanently Ban"); ?>
+							<span class="mandatory">*</span></label>
+						<input type="number" class="form-control" id="max_attempts_for_perm_ban"
+							name="max_attempts_for_perm_ban" placeholder="Enter maximum attempts for permanetly ban"
+							title="Please enter maximum attempts for permanetly ban"
+							value="<?php echo $this->max_attempts_for_perm_ban ?? null; ?>" />
 					</div>
 				</div>
 			</div><br>
 
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#emailConfig" aria-expanded="false" aria-controls="collapseExample">Email Configs <b class="caret pull-right" style="text-align:right;"></b></button>
+			<button type="button" class="collapsible" data-toggle="collapse" data-target="#emailConfig"
+				aria-expanded="false" aria-controls="collapseExample">Email Configs <b class="caret pull-right"
+					style="text-align:right;"></b></button>
 			<div class="collapse-content" id="emailConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="host" class="control-label"><?= $this->translate->_("Email Host"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->host ?? null; ?>" id="host" name="emailConfig[host]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the host of the email'); ?>" title="Please enter the email host" />
+						<label for="host" class="control-label"><?= $this->translate->_("Email Host"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->host ?? null; ?>" id="host"
+							name="emailConfig[host]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the host of the email'); ?>"
+							title="Please enter the email host" />
 					</div>
 					<div class="col-md-6">
-						<label for="port" class="control-label"><?= $this->translate->_("Email Port"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->port ?? null; ?>" id="port" name="emailConfig[port]" class="form-control isRequired isValidPort" placeholder="<?= $this->translate->_('Enter the email port'); ?>" title="Please enter a valid email port (1-65535)" />
+						<label for="port" class="control-label"><?= $this->translate->_("Email Port"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->port ?? null; ?>" id="port"
+							name="emailConfig[port]" class="form-control isRequired isValidPort"
+							placeholder="<?= $this->translate->_('Enter the email port'); ?>"
+							title="Please enter a valid email port (1-65535)" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="fromName" class="control-label"><?= $this->translate->_("From Name"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="fromName" name="emailConfig[fromName]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from name'); ?>" />
+						<label for="fromName" class="control-label"><?= $this->translate->_("From Name"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->fromName ?? null; ?>" id="fromName"
+							name="emailConfig[fromName]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the from name'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="fromEmail" class="ccontrol-label"><?= $this->translate->_("From Email"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail" name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
+						<label for="fromEmail" class="ccontrol-label"><?= $this->translate->_("From Email"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->fromEmail ?? null; ?>" id="fromEmail"
+							name="emailConfig[fromEmail]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the from email'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
 						<label for="cc" class="control-label"><?= $this->translate->_("CC"); ?></label>
-						<input type="text" value="<?php echo $emailConfig->cc ?? null; ?>" id="cc" name="emailConfig[cc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
+						<input type="text" value="<?php echo $emailConfig->cc ?? null; ?>" id="cc"
+							name="emailConfig[cc]" class="form-control" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter CC emails'); ?>" />
 					</div>
 					<div class="col-md-6">
 						<label for="bcc" class="control-label"><?= $this->translate->_("BCC"); ?></label>
-						<input type="text" value="<?php echo $emailConfig->bcc ?? null; ?>" id="bcc" name="emailConfig[bcc]" class="form-control" style="background: #fff" placeholder="<?= $this->translate->_('Enter the to CC'); ?>" />
+						<input type="text" value="<?php echo $emailConfig->bcc ?? null; ?>" id="bcc"
+							name="emailConfig[bcc]" class="form-control" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter BCC emails'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="ssl" class="control-label"><?= $this->translate->_("SSL type"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->ssl ?? null; ?>" id="ssl" name="emailConfig[ssl]" class="form-control isRequired isValidSSL" style="background: #fff" placeholder="<?= $this->translate->_('Enter the ssl for email (tls, ssl, starttls, or none)'); ?>" title="Please enter a valid SSL type (tls, ssl, starttls, or none)" />
+						<label for="ssl" class="control-label"><?= $this->translate->_("SSL type"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->ssl ?? null; ?>" id="ssl"
+							name="emailConfig[ssl]" class="form-control isRequired isValidSSL" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the ssl for email (tls, ssl, starttls, or none)'); ?>"
+							title="Please enter a valid SSL type (tls, ssl, starttls, or none)" />
 					</div>
 					<div class="col-md-6">
-						<label for="email" class="control-label"><?= $this->translate->_("User Email ID"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->username ?? null; ?>" id="email" name="emailConfig[username]" class="form-control isRequired isEmail" style="background: #fff" placeholder="<?= $this->translate->_('Enter the email id'); ?>" title="Please enter a valid email address" />
+						<label for="email" class="control-label"><?= $this->translate->_("User Email ID"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->username ?? null; ?>" id="email"
+							name="emailConfig[username]" class="form-control isRequired isEmail"
+							style="background: #fff" placeholder="<?= $this->translate->_('Enter the email id'); ?>"
+							title="Please enter a valid email address" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="password" class="control-label"><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->password ?? null; ?>" id="password" name="emailConfig[password]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
+						<label for="password" class="control-label"><?= $this->translate->_("Password"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->password ?? null; ?>" id="password"
+							name="emailConfig[password]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="auth" class="control-label"><?= $this->translate->_("Auth Type"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $emailConfig->auth ?? null; ?>" id="auth" name="emailConfig[auth]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
+						<label for="auth" class="control-label"><?= $this->translate->_("Auth Type"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $emailConfig->auth ?? null; ?>" id="auth"
+							name="emailConfig[auth]" class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the password for email'); ?>" />
 					</div>
 				</div>
 			</div><br>
 
-			<button type="button" class="collapsible" data-toggle="collapse" data-target="#homeConfig" aria-expanded="false" aria-controls="collapseExample">Home Section Configs <b class="caret pull-right" style="text-align:right;"></b></button>
+			<button type="button" class="collapsible" data-toggle="collapse" data-target="#homeConfig"
+				aria-expanded="false" aria-controls="collapseExample">Home Section Configs <b class="caret pull-right"
+					style="text-align:right;"></b></button>
 			<div class="collapse-content" id="homeConfig">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeTitle" class="control-label"><?= $this->translate->_("Title"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the home section title'); ?>" title="Please enter the home section title" />
+						<label for="homeTitle" class="control-label"><?= $this->translate->_("Title"); ?> <span
+								class="mandatory">*</span></label>
+						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
+							class="form-control isRequired" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter the home section title'); ?>"
+							title="Please enter the home section title" />
 					</div>
 					<div class="col-md-6">
-						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading 1"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading1" name="home[heading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 1'); ?>" title="Please enter a home heading 1"><?php echo $home->heading1 ?? null; ?></textarea>
+						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading 1"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeHeading1" name="home[heading1]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home heading 1'); ?>"
+							title="Please enter a home heading 1"><?php echo $home->heading1 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading 2"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading2" name="home[heading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 2'); ?>" title="Please enter a home heading 2"><?php echo $home->heading2 ?? null; ?></textarea>
+						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading 2"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeHeading2" name="home[heading2]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home heading 2'); ?>"
+							title="Please enter a home heading 2"><?php echo $home->heading2 ?? null; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading 3"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading3" name="home[heading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 3'); ?>" title="Please enter a home heading 3"><?php echo $home->heading3 ?? null; ?></textarea>
+						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading 3"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeHeading3" name="home[heading3]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home heading 3'); ?>"
+							title="Please enter a home heading 3"><?php echo $home->heading3 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Sub Heading 1"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 1'); ?>" title="Please enter a home sub heading 1"><?php echo $home->subHeading1 ?? null; ?></textarea>
+						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Sub Heading 1"); ?>
+							<span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home sub heading 1'); ?>"
+							title="Please enter a home sub heading 1"><?php echo $home->subHeading1 ?? null; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Sub Heading 2"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 2'); ?>" title="Please enter a home sub heading 2"><?php echo $home->subHeading2 ?? null; ?></textarea>
+						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Sub Heading 2"); ?>
+							<span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home sub heading 2'); ?>"
+							title="Please enter a home sub heading 2"><?php echo $home->subHeading2 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Sub Heading 3"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 3'); ?>" title="Please enter a home sub heading 3"><?php echo $home->subHeading3 ?? null; ?></textarea>
+						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Sub Heading 3"); ?>
+							<span class="mandatory">*</span></label>
+						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home sub heading 3'); ?>"
+							title="Please enter a home sub heading 3"><?php echo $home->subHeading3 ?? null; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeIcon1" name="home[icon1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home icon 1'); ?>" title=" Please enter a home Icon 1"><?php echo $home->icon1 ?? null; ?></textarea>
+						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeIcon1" name="home[icon1]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home icon 1'); ?>"
+							title=" Please enter a home Icon 1"><?php echo $home->icon1 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeIcon2" name="home[icon2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home icon 2'); ?>" title=" Please enter a home Icon 2"><?php echo $home->icon2 ?? null; ?></textarea>
+						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeIcon2" name="home[icon2]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home icon 2'); ?>"
+							title=" Please enter a home Icon 2"><?php echo $home->icon2 ?? null; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeIcon3" name="home[icon3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home icon 3'); ?>" title=" Please enter a home Icon 3"><?php echo $home->icon3 ?? null; ?></textarea>
+						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeIcon3" name="home[icon3]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home icon 3'); ?>"
+							title=" Please enter a home Icon 3"><?php echo $home->icon3 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeVideoUrl" name="home[videoUrl]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home section video URL'); ?>" title=" Please enter a home section video URL"><?php echo $home->videoUrl ?? null; ?></textarea>
+						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeVideoUrl" name="home[videoUrl]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home section video URL'); ?>"
+							title=" Please enter a home section video URL"><?php echo $home->videoUrl ?? null; ?></textarea>
 					</div>
 					<div class="col-md-6">
-						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeAdditionalLink" name="home[additionalLink]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link'); ?>" title=" Please enter a home additional link"><?php echo $home->additionalLink ?? null; ?></textarea>
+						<label for="homeAdditionalLink"
+							class="control-label"><?= $this->translate->_("Additional Link"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeAdditionalLink" name="home[additionalLink]" class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home additional link'); ?>"
+							title=" Please enter a home additional link"><?php echo $home->additionalLink ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link text'); ?>" title=" Please enter a home additional link text"><?php echo $home->additionalLinkText ?? null; ?></textarea>
+						<label for="homeAdditionalLinkText"
+							class="control-label"><?= $this->translate->_("Additional Link Text"); ?> <span
+								class="mandatory">*</span></label>
+						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]"
+							class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the home additional link text'); ?>"
+							title=" Please enter a home additional link text"><?php echo $home->additionalLinkText ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
-					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix" id="faqTable">
+					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
+						id="faqTable">
 						<thead>
 							<tr>
-								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Questions"); ?></th>
-								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Answeres"); ?></th>
-								<th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+								<th style="text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Questions"); ?></th>
+								<th style="text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Answeres"); ?></th>
+								<th style="width:5%;text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Add/Remove Row"); ?></th>
 							</tr>
 						</thead>
 						<tbody id="faqTable">
 							<?php if (isset($faqResults) && !empty($faqResults)) {
-								foreach ((array)$faqResults as $faq => $answer) { ?>
+								foreach ((array) $faqResults as $faq => $answer) { ?>
 									<tr>
 										<td>
-											<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"><?php echo $faq; ?></textarea>
+											<textarea name="faqQuestions[]" class="form-control input-sm"
+												placeholder="Enter the question"
+												title="Please enter the question"><?php echo $faq; ?></textarea>
 										</td>
 										<td>
-											<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"><?php echo $answer; ?></textarea>
+											<textarea name="faqAnswers[]" class="form-control input-sm"
+												placeholder="Enter the answers"
+												title="Please enter the question"><?php echo $answer; ?></textarea>
 										</td>
 										<td>
-											<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+											<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');"
+												class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
+												href="javascript:void(0);" onclick="removeRow(this)"
+												class="btn btn-xs btn-danger" title="Remove this row completely"
+												alt="Remove this row completely"><i class="icon-minus"></i></a>
 										</td>
 									</tr>
 								<?php }
 							} else { ?>
 								<tr>
 									<td>
-										<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"></textarea>
+										<textarea name="faqQuestions[]" class="form-control input-sm"
+											placeholder="Enter the question" title="Please enter the question"></textarea>
 									</td>
 									<td>
-										<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"></textarea>
+										<textarea name="faqAnswers[]" class="form-control input-sm"
+											placeholder="Enter the answers" title="Please enter the question"></textarea>
 									</td>
 									<td>
-										<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+										<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');"
+											class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 									</td>
 								</tr>
 							<?php } ?>
@@ -561,8 +819,10 @@ $faqResults = json_decode($this->faqs);
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
 			<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo">
 			<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo">
-			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
+			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+				tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
+			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8"
+				value="<?= $this->translate->_("Back"); ?>" />
 		</div>
 	</form>
 </div>
@@ -585,9 +845,9 @@ $faqResults = json_decode($this->faqs);
 		}
 	}
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		// Collapsible functionality
-		$('.collapsible').on('click', function() {
+		$('.collapsible').on('click', function () {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -598,19 +858,19 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Expand All functionality
-		$('#expandAll').on('click', function() {
+		$('#expandAll').on('click', function () {
 			$('.collapse-content').slideDown();
 			$('.collapsible').addClass('active');
 		});
 
 		// Collapse All functionality
-		$('#collapseAll').on('click', function() {
+		$('#collapseAll').on('click', function () {
 			$('.collapse-content').slideUp();
 			$('.collapsible').removeClass('active');
 		});
 
 		// Jump to section functionality
-		$('#jumpToSection').on('change', function() {
+		$('#jumpToSection').on('change', function () {
 			var sectionId = $(this).val();
 			if (sectionId) {
 				// Open the selected section
@@ -625,7 +885,7 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Search functionality
-		$('#searchSettings').on('keyup', function() {
+		$('#searchSettings').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 
 			if (searchTerm === '') {
@@ -637,11 +897,11 @@ $faqResults = json_decode($this->faqs);
 			}
 
 			// Search through all form fields
-			$('.collapse-content').each(function() {
+			$('.collapse-content').each(function () {
 				var section = $(this);
 				var hasMatch = false;
 
-				section.find('label, input, textarea, select').each(function() {
+				section.find('label, input, textarea, select').each(function () {
 					var text = $(this).text().toLowerCase() || $(this).attr('placeholder')?.toLowerCase() || '';
 
 					if (text.includes(searchTerm)) {
@@ -668,7 +928,7 @@ $faqResults = json_decode($this->faqs);
 			includeSelectAllOption: true
 		});
 
-		$('#training_instance').on('change', function() {
+		$('#training_instance').on('change', function () {
 			if ($(this).val() == 'no') {
 				$('#training_instance_text').removeClass('isRequired');
 				$('#training_instance_text').val('');
@@ -739,7 +999,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+		$(obj.parentNode.parentNode).fadeOut("normal", function () {
 			$(this).remove();
 		});
 	}
