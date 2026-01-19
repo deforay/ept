@@ -681,6 +681,8 @@ class Application_Service_Evaluation
 		}
 		if ($params['scheme'] == 'eid') {
 
+			$eidPassPercentage = $schemeConfig->getSchemeConfig('eid.passPercentage') ?? 100;
+
 			if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != "") {
 				$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 				$ifExist = $dbAdapter->fetchRow($dbAdapter->select()->from(array('rea' => 'r_eid_extraction_assay'))->where('name LIKE "' . $params['extractionAssayOther'] . '%"'));
@@ -790,11 +792,7 @@ class Application_Service_Evaluation
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = ($shipmentScore + $docScore);
-				if ($grandTotal < $dtsPasspercentage) {
-					$finalResult = 2;
-				} else {
-					$finalResult = 1;
-				}
+				$finalResult = ($grandTotal < $eidPassPercentage) ? 2 : 1;
 			}
 
 			if (isset($params['labDirectorName']) && $params['labDirectorName'] != "") {
@@ -802,25 +800,25 @@ class Application_Service_Evaluation
 				/* Shipment Participant table updation */
 				$dbAdapter->update(
 					'shipment_participant_map',
-					array(
+					[
 						'lab_director_name' => $params['labDirectorName'],
 						'lab_director_email' => $params['labDirectorEmail'],
 						'contact_person_name' => $params['contactPersonName'],
 						'contact_person_email' => $params['contactPersonEmail'],
 						'contact_person_telephone' => $params['contactPersonTelephone']
-					),
+					],
 					'map_id = ' . $params['smid']
 				);
 				/* Participant table updation */
 				$dbAdapter->update(
 					'participant',
-					array(
+					[
 						'lab_director_name' => $params['labDirectorName'],
 						'lab_director_email' => $params['labDirectorEmail'],
 						'contact_person_name' => $params['contactPersonName'],
 						'contact_person_email' => $params['contactPersonEmail'],
 						'contact_person_telephone' => $params['contactPersonTelephone']
-					),
+					],
 					'participant_id = ' . $params['participantId']
 				);
 			}
@@ -835,7 +833,7 @@ class Application_Service_Evaluation
 			$attributes["stop_watch"] = (isset($params['stopWatch']) && !empty($params['stopWatch'])) ? $params['stopWatch'] : '';
 			$attributes = json_encode($attributes);
 
-			$mapdata = array(
+			$mapdata = [
 				"shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receivedOn']),
 				"shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testedOn']),
 				"attributes" => $attributes,
@@ -844,7 +842,7 @@ class Application_Service_Evaluation
 				"user_comment" => $params['userComments'],
 				"updated_by_admin" => $admin,
 				"updated_on_admin" => new Zend_Db_Expr('now()')
-			);
+			];
 			if (isset($params['customField1']) && trim($params['customField1']) != "") {
 				$mapdata['custom_field_1'] = $params['customField1'];
 			}
@@ -855,7 +853,7 @@ class Application_Service_Evaluation
 			$db->update('shipment_participant_map', $mapdata, "map_id = " . $params['smid']);
 
 			for ($i = 0; $i < $size; $i++) {
-				$db->update('response_result_dts', array(
+				$db->update('response_result_dts', [
 					'test_kit_name_1' => $params['test_kit_name_1'],
 					'lot_no_1' => $params['lot_no_1'],
 					'exp_date_1' => Pt_Commons_General::isoDateFormat($params['exp_date_1']),
@@ -883,16 +881,12 @@ class Application_Service_Evaluation
 					'kit_additional_info' => json_encode($params['additionalInfoKit'][$i], true),
 					'updated_by' => $admin,
 					'updated_on' => new Zend_Db_Expr('now()')
-				), "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
+				], "shipment_map_id = " . $params['smid'] . " AND sample_id = " . $params['sampleId'][$i]);
 			}
 			/* Manual result override changes */
 			if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
 				$grandTotal = number_format($shipmentScore + $docScore);
-				if ($grandTotal < $dtsPasspercentage) {
-					$finalResult = 2;
-				} else {
-					$finalResult = 1;
-				}
+				$finalResult = ($grandTotal < $dtsPasspercentage) ? 2 : 1;
 			}
 		} elseif ($params['scheme'] == 'vl') {
 
