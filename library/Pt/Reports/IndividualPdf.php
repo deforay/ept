@@ -311,13 +311,13 @@ class Pt_Reports_IndividualPdf extends Fpdi
                 $this->writeHTML($instituteAddress, true, false, true, false, "L");
             }
         }
-        $effectiveDate = new DateTime($showTime);
+        $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
 
             // $this->Ln();
 
-            $effectiveMonthYear = ($this->schemeType == 'tb') ? "March 2022" : $effectiveDate->format('M Y');
+            $effectiveMonthYear = (!empty($effectiveDate) || $effectiveDate != '') ? $effectiveDate->format('M Y') : '';
             $this->SetFont('freesans', '', 10);
             if ($this->schemeType == 'tb') {
                 $this->SetFont('freesans', '', 9);

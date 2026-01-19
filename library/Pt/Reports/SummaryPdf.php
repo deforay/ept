@@ -339,12 +339,13 @@ class Pt_Reports_SummaryPdf extends Fpdi
             $this->writeHTML($instituteAddress, true, false, true, false, "L");
         }
         if (($this->schemeType == 'eid' || $this->schemeType == 'vl') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
-            $effectiveDate = new DateTime($showTime);
+            $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
+            $effectiveMonthYear = (!empty($effectiveDate) || $effectiveDate != '') ? $effectiveDate->format('M Y') : '';
             $this->SetFont('freesans', '', 10, '', true);
-            $this->Cell(0, 10, 'Effective Date:' . $effectiveDate->format('M Y'), 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(0, 10, 'Effective Date:' . $effectiveMonthYear, 0, false, 'L', 0, '', 0, false, 'T', 'M');
         } else {
-            $effectiveDate = new DateTime($showTime);
-            $effectiveMonthYear = ($this->schemeType == 'tb') ? "June 2022" : $effectiveDate->format('M Y');
+            $effectiveDate = (!empty($showTime) || $showTime != '') ? new DateTime($showTime) : null;
+            $effectiveMonthYear = (!empty($effectiveDate) || $effectiveDate != '') ? $effectiveDate->format('M Y') : '';
             if ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
                 $this->SetFont('freesans', '', 9, '', true);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
