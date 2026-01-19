@@ -400,6 +400,15 @@ class Application_Model_Tb
         return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
     }
 
+    private static function sortBySampleLabelNatural(array $rows, $key = 'sample_label')
+    {
+        usort($rows, function ($left, $right) use ($key) {
+            return strnatcasecmp((string) ($left[$key] ?? ''), (string) ($right[$key] ?? ''));
+        });
+
+        return $rows;
+    }
+
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
     {
 
@@ -451,15 +460,17 @@ class Application_Model_Tb
             )
             ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
             ->where("spm.shipment_id = ?", $sId)
-            // ->where("spm.participant_id = ?", $pId)
-            ->order(['ref.sample_label ASC']);
+            ->order('ref.sample_id ASC');
+        // ->where("spm.participant_id = ?", $pId)
         if (!empty($pId)) {
             $sql = $sql->where("spm.participant_id = ?", $pId);
         }
         if (isset($type) && $type == "shipment") {
             $sql = $sql->group("ref.sample_id");
         }
-        return $db->fetchAll($sql);
+        $rows = $db->fetchAll($sql);
+
+        return self::sortBySampleLabelNatural($rows);
     }
 
     public function getAllTbAssays()
@@ -1189,8 +1200,9 @@ class Application_Model_Tb
             ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->where("spm.map_id = ?", $mapId)
-            ->order(['ref.sample_label ASC']);
+            ->order('ref.sample_id ASC');
         $result = $this->db->fetchAll($sQuery);
+        $result = self::sortBySampleLabelNatural($result);
         $response = [];
         foreach ($result as $key => $row) {
             $attributes = [];
