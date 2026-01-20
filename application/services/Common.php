@@ -1343,21 +1343,7 @@ class Application_Service_Common
 
     public static function isJSON($string, bool $logError = false): bool
     {
-        if (empty($string) || !is_string($string)) {
-            return false;
-        }
-
-        json_decode($string);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return true;
-        } else {
-            if ($logError) {
-                throw new Exception('error', 'JSON decoding error: ' . json_last_error_msg());
-                //throw new Exception('error', 'Invalid JSON: ' . $string);
-            }
-            return false;
-        }
+        return Pt_Commons_JsonUtility::isJSON($string, $logError);
     }
 
     // Convert a value to a JSON-compatible string representation

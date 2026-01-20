@@ -24,8 +24,9 @@ $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 try {
     $db->query("SELECT 1 FROM `run_once_scripts` LIMIT 1");
 } catch (Exception $e) {
-    $io->error('Missing table run_once_scripts. Run migrations (7.3.3+) first.');
-    exit(1);
+    // Table doesn't exist - log warning and exit gracefully (don't block upgrade)
+    $io->warning('Missing table run_once_scripts. Run-once scripts will be skipped. Run migrations (7.3.3+) to enable.');
+    exit(0);
 }
 
 $scripts = glob($runOnceDir . '/*.php') ?: [];
@@ -82,5 +83,7 @@ foreach ($scripts as $scriptPath) {
 }
 
 if ($hadFailures) {
-    exit(1);
+    // Log failures but don't block the upgrade process - exit gracefully
+    $io->warning('Some run-once scripts had failures (see logs above). Continuing with upgrade.');
 }
+exit(0);
