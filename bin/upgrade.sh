@@ -860,6 +860,10 @@ wait $pid
 print success "Database migrations and post-update tasks completed."
 log_action "Database migrations and post-update tasks completed."
 
+# Run any run-once scripts for this EPT path
+print header "Running run-once scripts"
+sudo -u www-data php "${ept_path}/bin/run-once.php"
+
 # Make the runner script executable
 chmod +x "${ept_path}/runner" 2>/dev/null
 sudo rm /usr/local/bin/runner 2>/dev/null || true
