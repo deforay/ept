@@ -199,45 +199,45 @@
         },
         {
             "name": "crunzphp/crunz",
-            "version": "v3.8.1",
+            "version": "v3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crunzphp/crunz.git",
-                "reference": "09276e03debd10c92f12e6fb4abc63e770aefce3"
+                "reference": "cc4a871d8fa1eeaad311bd90f78aab96ebe67401"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crunzphp/crunz/zipball/09276e03debd10c92f12e6fb4abc63e770aefce3",
-                "reference": "09276e03debd10c92f12e6fb4abc63e770aefce3",
+                "url": "https://api.github.com/repos/crunzphp/crunz/zipball/cc4a871d8fa1eeaad311bd90f78aab96ebe67401",
+                "reference": "cc4a871d8fa1eeaad311bd90f78aab96ebe67401",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.0",
                 "dragonmantank/cron-expression": "^3.4.0",
                 "laravel/serializable-closure": "^2.0",
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "psr/log": "^2.0 || ^3.0",
-                "symfony/config": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/console": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/dependency-injection": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/filesystem": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/lock": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/mailer": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/process": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/string": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/yaml": "^5.4.40 || ^6.4.10 || ^7.1.0"
+                "symfony/config": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/console": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/dependency-injection": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/filesystem": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/lock": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/mailer": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/process": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/string": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/yaml": "^6.4.25 || ^7.4.0 || ^8.0.0"
             },
             "require-dev": {
                 "ergebnis/composer-normalize": "2.28.3",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "friendsofphp/php-cs-fixer": "3.64",
+                "friendsofphp/php-cs-fixer": "3.90.0",
                 "phpstan/phpstan": "2.0.2",
                 "phpstan/phpstan-phpunit": "2.0.1",
                 "phpstan/phpstan-strict-rules": "2.0.0",
-                "phpunit/phpunit": "10.5.38",
-                "symfony/error-handler": "^5.4.40 || ^6.4.10 || ^7.1.0",
-                "symfony/phpunit-bridge": "^5.4.40 || ^6.4.10 || ^7.1.0"
+                "phpunit/phpunit": "10.5.60",
+                "symfony/error-handler": "^6.4.25 || ^7.4.0 || ^8.0.0",
+                "symfony/phpunit-bridge": "^6.4.25 || ^7.4.0 || ^8.0.0"
             },
             "bin": [
                 "crunz"
@@ -277,7 +277,7 @@
             ],
             "support": {
                 "issues": "https://github.com/crunzphp/crunz/issues",
-                "source": "https://github.com/crunzphp/crunz/tree/v3.8.1"
+                "source": "https://github.com/crunzphp/crunz/tree/v3.9.0"
             },
             "funding": [
                 {
@@ -285,7 +285,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-17T15:58:18+00:00"
+            "time": "2026-01-08T16:21:56+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -600,16 +600,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.7",
+            "version": "v2.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "cb291e4c998ac50637c7eeb58189c14f5de5b9dd"
+                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/cb291e4c998ac50637c7eeb58189c14f5de5b9dd",
-                "reference": "cb291e4c998ac50637c7eeb58189c14f5de5b9dd",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/7581a4407012f5f53365e11bafc520fd7f36bc9b",
+                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b",
                 "shasum": ""
             },
             "require": {
@@ -657,7 +657,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2025-11-21T20:52:36+00:00"
+            "time": "2026-01-08T16:22:46+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -1492,16 +1492,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "5.3.0",
+            "version": "5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "4d597c1aacdde1805a33c525b9758113ea0d90df"
+                "reference": "48f2fe37d64c2dece0ef71fb2ac55497566782af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/4d597c1aacdde1805a33c525b9758113ea0d90df",
-                "reference": "4d597c1aacdde1805a33c525b9758113ea0d90df",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/48f2fe37d64c2dece0ef71fb2ac55497566782af",
+                "reference": "48f2fe37d64c2dece0ef71fb2ac55497566782af",
                 "shasum": ""
             },
             "require": {
@@ -1509,6 +1509,7 @@
                 "ext-ctype": "*",
                 "ext-dom": "*",
                 "ext-fileinfo": "*",
+                "ext-filter": "*",
                 "ext-gd": "*",
                 "ext-iconv": "*",
                 "ext-libxml": "*",
@@ -1523,13 +1524,12 @@
                 "markbaker/complex": "^3.0",
                 "markbaker/matrix": "^3.0",
                 "php": "^8.1",
-                "psr/http-client": "^1.0",
-                "psr/http-factory": "^1.0",
                 "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "dev-main",
                 "dompdf/dompdf": "^2.0 || ^3.0",
+                "ext-intl": "*",
                 "friendsofphp/php-cs-fixer": "^3.2",
                 "mitoteam/jpgraph": "^10.5",
                 "mpdf/mpdf": "^8.1.1",
@@ -1543,7 +1543,7 @@
             },
             "suggest": {
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
-                "ext-intl": "PHP Internationalization Functions, required for NumberFormat Wizard",
+                "ext-intl": "PHP Internationalization Functions, required for NumberFormat Wizard and StringHelper::setLocale()",
                 "mitoteam/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
@@ -1576,6 +1576,9 @@
                 },
                 {
                     "name": "Adrien Crivelli"
+                },
+                {
+                    "name": "Owen Leibman"
                 }
             ],
             "description": "PHPSpreadsheet - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
@@ -1592,9 +1595,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/5.3.0"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/5.4.0"
             },
-            "time": "2025-11-24T15:47:10+00:00"
+            "time": "2026-01-11T04:52:00+00:00"
         },
         {
             "name": "phpoffice/phpword",
@@ -1806,113 +1809,6 @@
                 "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
             },
             "time": "2019-01-08T18:20:26+00:00"
-        },
-        {
-            "name": "psr/http-client",
-            "version": "1.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/http-client.git",
-                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-client/zipball/bb5906edc1c324c9a05aa0873d40117941e5fa90",
-                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0 || ^8.0",
-                "psr/http-message": "^1.0 || ^2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Http\\Client\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for HTTP clients",
-            "homepage": "https://github.com/php-fig/http-client",
-            "keywords": [
-                "http",
-                "http-client",
-                "psr",
-                "psr-18"
-            ],
-            "support": {
-                "source": "https://github.com/php-fig/http-client"
-            },
-            "time": "2023-09-23T14:17:50+00:00"
-        },
-        {
-            "name": "psr/http-factory",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/http-factory.git",
-                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
-                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1",
-                "psr/http-message": "^1.0 || ^2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Http\\Message\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "https://www.php-fig.org/"
-                }
-            ],
-            "description": "PSR-17: Common interfaces for PSR-7 HTTP message factories",
-            "keywords": [
-                "factory",
-                "http",
-                "message",
-                "psr",
-                "psr-17",
-                "psr-7",
-                "request",
-                "response"
-            ],
-            "support": {
-                "source": "https://github.com/php-fig/http-factory"
-            },
-            "time": "2024-04-15T12:06:14+00:00"
         },
         {
             "name": "psr/http-message",

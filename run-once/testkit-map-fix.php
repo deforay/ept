@@ -1,17 +1,15 @@
 <?php
-// PTCC manager location wise mapping issue fixing auto runner
-// set php memeroy limit
+
 ini_set('memory_limit', '-1');
 require_once __DIR__ . '/../cli-bootstrap.php'; //Initiate the cron
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV); // Define the db resource config object
 $general = new Application_Service_Common(); // Declare the common functionality access object
 try {
-    $db = Zend_Db::factory($conf->resources->db);
-    Zend_Db_Table::setDefaultAdapter($db);
-    /* To get list of ptcc manager */
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
     $sQuery = $db->select()
-        ->from(array('rt' => 'r_testkitnames'));
+        ->from(['rt' => 'r_testkitnames']);
     $result = $db->fetchAll($sQuery);
     if (!empty($result)) {
         foreach ($result as $key => $row) {

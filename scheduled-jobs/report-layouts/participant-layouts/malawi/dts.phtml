@@ -123,8 +123,9 @@ if (!empty($resultArray['shipment'])) {
 
         $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
-        if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms))
+        if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
             $allowedAlgorithms = explode(',', $allowedAlgorithms);
+        }
         $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
         $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;

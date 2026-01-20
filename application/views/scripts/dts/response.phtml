@@ -1,19 +1,18 @@
 <?php
-$dtsConfig = $this->dtsConfig;
-if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
-    $dtsConfig = json_decode($dtsConfig);
-} elseif (is_array($dtsConfig)) {
-    $dtsConfig = (object) $dtsConfig;
-}
-$allowedAlgorithms = $dtsConfig->allowedAlgorithms;
-if (!is_array($allowedAlgorithms))
+$dtsConfig = $this->dtsConfig ?? [];
+
+$allowedAlgorithms = $dtsConfig['allowedAlgorithms'] ?? null;
+
+if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
     $allowedAlgorithms = explode(',', $allowedAlgorithms);
-$optionalTest3 = $dtsConfig->dtsOptionalTest3 ?? 'no';
-$allowRepeatTests = $dtsConfig->allowRepeatTests ?? 0;
-$rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
-$disableOtherTestkit = $$dtsConfig->disableOtherTestkit ?? 'no';
-$dtsSchemeType = $dtsConfig->dtsSchemeType ?? 'standard';
-$collectAdditionalTestkits = $dtsConfig->collectAdditionalTestkits ?? 'no';
+}
+
+$optionalTest3 = $dtsConfig['dtsOptionalTest3'] ?? 'no';
+$allowRepeatTests = $dtsConfig['allowRepeatTests'] ?? 0;
+$rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
+$disableOtherTestkit = $dtsConfig['disableOtherTestkit'] ?? 'no';
+$dtsSchemeType = $dtsConfig['dtsSchemeType'] ?? 'standard';
+$collectAdditionalTestkits = $dtsConfig['collectAdditionalTestkits'] ?? 'no';
 
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $participantAttributes = [];
@@ -33,7 +32,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 }
 
 $panelSettings = (new Application_Model_Dts())->getDtsPanelSettings(
-    (array)$dtsConfig,
+    (array) $dtsConfig,
     $shipmentAttributes,
     $participantAttributes,
     $dtsSchemeType,
@@ -251,27 +250,33 @@ foreach ($this->allTestKits as $kit) {
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('cotedivoireNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="cotedivoireNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'cotedivoireNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("Côte d'Ivoire National Algorithm"); ?></option>
+                                            <?= $this->translate->_("Côte d'Ivoire National Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('myanmarNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="myanmarNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'myanmarNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("Myanmar National Algorithm"); ?></option>
+                                            <?= $this->translate->_("Myanmar National Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('sierraLeoneNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="sierraLeoneNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'sierraLeoneNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("Sierra Leone National Algorithm"); ?></option>
+                                            <?= $this->translate->_("Sierra Leone National Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('malawiNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="malawiNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'malawiNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("Malawi National Algorithm"); ?></option>
+                                            <?= $this->translate->_("Malawi National Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('ghanaNationalDtsAlgo', $allowedAlgorithms)) { ?>
                                         <option value="ghanaNationalDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'ghanaNationalDtsAlgo') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("Ghana National Algorithm"); ?></option>
+                                            <?= $this->translate->_("Ghana National Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('dts-3-tests', $allowedAlgorithms)) { ?>
                                         <option value="dts-3-tests" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'dts-3-tests') ? "selected='selected'" : ''; ?>>
-                                            <?= $this->translate->_("3 Test DTS Algorithm"); ?></option>
+                                            <?= $this->translate->_("3 Test DTS Algorithm"); ?>
+                                        </option>
                                     <?php }
                                     if (!empty($allowedAlgorithms) && in_array('screening', $allowedAlgorithms)) { ?>
                                         <option value="screening" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'screening') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Screening Test"); ?></option>
@@ -493,26 +498,32 @@ foreach ($this->allTestKits as $kit) {
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
                                     <?php } ?>
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth testOneSpan">
-                                        <?= $this->translate->_("Test-1"); ?></th>
+                                        <?= $this->translate->_("Test-1"); ?>
+                                    </th>
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo  testTwoSpan colwidth'>
-                                        <?= $this->translate->_("Test-2"); ?></th>
+                                        <?= $this->translate->_("Test-2"); ?>
+                                    </th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree testThreeSpan colwidth'>
-                                        <?= $this->translate->_("Test-3"); ?></th>
+                                        <?= $this->translate->_("Test-3"); ?>
+                                    </th>
                                     <?php if ($allowRepeatTests) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth testOneRepeatSpan">
                                             <?= $this->translate->_("Repeat Test-1"); ?> &nbsp;&nbsp;&nbsp;<input
                                                 type="checkbox" id="repeat_check_1" name="repeat_check[1]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_1"]) && !empty($this->allSamples[0]["repeat_test_kit_name_1"])) ? 'checked="checked"' : ''; ?> class="form-check-input"
-                                                onchange="showHideRepeatTests(this, '.repeat_1')" /></th>
+                                                onchange="showHideRepeatTests(this, '.repeat_1')" />
+                                        </th>
                                         <th style="width: <?php echo $width; ?>%;"
                                             class='testTwo testTwoRepeatSpan repeatTestTwo colwidth'>
                                             <?= $this->translate->_("Repeat Test-2"); ?> &nbsp;&nbsp;&nbsp;<input
                                                 type="checkbox" id="repeat_check_2" name="repeat_check[2]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_2"]) && !empty($this->allSamples[0]["repeat_test_kit_name_2"])) ? 'checked="checked"' : ''; ?> class="form-check-input"
-                                                onchange="showHideRepeatTests(this, '.repeat_2')" /></th>
+                                                onchange="showHideRepeatTests(this, '.repeat_2')" />
+                                        </th>
                                         <th style="width: <?php echo $width; ?>%;"
                                             class='testThree testThreeRepeatSpan repeatTestThree colwidth'>
                                             <?= $this->translate->_("Repeat Test-3"); ?> &nbsp;&nbsp;&nbsp;<input
                                                 type="checkbox" id="repeat_check_3" name="repeat_check[3]" <?php echo (isset($this->allSamples[0]["repeat_test_kit_name_3"]) && !empty($this->allSamples[0]["repeat_test_kit_name_3"])) ? 'checked="checked"' : ''; ?> class="form-check-input"
-                                                onchange="showHideRepeatTests(this, '.repeat_3')" /></th>
+                                                onchange="showHideRepeatTests(this, '.repeat_3')" />
+                                        </th>
                                     <?php } ?>
                                     <!-- <th class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></th> -->
                                 </tr>
@@ -849,9 +860,11 @@ foreach ($this->allTestKits as $kit) {
                                             title="Please select the QC done for test 1">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "yes") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("Yes"); ?></option>
+                                                <?= $this->translate->_("Yes"); ?>
+                                            </option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_1']) && $this->allSamples[0]['qc_done_1'] == "no") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("No"); ?></option>
+                                                <?= $this->translate->_("No"); ?>
+                                            </option>
                                         </select>
                                     </td>
                                     <td class='testTwo testTwoSpan'>
@@ -859,9 +872,11 @@ foreach ($this->allTestKits as $kit) {
                                             title="Please select the QC done for test 2">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "yes") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("Yes"); ?></option>
+                                                <?= $this->translate->_("Yes"); ?>
+                                            </option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_2']) && $this->allSamples[0]['qc_done_2'] == "no") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("No"); ?></option>
+                                                <?= $this->translate->_("No"); ?>
+                                            </option>
                                         </select>
                                     </td>
                                     <td class='testThree testThreeSpan'>
@@ -869,9 +884,11 @@ foreach ($this->allTestKits as $kit) {
                                             title="Please select the QC done for test 3">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                             <option value="yes" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "yes") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("Yes"); ?></option>
+                                                <?= $this->translate->_("Yes"); ?>
+                                            </option>
                                             <option value="no" <?php echo (isset($this->allSamples[0]['qc_done_3']) && $this->allSamples[0]['qc_done_3'] == "no") ? "selected='selected'" : "" ?>>
-                                                <?= $this->translate->_("No"); ?></option>
+                                                <?= $this->translate->_("No"); ?>
+                                            </option>
                                         </select>
                                     </td>
                                     <?php if ($allowRepeatTests) { ?>
@@ -1019,36 +1036,47 @@ foreach ($this->allTestKits as $kit) {
                                 <?php } ?>
                                 <tr align="CENTER" class="dark auto-width autoWidth">
                                     <th style="width: <?php echo $width; ?>%;" class="colwidth">
-                                        <?= $this->translate->_("PT Panel Identifier"); ?></th>
+                                        <?= $this->translate->_("PT Panel Identifier"); ?>
+                                    </th>
                                     <?php if ($syphilisActive) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="syphilis-fields colwidth">
-                                            <?= $this->translate->_("Type of Test"); ?></th>
+                                            <?= $this->translate->_("Type of Test"); ?>
+                                        </th>
                                     <?php } ?>
                                     <th class="colwidth testOneHead" style="width: <?php echo $width; ?>%;">
-                                        <?= $this->translate->_("Result-1"); ?></th>
+                                        <?= $this->translate->_("Result-1"); ?>
+                                    </th>
                                     <th style="width: <?php echo $width; ?>%;" class='testTwo testTwoHead colwidth'>
-                                        <?= $this->translate->_("Result-2"); ?></th>
+                                        <?= $this->translate->_("Result-2"); ?>
+                                    </th>
                                     <th style="width: <?php echo $width; ?>%;" class='testThree testThreeHead colwidth'>
-                                        <?= $this->translate->_("Result-3"); ?></th>
+                                        <?= $this->translate->_("Result-3"); ?>
+                                    </th>
                                     <?php if ($allowRepeatTests) { ?>
                                         <th class="colwidth testOneRepeatHead" style="width: <?php echo $width; ?>%;">
-                                            <?= $this->translate->_("Repeat Result-1"); ?></th>
+                                            <?= $this->translate->_("Repeat Result-1"); ?>
+                                        </th>
                                         <th style="width: <?php echo $width; ?>%;"
                                             class='testTwoRepeatHead repeatTestTwo testTwo colwidth'>
-                                            <?= $this->translate->_("Repeat Result-2"); ?></th>
+                                            <?= $this->translate->_("Repeat Result-2"); ?>
+                                        </th>
                                         <th style="width: <?php echo $width; ?>%;"
                                             class='testThreeRepeatHead repeatTestThree testThree colwidth'>
-                                            <?= $this->translate->_("Repeat Result-3"); ?></th>
+                                            <?= $this->translate->_("Repeat Result-3"); ?>
+                                        </th>
                                     <?php } ?>
                                     <th class="colwidth" style="width: <?php echo $width; ?>%;">
-                                        <?php echo $resultText; ?></th>
+                                        <?php echo $resultText; ?>
+                                    </th>
                                     <?php if ($adminAccess) { ?>
                                         <th class="colwidth" style="width: <?php echo $width; ?>%;">
-                                            <?= $this->translate->_("Reference Result"); ?></th>
+                                            <?= $this->translate->_("Reference Result"); ?>
+                                        </th>
                                     <?php }
                                     if ($isThisRetestField) { ?>
                                         <th class="colwidth" style="width: <?php echo $width; ?>%;">
-                                            <?= $this->translate->_("Is this a Retest?"); ?></th>
+                                            <?= $this->translate->_("Is this a Retest?"); ?>
+                                        </th>
                                     <?php } ?>
                                 </tr>
                             </thead>
@@ -1072,7 +1100,8 @@ foreach ($this->allTestKits as $kit) {
                                         <th style="text-align:left;" class="syphilis-fields colwidth">
                                             <ul style="list-style:none;padding: 0px;">
                                                 <li style="padding: 5% 4%;border-bottom: 1px solid gray;">
-                                                    <?= $this->translate->_("HIV"); ?></li>
+                                                    <?= $this->translate->_("HIV"); ?>
+                                                </li>
                                                 <li style="padding: 5% 4%;"><?= $this->translate->_("SYPHILIS"); ?></li>
                                             </ul>
                                         </th>
@@ -1168,9 +1197,11 @@ foreach ($this->allTestKits as $kit) {
                                                 style="float: left;">
                                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                 <option value="yes" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "yes") ? "selected='selected'" : "" ?>>
-                                                    <?= $this->translate->_("Yes"); ?></option>
+                                                    <?= $this->translate->_("Yes"); ?>
+                                                </option>
                                                 <option value="no" <?php echo (isset($sample['is_this_retest']) && $sample['is_this_retest'] == "no") ? "selected='selected'" : "" ?>>
-                                                    <?= $this->translate->_("No"); ?></option>
+                                                    <?= $this->translate->_("No"); ?>
+                                                </option>
                                             </select>
                                         </td>
                                     <?php } ?>
@@ -1234,17 +1265,23 @@ foreach ($this->allTestKits as $kit) {
                                     <thead>
                                         <tr align="center" class="">
                                             <th style="width:5%;text-align: center;">
-                                                <?= $this->translate->_("RTRI Tested?"); ?></th>
+                                                <?= $this->translate->_("RTRI Tested?"); ?>
+                                            </th>
                                             <th style="width:19%;text-align: center;">
-                                                <?= $this->translate->_("Control/Sample"); ?></th>
+                                                <?= $this->translate->_("Control/Sample"); ?>
+                                            </th>
                                             <th style="width:19%;text-align: center;">
-                                                <?= $this->translate->_("Control Line"); ?></th>
+                                                <?= $this->translate->_("Control Line"); ?>
+                                            </th>
                                             <th style="width:19%;text-align: center;">
-                                                <?= $this->translate->_("Verification Line"); ?></th>
+                                                <?= $this->translate->_("Verification Line"); ?>
+                                            </th>
                                             <th style="width:19%;text-align: center;">
-                                                <?= $this->translate->_("Longterm Line"); ?></th>
+                                                <?= $this->translate->_("Longterm Line"); ?>
+                                            </th>
                                             <th style="width:19%;text-align: center;">
-                                                <?= $this->translate->_("Final RTRI Interpretation"); ?></th>
+                                                <?= $this->translate->_("Final RTRI Interpretation"); ?>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody id="rtrisectionTable">
@@ -1284,7 +1321,8 @@ foreach ($this->allTestKits as $kit) {
                                                         title="Please choose verification line" <?php echo $dtsRtriIsEditable; ?>>
                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "present") ? "selected='selected'" : ""; ?>>
-                                                            <?= $this->translate->_("Present"); ?></option>
+                                                            <?= $this->translate->_("Present"); ?>
+                                                        </option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_diagnosis_line']) && $sample['dts_rtri_diagnosis_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?>
                                                         </option>
                                                     </select>
@@ -1296,7 +1334,8 @@ foreach ($this->allTestKits as $kit) {
                                                         title="Please choose Longterm line" <?php echo $dtsRtriIsEditable; ?>>
                                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                                         <option value="present" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "present") ? "selected='selected'" : ""; ?>>
-                                                            <?= $this->translate->_("Present"); ?></option>
+                                                            <?= $this->translate->_("Present"); ?>
+                                                        </option>
                                                         <option value="absent" <?php echo (isset($sample['dts_rtri_longterm_line']) && $sample['dts_rtri_longterm_line'] == "absent") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Absent"); ?></option>
                                                     </select>
                                                 </td>
@@ -1347,9 +1386,9 @@ foreach ($this->allTestKits as $kit) {
                                     title="Please select if Supervisor Approval was conducted or not">
                                     <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                                     <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
-                                                            echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
+                                        echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
                                     <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
-                                                            echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
+                                        echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
                                 </select></td>
                             <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
@@ -1404,7 +1443,8 @@ foreach ($this->allTestKits as $kit) {
                                 title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                 <option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no">
-                                    <?= $this->translate->_("No"); ?></option>
+                                    <?= $this->translate->_("No"); ?>
+                                </option>
                                 <option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") ? " selected='selected' " : ""; ?>
                                     value="yes"><?= $this->translate->_("Yes"); ?></option>
                             </select>
@@ -1446,7 +1486,8 @@ foreach ($this->allTestKits as $kit) {
                                     foreach ($warnings as $warning) { ?>
                                         <tr>
                                             <td class="text-danger">
-                                                <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?></td>
+                                                <?php echo (isset($warning['warning']) ? $warning['warning'] : ""); ?>
+                                            </td>
                                             <td><?php echo (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : ""); ?>
                                             </td>
                                             <!-- Manual result override changes -->
@@ -1456,7 +1497,7 @@ foreach ($this->allTestKits as $kit) {
                                                     value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label
                                                     for="manualCorrective<?php echo $i; ?>"> </label></td>
                                         </tr>
-                                    <?php $i++;
+                                        <?php $i++;
                                     } ?>
                                 </table>
                             </td>
@@ -1501,7 +1542,8 @@ foreach ($this->allTestKits as $kit) {
                                 <select name="isExcluded" id="isExcluded" class="form-control isRequired"
                                     title="Please choose whether this response is excluded from evaluation or not">
                                     <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no">
-                                        <?= $this->translate->_("No"); ?></option>
+                                        <?= $this->translate->_("No"); ?>
+                                    </option>
                                     <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?>
                                         value="yes"><?= $this->translate->_("Yes"); ?></option>
                                 </select>
@@ -1584,13 +1626,13 @@ foreach ($this->allTestKits as $kit) {
         window.history.back();
     }
 
-    $(function() {
+    $(function () {
         $("#avilableTestKit").select2({
             placeholder: $(this).attr('title'),
             minimumInputLength: 0,
             width: '100%',
             allowClear: true,
-            id: function(bond) {
+            id: function (bond) {
                 return bond._id;
             },
             ajax: {
@@ -1598,13 +1640,13 @@ foreach ($this->allTestKits as $kit) {
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'testkit-list'), 'default', true); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function(params) {
+                data: function (params) {
                     return {
                         q: params.term, // search term
                         page: params.page
                     };
                 },
-                processResults: function(data, params) {
+                processResults: function (data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -1615,7 +1657,7 @@ foreach ($this->allTestKits as $kit) {
                 },
                 //cache: true
             },
-            escapeMarkup: function(markup) {
+            escapeMarkup: function (markup) {
                 return markup;
             }
         });
@@ -1631,7 +1673,7 @@ foreach ($this->allTestKits as $kit) {
         <?php } ?>
 
         // $('#isPtTestNotPerformed').trigger("change");
-        $('#receivedPtPanel').on("change", function() {
+        $('#receivedPtPanel').on("change", function () {
             if ($(this).val() == 'yes') {
                 $('#receiptDate').addClass('isRequired');
             } else {
@@ -1655,14 +1697,14 @@ foreach ($this->allTestKits as $kit) {
             dateFormat: '<?php echo $dtFormat; ?>'
         });
         <?php if (!$this->isEditable && !$adminAccess) {
-        ?>
+            ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
             $(".icon-remove-sign").remove();
-        <?php
+            <?php
         }
         ?>
 
-        $('#supervisorApproval').change(function() {
+        $('#supervisorApproval').change(function () {
 
             if ($('#supervisorApproval').val() == 'yes') {
                 $('#labSupervisor').show();
@@ -1722,7 +1764,7 @@ foreach ($this->allTestKits as $kit) {
             $("#retest_test_kit_other_name_update_3").val('');
         }
 
-        $('.testkit-change').change(function() {
+        $('.testkit-change').change(function () {
             var id = $(this).attr("id");
             // $("#repeat_" + id).val(this.value);
             /* Screening and Confirmatory changes */
@@ -1736,10 +1778,10 @@ foreach ($this->allTestKits as $kit) {
         var kitNoList = ["test_kit_name_1", "test_kit_name_2", "test_kit_name_3", "repeat_test_kit_name_1", "repeat_test_kit_name_2", "repeat_test_kit_name_3"];
         var kitIdList = ["One", "Two", "Three", "OneRepeat", "TwoRepeat", "ThreeRepeat"];
         var kitKeyList = ["1", "2", "3", "R1", "R2", "R3"];
-        $.each(kitNoList, function(index, idx) {
+        $.each(kitNoList, function (index, idx) {
             testKitInfo($('#' + idx), kitIdList[index], kitKeyList[index]);
         });
-        $('#isExcluded').change(function() {
+        $('#isExcluded').change(function () {
             if (this.value == 'yes') {
                 if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
                     showdefModal('removeParticipant', 500, 250);
@@ -1759,14 +1801,14 @@ foreach ($this->allTestKits as $kit) {
     function removeParticipantConfirmation() {
         if ($('#removeParticipantPassword').val() != '') {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-                    participantId: $('#participantId').val(),
-                    shipmentId: $('#shipmentId').val(),
-                    smid: $('#smid').val(),
-                    password: $('#removeParticipantPassword').val(),
-                    testType: 'dts',
-                    format: "html"
-                },
-                function(data) {
+                participantId: $('#participantId').val(),
+                shipmentId: $('#shipmentId').val(),
+                smid: $('#smid').val(),
+                password: $('#removeParticipantPassword').val(),
+                testType: 'dts',
+                format: "html"
+            },
+                function (data) {
                     if (!data) {
                         alert('Entered Password was wrong please try again later');
                         return false;
@@ -1834,7 +1876,7 @@ foreach ($this->allTestKits as $kit) {
     }
 
     //PT not performed case
-    $('#isPtTestNotPerformed').change(function() {
+    $('#isPtTestNotPerformed').change(function () {
         if ($(this).is(':checked')) {
             $('.vlResultSection').hide();
             $('.vlResultValues').val('');
@@ -1965,9 +2007,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                    class="testKit' + row + 'Input kitAddionalInput">\
-                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                    </td>');
+                                                                                                        class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                            <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                        </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {
@@ -1986,7 +2028,7 @@ foreach ($this->allTestKits as $kit) {
         var len = $('.autoWidth th').length;
         if (len > 0) {
             colwidth = 100 / len;
-            $('.autoWidth th').each(function(index, e) {
+            $('.autoWidth th').each(function (index, e) {
                 $(e).css('width', colwidth + '%');
             });
             $('.autoWidthSub th').css('width', colwidth + '%');
