@@ -1595,9 +1595,9 @@ foreach ($this->allTestKits as $kit) {
 
         if (test2Hidden == 'yes') {
             $('.testTwo').hide();
-            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '85%');
+            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '100%');
         } else {
-            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
+            $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '100%');
             $('.testTwo').show();
         }
 
@@ -1613,7 +1613,7 @@ foreach ($this->allTestKits as $kit) {
         } else {
             $('.testThree').show();
         }
-        $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
+        $('.testOne .expDatepicker, .testTwo .expDatepicker, .testThree .expDatepicker, .repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '100%');
         // if ($("#algorithm").val() != 'malawiNationalDtsAlgo') {
         //     $('.malawiNationalDtsAlgo').hide();
         // } else {
@@ -1667,9 +1667,9 @@ foreach ($this->allTestKits as $kit) {
         <?php if ($repeatTest1) { ?>
             $('.repeatTestTwo, .repeatTestThree').remove();
             $('.repeatTestsHeader').parent().remove();
-            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '85%');
+            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '100%');
         <?php } else { ?>
-            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '75%');
+            $('.repeatTestOne .expDatepicker, .repeatTestTwo .expDatepicker, .repeatTestThree .expDatepicker').css("width", '100%');
         <?php } ?>
 
         // $('#isPtTestNotPerformed').trigger("change");
@@ -2007,9 +2007,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                        class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                            <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                        </td>');
+                                                                                                                    class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                    </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {
