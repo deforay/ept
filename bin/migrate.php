@@ -40,8 +40,13 @@ if (!file_exists($logsDir)) {
     $canLog = is_readable($logsDir) && is_writable($logsDir);
 }
 
-$db = Zend_Db::factory($conf->resources->db);
-Zend_Db_Table::setDefaultAdapter($db);
+try {
+    $db = Zend_Db::factory($conf->resources->db);
+    Zend_Db_Table::setDefaultAdapter($db);
+} catch (Exception $e) {
+    echo "Error: Failed to connect to database: " . $e->getMessage() . "\n";
+    exit(1);
+}
 
 /* ---------------------- CLI flags ---------------------- */
 
@@ -346,11 +351,19 @@ function progress_bar(int $current, int $total, int $size = 30): void
 
 /* ---------------------- End helpers ---------------------- */
 
-// read current app version from DB
-$currentVersion = (string)$db->fetchOne(
-    $db->select()->from('system_config', ['value'])
-        ->where('config = ?', 'app_version')
-);
+// read current app version from DB (handle missing table for fresh installs)
+if (table_exists($db, 'system_config')) {
+    $currentVersion = (string)$db->fetchOne(
+        $db->select()->from('system_config', ['value'])
+            ->where('config = ?', 'app_version')
+    );
+} else {
+    // Table doesn't exist - start from beginning (run all migrations)
+    $currentVersion = '0.0.0';
+    if (!$quietMode) {
+        echo "Note: system_config table not found. Running all migrations from the beginning.\n";
+    }
+}
 
 // collect migrations
 $migrationFiles = (array)glob(DB_PATH . '/migrations/*.sql');
