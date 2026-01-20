@@ -681,7 +681,32 @@ final class Application_Model_Dts
 						(isset($testKitRecommendedUsed[$kitIndex]) && $testKitRecommendedUsed[$kitIndex] === false)
 					) {
 						$testKitExpiryResult = 'Fail';
-						$totalScore = 0;
+
+						// Myanmar special handling for expired/non-recommended Test Kit 2 or 3:
+						// If Test Kit 1 is valid (not expired), only penalize samples that
+						// actually used the problematic kit, instead of zeroing all scores
+						$applyMyanmarSampleOnlyPenalty = (
+							$dtsSchemeType === 'myanmar' &&
+							$kitIndex > 1 &&
+							!($testKitExpired[1] ?? false)
+						);
+
+						if ($applyMyanmarSampleOnlyPenalty) {
+							// Only subtract this sample's score contribution (if it was added)
+							if ($correctResponse) {
+								$totalScore -= ($scoreForSample + $scoreForAlgorithm);
+							}
+							// Add failure reason for this specific sample (use same corrective action as blanket fail)
+							$failureReason[] = [
+								'warning' => "Sample <strong>" . $result['sample_label'] . "</strong> failed: used expired/non-recommended Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . "</strong>).",
+								'correctiveAction' => $correctiveActions[5]
+							];
+							$correctiveActionList[] = 5;
+						} else {
+							// Original behavior: zero everything
+							$totalScore = 0;
+						}
+
 						$correctResponse = false;
 						$algoResult = 'Fail';
 						$interpretationResult = 'Fail';
