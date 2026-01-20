@@ -99,21 +99,16 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } elseif ($sid == 'dts') {
 
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-                $config = $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
                 $common = new Application_Service_Common();
                 $this->view->dtsConfig = $common->getSchemeConfig('dts');
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
-                $dtsSchemeType = isset($config->evaluation->dts->dtsSchemeType) ? $config->evaluation->dts->dtsSchemeType : 'standard';
+                $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'standard';
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dts', 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
                     $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency', 'admin');
                 }
                 $this->view->allTestKits = $scheme->getAllDtsTestKit();
-
-                $this->view->config = $config;
-
                 $this->view->wb = $scheme->getDbsWb();
                 $this->view->eia = $scheme->getDbsEia();
             } elseif ($sid == 'dbs') {

@@ -31,6 +31,6 @@ class Admin_RecencySettingsController extends Zend_Controller_Action
                 $common->saveSchemeConfigByName($recency, 'recency');
             }
         }
-        $this->view->recencyConfig = $common->getSchemeConfig('recency');
+        $this->view->recencyConfig = Pt_Commons_SchemeConfig::get('recency');
     }
 }

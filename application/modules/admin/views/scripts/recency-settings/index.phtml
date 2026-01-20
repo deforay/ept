@@ -2,7 +2,8 @@
 if (Application_Service_Common::isJSON($this->recencyConfig))
     $recency = json_decode($this->recencyConfig);
 else
-    $recency = $this->recencyConfig;
+    $recency = (object)$this->recencyConfig;
+
 ?>
 <div class="well">
     <form name="recencySettingsForm" id="recencySettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "recency-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
