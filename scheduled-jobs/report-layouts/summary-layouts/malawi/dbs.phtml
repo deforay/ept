@@ -4,7 +4,9 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+//$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+$config = Pt_Commons_SchemeConfig::get('dts');
+
 if ($resultArray['shipment'] != "") {
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
@@ -87,7 +89,7 @@ if ($resultArray['shipment'] != "") {
     }
     if (isset($resultArray['shipment']['summaryResult']) && count($resultArray['shipment']['summaryResult']) > 0) {
         $labCounter = 1;
-        $pass = $config->evaluation->dts->passPercentage;
+        $pass = $config['passPercentage'];
         $barPoints["0 - 59"] = 0;
         $barPoints["60 - 69"] = 0;
         $barPoints["70 - $pass"] = 0;
@@ -110,11 +112,11 @@ if ($resultArray['shipment'] != "") {
                     $barPoints["60 - 69"]++;
                 } elseif ($totalScore > 69 && $totalScore <= $pass) {
                     $barPoints["70 - $pass"]++;
-                } elseif ($totalScore > $config->evaluation->dts->passPercentage) {
+                } elseif ($totalScore > $config['passPercentage']) {
                     $barPoints[$abovePass]++;
                 } else {
                 }
-                if (($totalScore) >= $config->evaluation->dts->passPercentage) {
+                if (($totalScore) >= $config['passPercentage']) {
                     $maxScore++;
                 } else {
                     $belowScore++;
@@ -201,8 +203,8 @@ if ($resultArray['shipment'] != "") {
 
         $overview = '<table border="1" style="font-size:13px;"><tr>';
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Responses </td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config->evaluation->dts->passPercentage . '"</td>';
-        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config->evaluation->dts->passPercentage . '" </td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring >= "' . $config['passPercentage'] . '"</td>';
+        $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $config['passPercentage'] . '" </td>';
         $overview .= '</tr>';
 
 
