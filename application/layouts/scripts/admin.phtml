@@ -57,6 +57,200 @@ if ($adminSession->privileges != "") {
 	$pstatus = true;
 	$privileges = [];
 }
+
+// Spotlight Search Data Generation
+$spotlightItems = [];
+
+// Dashboard - always visible
+$spotlightItems[] = [
+	'id' => 'dashboard',
+	'title' => $this->translate->_('Dashboard'),
+	'category' => $this->translate->_('Navigation'),
+	'icon' => 'icon-dashboard',
+	'url' => $this->url(['module' => 'admin', 'controller' => 'index'], 'default', true),
+	'keywords' => ['home', 'main', 'overview']
+];
+
+// Configure menu items
+if (!$pstatus && in_array('config-ept', $privileges)) {
+	$spotlightItems[] = [
+		'id' => 'pt-managers',
+		'title' => $this->translate->_('PT Managers'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-user',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'system-admins'], 'default', true),
+		'keywords' => ['admin', 'users', 'managers']
+	];
+	$spotlightItems[] = [
+		'id' => 'global-settings',
+		'title' => $this->translate->_('ePT Global Settings'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-cog',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'global-config'], 'default', true),
+		'keywords' => ['settings', 'config', 'configuration']
+	];
+	$spotlightItems[] = [
+		'id' => 'audit-log',
+		'title' => $this->translate->_('Audit Log'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-list',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'audit-log'], 'default', true),
+		'keywords' => ['log', 'history', 'changes']
+	];
+}
+
+if (!$pstatus && (in_array('config-ept', $privileges) || in_array('manage-participants', $privileges))) {
+	$spotlightItems[] = [
+		'id' => 'pt-participants',
+		'title' => $this->translate->_('PT Participants'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-group',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'participants'], 'default', true),
+		'keywords' => ['labs', 'facilities', 'sites']
+	];
+	// Quick Actions
+	$spotlightItems[] = [
+		'id' => 'add-participant',
+		'title' => $this->translate->_('Add Participant'),
+		'category' => $this->translate->_('Quick Actions'),
+		'icon' => 'icon-plus',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'add'], 'default', true),
+		'keywords' => ['new', 'create', 'participant', 'lab']
+	];
+	$spotlightItems[] = [
+		'id' => 'bulk-add-participants',
+		'title' => $this->translate->_('Bulk Add Participants'),
+		'category' => $this->translate->_('Quick Actions'),
+		'icon' => 'icon-upload',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'import'], 'default', true),
+		'keywords' => ['import', 'excel', 'csv', 'bulk', 'upload']
+	];
+	$spotlightItems[] = [
+		'id' => 'data-managers',
+		'title' => $this->translate->_('Data Manager (Participant Login)'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-key',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'data-managers'], 'default', true),
+		'keywords' => ['login', 'credentials', 'access']
+	];
+	$spotlightItems[] = [
+		'id' => 'scheme-enrollments',
+		'title' => $this->translate->_('Scheme Enrollments'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-check',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'enrollments'], 'default', true),
+		'keywords' => ['enroll', 'register', 'scheme']
+	];
+	$spotlightItems[] = [
+		'id' => 'email-participants',
+		'title' => $this->translate->_('Email Participants'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-envelope',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'email-participants'], 'default', true),
+		'keywords' => ['mail', 'send', 'notify']
+	];
+}
+
+// Manage menu items
+if (!$pstatus && in_array('manage-shipments', $privileges)) {
+	$spotlightItems[] = [
+		'id' => 'pt-survey',
+		'title' => $this->translate->_('PT Survey'),
+		'category' => $this->translate->_('Manage'),
+		'icon' => 'icon-list-alt',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'distributions'], 'default', true),
+		'keywords' => ['distribution', 'survey', 'round']
+	];
+	$spotlightItems[] = [
+		'id' => 'shipments',
+		'title' => $this->translate->_('Shipments'),
+		'category' => $this->translate->_('Manage'),
+		'icon' => 'icon-truck',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'shipment'], 'default', true),
+		'keywords' => ['panels', 'samples', 'pt']
+	];
+}
+
+// Analyze menu items
+if (!$pstatus && in_array('analyze-generate-reports', $privileges)) {
+	$spotlightItems[] = [
+		'id' => 'evaluate-responses',
+		'title' => $this->translate->_('Evaluate Responses'),
+		'category' => $this->translate->_('Analyze'),
+		'icon' => 'icon-check-sign',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'evaluate'], 'default', true),
+		'keywords' => ['grade', 'score', 'review']
+	];
+	$spotlightItems[] = [
+		'id' => 'generate-reports',
+		'title' => $this->translate->_('Generate Reports'),
+		'category' => $this->translate->_('Analyze'),
+		'icon' => 'icon-file-text',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'distribution'], 'default', true),
+		'keywords' => ['pdf', 'report', 'create']
+	];
+	$spotlightItems[] = [
+		'id' => 'finalize-reports',
+		'title' => $this->translate->_('Finalize Reports'),
+		'category' => $this->translate->_('Analyze'),
+		'icon' => 'icon-ok-sign',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'finalize'], 'default', true),
+		'keywords' => ['complete', 'finish', 'close']
+	];
+}
+
+// Reports menu items
+if (!$pstatus && in_array('access-reports', $privileges)) {
+	// Quick Action
+	$spotlightItems[] = [
+		'id' => 'shipments-report-quick',
+		'title' => $this->translate->_('Shipments Report'),
+		'category' => $this->translate->_('Quick Actions'),
+		'icon' => 'icon-bar-chart',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'shipments'], 'default', true),
+		'keywords' => ['report', 'shipment', 'analytics']
+	];
+	$spotlightItems[] = [
+		'id' => 'shipments-report',
+		'title' => $this->translate->_('Shipments Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-bar-chart',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'shipments'], 'default', true),
+		'keywords' => ['analytics', 'statistics']
+	];
+	$spotlightItems[] = [
+		'id' => 'participant-performance',
+		'title' => $this->translate->_('Participant Performance Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-bar-chart',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'participant-performance'], 'default', true),
+		'keywords' => ['score', 'results', 'performance']
+	];
+	$spotlightItems[] = [
+		'id' => 'participant-response',
+		'title' => $this->translate->_('Participant Response Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-table',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'detailed'], 'default', true),
+		'keywords' => ['detailed', 'response', 'data']
+	];
+	$spotlightItems[] = [
+		'id' => 'corrective-actions',
+		'title' => $this->translate->_('Corrective Actions Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-wrench',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'corrective-actions'], 'default', true),
+		'keywords' => ['corrective', 'action', 'fix']
+	];
+	$spotlightItems[] = [
+		'id' => 'annual-performance',
+		'title' => $this->translate->_('Annual Performance Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-calendar',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'annual'], 'default', true),
+		'keywords' => ['yearly', 'annual', 'summary']
+	];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -71,6 +265,7 @@ if ($adminSession->privileges != "") {
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/DT_bootstrap.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/spotlight-search.css"); ?>" type="text/css" media="all">
 
 
 	<script src="<?php echo $this->baseUrl("js/jquery-3.7.1.min.js"); ?>"></script>
@@ -347,6 +542,12 @@ if ($adminSession->privileges != "") {
 					<?php } ?>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
+					<li class="spotlight-trigger-wrapper">
+						<a href="#" id="spotlightTrigger" title="<?= $this->translate->_('Search'); ?> (Ctrl+K)">
+							<i class="icon-search"></i>
+							<span class="hidden-xs kbd-hint">Ctrl+K</span>
+						</a>
+					</li>
 					<?php if ($notifyCount > 0) { ?>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i class="icon-envelope">
@@ -416,6 +617,24 @@ if ($adminSession->privileges != "") {
 	<script src="/assets/plugins/highcharts/modules/accessibility.js"></script>
 	<script src="/js/highchart-3d.js"></script>
 	<?php require_once WEB_ROOT . '/js/main.js.php'; ?>
+	<script type="text/javascript" src="<?php echo $this->baseUrl("js/spotlight-search.js"); ?>"></script>
+	<script type="text/javascript">
+		window.spotlightBaseUrl = <?php echo json_encode($this->baseUrl()); ?>;
+		window.spotlightData = <?php echo json_encode($spotlightItems, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+		window.spotlightTranslations = {
+			noResults: <?php echo json_encode($this->translate->_('No results found')); ?>,
+			shipments: <?php echo json_encode($this->translate->_('Shipments')); ?>,
+			searching: <?php echo json_encode($this->translate->_('Searching...')); ?>
+		};
+		window.spotlightCategoryOrder = <?php echo json_encode([
+			$this->translate->_('Quick Actions'),
+			$this->translate->_('Navigation'),
+			$this->translate->_('Configure'),
+			$this->translate->_('Manage'),
+			$this->translate->_('Analyze'),
+			$this->translate->_('Reports')
+		]); ?>;
+	</script>
 
 	<script type="text/javascript">
 		$(function() {
@@ -660,6 +879,30 @@ if ($adminSession->privileges != "") {
 		}
 	</script>
 	<img src="/images/loading.gif" alt="Loading..." style="display:none;" />
+
+	<!-- Spotlight Search Modal -->
+	<div id="spotlightModal" class="spotlight-modal" style="display: none;">
+		<div class="spotlight-backdrop"></div>
+		<div class="spotlight-dialog">
+			<div class="spotlight-search-wrapper">
+				<i class="icon-search spotlight-icon"></i>
+				<input type="text"
+					   id="spotlightInput"
+					   class="spotlight-input"
+					   placeholder="<?= $this->translate->_('Search menus, actions...'); ?>"
+					   autocomplete="off" />
+				<span class="spotlight-shortcut">ESC</span>
+			</div>
+			<div id="spotlightResults" class="spotlight-results">
+				<!-- Results populated by JS -->
+			</div>
+			<div class="spotlight-footer">
+				<span><kbd>&uarr;</kbd><kbd>&darr;</kbd> <?= $this->translate->_('Navigate'); ?></span>
+				<span><kbd>Enter</kbd> <?= $this->translate->_('Open'); ?></span>
+				<span><kbd>Esc</kbd> <?= $this->translate->_('Close'); ?></span>
+			</div>
+		</div>
+	</div>
 
 </body>
 

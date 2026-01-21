@@ -51,9 +51,8 @@ class Covid19Controller extends Zend_Controller_Action
 			//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 			//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-			$schemeConfig = new Application_Model_DbTable_SchemeConfig();
-			$this->view->covid19AllowedAlgorithms = $schemeConfig->getSchemeConfig('covid19.allowedAlgorithms');
-			$this->view->covid19MaximumTestAllowed = $schemeConfig->getSchemeConfig('covid19.covid19MaximumTestAllowed');
+			$this->view->covid19AllowedAlgorithms = Pt_Commons_SchemeConfig::get('covid19.allowedAlgorithms');
+			$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
 
 			$participantService = new Application_Service_Participants();
 			$this->view->participant = $participantService->getParticipantDetails($pID);
@@ -110,8 +109,7 @@ class Covid19Controller extends Zend_Controller_Action
 		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 		//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
 
-		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
-		$this->view->covid19MaximumTestAllowed = $schemeConfig->getSchemeConfig('covid19.covid19MaximumTestAllowed');
+		$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
 
 		$participantService = new Application_Service_Participants();
 		$this->view->participant = $participantService->getParticipantDetails($pID);
