@@ -8,7 +8,8 @@ $shipmentsToGenerate = $cliOptions['s'] ?? null;
 $certificateName = !empty($cliOptions['c']) ? $cliOptions['c'] : date('Y');
 $templateMode = strtolower($cliOptions['t'] ?? 'pdf');   // 'pdf' | 'docx'
 
-if (is_array($shipmentsToGenerate)) $shipmentsToGenerate = implode(",", $shipmentsToGenerate);
+if (is_array($shipmentsToGenerate))
+	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
 if (empty($shipmentsToGenerate)) {
 	error_log("Please specify the shipment ids with -s");
 	exit(1);
@@ -38,7 +39,8 @@ function sendNotification($emailConfig, $shipmentsList, ?string $downloadUrl = n
 function findPdftk(): ?string
 {
 	foreach (['/usr/bin/pdftk', '/usr/bin/pdftk-java', '/usr/local/bin/pdftk'] as $p) {
-		if (is_executable($p)) return $p;
+		if (is_executable($p))
+			return $p;
 	}
 	$which = trim(shell_exec('command -v pdftk 2>/dev/null') ?? '');
 	return $which !== '' ? $which : null;
@@ -83,7 +85,8 @@ function findLibreOffice(): ?string
 	// 3) PATH lookups (both names)
 	foreach (['soffice', 'libreoffice'] as $name) {
 		$path = trim(shell_exec('command -v ' . escapeshellarg($name) . ' 2>/dev/null') ?? '');
-		if ($path !== '') $candidates[] = $path;
+		if ($path !== '')
+			$candidates[] = $path;
 	}
 
 	// 4) Return first verified candidate
@@ -103,7 +106,8 @@ function _verifySoffice(string $bin): bool
 {
 	$cmd = escapeshellcmd($bin) . ' --headless --version 2>&1';
 	exec($cmd, $out, $code);
-	if ($code !== 0) return false;
+	if ($code !== 0)
+		return false;
 	$joined = strtolower(implode("\n", $out));
 	// Typical outputs include "LibreOffice" or "soffice ..."
 	return (stripos($joined, 'libreoffice') !== false || stripos($joined, 'soffice') !== false);
@@ -117,8 +121,8 @@ function createFDF(array $data): string
 	// UTF-16BE + BOM for reliable Unicode
 	$fdf = "%FDF-1.2\n1 0 obj\n<< /FDF << /Fields [\n";
 	foreach ($data as $key => $value) {
-		$v = str_replace(["\r\n", "\r", "\n"], "\r", (string)($value ?? ''));
-		$k16 = "\xFE\xFF" . mb_convert_encoding((string)$key, 'UTF-16BE', 'UTF-8');
+		$v = str_replace(["\r\n", "\r", "\n"], "\r", (string) ($value ?? ''));
+		$k16 = "\xFE\xFF" . mb_convert_encoding((string) $key, 'UTF-16BE', 'UTF-8');
 		$v16 = "\xFE\xFF" . mb_convert_encoding($v, 'UTF-16BE', 'UTF-8');
 		$k16 = str_replace(['\\', '(', ')'], ['\\\\', '\(', '\)'], $k16);
 		$v16 = str_replace(['\\', '(', ')'], ['\\\\', '\(', '\)'], $v16);
@@ -173,7 +177,7 @@ function renderDocx(string $docxTemplate, array $fields, string $outDocx): bool
 	};
 
 	foreach ($fields as $k => $v) {
-		$val = $wordSanitize((string)($v ?? ''));
+		$val = $wordSanitize((string) ($v ?? ''));
 		// Support ${participant_name} written in various cases in the DOCX:
 		$names = [$k, strtolower($k), strtoupper($k)];
 		foreach ($names as $name) {
@@ -192,7 +196,8 @@ function renderDocx(string $docxTemplate, array $fields, string $outDocx): bool
 function docxToPdf(string $inDocx, string $outPdf): ?string
 {
 	$soffice = findLibreOffice();
-	if (!$soffice) return null;
+	if (!$soffice)
+		return null;
 
 	$dir = dirname($outPdf);
 	@mkdir($dir, 0777, true);
@@ -234,10 +239,12 @@ function docxToPdf(string $inDocx, string $outPdf): ?string
 $generalModel = new Pt_Commons_General();
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
-$generalModel->rmdirRecursive($folderPath);
+Pt_Commons_General::rmdirRecursive($folderPath);
 $certificatePaths[] = $excellenceCertPath = "$folderPath/excellence";
 $certificatePaths[] = $participationCertPath = "$folderPath/participation";
-foreach ($certificatePaths as $p) if (!is_dir($p)) @mkdir($p, 0777, true);
+foreach ($certificatePaths as $p)
+	if (!is_dir($p))
+		@mkdir($p, 0777, true);
 
 /* ---------- DB + business logic (unchanged) ---------- */
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -258,29 +265,29 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 	$templates = [
 		'excellence' => [
 			'dts' => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.docx",
 			],
 			'eid' => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.docx",
 			],
-			'vl'  => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
+			'vl' => [
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.docx",
 			],
 		],
 		'participation' => [
 			'dts' => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.docx",
 			],
 			'eid' => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.docx",
 			],
-			'vl'  => [
-				'pdf'  => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
+			'vl' => [
+				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
 				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.docx",
 			],
 		],
@@ -295,9 +302,11 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 
 	if ($mode === 'pdf') {
 		$tpl = $t['pdf'] ?? '';
-		if (!is_file($tpl)) throw new Exception("PDF template not found: $tpl");
+		if (!is_file($tpl))
+			throw new Exception("PDF template not found: $tpl");
 		$ok = fillPdfTemplate($tpl, $fields, $outputFileBase . ".pdf");
-		if (!$ok) throw new Exception("PDF fill failed for $tpl");
+		if (!$ok)
+			throw new Exception("PDF fill failed for $tpl");
 		return;
 	}
 
@@ -310,7 +319,8 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 		}
 
 		$outDocx = "$outputFileBase.docx";
-		if (!renderDocx($tpl, $fields, $outDocx)) throw new Exception("DOCX render failed");
+		if (!renderDocx($tpl, $fields, $outDocx))
+			throw new Exception("DOCX render failed");
 
 		// No PDF conversion - let users handle this locally
 		error_log("DOCX certificate generated: $outDocx");
@@ -587,12 +597,13 @@ try {
 
 	foreach ($participants as $participantUID => $arrayVal) {
 		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
-			if (!isset($arrayVal[$shipmentType])) continue;
+			if (!isset($arrayVal[$shipmentType]))
+				continue;
 
 			$certificate = true;
 			$participated = true;
 			$assayName = '';
-			$attribs   = $arrayVal['attribs'] ?? [];
+			$attribs = $arrayVal['attribs'] ?? [];
 
 			foreach ($shipmentsList as $shipmentCode) {
 				// Determine assayName from participant/shipment attributes

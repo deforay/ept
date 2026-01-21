@@ -157,10 +157,6 @@ if (!$isWorker && $debug) {
     ReportJobUtil::log("Debug mode enabled: forcing --procs=1 for verbose output.", $isCli);
 }
 
-// Only print the banner in the master; workers stay silent to keep the spinner clean.
-if ($isCli && !$isWorker) {
-    echo "Report Generation : Using up to {$procs} parallel processes\n";
-}
 
 // Parallel processing uses Symfony Process which relies on `proc_open`.
 // On some Ubuntu hardening configs (or in restricted shared hosting), `proc_open` can be disabled.
@@ -437,6 +433,10 @@ try {
         $evalResult = $db->fetchAll($sQuery);
     }
     if (!empty($evalResult)) {
+        // Only print the banner when there are shipments to process
+        if ($isCli && !$isWorker) {
+            echo "Report Generation : Using up to {$procs} parallel processes\n";
+        }
 
         $evaluatedShipments = [];
 
@@ -532,7 +532,7 @@ try {
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
-                    $generalModel->rmdirRecursive($shipmentCodePath);
+                    Pt_Commons_General::rmdirRecursive($shipmentCodePath);
                     mkdir($shipmentCodePath, 0777, true);
                 }
                 if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip")) {

@@ -196,12 +196,13 @@ class Pt_Commons_General
 
         return $zip->close();
     }
-    public function rmdirRecursive($dir)
+    public static function rmdirRecursive($dir)
     {
         foreach (scandir($dir) as $file) {
-            if ('.' === $file || '..' === $file) continue;
+            if ('.' === $file || '..' === $file)
+                continue;
             if (is_dir("$dir/$file")) {
-                $this->rmdirRecursive("$dir/$file");
+                self::rmdirRecursive("$dir/$file");
             } else {
                 unlink("$dir/$file");
             }
@@ -209,7 +210,7 @@ class Pt_Commons_General
         rmdir($dir);
     }
 
-    public function checkFolder($base, $pattern, $flags)
+    public static function checkFolder($base, $pattern, $flags)
     {
         if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
             $base .= DIRECTORY_SEPARATOR;
@@ -226,20 +227,20 @@ class Pt_Commons_General
         }
 
         foreach ($dirs as $dir) {
-            $dirFiles = $this->checkFolder($dir, $pattern, $flags);
-            $files = array_merge($files, $dirFiles);
+            $dirFiles = self::checkFolder($dir, $pattern, $flags);
+            $files = [...$files, ...$dirFiles];
         }
 
         return $files;
     }
 
 
-    public function recuriveSearch($base, $pattern, $flags = 0)
+    public static function recuriveSearch($base, $pattern, $flags = 0)
     {
         $glob_nocheck = $flags & GLOB_NOCHECK;
         $flags = $flags & ~GLOB_NOCHECK;
 
-        $files = $this->checkFolder($base, $pattern, $flags);
+        $files = self::checkFolder($base, $pattern, $flags);
 
         if ($glob_nocheck && count($files) === 0) {
             return [$pattern];

@@ -41,6 +41,18 @@ try {
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
 		$timeEnd = microtime(true);
 
+		// Delete existing reports if they exist
+		$reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
+		$shipmentCode = $shipmentResult[0]['shipment_code'];
+		$shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $shipmentCode;
+		if (file_exists($shipmentCodePath)) {
+			Pt_Commons_General::rmdirRecursive($shipmentCodePath);
+			mkdir($shipmentCodePath, 0777, true);
+		}
+		if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $shipmentCode . ".zip")) {
+			unlink($reportsPath . DIRECTORY_SEPARATOR . $shipmentCode . ".zip");
+		}
+
 		// Cleanup and notify
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);

@@ -29,7 +29,7 @@ try {
   foreach ($pResult as $pRow) {
 
     $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'certificates' . DIRECTORY_SEPARATOR;
-    $files = $generalModel->recuriveSearch($filePath, "$pRow-*.pdf");
+    $files = Pt_Commons_General::recuriveSearch($filePath, "$pRow-*.pdf");
     // Zend_Debug::dump("$pRow*.pdf");
     // Zend_Debug::dump($filePath);
     // Zend_Debug::dump($files);
