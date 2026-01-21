@@ -33,11 +33,8 @@ try {
 	$db = Zend_Db::factory($conf->resources->db);
 	Zend_Db_Table::setDefaultAdapter($db);
 
-
-	$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 	$jobCompletionAlertStatus = $commonService->getConfig('job_completion_alert_status');
 	$jobCompletionAlertMails = $commonService->getConfig('job_completion_alert_mails');
-
 	$totalShipments = count($shipmentsToEvaluate);
 	$console->writeln("<info>Shipment Evaluation</info> Processing <comment>{$totalShipments}</comment> shipment(s)");
 

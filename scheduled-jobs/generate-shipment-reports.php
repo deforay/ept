@@ -15,7 +15,6 @@ ini_set('max_execution_time', -1);
 
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-$customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
 $isCli = php_sapi_name() === 'cli';
 // Simple logger: print to stdout in CLI for visibility, otherwise use error_log.
@@ -133,7 +132,7 @@ class ReportJobUtil
         if (!is_file($file)) {
             throw new RuntimeException("Template not found: {$file}");
         }
-        (static function () use ($file, $context): void{
+        (static function () use ($file, $context): void {
             extract($context, EXTR_OVERWRITE);
             require $file;
         })();
@@ -224,6 +223,7 @@ try {
     $recencyAssay = $schemeService->getRecencyAssay();
     $downloadDirectory = realpath(DOWNLOADS_FOLDER);
     $reportsPath = $downloadDirectory . DIRECTORY_SEPARATOR . 'reports';
+    $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
     $manualShipmentMode = !$isWorker && !empty($workerShipmentId);
     $manualShipmentLock = null;
@@ -247,9 +247,9 @@ try {
                 }
                 ReportJobUtil::warn(
                     "Shipment {$workerShipmentId} appears locked (lock file: {$info['path']}). " .
-                    "Proceeding due to --force" .
-                    ($ttlOk ? " (lockTtl={$lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
-                    " This can corrupt output if another job is actually running.",
+                        "Proceeding due to --force" .
+                        ($ttlOk ? " (lockTtl={$lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
+                        " This can corrupt output if another job is actually running.",
                     $isCli
                 );
             } else {
@@ -451,6 +451,8 @@ try {
         $evalResult = $db->fetchAll($sQuery);
     }
     if (!empty($evalResult)) {
+        $jobCompletionAlertStatus = $commonService->getConfig('job_completion_alert_status');
+        $jobCompletionAlertMails = $commonService->getConfig('job_completion_alert_mails');
         // Only print the banner when there are shipments to process
         if ($isCli && !$isWorker) {
             Pt_Commons_MiscUtility::console()->writeln("<info>Report Generation</info> Using up to <comment>{$procs}</comment> parallel processes");
@@ -485,7 +487,7 @@ try {
                             }
                             ReportJobUtil::warn(
                                 "Shipment {$shipmentIdForLock} appears locked (lock file: {$info['path']}). " .
-                                "Proceeding due to --force. This can corrupt output if another job is actually running.",
+                                    "Proceeding due to --force. This can corrupt output if another job is actually running.",
                                 $isCli
                             );
                         } else {
@@ -510,7 +512,6 @@ try {
                 if ($isCli) {
                     Pt_Commons_MiscUtility::console()->writeln("Evaluating shipment ID: <comment>{$evalRow['shipment_id']}</comment>");
                 }
-                $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
 
                 if (!isset($evaluatedShipments[$shipmentId])) {
@@ -533,17 +534,16 @@ try {
                     'description' => 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated in ' . round($executionTime, 2) . ' mins',
                     'link' => $link
                 ]);
-
                 if (
-                    isset($customConfig->jobCompletionAlert->status)
-                    && $customConfig->jobCompletionAlert->status == "yes"
-                    && isset($customConfig->jobCompletionAlert->mails)
-                    && !empty($customConfig->jobCompletionAlert->mails)
+                    isset($jobCompletionAlertStatus)
+                    && $jobCompletionAlertStatus == "yes"
+                    && isset($jobCompletionAlertMails)
+                    && !empty($jobCompletionAlertMails)
                 ) {
                     $emailSubject = "ePT | Shipment Evaluated";
                     $emailContent = 'Shipment ' . $shipmentResult[0]['shipment_code'] . ' has been evaluated <br><br> Please click on this link to see ' . $conf->domain . $link;
                     $emailContent .= "<br><br><br><small>This is a system generated email</small>";
-                    $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+                    $commonService->insertTempMail($jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
                 }
             }
             if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && !empty($evalRow['shipment_code'])) {
@@ -960,15 +960,15 @@ try {
             }
 
             if (
-                isset($customConfig->jobCompletionAlert->status)
-                && $customConfig->jobCompletionAlert->status == "yes"
-                && isset($customConfig->jobCompletionAlert->mails)
-                && !empty($customConfig->jobCompletionAlert->mails)
+                isset($jobCompletionAlertStatus)
+                && $jobCompletionAlertStatus == "yes"
+                && isset($jobCompletionAlertMails)
+                && !empty($jobCompletionAlertMails)
             ) {
                 $emailSubject = "ePT | Reports for " . $evalRow['shipment_code'];
                 $emailContent = "Reports for Shipment " . $evalRow['shipment_code'] . " have been generated. <br><br> Please click on this link to see " . $conf->domain . $link;
                 $emailContent .= "<br><br><br><small>This is a system generated email</small>";
-                $commonService->insertTempMail($customConfig->jobCompletionAlert->mails, null, null, $emailSubject, $emailContent);
+                $commonService->insertTempMail($jobCompletionAlertMails, null, null, $emailSubject, $emailContent);
             }
             $update = [
                 'status' => $reportCompletedStatus,
