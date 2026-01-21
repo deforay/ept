@@ -539,7 +539,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $config = Pt_Commons_SchemeConfig::get('dts');
         $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
-
+echo "<pre>"; print_r($config); die;
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [

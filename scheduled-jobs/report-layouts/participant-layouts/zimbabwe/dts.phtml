@@ -103,10 +103,10 @@ if (!empty($resultArray['shipment'])) {
         }
 
         // Check display settings based on shipment attributes
-        $testThreeOptionalDisplay = (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') ? "display:none;" : "";
+        $testThreeOptionalDisplay = (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == 'yes') ? "display:none;" : "";
         $screeningTestDisplay = (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') ? "display:none;" : "";
         $sampleTypeDisplay = (isset($shipmentAttributes["sampleType"]) && in_array($shipmentAttributes["sampleType"], ['serum', 'plasma'])) ? "display:none;" : "";
-        $passPercentage = $config->evaluation->dts->passPercentage;
+        $passPercentage = $config['passPercentage'];
         if ($screeningTestDisplay == "display:none;") {
             $testThreeOptionalDisplay = "display:none;";
         }
@@ -192,7 +192,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             // Calculate scoring
-            $maxDocumentationPoints = $config->evaluation->dts->documentationScore ?? 0;
+            $maxDocumentationPoints = $config['documentationScore'] ?? 0;
             $maximumResponseScore = 100 - $maxDocumentationPoints;
             $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
 
@@ -382,7 +382,7 @@ if (!empty($resultArray['shipment'])) {
                 $interval = $sampleRehydrationDate->diff($testedOnDate);
                 $totalHours = ($interval->d * 24) + $interval->h + ($interval->i / 60) + ($interval->s / 3600);
 
-                $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+                $sampleRehydrateDays = $config['sampleRehydrateDays'];
                 $rehydrateHours = $sampleRehydrateDays * 24;
 
                 if ($totalHours <= $rehydrateHours) {

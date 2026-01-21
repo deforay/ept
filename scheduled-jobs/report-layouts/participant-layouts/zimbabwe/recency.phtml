@@ -84,7 +84,8 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
+        $config = Pt_Commons_SchemeConfig::get('dts');
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -93,7 +94,7 @@ if (!empty($resultArray['shipment'])) {
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
         $testThreeOptionalDisplay = "";
-        if (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == 'yes') {
+        if (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
         }
         /* for Shipment attributes functionality start */
@@ -280,7 +281,7 @@ if (!empty($resultArray['shipment'])) {
 
                 $correctSamplesCount = count($correctSamples);
                 $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-                $maxDocumentationPoints = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore) : 0;
+                $maxDocumentationPoints = (isset($config['documentationScore']) && $config['documentationScore'] > 0) ? ($config['documentationScore']) : 0;
                 $maximumResponseScore = 100 - $maxDocumentationPoints;
                 $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
 
@@ -325,7 +326,7 @@ if (!empty($resultArray['shipment'])) {
 
                 //Let us now calculate documentation score
                 $documentationScore = 0;
-                $documentationScorePerItem = (isset($config->evaluation->dts->documentationScore) && $config->evaluation->dts->documentationScore > 0) ? ($config->evaluation->dts->documentationScore / 5) : 0;
+                $documentationScorePerItem = (isset($config['documentationScore']) && $config['documentationScore'] > 0) ? ($config['documentationScore'] / 5) : 0;
                 $attributes = json_decode($result['attributes'], true);
 
                 $img = [];
@@ -401,7 +402,7 @@ if (!empty($resultArray['shipment'])) {
                 $interval = $sampleRehydrationDate->diff($testedOnDate);
 
                 // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-                $sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+                $sampleRehydrateDays = $config['sampleRehydrateDays'];
                 $rehydrateHours = $sampleRehydrateDays * 24;
 
                 if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
