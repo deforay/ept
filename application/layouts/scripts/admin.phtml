@@ -619,9 +619,12 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	<?php require_once WEB_ROOT . '/js/main.js.php'; ?>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/spotlight-search.js"); ?>"></script>
 	<script type="text/javascript">
+		window.spotlightBaseUrl = <?php echo json_encode($this->baseUrl()); ?>;
 		window.spotlightData = <?php echo json_encode($spotlightItems, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 		window.spotlightTranslations = {
-			noResults: <?php echo json_encode($this->translate->_('No results found')); ?>
+			noResults: <?php echo json_encode($this->translate->_('No results found')); ?>,
+			shipments: <?php echo json_encode($this->translate->_('Shipments')); ?>,
+			searching: <?php echo json_encode($this->translate->_('Searching...')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
 			$this->translate->_('Quick Actions'),
