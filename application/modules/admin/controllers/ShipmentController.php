@@ -99,8 +99,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } elseif ($sid == 'dts') {
 
-                $common = new Application_Service_Common();
-                $this->view->dtsConfig = $common->getSchemeConfig('dts');
+                $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'standard';

@@ -39,7 +39,7 @@ class Admin_VlSettingsController extends Zend_Controller_Action
                 $auditDb = new Application_Model_DbTable_AuditLog();
                 $auditDb->addNewAuditLog("Updated VL Settings", "config");
             }
-            $this->view->vlConfig = $common->getSchemeConfig('vl');
+            $this->view->vlConfig = Pt_Commons_SchemeConfig::get('vl');
         } catch (Exception $exc) {
 
             error_log("VL-SETTINGS-" . $exc->getMessage());
