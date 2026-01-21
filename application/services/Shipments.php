@@ -1664,9 +1664,8 @@ class Application_Service_Shipments
             $distroService = new Application_Service_Distribution();
             $distro = $distroService->getDistribution($params['distribution']);
             // To get scheme config
-            $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
-            $dtsSchemeType = $schemeConfigDb->getSchemeConfig('dts.dtsSchemeType');
-            $sec = APPLICATION_ENV;
+            $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+
             $controlCount = 0;
             foreach ($params['control'] as $control) {
                 if ($control == 1) {
@@ -1792,8 +1791,7 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                        ;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2342,9 +2340,7 @@ class Application_Service_Shipments
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         // To get scheme config
-        $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
-        $dtsSchemeType = $schemeConfigDb->getSchemeConfig('dts.dtsSchemeType');
-        $sec = APPLICATION_ENV;
+        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
@@ -2402,8 +2398,7 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                    ;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -3024,7 +3019,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3063,7 +3058,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3357,8 +3352,7 @@ class Application_Service_Shipments
         // Updated manually overrided
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             // To get scheme config
-            $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
-            $dtsPassPercentage = $schemeConfigDb->getSchemeConfig('dts.passPercentage');
+            $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
             $shipmentDB = new Application_Model_DbTable_Shipments();
 
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
@@ -3464,8 +3458,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         // To get scheme config
-        $schemeConfigDb = new Application_Model_DbTable_SchemeConfig();
-        $dtsPassPercentage = $schemeConfigDb->getSchemeConfig('dts.passPercentage');
+        $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             $shipmentDB = new Application_Model_DbTable_Shipments();
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
@@ -3632,7 +3625,7 @@ class Application_Service_Shipments
         }
 
         /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
+        for ($i = 0; $i <i count($aColumns); $i++) {
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
                     if ($sWhere == "") {
@@ -3735,11 +3728,9 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
             $output['aaData'][] = $row;
         }

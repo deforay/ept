@@ -602,8 +602,7 @@ class Application_Service_Evaluation
 				}
 			}
 		}
-		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
-		$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
+		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
@@ -638,7 +637,6 @@ class Application_Service_Evaluation
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$admin = $authNameSpace->admin_id;
 		$size = count($params['sampleId']);
-		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
 
 		$failureReason = [];
 		/* Manual result override changes */
@@ -659,7 +657,7 @@ class Application_Service_Evaluation
 		}
 		if ($params['scheme'] == 'eid') {
 
-			$eidPassPercentage = $schemeConfig->getSchemeConfig('eid.passPercentage') ?? 100;
+			$eidPassPercentage = Pt_Commons_SchemeConfig::get('eid.passPercentage') ?? 100;
 
 			if (isset($params['extractionAssayOther']) && $params['extractionAssayOther'] != "") {
 				$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -802,7 +800,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'dts') {
 
-			$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
+			$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
@@ -1003,7 +1001,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'recency') {
 
-			$recencyPassPercentage = $schemeConfig->getSchemeConfig('recency.passPercentage');
+			$recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = array(
@@ -1053,7 +1051,7 @@ class Application_Service_Evaluation
 				}
 			}
 		} elseif ($params['scheme'] == 'covid19') {
-			$covid19PassPercentage = $schemeConfig->getSchemeConfig('covid19.passPercentage');
+			$covid19PassPercentage = Pt_Commons_SchemeConfig::get('covid19.passPercentage');
 			$attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
@@ -1425,12 +1423,11 @@ class Application_Service_Evaluation
 		}
 
 
-		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
 		$meanScore = [];
 		$testType = $shipmentResult[0]['scheme_type'];
 		$tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
 
-		$passPercentage = $schemeConfig->getSchemeConfig($testType . '.passPercentage');
+		$passPercentage = Pt_Commons_SchemeConfig::get($testType . '.passPercentage');
 		$score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '100';
 		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
 			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
@@ -1797,8 +1794,7 @@ class Application_Service_Evaluation
 	public function getSummaryReportsDataForPDF($shipmentId, $testType = "")
 	{
 		$vlCalculation = $penResult = $shipmentResult = [];
-		$schemeConfig = new Application_Model_DbTable_SchemeConfig();
-		$dtsPasspercentage = $schemeConfig->getSchemeConfig('dts.passPercentage');
+		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
 		$pass = $dtsPasspercentage ?? 95;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -2750,7 +2746,7 @@ class Application_Service_Evaluation
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
 			$authNameSpace = new Zend_Session_Namespace('administrators');
-			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status', )))
+			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status',)))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2803,9 +2799,7 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
-	{
-	}
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
 
 	/**
 	 * Get job progress for a specific shipment (for AJAX polling)

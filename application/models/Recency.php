@@ -34,11 +34,8 @@ class Application_Model_Recency
         }
 
 
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
-        $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
-        $recencyPassPercentage = $schemeConfig->getSchemeConfig('recency.passPercentage');
+        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
+        $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
 
 
         foreach ($shipmentResult as $shipment) {
@@ -275,8 +272,7 @@ class Application_Model_Recency
 
         $failureReasonsArray = [];
 
-        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
-        $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
+        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
 
         //Let us now calculate documentation score
         $documentationScore = 0;
@@ -340,7 +336,7 @@ class Application_Model_Recency
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-            $recencySampleRehydrateDays = $schemeConfig->getSchemeConfig('recency.sampleRehydrateDays');;
+            $recencySampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays');
 
             // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
             if (empty($attributes['sample_rehydration_date']) || $interval->days < $recencySampleRehydrateDays || $interval->days > ($recencySampleRehydrateDays + 1)) {
@@ -369,8 +365,6 @@ class Application_Model_Recency
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $schemeConfig = new Application_Model_DbTable_SchemeConfig();
-
         $excel = new Spreadsheet();
 
         $borderStyle = [
@@ -793,7 +787,7 @@ class Application_Model_Recency
         //<-------- Document Score Sheet Heading (Sheet Four)-------
 
         if ($result['scheme_type'] == 'recency') {
-            $recencyDocumentationScore = $schemeConfig->getSchemeConfig('recency.documentationScore');
+            $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
             $documentationScorePerItem = ($recencyDocumentationScore / 5);
         }
 
@@ -962,9 +956,8 @@ class Application_Model_Recency
 
                     // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
                     //$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
-                    $dtsSampleRehydrateDays = $schemeConfig->getSchemeConfig('dts.sampleRehydrateDays');
-                    $dtsDocumentationScore = $schemeConfig->getSchemeConfig('dts.documentationScore');
-                    $rehydrateHours = $dtsSampleRehydrateDays * 24;
+                    $dtsSampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
+                    $dtsDocumentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
                     if ($interval->days < $dtsSampleRehydrateDays || $interval->days > ($dtsSampleRehydrateDays + 1)) {
 
