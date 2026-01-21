@@ -37,7 +37,25 @@ class ReportJobUtil
     public static function log(string $msg, bool $isCli): void
     {
         if ($isCli) {
-            fwrite(STDOUT, $msg . PHP_EOL);
+            Pt_Commons_MiscUtility::console()->writeln($msg);
+        } else {
+            error_log($msg);
+        }
+    }
+
+    public static function error(string $msg, bool $isCli): void
+    {
+        if ($isCli) {
+            Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<error> ERROR </error> {$msg}");
+        } else {
+            error_log($msg);
+        }
+    }
+
+    public static function warn(string $msg, bool $isCli): void
+    {
+        if ($isCli) {
+            Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<comment>WARNING:</comment> {$msg}");
         } else {
             error_log($msg);
         }
@@ -48,7 +66,7 @@ class ReportJobUtil
         if (!$debug) {
             return;
         }
-        self::log($msg, $isCli);
+        self::log("<fg=gray>{$msg}</>", $isCli);
     }
 
     /**
@@ -164,7 +182,7 @@ if (!$isWorker && $procs > 1) {
     $disabled = array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions'))));
     $procOpenAvailable = function_exists('proc_open') && !in_array('proc_open', $disabled, true);
     if (!$procOpenAvailable) {
-        fwrite(STDERR, "Parallel processing disabled: PHP function `proc_open` is not available. Falling back to 1 process.\n");
+        ReportJobUtil::warn("Parallel processing disabled: PHP function `proc_open` is not available. Falling back to 1 process.", $isCli);
         $procs = 1;
     }
 }
@@ -227,12 +245,12 @@ try {
                         goto lock_acquired_manual;
                     }
                 }
-                fwrite(
-                    STDERR,
-                    "WARNING: Shipment {$workerShipmentId} appears locked (lock file: {$info['path']}). " .
+                ReportJobUtil::warn(
+                    "Shipment {$workerShipmentId} appears locked (lock file: {$info['path']}). " .
                     "Proceeding due to --force" .
                     ($ttlOk ? " (lockTtl={$lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
-                    " This can corrupt output if another job is actually running.\n"
+                    " This can corrupt output if another job is actually running.",
+                    $isCli
                 );
             } else {
                 $details = "lock file: {$info['path']}";
@@ -242,8 +260,8 @@ try {
                 if ($ageMinutes !== null) {
                     $details .= ", age: {$ageMinutes}m";
                 }
-                fwrite(STDERR, "Another report generation process is already running for shipment {$workerShipmentId} ({$details}). Exiting.\n");
-                fwrite(STDERR, "If this is stale: check the PID (ps -fp <pid>) and remove the lock file, or rerun with --force.\n");
+                ReportJobUtil::error("Another report generation process is already running for shipment {$workerShipmentId} ({$details}). Exiting.", $isCli);
+                ReportJobUtil::log("If this is stale: check the PID (ps -fp <pid>) and remove the lock file, or rerun with --force.", $isCli);
                 exit(1);
             }
         }
@@ -435,7 +453,7 @@ try {
     if (!empty($evalResult)) {
         // Only print the banner when there are shipments to process
         if ($isCli && !$isWorker) {
-            echo "Report Generation : Using up to {$procs} parallel processes\n";
+            Pt_Commons_MiscUtility::console()->writeln("<info>Report Generation</info> Using up to <comment>{$procs}</comment> parallel processes");
         }
 
         $evaluatedShipments = [];
@@ -465,10 +483,10 @@ try {
                                 $shipmentLock = ReportJobUtil::acquireShipmentLock($shipmentIdForLock);
                                 $lockAcquired = is_resource($shipmentLock);
                             }
-                            fwrite(
-                                STDERR,
-                                "WARNING: Shipment {$shipmentIdForLock} appears locked (lock file: {$info['path']}). " .
-                                "Proceeding due to --force. This can corrupt output if another job is actually running.\n"
+                            ReportJobUtil::warn(
+                                "Shipment {$shipmentIdForLock} appears locked (lock file: {$info['path']}). " .
+                                "Proceeding due to --force. This can corrupt output if another job is actually running.",
+                                $isCli
                             );
                         } else {
                             $details = "lock file: {$info['path']}";
@@ -478,7 +496,7 @@ try {
                             if ($ageMinutes !== null) {
                                 $details .= ", age: {$ageMinutes}m";
                             }
-                            fwrite(STDERR, "Shipment {$shipmentIdForLock} is already being processed by another report generation job ({$details}). Skipping.\n");
+                            ReportJobUtil::warn("Shipment {$shipmentIdForLock} is already being processed by another report generation job ({$details}). Skipping.", $isCli);
                             continue;
                         }
                     }
@@ -490,7 +508,7 @@ try {
             }
             if (($evalRow['report_type'] == 'finalized' || $evalRow['report_type'] == 'generateReport') && $evaluatOnFinalized == "yes") {
                 if ($isCli) {
-                    echo "Evaluating shipment ID: " . $evalRow['shipment_id'] . PHP_EOL;
+                    Pt_Commons_MiscUtility::console()->writeln("Evaluating shipment ID: <comment>{$evalRow['shipment_id']}</comment>");
                 }
                 $customConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
                 $shipmentId = $evalRow['shipment_id'];
@@ -529,6 +547,10 @@ try {
                 }
             }
             if (isset($evalRow['shipment_code']) && $evalRow['shipment_code'] != "" && !empty($evalRow['shipment_code'])) {
+                if ($isCli) {
+                    Pt_Commons_MiscUtility::console()->writeln("");
+                    Pt_Commons_MiscUtility::console()->writeln("<info>Processing shipment:</info> <comment>{$evalRow['shipment_code']}</comment> (ID: {$evalRow['shipment_id']})");
+                }
 
                 $shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'];
                 if (file_exists($shipmentCodePath)) {
@@ -685,10 +707,10 @@ try {
                 // In debug mode, skip spinner repainting so debug logs stay visible.
                 if ($debug) {
                     $participantProgressBar = null;
-                    ReportJobUtil::log("Generating participant reports...", $isCli);
+                    ReportJobUtil::log("  Generating participant reports ({$reportedCount} participants)...", $isCli);
                 } else {
                     // Use single-line output; multi-line progress bars don't repaint reliably in some IDE consoles.
-                    $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "Generating participant reports...", '█', '░', '█', 'cyan', false);
+                    $participantProgressBar = Pt_Commons_MiscUtility::spinnerStart($reportedCount, "  Participant reports ({$reportedCount} participants)...", '█', '░', '█', 'cyan', false);
                 }
                 if ($procs <= 1) {
                     $generateParticipantChunks();
@@ -720,7 +742,7 @@ try {
                     }
 
                     if (empty($processes)) {
-                        fwrite(STDERR, "Failed to start any worker processes; falling back to sequential generation.\n");
+                        ReportJobUtil::error("Failed to start any worker processes; falling back to sequential generation.", $isCli);
                         $generateParticipantChunks();
                         Pt_Commons_MiscUtility::spinnerFinish($participantProgressBar);
                     } else {
@@ -739,11 +761,12 @@ try {
                                             if ($err !== '') {
                                                 $msg .= ": " . preg_replace('/\\s+/', ' ', $err);
                                             }
-                                            ReportJobUtil::log($msg, $isCli);
                                             if ($isCli && $participantProgressBar) {
                                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
-                                                    fwrite(STDERR, $msg . PHP_EOL);
+                                                    Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<error> FAIL </error> {$msg}");
                                                 });
+                                            } else {
+                                                ReportJobUtil::error($msg, $isCli);
                                             }
                                         } else {
                                             $out = trim($process->getOutput());
@@ -778,11 +801,12 @@ try {
                         $participantPdfs = glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf');
                         if (empty($participantPdfs)) {
                             $msg = "Parallel generation produced no participant PDFs. Retrying sequentially.";
-                            ReportJobUtil::log($msg, $isCli);
                             if ($isCli && $participantProgressBar) {
                                 Pt_Commons_MiscUtility::spinnerPausePrint($participantProgressBar, static function () use ($msg): void {
-                                    fwrite(STDERR, $msg . PHP_EOL);
+                                    Pt_Commons_MiscUtility::console()->getErrorOutput()->writeln("<comment>WARNING:</comment> {$msg}");
                                 });
+                            } else {
+                                ReportJobUtil::warn($msg, $isCli);
                             }
                             $generateParticipantChunks();
                         }
@@ -791,6 +815,14 @@ try {
                         }
                     }
                 }
+                if ($isCli) {
+                    $pdfCount = count(glob($reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . DIRECTORY_SEPARATOR . '*.pdf'));
+                    Pt_Commons_MiscUtility::console()->writeln("  <fg=green>✓</> Participant reports: <comment>{$pdfCount}</comment> PDFs generated");
+                }
+            } elseif ($skipParticipantReports === false && $isCli) {
+                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (no participants reported)");
+            } elseif ($isCli) {
+                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Participant reports: <comment>skipped</comment> (-s flag)");
             }
 
             // Some layouts (e.g., Zimbabwe) expect distribution-level context even for summary generation.
@@ -828,6 +860,9 @@ try {
 
             $panelTestType = "";
             if ($skipSummaryReport === false) {
+                if ($isCli) {
+                    Pt_Commons_MiscUtility::console()->writeln("  Generating summary report...");
+                }
                 $shipmentAttribute = json_decode($evalRow['shipment_attributes'], true);
                 $noOfTests = (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? ['screening', 'confirmatory'] : null;
                 if (isset($noOfTests) && !empty($noOfTests) && $noOfTests != null && $evalRow['scheme_type'] == 'dts') {
@@ -893,8 +928,20 @@ try {
                         ReportJobUtil::includeWithContext($summaryLayoutFile, $context);
                     }
                 }
+                if ($isCli) {
+                    Pt_Commons_MiscUtility::console()->writeln("  <fg=green>✓</> Summary report generated");
+                }
+            } elseif ($isCli) {
+                Pt_Commons_MiscUtility::console()->writeln("  <fg=yellow>-</> Summary report: <comment>skipped</comment> (-p flag)");
+            }
+
+            if ($isCli) {
+                Pt_Commons_MiscUtility::console()->writeln("  Creating ZIP archive...");
             }
             $generalModel->zipFolder($shipmentCodePath, $reportsPath . DIRECTORY_SEPARATOR . $evalRow['shipment_code'] . ".zip");
+            if ($isCli) {
+                Pt_Commons_MiscUtility::console()->writeln("  <fg=green>✓</> ZIP created: <comment>{$evalRow['shipment_code']}.zip</comment>");
+            }
 
             $feedbackExpiryDate = null;
             $reportCompletedStatus = 'evaluated';
@@ -1007,6 +1054,6 @@ try {
         }
     }
 } catch (Exception $e) {
-    ReportJobUtil::log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
-    ReportJobUtil::log($e->getTraceAsString(), $isCli);
+    ReportJobUtil::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
+    ReportJobUtil::log("<fg=gray>{$e->getTraceAsString()}</>", $isCli);
 }
