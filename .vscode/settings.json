@@ -3,5 +3,7 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "deforay",
         "projectKey": "deforay_ept"
-    }
+    },
+    "snyk.advanced.organization": "94712c81-3a71-4bd9-979f-4c5147891f7d",
+    "snyk.advanced.autoSelectOrganization": true
 }

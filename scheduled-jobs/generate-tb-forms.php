@@ -84,7 +84,7 @@ try {
 
         // 2. Prepare Directory
         if (is_dir($folderPath)) {
-            $generalModel->rmdirRecursive($folderPath);
+            Pt_Commons_General::rmdirRecursive($folderPath);
         }
         mkdir($folderPath, 0777, true);
         if (file_exists("$folderPath.zip")) {

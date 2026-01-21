@@ -3,10 +3,8 @@
 require_once __DIR__ . '/../cli-bootstrap.php';
 
 try {
-    $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
-    $db = Zend_Db::factory($conf->resources->db);
-    Zend_Db_Table::setDefaultAdapter($db);
+    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
     $defaultPassword = 'ept1@)(*&^';
     $defaultHash = Application_Service_Common::passwordHash($defaultPassword);

@@ -48,7 +48,7 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/execute-job-queue.php"
     ->description('Executing Jobs');
 
 // Reset Stale Jobs (Shipments & Reports)
-$schedule->run($phpPath . " " . BIN_PATH . "/reset-stale-jobs.php")
+$schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/reset-stale-jobs.php")
     ->everyFifteenMinutes()
     ->timezone($timezone)
     ->preventOverlapping()

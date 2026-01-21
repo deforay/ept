@@ -4,13 +4,16 @@ ini_set('memory_limit', '-1');
 ini_set('max_execution_time', 0);
 require_once __DIR__ . '/../cli-bootstrap.php';
 
+$isCli = php_sapi_name() === 'cli';
+$console = Pt_Commons_MiscUtility::console();
+
 $cliOptions = getopt("s:");
-$shipmentsToEvaluate = $cliOptions['s'];
+$shipmentsToEvaluate = $cliOptions['s'] ?? null;
 
 
 if (empty($shipmentsToEvaluate)) {
-	error_log("Please specify the shipment ids with the -s flag");
-	exit();
+	$console->getErrorOutput()->writeln("<error> ERROR </error> Please specify the shipment ids with the -s flag");
+	exit(1);
 }
 
 if (is_array($shipmentsToEvaluate)) {
@@ -35,14 +38,36 @@ try {
 	$jobCompletionAlertStatus = $commonService->getConfig('job_completion_alert_status');
 	$jobCompletionAlertMails = $commonService->getConfig('job_completion_alert_mails');
 
-	foreach ($shipmentsToEvaluate as $shipmentId) {
+	$totalShipments = count($shipmentsToEvaluate);
+	$console->writeln("<info>Shipment Evaluation</info> Processing <comment>{$totalShipments}</comment> shipment(s)");
+
+	foreach ($shipmentsToEvaluate as $index => $shipmentId) {
+		$console->writeln("");
+		$console->writeln("<info>Evaluating shipment:</info> ID <comment>{$shipmentId}</comment> (" . ($index + 1) . "/{$totalShipments})");
+
 		// Do evaluation
 		$timeStart = microtime(true);
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
 		$timeEnd = microtime(true);
 
+		// Delete existing reports if they exist
+		$reportsPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports';
+		$shipmentCode = $shipmentResult[0]['shipment_code'];
+		$console->writeln("  Shipment code: <comment>{$shipmentCode}</comment>");
+
+		$shipmentCodePath = $reportsPath . DIRECTORY_SEPARATOR . $shipmentCode;
+		if (file_exists($shipmentCodePath)) {
+			Pt_Commons_General::rmdirRecursive($shipmentCodePath);
+			mkdir($shipmentCodePath, 0777, true);
+		}
+		if (file_exists($reportsPath . DIRECTORY_SEPARATOR . $shipmentCode . ".zip")) {
+			unlink($reportsPath . DIRECTORY_SEPARATOR . $shipmentCode . ".zip");
+		}
+
 		// Cleanup and notify
 		$executionTime = ($timeEnd - $timeStart) / 60;
+		$console->writeln("  <fg=green>✓</> Completed in <comment>" . round($executionTime, 2) . "</comment> mins");
+
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
 		$db->insert('notify', [
 			'title' => 'Shipment Evaluated',
@@ -79,6 +104,6 @@ try {
 		}
 	}
 } catch (Exception $e) {
-	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-	error_log($e->getTraceAsString());
+	$console->getErrorOutput()->writeln("<error> ERROR </error> {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
+	$console->writeln("<fg=gray>{$e->getTraceAsString()}</>");
 }

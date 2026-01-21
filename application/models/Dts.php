@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Pt_Commons_JsonUtility as JsonUtility;
 
 final class Application_Model_Dts
 {
@@ -309,7 +310,7 @@ final class Application_Model_Dts
 						$difference = $testedOn->diff($expDate);
 						$daysExpired = (int) $difference->format('%a');
 						$failureReason[] = [
-							'warning' => "Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . "</strong>) expired " . $daysExpired . " days before the test date " . $testDate,
+							'warning' => "Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . "</strong>) expired " . $daysExpired . " day(s) before the test date " . $testDate,
 							'correctiveAction' => $correctiveActions[5]
 						];
 						$correctiveActionList[] = 5;
@@ -458,7 +459,7 @@ final class Application_Model_Dts
 				$scorePercentageForAlgorithm = 0; // Most countries do not give score for getting algorithm right
 
 				$failureReason ??= [];
-				$correctiveActionList = $correctiveActionList ?? [];
+				$correctiveActionList ??= [];
 
 				// derive RTRI context locally from $result
 				$rtriEnabled ??= false; // keep existing flag if already set
@@ -680,7 +681,32 @@ final class Application_Model_Dts
 						(isset($testKitRecommendedUsed[$kitIndex]) && $testKitRecommendedUsed[$kitIndex] === false)
 					) {
 						$testKitExpiryResult = 'Fail';
-						$totalScore = 0;
+
+						// Myanmar special handling for expired/non-recommended Test Kit 2 or 3:
+						// If Test Kit 1 is valid (not expired), only penalize samples that
+						// actually used the problematic kit, instead of zeroing all scores
+						$applyMyanmarSampleOnlyPenalty = (
+							$dtsSchemeType === 'myanmar' &&
+							$kitIndex > 1 &&
+							!($testKitExpired[1] ?? false)
+						);
+
+						if ($applyMyanmarSampleOnlyPenalty) {
+							// Only subtract this sample's score contribution (if it was added)
+							if ($correctResponse) {
+								$totalScore -= ($scoreForSample + $scoreForAlgorithm);
+							}
+							// Add failure reason for this specific sample (use same corrective action as blanket fail)
+							$failureReason[] = [
+								'warning' => "Sample <strong>" . $result['sample_label'] . "</strong> failed: used expired/non-recommended Test Kit {$kitIndex} (<strong>" . $testKitNames[$kitIndex] . "</strong>).",
+								'correctiveAction' => $correctiveActions[5]
+							];
+							$correctiveActionList[] = 5;
+						} else {
+							// Original behavior: zero everything
+							$totalScore = 0;
+						}
+
 						$correctResponse = false;
 						$algoResult = 'Fail';
 						$interpretationResult = 'Fail';
@@ -751,10 +777,10 @@ final class Application_Model_Dts
 		if (isset($results[0]['shipment_receipt_date']) && !empty($results[0]['shipment_receipt_date'])) {
 			$documentationScore += $documentationScorePerItem;
 		} else {
-			$failureReason[] = array(
+			$failureReason[] = [
 				'warning' => "Shipment Receipt Date not provided",
 				'correctiveAction' => $correctiveActions[16]
-			);
+			];
 			$correctiveActionList[] = 16;
 		}
 		//D.3
@@ -858,10 +884,10 @@ final class Application_Model_Dts
 			if (!empty($attributes['stop_watch'])) {
 				$documentationScore += $documentationScorePerItem;
 			} else {
-				$failureReason[] = array(
+				$failureReason[] = [
 					'warning' => "Stop Watch Availability not reported",
 					'correctiveAction' => $correctiveActions[21]
-				);
+				];
 				$correctiveActionList[] = 18;
 			}
 		}
@@ -872,7 +898,7 @@ final class Application_Model_Dts
 		if ($grandTotal < $config['passPercentage']) {
 			$scoreResult = 'Fail';
 			$failureReason[] = [
-				'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($config->evaluation->dts->passPercentage) . "</strong>)",
+				'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($passPercentage) . "</strong>)",
 				'correctiveAction' => $correctiveActions[15]
 			];
 			$correctiveActionList[] = 15;
@@ -887,9 +913,12 @@ final class Application_Model_Dts
 			$shipmentResultEntry['shipment_score'] = $responseScore = 0;
 			$shipmentResultEntry['documentation_score'] = 0;
 			$shipmentResultEntry['display_result'] = '';
-			$failureReason[] = ['warning' => 'Excluded from Evaluation'];
+			$failureReason[] = [
+				'warning' => 'Excluded from Evaluation',
+				'correctiveAction' => ''
+			];
 			$finalResult = 3;
-			$shipmentResultEntry['failure_reason'] = $failureReason = json_encode($failureReason);
+			$shipmentResultEntry['failure_reason'] = JsonUtility::encodeUtf8Json($failureReason);
 		} else {
 			$shipment['is_excluded'] = 'no';
 
@@ -909,7 +938,7 @@ final class Application_Model_Dts
 
 
 			$shipmentResultEntry['display_result'] = $finalResultArray[$finalResult];
-			$shipmentResultEntry['failure_reason'] = $failureReason = (isset($failureReason) && !empty($failureReason)) ? json_encode($failureReason) : "";
+			$shipmentResultEntry['failure_reason'] = JsonUtility::encodeUtf8Json($failureReason);
 			//$shipmentResultEntry['corrective_actions'] = implode(",",$correctiveActionList);
 		}
 
@@ -925,13 +954,14 @@ final class Application_Model_Dts
 					'final_result' => 3,
 					'is_followup' => 'yes',
 					'is_excluded' => 'yes',
-					'failure_reason' => $failureReason,
+					'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
 					'is_response_late' => $shipment['is_response_late']
 				],
 				$mapWhere
 			);
 		} else {
 			/* Manual result override changes */
+			// TODO: If manual override, allow editing of failure_reason and corrective actions
 			if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
 				$sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
 				$shipmentOverall = $this->db->fetchRow($sql);
@@ -964,7 +994,7 @@ final class Application_Model_Dts
 						'final_result' => $finalResult,
 						'is_followup' => $shipment['is_followup'],
 						'is_excluded' => $shipment['is_excluded'],
-						'failure_reason' => $failureReason,
+						'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
 						'is_response_late' => $shipment['is_response_late']
 					],
 					$mapWhere
@@ -2566,18 +2596,19 @@ final class Application_Model_Dts
 	) {
 		$pass = false;
 
-		if ($result1 === 'NR' && $result2 === '-' && $result3 === '-' && $expectedResultCode === 'N' && $reportedResultCode === 'N')
+		if ($result1 === 'NR' && $result2 === '-' && $result3 === '-' && $expectedResultCode === 'N' && $reportedResultCode === 'N') {
 			$pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && in_array($result3, ['R', '-'], true) && $expectedResultCode === 'P' && $reportedResultCode === 'P')
+		} elseif ($result1 === 'R' && $result2 === 'R' && in_array($result3, ['R', '-'], true) && $expectedResultCode === 'P' && $reportedResultCode === 'P') {
 			$pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'R' && $expectedResultCode === 'R' && $reportedResultCode === 'R')
+		} elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'R' && $expectedResultCode === 'R' && $reportedResultCode === 'R') {
 			$pass = true;
-		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR' && $expectedResultCode === 'N' && $reportedResultCode === 'N')
+		} elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'NR' && $expectedResultCode === 'N' && $reportedResultCode === 'N') {
 			$pass = true;
-		elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'R' && $expectedResultCode === 'I' && $reportedResultCode === 'I')
+		} elseif ($result1 === 'R' && $result2 === 'NR' && $result3 === 'R' && $expectedResultCode === 'I' && $reportedResultCode === 'I') {
 			$pass = true;
-		elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && in_array($expectedResultCode, ['P', 'I'], true) && $reportedResultCode === $expectedResultCode)
+		} elseif ($result1 === 'R' && $result2 === 'R' && $result3 === 'NR' && in_array($expectedResultCode, ['P', 'I'], true) && $reportedResultCode === $expectedResultCode) {
 			$pass = true;
+		}
 
 		if ($pass) {
 			$out['algoResult'] = 'Pass';
