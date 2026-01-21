@@ -81,6 +81,132 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'url' => $this->url(['module' => 'admin', 'controller' => 'system-admins'], 'default', true),
 		'keywords' => ['admin', 'users', 'managers']
 	];
+
+	// Feedback items
+	if (isset($configData['participant_feedback']) && $configData['participant_feedback'] == 'yes') {
+		$spotlightItems[] = [
+			'id' => 'configure-feedback',
+			'title' => $this->translate->_('Configure Feedback'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-comments',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'], 'default', true),
+			'keywords' => ['feedback', 'questions', 'survey']
+		];
+		$spotlightItems[] = [
+			'id' => 'enable-feedback',
+			'title' => $this->translate->_('Enable Feedback'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-comments-alt',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'], 'default', true),
+			'keywords' => ['feedback', 'shipment', 'enable']
+		];
+	}
+
+	// Scheme-specific settings
+	if (isset($adminSession->activeSchemes) && in_array('dts', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'test-kits',
+			'title' => $this->translate->_('Test Kits'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-briefcase',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'testkit'], 'default', true),
+			'keywords' => ['test', 'kit', 'dts', 'hiv']
+		];
+		$spotlightItems[] = [
+			'id' => 'hiv-serology-settings',
+			'title' => $this->translate->_('HIV Serology Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'dts-settings'], 'default', true),
+			'keywords' => ['hiv', 'serology', 'dts', 'settings']
+		];
+	}
+	if (isset($adminSession->activeSchemes) && in_array('vl', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'vl-assay',
+			'title' => $this->translate->_('VL Assay'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-tint',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'vl-assay'], 'default', true),
+			'keywords' => ['vl', 'viral', 'load', 'assay']
+		];
+		$spotlightItems[] = [
+			'id' => 'vl-settings',
+			'title' => $this->translate->_('VL Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'vl-settings'], 'default', true),
+			'keywords' => ['vl', 'viral', 'load', 'settings']
+		];
+	}
+	if (isset($adminSession->activeSchemes) && in_array('eid', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'eid-assay',
+			'title' => $this->translate->_('EID Assay'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-tint',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'eid-assay'], 'default', true),
+			'keywords' => ['eid', 'early', 'infant', 'diagnosis', 'assay']
+		];
+	}
+	if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'tb-settings',
+			'title' => $this->translate->_('TB Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'tb-settings'], 'default', true),
+			'keywords' => ['tb', 'tuberculosis', 'settings']
+		];
+	}
+	if (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes') {
+		$spotlightItems[] = [
+			'id' => 'manage-custom-tests',
+			'title' => $this->translate->_('Manage Custom Tests'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-beaker',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'generic-test'], 'default', true),
+			'keywords' => ['custom', 'generic', 'test']
+		];
+	}
+	if (isset($adminSession->activeSchemes) && in_array('covid19', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'covid19-test-platforms',
+			'title' => $this->translate->_('SARS-CoV-2 Test Platforms'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-desktop',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'test-platform'], 'default', true),
+			'keywords' => ['covid', 'sars', 'cov', 'platform', 'test']
+		];
+		$spotlightItems[] = [
+			'id' => 'covid19-gene-types',
+			'title' => $this->translate->_('SARS-CoV-2 Gene Types'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-tags',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'covid19-gene-type'], 'default', true),
+			'keywords' => ['covid', 'sars', 'cov', 'gene', 'type']
+		];
+		$spotlightItems[] = [
+			'id' => 'covid19-settings',
+			'title' => $this->translate->_('SARS-CoV-2 Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'covid19-settings'], 'default', true),
+			'keywords' => ['covid', 'sars', 'cov', 'settings']
+		];
+	}
+	if (isset($adminSession->activeSchemes) && in_array('recency', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'recency-settings',
+			'title' => $this->translate->_('HIV Recency (RTRI) Settings'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-cogs',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'recency-settings'], 'default', true),
+			'keywords' => ['hiv', 'recency', 'rtri', 'settings']
+		];
+	}
+
+	// General config items
 	$spotlightItems[] = [
 		'id' => 'global-settings',
 		'title' => $this->translate->_('ePT Global Settings'),
@@ -90,12 +216,108 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'keywords' => ['settings', 'config', 'configuration']
 	];
 	$spotlightItems[] = [
+		'id' => 'home-section-links',
+		'title' => $this->translate->_('Home Section Links'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-link',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'home-section-links'], 'default', true),
+		'keywords' => ['home', 'section', 'links']
+	];
+	$spotlightItems[] = [
+		'id' => 'home-settings',
+		'title' => $this->translate->_('Home Settings'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-home',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'home-config'], 'default', true),
+		'keywords' => ['home', 'settings', 'config']
+	];
+	$spotlightItems[] = [
+		'id' => 'pdf-report-settings',
+		'title' => $this->translate->_('PDF Report Settings'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-file-text-alt',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'report-config'], 'default', true),
+		'keywords' => ['pdf', 'report', 'settings', 'config']
+	];
+	$spotlightItems[] = [
+		'id' => 'shipment-custom-fields',
+		'title' => $this->translate->_('Shipment Custom Fields'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-edit',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'custom-fields'], 'default', true),
+		'keywords' => ['shipment', 'custom', 'fields']
+	];
+	$spotlightItems[] = [
+		'id' => 'certificate-templates',
+		'title' => $this->translate->_('Certificate Templates'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-certificate',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'certificate-templates'], 'default', true),
+		'keywords' => ['certificate', 'template']
+	];
+	$spotlightItems[] = [
+		'id' => 'failed-emails',
+		'title' => $this->translate->_('Failed Emails'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-warning-sign',
+		'url' => '/admin/alerts/email',
+		'keywords' => ['failed', 'email', 'alerts']
+	];
+	$spotlightItems[] = [
+		'id' => 'mail-template',
+		'title' => $this->translate->_('Mail Template'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-envelope-alt',
+		'url' => '/admin/mail-template',
+		'keywords' => ['mail', 'template', 'email']
+	];
+	$spotlightItems[] = [
+		'id' => 'home-banner',
+		'title' => $this->translate->_('Home Banner'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-picture',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'home-banner'], 'default', true),
+		'keywords' => ['home', 'banner', 'image']
+	];
+	$spotlightItems[] = [
+		'id' => 'partners',
+		'title' => $this->translate->_('Partners'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-handshake',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'partners'], 'default', true),
+		'keywords' => ['partners', 'organizations']
+	];
+	$spotlightItems[] = [
+		'id' => 'contact-messages',
+		'title' => $this->translate->_('Contact Messages'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-comments',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'contact-us'], 'default', true),
+		'keywords' => ['contact', 'messages', 'inquiry']
+	];
+	$spotlightItems[] = [
 		'id' => 'audit-log',
 		'title' => $this->translate->_('Audit Log'),
 		'category' => $this->translate->_('Configure'),
 		'icon' => 'icon-list',
 		'url' => $this->url(['module' => 'admin', 'controller' => 'audit-log'], 'default', true),
 		'keywords' => ['log', 'history', 'changes']
+	];
+	$spotlightItems[] = [
+		'id' => 'api-sync-history',
+		'title' => $this->translate->_('API Sync History'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-exchange',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'api-history'], 'default', true),
+		'keywords' => ['api', 'sync', 'history']
+	];
+	$spotlightItems[] = [
+		'id' => 'job-tracking',
+		'title' => $this->translate->_('Job Tracking'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-tasks',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'job-tracking'], 'default', true),
+		'keywords' => ['job', 'tracking', 'queue']
 	];
 }
 
@@ -133,6 +355,24 @@ if (!$pstatus && (in_array('config-ept', $privileges) || in_array('manage-partic
 		'url' => $this->url(['module' => 'admin', 'controller' => 'data-managers'], 'default', true),
 		'keywords' => ['login', 'credentials', 'access']
 	];
+	if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'manage-ptcc',
+			'title' => $this->translate->_('Manage PTCC'),
+			'category' => $this->translate->_('Configure'),
+			'icon' => 'icon-key',
+			'url' => $this->url(['module' => 'admin', 'controller' => 'data-managers', 'ptcc' => '1'], 'default', true),
+			'keywords' => ['ptcc', 'tb', 'coordinator']
+		];
+	}
+	$spotlightItems[] = [
+		'id' => 'participant-login-map',
+		'title' => $this->translate->_('Participant Login Map'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-link',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'], 'default', true),
+		'keywords' => ['map', 'login', 'participant', 'manager']
+	];
 	$spotlightItems[] = [
 		'id' => 'scheme-enrollments',
 		'title' => $this->translate->_('Scheme Enrollments'),
@@ -148,6 +388,14 @@ if (!$pstatus && (in_array('config-ept', $privileges) || in_array('manage-partic
 		'icon' => 'icon-envelope',
 		'url' => $this->url(['module' => 'admin', 'controller' => 'email-participants'], 'default', true),
 		'keywords' => ['mail', 'send', 'notify']
+	];
+	$spotlightItems[] = [
+		'id' => 'not-tested-reasons',
+		'title' => $this->translate->_('Not Tested Reasons'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-ban-circle',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'sample-not-tested-reasons'], 'default', true),
+		'keywords' => ['not tested', 'reasons', 'sample']
 	];
 }
 
@@ -197,6 +445,14 @@ if (!$pstatus && in_array('analyze-generate-reports', $privileges)) {
 		'url' => $this->url(['module' => 'reports', 'controller' => 'finalize'], 'default', true),
 		'keywords' => ['complete', 'finish', 'close']
 	];
+	$spotlightItems[] = [
+		'id' => 'view-finalized-shipments',
+		'title' => $this->translate->_('View Finalized Shipments'),
+		'category' => $this->translate->_('Analyze'),
+		'icon' => 'icon-list-alt',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'], 'default', true),
+		'keywords' => ['finalized', 'shipments', 'view', 'completed']
+	];
 }
 
 // Reports menu items
@@ -219,12 +475,20 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'keywords' => ['analytics', 'statistics']
 	];
 	$spotlightItems[] = [
-		'id' => 'participant-performance',
-		'title' => $this->translate->_('Participant Performance Report'),
+		'id' => 'shipment-response-report',
+		'title' => $this->translate->_('Shipment Response Report'),
 		'category' => $this->translate->_('Reports'),
 		'icon' => 'icon-bar-chart',
-		'url' => $this->url(['module' => 'reports', 'controller' => 'participant-performance'], 'default', true),
-		'keywords' => ['score', 'results', 'performance']
+		'url' => $this->url(['module' => 'reports', 'controller' => 'shipment-response-report'], 'default', true),
+		'keywords' => ['shipment', 'response', 'report']
+	];
+	$spotlightItems[] = [
+		'id' => 'testing-facility-by-ownership',
+		'title' => $this->translate->_('Testing Facility By Ownership'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-building',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'testing-facility-by-ownership'], 'default', true),
+		'keywords' => ['testing', 'facility', 'ownership']
 	];
 	$spotlightItems[] = [
 		'id' => 'participant-response',
@@ -235,6 +499,22 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'keywords' => ['detailed', 'response', 'data']
 	];
 	$spotlightItems[] = [
+		'id' => 'participant-performance',
+		'title' => $this->translate->_('Participant Performance Report'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-bar-chart',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'participant-performance'], 'default', true),
+		'keywords' => ['score', 'results', 'performance']
+	];
+	$spotlightItems[] = [
+		'id' => 'participant-trends',
+		'title' => $this->translate->_('Participant Trends'),
+		'category' => $this->translate->_('Reports'),
+		'icon' => 'icon-signal',
+		'url' => $this->url(['module' => 'reports', 'controller' => 'participant-trends'], 'default', true),
+		'keywords' => ['participant', 'trends', 'analysis']
+	];
+	$spotlightItems[] = [
 		'id' => 'corrective-actions',
 		'title' => $this->translate->_('Corrective Actions Report'),
 		'category' => $this->translate->_('Reports'),
@@ -242,6 +522,81 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'url' => $this->url(['module' => 'reports', 'controller' => 'corrective-actions'], 'default', true),
 		'keywords' => ['corrective', 'action', 'fix']
 	];
+	if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') {
+		$spotlightItems[] = [
+			'id' => 'corrective-preventive-actions',
+			'title' => $this->translate->_('Corrective and Preventive Actions'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-wrench',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'corrective-preventive-actions'], 'default', true),
+			'keywords' => ['corrective', 'preventive', 'capa', 'actions']
+		];
+	}
+	// DTS scheme reports
+	if (isset($adminSession->activeSchemes) && in_array('dts', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'testkit-report',
+			'title' => $this->translate->_('Test Kit Report For HIV Serology'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-briefcase',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'testkit'], 'default', true),
+			'keywords' => ['test', 'kit', 'hiv', 'serology', 'dts']
+		];
+	}
+	// TB scheme reports
+	if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'xtpt-indicators',
+			'title' => $this->translate->_('XTPT Indicators'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-bar-chart',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'xtpt-indicators'], 'default', true),
+			'keywords' => ['xtpt', 'indicators', 'tb']
+		];
+		$spotlightItems[] = [
+			'id' => 'tb-participants-per-country',
+			'title' => $this->translate->_('TB: Number of Participants per Country'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-globe',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'tb-participants-per-country'], 'default', true),
+			'keywords' => ['tb', 'participants', 'country']
+		];
+		$spotlightItems[] = [
+			'id' => 'tb-results',
+			'title' => $this->translate->_('TB: Result of PT Panel per Site'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-list-alt',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'tb-results'], 'default', true),
+			'keywords' => ['tb', 'results', 'panel', 'site']
+		];
+		$spotlightItems[] = [
+			'id' => 'tb-all-sites-results',
+			'title' => $this->translate->_('TB: All Sites\' Results'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-list',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'tb-all-sites-results'], 'default', true),
+			'keywords' => ['tb', 'all', 'sites', 'results']
+		];
+	}
+	// VL scheme reports
+	if (isset($adminSession->activeSchemes) && in_array('vl', $adminSession->activeSchemes)) {
+		$spotlightItems[] = [
+			'id' => 'vl-sample-analysis',
+			'title' => $this->translate->_('VL Sample Analysis'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-bar-chart',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'], 'default', true),
+			'keywords' => ['vl', 'viral', 'load', 'sample', 'analysis']
+		];
+		$spotlightItems[] = [
+			'id' => 'vl-assay-distribution',
+			'title' => $this->translate->_('VL Assay Distribution'),
+			'category' => $this->translate->_('Reports'),
+			'icon' => 'icon-bar-chart',
+			'url' => $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'], 'default', true),
+			'keywords' => ['vl', 'viral', 'load', 'assay', 'distribution']
+		];
+	}
 	$spotlightItems[] = [
 		'id' => 'annual-performance',
 		'title' => $this->translate->_('Annual Performance Report'),
@@ -620,13 +975,19 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/spotlight-search.js"); ?>"></script>
 	<script type="text/javascript">
 		window.spotlightBaseUrl = <?php echo json_encode($this->baseUrl()); ?>;
+		window.spotlightUserId = <?php echo json_encode($adminSession->admin_id ?? 'default'); ?>;
 		window.spotlightData = <?php echo json_encode($spotlightItems, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 		window.spotlightTranslations = {
 			noResults: <?php echo json_encode($this->translate->_('No results found')); ?>,
 			shipments: <?php echo json_encode($this->translate->_('Shipments')); ?>,
-			searching: <?php echo json_encode($this->translate->_('Searching...')); ?>
+			searching: <?php echo json_encode($this->translate->_('Searching...')); ?>,
+			recent: <?php echo json_encode($this->translate->_('Recent')); ?>,
+			recentShipments: <?php echo json_encode($this->translate->_('Recent Shipments')); ?>,
+			quickActions: <?php echo json_encode($this->translate->_('Quick Actions')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
+			$this->translate->_('Recent'),
+			$this->translate->_('Recent Shipments'),
 			$this->translate->_('Quick Actions'),
 			$this->translate->_('Navigation'),
 			$this->translate->_('Configure'),

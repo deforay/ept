@@ -14,10 +14,84 @@
         expandedEntityIndex: -1,
         selectedActionIndex: -1,
         isSearching: false,
+        maxHistoryItems: 5,
 
         init: function() {
             this.bindEvents();
             this.createResultsCache();
+        },
+
+        getStorageKey: function(type) {
+            // User-specific localStorage key (domain is already handled by localStorage)
+            var userId = window.spotlightUserId || 'default';
+            var suffix = type === 'shipments' ? '_shipments' : '';
+            return 'spotlightHistory_' + userId + suffix;
+        },
+
+        getHistory: function() {
+            try {
+                var history = JSON.parse(localStorage.getItem(this.getStorageKey())) || [];
+                // Filter to only items that still exist in current spotlightData
+                var validIds = this.searchData.map(function(item) { return item.id; });
+                return history.filter(function(h) {
+                    return validIds.indexOf(h.id) !== -1;
+                });
+            } catch (e) {
+                return [];
+            }
+        },
+
+        getShipmentHistory: function() {
+            try {
+                return JSON.parse(localStorage.getItem(this.getStorageKey('shipments'))) || [];
+            } catch (e) {
+                return [];
+            }
+        },
+
+        addToHistory: function(itemId) {
+            try {
+                var history = this.getHistory();
+                // Remove if already exists (to move to top)
+                history = history.filter(function(h) { return h.id !== itemId; });
+                // Add to beginning
+                history.unshift({ id: itemId, timestamp: Date.now() });
+                // Keep only max items
+                history = history.slice(0, this.maxHistoryItems);
+                localStorage.setItem(this.getStorageKey(), JSON.stringify(history));
+            } catch (e) {
+                // localStorage not available or quota exceeded
+            }
+        },
+
+        addShipmentToHistory: function(shipmentCode, shipmentId) {
+            try {
+                var history = this.getShipmentHistory();
+                // Remove if already exists (to move to top)
+                history = history.filter(function(h) { return h.code !== shipmentCode; });
+                // Add to beginning
+                history.unshift({ code: shipmentCode, id: shipmentId, timestamp: Date.now() });
+                // Keep only max items
+                history = history.slice(0, this.maxHistoryItems);
+                localStorage.setItem(this.getStorageKey('shipments'), JSON.stringify(history));
+            } catch (e) {
+                // localStorage not available or quota exceeded
+            }
+        },
+
+        getRecentItems: function() {
+            var self = this;
+            var history = this.getHistory();
+            var recentItems = [];
+
+            history.forEach(function(h) {
+                var item = self.searchData.find(function(i) { return i.id === h.id; });
+                if (item) {
+                    recentItems.push(item);
+                }
+            });
+
+            return recentItems;
         },
 
         createResultsCache: function() {
@@ -79,6 +153,10 @@
             $(document).on('click', '.spotlight-result-item:not(.spotlight-entity-item)', function(e) {
                 e.preventDefault();
                 var url = $(this).data('url');
+                var itemId = $(this).data('item-id');
+                if (itemId) {
+                    self.addToHistory(itemId);
+                }
                 if (url) {
                     window.location.href = url;
                 }
@@ -101,8 +179,23 @@
                 e.preventDefault();
                 e.stopPropagation();
                 var url = $(this).data('url');
+                var shipmentCode = $(this).closest('.spotlight-entity-actions').prev('.spotlight-entity-item').find('.spotlight-item-title').text();
+                var shipmentId = $(this).closest('.spotlight-entity-actions').prev('.spotlight-entity-item').data('entity-id');
+                if (shipmentCode) {
+                    self.addShipmentToHistory(shipmentCode, shipmentId);
+                }
                 if (url) {
                     self.navigateToUrl(url);
+                }
+            });
+
+            // Click on recent shipment item to search for it
+            $(document).on('click', '.spotlight-recent-shipment', function(e) {
+                e.preventDefault();
+                var code = $(this).data('shipment-code');
+                if (code) {
+                    $('#spotlightInput').val(code);
+                    self.search(code);
                 }
             });
 
@@ -160,20 +253,64 @@
         },
 
         showDefaultResults: function() {
-            // Show quick actions by default when opened
-            var quickActionsCategory = (window.spotlightCategoryOrder && window.spotlightCategoryOrder[0]) || 'Quick Actions';
+            var self = this;
+
+            // Get recent menu items
+            var recentItems = this.getRecentItems();
+
+            // Get recent shipments
+            var recentShipments = this.getShipmentHistory();
+
+            // Get quick actions - find items that are in the Quick Actions category
+            var quickActionsCategory = (window.spotlightTranslations && window.spotlightTranslations.quickActions) || 'Quick Actions';
             var quickActions = this.searchData.filter(function(item) {
                 return item.category === quickActionsCategory;
             });
 
-            this.entityResults = [];
-            if (quickActions.length > 0) {
-                this.filteredResults = quickActions;
-                this.renderResults();
-            } else {
+            // If no quick actions found, show first 8 items as default
+            if (quickActions.length === 0 && recentItems.length === 0 && recentShipments.length === 0) {
                 this.filteredResults = this.searchData.slice(0, 8);
+                this.entityResults = [];
                 this.renderResults();
+                return;
             }
+
+            // Combine: recent first (marked with special category), then quick actions
+            this.filteredResults = [];
+
+            // Add recent menu items with "Recent" category
+            var recentCategory = (window.spotlightTranslations && window.spotlightTranslations.recent) || 'Recent';
+            if (recentItems.length > 0) {
+                recentItems.forEach(function(item) {
+                    self.filteredResults.push($.extend({}, item, { category: recentCategory }));
+                });
+            }
+
+            // Add recent shipments as clickable items
+            if (recentShipments.length > 0) {
+                var recentShipmentsCategory = (window.spotlightTranslations && window.spotlightTranslations.recentShipments) || 'Recent Shipments';
+                recentShipments.forEach(function(shipment) {
+                    self.filteredResults.push({
+                        id: 'recent-shipment-' + shipment.code,
+                        title: shipment.code,
+                        category: recentShipmentsCategory,
+                        icon: 'icon-truck',
+                        isRecentShipment: true,
+                        shipmentCode: shipment.code
+                    });
+                });
+            }
+
+            // Add quick actions (excluding any that are already in recent)
+            var recentIds = recentItems.map(function(i) { return i.id; });
+            quickActions.forEach(function(item) {
+                if (recentIds.indexOf(item.id) === -1) {
+                    self.filteredResults.push(item);
+                }
+            });
+
+            this.entityResults = [];
+            this.renderResults();
         },
 
         search: function(query) {
@@ -309,14 +446,26 @@
 
                     grouped[category].forEach(function(item) {
                         var isSelected = globalIndex === self.selectedIndex;
-                        html += '<div class="spotlight-result-item' + (isSelected ? ' selected' : '') + '" ' +
-                                'data-url="' + self.escapeHtml(item.url) + '" data-index="' + globalIndex + '">';
-                        html += '<div class="spotlight-item-icon"><i class="' + self.escapeHtml(item.icon || 'icon-file') + '"></i></div>';
-                        html += '<div class="spotlight-item-content">';
-                        html += '<span class="spotlight-item-title">' + self.escapeHtml(item.title) + '</span>';
-                        html += '</div>';
-                        html += '<i class="icon-arrow-right spotlight-item-arrow"></i>';
-                        html += '</div>';
+                        if (item.isRecentShipment) {
+                            // Render recent shipment as clickable item that triggers search
+                            html += '<div class="spotlight-result-item spotlight-recent-shipment' + (isSelected ? ' selected' : '') + '" ' +
+                                    'data-shipment-code="' + self.escapeHtml(item.shipmentCode) + '" data-index="' + globalIndex + '">';
+                            html += '<div class="spotlight-item-icon"><i class="' + self.escapeHtml(item.icon || 'icon-truck') + '"></i></div>';
+                            html += '<div class="spotlight-item-content">';
+                            html += '<span class="spotlight-item-title">' + self.escapeHtml(item.title) + '</span>';
+                            html += '</div>';
+                            html += '<i class="icon-arrow-right spotlight-item-arrow"></i>';
+                            html += '</div>';
+                        } else {
+                            html += '<div class="spotlight-result-item' + (isSelected ? ' selected' : '') + '" ' +
+                                    'data-url="' + self.escapeHtml(item.url) + '" data-index="' + globalIndex + '" data-item-id="' + self.escapeHtml(item.id) + '">';
+                            html += '<div class="spotlight-item-icon"><i class="' + self.escapeHtml(item.icon || 'icon-file') + '"></i></div>';
+                            html += '<div class="spotlight-item-content">';
+                            html += '<span class="spotlight-item-title">' + self.escapeHtml(item.title) + '</span>';
+                            html += '</div>';
+                            html += '<i class="icon-arrow-right spotlight-item-arrow"></i>';
+                            html += '</div>';
+                        }
                         globalIndex++;
                     });
 
@@ -337,7 +486,7 @@
 
                 this.entityResults.forEach(function(entity, entityIndex) {
                     var isExpanded = entityIndex === self.expandedEntityIndex;
-                    html += '<div class="spotlight-entity-item' + (isExpanded ? ' expanded' : '') + '" data-entity-index="' + entityIndex + '">';
+                    html += '<div class="spotlight-entity-item' + (isExpanded ? ' expanded' : '') + '" data-entity-index="' + entityIndex + '" data-entity-id="' + self.escapeHtml(entity.id) + '">';
                     html += '<div class="spotlight-item-icon"><i class="' + self.escapeHtml(entity.icon || 'icon-truck') + '"></i></div>';
                     html += '<div class="spotlight-item-content">';
                     html += '<span class="spotlight-item-title">' + self.escapeHtml(entity.title) + '</span>';
@@ -464,7 +613,11 @@
                 case 'Enter':
                     e.preventDefault();
                     if (this.selectedIndex >= 0 && this.filteredResults[this.selectedIndex]) {
-                        window.location.href = this.filteredResults[this.selectedIndex].url;
+                        var selectedItem = this.filteredResults[this.selectedIndex];
+                        if (selectedItem.id) {
+                            this.addToHistory(selectedItem.id);
+                        }
+                        window.location.href = selectedItem.url;
                     } else if (totalEntities > 0 && this.selectedIndex === -1) {
                         // Expand first entity
                         this.expandEntity(0);

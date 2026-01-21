@@ -29,8 +29,14 @@ class Admin_SpotlightController extends Zend_Controller_Action
                 ->setIntegrityCheck(false)
                 ->from(['s' => 'shipment'])
                 ->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
+                ->joinLeft(
+                    ['spm' => 'shipment_participant_map'],
+                    's.shipment_id = spm.shipment_id AND spm.response_status = "responded"',
+                    ['response_count' => new Zend_Db_Expr('COUNT(spm.map_id)')]
+                )
                 ->where('s.shipment_code LIKE ?', '%' . $query . '%')
                 ->where('s.scheme_type IN (?)', $activeSchemes)
+                ->group('s.shipment_id')
                 ->order('s.shipment_date DESC')
                 ->limit(5);
 
@@ -59,8 +65,9 @@ class Admin_SpotlightController extends Zend_Controller_Action
                     ];
                 }
 
-                // Evaluate and Generate Reports - requires analyze-generate-reports privilege, not available for finalized
-                if (in_array('analyze-generate-reports', $privileges) && !$isFinalized) {
+                // Evaluate, Generate Reports, Finalize - requires analyze-generate-reports privilege, not available for finalized, requires at least one response
+                $hasResponses = ($shipment->response_count > 0);
+                if (in_array('analyze-generate-reports', $privileges) && !$isFinalized && $hasResponses) {
                     $actions[] = [
                         'label' => $this->view->translate->_('Evaluate'),
                         'url' => '/admin/evaluate/shipment/sid/' . $sid,
@@ -70,6 +77,11 @@ class Admin_SpotlightController extends Zend_Controller_Action
                         'label' => $this->view->translate->_('Generate Reports'),
                         'url' => '/reports/distribution/shipment/sid/' . $sid,
                         'icon' => 'icon-file-text'
+                    ];
+                    $actions[] = [
+                        'label' => $this->view->translate->_('Finalize'),
+                        'url' => '/reports/distribution/finalize/sid/' . $sid,
+                        'icon' => 'icon-ok-sign'
                     ];
                 }
 
