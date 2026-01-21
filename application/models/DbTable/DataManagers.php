@@ -538,6 +538,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
         $config = Pt_Commons_SchemeConfig::get('dts');
+        $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
+
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
@@ -624,7 +626,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'dtsOptionalTest3' => (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] != "") ? $config['dtsOptionalTest3'] : "no",
             'displaySampleConditionFields' => (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] != "") ? $config['displaySampleConditionFields'] : "no",
             'allowRepeatTests' => (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] != "") ? $config['allowRepeatTests'] : "no",
-            'covid19MaximumTestAllowed' => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
+            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $covid19Config['covid19MaximumTestAllowed'] : "1",
             'name' => $result['first_name'] . ' ' . $result['last_name'],
             'phone' => $result['phone'],
             'appVersion' => $apiVersion ?? null,
@@ -689,11 +691,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'enableChoosingModeOfReceipt' => (isset($aResult['enable_choosing_mode_of_receipt']) && $aResult['enable_choosing_mode_of_receipt'] == "yes") ? true : false,
             'forcePasswordReset' => (isset($aResult['force_password_reset']) && $aResult['force_password_reset'] != "" && $aResult['force_password_reset'] == 1) ? true : false,
             'forceProfileCheck' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] == "yes") ? true : false,
-            'dtsOptionalTest3' => (isset($config->evaluation->dts->dtsOptionalTest3) && $config->evaluation->dts->dtsOptionalTest3 == "yes") ? true : false,
-            'displaySampleConditionFields' => (isset($config->evaluation->dts->displaySampleConditionFields) && $config->evaluation->dts->displaySampleConditionFields == "yes") ? true : false,
-            'allowRepeatTests' => (isset($config->evaluation->dts->allowRepeatTests) && $config->evaluation->dts->allowRepeatTests == "yes") ? true : false,
-            'dtsSchemeType' => (isset($config->evaluation->dts->dtsSchemeType) && $config->evaluation->dts->dtsSchemeType != "") ? $config->evaluation->dts->dtsSchemeType : "standard",
-            'covid19MaximumTestAllowed' => (isset($config->evaluation->covid19->covid19MaximumTestAllowed) && $config->evaluation->covid19->covid19MaximumTestAllowed != "") ? $config->evaluation->covid19->covid19MaximumTestAllowed : "1",
+            'dtsOptionalTest3' => (isset($config['dtsOptionalTest3']) && $config['dtsOptionalTest3'] == "yes") ? true : false,
+            'displaySampleConditionFields' => (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == "yes") ? true : false,
+            'allowRepeatTests' => (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == "yes") ? true : false,
+            'dtsSchemeType' => (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : "standard",
+            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $config['covid19MaximumTestAllowed'] : "1",
             'name' => $result['first_name'] . ' ' . $result['last_name'],
             'phone' => $result['phone'],
             'appVersion' => $aResult['app_version'],
