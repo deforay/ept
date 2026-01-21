@@ -38,7 +38,7 @@ class Admin_Covid19SettingsController extends Zend_Controller_Action
                 $common->saveSchemeConfigByName($covid19, 'covid19');
             }
         }
-        $this->view->covid19Config = $common->getSchemeConfig('covid19');
+        $this->view->covid19Config = Pt_Commons_SchemeConfig::get('covid19');
         $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise(true);
         $this->view->recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
     }

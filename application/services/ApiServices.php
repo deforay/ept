@@ -59,7 +59,7 @@ class Application_Service_ApiServices
         /* Started DTS (HIV Serology) References */
         $dtsModel = new Application_Model_Dts();
         // Load dts configuration into a init as array
-        $response['dts']['config'] = $this->common->getSchemeConfig('dts');
+        $response['dts']['config'] = Pt_Commons_SchemeConfig::get('dts');
 
         // Load dts testing kit into a init as separate tests
         $allTestKits = $dtsModel->getAllDtsTestKitList();

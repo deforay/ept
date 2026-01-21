@@ -1,8 +1,5 @@
 <?php
-if (Application_Service_Common::isJSON($this->vlConfig))
-    $vl = json_decode($this->vlConfig);
-else
-    $vl = $this->vlConfig;
+$vl = $this->vlConfig ?? [];
 ?>
 <div class="well">
     <form name="vlSettingsForm" id="vlSettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "vl-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
@@ -14,19 +11,19 @@ else
             <div class="form-group">
                 <label for="vlPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Passing Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="vlPassPercentage" name="vl[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl->passPercentage ?? 95; ?>" />
+                    <input type="number" id="vlPassPercentage" name="vl[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl['passPercentage'] ?? 95; ?>" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="vlDocumentationScore" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="vlDocumentationScore" name="vl[documentationScore]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl->documentationScore ?? 95; ?>" />
+                    <input type="number" id="vlDocumentationScore" name="vl[documentationScore]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $vl['documentationScore'] ?? 95; ?>" />
                 </div>
             </div>
             <div class="form-group">
                 <label for="contentForIndividualVlReports" class="col-lg-3 control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <div id="content" name="content" class="richtextarea form-control" title="Please enter content for individual VL reports" placeholder="Enter content for individual VL reports"><?php echo htmlspecialchars_decode($vl->contentForIndividualVlReports); ?></div>
+                    <div id="content" name="content" class="richtextarea form-control" title="Please enter content for individual VL reports" placeholder="Enter content for individual VL reports"><?php echo htmlspecialchars_decode($vl['contentForIndividualVlReports']); ?></div>
                     <textarea style="display: none;" id="contentForIndividualVlReports" class="form-control" name="vl[contentForIndividualVlReports]" placeholder="Enter content for individual VL reports" title="Please enter content for individual VL reports"></textarea>
                 </div>
             </div>

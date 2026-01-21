@@ -97,7 +97,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
             $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
             $this->view->customTestsRecommendedTestkits = $db->getRecommededGenericTestkits($schemeCode);
         }
-        $this->view->disableOtherTestkit = $common->getSchemeConfig($schemeCode . '.disableOtherTestkit');
-        $this->view->passingScore = $common->getSchemeConfig($schemeCode . '.passingScore');
+        $this->view->disableOtherTestkit = Pt_Commons_SchemeConfig::get($schemeCode . '.disableOtherTestkit');
+        $this->view->passingScore = Pt_Commons_SchemeConfig::get($schemeCode . '.passingScore');
     }
 }

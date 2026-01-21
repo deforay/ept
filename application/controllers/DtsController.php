@@ -15,8 +15,6 @@ class DtsController extends Zend_Controller_Action
 		$schemeService = new Application_Service_Schemes();
 		$shipmentService = new Application_Service_Shipments();
 		$dtsModel = new Application_Model_Dts();
-		$common = new Application_Service_Common();
-
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
