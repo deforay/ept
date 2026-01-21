@@ -122,7 +122,7 @@ if (!$pstatus && (in_array('config-ept', $privileges) || in_array('manage-partic
 		'title' => $this->translate->_('Bulk Add Participants'),
 		'category' => $this->translate->_('Quick Actions'),
 		'icon' => 'icon-upload',
-		'url' => $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'import'], 'default', true),
+		'url' => $this->url(['module' => 'admin', 'controller' => 'participants', 'action' => 'bulk-import'], 'default', true),
 		'keywords' => ['import', 'excel', 'csv', 'bulk', 'upload']
 	];
 	$spotlightItems[] = [
