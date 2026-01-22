@@ -124,7 +124,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10, '', true);
-            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL INDIVIDUAL REPORT</span></div>';
+            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL INDIVIDUAL PERFORMANCE REPORT</span></div>';
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
@@ -167,11 +167,10 @@ class Pt_Reports_IndividualPdf extends Fpdi
                 $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span>', 0, 0, 0, true, 'J', true);
             } elseif ($this->schemeType == 'tb') {
                 // $this->writeHTMLCell(0, 0, 10, 39, '<span style="font-weight: bold;text-align:center;">' . 'Proficiency Testing Program for Tuberculosis</span>', 0, 0, 0, true, 'J', true);
-
             }
             if ($this->schemeType != 'tb') {
                 $finalized = (!empty($this->resultStatus) && $this->resultStatus == 'finalized') ? 'FINAL ' : '';
-                $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL REPORT ' . $screening . '</span>';
+                $finalizeReport = '<span style="font-weight: normal;text-align:center;">' . $finalized . ' INDIVIDUAL PERFORMANCE REPORT ' . $screening . '</span>';
                 $this->writeHTMLCell(0, 0, 10, 45, $finalizeReport, 0, 0, 0, true, 'J', true);
             }
         } elseif ($this->schemeType == 'covid19') {
@@ -293,9 +292,9 @@ class Pt_Reports_IndividualPdf extends Fpdi
     {
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
-            $finalizeReport = ' | INDIVIDUAL REPORT | FINALIZED ';
+            $finalizeReport = ' | INDIVIDUAL PERFORMANCE REPORT | FINALIZED ';
         } else {
-            $finalizeReport = ' | INDIVIDUAL REPORT ';
+            $finalizeReport = ' | INDIVIDUAL PERFORMANCE REPORT ';
         }
 
         $effectiveDateToShow = $this->effectiveDate ?? date("Y-m-d H:i:s");
@@ -324,7 +323,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             if ($this->schemeType == 'tb') {
                 $this->SetFont('freesans', '', 9);
                 if (isset($this->issuingAuthority) && !empty($this->issuingAuthority)) {
-                    $html = '<table><tr><td><span style="text-align:left;">Form : ' . $this->formVersion . '</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
+                    $html = '<table><tr><td><span style="text-align:left;">' . $this->formVersion . '</span></td><td><span style="text-align:center;">Issuing Authority : ' . $this->issuingAuthority . '</span></td><td><span style="text-align:right;">Effective Date : ' . $effectiveMonthYear . '</span></td></tr></table>';
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
