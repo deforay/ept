@@ -11,7 +11,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     protected $_name = 'participant';
     protected $_primary = 'participant_id';
-    protected $_defaultPassword  = 'ept1@)(*&^';
+    protected $_defaultPassword = 'ept1@)(*&^';
     protected $_defaultPasswordHash = null;
 
     public function __construct()
@@ -44,7 +44,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function checkParticipantAccess($participantId, $dmId = '', $comingFrom = '')
     {
         if ($comingFrom != 'API') {
-            $authNameSpace =  new Zend_Session_Namespace('datamanagers');
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $dmId = $authNameSpace->dm_id;
         }
 
@@ -238,8 +238,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function updateParticipant($params)
     {
-        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  NULL;
-        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  NULL;
+        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : NULL;
+        $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : NULL;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
         $data = [
@@ -366,8 +366,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
         $ulid = Pt_Commons_General::generateULID();
-        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] :  null;
-        $lastName =  isset($params['plname']) && $params['plname'] != '' ? $params['plname'] :  null;
+        $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : null;
+        $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : null;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = [
             'unique_identifier' => $params['pid'],
@@ -414,7 +414,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
         $configDb = new Application_Model_DbTable_GlobalConfig();
         if ((isset($params['dmPassword']) && !empty($params['dmPassword'])) && isset($params['pemail']) && !empty($params['pemail'])) {
-            $newDmId =  $dmDb->insert([
+            $newDmId = $dmDb->insert([
                 'primary_email' => $params['pemail'] ?? $prefix . $params['pid'],
                 'participant_ulid' => $ulid,
                 'data_manager_type' => 'participant',
@@ -858,17 +858,17 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
                                     $dataManagerData = [
-                                        'first_name'        => MiscUtility::cleanString($row['C']),
-                                        'primary_email'     => $row['D'],
-                                        'secondary_email'   => $row['E'],
-                                        'mobile'            => MiscUtility::cleanString($row['F']),
-                                        'password'          => $this->_defaultPasswordHash,
+                                        'first_name' => MiscUtility::cleanString($row['C']),
+                                        'primary_email' => $row['D'],
+                                        'secondary_email' => $row['E'],
+                                        'mobile' => MiscUtility::cleanString($row['F']),
+                                        'password' => $this->_defaultPasswordHash,
                                         'force_password_reset' => 0,
                                         'force_profile_check' => 0,
                                         'data_manager_type' => 'manager',
-                                        'created_by'        => $authNameSpace->admin_id,
-                                        'created_on'        => new Zend_Db_Expr('now()'),
-                                        'status'            => 'active'
+                                        'created_by' => $authNameSpace->admin_id,
+                                        'created_on' => new Zend_Db_Expr('now()'),
+                                        'status' => 'active'
                                     ];
 
                                     $db->insert('data_manager', $dataManagerData);
@@ -1160,7 +1160,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         }
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id',  'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             // ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
@@ -1339,7 +1339,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['phone'];
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
-            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(this, \'' . base64_encode($aRow['participant_id']) . '\',\'' .  base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
+            $row[] = '<a href="javascript:void(0);" onclick="enrollParticipants(this, \'' . base64_encode($aRow['participant_id']) . '\',\'' . base64_encode($parameters['shipmentId']) . '\')" class="btn btn-primary btn-xs"> Enroll</a>';
             $output['aaData'][] = $row;
         }
 
@@ -1362,10 +1362,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ['p' => $this->_name],
                 [
                     'country_details' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT CONCAT(con.id, ':', con.iso_name) SEPARATOR ',')"),
-                    'districts'       => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.district SEPARATOR ',')"),
-                    'regions'         => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.region SEPARATOR ',')"),
-                    'states'          => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.state SEPARATOR ',')"),
-                    'cities'          => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.city SEPARATOR ',')")
+                    'districts' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.district SEPARATOR ',')"),
+                    'regions' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.region SEPARATOR ',')"),
+                    'states' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.state SEPARATOR ',')"),
+                    'cities' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.city SEPARATOR ',')")
                 ]
             )
             ->joinLeft(['con' => 'countries'], 'con.id = p.country', [])
@@ -1386,9 +1386,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return [
             'countries' => $countries,
             'districts' => $result['districts'] ? explode(',', $result['districts']) : [],
-            'regions'   => $result['regions'] ? explode(',', $result['regions']) : [],
-            'states'    => $result['states'] ? explode(',', $result['states']) : [],
-            'cities'    => $result['cities'] ? explode(',', $result['cities']) : [],
+            'regions' => $result['regions'] ? explode(',', $result['regions']) : [],
+            'states' => $result['states'] ? explode(',', $result['states']) : [],
+            'cities' => $result['cities'] ? explode(',', $result['cities']) : [],
         ];
     }
 
@@ -1429,7 +1429,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchParticipantSearch($search)
     {
         $sql = $this->select();
-        $sql =  $sql->where("first_name LIKE '%" . $search . "%'
+        $sql = $sql->where("first_name LIKE '%" . $search . "%'
                 OR last_name LIKE '%" . $search . "%'
                 OR unique_identifier LIKE '%" . $search . "%'
                 OR institute_name LIKE '%" . $search . "%'
@@ -1474,28 +1474,28 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $response['status'] = 'success';
             foreach ($result as $row) {
                 $response['data']['participants'][] = array(
-                    'participant_id'    => $row['participant_id'],
+                    'participant_id' => $row['participant_id'],
                     'unique_identifier' => $row['unique_identifier'],
-                    'first_name'        => $row['first_name'],
-                    'last_name'         => $row['last_name'],
-                    'mobile'            => $row['mobile'],
-                    'email'             => $row['email'],
-                    'status'            => $row['status'],
-                    'individual'        => $row['individual'],
-                    'lab_name'          => $row['lab_name'],
-                    'institute_name'    => $row['institute_name'],
-                    'department_name'   => $row['department_name'],
-                    'region'            => $row['region']
+                    'first_name' => $row['first_name'],
+                    'last_name' => $row['last_name'],
+                    'mobile' => $row['mobile'],
+                    'email' => $row['email'],
+                    'status' => $row['status'],
+                    'individual' => $row['individual'],
+                    'lab_name' => $row['lab_name'],
+                    'institute_name' => $row['institute_name'],
+                    'department_name' => $row['department_name'],
+                    'region' => $row['region']
                 );
             }
             $schemeDb = new Application_Model_DbTable_SchemeList();
-            $schemeList =  $schemeDb->getFullSchemeList();
+            $schemeList = $schemeDb->getFullSchemeList();
             if (count($schemeList) > 0) {
                 foreach ($schemeList as $scheme) {
                     if ($scheme['status'] == 'active') {
                         $response['data']['shipments'][] = array(
-                            'scheme_id'     => $scheme['scheme_id'],
-                            'scheme_name'   => $scheme['scheme_name']
+                            'scheme_id' => $scheme['scheme_id'],
+                            'scheme_name' => $scheme['scheme_name']
                         );
                     }
                 }
@@ -1756,24 +1756,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                         // Success - add to response
                         $response['data'][] = [
-                            'participant_id'        => $sheetData[$i]['B'],
-                            'individual'            => $sheetData[$i]['C'] ?? 'no',
-                            'participant_lab_name'  => $sheetData[$i]['D'],
+                            'participant_id' => $sheetData[$i]['B'],
+                            'individual' => $sheetData[$i]['C'] ?? 'no',
+                            'participant_lab_name' => $sheetData[$i]['D'],
                             'participant_last_name' => $sheetData[$i]['E'],
-                            'institute_name'        => $sheetData[$i]['F'] ?? null,
-                            'department'            => $sheetData[$i]['G'] ?? null,
-                            'address'               => $sheetData[$i]['H'] ?? null,
-                            'district'              => $sheetData[$i]['J'] ?? null,
-                            'country'               => $sheetData[$i]['M'],
-                            'zip'                   => $sheetData[$i]['N'] ?? null,
-                            'longitude'             => $sheetData[$i]['O'] ?? null,
-                            'latitude'              => $sheetData[$i]['P'] ?? null,
-                            'mobile_number'         => $sheetData[$i]['Q'] ?? null,
-                            'participant_email'     => $originalEmail,
-                            'participant_password'  => $sheetData[$i]['S'],
-                            'additional_email'      => $sheetData[$i]['T'] ?? null,
-                            'filename'              => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
-                            'updated_datetime'      => Common::getDateTime()
+                            'institute_name' => $sheetData[$i]['F'] ?? null,
+                            'department' => $sheetData[$i]['G'] ?? null,
+                            'address' => $sheetData[$i]['H'] ?? null,
+                            'district' => $sheetData[$i]['J'] ?? null,
+                            'country' => $sheetData[$i]['M'],
+                            'zip' => $sheetData[$i]['N'] ?? null,
+                            'longitude' => $sheetData[$i]['O'] ?? null,
+                            'latitude' => $sheetData[$i]['P'] ?? null,
+                            'mobile_number' => $sheetData[$i]['Q'] ?? null,
+                            'participant_email' => $originalEmail,
+                            'participant_password' => $sheetData[$i]['S'],
+                            'additional_email' => $sheetData[$i]['T'] ?? null,
+                            'filename' => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
+                            'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime()
                         ];
                     } else {
                         $this->addError($response, $row, 'Could not add Participant Login');
@@ -1819,7 +1819,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $errorData = [
             'participant_id' => $row['B'] ?? 'Unknown',
             'error' => $errorMessage,
-            'updated_datetime' => Common::getDateTime()
+            'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime()
         ];
 
         $response['error-data'][] = $errorData;
@@ -2103,7 +2103,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['district']);
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['RESPONSE']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
             $row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']])) ? ucwords($finalResult[$aRow['final_result']]) : null;
             $output['aaData'][] = $row;
         }
@@ -2235,7 +2235,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function notRespondedParticipants($shipmentId)
     {
-        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id',  'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
@@ -2246,7 +2246,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function fetchNotRespondedParticipantsByDmId($dmId)
     {
-        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id',  'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
+        $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
             ->join(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array())
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")

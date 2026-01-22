@@ -89,10 +89,10 @@ if (!empty($resultArray['shipment'])) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -103,7 +103,7 @@ if (!empty($resultArray['shipment'])) {
         $score = 0;
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -112,15 +112,15 @@ if (!empty($resultArray['shipment'])) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . $panelName . '</span><br>';
@@ -294,7 +294,7 @@ if (!empty($resultArray['shipment'])) {
 
         if ($evalRow['report_type'] == 'finalized') {
             $authorised = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-            $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
+            $datetxt = Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
         }
 
         // Position at bottom of page 1

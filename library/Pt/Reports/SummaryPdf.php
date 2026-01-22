@@ -359,7 +359,7 @@ class Pt_Reports_SummaryPdf extends Fpdi
             if (isset($this->layout) && $isLayoutZimbabwe) {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } elseif ($this->schemeType != 'tb') {
-                $this->Cell(0, 10, "Report generated on " . $this->generalModel->humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+                $this->Cell(0, 10, "Report generated on " . Pt_Commons_DateUtility::humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, 0, false, 'C', 0, '', 0, false, 'T', 'M');
             }
         }
         if ($this->schemeType != 'tb') {

@@ -107,10 +107,10 @@ if (!empty($resultArray['shipment'])) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -187,7 +187,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -196,7 +196,7 @@ if (!empty($resultArray['shipment'])) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
         $srDate = new DateTime($attributes['sample_rehydration_date']);
@@ -210,15 +210,15 @@ if (!empty($resultArray['shipment'])) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         if (trim($result['distribution_date']) != "") {
-            $distributionDate = Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+            $distributionDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         }
 
         $labInfo = '<span style="font-weight: bold;font-size:13px;">Laboratory Results Summary : </span><br/>';

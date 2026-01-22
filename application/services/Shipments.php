@@ -166,7 +166,7 @@ class Application_Service_Shipments
             }
             if ($aRow['last_new_shipment_mailed_on'] != '') {
                 $mailedOn = explode(' ', $aRow['last_new_shipment_mailed_on']);
-                $mailedOn = Pt_Commons_General::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
+                $mailedOn = Pt_Commons_DateUtility::humanReadableDateFormat($mailedOn[0]) . ' ' . $mailedOn[1];
             }
             if ($aRow['status'] != 'finalized' && $aRow['status'] != 'ready' && $aRow['status'] != 'pending') {
                 $responseSwitch = "<select onchange='responseSwitch(this.value," . $aRow['shipment_id'] . ")'>";
@@ -181,8 +181,8 @@ class Application_Service_Shipments
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['total_participants'];
             $row[] = $responseSwitch;
@@ -292,17 +292,17 @@ class Application_Service_Shipments
 
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
-                $params['sampleRehydrationDate'] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+                $params['sampleRehydrationDate'] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             } else {
                 $params['sampleRehydrationDate'] = '';
             }
             if (isset($params['extractionAssayExpiryDate']) && trim($params['extractionAssayExpiryDate']) != "") {
-                $params['extractionAssayExpiryDate'] = Pt_Commons_General::isoDateFormat($params['extractionAssayExpiryDate']);
+                $params['extractionAssayExpiryDate'] = Pt_Commons_DateUtility::isoDateFormat($params['extractionAssayExpiryDate']);
             } else {
                 $params['extractionAssayExpiryDate'] = '';
             }
             if (isset($params['detectionAssayExpiryDate']) && trim($params['detectionAssayExpiryDate']) != "") {
-                $params['detectionAssayExpiryDate'] = Pt_Commons_General::isoDateFormat($params['detectionAssayExpiryDate']);
+                $params['detectionAssayExpiryDate'] = Pt_Commons_DateUtility::isoDateFormat($params['detectionAssayExpiryDate']);
             } else {
                 $params['detectionAssayExpiryDate'] = '';
             }
@@ -354,8 +354,8 @@ class Application_Service_Shipments
             // }
 
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -375,14 +375,14 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
 
             $data['is_pt_test_not_performed'] = null;
             $data['vl_not_tested_reason'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
 
@@ -397,7 +397,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -496,12 +496,12 @@ class Application_Service_Shipments
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
-                $params['sampleRehydrationDate'] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+                $params['sampleRehydrationDate'] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             } else {
                 $params['sampleRehydrationDate'] = '';
             }
             if (isset($params['recencyAssayExpiryDate']) && trim($params['recencyAssayExpiryDate']) != "") {
-                $params['recencyAssayExpiryDate'] = Pt_Commons_General::isoDateFormat($params['recencyAssayExpiryDate']);
+                $params['recencyAssayExpiryDate'] = Pt_Commons_DateUtility::isoDateFormat($params['recencyAssayExpiryDate']);
             } else {
                 $params['recencyAssayExpiryDate'] = '';
             }
@@ -523,8 +523,8 @@ class Application_Service_Shipments
             //     $responseStatus = "nottested";
             // }
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -544,7 +544,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -552,7 +552,7 @@ class Application_Service_Shipments
 
             $data['is_pt_test_not_performed'] = null;
             $data['vl_not_tested_reason'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
 
@@ -567,7 +567,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -632,7 +632,7 @@ class Application_Service_Shipments
 
 
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate'] ?? '');
+            $attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate'] ?? '');
             $attributes["algorithm"] = $params['algorithm'];
             if (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) {
                 $attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
@@ -647,8 +647,8 @@ class Application_Service_Shipments
             //     $responseStatus = "nottested";
             // }
             $data = [
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
@@ -667,7 +667,7 @@ class Application_Service_Shipments
 
             $testResponseDate = $params['testResponseDate'] ?? $params['testReceiptDate'] ?? null;
             if (isset($testResponseDate) && !empty($testResponseDate)) {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($testResponseDate);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($testResponseDate);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -675,7 +675,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -689,7 +689,7 @@ class Application_Service_Shipments
             $data['vl_not_tested_reason'] = null;
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
 
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
@@ -778,7 +778,7 @@ class Application_Service_Shipments
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+            $attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             $attributes["algorithm"] = $params['algorithm'];
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
@@ -786,8 +786,8 @@ class Application_Service_Shipments
             //     $responseStatus = "nottested";
             // }
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -809,7 +809,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -817,7 +817,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -829,7 +829,7 @@ class Application_Service_Shipments
 
             $data['is_pt_test_not_performed'] = null;
             $data['vl_not_tested_reason'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
@@ -1203,15 +1203,15 @@ class Application_Service_Shipments
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+            $attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
             // if ($params['isPtTestNotPerformed'] == "yes") {
             //     $responseStatus = "nottested";
             // }
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 "attributes" => $attributes,
                 //"shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -1230,7 +1230,7 @@ class Application_Service_Shipments
                 $data["updated_on_admin"] = new Zend_Db_Expr('now()');
             }
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1238,7 +1238,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'];
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -1290,7 +1290,7 @@ class Application_Service_Shipments
                 "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
                 "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
                 "mtb_rif_kit_lot_no" => (isset($params['mtbRifKitLotNo']) && !empty($params['mtbRifKitLotNo'])) ? $params['mtbRifKitLotNo'] : "",
-                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
+                "expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['expiryDate']) : "",
                 "date_of_xpert_instrument_calibration" => (isset($params['geneXpertInstrument']) && !empty($params['geneXpertInstrument'])) ? $params['geneXpertInstrument'] : "",
                 "attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : ""
@@ -1298,8 +1298,8 @@ class Application_Service_Shipments
             $attributes = json_encode($attributes);
 
             $data = array(
-                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_General::isoDateFormat($params['shipmentTestDate']) : '',
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']) : '',
+                "shipment_test_date" => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['shipmentTestDate']) : '',
                 "attributes" => $attributes,
                 "shipment_test_report_date" => new Zend_Db_Expr('now()'),
                 "supervisor_approval" => $params['supervisorApproval'],
@@ -1319,7 +1319,7 @@ class Application_Service_Shipments
 
             $data['is_pt_test_not_performed'] = null;
             $data['vl_not_tested_reason'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
@@ -1331,7 +1331,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['responseDate']) && trim($params['responseDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['responseDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['responseDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1350,8 +1350,8 @@ class Application_Service_Shipments
                         'participant_id' => $params['participantId'],
                         'map_id' => $params['smid'],
                         'instrument_serial' => $params['serialNo'][$key],
-                        'instrument_installed_on' => Pt_Commons_General::isoDateFormat($params['installedOn'][$key]),
-                        'instrument_last_calibrated_on' => Pt_Commons_General::isoDateFormat($params['lastCalibrated'][$key])
+                        'instrument_installed_on' => Pt_Commons_DateUtility::isoDateFormat($params['installedOn'][$key]),
+                        'instrument_last_calibrated_on' => Pt_Commons_DateUtility::isoDateFormat($params['lastCalibrated'][$key])
                     );
                     if (isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])) {
                         $instrumentData['updated_by'] = $authNameSpace->dm_id ?? null;
@@ -1420,15 +1420,15 @@ class Application_Service_Shipments
                 "analyst_name" => (isset($params['analystName']) && !empty($params['analystName'])) ? $params['analystName'] : "",
                 "kit_name" => $params['kitName'] ?? null,
                 "kit_lot_number" => (isset($params['kitLot']) && !empty($params['kitLot'])) ? $params['kitLot'] : "",
-                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_General::isoDateFormat($params['expiryDate']) : "",
+                "kit_expiry_date" => (isset($params['expiryDate']) && !empty($params['expiryDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['expiryDate']) : "",
             ];
 
             $attributes = json_encode($attributes);
             $responseStatus = "responded";
 
             $data = [
-                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_General::isoDateFormat($params['receiptDate']) : '',
-                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_General::isoDateFormat($params['testDate']) : '',
+                "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']) : '',
+                "shipment_test_date" => (isset($params['testDate']) && !empty($params['testDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['testDate']) : '',
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
@@ -1446,7 +1446,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1512,10 +1512,10 @@ class Application_Service_Shipments
             }
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             if (isset($params['sampleRehydrationDate']) && trim($params['sampleRehydrationDate']) != "") {
-                $params['sampleRehydrationDate'] = Pt_Commons_General::isoDateFormat($params['sampleRehydrationDate']);
+                $params['sampleRehydrationDate'] = Pt_Commons_DateUtility::isoDateFormat($params['sampleRehydrationDate']);
             }
             if (isset($params['assayExpirationDate']) && trim($params['assayExpirationDate']) != "") {
-                $params['assayExpirationDate'] = Pt_Commons_General::isoDateFormat($params['assayExpirationDate']);
+                $params['assayExpirationDate'] = Pt_Commons_DateUtility::isoDateFormat($params['assayExpirationDate']);
             }
 
             $attributes = [
@@ -1552,8 +1552,8 @@ class Application_Service_Shipments
             //     $responseStatus = "nottested";
             // }
             $data = array(
-                "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($params['receiptDate']),
-                "shipment_test_date" => Pt_Commons_General::isoDateFormat($params['testDate']),
+                "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']),
+                "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($params['testDate']),
                 "attributes" => $attributes,
                 "supervisor_approval" => $params['supervisorApproval'],
                 "participant_supervisor" => $params['participantSupervisor'],
@@ -1570,7 +1570,7 @@ class Application_Service_Shipments
             }
 
             if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '' && $responseStatus == 'responded') {
-                $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
             } else {
                 $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
             }
@@ -1579,7 +1579,7 @@ class Application_Service_Shipments
             $data['vl_not_tested_reason'] = null;
             $data['pt_test_not_performed_comments'] = null;
             $data['pt_support_comments'] = null;
-            $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($params['testDate']);
+            $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testDate']);
 
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 $data['is_pt_test_not_performed'] = 'yes';
@@ -1592,7 +1592,7 @@ class Application_Service_Shipments
             if (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') {
                 $data['qc_done'] = $params['qcDone'] ?? 'no';
                 if (isset($data['qc_done']) && trim($data['qc_done']) == "yes") {
-                    $data['qc_date'] = Pt_Commons_General::isoDateFormat($params['qcDate']);
+                    $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
                     $data['qc_done_by'] = trim($params['qcDoneBy']);
                     $data['qc_created_on'] = new Zend_Db_Expr('now()');
                 } else {
@@ -1738,7 +1738,7 @@ class Application_Service_Shipments
                 'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
                 'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
                 'collect_feedback' => $params['collectFeedBack'] ?? 'no',
-                'lastdate_response' => Pt_Commons_General::isoDateFormat($params['lastDate']),
+                'lastdate_response' => Pt_Commons_DateUtility::isoDateFormat($params['lastDate']),
                 'created_on_admin' => new Zend_Db_Expr('now()'),
                 'created_by_admin' => $authNameSpace->primary_email
             );
@@ -1763,7 +1763,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'reference_result' => $params['possibleResults'][$i],
                             'reference_hiv_ct_od' => $params['hivCtOd'][$i],
                             'reference_ic_qs' => $params['icQs'][$i],
@@ -1783,7 +1783,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             //'reference_result' => $params['vlResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
@@ -1814,7 +1814,7 @@ class Application_Service_Shipments
                         'shipment_id' => $lastId,
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'syphilis_reference_result' => $params['possibleSyphilisResults'][$i] ?? null,
@@ -1834,7 +1834,7 @@ class Application_Service_Shipments
                             if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                                 }
 
                                 $dbAdapter->insert(
@@ -1861,7 +1861,7 @@ class Application_Service_Shipments
                             if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                                 }
                                 $dbAdapter->insert(
                                     'reference_dts_wb',
@@ -1894,7 +1894,7 @@ class Application_Service_Shipments
                             if (isset($params['rhiv'][$i + 1]['kit'][$e]) && trim($params['rhiv'][$i + 1]['kit'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
                                 }
 
                                 $dbAdapter->insert(
@@ -1920,7 +1920,7 @@ class Application_Service_Shipments
                             if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
                                 }
 
                                 $id = $dbAdapter->insert(
@@ -1952,7 +1952,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'reference_result' => $params['possibleResults'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
@@ -1966,7 +1966,7 @@ class Application_Service_Shipments
                             if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                                 }
 
                                 $dbAdapter->insert(
@@ -1992,7 +1992,7 @@ class Application_Service_Shipments
                             if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                                 }
                                 $dbAdapter->insert(
                                     'reference_dbs_wb',
@@ -2032,7 +2032,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'tb_isolate' => $params['tbIsolate'][$i],
                             'mtb_detected' => $params['mtbDetected'][$i],
                             'mtb_detected_ultra' => $params['mtbDetectedUltra'][$i],
@@ -2066,7 +2066,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'reference_result' => $params['possibleResults'][$i],
                             'reference_control_line' => $params['controlLine'][$i],
                             'reference_diagnosis_line' => $params['verificationLine'][$i],
@@ -2084,7 +2084,7 @@ class Application_Service_Shipments
                             if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
                                 $expDate = '';
                                 if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
-                                    $expDate = Pt_Commons_General::isoDateFormat($params['assay'][$i + 1]['expiry'][$e]);
+                                    $expDate = Pt_Commons_DateUtility::isoDateFormat($params['assay'][$i + 1]['expiry'][$e]);
                                 }
 
                                 $dbAdapter->insert(
@@ -2111,7 +2111,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'reference_result' => $params['possibleResults'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
@@ -2127,7 +2127,7 @@ class Application_Service_Shipments
                         if (isset($params['rtype'][$i + 1]['type'][$e]) && trim($params['rtype'][$i + 1]['type'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['rtype'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['rtype'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['rtype'][$i + 1]['expiry'][$e]);
                             }
 
                             $dbAdapter->insert(
@@ -2156,7 +2156,7 @@ class Application_Service_Shipments
                             'shipment_id' => $lastId,
                             'sample_id' => ($i + 1),
                             'sample_label' => $params['sampleName'][$i],
-                            'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                            'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                             'reference_result' => $params['finalResult'][$i],
                             'control' => $params['control'][$i],
                             'mandatory' => $params['mandatory'][$i],
@@ -2368,7 +2368,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['possibleResults'][$i],
                         'reference_hiv_ct_od' => $params['hivCtOd'][$i],
                         'reference_ic_qs' => $params['icQs'][$i],
@@ -2390,7 +2390,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['vlResult'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
@@ -2438,7 +2438,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'] ?? null,
                         'sample_id' => ($i),
                         'sample_label' => $getValue($params['sampleName'][$i] ?? null),
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i] ?? null),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i] ?? null),
                         'tb_isolate' => $getValue($params['tbIsolate'][$i] ?? null),
                         'mtb_detected' => $getValue($params['mtbDetected'][$i] ?? null),
                         'mtb_detected_ultra' => $getValue($params['mtbDetectedUltra'][$i] ?? $params['mtbDetected'][$i] ?? null),
@@ -2477,7 +2477,7 @@ class Application_Service_Shipments
                     'shipment_id' => $params['shipmentId'],
                     'sample_id' => ($i + 1),
                     'sample_label' => $params['sampleName'][$i],
-                    'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                    'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                     'reference_result' => $params['possibleResults'][$i],
                     'syphilis_reference_result' => (isset($params['possibleSyphilisResults'][$i]) && !empty($params['possibleSyphilisResults'][$i])) ? $params['possibleSyphilisResults'][$i] : null,
                     'dts_rtri_reference_result' => (isset($params['possibleRTRIResults'][$i]) && !empty($params['possibleRTRIResults'][$i])) ? $params['possibleRTRIResults'][$i] : null,
@@ -2492,7 +2492,7 @@ class Application_Service_Shipments
                         if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                             }
                             $dbAdapter->insert(
                                 'reference_dts_eia',
@@ -2517,7 +2517,7 @@ class Application_Service_Shipments
                         if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                             }
                             $dbAdapter->insert(
                                 'reference_dts_wb',
@@ -2550,7 +2550,7 @@ class Application_Service_Shipments
                         if (isset($params['rhiv'][$i + 1]['kit'][$e]) && trim($params['rhiv'][$i + 1]['kit'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
                             }
 
                             $dbAdapter->insert(
@@ -2577,7 +2577,7 @@ class Application_Service_Shipments
                         if (isset($params['geenius'][$i + 1]['expiry'][$e]) && trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
                             }
 
                             $id = $dbAdapter->insert(
@@ -2604,7 +2604,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
@@ -2623,7 +2623,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['possibleResults'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
@@ -2636,7 +2636,7 @@ class Application_Service_Shipments
                         if (isset($params['eia'][$i + 1]['eia'][$e]) && trim($params['eia'][$i + 1]['eia'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                             }
                             $dbAdapter->insert(
                                 'reference_dbs_eia',
@@ -2660,7 +2660,7 @@ class Application_Service_Shipments
                         if (isset($params['wb'][$i + 1]['wb'][$e]) && trim($params['wb'][$i + 1]['wb'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                             }
                             $dbAdapter->insert(
                                 'reference_dbs_wb',
@@ -2696,7 +2696,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['possibleResults'][$i],
                         'reference_control_line' => $params['controlLine'][$i],
                         'reference_diagnosis_line' => $params['verificationLine'][$i],
@@ -2713,7 +2713,7 @@ class Application_Service_Shipments
                         if (isset($params['assay'][$i + 1]['assay'][$e]) && trim($params['assay'][$i + 1]['assay'][$e]) != "") {
                             $expDate = '';
                             if (trim($params['assay'][$i + 1]['expiry'][$e]) != "") {
-                                $expDate = Pt_Commons_General::isoDateFormat($params['assay'][$i + 1]['expiry'][$e]);
+                                $expDate = Pt_Commons_DateUtility::isoDateFormat($params['assay'][$i + 1]['expiry'][$e]);
                             }
 
                             $dbAdapter->insert(
@@ -2743,7 +2743,7 @@ class Application_Service_Shipments
                         'shipment_id' => $params['shipmentId'],
                         'sample_id' => ($i + 1),
                         'sample_label' => $params['sampleName'][$i],
-                        'sample_preparation_date' => Pt_Commons_General::isoDateFormat($params['samplePreparationDate'][$i]),
+                        'sample_preparation_date' => Pt_Commons_DateUtility::isoDateFormat($params['samplePreparationDate'][$i]),
                         'reference_result' => $params['finalResult'][$i],
                         'control' => $params['control'][$i],
                         'mandatory' => $params['mandatory'][$i],
@@ -2818,7 +2818,7 @@ class Application_Service_Shipments
                 'pt_co_ordinator_email' => $params['ptEmail'] ?? null,
                 'pt_co_ordinator_phone' => $params['ptPhone'] ?? null,
                 'collect_feedback' => $params['collectFeedBack'],
-                'lastdate_response' => Pt_Commons_General::isoDateFormat($params['lastDate'])
+                'lastdate_response' => Pt_Commons_DateUtility::isoDateFormat($params['lastDate'])
             ),
             'shipment_id = ' . $params['shipmentId']
         );
@@ -3020,7 +3020,7 @@ class Application_Service_Shipments
 
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
-                $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
+                $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
@@ -3059,7 +3059,7 @@ class Application_Service_Shipments
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
-                $surveyDate = Pt_Commons_General::humanReadableDateFormat($participantDetails['distribution_date']);
+                $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
                 $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
@@ -3289,7 +3289,7 @@ class Application_Service_Shipments
                 'scheduled_jobs',
                 [
                     'job' => 'send-reports-mail.php -s ' . $sid,
-                    'requested_on' => Pt_Commons_General::getDateTime(),
+                    'requested_on' => Pt_Commons_DateUtility::getCurrentDateTime(),
                     'requested_by' => $authNameSpace->admin_id,
                     'status' => 'pending'
                 ]
@@ -3672,8 +3672,8 @@ class Application_Service_Shipments
         }
 
         if (isset($parameters['startDate']) && !empty($parameters['startDate']) && isset($parameters['endDate']) && !empty($parameters['endDate'])) {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -3717,12 +3717,12 @@ class Application_Service_Shipments
             $row[] = $aRow['participantName'];
             // }
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             }
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['number_of_samples'];
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
@@ -3777,7 +3777,7 @@ class Application_Service_Shipments
                     if ($token) {
                         $data = array(
                             'action_taken' => $token ?? null,
-                            'action_date' => Pt_Commons_General::isoDateFormat($params['actionDate'][$cId])
+                            'action_date' => Pt_Commons_DateUtility::isoDateFormat($params['actionDate'][$cId])
                         );
                         $db->update('dts_shipment_corrective_action_map', $data, 'shipment_map_id = ' . $params['shipmentMapId'][$cId] . ' AND corrective_action_id = ' . $cId);
                     }
@@ -3840,17 +3840,17 @@ class Application_Service_Shipments
                 $row[] = $aRow['participantName'];
                 $row[] = $aRow['institute_name'] . ' / ' . $aRow['department_name'];
                 $row[] = $aRow['distribution_code'];
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
                 $row[] = $aRow['shipment_code'];
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
                 $row[] = $aRow['SCHEME'];
                 $row[] = $aRow['number_of_samples'];
                 $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
                 $row[] = ($aRow['shipment_score'] + $aRow['documentation_score']) . '%';
                 $row[] = $aRow['corrective_action'];
                 $row[] = $aRow['action_taken'];
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['action_date']);
                 $output[] = $row;
             }
 
@@ -3956,13 +3956,13 @@ class Application_Service_Shipments
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . 3)
                 ->setValueExplicit(html_entity_decode($result['distribution_code'], ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 4)
-                ->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['distribution_date']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . 4)
                 ->setValueExplicit(html_entity_decode($result['shipment_code'], ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 5)
-                ->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . 5)
-                ->setValueExplicit(html_entity_decode(Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode(Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']), ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . 6)
                 ->setValueExplicit(html_entity_decode(($result['final_result'] == 1) ? 'Pass' : 'Fail', ENT_QUOTES, 'UTF-8'));
             $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(5) . 6)
@@ -3984,7 +3984,7 @@ class Application_Service_Shipments
                 $row[] = $aRow['corrective_action'] ?? null;
                 $row[] = $aRow['description'] ?? null;
                 $row[] = $aRow['action_taken'] ?? null;
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['action_date']) ?? null;
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['action_date']) ?? null;
 
                 $output[] = $row;
             }

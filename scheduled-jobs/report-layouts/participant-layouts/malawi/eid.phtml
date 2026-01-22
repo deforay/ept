@@ -22,7 +22,7 @@ if (!empty($resultArray['shipment'])) {
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         if (
-            /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+                /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
@@ -104,10 +104,10 @@ if (!empty($resultArray['shipment'])) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -129,7 +129,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -138,15 +138,15 @@ if (!empty($resultArray['shipment'])) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
         //if($result['result_name']=='Fail'){
@@ -311,7 +311,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
@@ -380,7 +380,7 @@ if (!empty($resultArray['shipment'])) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $resultArray['shipment'][0]['pt_co_ordinator_name'] . '</small></span>';
         }
 
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_DateUtility::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
          */
         $eodReportText = "End of report";

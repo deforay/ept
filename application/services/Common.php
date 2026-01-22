@@ -1783,7 +1783,7 @@ class Application_Service_Common
             $eptDomain = parse_url($eptDomain, PHP_URL_HOST);
 
             $gzdata = gzencode(file_get_contents($filePath));
-            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_General::getDateTime()) . ".ini.gz";
+            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_DateUtility::getCurrentDateTime()) . ".ini.gz";
             file_put_contents($gipPath, $gzdata);
 
             return $gipPath;

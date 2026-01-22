@@ -76,7 +76,7 @@ $answers = $this->ans;
 
                                     <?php } elseif ($question['question_type'] == 'datetime') { ?>
                                         <input
-                                            value="<?php echo Pt_Commons_General::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>"
+                                            value="<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($answers[$question['question_id']] ?? null); ?>"
                                             type="text" readonly name="answer[<?php echo $key; ?>][date]"
                                             id="answer<?php echo ($key + 1); ?>" placeholder="Select date"
                                             title="Please select your response"

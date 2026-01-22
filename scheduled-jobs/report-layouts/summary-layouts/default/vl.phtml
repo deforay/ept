@@ -109,7 +109,7 @@ if ($resultArray['shipment'] != "") {
         }
     }
     $pdf->SetFont('freesans', '', 11);
-    $htmlTitle = '<br><br><span style="font-size:12px;"><strong>PT Panel Name and Results Due Date:</strong> ' . $resultArray['shipment']['distribution_code'] . '(' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span>';
+    $htmlTitle = '<br><br><span style="font-size:12px;"><strong>PT Panel Name and Results Due Date:</strong> ' . $resultArray['shipment']['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span>';
     $pdf->writeHTML($htmlTitle, true, false, true, false, '');
     if ($methodOfEvaluation == 'standard') {
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
@@ -117,7 +117,7 @@ if ($resultArray['shipment'] != "") {
         $referenceRes .= '<td style="font-weight:normal;width:20%;">PT Panel/Assay Name</td><td style="font-weight:normal;width:30%;">' . $resultArray['shipment']['distribution_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:20%;">Shipment Date</td><td style="font-weight:normal;width:30%;">' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
         $pdf->writeHTML($referenceRes, true, false, true, false, '');

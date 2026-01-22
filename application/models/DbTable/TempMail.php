@@ -2,7 +2,7 @@
 
 class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 {
-    protected $_name    = 'temp_mail';
+    protected $_name = 'temp_mail';
     protected $_primary = 'temp_id';
 
     /**
@@ -33,7 +33,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
         try {
             // Validate message content - reject empty messages
-            if (trim((string)$message) === '') {
+            if (trim((string) $message) === '') {
                 error_log("TempMail insert rejected: empty message body");
                 return false;
             }
@@ -48,17 +48,17 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             // Load attachment size limits from configuration with fallback defaults
             // email.limits.perAttachmentMb = 15 (maximum size per individual attachment)
             // email.limits.totalAttachmentsMb = 22 (maximum cumulative size for all attachments)
-            $perAttachMb    = (int)($conf->email->limits->perAttachmentMb ?? 15);
-            $totalAttachMb  = (int)($conf->email->limits->totalAttachmentsMb ?? 22);
-            $PER_BYTES      = $perAttachMb   * 1024 * 1024;
-            $TOTAL_BYTES    = $totalAttachMb * 1024 * 1024;
+            $perAttachMb = (int) ($conf->email->limits->perAttachmentMb ?? 15);
+            $totalAttachMb = (int) ($conf->email->limits->totalAttachmentsMb ?? 22);
+            $PER_BYTES = $perAttachMb * 1024 * 1024;
+            $TOTAL_BYTES = $totalAttachMb * 1024 * 1024;
 
             // Parse and validate recipient email addresses
             try {
                 $recips = Application_Service_Common::parseRecipients(
-                    (string)$to,
-                    $cc !== null  ? (string)$cc  : null,
-                    $bcc !== null ? (string)$bcc : null
+                    (string) $to,
+                    $cc !== null ? (string) $cc : null,
+                    $bcc !== null ? (string) $bcc : null
                 );
             } catch (Exception $e) {
                 error_log("Failed to parse recipients: " . $e->getMessage());
@@ -77,7 +77,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             // Set and validate sender email address
             // Falls back to configured default email if not provided or invalid
             try {
-                $fromMail = (string)($fromMail ?: $conf->email->config->username);
+                $fromMail = (string) ($fromMail ?: $conf->email->config->username);
                 $fromMail = Application_Service_Common::validateEmail($fromMail) ?: $conf->email->config->username;
                 $fromName = $fromName ?: 'ePT Support';
             } catch (Exception $e) {
@@ -90,7 +90,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             // Set and validate reply-to address
             // Extracts first email from comma/semicolon-separated list
             try {
-                $replyToRaw   = (string)($replyTo ?? $fromMail);
+                $replyToRaw = (string) ($replyTo ?? $fromMail);
                 $replyToFirst = trim(preg_split('/[;,]+/', $replyToRaw)[0] ?? '');
                 $replyToValid = $replyToFirst && Application_Service_Common::validateEmail($replyToFirst)
                     ? $replyToFirst
@@ -112,14 +112,14 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     try {
                         // Validate file path is a string and file exists
                         if (!is_string($path) || !file_exists($path)) {
-                            error_log("Attachment skipped (not found): " . (string)$path);
+                            error_log("Attachment skipped (not found): " . (string) $path);
                             continue;
                         }
 
                         // Get file size with error suppression
                         $size = @filesize($path);
                         if ($size === false) {
-                            error_log("Attachment skipped (size unreadable): " . (string)$path);
+                            error_log("Attachment skipped (size unreadable): " . (string) $path);
                             continue;
                         }
 
@@ -137,7 +137,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
                         // File passed all validations - add to list
                         $files[] = $path;
-                        $total  += $size;
+                        $total += $size;
                     } catch (Exception $e) {
                         error_log("Error processing attachment {$path}: " . $e->getMessage());
                         continue;
@@ -147,16 +147,16 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
             // Build database row with all validated email data
             $row = [
-                'from_mail'      => $fromMail,
+                'from_mail' => $fromMail,
                 'from_full_name' => $fromName,
-                'reply_to'       => $replyToValid,
-                'to_email'       => implode(',', $recips['to']),
-                'cc'             => !empty($recips['cc'])  ? implode(',', $recips['cc'])  : '',
-                'bcc'            => !empty($recips['bcc']) ? implode(',', $recips['bcc']) : '',
-                'subject'        => (string)$subject,
-                'message'        => (string)$message,
-                'attachment'     => $files ? json_encode($files, JSON_UNESCAPED_SLASHES) : '',
-                'status'         => 'pending', // Queue status for background processing
+                'reply_to' => $replyToValid,
+                'to_email' => implode(',', $recips['to']),
+                'cc' => !empty($recips['cc']) ? implode(',', $recips['cc']) : '',
+                'bcc' => !empty($recips['bcc']) ? implode(',', $recips['bcc']) : '',
+                'subject' => (string) $subject,
+                'message' => (string) $message,
+                'attachment' => $files ? json_encode($files, JSON_UNESCAPED_SLASHES) : '',
+                'status' => 'pending', // Queue status for background processing
             ];
             // Insert record into database
             try {
@@ -186,13 +186,13 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
     {
         return $this->update(
             ['status' => $status],
-            $this->getAdapter()->quoteInto('temp_id = ?', (int)$id)
+            $this->getAdapter()->quoteInto('temp_id = ?', (int) $id)
         );
     }
 
     public function deleteTempMail($id)
     {
-        return $this->delete($this->getAdapter()->quoteInto('temp_id = ?', (int)$id));
+        return $this->delete($this->getAdapter()->quoteInto('temp_id = ?', (int) $id));
     }
 
     public function fetchEmailFailureInGrid($parameters)
@@ -313,7 +313,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['status']);
             $row[] = ucwords(str_replace("-", " ", $aRow['failure_type']));
             $row[] = $aRow['failure_reason'];
-            $row[] = $general->humanReadableDateFormat($aRow['updated_at']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['updated_at']);
             // $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;

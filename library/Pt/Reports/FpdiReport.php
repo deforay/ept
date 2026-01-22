@@ -153,7 +153,7 @@ class Pt_Reports_FpdiReport extends Fpdi
 
         // Append dynamic content to footer HTML
 
-        $reportDate = $this->generalModel->humanReadableDateFormat($showTime);
+        $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
 
         // Append page numbers

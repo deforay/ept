@@ -1699,7 +1699,7 @@ class Application_Model_Tb
             ->setBottom(0.5);
 
         $sheet->setCellValue('A2', $result[0]['shipment_code']);
-        $sheet->setCellValue('R2', Pt_Commons_General::humanReadableDateFormat($result[0]['lastdate_response']));
+        $sheet->setCellValue('R2', Pt_Commons_DateUtility::humanReadableDateFormat($result[0]['lastdate_response']));
 
         if (isset($result[0]['iso_name']) && !empty($result[0]['iso_name'])) {
             $sheet->setCellValue('H2', $result[0]['iso_name']);

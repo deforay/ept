@@ -55,7 +55,7 @@ if ($resultArray['shipment'] != "") {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
         $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
@@ -365,8 +365,8 @@ if ($resultArray['shipment'] != "") {
         $graph->legend->SetColumns(3);
         $graph->Add($p1);
 
-	        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
-	        $graph->Stroke($piechart);
+        $piechart = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'pieChart.png';
+        $graph->Stroke($piechart);
 
         $pdf->Image($piechart, 5, $y, '', '', '', '', '', false, 300);
         if (file_exists($piechart)) {

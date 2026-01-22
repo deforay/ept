@@ -39,10 +39,10 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     public function addgeneTypeDetails($params)
     {
         $data = array(
-            'gene_name'            => $params['geneTypeName'],
-            'scheme_type'          => $params['scheme'],
-            'gene_status'          => $params['geneStatus'],
-            'created_on'           => new Zend_Db_Expr('now()')
+            'gene_name' => $params['geneTypeName'],
+            'scheme_type' => $params['scheme'],
+            'gene_status' => $params['geneStatus'],
+            'created_on' => new Zend_Db_Expr('now()')
         );
         return $this->insert($data);
     }
@@ -51,9 +51,9 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
     {
         if (trim($params['genetypeId']) != "") {
             $data = array(
-                'gene_name'        => $params['geneTypeName'],
-                'scheme_type'      => $params['scheme'],
-                'gene_status'          => $params['geneStatus']
+                'gene_name' => $params['geneTypeName'],
+                'scheme_type' => $params['scheme'],
+                'gene_status' => $params['geneStatus']
             );
             return $this->update($data, "gene_id='" . $params['genetypeId'] . "'");
         }
@@ -213,7 +213,7 @@ class Application_Model_DbTable_RCovid19GeneTypes extends Zend_Db_Table_Abstract
             $createdDate = explode(" ", $aRow['created_on']);
             $row[] = ucwords($aRow['gene_name']);
             $row[] = $aRow['scheme_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($createdDate[0]) . " " . $createdDate[1];
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . " " . $createdDate[1];
             $row[] = '<a href="/admin/covid19-gene-type/edit/53s5k85_8d/' . base64_encode($aRow['gene_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;

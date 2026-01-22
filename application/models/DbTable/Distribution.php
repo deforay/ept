@@ -131,7 +131,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row = [];
             $row[] = '<a class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal" href="/admin/distributions/view-shipment/id/' . $aRow['distribution_id'] . '"><span><i class="icon-search"></i></span></a>';
             $row[] = ($aRow['scheme_name'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>');
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = '<a href="/admin/shipment/index/searchString/' . $aRow['distribution_code'] . '">' . $aRow['distribution_code'] . '</a>';
             $row[] = $aRow['shipments'] ?: '<span style="color:#ccc;">No Shipment/Panel Added</span>';
             $row[] = ucwords($aRow['status']);
@@ -171,10 +171,10 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'distribution_code' => $params['distributionCode'],
-            'distribution_date' => Pt_Commons_General::isoDateFormat($params['distributionDate']),
-            'status'            => 'created',
-            'created_by'        => $authNameSpace->admin_id,
-            'created_on'        => new Zend_Db_Expr('now()')
+            'distribution_date' => Pt_Commons_DateUtility::isoDateFormat($params['distributionDate']),
+            'status' => 'created',
+            'created_by' => $authNameSpace->admin_id,
+            'created_on' => new Zend_Db_Expr('now()')
         );
         $distributionId = $this->insert($data);
         if ($distributionId > 0) {
@@ -184,7 +184,9 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         return $distributionId;
     }
 
-    public function shipDistribution($params) {}
+    public function shipDistribution($params)
+    {
+    }
 
     public function getDistributionDates()
     {
@@ -201,7 +203,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $data = array(
             'distribution_code' => $params['distributionCode'],
-            'distribution_date' => Pt_Commons_General::isoDateFormat($params['distributionDate']),
+            'distribution_date' => Pt_Commons_DateUtility::isoDateFormat($params['distributionDate']),
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
@@ -348,7 +350,7 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             // $shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $row = [];
             $row['DT_RowId'] = "dist" . $aRow['distribution_id'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);

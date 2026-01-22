@@ -102,10 +102,10 @@ if (!empty($resultArray['shipment'])) {
         // ---------------------------------------------------------
 
         if (trim($result['shipment_date'] ?? '') != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response'] ?? '') != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -123,7 +123,7 @@ if (!empty($resultArray['shipment'])) {
         /* for Shipment attributes functionality end */
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -132,18 +132,18 @@ if (!empty($resultArray['shipment'])) {
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $shipmentTestReportDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
         if (isset($result['distribution_date']) && trim($result['distribution_date']) != "") {
-            $distributionDate = Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+            $distributionDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         }
         // PT Co-ordinator header details start
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
@@ -213,7 +213,7 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '	<td><strong>Kit Lot Number </strong> : ' . $attributes['kit_lot_number'] . '</td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Kit Expiry Date </strong> : ' . Pt_Commons_General::humanReadableDateFormat($attributes['kit_expiry_date']) . '</td>';
+        $labInfo .= '	<td><strong>Kit Expiry Date </strong> : ' . Pt_Commons_DateUtility::humanReadableDateFormat($attributes['kit_expiry_date']) . '</td>';
         $labInfo .= '</tr>';
 
         $labInfo .= '<tr>';
@@ -304,7 +304,7 @@ if (!empty($resultArray['shipment'])) {
         include('summary-statistics.phtml');
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';

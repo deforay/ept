@@ -85,10 +85,10 @@ if (!empty($resultArray['shipment'])) {
 
 
         if (trim($result['shipment_date']) != "") {
-            $result['shipment_date'] = Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);
+            $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
         }
         if (trim($result['lastdate_response']) != "") {
-            $result['lastdate_response'] = Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);
+            $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
         $responseDate = "";
@@ -121,7 +121,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
         $attributes = '';
         if (isset($result['attributes'])) {
@@ -130,15 +130,15 @@ if (!empty($resultArray['shipment'])) {
 
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
-            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
@@ -225,12 +225,12 @@ if (!empty($resultArray['shipment'])) {
                             </tr>';
             $labRes .= '<tr>
                                 <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                                <td>' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+                                <td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             $labRes .= '<td colspan="4"></td>
                             </tr>';
@@ -456,7 +456,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         //if(trim($result['distribution_date'])!=""){
-        //    $result['distribution_date']=Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);
+        //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         //}
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';

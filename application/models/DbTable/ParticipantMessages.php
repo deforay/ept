@@ -36,7 +36,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                 }
             }
 
-            $data =  [
+            $data = [
                 "participant_id" => $partcipant_id,
                 "subject" => $params['subject'],
                 "message" => $params['message'],
@@ -191,7 +191,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $row[] = $participantName;
             $row[] = ucwords($aRow['subject']);
             $row[] = ucwords($aRow['message']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['created_at']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['created_at']);
             $row[] = '<a class="btn btn-primary btn-xs" href="/admin/participant-messages/view/d8s5_8d/' . base64_encode($aRow['id']) . '"><span><i class="fa fa-eye"></i> view</span></a>';
             $output['aaData'][] = $row;
         }
