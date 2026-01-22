@@ -5,7 +5,7 @@ use mitoteam\jpgraph\MtJpGraph;
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// Zend_Debug::dump($resultArray);die;
+
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();

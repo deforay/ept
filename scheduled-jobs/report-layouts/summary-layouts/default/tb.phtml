@@ -112,7 +112,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $referenceResultContent .= '</div>';
     }
     $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
-    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
+
 
     if (isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])) {
 

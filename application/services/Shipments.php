@@ -3217,7 +3217,7 @@ class Application_Service_Shipments
         if (isset($shipmentDate[1]) && $shipmentDate[1] != "") {
             $sQuery->where('s.shipment_date <="' . date('Y-m-t', strtotime($shipmentDate[1])) . '"');
         }
-        // die($sQuery);
+
         $result = $db->fetchAll($sQuery);
         if (!empty($result)) {
 
@@ -3688,7 +3688,7 @@ class Application_Service_Shipments
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($sQuery);
+
         $rResult = $db->fetchAll($sQuery);
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);

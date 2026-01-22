@@ -123,7 +123,7 @@ class Application_Service_Evaluation
 
 		$sQuery = $dbAdapter->select()->from(array('temp' => $sQuery))->where("not_finalized_count>0");
 
-		// die($sQuery);
+
 
 		$rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -180,7 +180,7 @@ class Application_Service_Evaluation
 			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
 			->group('s.shipment_id');
-		// die($sql);
+
 		return $db->fetchAll($sql);
 	}
 
@@ -2180,7 +2180,7 @@ class Application_Service_Evaluation
 					->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['region'])
 					->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [''])
 					->where("s.shipment_id = ?", $shipmentId);
-				// die($sQuery);
+
 				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
@@ -2208,7 +2208,7 @@ class Application_Service_Evaluation
 					->where("s.shipment_id = ?", $shipmentId)
 					// ->group(array('p.network_tier'));
 					->group(['p.department_name']);
-				// die($sQuery);
+
 				if (isset($testType) && !empty($testType)) {
 					$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 				}
@@ -2719,7 +2719,7 @@ class Application_Service_Evaluation
 		if (isset($testType) && !empty($testType)) {
 			$sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
 		}
-		// die($sQuery);
+
 		return $dbAdapter->fetchRow($sQuery);
 	}
 

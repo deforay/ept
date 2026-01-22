@@ -139,8 +139,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo ($sQuery);
-        // die;
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -316,14 +314,14 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("s.scheme_type = ?", $params['scheme']);
         }
 
-        //die($sQuery);
+
         if (isset($params['startDate']) && $params['startDate'] != "" && isset($params['endDate']) && $params['endDate'] != "") {
 
             $sQuery = $sQuery->where("s.shipment_date >= ?", $this->common->isoDateFormat($params['startDate']));
             $sQuery = $sQuery->where("s.shipment_date <= ?", $this->common->isoDateFormat($params['endDate']));
         }
 
-        //echo $sQuery;die;
+
         return $dbAdapter->fetchAll($sQuery);
     }
 
@@ -1071,7 +1069,7 @@ class Application_Service_Reports
         if (isset($testType) && !empty($testType)) {
             $sQuery = $sQuery->where("JSON_EXTRACT(sp.attributes, '$.dts_test_panel_type') = ?", $testType);
         }
-        // echo $sQuery;die;
+
         return $dbAdapter->fetchRow($sQuery);
     }
 
@@ -1245,7 +1243,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -1826,7 +1824,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //echo $sQuery;die;
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -2782,7 +2779,7 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
-        // die($sQuery);
+
         $rResult = $dbAdapter->fetchRow($sQuery);
         $rResult['failed'] = $this->getFaileParticipants($parameters);
         return $rResult;
@@ -2823,7 +2820,7 @@ class Application_Service_Reports
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
             $sQuery = $sQuery->where("s.shipment_id = ?", $parameters['shipmentId']);
         }
-        // die($sQuery);
+
         $rResult = $dbAdapter->fetchAll($sQuery);
         $row = [];
         foreach ($rResult as $key => $aRow) {
@@ -3681,7 +3678,7 @@ class Application_Service_Reports
                 //$sQuery->where('spm.shipment_id IN(?)', $impShipmentId);
                 $sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
             }
-            // die($sQuery);
+
             //Zend_Debug::dump($shipmentCodeArray);die;
             $shipmentParticipantResult = $db->fetchAll($sQuery);
             $participants = [];
@@ -3854,9 +3851,6 @@ class Application_Service_Reports
         ];
 
         foreach ($rResult as $aRow) {
-            echo '<pre>';
-            print_r($aRow);
-            die;
             $row = [];
             $row[] = $aRow['noOfParticipants'];
             $row[] = $aRow['noOfResponded'];
@@ -4412,7 +4406,7 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo ($sQuery);die;
+
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */

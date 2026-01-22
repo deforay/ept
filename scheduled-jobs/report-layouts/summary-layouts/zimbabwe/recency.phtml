@@ -4,7 +4,7 @@ use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
 
-// Zend_Debug::dump($resultArray);die;
+
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
 if ($resultArray['shipment'] != "") {

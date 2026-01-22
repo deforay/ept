@@ -59,7 +59,7 @@ class Application_Service_Schemes
         if ($testPlatforms != null && (int) $testPlatforms > 0 && (int) $testPlatforms <= 3) {
             $sql = $sql->where('test_no = ' . (int) $testPlatforms);
         }
-        // die($sql);
+
         $stmt = $db->fetchAll($sql);
         $retval = [];
         foreach ($stmt as $t) {
@@ -261,7 +261,7 @@ class Application_Service_Schemes
             ])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
-        // die($sql);
+
         return $db->fetchAll($sql);
     }
 

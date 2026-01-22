@@ -330,8 +330,6 @@ if ($resultArray['shipment'] != "") {
         $scoreBelow[] = $totalBarFailed;
         $avg[] = $totalBarAvg;
 
-        /* Zend_Debug::dump($avg);
-        die; */
         if (count($noOfPaResponse) > 0 && ($totalBarPassed) > 0) {
             /* JPGraph start */
             // Create the graph and specify the scale for both Y-axis
@@ -510,18 +508,6 @@ if ($resultArray['shipment'] != "") {
 
 
     $uncalculatedAssayList = null;
-    //Zend_Debug::dump($resultArray['pendingAssay']);die;
-    // if(isset($resultArray['pendingAssay']['count']) && ($resultArray['pendingAssay']['count'])>0){
-
-    //     if($pdf->getY()>=250){
-    //         $pdf->AddPage();
-    //     }
-    //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
-    //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
-
-    //     $pdf->writeHTML($unCalRes, true, false, true, false, '');
-
-    // }
 
 
     //Close and output PDF document

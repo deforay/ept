@@ -797,7 +797,7 @@ class Application_Service_Participants
 			$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 			$sQuery = $sQuerySession->participantResponseReportQuerySession;
 			$rResult = $db->fetchAll($sQuery);
-			// Zend_Debug::dump($rResult);die;
+
 			$finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
 			foreach ($rResult as $aRow) {
 				$row = [];

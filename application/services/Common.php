@@ -339,7 +339,7 @@ class Application_Service_Common
         if (isset($did) && !empty($did)) {
             $sql = $sql->where("district like ?", $did);
         }
-        // die($sql);
+
         return $db->fetchAll($sql);
     }
     public function getGlobalConfigDetails()
@@ -907,7 +907,7 @@ class Application_Service_Common
         if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("shipment_id = ?", $sid);
         }
-        // die($sql);
+
         return $db->fetchCol($sql);
     }
 

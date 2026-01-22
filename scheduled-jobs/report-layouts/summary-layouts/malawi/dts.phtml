@@ -337,8 +337,7 @@ if ($resultArray['shipment'] != "") {
 
             } */
             $pdf->writeHTML($testkit, true, false, true, false, '');
-            /* Zend_Debug::dump($resultArray['shipment']['testKitChart']);
-            die; */
+
 
             if (isset($resultArray['shipment']['testKitChart']) && !empty($resultArray['shipment']['testKitChart'])) {
                 $passedTestKits = $failedTestKits = $testkitname = [];
