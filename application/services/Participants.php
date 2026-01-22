@@ -808,7 +808,7 @@ class Application_Service_Participants
 				$row[] = ucwords($aRow['district']);
 				$row[] = $aRow['shipment_code'];
 				$row[] = ucwords($aRow['RESPONSE']);
-				$row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
+				$row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
 				$row[] = (isset($finalResult[$aRow['final_result']]) && !empty($finalResult[$aRow['final_result']])) ? ucwords($finalResult[$aRow['final_result']]) : null;
 
 				$output[] = $row;
@@ -1025,7 +1025,7 @@ class Application_Service_Participants
 				}
 
 				// Personalize subject/message
-				$surveyDate = Pt_Commons_General::humanReadableDateFormat($pt['distribution_date']);
+				$surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($pt['distribution_date']);
 				$search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##'];
 
 				$replace = [

@@ -181,7 +181,7 @@ class Application_Service_Reports
                 }
                 $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip";
                 if (file_exists($zipFilePath)) {
-                    $allReportsDownload =  "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 5px; '><i class='icon-download'></i> &nbsp  " . $this->translator->_("All Reports") . "</a><br>";
+                    $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 5px; '><i class='icon-download'></i> &nbsp  " . $this->translator->_("All Reports") . "</a><br>";
                 }
             }
 
@@ -195,9 +195,9 @@ class Application_Service_Reports
 
             $row = [];
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['scheme_name'];
             // $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
@@ -267,7 +267,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('n.network_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')/* ->where("p.status = 'active'") */ ;
         }
 
         if (isset($params['reportType']) && $params['reportType'] == "affiliation") {
@@ -280,7 +280,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('pa.aff_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
@@ -291,7 +291,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
@@ -393,7 +393,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
                 ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array('p.state', 'p.district'))
@@ -401,14 +401,14 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region', 'p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.state', 'p.district'))
                 ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
@@ -417,7 +417,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         }
         //        else{
         //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -493,7 +493,7 @@ class Application_Service_Reports
             }
 
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = ucwords($aRow['state']);
             $row[] = ucwords($aRow['district']);
             $output['aaData'][] = $row;
@@ -797,8 +797,8 @@ class Application_Service_Reports
             $row = [];
             $row['DT_RowId'] = "shipment" . $aRow['shipment_id'];
             $row[] = $aRow['scheme_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . "\"),regionDetails(\"" . $aRow['scheme_name'] . "\",\"" . Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']) . "\",\"" . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . "</a>";
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . "\"),regionDetails(\"" . $aRow['scheme_name'] . "\",\"" . Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']) . "\",\"" . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . "</a>";
             $row[] = $aRow['total_shipped'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
@@ -1033,8 +1033,8 @@ class Application_Service_Reports
             $row = [];
             $row['DT_RowId'] = "shipment" . $aRow['shipment_id'];
             $row[] = $aRow['scheme_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
-            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . "\"),regionDetails(\"" . $aRow['scheme_name'] . "\",\"" . Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']) . "\",\"" . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . "</a>";
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = "<a href='javascript:void(0);' onclick='shipmetRegionReport(\"" . $aRow['shipment_id'] . "\"),regionDetails(\"" . $aRow['scheme_name'] . "\",\"" . Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']) . "\",\"" . $aRow['shipment_code'] . "\")'>" . $aRow['shipment_code'] . "</a>";
             $row[] = $aRow['total_shipped'];
             $row[] = $aRow['total_responses'];
             $row[] = $aRow['valid_responses'];
@@ -1615,7 +1615,7 @@ class Application_Service_Reports
                 $result = $dbAdapter->fetchAll($sQuery);
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
-                $responseDate[] = Pt_Commons_General::humanReadableDateFormat($date) . ' ' . Pt_Commons_General::humanReadableDateFormat($endDate);
+                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . ' ' . Pt_Commons_DateUtility::humanReadableDateFormat($endDate);
 
                 // Update date for next iteration
                 $nextDateObj = new DateTime($endDate);
@@ -1628,7 +1628,7 @@ class Application_Service_Reports
                 $result = $dbAdapter->fetchAll($sQuery);
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
-                $responseDate[] = Pt_Commons_General::humanReadableDateFormat($date) . '  and Above';
+                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . '  and Above';
             }
         }
 
@@ -1961,7 +1961,7 @@ class Application_Service_Reports
 
                 $row = [];
                 $row[] = $aRow['scheme_name'];
-                $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+                $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
                 $row[] = $aRow['shipment_code'];
                 $row[] = $aRow['total_shipped'];
                 $row[] = $aRow['total_responses'];
@@ -2827,12 +2827,12 @@ class Application_Service_Reports
         $rResult = $dbAdapter->fetchAll($sQuery);
         $row = [];
         foreach ($rResult as $key => $aRow) {
-            $row['network_name'][$key]      = '"' . $aRow['network_name'] . '"';
-            $row['totalShipped'][$key]      = '"N=' . $aRow['total_shipped'] . '"';
-            $row['beforeDueDate'][$key]     = round($aRow['beforeDueDate'], 2);
-            $row['afterDueDate'][$key]      = round($aRow['afterDueDate'], 2);
-            $row['fail_percentage'][$key]   = round($aRow['fail_percentage'], 2);
-            $row['network_id'][$key]        = round($aRow['network_id'], 2);
+            $row['network_name'][$key] = '"' . $aRow['network_name'] . '"';
+            $row['totalShipped'][$key] = '"N=' . $aRow['total_shipped'] . '"';
+            $row['beforeDueDate'][$key] = round($aRow['beforeDueDate'], 2);
+            $row['afterDueDate'][$key] = round($aRow['afterDueDate'], 2);
+            $row['fail_percentage'][$key] = round($aRow['fail_percentage'], 2);
+            $row['network_id'][$key] = round($aRow['network_id'], 2);
         }
         return $row;
     }
@@ -3458,8 +3458,8 @@ class Application_Service_Reports
             $row = [];
             $row[] = $aRow['lab_name'];
             $row[] = $aRow['shipment_score'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_test_date']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_receipt_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_receipt_date']);
             $output['aaData'][] = $row;
         }
         echo json_encode($output);
@@ -3493,8 +3493,8 @@ class Application_Service_Reports
                     $k = $k + 1;
                 }
             }
-            $vlParticipantCount[$i]['count']  = $k;
-            $vlParticipantCount[$i]['name']  = $assayRow['short_name'];
+            $vlParticipantCount[$i]['count'] = $k;
+            $vlParticipantCount[$i]['name'] = $assayRow['short_name'];
             $i++;
         }
         return $vlParticipantCount;
@@ -3548,7 +3548,7 @@ class Application_Service_Reports
                     $totalResult[$s][$i]['accept'] = $a;
                     $totalResult[$s][$i]['fail'] = $f;
                     $totalResult[$s][$i]['excluded'] = $e;
-                    $totalResult[$s][$i]['name']  = $assayRow['short_name'];
+                    $totalResult[$s][$i]['name'] = $assayRow['short_name'];
                     $i++;
                 }
             }
@@ -3580,7 +3580,7 @@ class Application_Service_Reports
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ))
             ->order("s.shipment_date DESC");
         if ($notFinalized == true) {
             $sQuery = $sQuery->where("s.status = ?", 'finalized');
@@ -3641,10 +3641,21 @@ class Application_Service_Reports
             }
 
             $sQuery = $db->select()
-                ->from(array('spm' => 'shipment_participant_map'), array('spm.map_id', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_test_report_date', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result', 'spm.attributes', 'finalResult' => new Zend_Db_Expr("
+                ->from(array('spm' => 'shipment_participant_map'), array(
+                    'spm.map_id',
+                    'spm.shipment_id',
+                    'spm.participant_id',
+                    'spm.shipment_test_report_date',
+                    'spm.shipment_score',
+                    'spm.documentation_score',
+                    'spm.final_result',
+                    'spm.attributes',
+                    'finalResult' => new Zend_Db_Expr("
                     CASE WHEN (spm.final_result = 1) THEN 'PASS' ELSE
                         (CASE WHEN (spm.final_result = 2) THEN 'FAIL' ELSE 'EXCLUDED' END)
-                    END"), 'failure_reason'))
+                    END"),
+                    'failure_reason'
+                ))
                 ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', ['*'])
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'))
@@ -3690,7 +3701,7 @@ class Application_Service_Reports
                     $participants[$shipment['unique_identifier']]['email'] = $shipment['email'] ?? '';
                     $participants[$shipment['unique_identifier']]['additional_email'] = isset($shipment['additional_email']) ? $shipment['additional_email'] : '';
                     $participants[$shipment['unique_identifier']]['scheme_name'] = isset($shipment['scheme_name']) ? $shipment['scheme_name'] : '';
-                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float)($shipment['shipment_score'] + $shipment['documentation_score']);
+                    $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['score'] = (float) ($shipment['shipment_score'] + $shipment['documentation_score']);
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['result'] = $shipment['final_result'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['finalResult'] = $shipment['finalResult'] ?? '';
                     $participants[$shipment['unique_identifier']][$shipment['scheme_type']][$shipment['shipment_code']]['failure_reason'] = $shipment['failure_reason'] ?? '';
@@ -3862,7 +3873,7 @@ class Application_Service_Reports
     {
 
         $schemeService = new Application_Service_Schemes();
-        $vlModel       = new Application_Model_Vl();
+        $vlModel = new Application_Model_Vl();
         $vlAssayArray = $vlModel->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
@@ -3989,7 +4000,7 @@ class Application_Service_Reports
     public function generateAnnualReportCSV($shipmentCodeArray, $participants)
     {
         $schemeService = new Application_Service_Schemes();
-        $vlModel       = new Application_Model_Vl();
+        $vlModel = new Application_Model_Vl();
         $vlAssayArray = $vlModel->getVlAssay();
         $eidAssayArray = $schemeService->getEidExtractionAssay();
 
@@ -4028,9 +4039,9 @@ class Application_Service_Reports
                         $csvRow[] = $participantArray['scheme_name'];
                         $csvRow[] = $shipmentCode;
                         $csvRow[] = $participantArray[$shipmentType][$shipmentCode]['number_of_samples'];
-                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_date']);
-                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['lastdate_response']);
-                        $csvRow[] = Pt_Commons_General::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date']);
+                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_date']);
+                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['lastdate_response']);
+                        $csvRow[] = Pt_Commons_DateUtility::humanReadableDateFormat($participantArray[$shipmentType][$shipmentCode]['shipment_test_report_date']);
 
                         $assayName = "";
                         if ($shipmentType == 'vl' && !empty($participantArray[$shipmentType][$shipmentCode]['attributes']['vl_assay'])) {
@@ -4253,7 +4264,7 @@ class Application_Service_Reports
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',));
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ));
         if (isset($startDate) && $startDate != "") {
             $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($startDate));
         }
@@ -4514,15 +4525,15 @@ class Application_Service_Reports
         $shipmentQuery = $db->select()->from('shipment', array('shipment_code'))->where('shipment_id=?', $params['shipmentId']);
         $shipmentResult = $db->fetchRow($shipmentQuery);
         $writer = IOFactory::createWriter($excel, 'Xlsx');
-        if (!file_exists($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
-            mkdir($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+        if (!file_exists($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
+            mkdir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
         }
         $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
             array_map('chr', range(0, 31)),
             array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
         ), '', $shipmentResult['shipment_code']));
         $filename = $fileSafeShipmentCode . '-TB-ALL-SITES-RESULTS-' . date('d-M-Y-H-i-s') . '.xlsx';
-        $writer->save($this->tempUploadDirectory  . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
+        $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . "generated-tb-reports" . DIRECTORY_SEPARATOR . $filename);
 
         return array(
             "report-name" => $filename
@@ -4533,7 +4544,7 @@ class Application_Service_Reports
     {
         try {
             $db = new Application_Model_DbTable_Shipments();
-            $resultSet =  $db->getStatusOfMappedSites($parameters);
+            $resultSet = $db->getStatusOfMappedSites($parameters);
             if (isset($resultSet) && count($resultSet) > 0) {
 
                 $excel = new Spreadsheet();
@@ -4566,8 +4577,8 @@ class Application_Service_Reports
                     $row = [];
                     $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
                     $row[] = $aRow['shipment_code'];
-                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
-                    $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+                    $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
+                    $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
                     $row[] = $aRow['unique_identifier'];
                     $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
                     $row[] = $aRow['institute_name'];

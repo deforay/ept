@@ -11,7 +11,9 @@ use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 class Application_Model_Vl
 {
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {
@@ -527,7 +529,7 @@ class Application_Model_Vl
 
             $assayExpirationDate = "";
             if (isset($attributes['assay_expiration_date']) && $attributes['assay_expiration_date'] != "") {
-                $assayExpirationDate = Pt_Commons_General::humanReadableDateFormat($attributes['assay_expiration_date']);
+                $assayExpirationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['assay_expiration_date']);
             }
 
             $assayLotNumber = "";
@@ -617,8 +619,8 @@ class Application_Model_Vl
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit($rowOverAll['shipment_score']);
 
-            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
-            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_General::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
+            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
+            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)

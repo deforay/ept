@@ -18,7 +18,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
         try {
             // Set default timestamp if not provided
             if (!isset($data['login_attempted_datetime'])) {
-                $data['login_attempted_datetime'] = Common::getDateTime();
+                $data['login_attempted_datetime'] = Pt_Commons_DateUtility::getCurrentDateTime();
             }
 
             // Set IP address if not provided
@@ -312,11 +312,13 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             if (array_key_exists($key, $_SERVER) === true) {
                 foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip);
-                    if (filter_var(
-                        $ip,
-                        FILTER_VALIDATE_IP,
-                        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-                    ) !== false) {
+                    if (
+                        filter_var(
+                            $ip,
+                            FILTER_VALIDATE_IP,
+                            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+                        ) !== false
+                    ) {
                         return $ip;
                     }
                 }

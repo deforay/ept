@@ -80,7 +80,7 @@ class Application_Service_FeedBack
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         foreach ($params['questionId'] as $key => $q) {
             if (isset($params['answer'][$key]['date']) && !empty($params['answer'][$key]['date'])) {
-                $answer = Pt_Commons_General::isoDateFormat($params['answer'][$key]['date']);
+                $answer = Pt_Commons_DateUtility::isoDateFormat($params['answer'][$key]['date']);
             } else {
                 $answer = $params['answer'][$key];
             }
@@ -91,7 +91,7 @@ class Application_Service_FeedBack
                 'participant_id' => $params['participantId'],
                 'map_id' => $params['mapId'],
                 'answer' => $answer,
-                'updated_datetime' => Pt_Commons_General::getDateTime(),
+                'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
                 'modified_by' => $authNameSpace->admin_id
             ];
 

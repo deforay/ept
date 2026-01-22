@@ -98,7 +98,7 @@ if ($resultArray['shipment'] != "") {
 
     $referenceRes = '<table style="text-align:center;width:100%" align="left">';
     $referenceRes .= '<tr>';
-    $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
+    $referenceRes .= '<td style="font-weight:normal;width:100%;"><strong>PT Panel Name and Due Date : </strong><span style="font-weight:normal;">' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['lastdate_response']) . ')</span></td>';
     $referenceRes .= '</tr>';
     $referenceRes .= '</table>';
     $participantCount = '';
@@ -314,7 +314,7 @@ if ($resultArray['shipment'] != "") {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }
         if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
         }
     }
     $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
@@ -335,6 +335,6 @@ if ($trainingInstance == "yes") {
     //Watermark section
     $pdf = new Pt_Reports_PdfRotate();
 }
-    //============================================================+
-    // END OF FILE
-    //============================================================+
+//============================================================+
+// END OF FILE
+//============================================================+

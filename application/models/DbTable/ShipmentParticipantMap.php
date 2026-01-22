@@ -54,14 +54,14 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                             $db->delete('enrollments', 'list_name IN ("' . implode('", "', $ids) . '") AND participant_id IN(' . implode(",", $params['selectedForEnrollment']) . ')');
                         }
                         $db->insert('enrollments', array(
-                            'list_name'      => $params['listName'],
-                            'scheme_id'      => $params['schemeId'],
+                            'list_name' => $params['listName'],
+                            'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
                         ));
                     } else {
                         $db->insert('enrollments', array(
-                            'list_name'      => $params['listName'],
-                            'scheme_id'      => $params['schemeId'],
+                            'list_name' => $params['listName'],
+                            'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
                         ));
                     }
@@ -92,7 +92,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 ->group('dm.dm_id')->setIntegrityCheck(false);
             $subResult = $this->fetchAll($subQuery);
             foreach ($subResult as $dm) {
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -264,7 +264,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         if (isset($params['mapId']) && trim($params['mapId']) != "") {
             $participantMapId = explode(',', $params['mapId']);
             $count = count($participantMapId);
-            $qcDate = Pt_Commons_General::isoDateFormat($params['qcDate']);
+            $qcDate = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
             for ($i = 0; $i < $count; $i++) {
                 if (trim($participantMapId[$i]) != "") {
                     $data = array(
@@ -305,24 +305,24 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
             }
         }
-        $data['shipment_id']        = $params['shipmentId'];
-        $data['participant_id']     = $params['participantId'];
-        $data['evaluation_status']  = $params['evaluationStatus'];
-        $data['updated_by_user']    = $dm['dm_id'];
+        $data['shipment_id'] = $params['shipmentId'];
+        $data['participant_id'] = $params['participantId'];
+        $data['evaluation_status'] = $params['evaluationStatus'];
+        $data['updated_by_user'] = $dm['dm_id'];
         if ($params['schemeType'] == 'dts') {
-            $lastDate   = $params['dtsData']->Section2->data->resultDueDate;
+            $lastDate = $params['dtsData']->Section2->data->resultDueDate;
         }
         if ($params['schemeType'] == 'vl') {
-            $lastDate   = $params['vlData']->Section2->data->resultDueDate;
+            $lastDate = $params['vlData']->Section2->data->resultDueDate;
         }
         if ($params['schemeType'] == 'eid') {
-            $lastDate   = $params['eidData']->Section2->data->resultDueDate;
+            $lastDate = $params['eidData']->Section2->data->resultDueDate;
         }
         if ($params['schemeType'] == 'recency') {
-            $lastDate   = $params['recencyData']->Section2->data->resultDueDate;
+            $lastDate = $params['recencyData']->Section2->data->resultDueDate;
         }
         if ($params['schemeType'] == 'covid19') {
-            $lastDate   = $params['covid19Data']->Section2->data->resultDueDate;
+            $lastDate = $params['covid19Data']->Section2->data->resultDueDate;
         }
 
         // changing evaluation status 3rd character to 1 = responded
@@ -368,11 +368,11 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
                 }
             }
-            $data['shipment_id']        = $params['shipmentId'];
-            $data['participant_id']     = $params['participantId'];
-            $data['evaluation_status']  = $params['evaluationStatus'];
-            $data['updated_by_user']    = $dm;
-            $lastDate   = $commonService->isoDateFormat($params['resultDueDate']);
+            $data['shipment_id'] = $params['shipmentId'];
+            $data['participant_id'] = $params['participantId'];
+            $data['evaluation_status'] = $params['evaluationStatus'];
+            $data['updated_by_user'] = $dm;
+            $lastDate = $commonService->isoDateFormat($params['resultDueDate']);
             // changing evaluation status 3rd character to 1 = responded
             $data['evaluation_status'][2] = 1;
 

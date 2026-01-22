@@ -174,11 +174,11 @@ class Application_Service_ApiServices
         if (isset($shipments) && !empty($shipments)) {
             foreach ($shipments as $key => $list) {
                 $response['schemes'][$key] = [
-                    "name"  => $list['name'],
-                    "type"  => $list['type'],
-                    "active"  => $list['active'],
-                    "finalized"  => $list['finalized'],
-                    "shipments"  => $this->fetchShipmentDetails($list['type'])
+                    "name" => $list['name'],
+                    "type" => $list['type'],
+                    "active" => $list['active'],
+                    "finalized" => $list['finalized'],
+                    "shipments" => $this->fetchShipmentDetails($list['type'])
                 ];
             }
         }
@@ -226,7 +226,7 @@ class Application_Service_ApiServices
             $response = [];
             $schemeType = "";
             foreach ($parameters['data'] as $key => $param) {
-                $param = (array)$param;
+                $param = (array) $param;
                 $schemeType = $param['schemeType'];
                 if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
                     return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
@@ -237,7 +237,7 @@ class Application_Service_ApiServices
                 if (count($mandatoryCheckErrors) > 0) {
                     return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
                 }
-                $attributes["sample_rehydration_date"] = Pt_Commons_General::isoDateFormat($param['sampleRehydrationDate'] ?? '');
+                $attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($param['sampleRehydrationDate'] ?? '');
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'dts') {
                     $attributes["algorithm"] = $param['algorithm'];
                     if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
@@ -251,28 +251,28 @@ class Application_Service_ApiServices
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
                     $attributes["vl_assay"] = $param['vlAssay'] ?? null;
                     $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
-                    $attributes["assay_expiration_date"] = Pt_Commons_General::isoDateFormat($param['assayExpirationDate'] ?? null);
+                    $attributes["assay_expiration_date"] = Pt_Commons_DateUtility::isoDateFormat($param['assayExpirationDate'] ?? null);
                     $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
                     $attributes["date_of_xpert_instrument_calibration"] = $param['geneXpertInstrument'] ?? null;
                     $attributes["instrument_sn"] = $param['instrumentSn'] ?? null;
                     $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
-                    $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] :  null;
-                    $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] :  null;
+                    $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] : null;
+                    $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] : null;
                 }
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'eid') {
                     $attributes["extraction_assay"] = $param['extractionAssay'] ?? null;
                     $attributes["extraction_assay_lot_no"] = $param['extractionAssayLotNo'] ?? null;
-                    $attributes["extraction_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
+                    $attributes["extraction_assay_expiry_date"] = Pt_Commons_DateUtility::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
                     $attributes["detection_assay"] = $param['detectionAssay'] ?? null;
                     $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
-                    $attributes["detection_assay_expiry_date"] = Pt_Commons_General::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
+                    $attributes["detection_assay_expiry_date"] = Pt_Commons_DateUtility::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
                 }
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
                     $attributes = array(
                         "analyst_name" => $param['analystName'] ?? null,
                         "kit_name" => $param['kitName'] ?? null,
                         "kit_lot_number" => $param['kitLot'] ?? null,
-                        "kit_expiry_date" => Pt_Commons_General::isoDateFormat($param['expiryDate'] ?? null),
+                        "kit_expiry_date" => Pt_Commons_DateUtility::isoDateFormat($param['expiryDate'] ?? null),
                     );
                 }
                 $attributes = json_encode($attributes);
@@ -281,8 +281,8 @@ class Application_Service_ApiServices
                     $responseStatus = "nottested";
                 }
                 $data = [
-                    "shipment_receipt_date" => Pt_Commons_General::isoDateFormat($param['shipmentReceiptDate']),
-                    "shipment_test_date" => Pt_Commons_General::isoDateFormat($param['testingDate']),
+                    "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($param['shipmentReceiptDate']),
+                    "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($param['testingDate']),
                     "attributes" => $attributes,
                     "received_pt_panel" => $param['receivedPtPanel'],
                     "supervisor_approval" => $param['supervisorReview'],
@@ -298,7 +298,7 @@ class Application_Service_ApiServices
                 }
 
                 if (isset($param['responseDate']) && trim($param['responseDate']) != '') {
-                    $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($param['responseDate']);
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($param['responseDate']);
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }
@@ -306,7 +306,7 @@ class Application_Service_ApiServices
                 if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
                     $data['qc_done'] = $param['qcDone'];
                     if (isset($param['qcDone']) && trim($param['qcDone']) == "yes") {
-                        $data['qc_date'] = Pt_Commons_General::isoDateFormat($param['qcDate']);
+                        $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($param['qcDate']);
                         $data['qc_done_by'] = trim($param['qcDoneBy']);
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
                     } else {
@@ -320,7 +320,7 @@ class Application_Service_ApiServices
                 $data['vl_not_tested_reason'] = null;
                 $data['pt_test_not_performed_comments'] = null;
                 $data['pt_support_comments'] = null;
-                $data['shipment_test_date'] = Pt_Commons_General::isoDateFormat($param['testingDate']);
+                $data['shipment_test_date'] = Pt_Commons_DateUtility::isoDateFormat($param['testingDate']);
 
                 if (!empty($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] === 'yes') {
                     $data['is_pt_test_not_performed'] = 'yes';
@@ -345,11 +345,11 @@ class Application_Service_ApiServices
                     $dbAdapter->update(
                         'shipment_participant_map',
                         array(
-                            'lab_director_name'         => $param['labDirectorName'],
-                            'lab_director_email'        => $param['labDirectorEmail'],
-                            'contact_person_name'       => $param['contactPersonName'],
-                            'contact_person_email'      => $param['contactPersonEmail'],
-                            'contact_person_telephone'  => $param['contactPersonTelephone']
+                            'lab_director_name' => $param['labDirectorName'],
+                            'lab_director_email' => $param['labDirectorEmail'],
+                            'contact_person_name' => $param['contactPersonName'],
+                            'contact_person_email' => $param['contactPersonEmail'],
+                            'contact_person_telephone' => $param['contactPersonTelephone']
                         ),
                         'map_id = ' . $param['mapId']
                     );
@@ -357,11 +357,11 @@ class Application_Service_ApiServices
                     $dbAdapter->update(
                         'participant',
                         array(
-                            'lab_director_name'         => $param['labDirectorName'],
-                            'lab_director_email'        => $param['labDirectorEmail'],
-                            'contact_person_name'       => $param['contactPersonName'],
-                            'contact_person_email'      => $param['contactPersonEmail'],
-                            'contact_person_telephone'  => $param['contactPersonTelephone']
+                            'lab_director_name' => $param['labDirectorName'],
+                            'lab_director_email' => $param['labDirectorEmail'],
+                            'contact_person_name' => $param['contactPersonName'],
+                            'contact_person_email' => $param['contactPersonEmail'],
+                            'contact_person_telephone' => $param['contactPersonTelephone']
                         ),
                         'participant_id = ' . $param['participantId']
                     );
@@ -376,13 +376,13 @@ class Application_Service_ApiServices
             }
             if (isset($response) && !empty($response)) {
                 $payload = array(
-                    'status'  => 'success',
-                    'data'    => $response,
+                    'status' => 'success',
+                    'data' => $response,
                     'message' => 'Shipment form saved successfully.'
                 );
             } else {
                 $payload = array(
-                    'status'  => 'fail',
+                    'status' => 'fail',
                     'message' => 'Shipment form not saved. Please re-sync again'
                 );
             }
@@ -438,7 +438,7 @@ class Application_Service_ApiServices
             $data = [
                 'transaction_id' => $transactionId ?? null,
                 'requested_by' => $user ?? 'system',
-                'requested_on' => Pt_Commons_General::getDateTime(),
+                'requested_on' => Pt_Commons_DateUtility::getCurrentDateTime(),
                 'number_of_records' => $numberOfRecords ?? 0,
                 'request_type' => $requestType ?? null,
                 'test_type' => $testType ?? null,
@@ -609,7 +609,7 @@ class Application_Service_ApiServices
             $row[] = strtoupper(str_replace("-", " ", (string) $aRow['request_type']));
             $row[] = strtoupper((string) $aRow['test_type']);
             $row[] = $aRow['api_url'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['requested_on'], true);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['requested_on'], true);
             $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="margin-right: 2px;" title="Result" onclick="layoutModal(\'/admin/api-history/api-params?id=' . base64_encode((string) $aRow['api_track_id']) . '\',1200,720);"> Show Params</a>';
 
             $output['aaData'][] = $row;

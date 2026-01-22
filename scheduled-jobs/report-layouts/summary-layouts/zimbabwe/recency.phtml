@@ -58,7 +58,7 @@ if ($resultArray['shipment'] != "") {
 
         $referenceRes = '<table style="text-align:center;width:100%" align="left">';
         $referenceRes .= '<tr>';
-        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_General::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
+        $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;"><span style="font-weight:bold;">PT Survey</span><br>' . $resultArray['shipment']['distribution_code'] . ' (' . Pt_Commons_DateUtility::humanReadableDateFormat($resultArray['shipment']['shipment_date']) . ')</td>';
         $referenceRes .= '<td style="font-weight:normal;width:50%;font-size:12px;padding-left:20px;"><span style="font-weight:bold;">Shipment Code</span><br>' . $resultArray['shipment']['shipment_code'] . '</td>';
         $referenceRes .= '</tr>';
         $referenceRes .= '</table>';
@@ -302,7 +302,7 @@ if ($resultArray['shipment'] != "") {
         if (isset($evalRow['saname']) && $evalRow['saname'] != "") {
             $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
             $htmlBottom .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $evalRow['saname'] . '</small></span>';
-            $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_General::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
+            $htmlBottom .= '<br/><span style="text-align:center;font-weight:normal;"><small>Date of approval: ' . (isset($pdf->dateTime) ? Pt_Commons_DateUtility::humanReadableDateFormat($pdf->dateTime) : date('d M Y')) . '</small></span>';
         }
         $html .= $htmlBottom;
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small><i>This is a system generated report. No signature required</i></small></span>';

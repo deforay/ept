@@ -264,7 +264,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             $row[] = $aRow['TestKit_Manufacturer'];
             $row[] = $aRow['TestKit_ApprovalAgency'];
             $row[] = $approved;
-            $row[] = Pt_Commons_General::humanReadableDateFormat($createdDate[0]) . " " . $createdDate[1];
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . " " . $createdDate[1];
             $row[] = '<a href="/admin/testkit/edit/53s5k85_8d/' . base64_encode($aRow['TestKitName_ID']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
@@ -293,10 +293,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
                     'TestKitName_ID' => $tkId,
-                    'TestKit_Name'  => trim($testkitName),
+                    'TestKit_Name' => trim($testkitName),
                     'COUNTRYADAPTED' => '1',
-                    'Approval'      => '0',
-                    'Created_On'    => new Zend_Db_Expr('now()')
+                    'Approval' => '0',
+                    'Created_On' => new Zend_Db_Expr('now()')
                 );
                 $this->insert($data);
                 if (isset($scheme) && !empty($scheme)) {
@@ -337,10 +337,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
             if ($result == "" && trim($oldName) == "") {
                 $data = array(
                     'TestKitName_ID' => $tkId,
-                    'TestKit_Name'  => trim($testkitName),
-                    'Approval'      => '0',
+                    'TestKit_Name' => trim($testkitName),
+                    'Approval' => '0',
                     'COUNTRYADAPTED' => '1',
-                    'Created_On'    => new Zend_Db_Expr('now()')
+                    'Created_On' => new Zend_Db_Expr('now()')
                 );
                 $this->insert($data);
                 if (isset($scheme) && !empty($scheme)) {
@@ -361,7 +361,7 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
                 if ($result != "") {
                     $data = array(
                         'TestKit_Name' => trim($testkitName),
-                        'TestKit_Name'  => trim($testkitName),
+                        'TestKit_Name' => trim($testkitName),
                         'COUNTRYADAPTED' => '1'
                     );
                     $this->update($data, "TestKitName_ID='" . $result['TestKitName_ID'] . "'");

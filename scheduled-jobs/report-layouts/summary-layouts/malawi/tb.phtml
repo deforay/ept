@@ -581,7 +581,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     if ($evalRow['report_type'] == 'finalized') {
         $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
-        $datetxt = Pt_Commons_General::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
+        $datetxt = Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
     /*  $pdf->writeHTML('<table style="width:100%;font-size:12px;">
                             <tr>

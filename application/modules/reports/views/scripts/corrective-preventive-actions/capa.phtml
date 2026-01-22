@@ -1,8 +1,9 @@
 <?php
 $result = $this->correctiveActions[0];
 $genderHelper = $this->getHelper('DateFormat');
-$dtFormat =  $genderHelper->getDateFormat();
-?><style>
+$dtFormat = $genderHelper->getDateFormat();
+?>
+<style>
 	@media print {
 
 		.dontPrint,
@@ -16,7 +17,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-modal.css"); ?>" type="text/css" media="all">
 <legend>
 	<h3>
-		Corrective Actions and Preventive Action for <?php echo $result['shipment_code'];?>
+		Corrective Actions and Preventive Action for <?php echo $result['shipment_code']; ?>
 		<!-- <button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>  -->
 	</h3>
 </legend>
@@ -24,37 +25,42 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<thead>
 		<tr>
 			<th style="width: 17%;">Participant ID:</th>
-			<td style="width: 33%;"><?php echo $result['unique_identifier'];?></td>
+			<td style="width: 33%;"><?php echo $result['unique_identifier']; ?></td>
 			<th style="width: 13%;">Participant Name:</th>
-			<td style="width: 37%;"><?php echo $result['participantName'];?></td>
+			<td style="width: 37%;"><?php echo $result['participantName']; ?></td>
 		</tr>
 		<tr>
 			<th style="width: 17%;">Institute / Department:</th>
-			<td style="width: 33%;"><?php echo $result['institute_name'] . ' / ' . $result['department_name'];?></td>
+			<td style="width: 33%;"><?php echo $result['institute_name'] . ' / ' . $result['department_name']; ?></td>
 			<th style="width: 13%;">PT Survey Code:</th>
-			<td style="width: 37%;"><?php echo $result['distribution_code'];?></td>
+			<td style="width: 37%;"><?php echo $result['distribution_code']; ?></td>
 		</tr>
 		<tr>
 			<th style="width: 17%;">PT Survey Date:</th>
-			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['distribution_date']);?></td>
+			<td style="width: 33%;">
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']); ?></td>
 			<th style="width: 13%;">Shipment Code:</th>
-			<td style="width: 37%;"><?php echo $result['shipment_code'];?></td>
+			<td style="width: 37%;"><?php echo $result['shipment_code']; ?></td>
 		</tr>
 		<tr>
 			<th style="width: 17%;">Shipment Due Date:</th>
-			<td style="width: 33%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['shipment_date']);?></td>
+			<td style="width: 33%;">
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']); ?></td>
 			<th style="width: 13%;">Result Due Date:</th>
-			<td style="width: 37%;"><?php echo Pt_Commons_General::humanReadableDateFormat($result['lastdate_response']);?></td>
+			<td style="width: 37%;">
+				<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']); ?></td>
 		</tr>
 		<tr>
 			<th style="width: 17%;">Final Result:</th>
-			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail';?></td>
+			<td style="width: 33%;"><?php echo ($result['final_result'] == 1) ? 'Pass' : 'Fail'; ?></td>
 			<th style="width: 13%;">Score:</th>
-			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']);?>%</td>
+			<td style="width: 37%;"><?php echo ($result['shipment_score'] + $result['documentation_score']); ?>%</td>
 		</tr>
 	</thead>
 </table>
-<form name="capaForm" id="capaForm" method="post" action="<?php echo $this->url(array("module" => "reports", "controller" => "corrective-preventive-actions", "action" => "capa"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
+<form name="capaForm" id="capaForm" method="post"
+	action="<?php echo $this->url(array("module" => "reports", "controller" => "corrective-preventive-actions", "action" => "capa"), 'default', true) ?>"
+	class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
 	<table style="margin:20px 0;" class="table table-bordered">
 		<thead>
 			<tr>
@@ -70,11 +76,19 @@ $dtFormat =  $genderHelper->getDateFormat();
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach($this->correctiveActions as $key=>$row){ ?>
+			<?php foreach ($this->correctiveActions as $key => $row) { ?>
 				<tr>
-					<td><input type="hidden" name="shipmentMapId[<?php echo $row['action_id'];?>]" value="<?php echo $row['shipment_map_id'];?>"/><?php echo $row['corrective_action'];?><br><small style=" color: gray; "><?php echo $row['description'];?></small></td>
-					<td><textarea name="actionToken[<?php echo $row['action_id'];?>]" id="actionToken<?php echo ($key+1);?>" placeholder="Enter the action token" title="Please enter the action token" class="form-control"><?php echo $row['action_taken'] ?? null;?></textarea></td>
-					<td><input type="text" value="<?php echo Pt_Commons_General::humanReadableDateFormat($row['action_date']) ?? null;?>" name="actionDate[<?php echo $row['action_id'];?>]" id="actionDate<?php echo ($key+1);?>" placeholder="Select the action date" title="Please select the action date" class="form-control datepicker" readonly/></td>
+					<td><input type="hidden" name="shipmentMapId[<?php echo $row['action_id']; ?>]"
+							value="<?php echo $row['shipment_map_id']; ?>" /><?php echo $row['corrective_action']; ?><br><small
+							style=" color: gray; "><?php echo $row['description']; ?></small></td>
+					<td><textarea name="actionToken[<?php echo $row['action_id']; ?>]" id="actionToken<?php echo ($key + 1); ?>"
+							placeholder="Enter the action token" title="Please enter the action token"
+							class="form-control"><?php echo $row['action_taken'] ?? null; ?></textarea></td>
+					<td><input type="text"
+							value="<?php echo Pt_Commons_DateUtility::humanReadableDateFormat($row['action_date']) ?? null; ?>"
+							name="actionDate[<?php echo $row['action_id']; ?>]" id="actionDate<?php echo ($key + 1); ?>"
+							placeholder="Select the action date" title="Please select the action date"
+							class="form-control datepicker" readonly /></td>
 				</tr>
 			<?php } ?>
 		</tbody>
@@ -82,15 +96,17 @@ $dtFormat =  $genderHelper->getDateFormat();
 	<table>
 		<tr>
 			<td>
-				<button style=" text-align:center;" class="btn btn-success btn-sm" onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button>
-				<input type="hidden" name="shipmentId" value="<?php echo $result['shipment_id'];?>"/>
-				<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Cencel"); ?></span></button>
+				<button style=" text-align:center;" class="btn btn-success btn-sm"
+					onclick="validateNow()"><span><?= $this->translate->_("Submit"); ?></span></button>
+				<input type="hidden" name="shipmentId" value="<?php echo $result['shipment_id']; ?>" />
+				<button class="btn btn-danger btn-sm"
+					onclick="document.location.href=document.location"><span><?= $this->translate->_("Cencel"); ?></span></button>
 			</td>
 		</tr>
 	</table>
 </form>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>',
 		});
@@ -104,15 +120,15 @@ $dtFormat =  $genderHelper->getDateFormat();
 			$.blockUI();
 			document.getElementById('capaForm').submit();
 		}
-    }
+	}
 	function generateReport() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions', 'action' => 'capa-export')); ?>", {
-				type: "view",
-				originatedFrom: "admin",
-				format: "html"
-			},
-			function(data) {
+			type: "view",
+			originatedFrom: "admin",
+			format: "html"
+		},
+			function (data) {
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				}

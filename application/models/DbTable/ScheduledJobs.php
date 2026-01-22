@@ -48,7 +48,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         // Update status to 'queued' and set previous_status to the original status value
         $db->query(
             "UPDATE shipment SET previous_status = `status`, `status` = 'queued', updated_on_admin = ? WHERE shipment_id = ?",
-            [Pt_Commons_General::getDateTime(), $shipmentId]
+            [Pt_Commons_DateUtility::getCurrentDateTime(), $shipmentId]
         );
 
         if (isset($shipmentId) && !empty($shipmentId)) {

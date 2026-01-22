@@ -1,70 +1,13 @@
 <?php
 
+use Pt_Commons_DateUtility as DateUtility;
 class Pt_Commons_General
 {
-
-    public static function isDateValid($date): bool
-    {
-        $date = trim($date);
-
-        if (empty($date) || 'undefined' === $date || 'null' === $date) {
-            $response = false;
-        } else {
-            try {
-                $dateTime = new DateTimeImmutable($date);
-                $errors = DateTimeImmutable::getLastErrors();
-                if (
-                    !empty($errors['warning_count'])
-                    || !empty($errors['error_count'])
-                ) {
-                    $response = false;
-                } else {
-                    $response = true;
-                }
-            } catch (Exception $e) {
-                error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-                error_log($e->getTraceAsString());
-                $response = false;
-            }
-        }
-
-        return $response;
-    }
-
-    public static function isoDateFormat($date, $includeTime = false)
-    {
-        if (false === self::isDateValid($date)) {
-            return null;
-        } else {
-            $format = "Y-m-d";
-            if ($includeTime === true) {
-                $format = $format . " H:i:s";
-            }
-            return (new DateTimeImmutable($date))->format($format);
-        }
-    }
 
     // returns true if $needle is a substring of $haystack
     public static function stringContains($needle, $haystack)
     {
         return strpos($haystack, $needle) !== false;
-    }
-
-    // Returns the given date in d-M-Y format
-    // (with or without time depending on the $includeTime parameter)
-    public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
-    {
-        $date = trim($date);
-        if (false === self::isDateValid($date)) {
-            return null;
-        } else {
-
-            if ($includeTime === true) {
-                $format = $format . " H:i";
-            }
-
-            return (new DateTimeImmutable($date))->format($format);
-        }
     }
 
     public function copyDirectoryContents($source, $destination, $deleteSource = false)
@@ -110,17 +53,6 @@ class Pt_Commons_General
         $dir->close();
         return rmdir($dirname);
     }
-
-    public static function getDateTime()
-    {
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        // Try to get timezone from config, then from the server, else default to UTC
-        $timezone = !empty($conf->timezone) ? $conf->timezone : (date_default_timezone_get() ?: 'UTC');
-
-        $date = new DateTime('now', new DateTimeZone($timezone));
-        return $date->format('Y-m-d H:i:s');
-    }
-
 
     public static function getVersion()
     {

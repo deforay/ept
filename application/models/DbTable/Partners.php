@@ -157,7 +157,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
             $row[] = ucwords($aRow['partner_name']);
             $row[] = $link;
             $row[] = $aRow['sort_order'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($addedDateTime[0]);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($addedDateTime[0]);
             $row[] = ucwords($aRow['status']);
             $row[] = '<a href="/admin/partners/edit/id/' . $aRow['partner_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 

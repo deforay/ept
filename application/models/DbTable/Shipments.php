@@ -380,15 +380,15 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $download = '';
             $isEditable = $shipmentParticipantDb->isShipmentEditable($aRow['shipment_id'], $aRow['participant_id']);
             $row = [];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['panelName'] ?? $aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
             $row[] = $aRow['institute_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             $buttonText = "View/Edit";
             $buttonType = 'btn-primary';
@@ -560,14 +560,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
 
             $row[] = $aRow['SHIP_YEAR'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = $aRow['STATUS'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             $buttonText = "View/Edit";
             $download = '';
@@ -748,7 +748,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                 if ($aRow['qc_date'] != "") {
                     $qcBtnText = " Edit Quality Check";
-                    $aRow['qc_date'] = Pt_Commons_General::humanReadableDateFormat($aRow['qc_date']);
+                    $aRow['qc_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['qc_date']);
                 }
                 if ($globalQcAccess == 'yes') {
                     if ($this->_session->qc_access == 'yes') {
@@ -759,12 +759,12 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             }
             $row[] = $qcChkbox;
             $row[] = $aRow['SHIP_YEAR'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
             //            if($aRow['status']!='finalized' && $aRow['RESPONSEDATE']!='' && $aRow['RESPONSEDATE']!='0000-00-00'){
             //             $delete='<a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type']. '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" style="text-decoration : underline;"> Delete</a>';
@@ -949,7 +949,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $fileName = str_replace(" ", "-", $fileName);
 
             $row[] = $aRow['SHIP_YEAR'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
 
@@ -1054,8 +1054,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -1106,10 +1106,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $row[] = strtoupper($aRow['scheme_name']);
             $row[] = $aRow['shipment_code'];
-            $row[] = $general->humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = $general->humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             $row[] = $displayResult;
             if ($aRow['is_excluded'] != 'yes' && isset($aRow['REPORT']) && $aRow['REPORT'] != "") {
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
@@ -1274,11 +1274,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $corrective = "";
             $row = [];
             $row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = ($aRow['scheme_name']);
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             if (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "") {
                 $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');" style="text-decoration : underline;" target="_BLANK" download>Corrective Action</a>';
             }
@@ -1378,8 +1378,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_General::isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_General::isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Pt_Commons_DateUtility::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -1414,7 +1414,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row = [];
             $row[] = (!empty($aRow['scheme_name'])) ? ($aRow['scheme_name']) : null;
             $row[] = $aRow['shipment_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf") && $aRow['status'] == 'finalized') {
                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                 $row[] = '<a href="/d/' . $filePath . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
@@ -1550,8 +1550,8 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['SCHEME'];
             $row[] = $aRow['distribution_code'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['lastdate_response']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             if ($aRow['scheme_id'] == "tb") {
                 $row[] = '<a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '"  style="text-decoration : underline;" target="_blank" download> Download </a>';
             } else {
@@ -1681,7 +1681,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
             $row = [];
             $row['DT_RowId'] = "dist" . $aRow['distribution_id'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['distribution_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
@@ -1808,11 +1808,11 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']);
             $row[] = $aRow['shipment_code'];
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
-            $row[] = Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']);
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
             $row[] = $aRow['shipment_score'];
             $output['aaData'][] = $row;
         }
@@ -4341,10 +4341,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[] = array(
                 'schemeType' => strtoupper($aRow['scheme_type']),
                 'shipmentCode' => $aRow['shipment_code'],
-                'shipmentDate' => Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']),
+                'shipmentDate' => Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']),
                 'uniqueIdentifier' => $aRow['unique_identifier'],
                 'name' => $aRow['first_name'] . " " . $aRow['last_name'],
-                'responseDate' => Pt_Commons_General::humanReadableDateFormat($aRow['RESPONSEDATE']),
+                'responseDate' => Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']),
                 'fileName' => (file_exists($invididualFilePath)) ? basename($invididualFilePath) : '',
                 'schemeName' => $aRow['scheme_name'],
                 'status' => $aRow['status'],
@@ -4407,7 +4407,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $data[] = array(
                 'schemeType' => strtoupper($aRow['scheme_type']),
                 'shipmentCode' => $aRow['shipment_code'],
-                'shipmentDate' => Pt_Commons_General::humanReadableDateFormat($aRow['shipment_date']),
+                'shipmentDate' => Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_date']),
                 'fileName' => (file_exists($summaryFilePath)) ? basename($summaryFilePath) : '',
                 'schemeName' => $aRow['scheme_name'],
                 'status' => $aRow['status'],
@@ -4804,7 +4804,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     "updated_on_user" => new Zend_Db_Expr('now()')
                 );
                 if (isset($params['testReceiptDate']) && trim($params['testReceiptDate']) != '') {
-                    $data['shipment_test_report_date'] = Pt_Commons_General::isoDateFormat($params['testReceiptDate']);
+                    $data['shipment_test_report_date'] = Pt_Commons_DateUtility::isoDateFormat($params['testReceiptDate']);
                 } else {
                     $data['shipment_test_report_date'] = new Zend_Db_Expr('now()');
                 }

@@ -31,7 +31,7 @@ if (!empty($resultArray['shipment'])) {
 
         $sampleRehydrationDate = '';
         if (!empty($attributes['sample_rehydration_date'])) {
-            $sampleRehydrationDate = Pt_Commons_General::humanReadableDateFormat($attributes['sample_rehydration_date']);
+            $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
         $sampleTypeDisplay = (isset($shipmentAttributes["sampleType"]) && in_array($shipmentAttributes["sampleType"], ['serum', 'plasma']))
@@ -99,30 +99,30 @@ if (!empty($resultArray['shipment'])) {
 
         // Format dates for display
         $shipmentDate = !empty(trim($result['shipment_date']))
-            ? Pt_Commons_General::humanReadableDateFormat($result['shipment_date'])
+            ? Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date'])
             : '';
 
         $lastResponseDate = !empty(trim($result['lastdate_response']))
-            ? Pt_Commons_General::humanReadableDateFormat($result['lastdate_response'])
+            ? Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response'])
             : '';
 
         // Format response date
         $responseDate = '';
         if (isset($result['responseResult'][0]['responseDate']) && !empty(trim($result['responseResult'][0]['responseDate']))) {
             $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
-            $responseDate = Pt_Commons_General::humanReadableDateFormat($splitDate[0]);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
 
         // Format shipment receipt date
         $shipmentReceiptDate = '';
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && !empty(trim($result['responseResult'][0]['shipment_receipt_date']))) {
-            $shipmentReceiptDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
 
         // Format test date
         $shipmentTestDate = '';
         if (isset($result['responseResult'][0]['shipment_test_date']) && !empty(trim($result['responseResult'][0]['shipment_test_date']))) {
-            $shipmentTestDate = Pt_Commons_General::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
 
         // Get possible test results for the scheme type
