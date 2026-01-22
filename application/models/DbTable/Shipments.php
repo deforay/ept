@@ -6,11 +6,13 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
     protected $_name = 'shipment';
     protected $_primary = 'shipment_id';
     protected $_session = null;
+    protected $translator = null;
 
     public function __construct()
     {
         parent::__construct();
         $this->_session = new Zend_Session_Namespace('datamanagers');
+        $this->translator = Zend_Registry::get('translate');
     }
 
     public function getShipmentData($sId, $pId)
@@ -1088,20 +1090,20 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('participant_feedback');
         foreach ($rResult as $aRow) {
-            $download = _("Not Available");
+            $download = $this->translator->_("Not Available");
             $corrective = "";
             $feedback = "";
             $row = [];
 
             $displayResult = " - ";
             if ($aRow['is_pt_test_not_performed'] == 'yes') {
-                $displayResult = _('Participant unable to test');
+                $displayResult = $this->translator->_('Participant unable to test');
             } elseif ($aRow['final_result'] == 1) {
-                $displayResult = _('Satisfactory');
+                $displayResult = $this->translator->_('Satisfactory');
             } elseif ($aRow['final_result'] == 2) {
-                $displayResult = _('Unsatisfactory');
+                $displayResult = $this->translator->_('Unsatisfactory');
             } elseif ($aRow['final_result'] == 3 || $aRow['is_excluded'] == 'yes') {
-                $displayResult = _('Excluded from evaluation');
+                $displayResult = $this->translator->_('Excluded from evaluation');
             }
 
             $row[] = strtoupper($aRow['scheme_name']);
@@ -1419,7 +1421,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                 $row[] = '<a href="/d/' . $filePath . '" onclick="updateReportDownloadDateTime(' . $aRow['shipment_id'] . ', \'summary\');"  style="text-decoration : none;" download target="_BLANK">Download Report</a>';
             } else {
-                $row[] = _('Not Available');
+                $row[] = $this->translator->_('Not Available');
             }
             $output['aaData'][] = $row;
         }
