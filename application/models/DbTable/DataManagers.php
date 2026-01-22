@@ -938,7 +938,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* started save profile details */
 
         /* check old data */
-        $fetchOldMail = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
+        $selectOld = $this->select()->where('auth_token = ?', $params['authToken']);
+        $fetchOldMail = $this->fetchRow($selectOld);
         $updateData = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -947,7 +948,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'phone' => $params['phone']
         );
         /* check primary email already exist or not */
-        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email LIKE '" . $params['primaryEmail'] . "' AND (new_email NOT LIKE '" . $params['primaryEmail'] . "' OR new_email IS NULL)");
+        $select = $this->select()
+            ->where('auth_token = ?', $params['authToken'])
+            ->where('primary_email LIKE ?', $params['primaryEmail'])
+            ->where('new_email NOT LIKE ? OR new_email IS NULL', $params['primaryEmail']);
+        $result = $this->fetchRow($select);
         $forceLogin = false;
         if (!$result) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -1053,10 +1058,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->group('ptcc_id');
         if (is_array($field)) {
             foreach ($field as $key => $f) {
-                $select = $select->orWhere($f . " LIKE '" . $value[$key] . "'");
+                $select = $select->orWhere($f . " LIKE ?", $value[$key]);
             }
         } else {
-            $select = $select->orWhere($field . " LIKE '" . $value . "'");
+            $select = $select->orWhere($field . " LIKE ?", $value);
         }
         return $db->fetchCol($select);
     }

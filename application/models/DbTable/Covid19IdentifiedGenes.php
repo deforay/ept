@@ -9,7 +9,7 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
     public function saveCovid19IdentifiedGenesResults($params)
     {
         if (count($params['sampleId']) > 0) {
-            $this->delete('map_id =' . $params['smid']);
+            $this->delete($this->getAdapter()->quoteInto('map_id = ?', $params['smid']));
             foreach ($params['sampleId'] as $sample) {
                 foreach ($params['geneType'][$sample] as $key => $gene) {
                     if (isset($params['geneType'][$sample][$key]) && $params['geneType'][$sample][$key] != "" && isset($params['cTValue'][$sample][$key]) && $params['cTValue'][$sample][$key] != "") {
@@ -38,7 +38,7 @@ class Application_Model_DbTable_Covid19IdentifiedGenes extends Zend_Db_Table_Abs
     public function deleteCovid19IdentifiedGenesResults($mapId)
     {
         if (isset($mapId) && $mapId > 0) {
-            return  $this->delete('map_id =' . $mapId);
+            return  $this->delete($this->getAdapter()->quoteInto('map_id = ?', $mapId));
         }
     }
 }
