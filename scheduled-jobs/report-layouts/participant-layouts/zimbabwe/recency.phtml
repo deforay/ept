@@ -401,7 +401,7 @@ if (!empty($resultArray['shipment'])) {
                 $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
                 $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-                // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+                // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
                 $sampleRehydrateDays = $config['sampleRehydrateDays'];
                 $rehydrateHours = $sampleRehydrateDays * 24;
 

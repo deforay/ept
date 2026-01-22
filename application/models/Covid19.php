@@ -387,7 +387,7 @@ class Application_Model_Covid19
 
             //D.7
 
-            // Testing should be done within 24*($config->evaluation->covid19->sampleRehydrateDays) hours of rehydration.
+            // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
             $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
@@ -818,11 +818,11 @@ class Application_Model_Covid19
             $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 // for Dried Samples, we will have rehydration as one of the documentation scores
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 5), 2);
+                $documentationScorePerItem = round(($documentationScore / 5), 2);
             } else {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores
                 // there are 2 conditions for rehydration so 5 - 2 = 3
-                $documentationScorePerItem = round(($config->evaluation->covid19->documentationScore / 3), 2);
+                $documentationScorePerItem = round(($documentationScore / 3), 2);
             }
         } */
 
@@ -1034,8 +1034,8 @@ class Application_Model_Covid19
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
                     $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-                    // Testing should be done within 24*($config->evaluation->covid19->sampleRehydrateDays) hours of rehydration.
-                    $sampleRehydrateDays = $config->evaluation->covid19->sampleRehydrateDays;
+                    // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
+                    $sampleRehydrateDays = $sampleRehydrateDays;
                     $rehydrateHours = $sampleRehydrateDays * 24;
 
                     if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {

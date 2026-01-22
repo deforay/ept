@@ -812,7 +812,7 @@ final class Application_Model_Dts
 
 			// Only for Dried samples we will do this check
 
-			// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+			// Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
 			$sampleRehydrateDays = null;
 			$interval = null;
 			if (!empty($attributes['sample_rehydration_date'])) {
@@ -1403,7 +1403,7 @@ final class Application_Model_Dts
 		$n = count($reportHeadings);
 		/* if (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes') {
 			$rCount = 14 + ($result['number_of_samples'] * 2);
-			if (!isset($config->evaluation->dts->dtsOptionalTest3) || $config->evaluation->dts->dtsOptionalTest3 == 'no') {
+			if (!isset($dtsOptionalTest3) || $dtsOptionalTest3 == 'no') {
 				$rCount = 17 + ($result['number_of_samples'] * 3);
 			}
 			$finalResColoumn = $rCount;
@@ -1719,7 +1719,7 @@ final class Application_Model_Dts
 					$testedOnDate = new DateTimeImmutable($aRow['shipment_test_date']);
 					$interval = $sampleRehydrationDate->diff($testedOnDate);
 
-					// Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+					// Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
 					$sampleRehydrateDays = $config['sampleRehydrateDays'];
 					//$rehydrateHours = $sampleRehydrateDays * 24;
 
@@ -1732,7 +1732,7 @@ final class Application_Model_Dts
 					$docScoreRow[] = 0;
 				}
 
-				//$panelScore = !empty($config->evaluation->dts->panelScore) && (int) $config->evaluation->dts->panelScore > 0 ? ($config->evaluation->dts->panelScore/100) : 0.9;
+				//$panelScore = !empty($panelScore) && (int) $panelScore > 0 ? ($panelScore/100) : 0.9;
 				$documentScore = !empty($config['documentationScore']) && (int) $config['documentationScore'] > 0 ? (($aRow['documentation_score'] / $config['documentationScore']) * 100) : 0;
 				$docScoreRow[] = $documentScore;
 

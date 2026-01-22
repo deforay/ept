@@ -331,7 +331,7 @@ class Application_Model_Recency
 
             // Only for Dried samples we will do this check
 
-            // Testing should be done within 24*($config->evaluation->recency->sampleRehydrateDays) hours of rehydration.
+            // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
             $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
@@ -954,8 +954,8 @@ class Application_Model_Recency
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
                     $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-                    // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
-                    //$sampleRehydrateDays = $config->evaluation->dts->sampleRehydrateDays;
+                    // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
+                    //$sampleRehydrateDays = $sampleRehydrateDays;
                     $dtsSampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
                     $dtsDocumentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
