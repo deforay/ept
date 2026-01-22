@@ -602,7 +602,7 @@ class Application_Service_Evaluation
 				}
 			}
 		}
-		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'))
 			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id')
@@ -800,7 +800,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'dts') {
 
-			$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+			$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
 			$attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes["condition_pt_samples"] = (isset($params['conditionOfPTSamples']) && !empty($params['conditionOfPTSamples'])) ? $params['conditionOfPTSamples'] : '';
@@ -1001,7 +1001,7 @@ class Application_Service_Evaluation
 			}
 		} elseif ($params['scheme'] == 'recency') {
 
-			$recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
+			$recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage') ?? 100;
 			$attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['rehydrationDate']);
 			$attributes["algorithm"] = $params['algorithm'];
 			$attributes = array(
@@ -1051,7 +1051,7 @@ class Application_Service_Evaluation
 				}
 			}
 		} elseif ($params['scheme'] == 'covid19') {
-			$covid19PassPercentage = Pt_Commons_SchemeConfig::get('covid19.passPercentage');
+			$covid19PassPercentage = Pt_Commons_SchemeConfig::get('covid19.passPercentage') ?? 100;
 			$attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($params['rehydrationDate']);
 			// $attributes["algorithm"] = $params['algorithm'];
 			$attributes = json_encode($attributes);
@@ -1427,7 +1427,7 @@ class Application_Service_Evaluation
 		$testType = $shipmentResult[0]['scheme_type'];
 		$tableType = ($shipmentResult[0]['is_user_configured'] == 'yes') ? 'generic_test' : $shipmentResult[0]['scheme_type'];
 
-		$passPercentage = Pt_Commons_SchemeConfig::get($testType . '.passPercentage');
+		$passPercentage = Pt_Commons_SchemeConfig::get($testType . '.passPercentage') ?? 100;
 		$score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '100';
 		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
 			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
@@ -1794,7 +1794,7 @@ class Application_Service_Evaluation
 	public function getSummaryReportsDataForPDF($shipmentId, $testType = "")
 	{
 		$vlCalculation = $penResult = $shipmentResult = [];
-		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+		$dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
 		$pass = $dtsPasspercentage ?? 95;
 
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();

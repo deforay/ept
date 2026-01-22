@@ -535,11 +535,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $apiService = new Application_Service_ApiServices();
         $transactionId = Pt_Commons_General::generateULID();
         $payload = [];
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $config = Pt_Commons_SchemeConfig::get('dts');
         $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
-echo "<pre>"; print_r($config); die;
+
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
@@ -681,6 +680,9 @@ echo "<pre>"; print_r($config); die;
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
+
+        $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
+        $config = Pt_Commons_SchemeConfig::get('dts');
         /* Create a new response to the API service */
         $resultData = [
             'id' => $result['dm_id'],
@@ -695,7 +697,7 @@ echo "<pre>"; print_r($config); die;
             'displaySampleConditionFields' => (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == "yes") ? true : false,
             'allowRepeatTests' => (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == "yes") ? true : false,
             'dtsSchemeType' => (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : "standard",
-            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $config['covid19MaximumTestAllowed'] : "1",
+            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $covid19Config['covid19MaximumTestAllowed'] : "1",
             'name' => $result['first_name'] . ' ' . $result['last_name'],
             'phone' => $result['phone'],
             'appVersion' => $aResult['app_version'],

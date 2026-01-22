@@ -32,7 +32,7 @@ class Application_Model_Vl
 
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage');
+        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
 
         if ($reEvaluate) {
             //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));

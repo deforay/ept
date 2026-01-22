@@ -1664,7 +1664,7 @@ class Application_Service_Shipments
             $distroService = new Application_Service_Distribution();
             $distro = $distroService->getDistribution($params['distribution']);
             // To get scheme config
-            $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+            $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';
 
             $controlCount = 0;
             foreach ($params['control'] as $control) {
@@ -2341,7 +2341,7 @@ class Application_Service_Shipments
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         // To get scheme config
-        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);
@@ -3354,7 +3354,7 @@ class Application_Service_Shipments
         // Updated manually overrided
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             // To get scheme config
-            $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+            $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
             $shipmentDB = new Application_Model_DbTable_Shipments();
 
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);
@@ -3460,7 +3460,7 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $authNameSpace = new Zend_Session_Namespace('administrators');
         // To get scheme config
-        $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+        $dtsPassPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage') ?? 100;
         if (isset($params['manualOverride']) && $params['manualOverride'] == "yes") {
             $shipmentDB = new Application_Model_DbTable_Shipments();
             $shipmentDeails = $shipmentDB->fetchRow("shipment_id = " . $params['shipmentId']);

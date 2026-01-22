@@ -17,24 +17,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         // If value is null, check in config.ini
         if ($value === null) {
             try {
-                $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
-
-                // Handle nested config keys (e.g., 'evaluation.dts.passPercentage')
-                $keys = explode('.', $name);
-                $configValue = $conf;
-
-                foreach ($keys as $key) {
-                    if (isset($configValue->$key)) {
-                        $configValue = $configValue->$key;
-                        if (!$configValue)
-                            $configValue = $configValue->evaluation->$key;
-                    } else {
-                        $configValue = null;
-                        break;
-                    }
-                }
-
-                $value = $configValue;
+                $value = Pt_Commons_SchemeConfig::get($name);
             } catch (Exception $e) {
                 // Log error or handle exception as needed
                 $value = null;

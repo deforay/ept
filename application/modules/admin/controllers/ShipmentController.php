@@ -102,7 +102,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
-                $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'standard';
+                $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';
                 $this->view->dtsPossibleResults = $scheme->getPossibleResults('dts', 'admin');
                 if ($dtsSchemeType == 'updated-3-tests') {
                     $this->view->rtriPossibleResults = $scheme->getPossibleResults('recency', 'admin');

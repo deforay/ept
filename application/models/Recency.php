@@ -34,8 +34,8 @@ class Application_Model_Recency
         }
 
 
-        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
-        $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage');
+        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore') ?? 10;
+        $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage') ?? 100;
 
 
         foreach ($shipmentResult as $shipment) {
@@ -272,7 +272,7 @@ class Application_Model_Recency
 
         $failureReasonsArray = [];
 
-        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
+        $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore') ?? 10;
 
         //Let us now calculate documentation score
         $documentationScore = 0;
@@ -336,7 +336,7 @@ class Application_Model_Recency
             $testedOnDate = new DateTime($results[0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-            $recencySampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays');
+            $recencySampleRehydrateDays = Pt_Commons_SchemeConfig::get('recency.sampleRehydrateDays') ?? 1;
 
             // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
             if (empty($attributes['sample_rehydration_date']) || $interval->days < $recencySampleRehydrateDays || $interval->days > ($recencySampleRehydrateDays + 1)) {
@@ -787,11 +787,11 @@ class Application_Model_Recency
         //<-------- Document Score Sheet Heading (Sheet Four)-------
 
         if ($result['scheme_type'] == 'recency') {
-            $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore');
-            $documentationScorePerItem = ($recencyDocumentationScore / 5);
+            $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore') ?? 10;
+            $documentationScorePerItem = ($recencyDocumentationScore > 0) ? ($recencyDocumentationScore / 5) : 0;
         }
 
-        $docScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Documentation Score');
+        $docScoreSheet = new Worksheet($excel, 'Documentation Score');
         $excel->addSheet($docScoreSheet, 4);
         $docScoreSheet->setTitle('Documentation Score', true);
         $docScoreSheet->getDefaultColumnDimension()->setWidth(20);
@@ -956,8 +956,8 @@ class Application_Model_Recency
 
                     // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
                     //$sampleRehydrateDays = $sampleRehydrateDays;
-                    $dtsSampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays');
-                    $dtsDocumentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
+                    $dtsSampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 1;
+                    $dtsDocumentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore') ?? 10;
 
                     if ($interval->days < $dtsSampleRehydrateDays || $interval->days > ($dtsSampleRehydrateDays + 1)) {
 
