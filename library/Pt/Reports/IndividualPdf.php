@@ -124,7 +124,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         } elseif ($this->schemeType == 'tb' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10, '', true);
-            $html = '<div style="font-weight: bold;text-align:center;background-color:black;color:white;height:100px;"><span style="text-align:center;font-size:11;">' . $this->header . ' | FINAL INDIVIDUAL PERFORMANCE REPORT</span></div>';
+            $html = '<div style="font-weight: bold;text-align:center;background-color:#777777;color:white;height:100px;"><span style="text-align:center;font-size:10;">' . $this->header . ' | FINAL INDIVIDUAL PERFORMANCE REPORT</span></div>';
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';

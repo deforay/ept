@@ -127,7 +127,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($htmlTitle);
 
         $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $labInfo .= '<tr style="background-color:#777777;color:#FFFFFF;">';
         $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
         $labInfo .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
         $labInfo .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
@@ -147,7 +147,7 @@ if (!empty($resultArray['shipment'])) {
 
             // $participantResult .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
             $participantResult .= '<table style="font-size:11px;width:100%;" border="0" cellpadding="1">';
-            $participantResult .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+            $participantResult .= '<tr style="background-color:#777777;color:#FFFFFF;">';
             $participantResult .= '	<td colspan="4" style="text-align:center;width:100%;"><strong>Site Results Testing with ' . $result['assayName'] . '</strong></td>';
             $participantResult .= '</tr>';
 
@@ -226,7 +226,7 @@ if (!empty($resultArray['shipment'])) {
         // $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        // $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
+        // $htmlSubTitle .= '<tr style="background-color:#777777;width:100%;color:#FFFFFF;">';
         // $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
         // $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
         // $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
@@ -243,7 +243,7 @@ if (!empty($resultArray['shipment'])) {
             $notTestedInfo = '<hr>';
             $notTestedInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
             if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))) {
-                $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $notTestedInfo .= '<tr style="background-color:#777777;color:#FFFFFF;">';
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
@@ -252,7 +252,7 @@ if (!empty($resultArray['shipment'])) {
                 $notTestedInfo .= '</tr>';
             }
             if (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
-                $notTestedInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+                $notTestedInfo .= '<tr style="background-color:#777777;color:#FFFFFF;">';
                 $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
                 $notTestedInfo .= '</tr>';
                 $notTestedInfo .= '<tr>';
@@ -267,7 +267,7 @@ if (!empty($resultArray['shipment'])) {
 
         // Comments section - always show heading (no border, just header bar)
         $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
-        $comment .= '<tr style="background-color:#595959;color:#FFFFFF;">';
+        $comment .= '<tr style="background-color:#777777;color:#FFFFFF;">';
         $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
         $comment .= '</tr>';
 
@@ -313,7 +313,7 @@ if (!empty($resultArray['shipment'])) {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:12px;">' . ($panelName) . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         $htmlSubTitle = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-        $htmlSubTitle .= '<tr style="background-color:#595959;width:100%;color:#FFFFFF;">';
+        $htmlSubTitle .= '<tr style="background-color:#777777;width:100%;color:#FFFFFF;">';
         $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Country </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;width:50%;"><strong>Testing Site </strong></td>';
         $htmlSubTitle .= '	<td style="text-align:center;width:25%;"><strong>Participant ID </strong></td>';
