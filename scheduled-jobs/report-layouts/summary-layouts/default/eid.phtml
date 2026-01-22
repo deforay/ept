@@ -1,6 +1,5 @@
 <?php
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
 
@@ -52,10 +51,10 @@ if ($resultArray['shipment'] != "") {
     }
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $layout);
+        $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
     }
 
     // set default header data
@@ -82,7 +81,6 @@ if ($resultArray['shipment'] != "") {
 
     // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
     // add a page
     //$pdf->AddPage();
     // ---------------------------------------------------------
@@ -195,6 +193,7 @@ if ($resultArray['shipment'] != "") {
         $assayCount = 0;
         if ($k > 0) {
             foreach ($resultArray['shipment']['avgAssayResult'] as $assayResult) {
+
                 $avgAssay = '';
                 $avgAssay .= '<div style="border: 1px solid #000000;">';
 
@@ -229,7 +228,11 @@ if ($resultArray['shipment'] != "") {
                 $avgAssay .= $assayResult['belowScore'];
                 $avgAssay .= '</td>';
                 $avgAssay .= '<td style="text-align:center;">';
-                $avgAssay .= round(($assayResult['maxScore'] / $assayResult['participantCount']) * 100, 2) . "%";
+                if ($assayResult['maxScore'] > 0 && $assayResult['participantCount'] > 0) {
+                    $avgAssay .= round(($assayResult['maxScore'] / $assayResult['participantCount']) * 100, 2) . "%";
+                } else {
+                    $avgAssay .= "0%";
+                }
                 $avgAssay .= '</td>';
                 $avgAssay .= '</tr>';
                 $avgAssay .= '</table>';
@@ -251,7 +254,11 @@ if ($resultArray['shipment'] != "") {
                     $sampleAvg += $sample['correctRes'];
                     $avgAssay .= '<td style="text-align:center;">' . $sample['correctRes'] . '</td>';
                 }
-                $avg = round(($sampleAvg / $sCount), 2);
+                if ($sampleAvg > 0 && $sCount > 0) {
+                    $avg = round(($sampleAvg / $sCount), 2);
+                } else {
+                    $avg = 0;
+                }
                 $avgAssay .= '<td style="text-align:center;">' . $avg . '</td>';
                 $avgAssay .= '</tr>';
 
@@ -259,9 +266,17 @@ if ($resultArray['shipment'] != "") {
                 $avgAssay .= '<tr>';
                 foreach ($assayResult['specimen'] as $sKey => $sample) {
                     $sampleAvgInPer += $sample['correctRes'];
-                    $avgAssay .= '<td style="text-align:center;">' . round(($sample['correctRes'] / $assayResult['participantCount']) * 100, 2) . '%</td>';
+                    if ($sample['correctRes'] > 0 && $assayResult['participantCount'] > 0) {
+                        $avgAssay .= '<td style="text-align:center;">' . round(($sample['correctRes'] / $assayResult['participantCount']) * 100, 2) . '%</td>';
+                    } else {
+                        $avgAssay .= '<td style="text-align:center;">0%</td>';
+                    }
                 }
-                $avgAssay .= '<td style="text-align:center;">' . round(($avg / $assayResult['participantCount']) * 100, 2) . '%</td>';
+                if ($avg > 0 && $assayResult['participantCount'] > 0) {
+                    $avgAssay .= '<td style="text-align:center;">' . round(($avg / $assayResult['participantCount']) * 100, 2) . '%</td>';
+                } else {
+                    $avgAssay .= '<td style="text-align:center;">0%</td>';
+                }
                 $avgAssay .= '</tr>';
                 $avgAssay .= '</table>';
 
@@ -271,6 +286,7 @@ if ($resultArray['shipment'] != "") {
                 if ($pdf->getY() >= 250) {
                     $pdf->AddPage();
                 }
+
                 $assay = isset($assayResult['eidAssayWithCount']) && count($assayResult['eidAssayWithCount']) > 0 ? implode(",", $assayResult['eidAssayWithCount']) : "";
                 $assayCount = $assayResult['participantCount'] > 0 ? $assayResult['participantCount'] : 0;
             }

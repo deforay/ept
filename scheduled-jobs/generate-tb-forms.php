@@ -21,10 +21,10 @@ $procs = $cliOptions['procs'] ?? Pt_Commons_MiscUtility::getCpuCount();
 
 $generalModel = new Pt_Commons_General();
 
-$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+$dbConf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
 try {
-    $db = Zend_Db::factory($conf->resources->db);
+    $db = Zend_Db::factory($dbConf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 
     // Fallback logic for shipment ID (only needed if not passed, but workers must receive it)

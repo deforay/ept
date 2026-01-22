@@ -211,6 +211,7 @@ if (!empty($resultArray['shipment'])) {
         $interval = $srDate->diff($testedOnDate);
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
         $displaySampleConditionFields = Pt_Commons_SchemeConfig::get('dts.displaySampleConditionFields');
+        $passPercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
         // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
         $rehydrateHours = $sampleRehydrateDays * 24;
         $sampleConditionFields = $displaySampleConditionFields ?? 'no';
