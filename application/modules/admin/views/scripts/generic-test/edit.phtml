@@ -22,16 +22,16 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Test/Scheme name"); ?> <span class="mandatory">*</span></label>
+					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the scheme name" placeholder="Enter the scheme name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This scheme name already exists for another scheme name. Please try something else.')" />
+						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This name already exists. Please try something else.')" />
 					</div>
 				</div>
 
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Test/Scheme Code"); ?> <span class="mandatory">*</span></label>
+					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the scheme code" placeholder="Enter the scheme code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This scheme code already exists for another scheme code. Please try something else.')" />
+						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This code already exists. Please try something else.')" />
 					</div>
 				</div>
 			</div>
@@ -39,8 +39,8 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
 					<div class="col-lg-8">
-						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the no of tests">
-							<option value="">--<?= $this->translate->_("Select Number of test"); ?>--</option>
+						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
+							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
 							<option value="1" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 1) ? 'selected="selected"' : null; ?>>1</option>
 							<option value="2" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 2) ? 'selected="selected"' : null; ?>>2</option>
 							<option value="3" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 3) ? 'selected="selected"' : null; ?>>3</option>
@@ -50,7 +50,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
 					<div class="col-lg-8">
-						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select a capture additional details yes/no">
+						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'selected="selected"' : null; ?>>Yes</option>
 							<option value="no" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'no') ? 'selected="selected"' : null; ?>>No</option>
@@ -66,9 +66,9 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Scheme Status"); ?></label>
+					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Status"); ?></label>
 					<div class="col-lg-8">
-						<select id="status" name="status" class="form-control" title="Please select a capture additional details yes/no">
+						<select id="status" name="status" class="form-control" title="Please select the status">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="active" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'active') ? 'selected="selected"' : null; ?>>Active</option>
 							<option value="inactive" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'inactive') ? 'selected="selected"' : null; ?>>Inactive</option>
@@ -86,8 +86,8 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<div class="form-group col-lg-6">
 					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (isset($this->disableOtherTestkit) && $this->disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
-						&nbsp;<input type="radio" class="isRequired" name="disableOtherTestkit" id="disableOtherTestkit" <?php echo (!isset($this->disableOtherTestkit) || $this->disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("No"); ?>
+						<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" <?php echo (isset($this->disableOtherTestkit) && $this->disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
+						&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" <?php echo (!isset($this->disableOtherTestkit) || $this->disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
 					</div>
 				</div>
 			</div>
@@ -120,13 +120,13 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 													<lable for="resultSubGroup<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></lable>
 												</td>
 												<td class="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? '' : 'hide'; ?> firstSubTest" style="width:30%;">
-													<input type="text" name="resultSubGroup[<?php echo $rowCount; ?>]" id="resultSubGroup<?php echo $rowCount; ?>" value="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? $row['sub_scheme'] : ''; ?>" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for <?php echo $rowCount; ?> row" />
+													<input type="text" name="resultSubGroup[<?php echo $rowCount; ?>]" id="resultSubGroup<?php echo $rowCount; ?>" value="<?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme'])) ? $row['sub_scheme'] : ''; ?>" class="form-control input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for <?php echo $rowCount; ?> row" />
 												</td>
 												<td style="width:20%;">
-													<lable for="testType<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Select Result Type"); ?></lable>
+													<lable for="testType<?php echo $rowCount; ?>" class="form-label-control"><?= $this->translate->_("Select Test Format"); ?></lable>
 												</td>
 												<td style="width:30%;">
-													<select type="text" name="testType[<?php echo $rowCount; ?>]" id="testType<?php echo $rowCount; ?>" class="form-control test-type input-sm" title="Please select the type of result" onchange="setResultType(this.value, <?php echo $rowCount; ?>)">
+													<select type="text" name="testType[<?php echo $rowCount; ?>]" id="testType<?php echo $rowCount; ?>" class="form-control test-type input-sm" title="Please select the test format" onchange="setTestFormatType(this.value, <?php echo $rowCount; ?>)">
 														<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 														<option value="qualitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'qualitative') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Qualitative"); ?></option>
 														<option value="quantitative" <?php echo (isset($row['result_type']) && !empty($row['result_type']) && $row['result_type'] == 'quantitative') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Quantitative"); ?></option>
@@ -222,10 +222,18 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 										</table>
 									</td>
 								</tr>
+								<tr class="quantitative-warning <?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme']) && $row['result_type'] == 'quantitative') ? '' : 'hide'; ?>" id="quantitativeWarning<?php echo $rowCount; ?>">
+									<td colspan="4">
+										<div class="alert alert-warning" style="margin-top: 10px;">
+											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+										</div>
+									</td>
+								</tr>
 			</table>
 			</td>
-			<td style=" text-align:center;vertical-align: middle;">
-				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+			<!-- TODO: Multiple sub-tests feature hidden until evaluation logic supports it -->
+			<td style="text-align:center;vertical-align: middle; display:none;" class="add-subtest-btn">
+				<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
 			</td>
 			</tr>
 	<?php }
@@ -239,13 +247,13 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 						<lable for="resultSubGroup1" class="form-label-control">Enter the test name</lable>
 					</td>
 					<td class="hide firstSubTest" style="width:30%;">
-						<input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for 1st row" />
+						<input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for 1st row" />
 					</td>
 					<td style="width:20%;">
-						<lable for="testType1" class="form-label-control">Select Result Type</lable>
+						<lable for="testType1" class="form-label-control">Select Test Format</lable>
 					</td>
 					<td style="width:30%;">
-						<select type="text" name="testType[1]" id="testType1" class="form-control test-type input-sm" title="Please select the type of result" onchange="setResultType(this.value, 1)">
+						<select type="text" name="testType[1]" id="testType1" class="form-control test-type input-sm" title="Please select the test format" onchange="setTestFormatType(this.value, 1)">
 							<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 							<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>
 							<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>
@@ -333,10 +341,18 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 						</table>
 					</td>
 				</tr>
+				<tr class="quantitative-warning hide" id="quantitativeWarning1">
+					<td colspan="4">
+						<div class="alert alert-warning" style="margin-top: 10px;">
+							<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+						</div>
+					</td>
+				</tr>
 			</table>
 		</td>
-		<td style=" text-align:center;vertical-align: middle;">
-			<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+		<!-- TODO: Multiple sub-tests feature hidden until evaluation logic supports it -->
+		<td style="text-align:center;vertical-align: middle; display:none;" class="add-subtest-btn">
+			<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 		</td>
 	</tr>
 <?php } ?>
@@ -377,11 +393,66 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			});
 	}
 
+	function validateQualitativeResults() {
+		var qualitativeVisible = false;
+		$('.qualitative-div').each(function() {
+			if (!$(this).hasClass('hide')) {
+				qualitativeVisible = true;
+			}
+		});
+
+		if (!qualitativeVisible) {
+			return true; // No qualitative results to validate
+		}
+
+		var hasTestResult = false;
+		var hasFinalInterpretation = false;
+		var resultsByType = {
+			'test-result': [],
+			'final-interpretation': []
+		};
+
+		// Collect all result types and expected results
+		$('.resultTypeInput').each(function() {
+			var resultType = $(this).val();
+			if (resultType) {
+				if (resultType === 'test-result') {
+					hasTestResult = true;
+				} else if (resultType === 'final-interpretation') {
+					hasFinalInterpretation = true;
+				}
+
+				// Get the expected result from the same row
+				var row = $(this).closest('tr');
+				var expectedResult = row.find('input[name*="[expectedResult]"]').val();
+				if (expectedResult && expectedResult.trim() !== '') {
+					var normalizedResult = expectedResult.trim().toLowerCase();
+					if (resultsByType[resultType].includes(normalizedResult)) {
+						alert('Duplicate expected result "' + expectedResult + '" found for Result Type "' + (resultType === 'test-result' ? 'Test Result' : 'Final Interpretation') + '". Each expected result must be unique within a result type.');
+						return false;
+					}
+					resultsByType[resultType].push(normalizedResult);
+				}
+			}
+		});
+
+		// Check if both result types exist
+		if (!hasTestResult || !hasFinalInterpretation) {
+			alert('You must have at least one "Test Result" and one "Final Interpretation" result type.');
+			return false;
+		}
+
+		return true;
+	}
+
 	function validateNow() {
 		flag = deforayValidator.init({
 			formId: 'editGenericTestForm'
 		});
 		if (flag && !duplicated) {
+			if (!validateQualitativeResults()) {
+				return false;
+			}
 			$.blockUI();
 			document.getElementById('editGenericTestForm').submit();
 		}
@@ -419,7 +490,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 		$(obj.parentNode.parentNode).after(html);
 	}
 
-	function addTbRow(obj) {
+	function addNewRow(obj) {
 		$('.firstSubTest').removeClass('hide');
 		$('#resultSubGroup1').addClass('isRequired');
 		sampleCounter++;
@@ -429,11 +500,11 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 						<tr>\
 							<td style="width:20%;"><lable for="resultSubGroup' + sampleCounter + '" class="form-label-control">Enter the test name</lable></td>\
 							<td style="width:30%;">\
-								<input type="text" name="resultSubGroup[' + sampleCounter + ']"id="resultSubGroup' + sampleCounter + '" class="form-control isRequired input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for ' + sampleCounter + ' row"/>\
+								<input type="text" name="resultSubGroup[' + sampleCounter + ']"id="resultSubGroup' + sampleCounter + '" class="form-control isRequired input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for ' + sampleCounter + ' row"/>\
 							</td>\
-							<td style="width:20%;"><lable for="testType' + sampleCounter + '" class="form-label-control">Select Result Type</lable></td>\
+							<td style="width:20%;"><lable for="testType' + sampleCounter + '" class="form-label-control">Select Test Format</lable></td>\
 							<td style="width:30%;">\
-								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control test-type isRequired input-sm" title="Please select the type of result" onchange="setResultType(this.value, ' + sampleCounter + ')">\
+								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control test-type isRequired input-sm" title="Please select the test format" onchange="setTestFormatType(this.value, ' + sampleCounter + ')">\
 									<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 									<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>\
 									<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>\
@@ -521,10 +592,17 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 								</table>\
 							</td>\
 						</tr>\
+						<tr class="quantitative-warning hide" id="quantitativeWarning' + sampleCounter + '">\
+							<td colspan="4">\
+								<div class="alert alert-warning" style="margin-top: 10px;">\
+									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>\
+								</div>\
+							</td>\
+						</tr>\
 					</table>\
 				</td>\
 				<td style=" text-align:center;vertical-align: middle;">\
-					<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>\
+					<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>\
 				</td>\
 			</tr>';
 		$(obj.parentNode.parentNode).after(html);
@@ -555,7 +633,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 			$(this).val($(this).val().replace(/[^a-z0-9-]/gi, ''));
 		});
 		$('.test-type').each(function(index, element) {
-			setResultType($(this).val(), (index + 1));
+			setTestFormatType($(this).val(), (index + 1));
 		});
 	});
 
@@ -572,22 +650,31 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 		});
 	}
 
-	function setResultType(id, row) {
+	function setTestFormatType(id, row) {
 		if (id == 'qualitative') {
 			$('.quantitative-input' + row).removeClass('isRequired');
 			$('#qualitativeRow' + row).removeClass('hide');
 			$('.qualitative-input' + row).addClass('isRequired');
 			$('#quantitativeRow' + row).addClass('hide');
+			$('#quantitativeWarning' + row).addClass('hide');
 		} else if (id == 'quantitative') {
 			$('.qualitative-input' + row).removeClass('isRequired');
 			$('#quantitativeRow' + row).removeClass('hide');
 			$('.quantitative-input' + row).addClass('isRequired');
 			$('#qualitativeRow' + row).addClass('hide');
+			$('#quantitativeWarning' + row).removeClass('hide');
 		}
 	}
 
 	function resultCodeChange(obj) {
-		$(obj).val($('#schemeCode').val() + '-' + $(obj).val());
+		var schemeCode = $('#schemeCode').val();
+		var currentVal = $(obj).val();
+		var prefix = schemeCode + '-';
+
+		// Only add prefix if it doesn't already start with it
+		if (!currentVal.startsWith(prefix)) {
+			$(obj).val(prefix + currentVal);
+		}
 	}
 
 	function resultTypeChange(rrow, srow) {

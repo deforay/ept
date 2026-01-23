@@ -2,6 +2,7 @@
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->email->domains != "") ? $conf->blocked->email->domains : '';
 // Zend_Debug::dump($blockedDomains);die;
+
 ?>
 <section class="content-header">
     <h1>
