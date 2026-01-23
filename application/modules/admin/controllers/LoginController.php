@@ -24,16 +24,6 @@ class Admin_LoginController extends Zend_Controller_Action
 				$this->redirect('/admin');
 			}
 			$systemAdminDb = new Application_Model_DbTable_SystemAdmin();
-			/* $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-			$adapter = new Zend_Auth_Adapter_DbTable($db, "system_admin", "primary_email", "password");
-			$common = new Application_Service_Common();
-			$select = $adapter->getDbSelect();
-			$select->where('status = "active"');
-			$adapter->setIdentity($params['username']);
-			// $adapter->setCredential($params['password']);
-
-			$auth = Zend_Auth::getInstance();
-			$res = $auth->authenticate($adapter); */
 
 			$result = $systemAdminDb->fetchSystemAdminByMail($params['username'], $params['password']);
 			$passwordVerify = true;
@@ -41,18 +31,21 @@ class Admin_LoginController extends Zend_Controller_Action
 				$passwordVerify = password_verify((string) $params['password'], (string) $result['password']);
 			}
 			if (isset($result) && !empty($result) && $passwordVerify) {
-				Zend_Session::rememberMe(36000); // keeping the session cookie active for 10 hours
+				// keeping the session cookie active for 10 hours
+				Zend_Session::rememberMe(60 * 60 * 10);
+				// regenerate and delete old session to prevent fixation, before setting session data
+				Zend_Session::regenerateId();
 
-				$authNameSpace 							= new Zend_Session_Namespace('administrators');
-				$authNameSpace->primary_email 			= $params['username'];
-				$authNameSpace->admin_id 				= $result['admin_id'];
-				$authNameSpace->first_name 				= $result['first_name'];
-				$authNameSpace->last_name 				= $result['last_name'];
-				$authNameSpace->phone 					= $result['phone'];
-				$authNameSpace->secondary_email 		= $result['secondary_email'];
-				$authNameSpace->forcePasswordReset 		= $result['force_password_reset'];
-				$authNameSpace->privileges 				= $result['privileges'];
-				$authNameSpace->activeScheme 			= $result['scheme'];
+				$authNameSpace = new Zend_Session_Namespace('administrators');
+				$authNameSpace->primary_email = $params['username'];
+				$authNameSpace->admin_id = $result['admin_id'];
+				$authNameSpace->first_name = $result['first_name'];
+				$authNameSpace->last_name = $result['last_name'];
+				$authNameSpace->phone = $result['phone'];
+				$authNameSpace->secondary_email = $result['secondary_email'];
+				$authNameSpace->forcePasswordReset = $result['force_password_reset'];
+				$authNameSpace->privileges = $result['privileges'];
+				$authNameSpace->activeScheme = $result['scheme'];
 
 				$schemeService = new Application_Service_Schemes();
 				$allSchemes = $schemeService->getAllSchemes();
@@ -66,12 +59,12 @@ class Admin_LoginController extends Zend_Controller_Action
 				$userId = $result['admin_id']; // Set this to the logged-in user's ID
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-				$loginData = array(
+				$loginData = [
 					'user_id' => $userId,
 					'login_context' => 'admin', // or 'failed' if login failed
-					'login_status' => 'success', // Indicate failed login
+					'login_status' => 'success', // Indicate successful login
 					'login_id' => $params['username'], // This can be set to a unique ID if needed
-				);
+				];
 
 				$loginHistoryModel->addLoginHistory($loginData);
 
@@ -80,12 +73,12 @@ class Admin_LoginController extends Zend_Controller_Action
 				// Insert login history
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
-				$loginData = array(
+				$loginData = [
 					'user_id' => NULL,
 					'login_context' => 'admin', // or 'failed' if login failed
 					'login_status' => 'failed', // Indicate failed login
 					'login_id' => $params['username'], // This can be set to a unique ID if needed
-				);
+				];
 
 				$loginHistoryModel->addLoginHistory($loginData);
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
@@ -99,6 +92,7 @@ class Admin_LoginController extends Zend_Controller_Action
 			// logged in as a User as well..
 			// We don't want that
 			Zend_Auth::getInstance()->clearIdentity();
+			//Zend_Session::destroy();
 			SecurityService::rotateCSRF();
 		}
 	}

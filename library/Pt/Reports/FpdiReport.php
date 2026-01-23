@@ -72,7 +72,7 @@ class Pt_Reports_FpdiReport extends Fpdi
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
                 $this->writeHTML("<br>All Participants Results Report", true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
-                $this->writeHTML("<br>Individual Participant Results Report", true, false, true, false, 'C');
+                $this->writeHTML("Individual Participant Results Report", true, false, true, false, 'C');
             }
         }
 
