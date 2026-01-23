@@ -13,7 +13,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
 $config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $showResource = false;
-if (!empty($config->home->content->homeSectionHeading1) || !empty($config->home->content->homeSectionHeading2) || !empty($config->home->content->homeSectionHeading3)) {
+if (!empty($config->homeContent->homeSectionHeading1) || !empty($config->homeContent->homeSectionHeading2) || !empty($config->homeContent->homeSectionHeading3)) {
     $showResource = true;
 }
 
@@ -100,7 +100,7 @@ $eptLogo = implode('', $logos);
                         <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
                         </li>
                     <?php } ?>
-                    <?php if (isset($config->home->content->faq) && !empty($config->home->content->faq)) { ?>
+                    <?php if (isset($config->homeContent->faq) && !empty($config->homeContent->faq)) { ?>
                         <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
                     <?php } ?>
                     <li><a class="nav-link scrollto" href="/index#contact">Contact</a></li>

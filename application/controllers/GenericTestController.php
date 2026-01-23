@@ -93,8 +93,9 @@ class GenericTestController extends Zend_Controller_Action
         $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
 
-        $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+       // $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+       $this->view->config = Pt_Commons_SchemeConfig::get('custom');
 
 
         $participantService = new Application_Service_Participants();
