@@ -7,7 +7,7 @@
 
 // Validate shipments data
 if (empty($this->shipments)) {
-	echo '<br><br><br><h4 style="text-align:center;">Unable to fetch shipments. Please click view shipment or contact system admin for help</h4>';
+	echo '<br><br><br><h4 style="text-align:center;">' . $this->translate->_("Unable to fetch shipments. Please click view shipment or contact system admin for help") . '</h4>';
 	return;
 }
 
@@ -18,19 +18,19 @@ $canGenerateIndividualReport = ($distributionDate < $currentDate) ? 1 : 0;
 $canGenerateFinalReport = ($distributionDate <= $currentDate) ? 1 : 0;
 
 // Determine report button states
-$individualReportTitle = 'Generate Reports';
+$individualReportTitle = $this->translate->_('Generate Reports');
 $individualReportClass = '';
-$finalReportTitle = 'Finalize';
+$finalReportTitle = $this->translate->_('Finalize');
 $finalReportClass = '';
 
 if (isset($this->shipmentStatus['generateReport']['status'])) {
 	$reportStatus = $this->shipmentStatus['generateReport']['status'];
 
 	if ($reportStatus === 'pending') {
-		$individualReportTitle = 'Processing..';
+		$individualReportTitle = $this->translate->_('Processing..');
 		$individualReportClass = 'disabled';
 	} elseif ($reportStatus === 'evaluated') {
-		$individualReportTitle = 'Generate Reports';
+		$individualReportTitle = $this->translate->_('Generate Reports');
 	}
 }
 
@@ -38,10 +38,10 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 	$finalizedStatus = $this->shipmentStatus['finalized']['status'];
 
 	if ($finalizedStatus === 'pending') {
-		$finalReportTitle = 'Processing..';
+		$finalReportTitle = $this->translate->_('Processing..');
 		$finalReportClass = 'disabled';
 	} elseif ($finalizedStatus === 'finalized') {
-		$finalReportTitle = 'Finalized';
+		$finalReportTitle = $this->translate->_('Finalized');
 	}
 }
 ?>
@@ -123,11 +123,11 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 					<tr>
 						<td style="text-align: center;"><?= htmlspecialchars($shipment['shipment_code']); ?></td>
 						<td style="text-align: center;"><?= htmlspecialchars($shipment['scheme_name']); ?></td>
-						<td style="text-align: center;"><?= (int)$shipment['number_of_samples']; ?></td>
-						<td style="text-align: center;"><?= (int)$totalParticipants; ?></td>
-						<td style="text-align: center;"><?= (int)$reported; ?></td>
+						<td style="text-align: center;"><?= (int) $shipment['number_of_samples']; ?></td>
+						<td style="text-align: center;"><?= (int) $totalParticipants; ?></td>
+						<td style="text-align: center;"><?= (int) $reported; ?></td>
 						<td style="text-align: center;"><?= $responsePercentage; ?>%</td>
-						<td style="text-align: center;"><?= (int)$passed; ?></td>
+						<td style="text-align: center;"><?= (int) $passed; ?></td>
 						<td style="text-align: center;"><?= ucfirst($shipment['shipment_status']); ?></td>
 						<td style="text-align: center; line-height: 30px;">
 							<?php if ($shipment['shipment_status'] !== 'finalized' && $reported > 0): ?>
@@ -148,8 +148,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 
 								<!-- VL Range Button (only for VL scheme type) -->
 								<?php if ($shipment['scheme_type'] === 'vl'): ?>
-									<a class="btn btn-success btn-xs <?= $buttonClass; ?>"
-										href="javascript:void(0);"
+									<a class="btn btn-success btn-xs <?= $buttonClass; ?>" href="javascript:void(0);"
 										onclick="getVLReferenceScores('<?= $encodedShipmentId; ?>')">
 										<i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?>
 									</a>
@@ -192,10 +191,9 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 
 								<!-- Email Non-Respondents Button -->
 								<?php if ($nonResponse > 0): ?>
-									<a class="btn btn-warning btn-xs <?= $buttonClass; ?>"
-										href="javascript:void(0);"
+									<a class="btn btn-warning btn-xs <?= $buttonClass; ?>" href="javascript:void(0);"
 										onclick="mailNonParticipants('<?= $encodedShipmentId; ?>');">
-										<i class="icon-envelope"></i> Mail <?= (int)$nonResponse; ?>
+										<i class="icon-envelope"></i> Mail <?= (int) $nonResponse; ?>
 										<?= $this->translate->_("Not Responded Participants"); ?>
 									</a>
 								<?php endif; ?>
@@ -220,16 +218,16 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 		$.blockUI();
 		$.post(
 			"<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'vl-range'], 'default', true); ?>", {
-				sid: sid,
-				format: "html"
-			},
-			function(data) {
+			sid: sid,
+			format: "html"
+		},
+			function (data) {
 				$("#vlRangeDiv").html(data);
 				$.unblockUI();
 			}
-		).fail(function() {
+		).fail(function () {
 			$.unblockUI();
-			alert('Error loading VL reference scores. Please try again.');
+			alert("`<?= Pt_Commons_TranslateUtility::jsTranslate("Error loading VL reference scores. Please try again."); ?>");
 		});
 	}
 
@@ -237,17 +235,17 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 		$.blockUI();
 		$.post(
 			"<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'schedule-evaluation'], 'default', true); ?>", {
-				sid: sid,
-				format: "html"
-			},
-			function(data) {
+			sid: sid,
+			format: "html"
+		},
+			function (data) {
 				$.unblockUI();
-				alert('Shipment has been added to the queue. It will be evaluated shortly.');
+				alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Shipment has been added to the queue. It will be evaluated shortly."); ?>");
 				window.location.href = "/admin/evaluate";
 			}
-		).fail(function() {
+		).fail(function () {
 			$.unblockUI();
-			alert('Error scheduling evaluation. Please try again.');
-		});
+			alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Error scheduling evaluation. Please try again."); ?>");
+	});
 	}
 </script>
