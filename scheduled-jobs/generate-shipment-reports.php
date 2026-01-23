@@ -1592,7 +1592,7 @@ class ReportGenerator
 try {
     $cliOpts = ReportJobOptions::parseCliOptions();
     $currentConfig = ReportConfig::load();
-    $reportGenerator = new ReportGenerator($currentConfig, $opts);
+    $reportGenerator = new ReportGenerator($currentConfig, $cliOpts);
 
     // -------------------------------------------------------------------------
     // SUBPROCESS MODE (internal - for parallel participant report generation)
