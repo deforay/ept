@@ -1,7 +1,7 @@
 <?php
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// Zend_Debug::dump($resultArray);die;
+
 //var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 
 $shipmentCode = '';
@@ -166,8 +166,7 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '</tr>';
         }
         $labInfo .= '</table>';
-        // Zend_Debug::dump($result['responseResult']);die;
-        //shipment_test_date
+
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         $responseGreater = false;
         foreach ($result['responseResult'] as $key => $response) {

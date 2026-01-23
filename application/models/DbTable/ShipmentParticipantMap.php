@@ -109,7 +109,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             return true;
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();
-            die($e->getMessage());
+            error_log($e->getMessage());
             error_log($e->getTraceAsString());
             return false;
         }
@@ -224,7 +224,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $alertMsg->message = "Participants added successfully";
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();
-            die($e->getMessage());
+            error_log($e->getMessage());
             error_log($e->getTraceAsString());
             return false;
         }
@@ -252,7 +252,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             return $insertCount;
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();
-            die($e->getMessage());
+            error_log($e->getMessage());
             error_log($e->getTraceAsString());
             return 0;
         }

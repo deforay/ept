@@ -1,7 +1,8 @@
 <?php
 //----------------Summary Statistics for this survey  start----------------
 if (isset($result['statistics']) && !empty($result['statistics'])) {
-    $score = (isset($config->evaluation->$schemeType->passPercentage) && !empty($config->evaluation->$schemeType->passPercentage) && $config->evaluation->dts->passPercentage > 0) ? $config->evaluation->$schemeType->passPercentage : '80';
+    $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
+    $score = $dtsPasspercentage ?? '80';
     $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
     $ppOverview .= '<table border="1" style="font-size:12px;">';
     $ppOverview .= '<tr style="background-color:#dbe4ee;">';

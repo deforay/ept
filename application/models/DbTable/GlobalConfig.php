@@ -9,7 +9,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     public function getValue($name)
     {
         $res = $this->getAdapter()->fetchCol($this->select()
-            ->from($this->_name, array('value'))
+            ->from($this->_name, ['value'])
             ->where("name='$name'"));
 
         $value = !empty($res[0]) ? $res[0] : null;
@@ -17,24 +17,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         // If value is null, check in config.ini
         if ($value === null) {
             try {
-                $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
-
-                // Handle nested config keys (e.g., 'evaluation.dts.passPercentage')
-                $keys = explode('.', $name);
-                $configValue = $conf;
-
-                foreach ($keys as $key) {
-                    if (isset($configValue->$key)) {
-                        $configValue = $configValue->$key;
-                        if (!$configValue)
-                            $configValue = $configValue->evaluation->$key;
-                    } else {
-                        $configValue = null;
-                        break;
-                    }
-                }
-
-                $value = $configValue;
+                $value = Pt_Commons_SchemeConfig::get($name);
             } catch (Exception $e) {
                 // Log error or handle exception as needed
                 $value = null;
@@ -82,7 +65,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
                 $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                $fileName =   Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
+                $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(array("value" => $fileName), "name = '" . $field . "'");
                 }

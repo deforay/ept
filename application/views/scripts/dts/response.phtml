@@ -1662,7 +1662,7 @@ foreach ($this->allTestKits as $kit) {
             }
         });
         <?php if (count($allowedAlgorithms) == 1 && count($allowedAlgorithms) != 0) { ?>
-            $('#algorithm').val('<?php echo $allowedAlgorithms[0]; ?>');
+            $('#algorithm').val(<?php echo json_encode($allowedAlgorithms[0] ?? ''); ?>);
         <?php } ?>
         <?php if ($repeatTest1) { ?>
             $('.repeatTestTwo, .repeatTestThree').remove();
@@ -1694,7 +1694,7 @@ foreach ($this->allTestKits as $kit) {
         updateTestType($('#dtsTestPanelType').val());
         //$(".datepicker" ).datepicker({dateFormat: '< ?php echo $dtFormat;?>',maxDate: '0',minDate : new Date('<?php echo $this->shipment['shipment_date']; ?>')});
         $(".datepicker,.expDatepicker").datepicker({
-            dateFormat: '<?php echo $dtFormat; ?>'
+            dateFormat: <?php echo json_encode($dtFormat ?? ''); ?>
         });
         <?php if (!$this->isEditable && !$adminAccess) {
             ?>
@@ -1813,7 +1813,7 @@ foreach ($this->allTestKits as $kit) {
                         alert('Entered Password was wrong please try again later');
                         return false;
                     }
-                    window.location.href = '/admin/evaluate/shipment/sid/<?php echo base64_encode($this->shipId); ?>';
+                    window.location.href = '/admin/evaluate/shipment/sid/' + <?php echo json_encode(base64_encode($this->shipId)); ?>;
                 }
             );
         } else {
@@ -1997,11 +1997,11 @@ foreach ($this->allTestKits as $kit) {
             </th>');
 
             <?php foreach ($this->allSamples as $sample) { ?>
-                var sampleId = "<?php echo $sample['sample_id']; ?>";
+                var sampleId = <?php echo json_encode($sample['sample_id'] ?? ''); ?>;
                 // test kit info runtime set values
                 var infoJson = '';
                 <?php if (isset($sample['kit_additional_info']) && !empty($sample['kit_additional_info'])) { ?>
-                    infoJson = JSON.parse('<?php echo $sample['kit_additional_info']; ?>');
+                    infoJson = <?php echo $sample['kit_additional_info']; ?>;
                 <?php } ?>
                 var valInfo = infoJson['test' + no];
                 valInfo = (valInfo == undefined) ? '' : valInfo;

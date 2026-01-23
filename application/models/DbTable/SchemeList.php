@@ -189,7 +189,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         ];
         if (isset($params['schemeId']) && !empty($params['schemeId'])) {
             $this->update($data, 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
-            $this->getAdapter()->delete('r_possibleresult', 'scheme_id = "' . base64_decode($params['schemeId']) . '"');
+            $this->getAdapter()->delete('r_possibleresult', $this->getAdapter()->quoteInto('scheme_id = ?', base64_decode($params['schemeId'])));
         } else {
             $this->insert($data);
         }

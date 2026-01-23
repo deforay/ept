@@ -15,8 +15,7 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
             $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
-            $count = (isset($res) && $res != "") ? count($res) : 0;
-            if ($res == null || $count == 0) {
+            if ($res == null || !empty($res)) {
                 $this->insert(array(
                     'shipment_map_id' => $params['smid'],
                     'sample_id' => $sampleId,

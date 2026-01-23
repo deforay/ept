@@ -109,7 +109,7 @@ class Application_Model_DbTable_ResponseCovid19 extends Zend_Db_Table_Abstract
         $testThreeOptional = false;
         $testTwoOptional = false;
 
-        $testAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
+        $testAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed') ?? 3;
         if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
             $testThreeOptional = true;
         }

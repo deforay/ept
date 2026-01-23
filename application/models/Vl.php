@@ -32,7 +32,7 @@ class Application_Model_Vl
 
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
         //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
-        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage');
+        $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
 
         if ($reEvaluate) {
             //$beforeSetVlRange = $db->fetchAll($db->select()->from('reference_vl_calculation', array('*'))->where('shipment_id = ' . $shipmentId)->where('use_range = "manual"'));
@@ -1409,7 +1409,7 @@ class Application_Model_Vl
 
 
         $beforeSetVlRangeData = $db->fetchAll($db->select()->from('reference_vl_calculation', ['*'])
-            ->where("shipment_id = $shipmentId"));
+            ->where("shipment_id = ?", $shipmentId));
         $oldQuantRange = [];
         foreach ($beforeSetVlRangeData as $beforeSetVlRangeRow) {
             $oldQuantRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
@@ -1420,7 +1420,7 @@ class Application_Model_Vl
 
         $method = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-        $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND shipment_id=$shipmentId");
+        $db->delete('reference_vl_calculation', "use_range IS NOT NULL and use_range not like 'manual' AND " . $db->quoteInto('shipment_id = ?', $shipmentId));
 
         $sql = $db->select()->from(['ref' => 'reference_result_vl'], ['shipment_id', 'sample_id'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id', [])
@@ -1585,13 +1585,13 @@ class Application_Model_Vl
                         $data['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
                     }
 
-                    $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND sample_id=$sample AND shipment_id=$shipmentId");
+                    $db->delete('reference_vl_calculation', $db->quoteInto('vl_assay = ?', $vlAssayId) . ' AND ' . $db->quoteInto('sample_id = ?', $sample) . ' AND ' . $db->quoteInto('shipment_id = ?', $shipmentId));
 
                     $db->insert('reference_vl_calculation', $data);
                 } else {
 
                     if (isset($oldQuantRange[$vlAssayId][$sample]) && !empty($oldQuantRange[$vlAssayId][$sample]) && $oldQuantRange[$vlAssayId][$sample]['use_range'] != 'manual') {
-                        $db->delete('reference_vl_calculation', "vl_assay = $vlAssayId AND shipment_id = $shipmentId");
+                        $db->delete('reference_vl_calculation', $db->quoteInto('vl_assay = ?', $vlAssayId) . ' AND ' . $db->quoteInto('shipment_id = ?', $shipmentId));
                     }
 
                     $skippedAssays[] = $vlAssayId;

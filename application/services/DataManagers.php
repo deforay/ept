@@ -138,8 +138,8 @@ class Application_Service_DataManagers
     public function resetPassword($email)
     {
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        $conf         = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $eptDomain    = rtrim((string) $conf->domain, "/");
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $eptDomain = rtrim((string) $conf->domain, "/");
 
         // Normalize/quick-validate the incoming email first
         $normalizedInput = Application_Service_Common::validateEmail((string) $email);
@@ -153,12 +153,12 @@ class Application_Service_DataManagers
         if ($participant === false) {
             // Avoid revealing whether the email exists
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status  = "success";
+            $sessionAlert->status = "success";
             return;
         }
 
-        $common          = new Application_Service_Common();
-        $participantName = trim((string)($participant->first_name . ' ' . $participant->last_name));
+        $common = new Application_Service_Common();
+        $participantName = trim((string) ($participant->first_name . ' ' . $participant->last_name));
         $participantName = htmlspecialchars($participantName, ENT_QUOTES, 'UTF-8');
 
         // Prefer the email stored in DB
@@ -179,7 +179,7 @@ class Application_Service_DataManagers
             //     "Record has invalid email for participant <b>{$participantName}</b> (input: " . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ")."
             // );
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status  = "success";
+            $sessionAlert->status = "success";
             return;
         }
 
@@ -204,7 +204,7 @@ class Application_Service_DataManagers
         if ($validMail === true) {
             // Build reset link using the **normalized DB email**
             $emailToken = base64_encode($participantMail);
-            $resetUrl   = "$eptDomain/auth/new-password/email/$emailToken";
+            $resetUrl = "$eptDomain/auth/new-password/email/$emailToken";
 
             $message = "Dear {$participantName},<br/><br/>"
                 . "You (or someone else) requested a password reset for your ePT account (<b>"
@@ -227,19 +227,19 @@ class Application_Service_DataManagers
 
             // Generic response to the user/browser
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status  = "success";
+            $sessionAlert->status = "success";
         } else {
             // Bad/temporary domain or no MX: notify admin, keep user message generic
             $adminMsg = "Participant <b>{$participantName}</b> requested a password reset, "
                 . "but their email appears invalid or undeliverable: <b>"
                 . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
                 . "</b> (input: "
-                . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ").";
+                . htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8') . ").";
 
             $common->insertTempMail($adminMail, null, null, "Password Reset - ePT", $adminMsg);
 
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status  = "success";
+            $sessionAlert->status = "success";
         }
     }
 
@@ -323,7 +323,7 @@ class Application_Service_DataManagers
         $sql = $db->select()->from(array('pmm' => 'participant_manager_map'), array('participant_id'))
             ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array(''))
             ->where("dm_id like ?", $params['datamanagerId'])->group('p.participant_id');
-        // die($sql);
+
         return $db->fetchAll($sql);
     }
 
@@ -383,7 +383,7 @@ class Application_Service_DataManagers
     {
         $newPassword = $this->datamanagersDb->saveNewPassword($params);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        if ($newPassword  != false) {
+        if ($newPassword != false) {
             $sessionAlert->message = "Your password has been updated.";
             $sessionAlert->status = "success";
             return '/auth/login';
@@ -472,7 +472,7 @@ class Application_Service_DataManagers
                 $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
                 if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
                     if (move_uploaded_file($_FILES['fileName']['tmp_name'], $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName)) {
-                        $response = $this->datamanagersDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,  false, $params);
+                        $response = $this->datamanagersDb->processBulkImport($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName, false, $params);
                     } else {
                         $alertMsg->message = 'Data import failed';
                         return false;

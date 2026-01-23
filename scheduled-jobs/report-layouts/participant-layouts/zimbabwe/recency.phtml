@@ -24,7 +24,7 @@ if (!empty($resultArray['shipment'])) {
             continue;
         }
 
-        //Zend_Debug::dump($result['responseResult'][0]);die;
+
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
@@ -401,7 +401,7 @@ if (!empty($resultArray['shipment'])) {
                 $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
                 $interval = $sampleRehydrationDate->diff($testedOnDate);
 
-                // Testing should be done within 24*($config->evaluation->dts->sampleRehydrateDays) hours of rehydration.
+                // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
                 $sampleRehydrateDays = $config['sampleRehydrateDays'];
                 $rehydrateHours = $sampleRehydrateDays * 24;
 
@@ -439,9 +439,7 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
         }
-        // if($result['shipment_code'] == 'REC0920-6'){
-        //     echo $docRes;die;
-        // }
+
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);

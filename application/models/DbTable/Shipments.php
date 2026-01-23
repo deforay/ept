@@ -1071,7 +1071,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        // die($sQuery);
+
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -1530,7 +1530,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($sLimit) && isset($sOffset)) {
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
-        //die($sQuery);
+
 
         $rResult = $db->fetchAll($sQuery);
 
@@ -1661,7 +1661,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //die($sQuery);
+
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
@@ -3843,7 +3843,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $testThreeOptional = false;
             $testTwoOptional = false;
 
-            $testAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
+            $testAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed') ?? 3;
             if (isset($testAllowed) && ($testAllowed == '1' || $testAllowed == '2')) {
                 $testThreeOptional = true;
             }

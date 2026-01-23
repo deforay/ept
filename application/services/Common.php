@@ -339,7 +339,7 @@ class Application_Service_Common
         if (isset($did) && !empty($did)) {
             $sql = $sql->where("district like ?", $did);
         }
-        // die($sql);
+
         return $db->fetchAll($sql);
     }
     public function getGlobalConfigDetails()
@@ -540,7 +540,7 @@ class Application_Service_Common
         if ($id == "all") {
             return $db->update('notify', array("status" => 'read'), "status = 'unread'");
         }
-        return $db->update('notify', array("status" => 'read'), "id = " . $id);
+        return $db->update('notify', array("status" => 'read'), $db->quoteInto("id = ?", $id));
     }
 
     public function generateSelectOptions($optionList, $selectedOptions = array(), $emptySelectText = false)
@@ -736,7 +736,7 @@ class Application_Service_Common
             ->where($params['returnfield'] . " not like ''")
             ->where($params['searchfield'] . " IS NOT NULL")
             ->where($params['searchfield'] . " not like ''")
-            ->where($params['searchfield'] . " like '" . $params['searchvalue'] . "'")
+            ->where($params['searchfield'] . " LIKE ?", $params['searchvalue'])
             ->group($params['returnfield'])
             ->order($params['returnfield']);
         return $db->fetchAll($sql);
@@ -767,7 +767,7 @@ class Application_Service_Common
         if ($status) {
             $sql = $sql->join(array('rvl' => 'response_result_vl'), 'r.id=rvl.vl_assay', array('shipment_map_id'));
             $sql = $sql->join(array('spm' => 'shipment_participant_map'), 'rvl.shipment_map_id=spm.map_id', array('shipment_id', 'participant_id'));
-            $sql = $sql->where('spm.shipment_id = ' . $sid . ' AND spm.participant_id = ' . $pid);
+            $sql = $sql->where('spm.shipment_id = ?', $sid)->where('spm.participant_id = ?', $pid);
             $sql = $sql->group('rvl.shipment_map_id');
         }
         return $db->fetchOne($sql);
@@ -884,7 +884,7 @@ class Application_Service_Common
     public function getAllTestKitBySearch($text)
     {
         $db = new Application_Model_DbTable_Testkitnames();
-        $sql = $db->select()->from(array('r_testkitnames'), array('TESTKITNAMEID' => 'TestKitName_ID', 'TESTKITNAME' => 'TestKit_Name'))->where("TESTKIT_NAME LIKE '%" . $text . "%'");
+        $sql = $db->select()->from(array('r_testkitnames'), array('TESTKITNAMEID' => 'TestKitName_ID', 'TESTKITNAME' => 'TestKit_Name'))->where("TESTKIT_NAME LIKE ?", "%" . $text . "%");
         $cResult = $db->fetchAll($sql);
         $echoResult = [];
         if (count($cResult) > 0) {
@@ -907,7 +907,7 @@ class Application_Service_Common
         if (isset($sid) && !empty($sid)) {
             $sql = $sql->where("shipment_id = ?", $sid);
         }
-        // die($sql);
+
         return $db->fetchCol($sql);
     }
 

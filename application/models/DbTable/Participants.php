@@ -160,11 +160,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->where("p.institute_name IN (?)", $pid);
         }
         if (isset($parameters['country']) && !empty($parameters['country'])) {
-            $cid = (is_array($parameters['country'])) ? implode(",", $parameters['country']) : $parameters['country'];
-            $sQuery = $sQuery->where('p.country IN(' . $cid . ')');
+            $cid = (is_array($parameters['country'])) ? $parameters['country'] : explode(",", $parameters['country']);
+            $sQuery = $sQuery->where('p.country IN (?)', $cid);
         }
         if (isset($parameters['pstatus']) && !empty($parameters['pstatus'])) {
-            $sQuery = $sQuery->where('p.status LIKE"' . $parameters['pstatus'] . '"');
+            $sQuery = $sQuery->where('p.status LIKE ?', $parameters['pstatus']);
         }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -295,8 +295,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
         /* get previous unique id for changes */
-        $exist = $this->fetchRow($this->select()->where("participant_id = " . $params['participantId']));
-        $noOfRows = $this->update($data, "participant_id = " . $params['participantId']);
+        $exist = $this->fetchRow($this->select()->where("participant_id = ?", $params['participantId']));
+        $noOfRows = $this->update($data, $this->getAdapter()->quoteInto("participant_id = ?", $params['participantId']));
         //Check profile update
         if (isset($authNameSpace->force_profile_updation) && trim($authNameSpace->force_profile_updation) > 0) {
             $profileUpdate = $this->checkParticipantsProfileUpdateByUserSystemId($authNameSpace->dm_id);
@@ -311,7 +311,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getAdapter();
 
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
-            $db->delete('participant_enrolled_programs_map', "participant_id = " . $params['participantId']);
+            $db->delete('participant_enrolled_programs_map', $db->quoteInto("participant_id = ?", $params['participantId']));
             foreach ($params['enrolledProgram'] as $epId) {
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $params['participantId']));
             }
@@ -338,7 +338,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             if (isset($params['dmPassword']) && !empty($params['dmPassword'])) {
                 $dmData['password'] = Common::passwordHash($params['dmPassword']);
             }
-            $dmDb->update($dmData, 'participant_ulid = "' . $exist['ulid'] . '"');
+            $dmDb->update($dmData, $db->quoteInto('participant_ulid = ?', $exist['ulid']));
         }
         if (isset($params['dataManager']) && $params['dataManager'] != "") {
             $params['participantsList'][] = $params['participantId'];
@@ -510,7 +510,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         if (isset($params['enrolledProgram']) && $params['enrolledProgram'] != "") {
             $db = Zend_Db_Table_Abstract::getAdapter();
-            $db->delete('participant_enrolled_programs_map', "participant_id = " . $participantId);
+            $db->delete('participant_enrolled_programs_map', $db->quoteInto("participant_id = ?", $participantId));
             foreach ($params['enrolledProgram'] as $epId) {
                 $db->insert('participant_enrolled_programs_map', array('ep_id' => $epId, 'participant_id' => $participantId));
             }
@@ -1429,11 +1429,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchParticipantSearch($search)
     {
         $sql = $this->select();
-        $sql = $sql->where("first_name LIKE '%" . $search . "%'
-                OR last_name LIKE '%" . $search . "%'
-                OR unique_identifier LIKE '%" . $search . "%'
-                OR institute_name LIKE '%" . $search . "%'
-                OR region LIKE '%" . $search . "%'")
+        $searchPattern = '%' . $search . '%';
+        $db = $this->getAdapter();
+        $sql = $sql->where(
+            $db->quoteInto("first_name LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("last_name LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("unique_identifier LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("institute_name LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("region LIKE ?", $searchPattern)
+        )
             ->where("status like 'active'");
         return $this->fetchAll($sql);
     }
@@ -1704,7 +1708,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dmId = $db->lastInsertId();
                 } else {
                     $dmId = $dataManagerExists['dm_id'];
-                    $db->update('data_manager', $dataManagerData, 'dm_id = ' . $dmId);
+                    $db->update('data_manager', $dataManagerData, $db->quoteInto('dm_id = ?', $dmId));
                 }
 
                 // Handle direct participant login
@@ -1734,7 +1738,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $db->insert('participant', $participantData);
                         $lastInsertedId = $db->lastInsertId();
                     } else {
-                        $db->update('participant', $participantData, 'unique_identifier = "' . $participantExists['unique_identifier'] . '"');
+                        $db->update('participant', $participantData, $db->quoteInto('unique_identifier = ?', $participantExists['unique_identifier']));
                         $lastInsertedId = $participantExists['participant_id'];
                     }
                 } catch (Exception $e) {
@@ -1746,7 +1750,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 if ($lastInsertedId > 0) {
                     // Direct participant login mapping
                     if ($dmId2 > 0) {
-                        $db->delete('participant_manager_map', "participant_id = $lastInsertedId AND dm_id NOT IN (SELECT dm_id FROM data_manager WHERE IFNULL(data_manager_type, 'manager') = 'ptcc')");
+                        $db->delete('participant_manager_map', $db->quoteInto("participant_id = ?", $lastInsertedId) . " AND dm_id NOT IN (SELECT dm_id FROM data_manager WHERE IFNULL(data_manager_type, 'manager') = 'ptcc')");
                         $db->insert('participant_manager_map', ['dm_id' => $dmId2, 'participant_id' => $lastInsertedId]);
                     }
 
@@ -1929,20 +1933,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             if ($participantId > 0 && is_numeric($participantId)) {
                 $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array('mapCount' => new Zend_Db_Expr("COUNT(pmm.dm_id)"), "pmm.dm_id"))
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                    ->where("pmm.participant_id", $participantId)
+                    ->where("pmm.participant_id = ?", $participantId)
                     ->group("pmm.participant_id");
                 $pmmCheck = $this->getAdapter()->fetchRow($sQuery);
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=0");
                 if ($pmmCheck['mapCount'] <= 1) {
-                    $id = $db->delete("shipment_participant_map", array("participant_id = " . $participantId));
-                    $id = $db->delete("participant_manager_map", array("participant_id = " . $participantId));
+                    $id = $db->delete("shipment_participant_map", $db->quoteInto("participant_id = ?", $participantId));
+                    $id = $db->delete("participant_manager_map", $db->quoteInto("participant_id = ?", $participantId));
                     if ($pmmCheck['mapCount'] == 1 && $pmmCheck['dm_id'] > 0) {
                         $id = $db->delete("data_manager", array("dm_id" => $pmmCheck['dm_id']));
                     }
                 }
-                $partcipant = $this->fetchRow(["participant_id = $participantId"]);
-                $id = $db->delete("enrollments", ["participant_id = $participantId"]);
-                $id = $db->delete("participant", ["participant_id = $participantId"]);
+                $partcipant = $this->fetchRow($db->quoteInto("participant_id = ?", $participantId));
+                $id = $db->delete("enrollments", $db->quoteInto("participant_id = ?", $participantId));
+                $id = $db->delete("participant", $db->quoteInto("participant_id = ?", $participantId));
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=1");
                 if ($participantId > 0) {
                     $auditDb = new Application_Model_DbTable_AuditLog();
@@ -2113,9 +2117,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function fetchParticipantsByLocations($locationValue, $locationField = 'country', $returnFields = array('participant_id'), $group = array('participant_id'))
     {
-        return $this->getAdapter()->fetchAll($sQuery = $this->getAdapter()->select()
+        $db = $this->getAdapter();
+        $allowedFields = ['country', 'state', 'district', 'region', 'city'];
+        if (!in_array($locationField, $allowedFields)) {
+            $locationField = 'country';
+        }
+        return $db->fetchAll($sQuery = $db->select()
             ->from(array('p' => $this->_name), $returnFields)
-            ->where($locationField . ' LIKE "' . $locationValue . '"')
+            ->where($locationField . ' LIKE ?', $locationValue)
             ->group($group));
     }
 
@@ -2220,8 +2229,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $verify = $db->fetchRow($pQuery);
             if ($verify) {
                 $db->query("SET FOREIGN_KEY_CHECKS = 0;"); // Disable foreign key checks
-                $db->delete('response_result_' . $params['testType'], 'shipment_map_id = ' . $params['smid']);
-                $db->delete('shipment_participant_map', 'map_id = ' . $params['smid']);
+                $allowedTestTypes = ['dts', 'dbs', 'vl', 'eid', 'recency', 'generic', 'covid19'];
+                $testType = in_array($params['testType'], $allowedTestTypes) ? $params['testType'] : 'dts';
+                $db->delete('response_result_' . $testType, $db->quoteInto('shipment_map_id = ?', $params['smid']));
+                $db->delete('shipment_participant_map', $db->quoteInto('map_id = ?', $params['smid']));
                 $db->query("SET FOREIGN_KEY_CHECKS = 1;"); // Enable foreign key checks
                 return true;
             }

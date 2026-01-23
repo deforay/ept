@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
-"POT-Creation-Date: 2026-01-21 19:49+0530\n"
-"PO-Revision-Date: 2026-01-21 19:50+0530\n"
+"POT-Creation-Date: 2026-01-22 17:21+0530\n"
+"PO-Revision-Date: 2026-01-22 17:21+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
 "Language: fr\n"
@@ -19,25 +19,26 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: vendor\n"
 "X-Poedit-SearchPathExcluded-1: library\n"
 "X-Poedit-SearchPathExcluded-2: public\n"
+"X-Poedit-SearchPathExcluded-3: node_modules\n"
 
-#: application/models/DbTable/Shipments.php:1091
-#: application/models/DbTable/Shipments.php:1422
+#: application/models/DbTable/Shipments.php:1093
+#: application/models/DbTable/Shipments.php:1424
 msgid "Not Available"
 msgstr "Non disponible"
 
-#: application/models/DbTable/Shipments.php:1098
+#: application/models/DbTable/Shipments.php:1100
 msgid "Participant unable to test"
 msgstr "Participant incapable de tester"
 
-#: application/models/DbTable/Shipments.php:1100
+#: application/models/DbTable/Shipments.php:1102
 msgid "Satisfactory"
 msgstr "Satisfait"
 
-#: application/models/DbTable/Shipments.php:1102
+#: application/models/DbTable/Shipments.php:1104
 msgid "Unsatisfactory"
 msgstr "Insatisfaisant"
 
-#: application/models/DbTable/Shipments.php:1104
+#: application/models/DbTable/Shipments.php:1106
 msgid "Excluded from evaluation"
 msgstr "Exclus de l'évaluation"
 
@@ -928,7 +929,7 @@ msgstr "Confirmer"
 #: application/views/scripts/covid19/response.phtml:684
 #: application/views/scripts/data-managers/add.phtml:115
 #: application/views/scripts/data-managers/edit.phtml:122
-#: application/views/scripts/data-managers/reset-password.phtml:25
+#: application/views/scripts/data-managers/reset-password.phtml:36
 #: application/views/scripts/dbs/response.phtml:472
 #: application/views/scripts/dts/response.phtml:1569
 #: application/views/scripts/eid/response.phtml:570
@@ -1083,7 +1084,7 @@ msgid "Individual Report"
 msgstr "Rapport individuel"
 
 #: application/layouts/scripts/layout.phtml:293
-#: application/views/scripts/capa/capa.phtml:67
+#: application/views/scripts/capa/capa.phtml:72
 #: application/views/scripts/participant/corrective.phtml:23
 msgid "Corrective Actions"
 msgstr "Actions correctives"
@@ -2687,7 +2688,7 @@ msgstr "Mot de passe"
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:33
 #: application/views/scripts/auth/new-password.phtml:36
 #: application/views/scripts/data-managers/add.phtml:16
-#: application/views/scripts/data-managers/reset-password.phtml:13
+#: application/views/scripts/data-managers/reset-password.phtml:19
 #: application/views/scripts/participant/password.phtml:220
 msgid "Please enter a valid password and should minimum length of "
 msgstr "Veuillez saisir un mot de passe valide et d'une longueur minimale de "
@@ -3087,29 +3088,29 @@ msgstr "Adresse e-mail primaire"
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:26
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:28
 #: application/views/scripts/auth/reset-password.phtml:76
-#: application/views/scripts/data-managers/reset-password.phtml:10
-#: application/views/scripts/data-managers/reset-password.phtml:24
+#: application/views/scripts/data-managers/reset-password.phtml:11
+#: application/views/scripts/data-managers/reset-password.phtml:34
 msgid "Reset Password"
 msgstr "Réinitialiser le mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:14
-#: application/views/scripts/data-managers/reset-password.phtml:12
+#: application/views/scripts/data-managers/reset-password.phtml:16
 #: application/views/scripts/participant/password.phtml:214
 msgid "New Password"
 msgstr "Nouveau mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:18
-#: application/views/scripts/data-managers/reset-password.phtml:16
+#: application/views/scripts/data-managers/reset-password.phtml:23
 msgid "Repeat Password"
 msgstr "Répéter le mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:21
-#: application/views/scripts/data-managers/reset-password.phtml:19
+#: application/views/scripts/data-managers/reset-password.phtml:28
 msgid "Generate Random Password"
 msgstr "Générer un mot de passe aléatoire"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:25
-#: application/views/scripts/data-managers/reset-password.phtml:23
+#: application/views/scripts/data-managers/reset-password.phtml:32
 msgid ""
 "Password must be at least 12 characters long and must include AT LEAST one "
 "number, <br>one alphabet and may have special characters."
@@ -3118,7 +3119,7 @@ msgstr ""
 "MOINS un chiffre, <br>un alphabet et peut contenir des caractères spéciaux."
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:152
-#: application/views/scripts/data-managers/reset-password.phtml:148
+#: application/views/scripts/data-managers/reset-password.phtml:159
 msgid ""
 "Password must be at least 8 characters long and must include AT LEAST one "
 "number, one alphabet and may have special characters."
@@ -3738,8 +3739,8 @@ msgstr "Type d'envoi"
 
 #: application/modules/admin/views/scripts/evaluate/add-manual-limits.phtml:105
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:164
-#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:85
-#: application/views/scripts/capa/capa.phtml:90
+#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:100
+#: application/views/scripts/capa/capa.phtml:105
 #: application/views/scripts/participant/add.phtml:184
 #: application/views/scripts/participant/all-schemes.phtml:73
 #: application/views/scripts/participant/dashboard.phtml:556
@@ -7232,7 +7233,7 @@ msgstr "Excel"
 msgid "PDF"
 msgstr "PDF"
 
-#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:20
+#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:21
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:20
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:127
 #: application/views/scripts/capa/capa.phtml:25
@@ -7241,8 +7242,8 @@ msgstr "PDF"
 msgid "Export Report"
 msgstr "Exporter Rapport"
 
-#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:87
-#: application/views/scripts/capa/capa.phtml:92
+#: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:103
+#: application/views/scripts/capa/capa.phtml:109
 msgid "Cencel"
 msgstr "Cencel"
 
@@ -7675,31 +7676,31 @@ msgstr "PT Code d'enquête :"
 msgid "PT Survey Date:"
 msgstr "PT Date de l'enquête :"
 
-#: application/views/scripts/capa/capa.phtml:45
+#: application/views/scripts/capa/capa.phtml:46
 msgid "Shipment Code:"
 msgstr "Code d'expédition :"
 
-#: application/views/scripts/capa/capa.phtml:49
+#: application/views/scripts/capa/capa.phtml:50
 msgid "Shipment Due Date:"
 msgstr "Date d'échéance de l'envoi :"
 
-#: application/views/scripts/capa/capa.phtml:51
+#: application/views/scripts/capa/capa.phtml:53
 msgid "Result Due Date:"
 msgstr "Date d'échéance du résultat :"
 
-#: application/views/scripts/capa/capa.phtml:55
+#: application/views/scripts/capa/capa.phtml:58
 msgid "Final Result:"
 msgstr "Résultat final :"
 
-#: application/views/scripts/capa/capa.phtml:57
+#: application/views/scripts/capa/capa.phtml:60
 msgid "Score:"
 msgstr "Score:"
 
-#: application/views/scripts/capa/capa.phtml:70
+#: application/views/scripts/capa/capa.phtml:75
 msgid "Actions Taken"
 msgstr "Mesures prises"
 
-#: application/views/scripts/capa/capa.phtml:73
+#: application/views/scripts/capa/capa.phtml:78
 msgid "Actions Date"
 msgstr "Actions Date"
 
@@ -8191,7 +8192,7 @@ msgstr ""
 msgid "Edit New PT Country Coordinator"
 msgstr "Editer le nouveau coordinateur national du PT"
 
-#: application/views/scripts/data-managers/reset-password.phtml:10
+#: application/views/scripts/data-managers/reset-password.phtml:11
 msgid "for"
 msgstr "pour"
 

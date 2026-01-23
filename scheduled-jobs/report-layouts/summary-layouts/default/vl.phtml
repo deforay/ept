@@ -61,7 +61,7 @@ if ($resultArray['shipment'] != "") {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
-        // echo "<pre>";print_r($methodOfEvaluation);die;
+
         $methodOfEvaluation = $methodOfEvaluation ?? 'iso17043';
 
         if ($methodOfEvaluation == 'iso17043') {
@@ -180,8 +180,7 @@ if ($resultArray['shipment'] != "") {
             $sample = [];
             $assayNameTxt = "";
             $noOfPaResponseTxt = "";
-            // Zend_Debug::dump($resultArray['shipment']['vlCalculation']);
-            // die;
+
             foreach ($resultArray['shipment']['vlCalculation'] as $vlCal) {
                 if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
                     $t = 0;
@@ -542,18 +541,6 @@ if ($resultArray['shipment'] != "") {
 
 
     $uncalculatedAssayList = null;
-    //Zend_Debug::dump($resultArray['pendingAssay']);die;
-    // if(isset($resultArray['pendingAssay']['count']) && ($resultArray['pendingAssay']['count'])>0){
-
-    //     if($pdf->getY()>=250){
-    //         $pdf->AddPage();
-    //     }
-    //     $unCalRes='<h5>Summary of Other Results | No. of Labs : '.$resultArray['pendingAssay']['count'].' </h5>';
-    //     $unCalRes.='<table cellpadding="6" border="1" style="text-align:left;font-weight:normal;width:660px;font-size:11px;"><tr><td>'.implode(", ",$resultArray['pendingAssay']['assayNames']).' platforms were not analyzed or graded due to less than 6 participating labs using the same platform.</td></tr></table>';
-
-    //     $pdf->writeHTML($unCalRes, true, false, true, false, '');
-
-    // }
 
 
     //Close and output PDF document

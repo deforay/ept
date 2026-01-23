@@ -56,7 +56,7 @@ if ($resultArray['shipment'] != "") {
     //$pdf->AddPage();
     //
     // ---------------------------------------------------------
-    // Zend_Debug::dump($resultArray['shipment']['correctRes']);die;
+
     $pdf->AddPage('P', 'A4');
     $pdf->SetFont('freesans', '', 11);
     // PT Co-ordinator header details start
@@ -208,7 +208,7 @@ if ($resultArray['shipment'] != "") {
 
             $k = count($resultArray['shipment']['avgAssayResult']);
 
-            // Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
+
 
             $avgAssay = "";
             if ($k > 0) {
@@ -365,7 +365,7 @@ if ($resultArray['shipment'] != "") {
 
             $k = count($resultArray['shipment']['avgAssayResult']);
 
-            // Zend_Debug::dump($resultArray['shipment']['avgAssayResult']);die;
+
 
             $avgAssay = "";
             $assay = "";

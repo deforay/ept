@@ -118,7 +118,7 @@ if ($isTrainingInstance) {
 	$(document).ready(function() {
 		<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 		if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
-			alert("<?php echo $alertMsg->message; ?>");
+			alert(<?php echo json_encode($alertMsg->message); ?>);
 		<?php
 			$alertMsg->message = "";
 			unset($alertMsg->message);

@@ -535,11 +535,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $apiService = new Application_Service_ApiServices();
         $transactionId = Pt_Commons_General::generateULID();
         $payload = [];
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $config = Pt_Commons_SchemeConfig::get('dts');
         $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
-echo "<pre>"; print_r($config); die;
+
 
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
@@ -681,6 +680,9 @@ echo "<pre>"; print_r($config); die;
         if (!$aResult) {
             return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
         }
+
+        $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
+        $config = Pt_Commons_SchemeConfig::get('dts');
         /* Create a new response to the API service */
         $resultData = [
             'id' => $result['dm_id'],
@@ -695,7 +697,7 @@ echo "<pre>"; print_r($config); die;
             'displaySampleConditionFields' => (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == "yes") ? true : false,
             'allowRepeatTests' => (isset($config['allowRepeatTests']) && $config['allowRepeatTests'] == "yes") ? true : false,
             'dtsSchemeType' => (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : "standard",
-            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $config['covid19MaximumTestAllowed'] : "1",
+            'covid19MaximumTestAllowed' => (isset($covid19Config['covid19MaximumTestAllowed']) && $covid19Config['covid19MaximumTestAllowed'] != "") ? $covid19Config['covid19MaximumTestAllowed'] : "1",
             'name' => $result['first_name'] . ' ' . $result['last_name'],
             'phone' => $result['phone'],
             'appVersion' => $aResult['app_version'],
@@ -936,7 +938,8 @@ echo "<pre>"; print_r($config); die;
         /* started save profile details */
 
         /* check old data */
-        $fetchOldMail = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
+        $selectOld = $this->select()->where('auth_token = ?', $params['authToken']);
+        $fetchOldMail = $this->fetchRow($selectOld);
         $updateData = array(
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
@@ -945,7 +948,11 @@ echo "<pre>"; print_r($config); die;
             'phone' => $params['phone']
         );
         /* check primary email already exist or not */
-        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "' AND primary_email LIKE '" . $params['primaryEmail'] . "' AND (new_email NOT LIKE '" . $params['primaryEmail'] . "' OR new_email IS NULL)");
+        $select = $this->select()
+            ->where('auth_token = ?', $params['authToken'])
+            ->where('primary_email LIKE ?', $params['primaryEmail'])
+            ->where('new_email NOT LIKE ? OR new_email IS NULL', $params['primaryEmail']);
+        $result = $this->fetchRow($select);
         $forceLogin = false;
         if (!$result) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -1051,10 +1058,10 @@ echo "<pre>"; print_r($config); die;
             ->group('ptcc_id');
         if (is_array($field)) {
             foreach ($field as $key => $f) {
-                $select = $select->orWhere($f . " LIKE '" . $value[$key] . "'");
+                $select = $select->orWhere($f . " LIKE ?", $value[$key]);
             }
         } else {
-            $select = $select->orWhere($field . " LIKE '" . $value . "'");
+            $select = $select->orWhere($field . " LIKE ?", $value);
         }
         return $db->fetchCol($select);
     }
