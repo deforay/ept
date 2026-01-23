@@ -15,11 +15,9 @@ foreach ($possibleDtsResults as $pr) {
 }
 
 if (!empty($resultArray['shipment'])) {
-
+    $config = Pt_Commons_SchemeConfig::get('dts');
     $totalPages = count($resultArray['shipment']);
     $j = 1;
-    //$resultArray['dmResult'];
-    // Zend_Debug::dump($recencyAssay[1]);die;
 
     foreach ($resultArray['shipment'] as $result) {
 
@@ -108,9 +106,6 @@ if (!empty($resultArray['shipment'])) {
         if (trim($result['lastdate_response']) != "") {
             $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
-
-        // $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $config = Pt_Commons_SchemeConfig::get('dts');
 
         $responseDate = "";
         $shipmentTestDate = "";
@@ -448,7 +443,6 @@ if (!empty($resultArray['shipment'])) {
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
 
-            $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
             $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
             $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
             $interval = $sampleRehydrationDate->diff($testedOnDate);
