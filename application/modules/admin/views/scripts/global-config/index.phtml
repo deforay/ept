@@ -7,42 +7,96 @@ $faqResults = json_decode($this->faqs);
 <style>
 	/* Style the button that is used to open and close the collapsible content */
 	.collapsible {
-		background-color: #eee;
-		color: #444;
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
 		cursor: pointer;
-		padding: 18px;
+		padding: 14px 18px;
 		width: 100%;
 		border: none;
 		text-align: left;
 		outline: none;
 		font-size: 15px;
+		font-weight: 500;
+		border-radius: 4px 4px 0 0;
+		margin-top: 10px;
+		transition: all 0.2s ease;
 	}
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-	.active,
+	.collapsible.active {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		border-radius: 4px 4px 0 0;
+	}
+
 	.collapsible:hover {
-		background-color: #ccc;
+		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+	}
+
+	.collapsible .caret {
+		border-top-color: #fff;
 	}
 
 	/* Style the collapsible content. Note: shown by default */
 	.collapse-content {
-		padding: 0 18px;
+		padding: 20px;
 		display: block;
 		overflow: hidden;
-		background-color: #f1f1f1;
+		background-color: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-top: none;
+		border-radius: 0 0 4px 4px;
+		margin-bottom: 5px;
+	}
+
+	/* Row spacing within sections */
+	.collapse-content .row {
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+		border-bottom: 1px solid #eef2f7;
+	}
+
+	.collapse-content .row:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	/* Label styling */
+	.collapse-content .control-label {
+		color: #374151;
+		font-weight: 500;
+		margin-bottom: 6px;
+		display: block;
+	}
+
+	/* Form control focus state */
+	.collapse-content .form-control:focus {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
 	}
 
 	.radioBtn .notActive {
-		color: #3276b1;
+		color: #4a6fa5;
 		background-color: #fff;
+		border-color: #4a6fa5;
+	}
+
+	.radioBtn .active {
+		background-color: #4a6fa5;
+		border-color: #3a5a8a;
 	}
 
 	.search-jump-container {
-		background: #f9f9f9;
+		background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
 		padding: 20px;
 		margin-bottom: 20px;
-		border-radius: 5px;
-		border: 1px solid #ddd;
+		border-radius: 8px;
+		border: 1px solid #c5ddf8;
+	}
+
+	.search-jump-container .control-label {
+		color: #374151;
+		font-weight: 500;
 	}
 
 	.control-buttons {
@@ -61,7 +115,8 @@ $faqResults = json_decode($this->faqs);
 		background: #fff;
 		padding: 15px 20px;
 		border-radius: 8px;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		border: 1px solid #e2e8f0;
 	}
 
 	.floating-buttons .btn {
@@ -74,16 +129,90 @@ $faqResults = json_decode($this->faqs);
 		margin-bottom: 80px !important;
 	}
 
+	/* Sub-section headings */
+	.collapse-content h5 {
+		color: #4a6fa5;
+		font-weight: 600;
+		margin-top: 20px;
+		border-bottom: 2px solid #4a6fa5 !important;
+		padding-bottom: 8px !important;
+	}
+
+	.collapse-content h5 i {
+		margin-right: 8px;
+	}
+
+	/* Alert info boxes */
+	.collapse-content .alert-info {
+		background-color: #e8f4fd;
+		border-color: #bee3f8;
+		color: #2c5282;
+	}
+
 	/* Style TomSelect wrapper to match form controls */
 	.ts-wrapper {
 		width: 100%;
 	}
 
 	.ts-wrapper .ts-control {
-		border: 1px solid #ccc;
+		border: 1px solid #cbd5e0;
 		border-radius: 4px;
 		padding: 6px 12px;
-		min-height: 34px;
+		min-height: 38px;
+		background-color: #fff;
+	}
+
+	.ts-wrapper .ts-control:focus,
+	.ts-wrapper.focus .ts-control {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	/* TomSelect selected items (tags) */
+	.ts-wrapper.multi .ts-control > div {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		padding: 4px 10px;
+		margin: 2px 4px 2px 0;
+		font-size: 13px;
+	}
+
+	.ts-wrapper.multi .ts-control > div .remove {
+		color: rgba(255, 255, 255, 0.7);
+		border-left: 1px solid rgba(255, 255, 255, 0.3);
+		margin-left: 6px;
+		padding-left: 6px;
+	}
+
+	.ts-wrapper.multi .ts-control > div .remove:hover {
+		color: #fff;
+		background: transparent;
+	}
+
+	/* TomSelect dropdown */
+	.ts-dropdown {
+		border: 1px solid #cbd5e0;
+		border-radius: 4px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		margin-top: 2px;
+	}
+
+	.ts-dropdown .option {
+		padding: 10px 12px;
+		color: #374151;
+	}
+
+	.ts-dropdown .option:hover,
+	.ts-dropdown .option.active {
+		background-color: #e8f4fd;
+		color: #2c5282;
+	}
+
+	.ts-dropdown .option.selected {
+		background-color: #4a6fa5;
+		color: #fff;
 	}
 
 	/* Ensure TomSelect properly hides the original select - using multiple selectors for specificity */
@@ -93,6 +222,53 @@ $faqResults = json_decode($this->faqs);
 		position: absolute !important;
 		left: -9999px !important;
 		visibility: hidden !important;
+	}
+
+	/* Table styling for FAQ */
+	.collapse-content .table {
+		background-color: #fff;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.collapse-content .table thead th {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		font-weight: 500;
+		border: none;
+		padding: 12px;
+	}
+
+	.collapse-content .table tbody tr:hover {
+		background-color: #f0f7ff;
+	}
+
+	/* Small/muted text */
+	.collapse-content .text-muted {
+		color: #6b7280;
+	}
+
+	/* Legend styling */
+	legend {
+		color: #1f2937;
+		font-weight: 600;
+		border-bottom: 2px solid #4a6fa5;
+		padding-bottom: 10px;
+	}
+
+	/* Feature card rows */
+	.feature-card-row {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 15px;
+		margin-bottom: 15px !important;
+		border-bottom: none !important;
+	}
+
+	.feature-card-row:hover {
+		border-color: #4a6fa5;
+		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
 	}
 </style>
 
@@ -632,105 +808,130 @@ $faqResults = json_decode($this->faqs);
 				<div class="alert alert-info" style="margin: 10px 0;">
 					<i class="icon-info-sign"></i> <?= $this->translate->_("Home page customization is optional. Default values will be used if left empty."); ?>
 				</div>
+
+				<!-- Basic Settings -->
 				<div class="row">
 					<div class="col-md-6">
 						<label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
 						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
-							class="form-control" style="background: #fff"
+							class="form-control"
 							placeholder="<?= $this->translate->_('Enter the home page title'); ?>"
 							title="<?= $this->translate->_('Enter the title displayed on the home page'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading 1"); ?></label>
-						<textarea id="homeHeading1" name="home[heading1]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the first heading for the home page'); ?>"><?php echo $home->heading1 ?? null; ?></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading 2"); ?></label>
-						<textarea id="homeHeading2" name="home[heading2]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the second heading for the home page'); ?>"><?php echo $home->heading2 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading 3"); ?></label>
-						<textarea id="homeHeading3" name="home[heading3]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the third heading for the home page'); ?>"><?php echo $home->heading3 ?? null; ?></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Sub-heading 1"); ?></label>
-						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter sub-heading text'); ?>"
-							title="<?= $this->translate->_('Enter the first sub-heading'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Sub-heading 2"); ?></label>
-						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter sub-heading text'); ?>"
-							title="<?= $this->translate->_('Enter the second sub-heading'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Sub-heading 3"); ?></label>
-						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control"
-							placeholder="<?= $this->translate->_('Enter sub-heading text'); ?>"
-							title="<?= $this->translate->_('Enter the third sub-heading'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?></label>
-						<textarea id="homeIcon1" name="home[icon1]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>"><?php echo $home->icon1 ?? null; ?></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?></label>
-						<textarea id="homeIcon2" name="home[icon2]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>"><?php echo $home->icon2 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?></label>
-						<textarea id="homeIcon3" name="home[icon3]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>"><?php echo $home->icon3 ?? null; ?></textarea>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
 						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
-						<textarea id="homeVideoUrl" name="home[videoUrl]" class="form-control"
+						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
+							class="form-control"
 							placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
-							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>"><?php echo $home->videoUrl ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeAdditionalLink"
-							class="control-label"><?= $this->translate->_("Additional Link"); ?></label>
-						<textarea id="homeAdditionalLink" name="home[additionalLink]" class="form-control"
-							placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
-							title="<?= $this->translate->_('Enter an additional link URL'); ?>"><?php echo $home->additionalLink ?? null; ?></textarea>
+							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeAdditionalLinkText"
-							class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]"
+						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
+							title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
+					</div>
+					<div class="col-md-6">
+						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
 							class="form-control"
 							placeholder="<?= $this->translate->_('e.g., Learn More'); ?>"
-							title="<?= $this->translate->_('Enter the text for the additional link'); ?>"><?php echo $home->additionalLinkText ?? null; ?></textarea>
+							title="<?= $this->translate->_('Enter the text for the additional link'); ?>" />
+					</div>
+				</div>
+
+				<!-- Feature Cards Section -->
+				<h5>
+					<i class="icon-th-large"></i> <?= $this->translate->_("Feature Cards"); ?>
+				</h5>
+				<p class="text-muted"><?= $this->translate->_("Configure up to 3 feature cards displayed on the home page. Each card has an icon, heading, and description."); ?></p>
+
+				<!-- Feature Card 1 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 1"); ?></label>
+					</div>
+					<div class="col-md-3">
+						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
+							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+					</div>
+					<div class="col-md-4">
+						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+					</div>
+					<div class="col-md-5">
+						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Description"); ?></label>
+						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control" rows="2"
+							placeholder="<?= $this->translate->_('Enter description text'); ?>"
+							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
+					</div>
+				</div>
+
+				<!-- Feature Card 2 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 2"); ?></label>
+					</div>
+					<div class="col-md-3">
+						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
+							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+					</div>
+					<div class="col-md-4">
+						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+					</div>
+					<div class="col-md-5">
+						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Description"); ?></label>
+						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control" rows="2"
+							placeholder="<?= $this->translate->_('Enter description text'); ?>"
+							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
+					</div>
+				</div>
+
+				<!-- Feature Card 3 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 3"); ?></label>
+					</div>
+					<div class="col-md-3">
+						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
+							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+					</div>
+					<div class="col-md-4">
+						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+						<input type="text" value="<?php echo $home->heading3 ?? null; ?>" id="homeHeading3" name="home[heading3]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+					</div>
+					<div class="col-md-5">
+						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Description"); ?></label>
+						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control" rows="2"
+							placeholder="<?= $this->translate->_('Enter description text'); ?>"
+							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
 					</div>
 				</div>
 
 				<!-- Home Page Logos -->
-				<h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+				<h5>
 					<i class="icon-picture"></i> <?= $this->translate->_("Home Page Logos"); ?>
 				</h5>
 				<div class="row">
@@ -860,9 +1061,45 @@ $faqResults = json_decode($this->faqs);
 </div>
 <script type="text/javascript">
 	// Existing functions...
+	// Email validation helper function
+	function isValidEmail(email) {
+		var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email.trim());
+	}
+
+	// Validate comma-separated emails
+	function validateEmails(emailString) {
+		if (!emailString || emailString.trim() === '') {
+			return { valid: false, message: '<?= $this->translate->_("Please enter at least one email address"); ?>' };
+		}
+		var emails = emailString.split(',');
+		var invalidEmails = [];
+		for (var i = 0; i < emails.length; i++) {
+			var email = emails[i].trim();
+			if (email && !isValidEmail(email)) {
+				invalidEmails.push(email);
+			}
+		}
+		if (invalidEmails.length > 0) {
+			return {
+				valid: false,
+				message: '<?= $this->translate->_("Invalid email address(es)"); ?>: ' + invalidEmails.join(', ')
+			};
+		}
+		return { valid: true };
+	}
+
 	function validateNow() {
 		if ($("#jobCompletionAlertStatus").val() != "yes") {
 			$("#jobCompletionAlertMails").val("")
+		} else {
+			// Validate email addresses when Job Completion Alerts is enabled
+			var emailValidation = validateEmails($("#jobCompletionAlertMails").val());
+			if (!emailValidation.valid) {
+				alert(emailValidation.message);
+				$("#jobCompletionAlertMails").focus();
+				return false;
+			}
 		}
 		// Validate at least one scheme is selected
 		if ($("#schemeId").val() == null || $("#schemeId").val().length == 0) {
