@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
-"POT-Creation-Date: 2026-01-23 21:38+0530\n"
-"PO-Revision-Date: 2026-01-23 21:38+0530\n"
+"POT-Creation-Date: 2026-01-23 21:58+0530\n"
+"PO-Revision-Date: 2026-01-23 21:59+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
 "Language: fr\n"
@@ -23,6 +23,41 @@ msgstr ""
 msgid "Invalid or expired request. Please try again"
 msgstr ""
 "Impossible de mettre à jour ce résultat TB. Veuillez réessayer plus tard"
+
+#: application/models/DbTable/Distribution.php:133
+#: application/models/DbTable/Distribution.php:136
+msgid "No Shipment/Panel Added"
+msgstr "Aucune expédition/panneau ajouté"
+
+#: application/models/DbTable/Distribution.php:138
+#: application/models/DbTable/Distribution.php:147
+#: application/modules/admin/controllers/SpotlightController.php:57
+msgid "Edit"
+msgstr "Modifier"
+
+#: application/models/DbTable/Distribution.php:141
+msgid "Ship Now"
+msgstr "Expédier maintenant"
+
+#: application/models/DbTable/Distribution.php:143
+msgid "Add Participants"
+msgstr "Ajouter des participants"
+
+#: application/models/DbTable/Distribution.php:147
+msgid "Shipped"
+msgstr "Expédiée"
+
+#: application/models/DbTable/Distribution.php:148
+msgid "Send Email to Participants"
+msgstr "Envoyer un e-mail aux participants"
+
+#: application/models/DbTable/Distribution.php:150
+msgid "Add Shipment"
+msgstr "Ajouter un envoi"
+
+#: application/models/DbTable/Distribution.php:357
+msgid "View"
+msgstr "Voir"
 
 #: application/models/DbTable/Shipments.php:1093
 #: application/models/DbTable/Shipments.php:1424
@@ -249,10 +284,6 @@ msgstr "Performance globale"
 #: application/models/Dts.php:2063
 msgid "Warnings and/or Reasons for Failure"
 msgstr "Avertissements et/ou raisons de l'échec"
-
-#: application/modules/admin/controllers/SpotlightController.php:57
-msgid "Edit"
-msgstr "Modifier"
 
 #: application/modules/admin/controllers/SpotlightController.php:62
 msgid "Manage Enrollment"
@@ -568,7 +599,7 @@ msgstr "Configurer le retour d'information"
 
 #: application/layouts/scripts/admin.phtml:97
 #: application/layouts/scripts/admin.phtml:814
-#: application/modules/admin/views/scripts/global-config/index.phtml:791
+#: application/modules/admin/views/scripts/global-config/index.phtml:824
 msgid "Enable Feedback"
 msgstr "Activer les commentaires"
 
@@ -634,7 +665,7 @@ msgstr "Paramètres de récurrence du VIH (RTRI)"
 
 #: application/layouts/scripts/admin.phtml:212
 #: application/layouts/scripts/admin.phtml:874
-#: application/modules/admin/views/scripts/global-config/index.phtml:434
+#: application/modules/admin/views/scripts/global-config/index.phtml:467
 msgid "ePT Global Settings"
 msgstr "paramètres globaux de l'ePT"
 
@@ -1811,13 +1842,13 @@ msgstr "Statut du gène"
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:44
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:43
 #: application/modules/admin/views/scripts/feedback-responses/get-questions.ajax.phtml:1
-#: application/modules/admin/views/scripts/global-config/index.phtml:488
-#: application/modules/admin/views/scripts/global-config/index.phtml:667
-#: application/modules/admin/views/scripts/global-config/index.phtml:681
-#: application/modules/admin/views/scripts/global-config/index.phtml:697
-#: application/modules/admin/views/scripts/global-config/index.phtml:709
-#: application/modules/admin/views/scripts/global-config/index.phtml:924
-#: application/modules/admin/views/scripts/global-config/index.phtml:949
+#: application/modules/admin/views/scripts/global-config/index.phtml:521
+#: application/modules/admin/views/scripts/global-config/index.phtml:700
+#: application/modules/admin/views/scripts/global-config/index.phtml:714
+#: application/modules/admin/views/scripts/global-config/index.phtml:730
+#: application/modules/admin/views/scripts/global-config/index.phtml:742
+#: application/modules/admin/views/scripts/global-config/index.phtml:957
+#: application/modules/admin/views/scripts/global-config/index.phtml:982
 #: application/modules/admin/views/scripts/home-config/index.phtml:169
 #: application/modules/admin/views/scripts/home-config/index.phtml:202
 #: application/modules/admin/views/scripts/home-config/index.phtml:230
@@ -2150,8 +2181,8 @@ msgstr "Modifier la plate-forme de test"
 #: application/modules/admin/views/scripts/distributions/edit.phtml:33
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:394
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:80
-#: application/modules/admin/views/scripts/global-config/index.phtml:1221
-#: application/modules/admin/views/scripts/global-config/index.phtml:1229
+#: application/modules/admin/views/scripts/global-config/index.phtml:1254
+#: application/modules/admin/views/scripts/global-config/index.phtml:1262
 #: application/modules/admin/views/scripts/home-banner/index.phtml:31
 #: application/modules/admin/views/scripts/home-config/index.phtml:245
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:92
@@ -2307,8 +2338,8 @@ msgstr "Type de test recommandé 3"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:396
 #: application/modules/admin/views/scripts/email-participants/index.phtml:105
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:111
-#: application/modules/admin/views/scripts/global-config/index.phtml:1223
-#: application/modules/admin/views/scripts/global-config/index.phtml:1232
+#: application/modules/admin/views/scripts/global-config/index.phtml:1256
+#: application/modules/admin/views/scripts/global-config/index.phtml:1265
 #: application/modules/admin/views/scripts/home-config/index.phtml:246
 #: application/modules/admin/views/scripts/participant-messages/view.phtml:43
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:81
@@ -2352,9 +2383,9 @@ msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:123
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:134
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:147
-#: application/modules/admin/views/scripts/global-config/index.phtml:537
-#: application/modules/admin/views/scripts/global-config/index.phtml:698
-#: application/modules/admin/views/scripts/global-config/index.phtml:710
+#: application/modules/admin/views/scripts/global-config/index.phtml:570
+#: application/modules/admin/views/scripts/global-config/index.phtml:731
+#: application/modules/admin/views/scripts/global-config/index.phtml:743
 #: application/modules/admin/views/scripts/participants/add.phtml:175
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:31
 #: application/modules/admin/views/scripts/participants/edit.phtml:91
@@ -2525,9 +2556,9 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:124
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:135
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:146
-#: application/modules/admin/views/scripts/global-config/index.phtml:536
-#: application/modules/admin/views/scripts/global-config/index.phtml:699
-#: application/modules/admin/views/scripts/global-config/index.phtml:711
+#: application/modules/admin/views/scripts/global-config/index.phtml:569
+#: application/modules/admin/views/scripts/global-config/index.phtml:732
+#: application/modules/admin/views/scripts/global-config/index.phtml:744
 #: application/modules/admin/views/scripts/participants/add.phtml:176
 #: application/modules/admin/views/scripts/participants/bulk-import.phtml:32
 #: application/modules/admin/views/scripts/participants/edit.phtml:90
@@ -3006,7 +3037,7 @@ msgstr "Veuillez saisir l'adresse e-mail principale ici"
 
 #: application/modules/admin/views/scripts/data-managers/add.phtml:32
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:41
-#: application/modules/admin/views/scripts/global-config/index.phtml:941
+#: application/modules/admin/views/scripts/global-config/index.phtml:974
 #: application/modules/admin/views/scripts/login/index.phtml:136
 #: application/modules/admin/views/scripts/participants/add.phtml:76
 #: application/modules/admin/views/scripts/participants/edit.phtml:99
@@ -4148,12 +4179,6 @@ msgstr "Réévaluer"
 msgid "Processing"
 msgstr "En cours"
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:139
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:205
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:81
-msgid "View"
-msgstr "Voir"
-
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:154
 msgid "VL Range"
 msgstr "Gamme VL"
@@ -4322,7 +4347,7 @@ msgstr "Ajouter une nouvelle question"
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:7
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:7
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:8
-#: application/modules/admin/views/scripts/global-config/index.phtml:1166
+#: application/modules/admin/views/scripts/global-config/index.phtml:1199
 #: application/modules/admin/views/scripts/home-config/index.phtml:127
 msgid "Question"
 msgstr "Question"
@@ -4470,172 +4495,172 @@ msgstr "Créer un nouveau formulaire de retour d'information"
 msgid "Number of Question Mapped"
 msgstr "Nombre de questions répertoriées"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:441
-#: application/modules/admin/views/scripts/global-config/index.phtml:445
+#: application/modules/admin/views/scripts/global-config/index.phtml:474
+#: application/modules/admin/views/scripts/global-config/index.phtml:478
 msgid "Search settings by keyword"
 msgstr "Rechercher les paramètres par mot-clé"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:450
+#: application/modules/admin/views/scripts/global-config/index.phtml:483
 msgid "Jump to Section"
 msgstr "Aller à la section"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:452
+#: application/modules/admin/views/scripts/global-config/index.phtml:485
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:19
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:16
 msgid "Select Section"
 msgstr "Sélectionnez la section"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:453
-#: application/modules/admin/views/scripts/global-config/index.phtml:473
+#: application/modules/admin/views/scripts/global-config/index.phtml:486
+#: application/modules/admin/views/scripts/global-config/index.phtml:506
 msgid "General Settings"
 msgstr "Réglages généraux"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:454
-#: application/modules/admin/views/scripts/global-config/index.phtml:750
+#: application/modules/admin/views/scripts/global-config/index.phtml:487
+#: application/modules/admin/views/scripts/global-config/index.phtml:783
 msgid "Participant Settings"
 msgstr "Paramètres des participants"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:455
-#: application/modules/admin/views/scripts/global-config/index.phtml:870
+#: application/modules/admin/views/scripts/global-config/index.phtml:488
+#: application/modules/admin/views/scripts/global-config/index.phtml:903
 msgid "Email Settings"
 msgstr "Paramètres de messagerie"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:456
-#: application/modules/admin/views/scripts/global-config/index.phtml:959
+#: application/modules/admin/views/scripts/global-config/index.phtml:489
+#: application/modules/admin/views/scripts/global-config/index.phtml:992
 msgid "Home Page Settings"
 msgstr "Réglages de la page d’accueil"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:465
+#: application/modules/admin/views/scripts/global-config/index.phtml:498
 msgid "Expand All"
 msgstr "Développer tout"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:468
+#: application/modules/admin/views/scripts/global-config/index.phtml:501
 msgid "Collapse All"
 msgstr "Tout réduire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:478
+#: application/modules/admin/views/scripts/global-config/index.phtml:511
 msgid "Domain"
 msgstr "Domaine"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:481
+#: application/modules/admin/views/scripts/global-config/index.phtml:514
 msgid "Domain for this ePT instance"
 msgstr "Domaine pour cette instance ePT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:482
+#: application/modules/admin/views/scripts/global-config/index.phtml:515
 msgid "Auto-filled from URL. Edit if using a proxy or CDN."
 msgstr ""
 "Remplissage automatique à partir de l'URL. Modifiez si vous utilisez un "
 "proxy ou un CDN."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:485
+#: application/modules/admin/views/scripts/global-config/index.phtml:518
 #: application/views/scripts/participant/user-info.phtml:56
 msgid "Language"
 msgstr "Langue"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:487
+#: application/modules/admin/views/scripts/global-config/index.phtml:520
 msgid "Select the language for this instance"
 msgstr "Sélectionnez la langue pour cette instance"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:490
+#: application/modules/admin/views/scripts/global-config/index.phtml:523
 #: application/views/scripts/participant/user-info.phtml:60
 msgid "English"
 msgstr "Anglais"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:492
+#: application/modules/admin/views/scripts/global-config/index.phtml:525
 #: application/views/scripts/participant/user-info.phtml:61
 msgid "French"
 msgstr "Français"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:500
+#: application/modules/admin/views/scripts/global-config/index.phtml:533
 msgid "Aggregate Insights URL"
 msgstr "URL de l'agrégat Insights"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:502
+#: application/modules/admin/views/scripts/global-config/index.phtml:535
 msgid "Enter aggregate insights URL"
 msgstr "Entrer l'URL des informations agrégées"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:503
+#: application/modules/admin/views/scripts/global-config/index.phtml:536
 msgid "Enter the URL for aggregate insights dashboard"
 msgstr "Entrez l'URL du tableau de bord des informations agrégées"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:508
+#: application/modules/admin/views/scripts/global-config/index.phtml:541
 msgid "Administrator Email"
 msgstr "Email administrateur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:510
+#: application/modules/admin/views/scripts/global-config/index.phtml:543
 msgid "Enter administrator email (optional)"
 msgstr "Entrez l'adresse e-mail de l'administrateur (facultatif)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:510
+#: application/modules/admin/views/scripts/global-config/index.phtml:543
 msgid "Enter the administrator email address"
 msgstr "Entrez l'adresse e-mail de l'administrateur."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:517
+#: application/modules/admin/views/scripts/global-config/index.phtml:550
 msgid "PT Program Name"
 msgstr "Nom du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:519
+#: application/modules/admin/views/scripts/global-config/index.phtml:552
 msgid "Enter PT program name"
 msgstr "Entrez le nom du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:519
+#: application/modules/admin/views/scripts/global-config/index.phtml:552
 msgid "Enter the full name of your PT program"
 msgstr "Entrez le nom complet de votre programme de physiothérapie"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:524
+#: application/modules/admin/views/scripts/global-config/index.phtml:557
 msgid "PT Program Short Name"
 msgstr "Nom abrégé du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:526
+#: application/modules/admin/views/scripts/global-config/index.phtml:559
 msgid "Enter PT program short name"
 msgstr "Entrez le nom abrégé du programme PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:526
+#: application/modules/admin/views/scripts/global-config/index.phtml:559
 msgid "Enter an abbreviated name for your PT program"
 msgstr "Entrez un nom abrégé pour votre programme de physiothérapie"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:533
+#: application/modules/admin/views/scripts/global-config/index.phtml:566
 msgid "Training Instance"
 msgstr "Instance de formation"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:535
+#: application/modules/admin/views/scripts/global-config/index.phtml:568
 msgid "Is this ePT installation used for training purposes?"
 msgstr "Cette installation ePT est-elle utilisée à des fins de formation ?"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:541
+#: application/modules/admin/views/scripts/global-config/index.phtml:574
 msgid "Active Schemes"
 msgstr "Programmes actifs"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:548
+#: application/modules/admin/views/scripts/global-config/index.phtml:581
 msgid "Select at least one scheme to enable"
 msgstr "Sélectionnez au moins un programme à activer."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:554
+#: application/modules/admin/views/scripts/global-config/index.phtml:587
 msgid "Report Watermark"
 msgstr "Signature numérique du rapport"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:556
+#: application/modules/admin/views/scripts/global-config/index.phtml:589
 msgid "Watermark text for training reports"
 msgstr "Texte en filigrane pour les rapports de formation"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:557
+#: application/modules/admin/views/scripts/global-config/index.phtml:590
 msgid "Enter the watermark text to display on training reports"
 msgstr ""
 "Entrez le texte du filigrane à afficher sur les rapports d'entraînement"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:562
+#: application/modules/admin/views/scripts/global-config/index.phtml:595
 msgid "Accept Responses After Finalization"
 msgstr "Accepter les réponses après finalisation"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:567
-#: application/modules/admin/views/scripts/global-config/index.phtml:584
-#: application/modules/admin/views/scripts/global-config/index.phtml:599
-#: application/modules/admin/views/scripts/global-config/index.phtml:615
-#: application/modules/admin/views/scripts/global-config/index.phtml:629
-#: application/modules/admin/views/scripts/global-config/index.phtml:780
-#: application/modules/admin/views/scripts/global-config/index.phtml:796
+#: application/modules/admin/views/scripts/global-config/index.phtml:600
+#: application/modules/admin/views/scripts/global-config/index.phtml:617
+#: application/modules/admin/views/scripts/global-config/index.phtml:632
+#: application/modules/admin/views/scripts/global-config/index.phtml:648
+#: application/modules/admin/views/scripts/global-config/index.phtml:662
 #: application/modules/admin/views/scripts/global-config/index.phtml:813
-#: application/modules/admin/views/scripts/global-config/index.phtml:828
+#: application/modules/admin/views/scripts/global-config/index.phtml:829
+#: application/modules/admin/views/scripts/global-config/index.phtml:846
+#: application/modules/admin/views/scripts/global-config/index.phtml:861
 #: application/views/scripts/covid19/response.phtml:558
 #: application/views/scripts/dbs/response.phtml:345
 #: application/views/scripts/dts/response.phtml:1389
@@ -4644,15 +4669,15 @@ msgstr "Accepter les réponses après finalisation"
 msgid "YES"
 msgstr "OUI"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:570
-#: application/modules/admin/views/scripts/global-config/index.phtml:587
-#: application/modules/admin/views/scripts/global-config/index.phtml:602
-#: application/modules/admin/views/scripts/global-config/index.phtml:617
-#: application/modules/admin/views/scripts/global-config/index.phtml:632
-#: application/modules/admin/views/scripts/global-config/index.phtml:783
-#: application/modules/admin/views/scripts/global-config/index.phtml:799
+#: application/modules/admin/views/scripts/global-config/index.phtml:603
+#: application/modules/admin/views/scripts/global-config/index.phtml:620
+#: application/modules/admin/views/scripts/global-config/index.phtml:635
+#: application/modules/admin/views/scripts/global-config/index.phtml:650
+#: application/modules/admin/views/scripts/global-config/index.phtml:665
 #: application/modules/admin/views/scripts/global-config/index.phtml:816
-#: application/modules/admin/views/scripts/global-config/index.phtml:831
+#: application/modules/admin/views/scripts/global-config/index.phtml:832
+#: application/modules/admin/views/scripts/global-config/index.phtml:849
+#: application/modules/admin/views/scripts/global-config/index.phtml:864
 #: application/views/scripts/covid19/response.phtml:559
 #: application/views/scripts/dbs/response.phtml:346
 #: application/views/scripts/dts/response.phtml:1391
@@ -4661,239 +4686,239 @@ msgstr "OUI"
 msgid "NO"
 msgstr "NON"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:579
+#: application/modules/admin/views/scripts/global-config/index.phtml:612
 msgid "Enable Custom Tests"
 msgstr "Activer les tests personnalisés"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:594
+#: application/modules/admin/views/scripts/global-config/index.phtml:627
 msgid "Re-evaluate Before Finalizing"
 msgstr "Réévaluer avant de finaliser"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:611
+#: application/modules/admin/views/scripts/global-config/index.phtml:644
 msgid "Enable CAPA"
 msgstr "Activer le CAPA"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:624
+#: application/modules/admin/views/scripts/global-config/index.phtml:657
 msgid "Admin Email Notifications"
 msgstr "Notifications par courriel de l'administrateur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:643
+#: application/modules/admin/views/scripts/global-config/index.phtml:676
 msgid "Enter institute name"
 msgstr "Entrez le nom de l'institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:644
+#: application/modules/admin/views/scripts/global-config/index.phtml:677
 msgid "Enter the name of your institute"
 msgstr "Entrez le nom de votre institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:648
+#: application/modules/admin/views/scripts/global-config/index.phtml:681
 msgid "Institute Address"
 msgstr "Adresse de l'Institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:650
+#: application/modules/admin/views/scripts/global-config/index.phtml:683
 msgid "Enter institute address"
 msgstr "Entrez l'adresse de l'institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:651
+#: application/modules/admin/views/scripts/global-config/index.phtml:684
 msgid "Enter your institute address"
 msgstr "Entrez l'adresse de votre institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:657
+#: application/modules/admin/views/scripts/global-config/index.phtml:690
 msgid "Additional Institute Details"
 msgstr "Informations supplémentaires sur l'institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:659
+#: application/modules/admin/views/scripts/global-config/index.phtml:692
 msgid "Enter additional institute details"
 msgstr "Entrez les détails supplémentaires concernant l'institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:660
+#: application/modules/admin/views/scripts/global-config/index.phtml:693
 msgid "Enter any additional details about your institute"
 msgstr "Entrez toute information supplémentaire concernant votre institut"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:664
+#: application/modules/admin/views/scripts/global-config/index.phtml:697
 msgid "Theme Color"
 msgstr "Couleur du thème"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:666
+#: application/modules/admin/views/scripts/global-config/index.phtml:699
 msgid "Select a theme color for the interface"
 msgstr "Sélectionnez une couleur thématique pour l'interface."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:668
+#: application/modules/admin/views/scripts/global-config/index.phtml:701
 msgid "Green"
 msgstr "Vert"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:669
+#: application/modules/admin/views/scripts/global-config/index.phtml:702
 msgid "Blue"
 msgstr "Bleu"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:670
+#: application/modules/admin/views/scripts/global-config/index.phtml:703
 msgid "Yellow"
 msgstr "Jaune"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:671
+#: application/modules/admin/views/scripts/global-config/index.phtml:704
 msgid "Purple"
 msgstr "Violet"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:672
+#: application/modules/admin/views/scripts/global-config/index.phtml:705
 msgid "Red"
 msgstr "Rouge"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:673
+#: application/modules/admin/views/scripts/global-config/index.phtml:706
 msgid "Black"
 msgstr "Noir"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:679
+#: application/modules/admin/views/scripts/global-config/index.phtml:712
 msgid "Instance"
 msgstr "Instance"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:680
+#: application/modules/admin/views/scripts/global-config/index.phtml:713
 msgid "Select the deployment instance"
 msgstr "Sélectionnez l'instance de déploiement."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:694
+#: application/modules/admin/views/scripts/global-config/index.phtml:727
 msgid "Job Completion Alerts"
 msgstr "Alertes de fin de tâche"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:696
+#: application/modules/admin/views/scripts/global-config/index.phtml:729
 msgid "Enable email alerts when jobs complete"
 msgstr "Activer les alertes par e-mail lorsque les tâches sont terminées"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:706
+#: application/modules/admin/views/scripts/global-config/index.phtml:739
 msgid "Auto-generate PT Survey Code"
 msgstr "Générer automatiquement le code d'enquête PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:708
+#: application/modules/admin/views/scripts/global-config/index.phtml:741
 msgid "Automatically generate PT survey codes"
 msgstr "Générer automatiquement des codes d'enquête PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:716
+#: application/modules/admin/views/scripts/global-config/index.phtml:749
 msgid "Footer Text"
 msgstr "Texte de pied de page"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:718
+#: application/modules/admin/views/scripts/global-config/index.phtml:751
 msgid "Enter footer text"
 msgstr "Entrer le texte du pied de page"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:719
+#: application/modules/admin/views/scripts/global-config/index.phtml:752
 msgid "Enter the text to display in the page footer"
 msgstr "Entrez le texte à afficher dans le pied de page"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:726
+#: application/modules/admin/views/scripts/global-config/index.phtml:759
 msgid "Job Completion Alert Recipients"
 msgstr "Destinataires de l'alerte de fin de tâche"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:728
+#: application/modules/admin/views/scripts/global-config/index.phtml:761
 msgid "Enter email addresses"
 msgstr "Entrez les adresses e-mail"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:729
+#: application/modules/admin/views/scripts/global-config/index.phtml:762
 msgid "Enter email addresses to receive job completion alerts"
 msgstr "Entrez les adresses e-mail pour recevoir des alertes de fin de tâche."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:730
+#: application/modules/admin/views/scripts/global-config/index.phtml:763
 msgid "Enter comma-separated email addresses for multiple recipients"
 msgstr ""
 "Entrez les adresses e-mail séparées par des virgules pour plusieurs "
 "destinataires"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:734
+#: application/modules/admin/views/scripts/global-config/index.phtml:767
 msgid "Date Format"
 msgstr "Format de date"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:736
+#: application/modules/admin/views/scripts/global-config/index.phtml:769
 msgid "e.g., d-M-Y"
 msgstr "par exemple, j-M-A"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:737
+#: application/modules/admin/views/scripts/global-config/index.phtml:770
 msgid "Enter the date format (e.g., d-M-Y)"
 msgstr "Entrez le format de date (par exemple, j-M-A)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:741
+#: application/modules/admin/views/scripts/global-config/index.phtml:774
 msgid "Certificate Email"
 msgstr "Certificat par e-mail"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:743
+#: application/modules/admin/views/scripts/global-config/index.phtml:776
 msgid "Enter certificate notification email"
 msgstr "Entrez l'adresse e-mail de notification du certificat"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:744
+#: application/modules/admin/views/scripts/global-config/index.phtml:777
 msgid "Enter the email address for certificate notifications"
 msgstr "Entrez l'adresse e-mail pour les notifications de certificat"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:756
+#: application/modules/admin/views/scripts/global-config/index.phtml:789
 msgid "Login ID Prefix"
 msgstr "Préfixe d'identifiant de connexion"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:758
+#: application/modules/admin/views/scripts/global-config/index.phtml:791
 msgid "e.g., PT"
 msgstr "par exemple, PT"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:759
+#: application/modules/admin/views/scripts/global-config/index.phtml:792
 msgid "Enter the prefix for participant login IDs"
 msgstr "Entrez le préfixe pour les identifiants de connexion des participants."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:764
+#: application/modules/admin/views/scripts/global-config/index.phtml:797
 msgid "Password Length"
 msgstr "Longueur du mot de passe"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:767
+#: application/modules/admin/views/scripts/global-config/index.phtml:800
 msgid "e.g., 8"
 msgstr "par exemple, 8"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:768
+#: application/modules/admin/views/scripts/global-config/index.phtml:801
 msgid "Enter the minimum password length for participants"
 msgstr "Entrez la longueur minimale du mot de passe pour les participants."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:775
+#: application/modules/admin/views/scripts/global-config/index.phtml:808
 msgid "Allow Name Editing"
 msgstr "Autoriser la modification du nom"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:808
+#: application/modules/admin/views/scripts/global-config/index.phtml:841
 msgid "Direct Login"
 msgstr "Liens de redirection"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:823
+#: application/modules/admin/views/scripts/global-config/index.phtml:856
 msgid "Login Attempt Ban"
 msgstr "Interdiction des tentatives de connexion"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:842
+#: application/modules/admin/views/scripts/global-config/index.phtml:875
 msgid "Temporary Ban Duration (minutes)"
 msgstr "Durée de l'interdiction temporaire (minutes)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:844
+#: application/modules/admin/views/scripts/global-config/index.phtml:877
 msgid "e.g., 5"
 msgstr "par exemple, 5"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:845
+#: application/modules/admin/views/scripts/global-config/index.phtml:878
 msgid "Enter the duration for temporary login bans in minutes"
 msgstr "Entrez la durée des interdictions temporaires de connexion en minutes."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:851
+#: application/modules/admin/views/scripts/global-config/index.phtml:884
 msgid "Attempts Before Temporary Ban"
 msgstr "Tentatives avant l'interdiction temporaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:853
+#: application/modules/admin/views/scripts/global-config/index.phtml:886
 msgid "e.g., 3"
 msgstr "par exemple, 3"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:854
+#: application/modules/admin/views/scripts/global-config/index.phtml:887
 msgid "Enter the number of failed attempts before a temporary ban"
 msgstr ""
 "Entrez le nombre de tentatives infructueuses avant une suspension temporaire."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:860
+#: application/modules/admin/views/scripts/global-config/index.phtml:893
 msgid "Attempts Before Permanent Ban"
 msgstr "Tentatives avant l'interdiction permanente"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:862
+#: application/modules/admin/views/scripts/global-config/index.phtml:895
 msgid "e.g., 10"
 msgstr "par exemple, 10"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:863
+#: application/modules/admin/views/scripts/global-config/index.phtml:896
 msgid "Enter the number of failed attempts before a permanent ban"
 msgstr ""
 "Entrez le nombre de tentatives infructueuses avant une exclusion définitive."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:874
+#: application/modules/admin/views/scripts/global-config/index.phtml:907
 msgid ""
 "Email configuration is optional. You can configure it later when you have "
 "the email server details."
@@ -4902,105 +4927,105 @@ msgstr ""
 "la configurer ultérieurement lorsque vous disposerez des informations "
 "relatives au serveur de messagerie."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:878
+#: application/modules/admin/views/scripts/global-config/index.phtml:911
 msgid "SMTP Host"
 msgstr "SMTP Host"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:881
+#: application/modules/admin/views/scripts/global-config/index.phtml:914
 msgid "e.g., smtp.gmail.com"
 msgstr "Par exemple, smtp.gmail.com"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:882
+#: application/modules/admin/views/scripts/global-config/index.phtml:915
 msgid "Enter the SMTP server hostname"
 msgstr "Entrez le nom d'hôte du serveur SMTP."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:885
+#: application/modules/admin/views/scripts/global-config/index.phtml:918
 msgid "SMTP Port"
 msgstr "Port SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:888
+#: application/modules/admin/views/scripts/global-config/index.phtml:921
 msgid "e.g., 587 or 465"
 msgstr "par exemple, 587 ou 465"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:889
+#: application/modules/admin/views/scripts/global-config/index.phtml:922
 msgid "Enter the SMTP port (typically 587 or 465)"
 msgstr "Entrez le port SMTP (généralement 587 ou 465)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:894
+#: application/modules/admin/views/scripts/global-config/index.phtml:927
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:19
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:2
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:17
 msgid "From Name"
 msgstr "Nom de l'expéditeur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:897
+#: application/modules/admin/views/scripts/global-config/index.phtml:930
 msgid "e.g., ePT System"
 msgstr "Par exemple, le système ePT."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:900
+#: application/modules/admin/views/scripts/global-config/index.phtml:933
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:25
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:8
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.phtml:23
 msgid "From Email"
 msgstr "Email de l'expéditeur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:903
+#: application/modules/admin/views/scripts/global-config/index.phtml:936
 msgid "e.g., noreply@example.com"
 msgstr "Par exemple, noreply@example.com"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:908
+#: application/modules/admin/views/scripts/global-config/index.phtml:941
 msgid "CC"
 msgstr "CC"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:911
+#: application/modules/admin/views/scripts/global-config/index.phtml:944
 msgid "Enter CC emails"
 msgstr "Entrez les adresses e-mail des destinataires en copie"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:914
+#: application/modules/admin/views/scripts/global-config/index.phtml:947
 msgid "BCC"
 msgstr "BCC"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:917
+#: application/modules/admin/views/scripts/global-config/index.phtml:950
 msgid "Enter BCC emails"
 msgstr "Entrer les e-mails en Cci"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:922
+#: application/modules/admin/views/scripts/global-config/index.phtml:955
 msgid "Encryption"
 msgstr "Chiffrement"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:923
+#: application/modules/admin/views/scripts/global-config/index.phtml:956
 msgid "Select the encryption type"
 msgstr "Sélectionnez le type de chiffrement"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:928
+#: application/modules/admin/views/scripts/global-config/index.phtml:961
 msgid "None"
 msgstr "Rien"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:932
+#: application/modules/admin/views/scripts/global-config/index.phtml:965
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:935
+#: application/modules/admin/views/scripts/global-config/index.phtml:968
 msgid "Enter email address for authentication"
 msgstr "Entrez votre adresse e-mail pour l'authentification"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:936
+#: application/modules/admin/views/scripts/global-config/index.phtml:969
 msgid "Enter the email address used for SMTP authentication"
 msgstr "Entrez l'adresse e-mail utilisée pour l'authentification SMTP."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:944
+#: application/modules/admin/views/scripts/global-config/index.phtml:977
 msgid "Enter SMTP password"
 msgstr "Entrez le mot de passe SMTP"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:947
+#: application/modules/admin/views/scripts/global-config/index.phtml:980
 msgid "Authentication Type"
 msgstr "Type d'authentification"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:948
+#: application/modules/admin/views/scripts/global-config/index.phtml:981
 msgid "Select the authentication method"
 msgstr "Sélectionnez la méthode d'authentification"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:963
+#: application/modules/admin/views/scripts/global-config/index.phtml:996
 msgid ""
 "Home page customization is optional. Default values will be used if left "
 "empty."
@@ -5008,61 +5033,61 @@ msgstr ""
 "La personnalisation de la page d'accueil est facultative. Si vous ne "
 "remplissez pas ce champ, les valeurs par défaut seront utilisées."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:969
+#: application/modules/admin/views/scripts/global-config/index.phtml:1002
 msgid "Page Title"
 msgstr "Titre de la page"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:972
+#: application/modules/admin/views/scripts/global-config/index.phtml:1005
 msgid "Enter the home page title"
 msgstr "Entrez le titre de la page d'accueil"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:973
+#: application/modules/admin/views/scripts/global-config/index.phtml:1006
 msgid "Enter the title displayed on the home page"
 msgstr "Entrez le titre affiché sur la page d'accueil."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:976
+#: application/modules/admin/views/scripts/global-config/index.phtml:1009
 #: application/modules/admin/views/scripts/home-config/index.phtml:109
 msgid "Video URL"
 msgstr "URL de la vidéo"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:979
+#: application/modules/admin/views/scripts/global-config/index.phtml:1012
 msgid "e.g., https://youtube.com/watch?v=..."
 msgstr "par exemple, https://youtube.com/watch?v=..."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:980
+#: application/modules/admin/views/scripts/global-config/index.phtml:1013
 msgid "Enter a YouTube or video URL"
 msgstr "Entrez une URL YouTube ou vidéo"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:985
+#: application/modules/admin/views/scripts/global-config/index.phtml:1018
 msgid "Additional Link URL"
 msgstr "URL du lien supplémentaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:988
+#: application/modules/admin/views/scripts/global-config/index.phtml:1021
 msgid "e.g., https://example.com/more-info"
 msgstr "Par exemple, https://example.com/more-info"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:989
+#: application/modules/admin/views/scripts/global-config/index.phtml:1022
 msgid "Enter an additional link URL"
 msgstr "Entrez une URL de lien supplémentaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:992
+#: application/modules/admin/views/scripts/global-config/index.phtml:1025
 #: application/modules/admin/views/scripts/home-config/index.phtml:119
 msgid "Additional Link Text"
 msgstr "Texte de lien supplémentaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:995
+#: application/modules/admin/views/scripts/global-config/index.phtml:1028
 msgid "e.g., Learn More"
 msgstr "Par exemple, En savoir plus"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:996
+#: application/modules/admin/views/scripts/global-config/index.phtml:1029
 msgid "Enter the text for the additional link"
 msgstr "Entrez le texte pour le lien supplémentaire"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1002
+#: application/modules/admin/views/scripts/global-config/index.phtml:1035
 msgid "Feature Cards"
 msgstr "Cartes spéciales"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1004
+#: application/modules/admin/views/scripts/global-config/index.phtml:1037
 msgid ""
 "Configure up to 3 feature cards displayed on the home page. Each card has an "
 "icon, heading, and description."
@@ -5070,13 +5095,13 @@ msgstr ""
 "Configurez jusqu'à 3 cartes de fonctionnalités affichées sur la page "
 "d'accueil. Chaque carte comporte une icône, un titre et une description."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1009
+#: application/modules/admin/views/scripts/global-config/index.phtml:1042
 msgid "Feature Card 1"
 msgstr "Carte spéciale 1"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1012
-#: application/modules/admin/views/scripts/global-config/index.phtml:1046
-#: application/modules/admin/views/scripts/global-config/index.phtml:1080
+#: application/modules/admin/views/scripts/global-config/index.phtml:1045
+#: application/modules/admin/views/scripts/global-config/index.phtml:1079
+#: application/modules/admin/views/scripts/global-config/index.phtml:1113
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:56
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:61
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:16
@@ -5084,159 +5109,159 @@ msgstr "Carte spéciale 1"
 msgid "Icon"
 msgstr "Icône"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1017
+#: application/modules/admin/views/scripts/global-config/index.phtml:1050
 msgid "e.g., icon-beaker"
 msgstr "Par exemple, icône-bécher"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1018
-#: application/modules/admin/views/scripts/global-config/index.phtml:1052
-#: application/modules/admin/views/scripts/global-config/index.phtml:1086
+#: application/modules/admin/views/scripts/global-config/index.phtml:1051
+#: application/modules/admin/views/scripts/global-config/index.phtml:1085
+#: application/modules/admin/views/scripts/global-config/index.phtml:1119
 msgid "Enter the icon class name"
 msgstr "Entrez le nom de la classe de l'icône"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1020
-#: application/modules/admin/views/scripts/global-config/index.phtml:1054
-#: application/modules/admin/views/scripts/global-config/index.phtml:1088
+#: application/modules/admin/views/scripts/global-config/index.phtml:1053
+#: application/modules/admin/views/scripts/global-config/index.phtml:1087
+#: application/modules/admin/views/scripts/global-config/index.phtml:1121
 msgid "Browse icons"
 msgstr "Parcourir les icônes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1026
-#: application/modules/admin/views/scripts/global-config/index.phtml:1060
-#: application/modules/admin/views/scripts/global-config/index.phtml:1094
+#: application/modules/admin/views/scripts/global-config/index.phtml:1059
+#: application/modules/admin/views/scripts/global-config/index.phtml:1093
+#: application/modules/admin/views/scripts/global-config/index.phtml:1127
 msgid "Heading"
 msgstr "En-tête"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1029
-#: application/modules/admin/views/scripts/global-config/index.phtml:1063
-#: application/modules/admin/views/scripts/global-config/index.phtml:1097
+#: application/modules/admin/views/scripts/global-config/index.phtml:1062
+#: application/modules/admin/views/scripts/global-config/index.phtml:1096
+#: application/modules/admin/views/scripts/global-config/index.phtml:1130
 msgid "Enter heading text"
 msgstr "Entrez le texte du titre"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1030
-#: application/modules/admin/views/scripts/global-config/index.phtml:1064
-#: application/modules/admin/views/scripts/global-config/index.phtml:1098
+#: application/modules/admin/views/scripts/global-config/index.phtml:1063
+#: application/modules/admin/views/scripts/global-config/index.phtml:1097
+#: application/modules/admin/views/scripts/global-config/index.phtml:1131
 msgid "Enter the heading for this feature card"
 msgstr "Entrez le titre de cette carte de fonctionnalité."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1033
-#: application/modules/admin/views/scripts/global-config/index.phtml:1067
-#: application/modules/admin/views/scripts/global-config/index.phtml:1101
+#: application/modules/admin/views/scripts/global-config/index.phtml:1066
+#: application/modules/admin/views/scripts/global-config/index.phtml:1100
+#: application/modules/admin/views/scripts/global-config/index.phtml:1134
 msgid "Description"
 msgstr "Description"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1035
-#: application/modules/admin/views/scripts/global-config/index.phtml:1069
-#: application/modules/admin/views/scripts/global-config/index.phtml:1103
+#: application/modules/admin/views/scripts/global-config/index.phtml:1068
+#: application/modules/admin/views/scripts/global-config/index.phtml:1102
+#: application/modules/admin/views/scripts/global-config/index.phtml:1136
 msgid "Enter description text"
 msgstr "Entrez le texte de la description"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1036
-#: application/modules/admin/views/scripts/global-config/index.phtml:1070
-#: application/modules/admin/views/scripts/global-config/index.phtml:1104
+#: application/modules/admin/views/scripts/global-config/index.phtml:1069
+#: application/modules/admin/views/scripts/global-config/index.phtml:1103
+#: application/modules/admin/views/scripts/global-config/index.phtml:1137
 msgid "Enter the description for this feature card"
 msgstr "Entrez la description de cette carte de fonctionnalité."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1043
+#: application/modules/admin/views/scripts/global-config/index.phtml:1076
 msgid "Feature Card 2"
 msgstr "Carte vedette 2"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1051
+#: application/modules/admin/views/scripts/global-config/index.phtml:1084
 msgid "e.g., icon-group"
 msgstr "par exemple, groupe d'icônes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1077
+#: application/modules/admin/views/scripts/global-config/index.phtml:1110
 msgid "Feature Card 3"
 msgstr "Carte spéciale 3"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1085
+#: application/modules/admin/views/scripts/global-config/index.phtml:1118
 msgid "e.g., icon-bar-chart"
 msgstr "Par exemple, icône-barre-graphique"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1110
+#: application/modules/admin/views/scripts/global-config/index.phtml:1143
 msgid "Home Page Logos"
 msgstr "Page d'accueil Logos"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1114
+#: application/modules/admin/views/scripts/global-config/index.phtml:1147
 msgid "Logo 1 (Left)"
 msgstr "Logo 1 (à gauche)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1117
-#: application/modules/admin/views/scripts/global-config/index.phtml:1137
+#: application/modules/admin/views/scripts/global-config/index.phtml:1150
+#: application/modules/admin/views/scripts/global-config/index.phtml:1170
 msgid "Logo image"
 msgstr "Image du logo"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1123
-#: application/modules/admin/views/scripts/global-config/index.phtml:1127
-#: application/modules/admin/views/scripts/global-config/index.phtml:1143
-#: application/modules/admin/views/scripts/global-config/index.phtml:1147
+#: application/modules/admin/views/scripts/global-config/index.phtml:1156
+#: application/modules/admin/views/scripts/global-config/index.phtml:1160
+#: application/modules/admin/views/scripts/global-config/index.phtml:1176
+#: application/modules/admin/views/scripts/global-config/index.phtml:1180
 msgid "Select logo image"
 msgstr "Sélectionnez l’image du logo"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1131
-#: application/modules/admin/views/scripts/global-config/index.phtml:1151
+#: application/modules/admin/views/scripts/global-config/index.phtml:1164
+#: application/modules/admin/views/scripts/global-config/index.phtml:1184
 msgid "Recommended size: 80x80 pixels"
 msgstr "Taille recommandée : 80 x 80 pixels"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1134
+#: application/modules/admin/views/scripts/global-config/index.phtml:1167
 msgid "Logo 2 (Right)"
 msgstr "Logo 2 (à droite)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1157
+#: application/modules/admin/views/scripts/global-config/index.phtml:1190
 msgid "Frequently Asked Questions (FAQ)"
 msgstr "Foire aux questions (FAQ)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1159
+#: application/modules/admin/views/scripts/global-config/index.phtml:1192
 msgid "Add questions and answers to display on the home page FAQ section."
 msgstr ""
 "Ajoutez des questions et réponses à afficher dans la section FAQ de la page "
 "d'accueil."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1168
+#: application/modules/admin/views/scripts/global-config/index.phtml:1201
 #: application/modules/admin/views/scripts/home-config/index.phtml:128
 msgid "Answer"
 msgstr "Réponse"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1170
+#: application/modules/admin/views/scripts/global-config/index.phtml:1203
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:134
 msgid "Actions"
 msgstr "Actions"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1179
-#: application/modules/admin/views/scripts/global-config/index.phtml:1199
-#: application/modules/admin/views/scripts/global-config/index.phtml:1461
+#: application/modules/admin/views/scripts/global-config/index.phtml:1212
+#: application/modules/admin/views/scripts/global-config/index.phtml:1232
+#: application/modules/admin/views/scripts/global-config/index.phtml:1494
 msgid "Enter the question"
 msgstr "Entrez la question"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1180
-#: application/modules/admin/views/scripts/global-config/index.phtml:1199
-#: application/modules/admin/views/scripts/global-config/index.phtml:1461
+#: application/modules/admin/views/scripts/global-config/index.phtml:1213
+#: application/modules/admin/views/scripts/global-config/index.phtml:1232
+#: application/modules/admin/views/scripts/global-config/index.phtml:1494
 msgid "Enter the FAQ question"
 msgstr "Utilisateur qui a créé cette entrée"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1184
-#: application/modules/admin/views/scripts/global-config/index.phtml:1203
-#: application/modules/admin/views/scripts/global-config/index.phtml:1464
+#: application/modules/admin/views/scripts/global-config/index.phtml:1217
+#: application/modules/admin/views/scripts/global-config/index.phtml:1236
+#: application/modules/admin/views/scripts/global-config/index.phtml:1497
 msgid "Enter the answer"
 msgstr "Entrez la réponse"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1185
-#: application/modules/admin/views/scripts/global-config/index.phtml:1203
-#: application/modules/admin/views/scripts/global-config/index.phtml:1464
+#: application/modules/admin/views/scripts/global-config/index.phtml:1218
+#: application/modules/admin/views/scripts/global-config/index.phtml:1236
+#: application/modules/admin/views/scripts/global-config/index.phtml:1497
 msgid "Enter the FAQ answer"
 msgstr "Entrez la réponse à la FAQ"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1189
-#: application/modules/admin/views/scripts/global-config/index.phtml:1207
-#: application/modules/admin/views/scripts/global-config/index.phtml:1467
+#: application/modules/admin/views/scripts/global-config/index.phtml:1222
+#: application/modules/admin/views/scripts/global-config/index.phtml:1240
+#: application/modules/admin/views/scripts/global-config/index.phtml:1500
 msgid "Add row"
 msgstr "Ajouter colonnes"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1191
-#: application/modules/admin/views/scripts/global-config/index.phtml:1468
+#: application/modules/admin/views/scripts/global-config/index.phtml:1224
+#: application/modules/admin/views/scripts/global-config/index.phtml:1501
 msgid "Remove row"
 msgstr "Supprimer la rangée"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1244
+#: application/modules/admin/views/scripts/global-config/index.phtml:1277
 #: application/modules/admin/views/scripts/home-config/index.phtml:71
 #: application/modules/admin/views/scripts/home-config/index.phtml:85
 #: application/modules/admin/views/scripts/home-config/index.phtml:97
@@ -5245,23 +5270,23 @@ msgstr "Supprimer la rangée"
 msgid "Select Icon"
 msgstr "Sélectionnez une icône"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1245
+#: application/modules/admin/views/scripts/global-config/index.phtml:1278
 msgid "Search icons..."
 msgstr "Icônes de recherche..."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1253
+#: application/modules/admin/views/scripts/global-config/index.phtml:1286
 msgid "No icons found matching your search"
 msgstr "Aucune icône correspondant à votre recherche n'a été trouvée."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1285
+#: application/modules/admin/views/scripts/global-config/index.phtml:1318
 msgid "Invalid email address(es)"
 msgstr "Adresse(s) e-mail invalide(s)"
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1305
+#: application/modules/admin/views/scripts/global-config/index.phtml:1338
 msgid "Please select at least one Active Scheme"
 msgstr "Veuillez sélectionner au moins un programme actif."
 
-#: application/modules/admin/views/scripts/global-config/index.phtml:1399
+#: application/modules/admin/views/scripts/global-config/index.phtml:1432
 msgid "Select schemes..."
 msgstr "Sélectionnez les programmes..."
 
@@ -7826,10 +7851,6 @@ msgstr "Réponse"
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:42
 msgid "Finalized"
 msgstr "Finalisé"
-
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:44
-msgid "Shipped"
-msgstr "Expédiée"
 
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:64
 msgid "You are currently generating reports for Shipment"
