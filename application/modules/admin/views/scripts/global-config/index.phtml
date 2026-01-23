@@ -270,6 +270,193 @@ $faqResults = json_decode($this->faqs);
 		border-color: #4a6fa5;
 		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
 	}
+
+	/* Icon Picker Styles */
+	.icon-input-wrapper {
+		display: flex;
+		align-items: stretch;
+		gap: 0;
+		position: relative;
+		max-width: 100%;
+	}
+
+	.icon-input-wrapper .form-control {
+		flex: 1;
+		min-width: 0;
+		border-radius: 0;
+		height: 34px;
+	}
+
+	.icon-preview {
+		width: 34px;
+		min-width: 34px;
+		flex-shrink: 0;
+		height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-right: none;
+		border-radius: 4px 0 0 4px;
+		font-size: 16px;
+		color: #4a6fa5;
+	}
+
+	.icon-preview:empty::before {
+		content: '?';
+		color: #cbd5e0;
+	}
+
+	.icon-picker-btn {
+		position: relative;
+		z-index: 5;
+		flex-shrink: 0;
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border: 1px solid #3a5a8a;
+		border-left: none;
+		border-radius: 0 4px 4px 0;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.icon-picker-btn:hover {
+		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		color: #fff;
+	}
+
+	.icon-picker-btn:active {
+		transform: scale(0.98);
+	}
+
+	#iconPickerModal {
+		z-index: 1060 !important;
+	}
+
+	#iconPickerModal .modal-dialog {
+		width: 700px;
+		max-width: 90%;
+		z-index: 1061;
+	}
+
+	#iconPickerModal .modal-content {
+		background: #fff;
+		border-radius: 6px;
+		box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+		position: relative;
+		z-index: 1062;
+	}
+
+	#iconPickerModal + .modal-backdrop,
+	.modal-backdrop {
+		z-index: 1050 !important;
+	}
+
+	#iconPickerModal .modal-header {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border-radius: 4px 4px 0 0;
+	}
+
+	#iconPickerModal .modal-header .close {
+		color: #fff;
+		opacity: 0.8;
+	}
+
+	#iconPickerModal .modal-header .close:hover {
+		opacity: 1;
+	}
+
+	#iconPickerModal .modal-title {
+		font-weight: 500;
+	}
+
+	#iconSearchInput {
+		margin-top: 15px;
+		border-radius: 4px;
+	}
+
+	.icon-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		max-height: 400px;
+		overflow-y: auto;
+		padding: 10px 0;
+	}
+
+	.icon-item {
+		width: 60px;
+		height: 60px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.icon-item i {
+		font-size: 22px;
+		color: #374151;
+	}
+
+	.icon-item:hover {
+		background: #e8f4fd;
+		border-color: #4a6fa5;
+		transform: scale(1.05);
+	}
+
+	.icon-item:hover i {
+		color: #4a6fa5;
+	}
+
+	.icon-item .icon-name {
+		position: absolute;
+		bottom: -25px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: #1f2937;
+		color: #fff;
+		font-size: 10px;
+		padding: 3px 6px;
+		border-radius: 3px;
+		white-space: nowrap;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.2s ease;
+		z-index: 10;
+	}
+
+	.icon-item:hover .icon-name {
+		opacity: 1;
+	}
+
+	.icon-item.selected {
+		background: #4a6fa5;
+		border-color: #3a5a8a;
+	}
+
+	.icon-item.selected i {
+		color: #fff;
+	}
+
+	.no-icons-found {
+		text-align: center;
+		padding: 40px;
+		color: #6b7280;
+	}
 </style>
 
 <div class="well">
@@ -856,10 +1043,17 @@ $faqResults = json_decode($this->faqs);
 					</div>
 					<div class="col-md-3">
 						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
+								title="<?= $this->translate->_('Enter the icon class name'); ?>"
+								onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
 					</div>
 					<div class="col-md-4">
 						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
@@ -883,10 +1077,17 @@ $faqResults = json_decode($this->faqs);
 					</div>
 					<div class="col-md-3">
 						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
+								title="<?= $this->translate->_('Enter the icon class name'); ?>"
+								onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
 					</div>
 					<div class="col-md-4">
 						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
@@ -910,10 +1111,17 @@ $faqResults = json_decode($this->faqs);
 					</div>
 					<div class="col-md-3">
 						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
-							title="<?= $this->translate->_('Enter the icon class name'); ?>" />
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
+								title="<?= $this->translate->_('Enter the icon class name'); ?>"
+								onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
 					</div>
 					<div class="col-md-4">
 						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
@@ -1059,6 +1267,29 @@ $faqResults = json_decode($this->faqs);
 		</div>
 	</form>
 </div>
+
+<!-- Icon Picker Modal -->
+<div class="modal" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i> <?= $this->translate->_("Select Icon"); ?></h4>
+				<input type="text" class="form-control" id="iconSearchInput" placeholder="<?= $this->translate->_('Search icons...'); ?>">
+			</div>
+			<div class="modal-body">
+				<div class="icon-grid" id="iconGrid">
+					<!-- Icons will be populated by JavaScript -->
+				</div>
+				<div class="no-icons-found" id="noIconsFound" style="display: none;">
+					<i class="icon-search" style="font-size: 40px; color: #cbd5e0;"></i>
+					<p><?= $this->translate->_("No icons found matching your search"); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 	// Existing functions...
 	// Email validation helper function
@@ -1278,4 +1509,138 @@ $faqResults = json_decode($this->faqs);
 			$(this).remove();
 		});
 	}
+
+	// Icon Picker functionality
+	var iconPickerTargetInput = null;
+	var iconPickerTargetPreview = null;
+
+	// List of available icons (Font Awesome 3.x)
+	var availableIcons = [
+		// Application
+		'icon-home', 'icon-search', 'icon-cog', 'icon-cogs', 'icon-user', 'icon-lock', 'icon-unlock', 'icon-key',
+		'icon-envelope', 'icon-envelope-alt', 'icon-inbox', 'icon-calendar', 'icon-time', 'icon-bell', 'icon-bell-alt',
+		'icon-flag', 'icon-flag-alt', 'icon-bookmark', 'icon-bookmark-empty', 'icon-star', 'icon-star-empty', 'icon-star-half',
+		'icon-heart', 'icon-heart-empty', 'icon-comment', 'icon-comment-alt', 'icon-comments', 'icon-comments-alt',
+		// Actions
+		'icon-ok', 'icon-ok-sign', 'icon-ok-circle', 'icon-remove', 'icon-remove-sign', 'icon-remove-circle',
+		'icon-plus', 'icon-plus-sign', 'icon-minus', 'icon-minus-sign', 'icon-check', 'icon-check-sign',
+		'icon-edit', 'icon-edit-sign', 'icon-pencil', 'icon-trash', 'icon-save', 'icon-download', 'icon-upload',
+		'icon-download-alt', 'icon-upload-alt', 'icon-refresh', 'icon-repeat', 'icon-undo', 'icon-copy', 'icon-paste', 'icon-cut',
+		// Navigation
+		'icon-arrow-left', 'icon-arrow-right', 'icon-arrow-up', 'icon-arrow-down',
+		'icon-chevron-left', 'icon-chevron-right', 'icon-chevron-up', 'icon-chevron-down',
+		'icon-caret-left', 'icon-caret-right', 'icon-caret-up', 'icon-caret-down',
+		'icon-circle-arrow-left', 'icon-circle-arrow-right', 'icon-circle-arrow-up', 'icon-circle-arrow-down',
+		'icon-long-arrow-left', 'icon-long-arrow-right', 'icon-long-arrow-up', 'icon-long-arrow-down',
+		// Media
+		'icon-play', 'icon-pause', 'icon-stop', 'icon-play-circle', 'icon-play-sign', 'icon-music', 'icon-film',
+		'icon-camera', 'icon-camera-retro', 'icon-picture', 'icon-facetime-video', 'icon-headphones',
+		'icon-volume-up', 'icon-volume-down', 'icon-volume-off', 'icon-microphone', 'icon-microphone-off',
+		// Charts/Data
+		'icon-bar-chart', 'icon-table', 'icon-th', 'icon-th-large', 'icon-th-list', 'icon-list', 'icon-list-alt',
+		'icon-list-ul', 'icon-list-ol', 'icon-tasks', 'icon-filter', 'icon-sort', 'icon-sort-down', 'icon-sort-up',
+		'icon-signal', 'icon-dashboard', 'icon-sitemap',
+		// Science/Medical
+		'icon-beaker', 'icon-medkit', 'icon-stethoscope', 'icon-ambulance', 'icon-hospital', 'icon-user-md',
+		'icon-fire-extinguisher', 'icon-shield', 'icon-bug',
+		// Objects
+		'icon-book', 'icon-file', 'icon-file-alt', 'icon-file-text', 'icon-file-text-alt', 'icon-folder-close',
+		'icon-folder-open', 'icon-folder-close-alt', 'icon-folder-open-alt', 'icon-briefcase', 'icon-suitcase',
+		'icon-gift', 'icon-trophy', 'icon-certificate', 'icon-credit-card', 'icon-money', 'icon-shopping-cart',
+		'icon-ticket', 'icon-tag', 'icon-tags', 'icon-barcode', 'icon-qrcode', 'icon-print',
+		// Communication
+		'icon-phone', 'icon-phone-sign', 'icon-mobile-phone', 'icon-bullhorn', 'icon-rss', 'icon-rss-sign',
+		'icon-globe', 'icon-link', 'icon-unlink', 'icon-external-link', 'icon-share', 'icon-share-alt', 'icon-share-sign',
+		'icon-signin', 'icon-signout', 'icon-exchange',
+		// Social
+		'icon-group', 'icon-user', 'icon-male', 'icon-female', 'icon-smile', 'icon-frown', 'icon-meh',
+		'icon-thumbs-up', 'icon-thumbs-down', 'icon-thumbs-up-alt', 'icon-thumbs-down-alt',
+		// Tools
+		'icon-wrench', 'icon-magic', 'icon-lightbulb', 'icon-bolt', 'icon-fire', 'icon-leaf', 'icon-cloud',
+		'icon-cloud-download', 'icon-cloud-upload', 'icon-umbrella', 'icon-sun', 'icon-moon',
+		// Location
+		'icon-map-marker', 'icon-location-arrow', 'icon-compass', 'icon-road', 'icon-plane', 'icon-truck', 'icon-rocket',
+		// Text
+		'icon-font', 'icon-bold', 'icon-italic', 'icon-underline', 'icon-strikethrough', 'icon-text-height', 'icon-text-width',
+		'icon-align-left', 'icon-align-center', 'icon-align-right', 'icon-align-justify', 'icon-indent-left', 'icon-indent-right',
+		'icon-quote-left', 'icon-quote-right',
+		// Misc
+		'icon-info', 'icon-info-sign', 'icon-question', 'icon-question-sign', 'icon-exclamation', 'icon-exclamation-sign',
+		'icon-warning-sign', 'icon-ban-circle', 'icon-spinner', 'icon-circle', 'icon-circle-blank',
+		'icon-asterisk', 'icon-power-off', 'icon-fullscreen', 'icon-resize-full', 'icon-resize-small',
+		'icon-zoom-in', 'icon-zoom-out', 'icon-expand', 'icon-collapse', 'icon-reorder', 'icon-anchor',
+		'icon-puzzle-piece', 'icon-gamepad', 'icon-keyboard', 'icon-terminal', 'icon-code', 'icon-code-fork',
+		// Devices
+		'icon-desktop', 'icon-laptop', 'icon-tablet', 'icon-hdd', 'icon-print'
+	];
+
+	function openIconPicker(inputId, previewId) {
+		iconPickerTargetInput = inputId;
+		iconPickerTargetPreview = previewId;
+
+		// Populate the icon grid
+		var gridHtml = '';
+		var currentValue = $('#' + inputId).val();
+
+		availableIcons.forEach(function(icon) {
+			var selectedClass = (icon === currentValue) ? ' selected' : '';
+			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
+			gridHtml += '<i class="' + icon + '"></i>';
+			gridHtml += '<span class="icon-name">' + icon.replace('icon-', '') + '</span>';
+			gridHtml += '</div>';
+		});
+
+		$('#iconGrid').html(gridHtml);
+		$('#noIconsFound').hide();
+		$('#iconSearchInput').val('');
+
+		// Show modal using Bootstrap
+		$('#iconPickerModal').modal('show');
+		setTimeout(function() { $('#iconSearchInput').focus(); }, 300);
+	}
+
+	function selectIcon(iconClass) {
+		// Update input value
+		$('#' + iconPickerTargetInput).val(iconClass);
+
+		// Update preview
+		$('#' + iconPickerTargetPreview).html('<i class="' + iconClass + '"></i>');
+
+		// Close modal using Bootstrap
+		$('#iconPickerModal').modal('hide');
+	}
+
+	function updateIconPreview(inputId, previewId) {
+		var iconClass = $('#' + inputId).val();
+		if (iconClass) {
+			$('#' + previewId).html('<i class="' + iconClass + '"></i>');
+		} else {
+			$('#' + previewId).html('');
+		}
+	}
+
+	// Icon search functionality
+	$(document).ready(function() {
+		$('#iconSearchInput').on('keyup', function() {
+			var searchTerm = $(this).val().toLowerCase();
+			var visibleCount = 0;
+
+			$('.icon-item').each(function() {
+				var iconName = $(this).data('icon').toLowerCase();
+				if (iconName.includes(searchTerm)) {
+					$(this).show();
+					visibleCount++;
+				} else {
+					$(this).hide();
+				}
+			});
+
+			// Show/hide no results message
+			if (visibleCount === 0) {
+				$('#noIconsFound').show();
+			} else {
+				$('#noIconsFound').hide();
+			}
+		});
+	});
 </script>
