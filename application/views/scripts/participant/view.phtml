@@ -1,5 +1,6 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All PT Participants"); ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <?= $this->translate->_("List of All PT Participants"); ?></div>
     <div style="margin-top:10px;">
         <!-- <a href="<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'add-participant'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New Participant</a> -->
         <!-- <a href="<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'bulk-import'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-plus"></i>&nbsp;&nbsp;Bulk Import Participants</a> -->
@@ -8,7 +9,8 @@
 </h4>
 <div class="table-responsive">
 
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover table-responsive" id="participantsTable">
+    <table cellpadding="0" cellspacing="0" border="0"
+        class="table table-striped table-bordered table-hover table-responsive" id="participantsTable">
         <thead>
             <tr>
                 <th><?= $this->translate->_("Participant ID"); ?></th>
@@ -33,62 +35,60 @@
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         oTable = $('#participantsTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
-			"bAutoWidth": false,
-			"bInfo": true,
-			"bScrollCollapse": true,
-			"sPaginationType": "full_numbers",
-			"bRetrieve": false,
-			"bDestroy": true,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "full_numbers",
+            "bRetrieve": false,
+            "bDestroy": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": ""
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": ""
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [0, "asc"]
             ],
             "bProcessing": true,
-			"bServerSide": true,
-			"bAutoWidth": false,
-			"bStateSave": true,
+            "bServerSide": true,
+            "bAutoWidth": false,
+            "bStateSave": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'view', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 aoData.push({
                     "name": "from",
                     "value": "participant"
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -104,7 +104,7 @@
     function downloadParticipantDetails() {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'export-participants-details', 'format' => 'html')); ?>",
-            function(data) {
+            function (data) {
                 $.unblockUI();
                 if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
                     alert('<?= $this->translate->_("Unable to generate download"); ?>');
@@ -119,10 +119,10 @@
             if (confirm("<?= $this->translate->_("Are you sure you want to delete this participant?"); ?> ")) {
                 // $.blockUI();
                 $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'delete-participant')); ?>", {
-                        participantId: id,
-                        format: "html"
-                    },
-                    function(data) {
+                    participantId: id,
+                    format: "html"
+                },
+                    function (data) {
                         $.unblockUI();
                         if (data > 0) {
                             oTable.fnDraw();

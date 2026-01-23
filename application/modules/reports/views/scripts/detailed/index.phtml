@@ -18,28 +18,30 @@
 <table style="margin:20px 0;" class="table table-bordered">
     <tr>
         <td style="width:120px;text-align: center;font-weight:bold;">
-        <?= $this->translate->_("Pick a Date Range"); ?>
+            <?= $this->translate->_("Pick a Date Range"); ?>
         </td>
         <td style="width:120px;text-align: center;font-weight:bold;">
-        <?= $this->translate->_("Select Scheme Type (Optional)"); ?>
+            <?= $this->translate->_("Select Scheme Type (Optional)"); ?>
         </td>
         <td style="width:120px;text-align: center;font-weight:bold;">
-        <?= $this->translate->_("Select Report Type"); ?>
+            <?= $this->translate->_("Select Report Type"); ?>
         </td>
-        <td class="dontPrint" style="width:5px;text-align: center;font-weight:bold;"><?= $this->translate->_("Action"); ?></td>
+        <td class="dontPrint" style="width:5px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Action"); ?></td>
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm isRequired" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm isRequired"
+                readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
         </td>
         <td>
             <select id="scheme" name="scheme" class="form-control input-sm">
                 <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?>--</option>
                 <?php
                 foreach ($this->schemes as $scheme) {
-                ?>
+                    ?>
                     <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                <?php
+                    <?php
                 }
                 ?>
             </select>
@@ -53,7 +55,12 @@
                 <option value="enrolled-programs"><?= $this->translate->_("Enrolled Programs"); ?></option>
             </select>
         </td>
-        <td class="dontPrint"><button class="btn btn-success btn-sm" onclick="drawGraph()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button class="btn btn-danger btn-sm" onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button> <button class="btn btn-primary btn-sm" onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button></td>
+        <td class="dontPrint"><button class="btn btn-success btn-sm"
+                onclick="drawGraph()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
+                class="btn btn-danger btn-sm"
+                onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+            <button class="btn btn-primary btn-sm"
+                onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button></td>
     </tr>
 </table>
 <div id="participant" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
@@ -71,31 +78,31 @@
     var startDate = "";
     var endDate = "";
     var paginate = true;
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-                }
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
             },
-            function(start, end) {
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            startDate: moment().subtract(179, 'days'),
+            endDate: moment(),
+            maxDate: moment(),
+            ranges: {
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+            }
+        },
+            function (start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
             });
@@ -113,13 +120,13 @@
         }
         drawTable();
         $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'index'), "default", true); ?>", {
-                startDate: startDate,
-                endDate: endDate,
-                scheme: $("#scheme").val(),
-                reportType: $("#reportType").val(),
-                format: "html"
-            },
-            function(response) {
+            startDate: startDate,
+            endDate: endDate,
+            scheme: $("#scheme").val(),
+            reportType: $("#reportType").val(),
+            format: "html"
+        },
+            function (response) {
                 response = response.split('##');
                 var passedvalues = [];
                 var failedvalues = [];
@@ -179,7 +186,7 @@
                         shadow: false
                     },
                     tooltip: {
-                        formatter: function() {
+                        formatter: function () {
                             return '<b>' + this.x + '</b><br/>' +
                                 this.series.name + ': ' + this.y + '<br/>' +
                                 'Total: ' + this.point.stackTotal;
@@ -226,22 +233,22 @@
         endDate = _dateRange[1];
 
         $("#shipmentTable").removeClass("hide");
-     
+
         $.ajax({
             url: "<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'report')); ?>",
             type: "POST",
-          //  format: "html",
-             data: {
+            //  format: "html",
+            data: {
                 startDate: startDate,
                 endDate: endDate,
                 scheme: $("#scheme").val(),
                 reportType: $("#reportType").val()
             },
-            success: function(response){
-         //   alert(response);
+            success: function (response) {
+                //   alert(response);
                 $("#tableData").html(response);
             },
-            error: function(){
+            error: function () {
                 alert("Error loading view!");
             }
         });
@@ -257,8 +264,7 @@
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
             "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
-                "sEmptyTable": "No data to show"
+                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
             },
             "bPaginate": paginate,
             "bJQueryUI": false,
@@ -296,39 +302,39 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed', 'action' => 'report', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "scheme",
-                    "value": $("#scheme").val()
-                });
-                aoData.push({
-                    "name": "reportType",
-                    "value": $("#reportType").val()
-                });
-            },
-            "fnServerData": function(sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": fnCallback
-                });
-            },
-            "fnRowCallback": function(nRow, aData, iDisplayIndex) {
-                $.unblockUI;
-            },
-        });
-        newcolumnHeading = $("#reportType option:selected").text();
-        $('#reportText').html(newcolumnHeading);*/
+        "fnServerParams": function(aoData) {
+            aoData.push({
+                "name": "startDate",
+                "value": startDate
+            });
+            aoData.push({
+                "name": "endDate",
+                "value": endDate
+            });
+            aoData.push({
+                "name": "scheme",
+                "value": $("#scheme").val()
+            });
+            aoData.push({
+                "name": "reportType",
+                "value": $("#reportType").val()
+            });
+        },
+        "fnServerData": function(sSource, aoData, fnCallback) {
+            $.ajax({
+                "dataType": 'json',
+                "type": "POST",
+                "url": sSource,
+                "data": aoData,
+                "success": fnCallback
+            });
+        },
+        "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+            $.unblockUI;
+        },
+    });
+    newcolumnHeading = $("#reportType option:selected").text();
+    $('#reportText').html(newcolumnHeading);*/
     };
 
     function GetPrint() {
@@ -336,7 +342,7 @@
         drawTable()
         window.print();
     }
-    jQuery(document).bind("keyup keydown", function(e) {
+    jQuery(document).bind("keyup keydown", function (e) {
         if (e.ctrlKey && e.keyCode == 80) {
             paginate = false;
             drawTable()

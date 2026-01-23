@@ -4,26 +4,37 @@
 		display: none;
 	}
 
-	<?php if ($this->shipment['status'] == "evaluated") { ?>.hide_column {
-		display: none;
-	}
+	<?php if ($this->shipment['status'] == "evaluated") { ?>
+		.hide_column {
+			display: none;
+		}
 
 	<?php } ?>
 </style>
 <div class="container">
-	<form name="addParticipantForm" id="addParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"), 'default', true) ?>" class="form-horizontal bs-example" role="form">
+	<form name="addParticipantForm" id="addParticipantForm" method="post"
+		action="<?php echo $this->url(array("module" => "admin", "controller" => "shipment", "action" => "add-enrollments"), 'default', true) ?>"
+		class="form-horizontal bs-example" role="form">
 		<fieldset>
-			<legend><?= $this->translate->_("Enrollments for Shipment Code"); ?> - <?php echo $this->shipment['shipment_code']; ?></legend>
+			<legend><?= $this->translate->_("Enrollments for Shipment Code"); ?> -
+				<?php echo $this->shipment['shipment_code']; ?></legend>
 			<?php if ($this->shipment['status'] != "finalized") { ?>
-				<input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
+				<input type="hidden" name="shipmentId" id="shipmentId"
+					value="<?php echo base64_encode($this->shipment['shipment_id']); ?>">
 				<span class="col-md-6 col-xs-12" style="padding:5px 0;">
-					<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;" id="showBtn"><span><?= $this->translate->_("Add participants to this shipment"); ?> - <?php echo $this->shipment['shipment_code']; ?></span></button>
-					<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn" style="display: none;"><span><?= $this->translate->_("Close participants this shipment"); ?> - <?php echo $this->shipmentCode; ?></span></button>
-					<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm" type="button" onclick="validateNow();return false;" value="<?= $this->translate->_("Add"); ?>">
+					<button class="btn btn-primary btn-sm" onclick="showUnEnrollment();return false;"
+						id="showBtn"><span><?= $this->translate->_("Add participants to this shipment"); ?> -
+							<?php echo $this->shipment['shipment_code']; ?></span></button>
+					<button class="btn btn-primary btn-sm" onclick="hideUnEnrollment();return false;" id="closeBtn"
+						style="display: none;"><span><?= $this->translate->_("Close participants this shipment"); ?> -
+							<?php echo $this->shipmentCode; ?></span></button>
+					<input name="submitbtn" id="submitbtn" style="display: none;" class="btn btn-success btn-sm"
+						type="button" onclick="validateNow();return false;" value="<?= $this->translate->_("Add"); ?>">
 				</span>
 			<?php } ?>
 			<br /><br />
-			<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable" style="width: 100%;margin:10px auto;">
+			<table class="table table-bordered table-striped table-hover" id="unEnrollmentTable"
+				style="width: 100%;margin:10px auto;">
 				<thead>
 					<tr>
 						<th></th>
@@ -36,13 +47,15 @@
 					</tr>
 				</thead>
 				<tr>
-					<td colspan="6" class="dataTables_empty"><?= $this->translate->_("No Unenrolled Participants found."); ?></td>
+					<td colspan="6" class="dataTables_empty">
+						<?= $this->translate->_("No Unenrolled Participants found."); ?></td>
 				</tr>
 			</table>
 
 			<br />
 
-			<table class="table table-bordered table-striped table-hover display" id="enrollmentTable" style="width: 100%;margin: auto;">
+			<table class="table table-bordered table-striped table-hover display" id="enrollmentTable"
+				style="width: 100%;margin: auto;">
 				<thead>
 					<tr>
 						<th><?= $this->translate->_("Lab Name / Participant Name"); ?></th>
@@ -55,7 +68,8 @@
 					</tr>
 				</thead>
 				<tr>
-					<td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+					<td colspan="6" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+					</td>
 				</tr>
 			</table>
 
@@ -65,7 +79,7 @@
 
 <script type="text/javascript">
 	var chosenOnes = new Array();
-	$(document).ready(function() {
+	$(document).ready(function () {
 
 		drawTable();
 		<?php if ($this->shipment['status'] != "evaluated") { ?>
@@ -76,9 +90,7 @@
 
 	function drawTable() {
 		oTable = $('#enrollmentTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -87,24 +99,24 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "hide_column",
-					"bSortable": false
-				}
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "hide_column",
+				"bSortable": false
+			}
 			],
 			"aaSorting": [
 				[0, "asc"]
@@ -112,13 +124,13 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'view-enrollments', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				aoData.push({
 					"name": "shipmentId",
 					"value": '<?php echo $this->shipment['shipment_id']; ?>'
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -132,9 +144,7 @@
 
 	function unEnrollDrawTable() {
 		oTable = $('#unEnrollmentTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": true,
 			"bInfo": true,
@@ -144,29 +154,29 @@
 			"bDestroy": true,
 			"bStateSave": true,
 			"aoColumns": [{
-					"sClass": "center noWrap",
-					"bSortable": false
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+				"sClass": "center noWrap",
+				"bSortable": false
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			}
 			],
 			"aaSorting": [
 				[0, "asc"]
 			],
-			"fnDrawCallback": function() {
+			"fnDrawCallback": function () {
 				var checkBoxes = document.getElementsByName("participants[]");
 				len = checkBoxes.length;
 				for (c = 0; c < len; c++) {
@@ -178,13 +188,13 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'unenrollments', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				aoData.push({
 					"name": "shipmentId",
 					"value": '<?php echo $this->shipment['shipment_id']; ?>'
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -200,11 +210,11 @@
 		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this participant? This cannot be undone!"); ?>")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'delete-shipment-participant')); ?>", {
-					mid: mid,
-					sid: sid,
-					format: "html"
-				},
-				function(data) {
+				mid: mid,
+				sid: sid,
+				format: "html"
+			},
+				function (data) {
 					if (data > 0) {
 						alert("<?= $this->translate->_("Participant(s) removed successfully"); ?>");
 					} else {
@@ -243,7 +253,7 @@
 		}
 	}
 
-	Array.prototype.remove = function() {
+	Array.prototype.remove = function () {
 		var what, a = arguments,
 			L = a.length,
 			ax;

@@ -1,8 +1,13 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All Partner"); ?></div>
-    <div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Partner"); ?></a></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <?= $this->translate->_("List of All Partner"); ?></div>
+    <div style="margin-top:10px;"><a
+            href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners', 'action' => 'add'), 'default', true); ?>"
+            class="btn btn-primary" style="float:right;"><i
+                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Partner"); ?></a></div>
 </h4>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="partnersTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="partnersTable">
     <thead>
         <tr>
             <th style="width:32%;"><?= $this->translate->_("Partner Name"); ?></th>
@@ -23,11 +28,9 @@
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         oTable = $('#partnersTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -35,24 +38,24 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [2, "ASC"]
@@ -60,7 +63,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",

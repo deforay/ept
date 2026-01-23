@@ -1,5 +1,6 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Data Managers"); ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Data Managers"); ?>
+    </div>
     <div style="margin-top:10px;">
         <!-- <a href="<?php echo $this->url(array('module' => 'default', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;Add New PTCC</a> -->
     </div>
@@ -7,7 +8,8 @@
 <section class="content">
     <div class="box">
         <div class="box-body">
-            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped" id="usersTable">
+            <table cellpadding="0" cellspacing="0" border="0"
+                class="display datatable table table-bordered table-hover table-striped" id="usersTable">
                 <thead>
                     <tr>
                         <th><?= $this->translate->_("Institute"); ?></th>
@@ -21,7 +23,8 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                        <td colspan="10" class="dataTables_empty">
+                            <?= $this->translate->_("Loading data from server"); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -34,16 +37,14 @@
 </div><!-- /.modal -->
 
 <script type="text/javascript" charset="utf-8">
-    $('#myModal').on('hidden.bs.modal', function() {
+    $('#myModal').on('hidden.bs.modal', function () {
         $(this).removeData('bs.modal');
     });
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         oTable = $('#usersTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -52,27 +53,27 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [{
-                    "sClass": ""
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": ""
+            },
+            {
+                "sClass": ""
+            },
+            {
+                "sClass": ""
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [0, "asc"]
@@ -82,13 +83,13 @@
             "bAutoWidth": false,
             "bStateSave": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'data-managers', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 aoData.push({
                     "name": "from",
                     "value": "participant"
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",

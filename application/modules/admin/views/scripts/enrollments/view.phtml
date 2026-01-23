@@ -2,9 +2,12 @@
 
 <div class="container">
 	<fieldset>
-		<legend><?php echo ucwords($this->enrollmentDetails[0]['first_name'] . " " . $this->enrollmentDetails[0]['last_name']); ?> - <?= $this->translate->_("Scheme"); ?> <?php echo strtoupper($this->sid); ?></legend>
+		<legend>
+			<?php echo ucwords($this->enrollmentDetails[0]['first_name'] . " " . $this->enrollmentDetails[0]['last_name']); ?>
+			- <?= $this->translate->_("Scheme"); ?> <?php echo strtoupper($this->sid); ?></legend>
 
-		<table class="table table-bordered table-striped table-hover display" id="shipmentTable" style="width: 100%;margin: auto;">
+		<table class="table table-bordered table-striped table-hover display" id="shipmentTable"
+			style="width: 100%;margin: auto;">
 			<thead>
 				<tr>
 					<th><?= $this->translate->_("Shipment Code"); ?></th>
@@ -21,7 +24,7 @@
 						<td><?php echo strtoupper($ed['scheme_name']); ?></td>
 						<td><?php echo ucwords($ed['status']); ?></td>
 					</tr>
-			<?php }
+				<?php }
 			} ?>
 		</table>
 
@@ -29,11 +32,9 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$("#shipmentTable").dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

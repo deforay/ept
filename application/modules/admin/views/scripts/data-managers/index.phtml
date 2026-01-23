@@ -11,18 +11,29 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_($title); ?></div>
     <div style="margin-top:10px;">
         <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-success" style="float:right;"><i class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
-            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-success" style="float:right;margin-right: 10px;"><i class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PTCC"); ?></a>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'), 'default', true); ?>" class="btn btn-primary" style="float:right;margin-right: 10px;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import PTCC"); ?></a>
+            <a href="javascript:void(0);" onclick="generatePtccExport('mapped');" id="exportExcel" class="btn btn-success"
+                style="float:right;"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC Mapped Participants"); ?></a>
+            <a href="javascript:void(0);" onclick="generatePtccExport('normal');" id="exportExcel" class="btn btn-success"
+                style="float:right;margin-right: 10px;"><i
+                    class="icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("PTCC"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add', 'ptcc' => '1'), 'default', true); ?>"
+                class="btn btn-primary" style="float:right;margin-right: 10px;"><i
+                    class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PTCC"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-import-ptcc'), 'default', true); ?>"
+                class="btn btn-primary" style="float:right;margin-right: 10px;"><i
+                    class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Bulk Import PTCC"); ?></a>
         <?php } else { ?>
-            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
+            <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'add'), 'default', true); ?>"
+                class="btn btn-primary" style="float:right;"><i
+                    class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Data Manager (Participant Login)"); ?></a>
         <?php } ?>
     </div>
 </h4>
 
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="usersTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="usersTable">
     <thead>
         <tr>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
@@ -52,17 +63,15 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 
 </div><!-- /.modal -->
 <script type="text/javascript" charset="utf-8">
-    $('#myModal').on('hidden.bs.modal', function() {
+    $('#myModal').on('hidden.bs.modal', function () {
 
         $(this).removeData('bs.modal');
     });
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         oTable = $('#usersTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -108,7 +117,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 schemeType = $("#scheme").val();
                 dateRange = $("#dateRange").val();
                 dataManager = $("#dataManager").val();
@@ -117,7 +126,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "value": <?php echo $ptcc; ?>
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -133,10 +142,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     function generatePtccExport(type) {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'export-ptcc')); ?>", {
-                type: type,
-                format: "html"
-            },
-            function(data) {
+            type: type,
+            format: "html"
+        },
+            function (data) {
                 if (data != "") {
                     //alert(data);$.unblockUI();return;
                     document.location.href = '/temporary/' + data;

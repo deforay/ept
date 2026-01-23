@@ -27,9 +27,10 @@
 
 				<?php $i_count = 0;
 				foreach ($this->rsUsersProfile as $tester) { ?>
-					<tr align="CENTER" class="<?php echo ($i_count % 2) ?   'dark' : 'light';
-												$i_count++; ?>">
-						<td><a href="javascript:void(0);" style="text-decoration: underline;"><?php echo $tester['unique_identifier']; ?></a></td>
+					<tr align="CENTER" class="<?php echo ($i_count % 2) ? 'dark' : 'light';
+					$i_count++; ?>">
+						<td><a href="javascript:void(0);"
+								style="text-decoration: underline;"><?php echo $tester['unique_identifier']; ?></a></td>
 						<td align="left"><?php echo $tester['first_name'] . ' ' . $tester['last_name']; ?></td>
 
 						<td><?php echo $tester['phone']; ?></td>
@@ -38,8 +39,10 @@
 						<!--<td>< ?php echo $tester['TESTGROUP']; ?></td>-->
 						<td>
 							<?php if ($tester['status'] == 'active') { ?>
-								<a class="btn btn-small" style="text-decoration : underline;" href="<?php echo $this->url(array("controller" => "participant", "action" => "testeredit", "psid" => $tester['participant_id']), null, true, false); ?>">Edit</a>
-								<a class="btn btn-small" style="text-decoration : underline;" href="<?php echo $this->url(array("controller" => "participant", "action" => "certificate", "pid" => $tester['participant_id']), null, true, false); ?>">Certificates</a>
+								<a class="btn btn-small" style="text-decoration : underline;"
+									href="<?php echo $this->url(array("controller" => "participant", "action" => "testeredit", "psid" => $tester['participant_id']), null, true, false); ?>">Edit</a>
+								<a class="btn btn-small" style="text-decoration : underline;"
+									href="<?php echo $this->url(array("controller" => "participant", "action" => "certificate", "pid" => $tester['participant_id']), null, true, false); ?>">Certificates</a>
 							<?php } else {
 								echo ucfirst($tester['status']) . "<br/><hr/> Contact PT Admin to activate";
 							} ?>
@@ -51,11 +54,9 @@
 	</div>
 </section>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$('#participantsTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

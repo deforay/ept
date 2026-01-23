@@ -35,24 +35,29 @@
                     <td><?= $this->translate->_("Action"); ?></td>
                 </tr>
                 <tr class="light">
-                    <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" /></td>
+                    <td><input type="text" id="dateRange" name="dateRange" class="form-control" readonly="readonly"
+                            style="background: #fff" placeholder="Click here to pick a Date Range" /></td>
                     <td>
                         <select id="scheme" name="scheme" class="form-control">
                             <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                             <?php
                             foreach ($this->schemes as $scheme) {
-                            ?>
-                                <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-                            <?php
+                                ?>
+                                <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?>
+                                </option>
+                                <?php
                             }
                             ?>
                         </select>
                     </td>
-                    <td><button class="btn btn-success btn-sm" onclick="summarySchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button></td>
+                    <td><button class="btn btn-success btn-sm"
+                            onclick="summarySchemes()"><span><?= $this->translate->_("Get Report"); ?></span></button>
+                    </td>
                 </tr>
             </table>
             <br><br>
-            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered" id="summaryReportTable">
+            <table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered"
+                id="summaryReportTable">
                 <thead>
                     <tr>
                         <th><?= $this->translate->_("Scheme"); ?></th>
@@ -63,7 +68,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="5" class="dataTables_empty" style="text-align: center;font-size:15px;font-weight:bold;"><?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
+                        <td colspan="5" class="dataTables_empty"
+                            style="text-align: center;font-size:15px;font-weight:bold;">
+                            <?= $this->translate->_("Please pick date range and Scheme Type to proceed"); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -78,40 +85,38 @@
     var startDate = "";
     var endDate = "";
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                startDate: moment().subtract(179, 'days'),
-                endDate: moment(),
-                maxDate: moment(),
-                ranges: {
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-                }
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
             },
-            function(start, end) {
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            startDate: moment().subtract(179, 'days'),
+            endDate: moment(),
+            maxDate: moment(),
+            ranges: {
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+            }
+        },
+            function (start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
             });
         $('#dateRange').val("");
 
         oTable = $('#summaryReportTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -120,18 +125,18 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [2, "desc"]
@@ -139,7 +144,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'summary-report', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 aoData.push({
                     "name": "scheme",
                     "value": $("#scheme").val()
@@ -153,7 +158,7 @@
                     "value": endDate
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -177,11 +182,11 @@
         if (id != "") {
             //$.blockUI();
             $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
-                    id: id,
-                    type: type,
-                    format: "html"
-                },
-                function(data) {
+                id: id,
+                type: type,
+                format: "html"
+            },
+                function (data) {
                     $.unblockUI();
                 }
             );

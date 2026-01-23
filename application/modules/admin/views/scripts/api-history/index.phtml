@@ -22,7 +22,8 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" onchange="drawTable();" />
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                style="background: #fff" placeholder="Click here to pick a Date Range" onchange="drawTable();" />
         </td>
         <td>
             <select id="syncType" name="syncType" onchange="drawTable();" class="form-control input-sm">
@@ -30,7 +31,7 @@
                 <?php if (isset($this->list['requestType']) && !empty($this->list['requestType'])) {
                     foreach ($this->list['requestType'] as $list) { ?>
                         <option value="<?php echo $list; ?>"><?php echo ucwords(str_replace("-", " ", $list)); ?></option>
-                <?php }
+                    <?php }
                 } ?>
             </select>
         </td>
@@ -40,7 +41,7 @@
                 <?php if (isset($this->list['testType']) && !empty($this->list['testType'])) {
                     foreach ($this->list['testType'] as $list) { ?>
                         <option value="<?php echo $list; ?>"><?php echo ucwords(str_replace("-", " ", $list)); ?></option>
-                <?php }
+                    <?php }
                 } ?>
             </select>
         </td>
@@ -50,11 +51,13 @@
                 <?php if (isset($this->list['manager']) && !empty($this->list['manager'])) {
                     foreach ($this->list['manager'] as $list) { ?>
                         <option value="<?php echo $list['requested_by']; ?>"><?php echo ucwords($list['name']); ?></option>
-                <?php }
+                    <?php }
                 } ?>
             </select>
         </td>
-        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
+        <td><button class="btn btn-danger btn-sm"
+                onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+        </td>
     </tr>
 </table>
 
@@ -83,12 +86,10 @@
     var endDate = "";
     var oTable = "";
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $.blockUI;
         oTable = $('#dataTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -96,27 +97,27 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [5, "desc"]
@@ -125,7 +126,7 @@
             "bSortClasses": false,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 syncType = $("#syncType").val();
                 schemeType = $("#schemeType").val();
                 dateRange = $("#dateRange").val();
@@ -155,13 +156,13 @@
                     "value": createdBy
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
                     "url": sSource,
                     "data": aoData,
-                    "success": function(json) {
+                    "success": function (json) {
                         fnCallback(json);
                     }
                 });
@@ -169,26 +170,26 @@
         });
 
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                ranges: {
-                    //'Today': [moment(), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 120 Days': [moment().subtract(119, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()]
-                }
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
             },
-            function(start, end) {
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            ranges: {
+                //'Today': [moment(), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                'Last 120 Days': [moment().subtract(119, 'days'), moment()],
+                'Last 180 Days': [moment().subtract(179, 'days'), moment()]
+            }
+        },
+            function (start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
                 oTable.fnDraw();

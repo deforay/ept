@@ -1,7 +1,7 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 $genderHelper = $this->getHelper('DateFormat');
-$dtFormat =  $genderHelper->getDateFormat();
+$dtFormat = $genderHelper->getDateFormat();
 ?>
 
 <section class="content-header">
@@ -13,11 +13,12 @@ $dtFormat =  $genderHelper->getDateFormat();
 
 			<?php
 			if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
-			?>
+				?>
 				<table class="table">
 					<tr>
 						<td style="width:100%;">
-							<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()" class="form-control">
+							<select id="qualityChecked" name="qualityChecked" onchange="schemeTable.fnDraw()"
+								class="form-control">
 								<option value=""> -- <?= $this->translate->_("Filter QC Checked Responses"); ?> --</option>
 								<option value="yes"><?= $this->translate->_("Show QC Checked Responses"); ?></option>
 								<option value="no"><?= $this->translate->_("Show Not QC Checked Responses"); ?></option>
@@ -27,22 +28,27 @@ $dtFormat =  $genderHelper->getDateFormat();
 				</table>
 				<input type="hidden" name="participantMapId" id="participantMapId" />
 				<div style="padding-top:20px;display:none;" id="qcTopButton">
-					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm" style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>) <?= $this->translate->_("Selected for Bulk Quality Check"); ?></b></a>
+					<a href="javascript:void(0)" onclick="checkQcStatus()" class="btn btn-primary btn-sm"
+						style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>)
+							<?= $this->translate->_("Selected for Bulk Quality Check"); ?></b></a>
 				</div>
-			<?php
+				<?php
 			}
 			?>
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
+			<table cellpadding="0" cellspacing="0" border="0"
+				class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
 					<tr>
 						<th></th>
 						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;">
+							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
 						<th><?= $this->translate->_("Participant ID"); ?></th>
 						<th><?= $this->translate->_("Participant Name"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;">
+							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
 						<th><?= $this->translate->_("Report"); ?></th>
 
@@ -50,7 +56,8 @@ $dtFormat =  $genderHelper->getDateFormat();
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+						<td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -65,12 +72,14 @@ $dtFormat =  $genderHelper->getDateFormat();
 		<table class="display datatable table table-bordered table-hover table-striped ">
 			<tr>
 				<th><?= $this->translate->_("QC Done on"); ?> : </th>
-				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value="" class="isRequired form-control" readonly="readonly" /></td>
+				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value=""
+						class="isRequired form-control" readonly="readonly" /></td>
 			</tr>
 		</table>
 
 		<div class="box-footer" style="text-align: center">
-			<button class="btn btn-primary" onclick="submitQcForm();return false;"><?= $this->translate->_("Submit"); ?></button>
+			<button class="btn btn-primary"
+				onclick="submitQcForm();return false;"><?= $this->translate->_("Submit"); ?></button>
 		</div>
 	</div>
 </div>
@@ -81,9 +90,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 
 	function allSchemes() {
 		schemeTable = $('#allSchemeTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -91,42 +98,42 @@ $dtFormat =  $genderHelper->getDateFormat();
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
 			"aoColumns": [{
-					"bSortable": false
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+				"bSortable": false
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": ""
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center",
+				"bSortable": false
+			},
+			{
+				"sClass": "center",
+				"bSortable": false
+			}
 			],
 			"aaSorting": [
 				[1, "desc"]
 			],
-			"fnDrawCallback": function() {
+			"fnDrawCallback": function () {
 				var checkBoxes = document.getElementsByName("subchk[]");
 				len = checkBoxes.length;
 				for (c = 0; c < len; c++) {
@@ -139,7 +146,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				aoData.push({
 					"name": "qualityChecked",
 					"value": $("#qualityChecked").val()
@@ -150,7 +157,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 					$("#qcTopButton").hide();
 				}
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -163,7 +170,7 @@ $dtFormat =  $genderHelper->getDateFormat();
 	}
 
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		allSchemes();
 
 	});
@@ -174,12 +181,12 @@ $dtFormat =  $genderHelper->getDateFormat();
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
-					schemeType: schemeType,
-					userConfig: userConfiguration,
-					mid: mid,
-					format: "html"
-				},
-				function(data) {
+				schemeType: schemeType,
+				userConfig: userConfiguration,
+				mid: mid,
+				format: "html"
+			},
+				function (data) {
 					alert("<?= $this->translate->_("Response removed successfully"); ?>");
 					schemeTable.fnDraw();
 					$.unblockUI();
@@ -222,11 +229,11 @@ $dtFormat =  $genderHelper->getDateFormat();
 		qcDate = $("#qcDate").val();
 		if (participantMapId != "" && qcDate != "") {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'add-qc')); ?>", {
-					mapId: participantMapId,
-					qcDate: qcDate,
-					format: "html"
-				},
-				function(data) {
+				mapId: participantMapId,
+				qcDate: qcDate,
+				format: "html"
+			},
+				function (data) {
 					if (data > 0) {
 						schemeTable.fnDraw();
 						$("#countChecksPending").text("0");

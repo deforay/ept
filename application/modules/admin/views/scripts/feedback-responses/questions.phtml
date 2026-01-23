@@ -1,8 +1,13 @@
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Feed Back Questions List"); ?></div>
-    <div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Feed Back Question"); ?></a></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <?= $this->translate->_("Feed Back Questions List"); ?></div>
+    <div style="margin-top:10px;"><a
+            href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'add'), 'default', true); ?>"
+            class="btn btn-primary" style="float:right;"><i
+                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Feed Back Question"); ?></a></div>
 </h4>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="feedbackResponse">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="feedbackResponse">
     <thead>
         <tr>
             <th style="width:40%;"><?= $this->translate->_("Question"); ?></th>
@@ -22,11 +27,9 @@
 <script type="text/javascript" charset="utf-8">
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         oTable = $('#feedbackResponse').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -34,21 +37,21 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": ""
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [0, "ASC"]
@@ -56,7 +59,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -69,13 +72,13 @@
 
     });
 
-      function generateFeedbackResponseReports(shipmentId) {
+    function generateFeedbackResponseReports(shipmentId) {
         // $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'get-feedback-response-report')); ?>", {
-                sid: shipmentId,
-                format: "html"
-            },
-            function(data) {
+            sid: shipmentId,
+            format: "html"
+        },
+            function (data) {
                 if (data != "") {
                     $.unblockUI();
                     document.location.href = '/temporary/' + data;

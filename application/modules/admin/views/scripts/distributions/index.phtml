@@ -11,13 +11,17 @@ $status = array(
 
 
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of"); ?> <?= isset($this->searchData) ? $status[$this->searchData] : "All PT Surveys"; ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of"); ?>
+        <?= isset($this->searchData) ? $status[$this->searchData] : "All PT Surveys"; ?></div>
     <div style="margin-top:10px;">
-        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'add'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PT Survey"); ?></a>
+        <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'add'), 'default', true); ?>"
+            class="btn btn-primary" style="float:right;"><i
+                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New PT Survey"); ?></a>
     </div>
 </h4>
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="usersTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="usersTable">
     <thead>
         <tr>
             <th><?= $this->translate->_("See Shipments"); ?></th>
@@ -42,17 +46,15 @@ $status = array(
 </div><!-- /.modal -->
 
 <script type="text/javascript" charset="utf-8">
-    $('#myModal').on('hidden.bs.modal', function() {
+    $('#myModal').on('hidden.bs.modal', function () {
         $(this).removeData('bs.modal');
     });
     /* Table initialisation */
     var oTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         oTable = $('#usersTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -60,28 +62,28 @@ $status = array(
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center",
-                    "bSortable": false
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center",
+                "bSortable": false
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [2, "desc"]
@@ -89,7 +91,7 @@ $status = array(
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -112,10 +114,10 @@ $status = array(
         }
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'ship-distribution')); ?>", {
-                did: did,
-                format: "html"
-            },
-            function(data) {
+            did: did,
+            format: "html"
+        },
+            function (data) {
                 alert(data);
                 oTable.fnDraw();
                 $.unblockUI();

@@ -25,7 +25,8 @@
 	<section class="content">
 		<section class="box">
 			<div class="box-body">
-				<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped" id="shipmentFormDownload">
+				<table cellpadding="0" cellspacing="0" border="0"
+					class="display datatable table table-bordered table-hover table-striped" id="shipmentFormDownload">
 					<thead>
 						<tr>
 							<th><?= $this->translate->_("Shipment Code"); ?></th>
@@ -38,7 +39,8 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="5" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+							<td colspan="5" class="dataTables_empty">
+								<?= $this->translate->_("Loading data from server"); ?></td>
 						</tr>
 					</tbody>
 				</table>
@@ -47,16 +49,14 @@
 	</section>
 </main>
 <script>
-	$(document).ready(function() {
+	$(document).ready(function () {
 		allSchemes();
 	});
 
 
 	function allSchemes() {
 		schemeTable = $('#shipmentFormDownload').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -64,24 +64,24 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
 			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center",
+				"bSortable": false
+			}
 			],
 			"aaSorting": [
 				[4, "asc"]
@@ -89,7 +89,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'shipment-form', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
