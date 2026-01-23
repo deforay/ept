@@ -58,23 +58,6 @@
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
-					<div class="col-lg-8">
-						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
-							<option value="yes">Yes</option>
-							<option value="no" selected="selected">No</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
-					</div>
-				</div>
-				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Status"); ?></label>
 					<div class="col-lg-8">
 						<select id="status" name="status" class="form-control" title="Please select the status">
@@ -106,6 +89,23 @@
 					<div class="col-lg-8">
 						<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
 						</select>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group col-lg-6">
+					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
+					<div class="col-lg-8">
+						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
+							<option value="yes">Yes</option>
+							<option value="no" selected="selected">No</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6" id="additionalDetailLabelGroup" style="display: none;">
+					<label class="col-lg-4 control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
 					</div>
 				</div>
 			</div>
@@ -253,10 +253,10 @@
 
 		$('#captureAdditionalDetails').on("change", function() {
 			if ($(this).val() == 'yes') {
-				$("#additionalDetailLabel").attr("disabled", false);
+				$("#additionalDetailLabelGroup").show();
 				$("#additionalDetailLabel").addClass("isRequired");
 			} else {
-				$("#additionalDetailLabel").attr("disabled", true);
+				$("#additionalDetailLabelGroup").hide();
 				$("#additionalDetailLabel").removeClass("isRequired");
 			}
 
@@ -301,8 +301,9 @@
 			'test-result': [],
 			'final-interpretation': []
 		};
+		var allResultCodes = [];
 
-		// Collect all result types and expected results
+		// Collect all result types, expected results, and result codes
 		$('.resultTypeInput').each(function() {
 			var resultType = $(this).val();
 			if (resultType) {
@@ -322,6 +323,17 @@
 						return false;
 					}
 					resultsByType[resultType].push(normalizedResult);
+				}
+
+				// Check for duplicate result codes
+				var resultCode = row.find('input[name*="[resultCode]"]').val();
+				if (resultCode && resultCode.trim() !== '') {
+					var normalizedCode = resultCode.trim().toUpperCase();
+					if (allResultCodes.includes(normalizedCode)) {
+						alert('Duplicate Result Code "' + resultCode + '" found. Each result code must be unique.');
+						return false;
+					}
+					allResultCodes.push(normalizedCode);
 				}
 			}
 		});
@@ -544,19 +556,37 @@
 	}
 
 	function resultCodeChange(obj) {
-		var schemeCode = $('#schemeCode').val();
-		var currentVal = $(obj).val();
-		var prefix = schemeCode + '-';
+		var schemeCode = $('#schemeCode').val().toUpperCase();
+		var row = $(obj).closest('tr');
+		var resultType = row.find('.resultTypeInput').val();
+		var currentVal = $(obj).val().toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-		// Only add prefix if it doesn't already start with it
-		if (!currentVal.startsWith(prefix)) {
-			$(obj).val(prefix + currentVal);
+		// Build the result code based on result type
+		// Test Result: PREFIX-T-{value}, Final Interpretation: PREFIX-F-{value}
+		var typeCode = (resultType === 'test-result') ? 'T' : (resultType === 'final-interpretation') ? 'F' : '';
+		var prefix = schemeCode + '-' + typeCode + '-';
+
+		// If result type is selected, use the pattern; otherwise just use schemeCode prefix
+		if (typeCode && currentVal) {
+			// Remove any existing prefix pattern to get the base value
+			var baseVal = currentVal.replace(new RegExp('^' + schemeCode + '-[TF]-', 'i'), '');
+			$(obj).val(prefix + baseVal);
+		} else if (currentVal && !currentVal.startsWith(schemeCode + '-')) {
+			$(obj).val(schemeCode + '-' + currentVal);
 		}
 	}
 
 	function resultTypeChange(rrow, srow) {
-		if ($('#resultType' + rrow + srow).val() == 'test-result') {
+		var resultType = $('#resultType' + rrow + srow).val();
+		if (resultType == 'test-result') {
 			$('#displayContext' + rrow + srow).val('participant');
+		}
+
+		// Update the result code when result type changes
+		var row = $('#resultType' + rrow + srow).closest('tr');
+		var resultCodeInput = row.find('.resultCodeInput');
+		if (resultCodeInput.val()) {
+			resultCodeChange(resultCodeInput[0]);
 		}
 	}
 
