@@ -1,6 +1,6 @@
 <?php
 
-class Admin_GenericTestController extends Zend_Controller_Action
+class Admin_CustomTestController extends Zend_Controller_Action
 {
 
     public function init()
@@ -59,7 +59,7 @@ class Admin_GenericTestController extends Zend_Controller_Action
 
             $schemeService->saveGenericTest($params);
             $schemeService->setRecommededCustomTestTypes($params);
-            $this->redirect("/admin/generic-test");
+            $this->redirect("/admin/custom-test");
         }
         $dtsModel = new Application_Model_Dts();
         $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
@@ -87,13 +87,13 @@ class Admin_GenericTestController extends Zend_Controller_Action
             }
             $schemeService->saveGenericTest($params);
             $schemeService->setRecommededCustomTestTypes($params);
-            $this->redirect('admin/generic-test');
+            $this->redirect('/admin/custom-test');
         } elseif ($this->hasParam('id')) {
             $id = base64_decode($this->_getParam('id'));
             $this->view->result = $result =  $schemeService->getGenericTest($id);
             $schemeCode = $result['schemeResult']['scheme_id'];
             $dtsModel = new Application_Model_Dts();
-            $db = new Application_Model_GenericTest();
+            $db = new Application_Model_CustomTest();
             $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
             $this->view->customTestsRecommendedTestkits = $db->getRecommededGenericTestkits($schemeCode);
         }

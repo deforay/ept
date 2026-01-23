@@ -45,7 +45,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 </section>
 <section class="content">
 	<div class="box">
-		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "generic-test", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">
+		<form name="tbResponseForm" id="tbResponseForm" method="post" action="<?php echo $this->url(array("controller" => "custom-test", "action" => "response"), null, true) ?>" onsubmit="return validateNow();return false;">
 			<div class="box-body">
 				<input type="hidden" id="hdLastDate" name="hdLastDate" value="<?php echo $this->shipment['lastdate_response']; ?>" />
 				<input type="hidden" id="smid" name="smid" value="<?php echo $this->shipment['map_id']; ?>" />

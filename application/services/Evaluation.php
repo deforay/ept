@@ -455,7 +455,7 @@ class Application_Service_Evaluation
 			if ($shipmentResult[0]['status'] == 'shipped' || $reEvaluate == true) {
 				// Set processing state
 				$this->setShipmentProcessingState($db, $shipmentId, $shipmentResult);
-				$genericTestModel = new Application_Model_GenericTest();
+				$genericTestModel = new Application_Model_CustomTest();
 				$shipmentResult = $genericTestModel->evaluate($shipmentResult, $shipmentId, $reEvaluate);
 			}
 		}
@@ -2687,7 +2687,7 @@ class Application_Service_Evaluation
 				$summaryPDFData = $tbModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			} elseif ($shipmentResult['scheme_type'] == 'generic-test' || $shipmentResult['is_user_configured'] == 'yes') {
-				$genericModel = new Application_Model_GenericTest();
+				$genericModel = new Application_Model_CustomTest();
 				$summaryPDFData = $genericModel->getDataForSummaryPDF($shipmentId);
 				$shipmentResult = array_merge($shipmentResult, $summaryPDFData);
 			}

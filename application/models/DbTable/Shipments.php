@@ -2093,7 +2093,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $allSamples = $schemeService->getEidSamples($row['shipment_id'], $row['participant_id']);
             }
             if ($row['is_user_configured'] == 'yes' && $schemeType == 'custom-tests') {
-                $model = new Application_Model_GenericTest();
+                $model = new Application_Model_CustomTest();
                 $allSamples = $model->getSamplesForParticipant($row['shipment_id'], $row['participant_id']);
             }
             $isEditable = $spMap->isShipmentEditable($row['shipment_id'], $row['participant_id']);

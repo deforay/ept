@@ -1,6 +1,6 @@
 <?php
 
-class GenericTestController extends Zend_Controller_Action
+class CustomTestController extends Zend_Controller_Action
 {
 
     public function init()
@@ -22,7 +22,7 @@ class GenericTestController extends Zend_Controller_Action
 
         $schemeService = new Application_Service_Schemes();
         $shipmentService = new Application_Service_Shipments();
-        $model = new Application_Model_GenericTest();
+        $model = new Application_Model_CustomTest();
 
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -35,7 +35,7 @@ class GenericTestController extends Zend_Controller_Action
                 $this->redirect("/participant/current-schemes");
             } else {
                 $_SESSION['confirmForm'] = "yes";
-                $this->redirect("/generic-test/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/yes");
+                $this->redirect("/custom-test/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/yes");
             }
         } else {
             $sID = $request->getParam('sid');

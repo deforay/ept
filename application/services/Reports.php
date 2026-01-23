@@ -1656,7 +1656,7 @@ class Application_Service_Reports
             $tbObj = new Application_Model_Tb();
             return $tbObj->generateTbExcelReport($shipmentId);
         } elseif ($schemeType == 'generic-test' || $uc = 'yes') {
-            $genericTestObj = new Application_Model_GenericTest();
+            $genericTestObj = new Application_Model_CustomTest();
             return $genericTestObj->generateGenericTestExcelReport($shipmentId, $schemeType);
         } else {
             return false;

@@ -28,7 +28,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="addGenericTestForm" id="addGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "custom-test", "action" => "add"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
 			<legend><?= $this->translate->_("Add New Custom Test"); ?></legend>
 			<div class="row">
@@ -218,7 +218,7 @@
 								<tr class="quantitative-warning hide" id="quantitativeWarning1">
 									<td colspan="4">
 										<div class="alert alert-warning" style="margin-top: 10px;">
-											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>
 										</div>
 									</td>
 								</tr>
@@ -233,7 +233,7 @@
 			</table>
 			<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 				<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
-				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/generic-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+				<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/custom-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
 			</div>
 		</fieldset>
 	</form>
@@ -246,6 +246,10 @@
 	var sampleCounter = 1;
 
 	$(document).ready(function() {
+
+		// Auto-select Qualitative by default (Quantitative is incomplete)
+		$('#testType1').val('qualitative');
+		setTestFormatType('qualitative', 1);
 
 		$('#captureAdditionalDetails').on("change", function() {
 			if ($(this).val() == 'yes') {
@@ -481,7 +485,7 @@
 						<tr class="quantitative-warning hide" id="quantitativeWarning' + sampleCounter + '">\
 							<td colspan="4">\
 								<div class="alert alert-warning" style="margin-top: 10px;">\
-									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>\
+									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>\
 								</div>\
 							</td>\
 						</tr>\

@@ -17,7 +17,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="well">
-	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "generic-test", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
+	<form name="editGenericTestForm" id="editGenericTestForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "custom-test", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;">
 		<fieldset>
 			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
@@ -225,7 +225,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 								<tr class="quantitative-warning <?php echo (isset($row['sub_scheme']) && !empty($row['sub_scheme']) && $row['result_type'] == 'quantitative') ? '' : 'hide'; ?>" id="quantitativeWarning<?php echo $rowCount; ?>">
 									<td colspan="4">
 										<div class="alert alert-warning" style="margin-top: 10px;">
-											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>
 										</div>
 									</td>
 								</tr>
@@ -344,7 +344,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 				<tr class="quantitative-warning hide" id="quantitativeWarning1">
 					<td colspan="4">
 						<div class="alert alert-warning" style="margin-top: 10px;">
-							<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+							<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>
 						</div>
 					</td>
 				</tr>
@@ -361,7 +361,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
 	<input name="schemeId" class="btn btn-primary" type="hidden" value="<?php echo base64_encode($this->result['schemeResult']['scheme_id']); ?>" />
 	<input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-	<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/generic-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+	<input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/custom-test';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
 </div>
 		</fieldset>
 	</form>
@@ -595,7 +595,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 						<tr class="quantitative-warning hide" id="quantitativeWarning' + sampleCounter + '">\
 							<td colspan="4">\
 								<div class="alert alert-warning" style="margin-top: 10px;">\
-									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>\
+									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative is under active development and may have limited functionality."); ?>\
 								</div>\
 							</td>\
 						</tr>\

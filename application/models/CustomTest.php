@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 
 
-class Application_Model_GenericTest
+class Application_Model_CustomTest
 {
     private $db = null;
 

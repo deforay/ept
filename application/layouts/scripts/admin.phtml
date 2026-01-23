@@ -165,7 +165,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 			'title' => $this->translate->_('Manage Custom Tests'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-beaker',
-			'url' => $this->url(['module' => 'admin', 'controller' => 'generic-test'], 'default', true),
+			'url' => $this->url(['module' => 'admin', 'controller' => 'custom-test'], 'default', true),
 			'keywords' => ['custom', 'generic', 'test']
 		];
 	}
@@ -802,7 +802,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 										<li id="TBSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>"><?= $this->translate->_("TB Settings"); ?></a></li>
 									<?php }
 									if (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes') { ?>
-										<li id="ManageCustomTests"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'generic-test'), 'default', true); ?>"><?= $this->translate->_("Manage Custom Tests"); ?></a></li>
+										<li id="ManageCustomTests"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test'), 'default', true); ?>"><?= $this->translate->_("Manage Custom Tests"); ?></a></li>
 									<?php }
 									if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
@@ -1031,7 +1031,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#VLSettings').addClass('active');
 			} else if (splitsUrl[2] == 'tb-settings') {
 				$('#TBSettings').addClass('active');
-			} else if (splitsUrl[2] == 'generic-test') {
+			} else if (splitsUrl[2] == 'custom-test') {
 				$('#ManageCustomTests').addClass('active');
 			} else if (splitsUrl[2] == 'global-config') {
 				$('#ePTGlobalSettings').addClass('active');
