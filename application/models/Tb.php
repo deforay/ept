@@ -27,8 +27,7 @@ class Application_Model_Tb
         $counter = 0;
         $maxScore = 0;
         $finalResult = null;
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $passingScore = Pt_Commons_SchemeConfig::get('tb.passPercentage') ?? 100;
 
         $schemeService = new Application_Service_Schemes();

@@ -3,7 +3,9 @@
 class Covid19Controller extends Zend_Controller_Action
 {
 
-	public function init() {}
+	public function init()
+	{
+	}
 
 	public function indexAction()
 	{
@@ -48,8 +50,7 @@ class Covid19Controller extends Zend_Controller_Action
 				$this->redirect("/participant/current-schemes");
 			}
 
-			//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-			//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
 
 			$this->view->covid19AllowedAlgorithms = Pt_Commons_SchemeConfig::get('covid19.allowedAlgorithms');
 			$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
@@ -106,8 +107,7 @@ class Covid19Controller extends Zend_Controller_Action
 		$this->view->logo = $reportService->getReportConfigValue('logo');
 		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		//$this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
 
 		$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
 

@@ -60,9 +60,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if (isset($authNameSpace->language) && !empty(trim($authNameSpace->language))) {
             $locale = trim($authNameSpace->language);
         } else {
-            $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
-            if (isset($conf->locale) && !empty(trim($conf->locale))) {
-                $locale = trim($conf->locale);
+            // Get locale from database (global_config table with built-in fallback to config.ini)
+            $this->bootstrap('db');
+            $dbLocale = Application_Service_Common::getConfig('locale');
+            if (!empty($dbLocale)) {
+                $locale = trim($dbLocale);
             }
         }
 

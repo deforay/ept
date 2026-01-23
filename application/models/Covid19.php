@@ -18,8 +18,7 @@ class Application_Model_Covid19
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $config = Pt_Commons_SchemeConfig::get('covid19');
         $correctiveActions = $schemeService->getCovid19CorrectiveActions();
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
