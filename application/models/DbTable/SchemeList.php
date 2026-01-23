@@ -174,6 +174,17 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function saveGenericTestDetails($params)
     {
+        // Set default values if not provided
+        if (!isset($params['genericConfig']['numberOfTests']) || empty($params['genericConfig']['numberOfTests'])) {
+            $params['genericConfig']['numberOfTests'] = '1';
+        }
+        if (!isset($params['genericConfig']['captureAdditionalDetails']) || empty($params['genericConfig']['captureAdditionalDetails'])) {
+            $params['genericConfig']['captureAdditionalDetails'] = 'no';
+        }
+        if (!isset($params['genericConfig']['passingScore']) || $params['genericConfig']['passingScore'] === '') {
+            $params['genericConfig']['passingScore'] = '100';
+        }
+
         if (isset($params['testType']) && !empty($params['testType'])) {
             $params['genericConfig']['testType'] = reset($params['testType']);
         }

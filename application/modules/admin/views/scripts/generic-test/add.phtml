@@ -1,3 +1,21 @@
+<?php
+/**
+ * TODO: Sub-scheme (Multiple Sub-Tests) Feature
+ * =============================================
+ * The UI supports adding multiple sub-tests (e.g., Test 1, Test 2) within a single Custom Test,
+ * but the evaluation logic in Application_Model_GenericTest::evaluate() does NOT currently
+ * handle sub-schemes. The sub_scheme field is stored but not used during evaluation.
+ *
+ * Required work:
+ * 1. Update evaluate() to handle multiple sub-schemes within a single test
+ * 2. Each sub-scheme should have its own result code prefix (e.g., HBV-TEST1-P, HBV-TEST2-P)
+ * 3. Evaluation should aggregate scores across sub-schemes appropriately
+ * 4. Frontend response.phtml needs to display sub-test sections separately
+ *
+ * For now, the "Add New Row" button is HIDDEN to prevent users from creating multi-sub-test configurations.
+ * See: Application_Model_GenericTest::evaluate() for the evaluation logic that needs updating.
+ */
+?>
 <style>
 	.result-type {
 		background-color: #f9f9f9;
@@ -15,16 +33,16 @@
 			<legend><?= $this->translate->_("Add New Custom Test"); ?></legend>
 			<div class="row">
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Test/Scheme name"); ?> <span class="mandatory">*</span></label>
+					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the scheme name" placeholder="Enter the scheme name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This scheme name already exists for another scheme name. Please try something else.')" />
+						<input type="text" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This name already exists. Please try something else.')" />
 					</div>
 				</div>
 
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Test/Scheme Code"); ?> <span class="mandatory">*</span></label>
+					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="text" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the scheme code" placeholder="Enter the scheme code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This scheme code already exists for another scheme code. Please try something else.')" />
+						<input type="text" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This code already exists. Please try something else.')" />
 					</div>
 				</div>
 			</div>
@@ -32,9 +50,8 @@
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
 					<div class="col-lg-8">
-						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the no of tests">
-							<option value="">--<?= $this->translate->_("Select Number of test"); ?>--</option>
-							<option value="1">1</option>
+						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
+							<option value="1" selected="selected">1</option>
 							<option value="2">2</option>
 							<option value="3">3</option>
 						</select>
@@ -43,10 +60,9 @@
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
 					<div class="col-lg-8">
-						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select a capture additional details yes/no">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
 							<option value="yes">Yes</option>
-							<option value="no">No</option>
+							<option value="no" selected="selected">No</option>
 						</select>
 					</div>
 				</div>
@@ -59,9 +75,9 @@
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Scheme Status"); ?></label>
+					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Status"); ?></label>
 					<div class="col-lg-8">
-						<select id="status" name="status" class="form-control" title="Please select a capture additional details yes/no">
+						<select id="status" name="status" class="form-control" title="Please select the status">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="active" selected="selected">Active</option>
 							<option value="inactive">Inactive</option>
@@ -73,14 +89,14 @@
 				<div class="form-group col-lg-6">
 					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
 					<div class="col-lg-8">
-						<input type="text" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
+						<input type="text" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" value="100" />
 					</div>
 				</div>
 				<div class="form-group col-lg-6">
 					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
 					<div class="col-lg-8">
-						<input type="radio" class="" name="disableOtherTestkit" id="disableOtherTestkit" value="yes" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("Yes"); ?>
-						&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkit" value="no" title="Please choose whether generic test kits enable or disable" /> <?= $this->translate->_("No"); ?>
+						<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
+						&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" value="no" checked="checked" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
 					</div>
 				</div>
 			</div>
@@ -104,13 +120,13 @@
 										<lable for="resultSubGroup1" class="form-label-control"><?= $this->translate->_("Enter the test name"); ?></lable>
 									</td>
 									<td class="hide firstSubTest" style="width:30%;">
-										<input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for 1st row" />
+										<input type="text" name="resultSubGroup[1]" id="resultSubGroup1" class="form-control input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for 1st row" />
 									</td>
 									<td style="width:20%;">
-										<lable for="testType1" class="form-label-control"><?= $this->translate->_("Select Result Type"); ?></lable>
+										<lable for="testType1" class="form-label-control"><?= $this->translate->_("Select Test Format"); ?></lable>
 									</td>
 									<td style="width:30%;">
-										<select type="text" name="testType[1]" id="testType1" class="form-control input-sm" title="Please select the type of result" onchange="setResultType(this.value, 1)">
+										<select type="text" name="testType[1]" id="testType1" class="form-control input-sm" title="Please select the test format" onchange="setTestFormatType(this.value, 1)">
 											<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
 											<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>
 											<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>
@@ -199,10 +215,18 @@
 										</table>
 									</td>
 								</tr>
+								<tr class="quantitative-warning hide" id="quantitativeWarning1">
+									<td colspan="4">
+										<div class="alert alert-warning" style="margin-top: 10px;">
+											<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>
+										</div>
+									</td>
+								</tr>
 							</table>
 						</td>
-						<td style=" text-align:center;vertical-align: middle;">
-							<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+						<!-- TODO: Multiple sub-tests feature hidden until evaluation logic supports it -->
+						<td style="text-align:center;vertical-align: middle; display:none;" class="add-subtest-btn">
+							<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
 						</td>
 					</tr>
 				</tbody>
@@ -255,11 +279,66 @@
 			});
 	}
 
+	function validateQualitativeResults() {
+		var qualitativeVisible = false;
+		$('.qualitative-div').each(function() {
+			if (!$(this).hasClass('hide')) {
+				qualitativeVisible = true;
+			}
+		});
+
+		if (!qualitativeVisible) {
+			return true; // No qualitative results to validate
+		}
+
+		var hasTestResult = false;
+		var hasFinalInterpretation = false;
+		var resultsByType = {
+			'test-result': [],
+			'final-interpretation': []
+		};
+
+		// Collect all result types and expected results
+		$('.resultTypeInput').each(function() {
+			var resultType = $(this).val();
+			if (resultType) {
+				if (resultType === 'test-result') {
+					hasTestResult = true;
+				} else if (resultType === 'final-interpretation') {
+					hasFinalInterpretation = true;
+				}
+
+				// Get the expected result from the same row
+				var row = $(this).closest('tr');
+				var expectedResult = row.find('input[name*="[expectedResult]"]').val();
+				if (expectedResult && expectedResult.trim() !== '') {
+					var normalizedResult = expectedResult.trim().toLowerCase();
+					if (resultsByType[resultType].includes(normalizedResult)) {
+						alert('Duplicate expected result "' + expectedResult + '" found for Result Type "' + (resultType === 'test-result' ? 'Test Result' : 'Final Interpretation') + '". Each expected result must be unique within a result type.');
+						return false;
+					}
+					resultsByType[resultType].push(normalizedResult);
+				}
+			}
+		});
+
+		// Check if both result types exist
+		if (!hasTestResult || !hasFinalInterpretation) {
+			alert('You must have at least one "Test Result" and one "Final Interpretation" result type.');
+			return false;
+		}
+
+		return true;
+	}
+
 	function validateNow() {
 		flag = deforayValidator.init({
 			formId: 'addGenericTestForm'
 		});
 		if (flag && !duplicated) {
+			if (!validateQualitativeResults()) {
+				return false;
+			}
 			$.blockUI();
 			document.getElementById('addGenericTestForm').submit();
 		}
@@ -297,7 +376,7 @@
 		$(obj.parentNode.parentNode).after(html);
 	}
 
-	function addTbRow(obj) {
+	function addNewRow(obj) {
 		$('.firstSubTest').removeClass('hide');
 		$('#resultSubGroup1').addClass('isRequired');
 		sampleCounter++;
@@ -307,11 +386,11 @@
 						<tr>\
 							<td style="width:20%;"><lable for="resultSubGroup' + sampleCounter + '" class="form-label-control">Enter the test name</lable></td>\
 							<td style="width:30%;">\
-								<input type="text" name="resultSubGroup[' + sampleCounter + ']"id="resultSubGroup' + sampleCounter + '" class="form-control isRequired input-sm" placeholder="Enter the sub test name" title="Please ener the sub test name for ' + sampleCounter + ' row"/>\
+								<input type="text" name="resultSubGroup[' + sampleCounter + ']"id="resultSubGroup' + sampleCounter + '" class="form-control isRequired input-sm" placeholder="Enter the sub test name" title="Please enter the sub test name for ' + sampleCounter + ' row"/>\
 							</td>\
-							<td style="width:20%;"><lable for="testType' + sampleCounter + '" class="form-label-control">Select Result Type</lable></td>\
+							<td style="width:20%;"><lable for="testType' + sampleCounter + '" class="form-label-control">Select Test Format</lable></td>\
 							<td style="width:30%;">\
-								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control isRequired input-sm" title="Please select the type of result" onchange="setResultType(this.value, ' + sampleCounter + ')">\
+								<select type="text" name="testType[' + sampleCounter + ']"id="testType' + sampleCounter + '" class="form-control isRequired input-sm" title="Please select the test format" onchange="setTestFormatType(this.value, ' + sampleCounter + ')">\
 									<option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>\
 									<option value="qualitative"><?= $this->translate->_("Qualitative"); ?></option>\
 									<option value="quantitative"><?= $this->translate->_("Quantitative"); ?></option>\
@@ -399,10 +478,17 @@
 								</table>\
 							</td>\
 						</tr>\
+						<tr class="quantitative-warning hide" id="quantitativeWarning' + sampleCounter + '">\
+							<td colspan="4">\
+								<div class="alert alert-warning" style="margin-top: 10px;">\
+									<i class="icon-warning-sign"></i> <strong><?= $this->translate->_("Note:"); ?></strong> <?= $this->translate->_("Quantitative test format is currently under active development and may not work fully as expected."); ?>\
+								</div>\
+							</td>\
+						</tr>\
 					</table>\
 				</td>\
 				<td style=" text-align:center;vertical-align: middle;">\
-					<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>\
+					<a href="javascript:void(0);" onclick="addNewRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>\
 				</td>\
 			</tr>';
 		$(obj.parentNode.parentNode).after(html);
@@ -437,22 +523,31 @@
 		});
 	}
 
-	function setResultType(id, row) {
+	function setTestFormatType(id, row) {
 		if (id == 'qualitative') {
 			$('.quantitative-input' + row).removeClass('isRequired');
 			$('#qualitativeRow' + row).removeClass('hide');
 			$('.qualitative-input' + row).addClass('isRequired');
 			$('#quantitativeRow' + row).addClass('hide');
+			$('#quantitativeWarning' + row).addClass('hide');
 		} else if (id == 'quantitative') {
 			$('.qualitative-input' + row).removeClass('isRequired');
 			$('#quantitativeRow' + row).removeClass('hide');
+			$('#quantitativeWarning' + row).removeClass('hide');
 			$('.quantitative-input' + row).addClass('isRequired');
 			$('#qualitativeRow' + row).addClass('hide');
 		}
 	}
 
 	function resultCodeChange(obj) {
-		$(obj).val($('#schemeCode').val() + '-' + $(obj).val());
+		var schemeCode = $('#schemeCode').val();
+		var currentVal = $(obj).val();
+		var prefix = schemeCode + '-';
+
+		// Only add prefix if it doesn't already start with it
+		if (!currentVal.startsWith(prefix)) {
+			$(obj).val(prefix + currentVal);
+		}
 	}
 
 	function resultTypeChange(rrow, srow) {

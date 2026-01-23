@@ -63,6 +63,25 @@ class Application_Model_GenericTest
 
 
 
+    /**
+     * TODO: Sub-scheme (Multiple Sub-Tests) Evaluation Support
+     * =========================================================
+     * Currently, this evaluate() function does NOT support multiple sub-schemes within a single Custom Test.
+     *
+     * The admin UI (add.phtml/edit.phtml) allows creating multiple sub-tests with the `sub_scheme` field
+     * (stored in r_possibleresult.sub_scheme), but this evaluation logic ignores it entirely.
+     *
+     * Required changes:
+     * 1. Query and group results by sub_scheme
+     * 2. Each sub_scheme should be evaluated separately with its own reference results
+     * 3. Aggregate scores across sub_schemes (e.g., if 2 sub-tests, each worth 50 points)
+     * 4. Handle result code prefixes per sub_scheme (e.g., HBV-TEST1-P, HBV-TEST2-P)
+     * 5. Update getSamplesForParticipant() to include sub_scheme information
+     * 6. Update failure reasons to indicate which sub_scheme failed
+     *
+     * For now, the multi-sub-test feature is HIDDEN in the admin UI.
+     * See: admin/views/scripts/generic-test/add.phtml for the hidden UI elements.
+     */
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)
     {
         $counter = 0;
