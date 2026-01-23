@@ -92,7 +92,7 @@ class Admin_LoginController extends Zend_Controller_Action
 			// logged in as a User as well..
 			// We don't want that
 			Zend_Auth::getInstance()->clearIdentity();
-			Zend_Session::destroy();
+			//Zend_Session::destroy();
 			SecurityService::rotateCSRF();
 		}
 	}
