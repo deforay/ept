@@ -1067,10 +1067,11 @@ $faqResults = json_decode($this->faqs);
 		return emailRegex.test(email.trim());
 	}
 
-	// Validate comma-separated emails
+	// Validate comma-separated emails (optional - only validates format if provided)
 	function validateEmails(emailString) {
+		// Empty is allowed (optional field)
 		if (!emailString || emailString.trim() === '') {
-			return { valid: false, message: '<?= $this->translate->_("Please enter at least one email address"); ?>' };
+			return { valid: true };
 		}
 		var emails = emailString.split(',');
 		var invalidEmails = [];
