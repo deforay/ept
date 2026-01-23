@@ -13,7 +13,6 @@ if ($isCli) {
     echo "Running in CLI mode\n";
 }
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
@@ -35,10 +34,10 @@ if (!empty($resultArray['shipment'])) {
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
+            $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);
         }
 
 
@@ -157,7 +156,7 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '</tr>';
 
             $labInfo .= '<tr style="background-color:#595959;color:#FFFFFF;">';
-            $labInfo .= '	<td style="text-align:center;" colspan="3"><strong> Site Results Testing with ' . $result['assayName'] . '</strong></td>';
+            $labInfo .= '	<td style="text-align:center;" colspan="4"><strong> Site Results Testing with ' . $result['assayName'] . '</strong></td>';
             $labInfo .= '</tr>';
         }
 
