@@ -286,9 +286,9 @@ class ReportGenerator
     private $currentShipmentLock = null;
     private ?array $evaluatedShipments = [];
 
-    public function __construct(Zend_Db_Adapter_Abstract $db, ReportConfig $config, ReportJobOptions $opts)
+    public function __construct(ReportConfig $config, ReportJobOptions $opts)
     {
-        $this->db = $db;
+        $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $this->config = $config;
         $this->opts = $opts;
     }
@@ -1590,10 +1590,9 @@ class ReportGenerator
 // =============================================================================
 
 try {
-    $opts = ReportJobOptions::parseCliOptions();
-    $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+    $cliOpts = ReportJobOptions::parseCliOptions();
     $currentConfig = ReportConfig::load();
-    $generator = new ReportGenerator($db, $currentConfig, $opts);
+    $reportGenerator = new ReportGenerator($currentConfig, $opts);
 
     // -------------------------------------------------------------------------
     // SUBPROCESS MODE (internal - for parallel participant report generation)
@@ -1601,8 +1600,8 @@ try {
     // When --procs > 1, participantReports() spawns subprocesses to generate
     // PDFs in parallel. Each subprocess handles a chunk of participants.
     //
-    if ($opts->isSubProcess) {
-        $generator->runAsSubProcess();
+    if ($cliOpts->isSubProcess) {
+        $reportGenerator->runAsSubProcess();
         exit(0);
     }
 
@@ -1612,22 +1611,22 @@ try {
     // Fetches shipments from queue (or single shipment via --shipment flag)
     // and runs the 4-step report generation process for each.
     //
-    $shipments = $generator->getShipmentsToProcess();
+    $shipments = $reportGenerator->getShipmentsToProcess();
     if (empty($shipments)) {
         exit(0);
     }
 
-    if ($opts->isCli) {
+    if ($cliOpts->isCli) {
         Pt_Commons_MiscUtility::console()->writeln(
-            "<info>Report Generation</info> Using up to <comment>{$opts->procs}</comment> parallel processes"
+            "<info>Report Generation</info> Using up to <comment>{$cliOpts->procs}</comment> parallel processes"
         );
     }
 
     foreach ($shipments as $shipment) {
-        $generator->setupShipment($shipment);     // Lock, evaluate, prepare directories
-        $generator->participantReports();                  // Generate individual PDFs (uses subprocesses when --procs > 1)
-        $generator->summaryReport();                       // Generate summary PDF (single-threaded, one per shipment)
-        $generator->completeShipmentReports();             // ZIP, notifications, release lock
+        $reportGenerator->setupShipment($shipment);     // Lock, evaluate, prepare directories
+        $reportGenerator->participantReports();                  // Generate individual PDFs (uses subprocesses when --procs > 1)
+        $reportGenerator->summaryReport();                       // Generate summary PDF (single-threaded, one per shipment)
+        $reportGenerator->completeShipmentReports();             // ZIP, notifications, release lock
     }
 
 } catch (Exception $e) {
