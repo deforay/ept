@@ -65,6 +65,11 @@ try {
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$console->writeln("  <fg=green>✓</> Completed in <comment>" . round($executionTime, 2) . "</comment> mins");
 
+		// Set evaluated_at milestone timestamp
+		$db->update('shipment', [
+			'evaluated_at' => new Zend_Db_Expr('NOW()')
+		], $db->quoteInto('shipment_id = ?', $shipmentId));
+
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
 		$db->insert('notify', [
 			'title' => 'Shipment Evaluated',

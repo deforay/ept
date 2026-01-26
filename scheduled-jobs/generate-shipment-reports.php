@@ -1477,8 +1477,8 @@ class ReportGenerator
 
         $feedbackExpiryDate = (isset($this->config->feedbackOption) && !empty($this->config->feedbackOption) && $this->config->feedbackOption == 'yes') ? $feedbackExpiryDate : null;
 
-        // Update shipment status
-        $this->db->update('shipment', [
+        // Update shipment status and milestone timestamps
+        $shipmentUpdate = [
             'status' => $reportCompletedStatus,
             'feedback_expiry_date' => $feedbackExpiryDate,
             'report_in_queue' => 'no',
@@ -1487,7 +1487,16 @@ class ReportGenerator
             'previous_status' => null,
             'processing_started_at' => null,
             'last_heartbeat' => null
-        ], "shipment_id = " . $evalRow['shipment_id']);
+        ];
+
+        // Set milestone timestamps based on report type
+        if ($evalRow['report_type'] == 'generateReport') {
+            $shipmentUpdate['reports_generated_at'] = new Zend_Db_Expr('now()');
+        } elseif ($evalRow['report_type'] == 'finalized') {
+            $shipmentUpdate['finalized_at'] = new Zend_Db_Expr('now()');
+        }
+
+        $this->db->update('shipment', $shipmentUpdate, "shipment_id = " . $evalRow['shipment_id']);
 
         // Add audit log for finalized shipments
         if (!empty($evalRow['id']) && $reportCompletedStatus == 'finalized') {
