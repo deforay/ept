@@ -1222,163 +1222,143 @@ class Application_Model_Vl
         return $filename;
     }
 
-    public function getDataForIndividualPDF($shipmentId, $participantId, $participantAttributes, $shipmentAttributes)
+    /**
+     * Batch fetch VL data for multiple participants to avoid N+1 queries.
+     * Returns processed results keyed by map_id.
+     *
+     * @param int $shipmentId
+     * @param array $mapIds Array of map_ids
+     * @param string $shipmentAttributesJson JSON string of shipment attributes
+     * @return array keyed by map_id, each containing the processed VL data
+     */
+    public function getDataForIndividualPDFBatch(int $shipmentId, array $mapIds, string $shipmentAttributesJson): array
     {
+        $mapIds = array_values(array_filter(array_map('intval', $mapIds)));
+        if (empty($mapIds)) {
+            return [];
+        }
+
         $schemeService = new Application_Service_Schemes();
-        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $vlAssayResultSet = $this->getVlAssay();
         $vlRange = $this->getVlRange($shipmentId);
-        $results = $schemeService->getVlSamples($shipmentId, $participantId);
-        $attributes = json_decode($participantAttributes, true);
-        $shipmentAttributes = json_decode($shipmentAttributes, true);
+        $shipmentAttributes = json_decode($shipmentAttributesJson, true);
+        $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
-        $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
+        // Ensure vlRange is populated
         if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
             $this->setVlRange($shipmentId);
             $vlRange = $this->getVlRange($shipmentId);
         }
 
-        $sql = $db->select()->from(array('ref' => 'reference_result_vl'), array('sample_id', 'ref.sample_label', 'control', 'mandatory'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id', array('*'))
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', array('sp.map_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier'))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_result_invalid', 'error_code', 'z_score'))
-            //->where("sp.is_pt_test_not_performed is NULL")
-            ->where("sp.is_excluded not like 'yes'")
-            ->where("sp.shipment_test_date IS NOT NULL AND sp.shipment_test_date not like '' AND sp.shipment_test_date not like '0000-00-00' AND sp.shipment_test_date not like '0000-00-00'")
-            ->where('sp.shipment_id = ? ', $shipmentId);
+        // Batch fetch all VL samples for all participants
+        $samplesByMapId = $schemeService->getVlSamplesBatch($shipmentId, $mapIds);
 
-        $spmResult = $db->fetchAll($sql);
+        $result = [];
+        foreach ($mapIds as $mapId) {
+            $samples = $samplesByMapId[$mapId] ?? [];
+            if (empty($samples)) {
+                $result[$mapId] = [];
+                continue;
+            }
 
-        $vlGraphResult = [];
-        foreach ($spmResult as $val) {
-            $valAttributes = json_decode($val['attributes'], true);
-            if ((isset($attributes['id']) && isset($valAttributes['vl_assay'])) && ($attributes['vl_assay'] == $valAttributes['vl_assay'])) {
-                if (array_key_exists($val['sample_label'], $vlGraphResult)) {
-                    if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
-                        $vlGraphResult[$val['sample_label']]['vl'][] = $val['reported_viral_load'];
-                    } else {
-                        $vlGraphResult[$val['sample_label']]['NA'][] = $val['reported_viral_load'];
-                    }
-                    //$vlGraphResult[$val['sample_label']]['pId'][]="lab ".$val['unique_identifier'];
+            // Process this participant's samples
+            $participantAttributes = json_decode($samples[0]['attributes'] ?? '{}', true);
+            $responseAssayId = $participantAttributes['vl_assay'] ?? null;
+
+            $toReturn = [];
+            $counter = 0;
+
+            foreach ($samples as $sample) {
+                $responseAssay = json_decode($sample['attributes'] ?? '{}', true);
+                $assayId = $responseAssay['vl_assay'] ?? null;
+
+                if ($assayId == 6) {
+                    $assayName = $responseAssay['other_assay'] ?? '';
                 } else {
-                    $vlGraphResult[$val['sample_label']] = [];
-                    if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'] <= $val['reported_viral_load'] && isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high']) && $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'] >= $val['reported_viral_load']) {
-                        $vlGraphResult[$val['sample_label']]['vl'][] = $val['reported_viral_load'];
-                    } else {
-                        $vlGraphResult[$val['sample_label']]['NA'][] = $val['reported_viral_load'];
-                    }
-                    if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'])) {
-                        $vlGraphResult[$val['sample_label']]['low'] = $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['low'];
-                    }
-                    if (isset($vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'])) {
-                        $vlGraphResult[$val['sample_label']]['high'] = $vlRange[$valAttributes['vl_assay']][$val['sample_id']]['high'];
-                    }
+                    $assayName = $vlAssayResultSet[$assayId] ?? '';
                 }
-            }
-        }
 
-        $counter = 0;
-        $zScore = null;
-        $toReturn = [];
-        foreach ($results as $result) {
-            //$toReturn = [];
-            $responseAssay = json_decode($result['attributes'], true);
-            if ($responseAssay['vl_assay'] == 6) {
-                $assayName = $responseAssay['other_assay'];
-            } else {
-                $assayName = $vlAssayResultSet[$responseAssay['vl_assay']];
-            }
-            $toReturn[$counter]['vl_assay'] = isset($vlAssayResultSet[$responseAssay['vl_assay']]) ? $vlAssayResultSet[$responseAssay['vl_assay']] : "";
-            $responseAssay = $responseAssay['vl_assay'];
+                $toReturn[$counter]['vl_assay'] = $vlAssayResultSet[$assayId] ?? '';
+                $toReturn[$counter]['sample_label'] = $sample['sample_label'];
+                $toReturn[$counter]['shipment_map_id'] = $sample['map_id'];
+                $toReturn[$counter]['shipment_id'] = $sample['shipment_id'];
+                $toReturn[$counter]['responseDate'] = $sample['responseDate'] ?? $sample['created_on'] ?? null;
+                $toReturn[$counter]['shipment_score'] = $sample['shipment_score'];
+                $toReturn[$counter]['shipment_test_date'] = $sample['shipment_test_date'];
+                $toReturn[$counter]['shipment_test_report_date'] = $sample['shipment_test_report_date'];
+                $toReturn[$counter]['user_comment'] = $sample['user_comment'];
+                $toReturn[$counter]['is_excluded'] = $sample['is_excluded'];
+                $toReturn[$counter]['is_pt_test_not_performed'] = $sample['is_pt_test_not_performed'];
+                $toReturn[$counter]['shipment_receipt_date'] = $sample['shipment_receipt_date'];
+                $toReturn[$counter]['max_score'] = $sample['max_score'] ?? null;
+                $toReturn[$counter]['reported_viral_load'] = $sample['reported_viral_load'];
+                $toReturn[$counter]['is_result_invalid'] = $sample['is_result_invalid'];
+                $toReturn[$counter]['error_code'] = $sample['error_code'];
 
-            $vlGraphResult[$result['sample_label']]['pVal'] = $result['reported_viral_load'];
+                $grade = 'Not Applicable';
 
-            $toReturn[$counter]['sample_label'] = $result['sample_label'];
-            $toReturn[$counter]['shipment_map_id'] = $result['map_id'];
-            $toReturn[$counter]['shipment_id'] = $result['shipment_id'];
-            $toReturn[$counter]['responseDate'] = $result['responseDate'];
-            $toReturn[$counter]['shipment_score'] = $result['shipment_score'];
-            $toReturn[$counter]['shipment_test_date'] = $result['shipment_test_date'];
-            $toReturn[$counter]['shipment_test_report_date'] = $result['shipment_test_report_date'];
-            $toReturn[$counter]['user_comment'] = $result['user_comment'];
-            $toReturn[$counter]['is_excluded'] = $result['is_excluded'];
-            $toReturn[$counter]['is_pt_test_not_performed'] = $result['is_pt_test_not_performed'];
-            $toReturn[$counter]['shipment_receipt_date'] = $result['shipment_receipt_date'];
-            $toReturn[$counter]['max_score'] = $result['max_score'];
-            $toReturn[$counter]['reported_viral_load'] = $result['reported_viral_load'];
-            $toReturn[$counter]['is_result_invalid'] = $result['is_result_invalid'];
-            $toReturn[$counter]['error_code'] = $result['error_code'];
+                if (isset($vlRange[$assayId]) && isset($sample['sample_id']) && isset($vlRange[$assayId][$sample['sample_id']])) {
+                    $sampleRange = $vlRange[$assayId][$sample['sample_id']];
+                    $toReturn[$counter]['no_of_participants'] = $sampleRange['no_of_responses'] ?? 0;
 
-            if (isset($vlRange[$responseAssay])) {
-
-
-                $toReturn[$counter]['no_of_participants'] = $vlRange[$responseAssay][$result['sample_id']]['no_of_responses'];
-
-                if ($methodOfEvaluation == 'standard') {
-                    // matching reported and low/high limits
-                    if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
-                        if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
-                            $grade = 'Acceptable';
+                    if ($methodOfEvaluation == 'standard') {
+                        $reportedVl = $sample['reported_viral_load'];
+                        if (isset($reportedVl) && $reportedVl !== null && trim($reportedVl) !== '') {
+                            $low = $sampleRange['low'] ?? 0;
+                            $high = $sampleRange['high'] ?? 0;
+                            if ($low <= $reportedVl && $high >= $reportedVl) {
+                                $grade = 'Acceptable';
+                            } else {
+                                $sampleScore = $sample['sample_score'] ?? 0;
+                                $grade = ($sampleScore > 0) ? 'Unacceptable' : '-';
+                            }
                         } else {
                             $grade = 'Unacceptable';
                         }
-                    }
 
-                    if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null && trim($result['reported_viral_load']) != null) {
-                        if ($vlRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $vlRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
+                        $toReturn[$counter]['low'] = $sampleRange['low'] ?? 'Not Applicable';
+                        $toReturn[$counter]['high'] = $sampleRange['high'] ?? 'Not Applicable';
+                        $toReturn[$counter]['sd'] = $sampleRange['sd'] ?? 'Not Applicable';
+                        $toReturn[$counter]['mean'] = $sampleRange['mean'] ?? 'Not Applicable';
+                        $toReturn[$counter]['median'] = $sampleRange['median'] ?? 'Not Applicable';
+                        $toReturn[$counter]['manualMean'] = $sampleRange['manual_mean'] ?? null;
+                        $toReturn[$counter]['manualSd'] = $sampleRange['manual_sd'] ?? null;
+                        $toReturn[$counter]['manualMedian'] = $sampleRange['manual_median'] ?? null;
+                        $toReturn[$counter]['useRange'] = $sampleRange['use_range'] ?? 'calculated';
+                        $toReturn[$counter]['zscore'] = $sample['z_score'] ?? 0;
+                    } elseif ($methodOfEvaluation == 'iso17043') {
+                        $calculatedScore = $sample['calculated_score'] ?? '';
+                        if ($calculatedScore == 'pass') {
                             $grade = 'Acceptable';
-                        } else {
-                            if ($result['sample_score'] > 0) {
-                                $grade = 'Unacceptable';
-                            } else {
-                                $grade = '-';
-                            }
+                        } elseif ($calculatedScore == 'fail') {
+                            $grade = 'Unacceptable';
+                        } elseif ($calculatedScore == 'warn') {
+                            $grade = 'Warning';
                         }
-                    } else {
-                        $grade = 'Unacceptable';
-                    }
-                    $toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['low'];
-                    $toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['high'];
-                    $toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
-                    $toReturn[$counter]['mean'] = $vlRange[$responseAssay][$result['sample_id']]['mean'];
-                    $toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
-                    $toReturn[$counter]['manualMean'] = $vlRange[$responseAssay][$result['sample_id']]['manual_mean'];
-                    $toReturn[$counter]['manualSd'] = $vlRange[$responseAssay][$result['sample_id']]['manual_sd'];
-                    $toReturn[$counter]['manualMedian'] = $vlRange[$responseAssay][$result['sample_id']]['manual_median'];
-                    $toReturn[$counter]['useRange'] = $vlRange[$responseAssay][$result['sample_id']]['use_range'] ?? 'calculated';
-                    $toReturn[$counter]['zscore'] = $result['z_score'];
-                } elseif ($methodOfEvaluation == 'iso17043') {
-                    // matching reported and low/high limits
-                    if (isset($result['calculated_score']) && $result['calculated_score'] == 'pass') {
-                        $grade = 'Acceptable';
-                    } elseif (isset($result['calculated_score']) && $result['calculated_score'] == 'fail') {
-                        $grade = 'Unacceptable';
-                    } elseif (isset($result['calculated_score']) && $result['calculated_score'] == 'warn') {
-                        $grade = 'Warning';
-                    }
 
-                    $toReturn[$counter]['low'] = $vlRange[$responseAssay][$result['sample_id']]['q1'];
-                    $toReturn[$counter]['high'] = $vlRange[$responseAssay][$result['sample_id']]['q3'];
-                    $toReturn[$counter]['sd'] = $vlRange[$responseAssay][$result['sample_id']]['sd'];
-                    $toReturn[$counter]['median'] = $vlRange[$responseAssay][$result['sample_id']]['median'];
-                    $toReturn[$counter]['zscore'] = $result['z_score'];
+                        $toReturn[$counter]['low'] = $sampleRange['q1'] ?? 'Not Applicable';
+                        $toReturn[$counter]['high'] = $sampleRange['q3'] ?? 'Not Applicable';
+                        $toReturn[$counter]['sd'] = $sampleRange['sd'] ?? 'Not Applicable';
+                        $toReturn[$counter]['median'] = $sampleRange['median'] ?? 'Not Applicable';
+                        $toReturn[$counter]['zscore'] = $sample['z_score'] ?? 0;
+                    }
+                } else {
+                    $toReturn[$counter]['low'] = 'Not Applicable';
+                    $toReturn[$counter]['high'] = 'Not Applicable';
+                    $toReturn[$counter]['sd'] = 'Not Applicable';
+                    $toReturn[$counter]['mean'] = 'Not Applicable';
+                    $toReturn[$counter]['median'] = 'Not Applicable';
+                    $toReturn[$counter]['zscore'] = 0;
                 }
-            } else {
-                $toReturn[$counter]['low'] = 'Not Applicable';
-                $toReturn[$counter]['high'] = 'Not Applicable';
-                $toReturn[$counter]['sd'] = 'Not Applicable';
-                $toReturn[$counter]['mean'] = 'Not Applicable';
-                $toReturn[$counter]['median'] = 'Not Applicable';
-                $grade = 'Not Applicable';
-                $toReturn[$counter]['zscore'] = 0;
-            }
-            $toReturn[$counter]['grade'] = $grade;
 
-            $counter++;
+                $toReturn[$counter]['grade'] = $grade;
+                $counter++;
+            }
+
+            $result[$mapId] = $toReturn;
         }
 
-        return $toReturn;
+        return $result;
     }
 
 

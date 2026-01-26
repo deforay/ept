@@ -1581,7 +1581,7 @@ class ReportGenerator
             return null;
         }
 
-        return Pt_Commons_MiscUtility::spinnerStart($reportedCount, "  Participant reports ({$reportedCount} participants)...", '█', '░', '█', 'cyan', false);
+        return Pt_Commons_MiscUtility::spinnerStart($reportedCount, "  Participant reports ({$reportedCount} participants)...", '█', '░', '█', 'cyan', true);
     }
 }
 
