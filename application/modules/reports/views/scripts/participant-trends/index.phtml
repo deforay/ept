@@ -69,7 +69,8 @@
             <?= $this->translate->_("Select Shipment"); ?>
         </td>
         <td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?></td>
+            <?= $this->translate->_("Action"); ?>
+        </td>
     </tr>
     <tr>
         <td>
@@ -101,7 +102,8 @@
             <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="performanceExcel()"><i
                     class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#"
                 class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a> </td>
+                <?= $this->translate->_("PDF"); ?></a>
+        </td>
     </tr>
 </table>
 
@@ -154,7 +156,8 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         <h4 class="modal-title" id="regionHeading">
             <?= $this->translate->_("Region Wise Participant Performance Report For"); ?> <strong>
                 <?php echo $this->schemeDetails["scheme_name"]; ?> - <?php echo $this->shipmentDetails['shipment_code']; ?>
-                ( <?php echo $this->dateFormat($this->shipmentDetails['shipment_date']); ?> ) </strong></h4>
+                ( <?php echo $this->dateFormat($this->shipmentDetails['shipment_date']); ?> ) </strong>
+        </h4>
     </legend>
     <?php
 } else {
@@ -268,9 +271,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         $.blockUI;
 
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -458,9 +459,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
         $.blockUI;
         $('#regionTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

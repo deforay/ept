@@ -42,7 +42,8 @@
                 onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
             <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="shipmentExcel()"><span><i
                         class="icon-download"></i> Excel</span></button> <a href="#" class="btn btn-primary btn-sm hide"
-                id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a></td>
+                id="exportPdf" target="_blank"><i class="icon-download"></i> PDF</a>
+        </td>
     </tr>
 </table>
 <br />
@@ -134,9 +135,6 @@
         //$("#shipmentTable").removeClass("hide");
         //$.blockUI;
         //oTable = $('#shipmentTable').dataTable({
-        //    "oLanguage": {
-        //        "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-        //    },
         //    "bPaginate": paginate,
         //    "bJQueryUI": false,
         //    "bAutoWidth": false,

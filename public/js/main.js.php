@@ -39,7 +39,7 @@
         "language": {
             "lengthMenu": "_MENU_ <?= $this->jsTranslate("records per page"); ?>",
             "zeroRecords": "<?= $this->jsTranslate("No records found"); ?>",
-            "sEmptyTable": "<?= $this->jsTranslate("No data available in table"); ?>",
+            "sEmptyTable": "<?= $this->jsTranslate("No data to show"); ?>",
             "info": "<?= $this->jsTranslate("Showing _START_ to _END_ of _TOTAL_ entries"); ?>",
             "infoEmpty": "<?= $this->jsTranslate("Showing 0 to 0 of 0 entries"); ?>",
             "infoFiltered": "(<?= $this->jsTranslate("filtered from _MAX_ total entries"); ?>)",

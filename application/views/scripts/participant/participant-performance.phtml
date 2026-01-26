@@ -260,9 +260,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
         $.blockUI;
 
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -432,9 +430,7 @@ if ((isset($this->shipmentDetails['shipment_code']) && $this->shipmentDetails['s
 
         $.blockUI;
         $('#regionTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,

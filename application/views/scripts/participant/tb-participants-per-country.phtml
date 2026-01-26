@@ -25,7 +25,8 @@
 			<?= $this->translate->_("Select Shipment"); ?>
 		</td>
 		<td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">
-			<?= $this->translate->_("Action"); ?></td>
+			<?= $this->translate->_("Action"); ?>
+		</td>
 	</tr>
 	<tr>
 		<td>
@@ -135,9 +136,7 @@
 		$.blockUI();
 		showPieChart($("#shipmentId").val());
 		$('#countriesTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

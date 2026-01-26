@@ -42,7 +42,8 @@
             <?= $this->translate->_("TestKit No"); ?>.
         </td>
         <td class="dontPrint" style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?></td>
+            <?= $this->translate->_("Action"); ?>
+        </td>
     </tr>
     <tr>
         <td>
@@ -123,7 +124,8 @@
             <button class="btn btn-info btn-sm"
                 onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button> <a href="#"
                 class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a></td>
+                <?= $this->translate->_("PDF"); ?></a>
+        </td>
     </tr>
 </table>
 <div id="testKitChart" width="450" height="450"></div>
@@ -356,9 +358,7 @@
         $("#participantReportHeader").addClass("hide");
         $.blockUI;
         oTable = $('#testKitTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,
@@ -464,9 +464,7 @@
         //   $("#participantTable").removeClass("hide");
         $.blockUI;
         rTable = $('#participantTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

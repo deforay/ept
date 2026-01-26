@@ -16,7 +16,8 @@
             <?= $this->translate->_("Select Shipment"); ?>
         </td>
         <td class="dontPrint" style="width:115px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?></td>
+            <?= $this->translate->_("Action"); ?>
+        </td>
     </tr>
     <tr>
         <td>
@@ -50,7 +51,8 @@
             <button class="btn btn-info btn-sm hide" id="exportExcel" onclick="correctiveExcel()"><i
                     class="icon-download"></i> <?= $this->translate->_("Excel"); ?></button> <a href="#"
                 class="btn btn-primary btn-sm hide" id="exportPdf" target="_blank"><i class="icon-download"></i>
-                <?= $this->translate->_("PDF"); ?></a></td>
+                <?= $this->translate->_("PDF"); ?></a>
+        </td>
     </tr>
 </table>
 <br />
@@ -70,7 +72,8 @@
         <tr>
             <th style="text-align: center;"><?= $this->translate->_("Corrective Action"); ?></th>
             <th style="text-align: center;">
-                <?= $this->translate->_("No. of Responses having this corrective action"); ?></th>
+                <?= $this->translate->_("No. of Responses having this corrective action"); ?>
+            </th>
 
         </tr>
     </thead>
@@ -164,9 +167,7 @@
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bPaginate": paginate,
             "bJQueryUI": false,
             "bAutoWidth": false,

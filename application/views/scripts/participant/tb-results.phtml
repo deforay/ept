@@ -24,7 +24,8 @@
 		<td style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Pick a Date Range"); ?></td>
 		<td style="width:20%;text-align: center;font-weight:bold;"><?= $this->translate->_("Select Shipment"); ?></td>
 		<td class="dontPrint" style="width:20%;text-align: center;font-weight:bold;">
-			<?= $this->translate->_("Action"); ?></td>
+			<?= $this->translate->_("Action"); ?>
+		</td>
 	</tr>
 	<tr>
 		<td>
@@ -40,7 +41,8 @@
 				onclick="drawGraph()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
 				class="btn btn-danger btn-sm"
 				onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-			<button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button></td>
+			<button class="btn btn-primary btn-sm" onclick="GetPrint()"><span>Print</span></button>
+		</td>
 	</tr>
 </table>
 <div id="resultsChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
@@ -130,9 +132,7 @@
 		$.blockUI();
 		showPieChart($("#shipmentId").val());
 		$('#resultsTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

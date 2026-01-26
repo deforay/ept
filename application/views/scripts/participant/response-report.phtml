@@ -27,7 +27,8 @@
             <?= $this->translate->_("Select Report Type"); ?>
         </td>
         <td class="dontPrint" style="width:5px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Action"); ?></td>
+            <?= $this->translate->_("Action"); ?>
+        </td>
     </tr>
     <tr>
         <td>
@@ -60,7 +61,8 @@
                 class="btn btn-danger btn-sm"
                 onclick="document.location.href = document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
             <button class="btn btn-primary btn-sm"
-                onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button></td>
+                onclick="GetPrint()"><span><?= $this->translate->_("Print"); ?></span></button>
+        </td>
     </tr>
 </table>
 <div id="participant" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
@@ -247,9 +249,7 @@
         $("#shipmentTable").removeClass("hide");
         $.blockUI;
         oTable = $('#shipmentTable').dataTable({
-            "oLanguage": {
-                "sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,

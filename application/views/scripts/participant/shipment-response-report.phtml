@@ -235,9 +235,7 @@ die; */
 		$("#shipmentTable").removeClass("hide");
 		$(".participantTable").removeClass("hide");
 		oTable = $('#shipmentTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -318,9 +316,7 @@ die; */
 		});
 
 		aTable = $('#participantTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

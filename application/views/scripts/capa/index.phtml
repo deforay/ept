@@ -142,9 +142,7 @@
 		$("#shipmentTable").removeClass("hide");
 		$.blockUI;
 		oTable = $('#shipmentTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

@@ -134,9 +134,7 @@
 		$.blockUI();
 		showPieChart($("#shipmentId").val());
 		$('#countriesTable').dataTable({
-			"oLanguage": {
-				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
-			},
+
 			"bPaginate": paginate,
 			"bJQueryUI": false,
 			"bAutoWidth": false,
