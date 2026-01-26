@@ -1324,6 +1324,8 @@ class Application_Model_Vl
                         $toReturn[$counter]['manualMean'] = $sampleRange['manual_mean'] ?? null;
                         $toReturn[$counter]['manualSd'] = $sampleRange['manual_sd'] ?? null;
                         $toReturn[$counter]['manualMedian'] = $sampleRange['manual_median'] ?? null;
+                        $toReturn[$counter]['manual_low'] = $sampleRange['manual_low_limit'] ?? null;
+                        $toReturn[$counter]['manual_high'] = $sampleRange['manual_high_limit'] ?? null;
                         $toReturn[$counter]['useRange'] = $sampleRange['use_range'] ?? 'calculated';
                         $toReturn[$counter]['zscore'] = $sample['z_score'] ?? 0;
                     } elseif ($methodOfEvaluation == 'iso17043') {

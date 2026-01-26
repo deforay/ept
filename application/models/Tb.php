@@ -1216,11 +1216,12 @@ class Application_Model_Tb
                     'res.tester_name',
                     'res.error_code',
                     'responseDate' => 'res.created_on',
-                    'res.response_attributes'
+                    'res.response_attributes',
+                    'res.calculated_score'
                 ]
             )
             ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['labName' => new Zend_Db_Expr("p.lab_name"), 'institute_name', 'department_name', 'phone', 'mobile', 'email', 'region', 'state', 'city', 'district', 'unique_identifier', 'first_name', 'last_name'])
-            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name'])
+            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name', 'drug_resistance_test' => 'rtb.drug_resistance_test'])
             ->joinLeft(['resR' => 'r_results'], 'resR.result_id = spm.final_result', ['result_name'])
             ->where('spm.map_id IN (?)', $mapIds)
             ->where("ref.control = 0")
