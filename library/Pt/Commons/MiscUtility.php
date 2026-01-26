@@ -766,8 +766,12 @@ final class Pt_Commons_MiscUtility
     public static function console(): ConsoleOutput
     {
         static $out = null;
-        if (!$out)
-            $out = new ConsoleOutput();
+        if (!$out) {
+            // Force decoration (ANSI support) if running in a TTY terminal
+            // This fixes progress bar not overwriting lines
+            $decorated = \defined('STDOUT') && \function_exists('posix_isatty') && @posix_isatty(STDOUT);
+            $out = new ConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, $decorated);
+        }
         return $out;
     }
 

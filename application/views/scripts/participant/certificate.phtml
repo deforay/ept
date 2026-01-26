@@ -2,7 +2,8 @@
 	<h1>
 		<?= $this->translate->_("PT Certificates"); ?>
 		<small><?= $this->translate->_("Download Certificates"); ?></small>
-		<input class="btn btn-danger" type="button" onclick="document.location='/participant/testers'" style="float:right;" value="<?= $this->translate->_("Back"); ?>">
+		<input class="btn btn-danger" type="button" onclick="document.location='/participant/testers'"
+			style="float:right;" value="<?= $this->translate->_("Back"); ?>">
 	</h1>
 </section>
 <section class="content">
@@ -22,22 +23,23 @@
 				</thead>
 				<?php
 				foreach ($this->certificate as $val) {
-				?>
+					?>
 					<tr>
 						<td style="width:20%"><?php echo $val['year']; ?></td>
 						<td style="width:20%"><?php echo strtoupper($val['scheme_name']); ?></td>
 						<td><?php
-							$fileName = $val['unique_identifier'] . "-" . strtoupper($val['scheme_name']) . "-" . $val['year'] . ".pdf";
-							$filePath = $folderPath . DIRECTORY_SEPARATOR . $val['year'] . DIRECTORY_SEPARATOR . $val['scheme_type'] . DIRECTORY_SEPARATOR . $fileName;
-							if (file_exists($filePath)) {
+						$fileName = $val['unique_identifier'] . "-" . strtoupper($val['scheme_name']) . "-" . $val['year'] . ".pdf";
+						$filePath = $folderPath . DIRECTORY_SEPARATOR . $val['year'] . DIRECTORY_SEPARATOR . $val['scheme_type'] . DIRECTORY_SEPARATOR . $fileName;
+						if (file_exists($filePath)) {
 							?>
-								<a href="<?php echo $this->baseUrl("/d/" . base64_encode($filePath)); ?>" target="_BLANK" download><?php echo $fileName; ?></a>
-							<?php
-							}
-							?>
+								<a href="<?php echo $this->baseUrl("/d/" . base64_encode($filePath)); ?>" target="_BLANK"
+									download><?php echo $fileName; ?></a>
+								<?php
+						}
+						?>
 						</td>
 					</tr>
-				<?php
+					<?php
 				}
 				?>
 			</table>
@@ -45,11 +47,9 @@
 	</div>
 </section>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$('#participantCertificateTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

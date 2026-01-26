@@ -20,7 +20,8 @@
     </tr>
     <tr>
         <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                style="background: #fff" placeholder="Click here to pick a Date Range" />
         </td>
         <td>
             <select id="type" name="type" onchange="drawTable();" class="form-control input-sm">
@@ -34,18 +35,22 @@
                 <option value=""> -- <?= $this->translate->_("Select a User"); ?> --</option>
                 <?php
                 foreach ($this->systemAdmin as $admin) {
-                ?>
-                    <option value="<?php echo $admin['primary_email']; ?>"><?php echo $admin['first_name'] . " " . $admin['last_name']; ?></option>
-                <?php
+                    ?>
+                    <option value="<?php echo $admin['primary_email']; ?>">
+                        <?php echo $admin['first_name'] . " " . $admin['last_name']; ?></option>
+                    <?php
                 }
                 ?>
             </select>
         </td>
-        <td><button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button></td>
+        <td><button class="btn btn-danger btn-sm"
+                onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+        </td>
     </tr>
 </table>
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="auditLogTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="auditLogTable">
     <thead>
         <tr>
             <th><?= $this->translate->_("Action"); ?></th>
@@ -65,38 +70,36 @@
 <script type="text/javascript" charset="utf-8">
     var startDate = "";
     var endDate = "";
-    $(document).ready(function() {
+    $(document).ready(function () {
         $.blockUI;
 
         $('#dateRange').daterangepicker({
-                locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-                showDropdowns: true,
-                alwaysShowCalendars: true,
-                autoUpdateInput: true,
-                ranges: {
-                    //'Today': [moment(), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                    'Last 120 Days': [moment().subtract(119, 'days'), moment()],
-                    'Last 180 Days': [moment().subtract(179, 'days'), moment()]
-                }
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
             },
-            function(start, end) {
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            ranges: {
+                //'Today': [moment(), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                'Last 120 Days': [moment().subtract(119, 'days'), moment()],
+                'Last 180 Days': [moment().subtract(179, 'days'), moment()]
+            }
+        },
+            function (start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
                 oTable.fnDraw();
             });
         oTable = $('#auditLogTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -104,17 +107,17 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                },
-                {
-                    "sClass": "center",
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            },
+            {
+                "sClass": "center",
+            }
             ],
             "aaSorting": [
                 [0, "desc"]
@@ -123,7 +126,7 @@
             "bSortClasses": false,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerParams": function(aoData) {
+            "fnServerParams": function (aoData) {
                 type = $("#type").val();
                 dateRange = $("#dateRange").val();
                 createdBy = $("#createdBy").val();
@@ -148,13 +151,13 @@
                     "value": createdBy
                 });
             },
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
                     "url": sSource,
                     "data": aoData,
-                    "success": function(json) {
+                    "success": function (json) {
                         fnCallback(json);
                     }
                 });

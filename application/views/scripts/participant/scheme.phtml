@@ -27,7 +27,7 @@
 						<td><?php echo $ps['first_name'] . ' ' . $ps['last_name'] ?></td>
 						<td><?php echo $ps['scheme_name'] ?></td>
 					</tr>
-				<?php $count++;
+					<?php $count++;
 				} ?>
 
 			</table>
@@ -37,11 +37,9 @@
 	</div>
 </section>
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$('#participantsTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,

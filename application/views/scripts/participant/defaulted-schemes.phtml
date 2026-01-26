@@ -4,24 +4,28 @@
 <section class="content">
 	<div class="box">
 		<div class="box-body">
-			<table cellpadding="0" cellspacing="0" border="0" class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
+			<table cellpadding="0" cellspacing="0" border="0"
+				class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
 				<thead>
 					<tr>
 						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;">
+							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
 						<th><?= $this->translate->_("Participant Id"); ?></th>
 						<th><?= $this->translate->_("Participant"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
 						<th>Status");?></th>
-						<th style="width:100px;"><?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
+						<th style="width:100px;">
+							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+						<td colspan="10" class="dataTables_empty">
+							<?= $this->translate->_("Loading data from server"); ?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -33,9 +37,7 @@
 
 	function defaultSchemes() {
 		dsTable = $('#defaultedSchemeTable').dataTable({
-			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page"
-			},
+
 			"bJQueryUI": false,
 			"bAutoWidth": false,
 			"bInfo": true,
@@ -43,36 +45,36 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
 			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": ""
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": ""
+			},
+			{
+				"sClass": ""
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center",
+				"bSortable": false
+			}
 			],
 			"aaSorting": [
 				[0, "desc"]
@@ -80,7 +82,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'defaulted-schemes', 'format' => 'html')); ?>",
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -94,7 +96,7 @@
 
 
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		defaultSchemes();
 	});
 
@@ -103,12 +105,12 @@
 		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this response? This cannot be undone!"); ?> ")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'dts', 'action' => 'delete')); ?>", {
-					mid: mid,
-					schemeType: schemeType,
-					userConfig: userConfiguration,
-					format: "html"
-				},
-				function(data) {
+				mid: mid,
+				schemeType: schemeType,
+				userConfig: userConfiguration,
+				format: "html"
+			},
+				function (data) {
 					alert("Response removed successfully");
 
 					dsTable.fnDraw();

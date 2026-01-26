@@ -27,8 +27,7 @@ class Application_Model_Tb
         $counter = 0;
         $maxScore = 0;
         $finalResult = null;
-        //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-        //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
         $passingScore = Pt_Commons_SchemeConfig::get('tb.passPercentage') ?? 100;
 
         $schemeService = new Application_Service_Schemes();
@@ -1145,136 +1144,6 @@ class Application_Model_Tb
         return $calculatedConsensus;
     }
 
-
-    public function getDataForIndividualPDF($mapId, $participantId)
-    {
-
-        $output = [];
-        $sQuery = $this->db->select()->from(
-            ['ref' => 'reference_result_tb'],
-            [
-                'sample_id',
-                'sample_label',
-                'reference_mtb_detected' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected = 'na' THEN 'N/A' else ref.mtb_detected END"),
-                'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
-                'ref.control',
-                'ref.mandatory',
-                'ref.sample_score'
-            ]
-        )
-            ->joinLeft(
-                ['spm' => 'shipment_participant_map'],
-                'spm.shipment_id=ref.shipment_id',
-                [
-                    'spm.shipment_id',
-                    'spm.participant_id',
-                    'spm.shipment_receipt_date',
-                    'spm.shipment_test_date',
-                    'spm.attributes',
-                    'assay_name' => new Zend_Db_Expr('spm.attributes->>"$.assay_name"'),
-                    'responseDate' => 'spm.shipment_test_report_date'
-                ]
-            )
-            ->joinLeft(
-                ['res' => 'response_result_tb'],
-                'spm.map_id = res.shipment_map_id AND ref.sample_id = res.sample_id',
-                [
-                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' else res.mtb_detected END"),
-                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' else res.rif_resistance END"),
-                    'calculated_score'
-                ]
-            )
-            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
-            ->joinLeft(['s' => 'shipment'], 'spm.shipment_id = s.shipment_id')
-            ->where("ref.control = 0")
-            ->where("spm.response_status is not null AND spm.response_status not like 'noresponse'")
-            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
-            ->where("spm.map_id = ?", $mapId)
-            ->order('ref.sample_id ASC');
-        $result = $this->db->fetchAll($sQuery);
-        $result = Pt_Commons_MiscUtility::sortBySampleLabelNatural($result);
-        $response = [];
-        foreach ($result as $key => $row) {
-            $attributes = [];
-            if (isset($row['attributes'])) {
-                $attributes = json_decode($row['attributes'], true);
-            }
-            if (isset($attributes['assay_name']) && !empty($attributes['assay_name'])) {
-                $row['assay_name'] = $this->getTbAssayName($attributes['assay_name']);
-                $row['drug_resistance_test'] = $this->getTbAssayDrugResistanceStatus($attributes['assay_name']);
-            }
-            $response[$key] = $row;
-        }
-
-        $output['responseResult'] = $response;
-
-
-
-        // Define a subquery to calculate the average shipment score for all participants
-        $meanShipmentScoreSubQuery = $this->db->select()
-            ->from(
-                ['spm2' => 'shipment_participant_map'],
-                [
-                    'spm2.shipment_id',
-                    'mean_shipment_score' => new Zend_Db_Expr("AVG(CASE WHEN spm2.shipment_score > 0 THEN spm2.shipment_score ELSE NULL END)")
-                ]
-            )
-            ->where("IFNULL(spm2.is_pt_test_not_performed, 'no') = 'no'")
-            ->where("spm2.response_status = 'responded'")
-            ->group('spm2.shipment_id');
-
-        // Now, incorporate this subquery into your main query
-        $previousSixShipmentsSql = $this->db->select()
-            ->from(['s' => 'shipment'], [
-                's.shipment_id',
-                's.shipment_code',
-                's.shipment_date'
-            ])
-            ->joinLeft(
-                ['meanScores' => new Zend_Db_Expr('(' . $meanShipmentScoreSubQuery . ')')],
-                'meanScores.shipment_id = s.shipment_id',
-                ['mean_shipment_score' => 'meanScores.mean_shipment_score']
-            )
-            ->join(
-                ['spm' => 'shipment_participant_map'],
-                's.shipment_id = spm.shipment_id AND spm.participant_id = ' . $participantId,
-                ['participant_score' => 'spm.shipment_score'] // Specific participant's score
-            )
-            ->where("spm.participant_id = ?", $participantId)
-            ->where("spm.map_id = $mapId OR s.status = 'finalized'")
-            ->group('s.shipment_id')
-            ->order("s.shipment_date DESC")
-            ->limit(6);
-        $previousSixShipments = $this->db->fetchAll($previousSixShipmentsSql);
-
-        $participantPreviousSixShipments = [];
-        if (!empty($previousSixShipments)) {
-            $participantPreviousSixShipmentsSql = $this->db->select()
-                ->from(['spm' => 'shipment_participant_map'], ['shipment_id' => 'spm.shipment_id', 'shipment_score' => new Zend_Db_Expr("IFNULL(spm.shipment_score, 0) + IFNULL(spm.documentation_score, 0)")])
-                ->where("spm.participant_id = ?", $participantId)
-                ->where("spm.shipment_id IN (" . implode(",", array_column($previousSixShipments, "shipment_id")) . ")");
-
-            $participantPreviousSixShipmentRecords = $this->db->fetchAll($participantPreviousSixShipmentsSql);
-            foreach ($participantPreviousSixShipmentRecords as $participantPreviousSixShipmentRecord) {
-                $participantPreviousSixShipments[$participantPreviousSixShipmentRecord['shipment_id']] = $participantPreviousSixShipmentRecord;
-            }
-        }
-        $output['previous_six_shipments'] = [];
-        for ($participantPreviousSixShipmentIndex = 0; $participantPreviousSixShipmentIndex <= count($previousSixShipments); $participantPreviousSixShipmentIndex++) {
-
-            if (count($previousSixShipments) > $participantPreviousSixShipmentIndex) {
-                $previousShipmentData['shipment_code'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_code'];
-                $previousShipmentData['mean_shipment_score'] = $previousSixShipments[$participantPreviousSixShipmentIndex]['mean_shipment_score'];
-                if (isset($participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']])) {
-                    $previousShipmentData['shipment_score'] = $participantPreviousSixShipments[$previousSixShipments[$participantPreviousSixShipmentIndex]['shipment_id']]['shipment_score'];
-                }
-                $output['previous_six_shipments'][$participantPreviousSixShipmentIndex] = $previousShipmentData;
-            }
-        }
-
-        return $output;
-    }
-
     /**
      * Fetch response data for multiple participant maps in one query to avoid repeated joins.
      *
@@ -1327,8 +1196,8 @@ class Application_Model_Tb
                 ['res' => 'response_result_tb'],
                 'res.shipment_map_id=spm.map_id and res.sample_id=ref.sample_id',
                 [
-                    'res.mtb_detected',
-                    'res.rif_resistance',
+                    'mtb_detected' => new Zend_Db_Expr("CASE WHEN res.mtb_detected = 'na' THEN 'N/A' ELSE res.mtb_detected END"),
+                    'rif_resistance' => new Zend_Db_Expr("CASE WHEN res.rif_resistance = 'na' THEN 'N/A' ELSE res.rif_resistance END"),
                     'res.probe_d',
                     'res.probe_c',
                     'res.probe_e',
@@ -1347,17 +1216,21 @@ class Application_Model_Tb
                     'res.tester_name',
                     'res.error_code',
                     'responseDate' => 'res.created_on',
-                    'res.response_attributes'
+                    'res.response_attributes',
+                    'res.calculated_score'
                 ]
             )
             ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['labName' => new Zend_Db_Expr("p.lab_name"), 'institute_name', 'department_name', 'phone', 'mobile', 'email', 'region', 'state', 'city', 'district', 'unique_identifier', 'first_name', 'last_name'])
-            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name'])
+            ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name', 'drug_resistance_test' => 'rtb.drug_resistance_test'])
             ->joinLeft(['resR' => 'r_results'], 'resR.result_id = spm.final_result', ['result_name'])
             ->where('spm.map_id IN (?)', $mapIds)
+            ->where("ref.control = 0")
+            ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->order(['spm.map_id', 'ref.sample_id']);
 
         $resultRows = $this->db->fetchAll($rows);
 
+        // Group rows by map_id
         $grouped = [];
         foreach ($resultRows as $row) {
             $mapId = (int) $row['map_id'];
@@ -1365,6 +1238,21 @@ class Application_Model_Tb
                 $grouped[$mapId] = [];
             }
             $grouped[$mapId][] = $row;
+        }
+
+        // Post-process each group: sort and use already-joined assay data
+        foreach ($grouped as $mapId => $rows) {
+            $rows = Pt_Commons_MiscUtility::sortBySampleLabelNatural($rows);
+            $processed = [];
+            foreach ($rows as $key => $row) {
+                // assayName and assayShortName are already joined from r_tb_assay
+                // Map to expected field names used by PDF template
+                if (!empty($row['assayName'])) {
+                    $row['assay_name'] = $row['assayName'];
+                }
+                $processed[$key] = $row;
+            }
+            $grouped[$mapId] = $processed;
         }
 
         return $grouped;

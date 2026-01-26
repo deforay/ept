@@ -621,6 +621,10 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/spotlight-search.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css"
+		integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg=="
+		crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
 	<script src="<?php echo $this->baseUrl("js/jquery-3.7.1.min.js"); ?>"></script>
@@ -723,13 +727,18 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		<div class="modal-body">
 			<div class="row">
 				<div>
-					<input autocomplete="off" type="password" placeholder="<?= $this->translate->_('Enter your Password'); ?>" title="<?= $this->translate->_('Please enter the your password'); ?>" name="removeParticipantPassword" id="removeParticipantPassword" class="form-control" />
+					<input autocomplete="off" type="password"
+						placeholder="<?= $this->translate->_('Enter your Password'); ?>"
+						title="<?= $this->translate->_('Please enter the your password'); ?>"
+						name="removeParticipantPassword" id="removeParticipantPassword" class="form-control" />
 				</div>
-				<small>Note: Please note that this action cannot be undone and will remove the participant and their response (if any) from the system</small>
+				<small>Note: Please note that this action cannot be undone and will remove the participant and their
+					response (if any) from the system</small>
 			</div>
 		</div>
 		<div style="margin: 0px auto 0px auto; text-align: center;">
-			<button class="btn btn-danger" onclick="removeParticipantConfirmation();"><?= $this->translate->_("Confirm"); ?></button>
+			<button class="btn btn-danger"
+				onclick="removeParticipantConfirmation();"><?= $this->translate->_("Confirm"); ?></button>
 			<button class="btn btn-warning" onclick="hidedefModal();"><?= $this->translate->_("Cancel"); ?></button>
 		</div>
 	</div>
@@ -753,145 +762,267 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?>><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index'), 'default', true); ?>"><i class="icon-dashboard"></i>&nbsp;&nbsp;<?= $this->translate->_("Dashboard"); ?></a></li>
+					<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'dashboard') ? "class='active'" : ""; ?>><a
+							href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index'), 'default', true); ?>"><i
+								class="icon-dashboard"></i>&nbsp;&nbsp;<?= $this->translate->_("Dashboard"); ?></a></li>
 					<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'configMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i>&nbsp;&nbsp;<?= $this->translate->_("Configure"); ?> <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+									class="icon-cog"></i>&nbsp;&nbsp;<?= $this->translate->_("Configure"); ?> <b
+									class="caret"></b></a>
 							<ul class="dropdown-menu" style="overflow-y:scroll;height:500px;">
 								<?php if (!$pstatus && in_array('config-ept', $privileges)) { ?>
-									<li id="pt-managers"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>"><?= $this->translate->_("PT Managers"); ?></a></li>
+									<li id="pt-managers"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'system-admins'), 'default', true); ?>"><?= $this->translate->_("PT Managers"); ?></a>
+									</li>
 								<?php } ?>
 
 								<?php if (!$pstatus && in_array('config-ept', $privileges) || !$pstatus && in_array('manage-participants', $privileges)) { ?>
 									<li class="divider"></li>
-									<li id="pt-participants"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>"><?= $this->translate->_("PT Participants"); ?></a></li>
-									<li id="data-manager"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>"><?= $this->translate->_("Data Manager (Participant Login)"); ?></a></li>
+									<li id="pt-participants"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants'), 'default', true); ?>"><?= $this->translate->_("PT Participants"); ?></a>
+									</li>
+									<li id="data-manager"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers'), 'default', true); ?>"><?= $this->translate->_("Data Manager (Participant Login)"); ?></a>
+									</li>
 									<?php if (isset($adminSession->activeSchemes) && in_array('tb', $adminSession->activeSchemes)) { ?>
-										<li id="manage-ptcc"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'ptcc' => '1'), 'default', true); ?>"><?= $this->translate->_("Manage PTCC"); ?></a></li>
+										<li id="manage-ptcc"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'ptcc' => '1'), 'default', true); ?>"><?= $this->translate->_("Manage PTCC"); ?></a>
+										</li>
 									<?php } ?>
-									<li id="participant-login-map"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>"><?= $this->translate->_("Participant Login Map"); ?></a></li>
+									<li id="participant-login-map"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>"><?= $this->translate->_("Participant Login Map"); ?></a>
+									</li>
 									<!-- <li id="PendingPTParticipants"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'pending'), 'default', true); ?>"><?= $this->translate->_("Pending PT Participants"); ?></a></li> -->
-									<li id="SchemeEnrollments"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>"><?= $this->translate->_("Scheme Enrollments"); ?></a></li>
-									<li id="EmailParticipants"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants'), 'default', true); ?>"><?= $this->translate->_("Email Participants"); ?></a></li>
-									<li id="NotTestedReasons"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons'), 'default', true); ?>"><?= $this->translate->_("Not Tested Reasons"); ?></a></li>
+									<li id="SchemeEnrollments"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'enrollments'), 'default', true); ?>"><?= $this->translate->_("Scheme Enrollments"); ?></a>
+									</li>
+									<li id="EmailParticipants"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'email-participants'), 'default', true); ?>"><?= $this->translate->_("Email Participants"); ?></a>
+									</li>
+									<li id="NotTestedReasons"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'sample-not-tested-reasons'), 'default', true); ?>"><?= $this->translate->_("Not Tested Reasons"); ?></a>
+									</li>
 								<?php }
 								if (!$pstatus && in_array('config-ept', $privileges)) { ?>
 									<li class="divider"></li>
 									<?php if (isset($configData['participant_feedback']) && $configData['participant_feedback'] == 'yes') { ?>
-										<li id="FeedbackQuestions"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Configure Feedback"); ?></a></li>
-										<li id="ShipmentQustionsMap"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a></li>
+										<li id="FeedbackQuestions"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'questions'), 'default', true); ?>"><?= $this->translate->_("Configure Feedback"); ?></a>
+										</li>
+										<li id="ShipmentQustionsMap"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions'), 'default', true); ?>"><?= $this->translate->_("Enable Feedback"); ?></a>
+										</li>
 									<?php }
 									if (in_array('dts', $adminSession->activeSchemes)) { ?>
-										<li id="TestKits"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a></li>
+										<li id="TestKits"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kits"); ?></a>
+										</li>
 									<?php } ?>
 									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
-										<li id="VLAssay"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay"); ?></a></li>
+										<li id="VLAssay"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay"); ?></a>
+										</li>
 									<?php } ?>
 									<?php if (in_array('eid', $adminSession->activeSchemes)) { ?>
-										<li id="EIDAssay"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay"); ?></a></li>
+										<li id="EIDAssay"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay"); ?></a>
+										</li>
 									<?php } ?>
 									<?php if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
 									<?php }
 									if (in_array('dts', $adminSession->activeSchemes)) { ?>
-										<li id="HIVSerologySettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Serology Settings"); ?></a></li>
+										<li id="HIVSerologySettings"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'dts-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Serology Settings"); ?></a>
+										</li>
 									<?php }
 									if (in_array('vl', $adminSession->activeSchemes)) { ?>
-										<li id="VLSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-settings'), 'default', true); ?>"><?= $this->translate->_("VL Settings"); ?></a></li>
+										<li id="VLSettings"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-settings'), 'default', true); ?>"><?= $this->translate->_("VL Settings"); ?></a>
+										</li>
 									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
-										<li id="TBSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>"><?= $this->translate->_("TB Settings"); ?></a></li>
+										<li id="TBSettings"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'tb-settings'), 'default', true); ?>"><?= $this->translate->_("TB Settings"); ?></a>
+										</li>
 									<?php }
 									if (isset($configData['generic_test_config']) && $configData['generic_test_config'] == 'yes') { ?>
-										<li id="ManageCustomTests"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test'), 'default', true); ?>"><?= $this->translate->_("Manage Custom Tests"); ?></a></li>
+										<li id="ManageCustomTests"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-test'), 'default', true); ?>"><?= $this->translate->_("Manage Custom Tests"); ?></a>
+										</li>
 									<?php }
 									if (in_array('covid19', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
-										<li id="SARS-CoV-2TestPlatforms"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Test Platforms"); ?></a></li>
-										<li id="SARS-CoV-2GeneTypes"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Gene Types"); ?></a></li>
-										<li id="SARS-CoV-2Settings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-settings'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Settings"); ?></a></li>
+										<li id="SARS-CoV-2TestPlatforms"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'test-platform'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Test Platforms"); ?></a>
+										</li>
+										<li id="SARS-CoV-2GeneTypes"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-gene-type'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Gene Types"); ?></a>
+										</li>
+										<li id="SARS-CoV-2Settings"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'covid19-settings'), 'default', true); ?>"><?= $this->translate->_("SARS-CoV-2 Settings"); ?></a>
+										</li>
 									<?php }
 									if (in_array('recency', $adminSession->activeSchemes)) { ?>
 										<li class="divider"></li>
-										<li id="HIVRecencyRTRISettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'recency-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Recency (RTRI) Settings"); ?></a></li>
+										<li id="HIVRecencyRTRISettings"><a
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'recency-settings'), 'default', true); ?>"><?= $this->translate->_("HIV Recency (RTRI) Settings"); ?></a>
+										</li>
 									<?php } ?>
 									<li class="divider"></li>
-									<li id="ePTGlobalSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a></li>
-									<li id="HomeSectionLinks"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links'), 'default', true); ?>"><?= $this->translate->_("Home Section Links"); ?></a></li>
-									<li id="HomeSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config'), 'default', true); ?>"><?= $this->translate->_("Home Settings"); ?></a></li>
-									<li id="PDFReportSettings"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>"><?= $this->translate->_("PDF Report Settings"); ?></a></li>
-									<li id="ShipmentCustomFields"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>"><?= $this->translate->_("Shipment Custom Fields"); ?></a></li>
-									<li id="CertificateTemplates"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-templates'), 'default', true); ?>"> <?= $this->translate->_("Certificate Templates"); ?></a></li>
-									<li id="FailedEmails"><a href="/admin/alerts/email"> Failed Emails</a></li>
-									<li id="MailTemplate"><a href="/admin/mail-template"> Mail Template</a></li>
+									<li id="ePTGlobalSettings"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a>
+									</li>
+									<li id="HomeSectionLinks"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links'), 'default', true); ?>"><?= $this->translate->_("Home Section Links"); ?></a>
+									</li>
+									<li id="HomeSettings"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config'), 'default', true); ?>"><?= $this->translate->_("Home Settings"); ?></a>
+									</li>
+									<li id="PDFReportSettings"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>"><?= $this->translate->_("PDF Report Settings"); ?></a>
+									</li>
+									<li id="ShipmentCustomFields"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'custom-fields'), 'default', true); ?>"><?= $this->translate->_("Shipment Custom Fields"); ?></a>
+									</li>
+									<li id="CertificateTemplates"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-templates'), 'default', true); ?>">
+											<?= $this->translate->_("Certificate Templates"); ?></a></li>
+									<li id="FailedEmails"><a href="/admin/alerts/email">
+											<?= $this->translate->_("Failed Emails"); ?></a></li>
+									<li id="MailTemplate"><a href="/admin/mail-template">
+											<?= $this->translate->_("Mail Template"); ?></a></li>
 									<li class="divider"></li>
-									<li id="HomeBanner"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>"><?= $this->translate->_("Home Banner"); ?></a></li>
-									<li id="Partners"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>"><?= $this->translate->_("Partners"); ?></a></li>
-									<li id="ContactMessages"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>"><?= $this->translate->_("Contact Messages"); ?></a></li>
+									<li id="HomeBanner"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>"><?= $this->translate->_("Home Banner"); ?></a>
+									</li>
+									<li id="Partners"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>"><?= $this->translate->_("Partners"); ?></a>
+									</li>
+									<li id="ContactMessages"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'contact-us'), 'default', true); ?>"><?= $this->translate->_("Contact Messages"); ?></a>
+									</li>
 									<li class="divider"></li>
-									<li id="AuditLog"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>"><?= $this->translate->_("Audit Log"); ?></a></li>
-									<li id="ApiSyncHistory"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history'), 'default', true); ?>"><?= $this->translate->_("API Sync History"); ?></a></li>
-									<li id="JobTracking"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking'), 'default', true); ?>"><?= $this->translate->_("Job Tracking"); ?></a></li>
+									<li id="AuditLog"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>"><?= $this->translate->_("Audit Log"); ?></a>
+									</li>
+									<li id="ApiSyncHistory"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history'), 'default', true); ?>"><?= $this->translate->_("API Sync History"); ?></a>
+									</li>
+									<li id="JobTracking"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking'), 'default', true); ?>"><?= $this->translate->_("Job Tracking"); ?></a>
+									</li>
 								<?php } ?>
 							</ul>
 						</li>
 					<?php } ?>
 					<?php if (!$pstatus && in_array('manage-shipments', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'manageMenu') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-beaker"></i>&nbsp;&nbsp;<?= $this->translate->_("Manage"); ?> <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+									class="icon-beaker"></i>&nbsp;&nbsp;<?= $this->translate->_("Manage"); ?> <b
+									class="caret"></b></a>
 							<ul class="dropdown-menu">
 
-								<li id="PTSurvey"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>"><?= $this->translate->_("PT Survey"); ?></a></li>
-								<li id="Shipments"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>"><?= $this->translate->_("Shipments"); ?></a></li>
+								<li id="PTSurvey"><a
+										href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions'), 'default', true); ?>"><?= $this->translate->_("PT Survey"); ?></a>
+								</li>
+								<li id="Shipments"><a
+										href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment'), 'default', true); ?>"><?= $this->translate->_("Shipments"); ?></a>
+								</li>
 							</ul>
 						</li>
 					<?php } ?>
 					<?php if (!$pstatus && in_array('analyze-generate-reports', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'analyze') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-search"></i>&nbsp;&nbsp;<?= $this->translate->_("Analyze"); ?> <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+									class="icon-search"></i>&nbsp;&nbsp;<?= $this->translate->_("Analyze"); ?> <b
+									class="caret"></b></a>
 							<ul class="dropdown-menu">
-								<li id="EvaluateResponses"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate'), 'default', true); ?>"><?= $this->translate->_("Evaluate Responses"); ?></a></li>
-								<li id="GenerateReports"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution'), 'default', true); ?>"><?= $this->translate->_("Generate Reports"); ?></a></li>
-								<li id="FinalizeReports"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize'), 'default', true); ?>"><?= $this->translate->_("Finalize Reports"); ?></a></li>
+								<li id="EvaluateResponses"><a
+										href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate'), 'default', true); ?>"><?= $this->translate->_("Evaluate Responses"); ?></a>
+								</li>
+								<li id="GenerateReports"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution'), 'default', true); ?>"><?= $this->translate->_("Generate Reports"); ?></a>
+								</li>
+								<li id="FinalizeReports"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize'), 'default', true); ?>"><?= $this->translate->_("Finalize Reports"); ?></a>
+								</li>
 								<li class="divider"></li>
-								<li id="ViewFinalizedShipments"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>"><?= $this->translate->_("View Finalized Shipments"); ?></a></li>
+								<li id="ViewFinalizedShipments"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'shipments'), 'default', true); ?>"><?= $this->translate->_("View Finalized Shipments"); ?></a>
+								</li>
 							</ul>
 						</li>
 					<?php }
 					if (!$pstatus && in_array('access-reports', $privileges)) { ?>
 						<li <?php echo (isset($this->layout()->pageName) && $this->layout()->pageName == 'report') ? "class='active dropdown'" : "class='dropdown'"; ?>>
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-bar-chart"></i>&nbsp;&nbsp;<?= $this->translate->_("Reports"); ?> <b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+									class="icon-bar-chart"></i>&nbsp;&nbsp;<?= $this->translate->_("Reports"); ?> <b
+									class="caret"></b></a>
 							<ul class="dropdown-menu">
-								<li id="shipmentsReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>"><?= $this->translate->_("Shipments Report"); ?></a></li>
-								<li id="ShipmentResponseReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response-report'), 'default', true); ?>"><?= $this->translate->_("Shipment Response Report"); ?></a></li>
-								<li id="testingFacilityByOwnership"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership'), 'default', true); ?>"><?= $this->translate->_("Testing Facility By Ownership"); ?></a></li>
+								<li id="shipmentsReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments'), 'default', true); ?>"><?= $this->translate->_("Shipments Report"); ?></a>
+								</li>
+								<li id="ShipmentResponseReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipment-response-report'), 'default', true); ?>"><?= $this->translate->_("Shipment Response Report"); ?></a>
+								</li>
+								<li id="testingFacilityByOwnership"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testing-facility-by-ownership'), 'default', true); ?>"><?= $this->translate->_("Testing Facility By Ownership"); ?></a>
+								</li>
 								<li class="divider"></li>
-								<li id="ParticipantResponseReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>"><?= $this->translate->_("Participant Response Report"); ?></a></li>
-								<li id="ParticipantPerformanceReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>"><?= $this->translate->_("Participant Performance Report"); ?></a></li>
-								<li id="ParticipantTrends"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends'), 'default', true); ?>"><?= $this->translate->_("Participant Trends"); ?></a></li>
-								<li id="CorrectiveActionsReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective Actions Report"); ?></a></li>
+								<li id="ParticipantResponseReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'detailed'), 'default', true); ?>"><?= $this->translate->_("Participant Response Report"); ?></a>
+								</li>
+								<li id="ParticipantPerformanceReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-performance'), 'default', true); ?>"><?= $this->translate->_("Participant Performance Report"); ?></a>
+								</li>
+								<li id="ParticipantTrends"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'participant-trends'), 'default', true); ?>"><?= $this->translate->_("Participant Trends"); ?></a>
+								</li>
+								<li id="CorrectiveActionsReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective Actions Report"); ?></a>
+								</li>
 								<?php if (isset($configData['enable_capa']) && $configData['enable_capa'] == 'yes') { ?>
-									<li id="CorrectiveandPreventiveActions"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective and Preventive Actions"); ?></a></li>
+									<li id="CorrectiveandPreventiveActions"><a
+											href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'corrective-preventive-actions'), 'default', true); ?>"><?= $this->translate->_("Corrective and Preventive Actions"); ?></a>
+									</li>
 								<?php }
 								if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
 									<li class="divider"></li>
 									<?php if (in_array('dts', $adminSession->activeSchemes)) { ?>
-										<li id="TestKitReportForHIVSerology"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kit Report For HIV Serology"); ?></a></li>
+										<li id="TestKitReportForHIVSerology"><a
+												href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'testkit'), 'default', true); ?>"><?= $this->translate->_("Test Kit Report For HIV Serology"); ?></a>
+										</li>
 									<?php }
 									if (in_array('tb', $adminSession->activeSchemes)) { ?>
-										<li id="XTPTIndicators"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>"><?= $this->translate->_("XTPT Indicators"); ?></a></li>
-										<li id="TbNumberofParticipantsCountry"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-participants-per-country', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: Number of Participants per Country"); ?></a></li>
-										<li id="TBResultofPTPanelperSite"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-results', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: Result of PT Panel per Site"); ?></a></li>
-										<li id="TBAllSitesResults"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-all-sites-results', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: All Sites' Results"); ?></a></li>
+										<li id="XTPTIndicators"><a
+												href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'xtpt-indicators'), 'default', true); ?>"><?= $this->translate->_("XTPT Indicators"); ?></a>
+										</li>
+										<li id="TbNumberofParticipantsCountry"><a
+												href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-participants-per-country', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: Number of Participants per Country"); ?></a>
+										</li>
+										<li id="TBResultofPTPanelperSite"><a
+												href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-results', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: Result of PT Panel per Site"); ?></a>
+										</li>
+										<li id="TBAllSitesResults"><a
+												href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'tb-all-sites-results', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("TB: All Sites' Results"); ?></a>
+										</li>
 									<?php } ?>
 								<?php } ?>
 
 								<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
 									<li class="divider"></li>
-									<li id="VLSampleAnalysis"><a href="<?php echo $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'], 'default', true); ?>"><?= $this->translate->_("VL Sample Analysis"); ?></a></li>
-									<li id="VLAssayDistribution"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>"><?= $this->translate->_("VL Assay Distribution"); ?></a></li>
+									<li id="VLSampleAnalysis"><a
+											href="<?php echo $this->url(['module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-sample-analysis'], 'default', true); ?>"><?= $this->translate->_("VL Sample Analysis"); ?></a>
+									</li>
+									<li id="VLAssayDistribution"><a
+											href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution'), 'default', true); ?>"><?= $this->translate->_("VL Assay Distribution"); ?></a>
+									</li>
 								<?php } ?>
 								<li class="divider"></li>
-								<li id="AnnualPerformanceReport"><a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("Annual Performance Report"); ?></a></li>
+								<li id="AnnualPerformanceReport"><a
+										href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'annual', 'action' => 'index'), 'default', true); ?>"><?= $this->translate->_("Annual Performance Report"); ?></a>
+								</li>
 							</ul>
 						</li>
 					<?php } ?>
@@ -905,7 +1036,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 					</li>
 					<?php if ($notifyCount > 0) { ?>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i class="icon-envelope">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i
+									class="icon-envelope">
 									<?php if ($nCount > 0) { ?>
 										<span class="count-notify"><?php echo $nCount; ?></span>
 									<?php } ?>
@@ -915,7 +1047,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 					<?php } else {
 						echo '<li id=""><a href="javascript:void(0);"><i class="icon-envelope" style="opacity: 0.6;"></i></a></li>';
 					} ?>
-					<li id="Logout"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'login', 'action' => 'log-out')); ?>"><i class="icon-signout"></i> <?= $this->translate->_("Logout"); ?></a></li>
+					<li id="Logout"><a
+							href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'login', 'action' => 'log-out')); ?>"><i
+								class="icon-signout"></i> <?= $this->translate->_("Logout"); ?></a></li>
 				</ul>
 			</div>
 			<!--/.nav-collapse -->
@@ -926,8 +1060,10 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		<?php echo $this->layout()->content; ?>
 	</div> <!-- /container -->
 	<div id="dDiv" class="dialog">
-		<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;" class="closeModal"></span></div>
-		<iframe title="Some Problem" id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
+		<div style="text-align:center"><span onclick="closeLayoutModal();" style="float:right;clear:both;"
+				class="closeModal"></span></div>
+		<iframe title="Some Problem" id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0'
+			marginheight='0' frameborder='0' vspace='0' hspace='0'><?= $this->translate->_("some problem"); ?></iframe>
 	</div>
 
 	<footer style="padding:40px 0 20px 0;color:grey;">
@@ -938,14 +1074,16 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
 				$footerText = $configData['footer_text'];
 			} ?>
-			<?= $this->translate->_($footerText . " This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
+			<?= $footerText . $this->translate->_(" This project is supported by the U.S. President's Emergency Plan for AIDS Relief (PEPFAR) through the U.S. Centers for Disease Control and Prevention (CDC)."); ?>
 			<div class="pull-right hidden-xs">
 				<span>ver. <?php echo APP_VERSION; ?></span>
 			</div>
 		</div>
 	</footer>
-	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.js"); ?>" type="text/javascript"></script>
-	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.js"); ?>" type="text/javascript"></script>
+	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.js"); ?>"
+		type="text/javascript"></script>
+	<script src="<?php echo $this->baseUrl("assets/plugins/datatables/dataTables.bootstrap.js"); ?>"
+		type="text/javascript"></script>
 	<script src="<?php echo $this->baseUrl("js/bootstrap-v3.js"); ?>" type="text/javascript"></script>
 	<script src="<?php echo $this->baseUrl("js/standingRedraw.js"); ?>" type="text/javascript"></script>
 	<script src="<?php echo $this->baseUrl("js/extra.js"); ?>" type="text/javascript"></script>
@@ -960,8 +1098,12 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	<script type="text/javascript" src="<?php echo $this->baseUrl('js/deforayModal.js'); ?>"></script>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-typeahead.js"); ?>"></script>
-	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/bootstrap-multiselect.css"); ?>" type="text/css"
+		media="all">
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/bootstrap-multiselect.js"); ?>"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/js/tom-select.complete.min.js"
+		integrity="sha512-PLbucJiSkC5G/5kCLg/tz+fDvIqDQSB92CrLn0bypi2KUmTS6Iv4l1C/eSX7RrlczdSrqzL1KVUBfcnjk9wV+g=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script type="text/javascript" src="<?php echo $this->baseUrl("js/cookie.js"); ?>"></script>
 
 	<script src="/assets/plugins/highcharts/highcharts.js"></script>
@@ -998,7 +1140,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	</script>
 
 	<script type="text/javascript">
-		$(function() {
+		$(function () {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
@@ -1115,8 +1257,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 
-			$('.autoSelectIfOnlyOneOption').each(function() {
-				var nonEmptyOptions = $(this).find('option').filter(function() {
+			$('.autoSelectIfOnlyOneOption').each(function () {
+				var nonEmptyOptions = $(this).find('option').filter(function () {
 					return this.value.trim() !== "";
 				});
 
@@ -1125,7 +1267,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				}
 			});
 
-			$(".checkNum").keydown(function(e) {
+			$(".checkNum").keydown(function (e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A
@@ -1144,7 +1286,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 				alert(<?php echo json_encode($alertMsg->message); ?>);
-			<?php $alertMsg->message = "";
+				<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
 		});
@@ -1187,9 +1329,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: id
-				},
-				function(data) {})
+				nid: id
+			},
+				function (data) { })
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
@@ -1200,9 +1342,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function markasRead() {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: 'all'
-				},
-				function(data) {
+				nid: 'all'
+			},
+				function (data) {
 					if (data > 0) {
 						$('.readc').removeAttr('style');
 						$('.count-notify').html('');
@@ -1227,11 +1369,11 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			let formData = $('#' + formId).serialize();
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
-					formPost: formData,
-					scheme: schemeId,
-					file: schemeId
-				},
-				function(data) {
+				formPost: formData,
+				scheme: schemeId,
+				file: schemeId
+			},
+				function (data) {
 					if (data) {
 						window.open('/d/' + data, '_blank');
 					}
@@ -1247,11 +1389,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		<div class="spotlight-dialog">
 			<div class="spotlight-search-wrapper">
 				<i class="icon-search spotlight-icon"></i>
-				<input type="text"
-					   id="spotlightInput"
-					   class="spotlight-input"
-					   placeholder="<?= $this->translate->_('Search menus, actions...'); ?>"
-					   autocomplete="off" />
+				<input type="text" id="spotlightInput" class="spotlight-input"
+					placeholder="<?= $this->translate->_('Search menus, actions...'); ?>" autocomplete="off" />
 				<span class="spotlight-shortcut">ESC</span>
 			</div>
 			<div id="spotlightResults" class="spotlight-results">

@@ -3,18 +3,20 @@ if (!empty($this->shipment)) {
     if (isset($this->shipment[0]['status']) && $this->shipment[0]['status'] == 'finalized') {
         header('Location: /reports/distribution');
     }
-?>
+    ?>
     <style>
         .generate-btn:hover {
             box-shadow: 0px 3px 5px grey !important;
         }
     </style>
     <div class="well" style="clear: both;">
-        <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right" style="margin-top:-10px;">Show/Hide Shipment List</a>
+        <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right"
+            style="margin-top:-10px;">Show/Hide Shipment List</a>
         <div id="allShipmentList">
 
             <legend>
-                <h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
+                <h4>All Shipments Under PT Survey <?php echo $this->shipment[0]['distribution_code']; ?>
+                    (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
             </legend>
 
             <table class="table table-bordered table-striped table-hover">
@@ -33,25 +35,32 @@ if (!empty($this->shipment)) {
                 if (count($this->shipmentsUnderDistro) > 0) {
                     foreach ($this->shipmentsUnderDistro as $shipment) {
                         $reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-                ?>
+                        ?>
                         <tr>
                             <td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
                             <td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
                             <td style="text-align: center;"><?php echo $shipment['number_of_samples'] ?></td>
                             <td style="text-align: center;"><?php echo $shipment['participant_count'] ?></td>
                             <td style="text-align: center;"><?php echo $reported ?></td>
-                            <td style="text-align: center;"><?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?></td>
-                            <td style="text-align: center;"><?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?></td>
+                            <td style="text-align: center;">
+                                <?php echo (isset($shipment['participant_count']) && $shipment['participant_count'] > 0) ? round(($reported / $shipment['participant_count']) * 100, 2) : 0; ?>
+                            </td>
+                            <td style="text-align: center;">
+                                <?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
+                            </td>
                             <td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
                             <td style="text-align: center;">
                                 <?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
-                                    <a class="btn btn-success btn-xs" href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i class="icon-edit"></i> Report</span></a>
+                                    <a class="btn btn-success btn-xs"
+                                        href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
+                                                class="icon-edit"></i> Report</span></a>
                                 <?php } else { ?>
-                                    <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i> Report</span></a>
+                                    <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i>
+                                            Report</span></a>
                                 <?php } ?>
                             </td>
                         </tr>
-                    <?php
+                        <?php
                     }
                 } else {
                     ?>
@@ -60,16 +69,18 @@ if (!empty($this->shipment)) {
                             No shipments for this PT Survey yet
                         </td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
             </table>
         </div><!-- /.modal-dialog -->
     </div>
     <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-        <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently generating reports for Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> </div>
+        <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">You are currently generating reports for
+            Shipment <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> </div>
         <div style="margin-top:10px;">
-            <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+            <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'distribution', 'action' => 'index'), 'default', true); ?>"
+                class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
         </div>
     </h4>
     <table class="table table-bordered" style="margin:0 auto;">
@@ -86,10 +97,14 @@ if (!empty($this->shipment)) {
     <div class="row">
         <div class="col-md-12">
             <label class="form-control-label">Comment for all Participants of this shipment</label>
-            <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment" title="Comment for all Participants of this shipment" name="shipmentComment" id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
+            <textarea rows="10" cols="20" class="form-control" placeholder="Comment for all Participants of this shipment"
+                title="Comment for all Participants of this shipment" name="shipmentComment"
+                id="shipmentComment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
             <br>
-            <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId" id="shipmentId">
-            <button class="btn btn-primary" onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
+            <input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="shipmentId"
+                id="shipmentId">
+            <button class="btn btn-primary"
+                onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update Comment"); ?></span></button>
         </div>
     </div>
     <hr>
@@ -105,7 +120,10 @@ if (!empty($this->shipment)) {
         $checkReportDate = 1;
     } ?>
     <div class="row" align="center">
-        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>" style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;" onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
+        <a href="javascript:void(0)" class="btn btn-sm generate-btn btn-info <?php echo $reportQueue; ?>"
+            style="margin-top:10px;clear:both !important;padding: 10px;box-shadow: 0px 1px 5px grey;"
+            onclick="generateReports('<?php echo base64_encode($this->shipment[0]['shipment_id']); ?>', <?php echo $checkReportDate; ?>, '<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>', 'generateReport')"><i
+                class="icon-ok"></i>&nbsp&nbsp <?php echo $reportTitle; ?></a>
     </div>
     <?php if ($reportQueue != 'disabled') { ?>
         <div class="summaryDivTop row" align="center">
@@ -113,27 +131,34 @@ if (!empty($this->shipment)) {
             <?php
             $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . "-summary.pdf");
             if (file_exists($summaryFilePath)) {
-            ?>
-                <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
-                <?php } else {
+                ?>
+                <a href="<?= '/d/' . base64_encode($summaryFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank'
+                    style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Summary Report</a>
+            <?php } else {
                 $testTypePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code']);
                 if (file_exists($testTypePath . "-screening-summary.pdf")) { ?>
-                    <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-screening-summary.pdf"); ?>"
+                        class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i
+                            class='icon-file-text'></i> &nbsp Download Screening Summary Report</a>
                 <?php }
                 if (file_exists($testTypePath . "-confirmatory-summary.pdf")) { ?>
-                    <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-file-text'></i> &nbsp Download Confirmatory Summary Report</a>
+                    <a href="<?= '/d/' . base64_encode($testTypePath . "-confirmatory-summary.pdf"); ?>"
+                        class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i
+                            class='icon-file-text'></i> &nbsp Download Confirmatory Summary Report</a>
                 <?php }
             }
             $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
             if (file_exists($zipFilePath)) {
                 ?>
-                <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank' style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
+                <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank'
+                    style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
             <?php } ?>
 
         </div>
     <?php } ?>
     <br /><br />
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="shipmentEvaluation" style="margin:10px auto;">
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+        id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
             <tr>
                 <th style="width:40px;"></th>
@@ -167,9 +192,10 @@ if (!empty($this->shipment)) {
                     $shipment['failure_reason'] = "<table class='table table-bordered'>";
                     $shipment['failure_reason'] .= "<tr><th>Failure Reasons (or) Warnings</th><th>Corrective Actions (if any)</th></tr>";
                     foreach ($warnings as $warning) {
-                        $shipment['failure_reason'] .=     "<tr><td>" . (isset($warning['warning']) ? $warning['warning'] : "") . "</td><td>" . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . "</td></tr>";
+                        $shipment['failure_reason'] .= "<tr><td>" . (isset($warning['warning']) ? $warning['warning'] : "") . "</td><td>" . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . "</td></tr>";
                     }
-                    $shipment['failure_reason'] .=  "</table>";;
+                    $shipment['failure_reason'] .= "</table>";
+                    ;
                 } else {
                     $shipment['failure_reason'] = " No Warnings or Corrective Actions ";
                 }
@@ -201,18 +227,23 @@ if (!empty($this->shipment)) {
                 } else {
                     $responseStatus = "Not Tested";
                 }
-            ?>
+                ?>
                 <tr>
-                    <td class="center"><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
-                    <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?></td>
+                    <td class="center"><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i
+                                class="icon-plus"></i></a></td>
+                    <td style="vertical-align:middle;">
+                        <?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?>
+                    </td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
-                    <td style="text-align:center;vertical-align:middle;"><?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?></td>
+                    <td style="text-align:center;vertical-align:middle;">
+                        <?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?>
+                    </td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']);
-                                                                        43 ?></td>
+                    43 ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $shipment['failure_reason'] ?></td>
                 </tr>
@@ -265,10 +296,10 @@ if (!empty($this->shipment)) {
     <script type="text/javascript" charset="utf-8">
         var oTable = null;
         var nTr = null;
-        $(document).ready(function() {
+        $(document).ready(function () {
 
 
-            $('#shipmentEvaluation').on('click', ".clicker", function() {
+            $('#shipmentEvaluation').on('click', ".clicker", function () {
                 nTr = $(this).parents('tr')[0];
                 // console.log(nTr);
                 aData = oTable.fnGetData(nTr);
@@ -301,9 +332,7 @@ if (!empty($this->shipment)) {
 
 
             oTable = $("#shipmentEvaluation").dataTable({
-                "oLanguage": {
-                    "sLengthMenu": "_MENU_ records per page"
-                },
+
                 "bJQueryUI": false,
                 "bAutoWidth": false,
                 "bInfo": true,
@@ -311,35 +340,35 @@ if (!empty($this->shipment)) {
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
                 "aoColumns": [{
-                        "bSortable": false,
-                        "aTargets": [0]
-                    },
-                    {
-                        "sClass": ""
-                    },
-                    {
-                        "sClass": ""
-                    },
-                    {
-                        "sClass": "center"
-                    },
-                    {
-                        "sClass": "center"
-                    }, {
-                        "sClass": "center"
-                    }, {
-                        "sClass": "center"
-                    }, {
-                        "sClass": "center"
-                    }, {
-                        "sClass": "center"
-                    }, {
-                        "bSearchable": false,
-                        "bSortable": false
-                    }, {
-                        "bSearchable": false,
-                        "bVisible": false
-                    }
+                    "bSortable": false,
+                    "aTargets": [0]
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": ""
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                }, {
+                    "sClass": "center"
+                }, {
+                    "sClass": "center"
+                }, {
+                    "sClass": "center"
+                }, {
+                    "sClass": "center"
+                }, {
+                    "bSearchable": false,
+                    "bSortable": false
+                }, {
+                    "bSearchable": false,
+                    "bVisible": false
+                }
                 ],
                 "aaSorting": [
                     [1, "asc"]
@@ -371,11 +400,11 @@ if (!empty($this->shipment)) {
             // }
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'update-shipment-comment'), 'default', true); ?>", {
-                    sid: sid,
-                    comment: $("#shipmentComment").val(),
-                    format: "html"
-                },
-                function(data) {
+                sid: sid,
+                comment: $("#shipmentComment").val(),
+                format: "html"
+            },
+                function (data) {
                     alert(data);
                     $.unblockUI();
                 });
@@ -385,6 +414,8 @@ if (!empty($this->shipment)) {
 <?php } else { ?>
 
     <br /><br /><br />
-    <h3 style="text-align: center">No Shipment to evaluate. <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>">Click here to go back</a></h3>
+    <h3 style="text-align: center">No Shipment to evaluate. <a
+            href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>">Click
+            here to go back</a></h3>
 
 <?php } ?>

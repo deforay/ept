@@ -68,8 +68,7 @@ class CustomTestController extends Zend_Controller_Action
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
             $kitDb = new Application_Model_DbTable_Testkitnames();
             $this->view->allTestKits = $kitDb->getAllTestKitList($shipment['scheme_type']);
-            //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            //$config = new Zend_Config_Ini($file, APPLICATION_ENV);
+
 
             $disableOtherTestkit = Pt_Commons_SchemeConfig::get('custom.disableOtherTestkit');
 
@@ -94,8 +93,8 @@ class CustomTestController extends Zend_Controller_Action
 
 
         //$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-       // $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
-       $this->view->config = Pt_Commons_SchemeConfig::get('custom');
+        // $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
+        $this->view->config = Pt_Commons_SchemeConfig::get('custom');
 
 
         $participantService = new Application_Service_Participants();

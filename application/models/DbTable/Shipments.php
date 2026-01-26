@@ -392,10 +392,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['lastdate_response']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
-            $buttonText = "View/Edit";
+            $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("View/Edit");
             $buttonType = 'btn-primary';
             if ($aRow['response_status'] === 'draft') {
-                $buttonText = "View/Edit Draft";
+                $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("View/Edit Draft");
                 $buttonType = 'btn-danger';
             }
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
@@ -408,22 +408,22 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no' && (!isset($aRow['allow_editing_response']) || $aRow['allow_editing_response'] != 'no')) {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger" style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Delete Response") . '</a>';
                     }
                 } else {
                     $buttonType = 'btn-success';
-                    $buttonText = "Enter Response";
+                    $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("Enter Response");
                     if ($aRow['scheme_type'] == "tb") {
                         $downloadLink = base64_encode(TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf');
-                        $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . "/pid/" . $aRow['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> Download Form</a>";
+                        $download = "<br/><a href='/participant/download-tb/sid/" . $aRow['shipment_id'] . "/pid/" . $aRow['participant_id'] . "/file/" . $downloadLink . "' class='btn btn-default' style='margin:3px 0;' target='_BLANK'> <i class='icon icon-download'></i> " . Pt_Commons_TranslateUtility::htmlTranslate("Download Form") . "</a>";
                     } else {
-                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Download Form") . '</a>';
                     }
                 }
             }
             if (isset($aRow['allow_editing_response']) && !empty($aRow['allow_editing_response']) && $aRow['allow_editing_response'] == 'no' && ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00')) {
                 // $row[] = "<a href='javascript:void(0);' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-ban-circle'></i> View</a>$delete$download";
-                $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-edit'></i> View </a>$delete$download";
+                $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn btn-default' style='margin:3px 0;'><i class='icon icon-edit'></i> " . Pt_Commons_TranslateUtility::htmlTranslate("View") . " </a>$delete$download";
             } else {
                 $row[] = "<a href='/{$aRow['scheme_type']}/response/sid/{$aRow['shipment_id']}/pid/{$aRow['participant_id']}/eid/{$aRow['evaluation_status']}/uc/{$aRow['is_user_configured']}' class='btn $buttonType' style='margin:3px 0;'><i class='icon icon-edit'></i> $buttonText </a>$delete$download";
             }
@@ -571,7 +571,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['STATUS'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['RESPONSEDATE']);
 
-            $buttonText = "View/Edit";
+            $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("View/Edit");
             $download = '';
             $delete = '';
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
@@ -580,19 +580,19 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Delete Response") . '</a>';
                     }
                 } else {
-                    $buttonText = "Enter Response";
+                    $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("Enter Response");
                     if ($aRow['scheme_type'] == "tb") {
                         $downloadLink = TEMP_UPLOAD_PATH . '/' . $aRow['shipment_code'] . '/TB-FORM-' . $aRow['shipment_code'] . '-' . $aRow['unique_identifier'] . '.pdf';
                         // if(file_exists($downloadLink)){
-                        $download = '<br/><a href="/participant/download-tb/file/' . base64_encode($downloadLink) . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
+                        $download = '<br/><a href="/participant/download-tb/file/' . base64_encode($downloadLink) . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Download Form") . '</a>';
                         /* }else{
                             $download = '<br/><a href="/shipment-form/tb-download/sid/' . base64_encode($aRow['shipment_id']) . '/pid/' . base64_encode($aRow['participant_id']) . '"   class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                         } */
                     } else {
-                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK" download> <i class="icon icon-download"></i> Download Form</a>';
+                        $download = '<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default" style="margin:3px 0;" target="_BLANK" download> <i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Download Form") . '</a>';
                     }
                 }
             }
@@ -780,7 +780,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             //                $row[] ='';
             //            }
 
-            $buttonText = "View";
+            $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("View");
             $download = '';
             $delete = '';
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
@@ -790,10 +790,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             if ($isEditable) {
                 if ($aRow['RESPONSEDATE'] != '' && $aRow['RESPONSEDATE'] != '0000-00-00') {
                     if ($this->_session->view_only_access == 'no') {
-                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> Delete Response</a>';
+                        $delete = '<br/><a href="javascript:void(0);" onclick="removeSchemes(\'' . $aRow['scheme_type'] . '\',\'' . base64_encode($aRow['map_id']) . '\', \'' . $aRow['is_user_configured'] . '\')" class="btn btn-danger"  style="margin:3px 0;"> <i class="icon icon-remove-sign"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Delete Response") . '</a>';
                     }
                 } else {
-                    $buttonText = "Enter Response";
+                    $buttonText = Pt_Commons_TranslateUtility::htmlTranslate("Enter Response");
                     $download = ''; //<br/><a href="/' . $aRow['scheme_type'] . '/download/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/eid/' . $aRow['evaluation_status'] . '" class="btn btn-default"  style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> Download Form</a>';
                 }
             }
@@ -808,7 +808,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $downloadReports = "";
                 $summaryFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
                 if (file_exists($summaryFilePath)) {
-                    $downloadReports .= '<a href="/d/' . base64_encode($summaryFilePath) . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'summary\');"  class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> Summary Report</a>';
+                    $downloadReports .= '<a href="/d/' . base64_encode($summaryFilePath) . '" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'summary\');"  class="btn btn-primary" style="text-decoration : none;overflow:hidden;" target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Summary Report") . '</a>';
                 }
                 $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-" . $aRow['map_id'] . ".pdf");
                 if (!file_exists($invididualFilePath)) {
@@ -817,7 +817,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     $invididualFilePath = isset($files[0]) ? $files[0] : '';
                 }
                 if (file_exists($invididualFilePath)) {
-                    $downloadReports .= '<br><a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> Individual Report</a>';
+                    $downloadReports .= '<br><a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-primary" onclick="updateReportDownloadDateTime(' . $aRow['map_id'] . ', \'individual\');"   style="text-decoration : none;overflow:hidden;margin-top:4px;"  target="_BLANK" download><i class="icon icon-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Individual Report") . '</a>';
                 }
             }
             $row[] = $downloadReports;
@@ -1125,14 +1125,14 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 }
             }
             if (($aRow['final_result'] == '2') && (isset($aRow['corrective_action_file']) && $aRow['corrective_action_file'] != "")) {
-                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> Corrective Actions</a>';
+                $corrective = '<a href="/uploads/corrective-action-files/' . $aRow['corrective_action_file'] . '"   class="btn btn-warning"   style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;" target="_BLANK" download><i class="fa fa-fw fa-download"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Corrective Actions") . '</a>';
             }
             if ($aRow['shipmentStatus'] == 'finalized' && $aRow['collect_feedback'] == 'yes' && $aRow['response_status'] == 'responded' && $aRow['feedback_expiry_date'] >= date('Y-m-d') && isset($feedbackOption) && !empty($feedbackOption) && $feedbackOption == 'yes') {
                 $result = $db->fetchRow($db->select()->from(array('participant_feedback_answer'))->where("shipment_id =?", $aRow['shipment_id'])->where("participant_id =?", $aRow['participant_id'])->where("map_id =?", $aRow['map_id']));
                 if ($result) {
-                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
+                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Feedback") . '</a>';
                 } else {
-                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> Feedback</a>';
+                    $feedback = '<a href="/participant/feed-back/sid/' . $aRow['shipment_id'] . '/pid/' . $aRow['participant_id'] . '/mid/' . $aRow['map_id'] . '"   class="btn btn-default" style="text-decoration : none;overflow:hidden;margin-top:4px; clear:both !important;display:block;"><i class="icon-comments"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Feedback") . '</a>';
                 }
                 if (isset($aRow['form_show_to']) && !empty($aRow['form_show_to'])) {
                     if ($aRow['form_show_to'] == 'passing-participants' && $aRow['final_result'] != 1) {
@@ -1687,10 +1687,10 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             $row[] = $aRow['distribution_code'];
             $row[] = $aRow['shipments'];
             $row[] = ucwords($aRow['status']);
-            $sendReportMail = '<a class="btn btn-warning btn-xs send-report-btn-' . ($aRow['shipment_id']) . '" href="javascript:void(0);" onclick="sendReportsInMail(\'' . ($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i>&nbsp; Send Reports via Email</span></a>';
-            $view = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')" style=" margin-left: 10px; "><span><i class="icon-search"></i> View</span></a>';
+            $sendReportMail = '<a class="btn btn-warning btn-xs send-report-btn-' . ($aRow['shipment_id']) . '" href="javascript:void(0);" onclick="sendReportsInMail(\'' . ($aRow['shipment_id']) . '\')"><span><i class="icon-bullhorn"></i>&nbsp; ' . Pt_Commons_TranslateUtility::htmlTranslate("Send Reports via Email") . '</span></a>';
+            $view = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipmentInReports(\'' . ($aRow['distribution_id']) . '\')" style=" margin-left: 10px; "><span><i class="icon-search"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("View") . '</span></a>';
             if (isset($privileges) && !empty($privileges) && in_array('replace-finalized-summary-report', $privileges)) {
-                $replaceSummaryRportBtn = '<a class="btn btn-primary btn-xs" href="/reports/finalize/replace-summary-report/id/' . base64_encode($aRow['shipment_id']) . '" style=" margin-left: 10px; "><span><i class="icon-exchange"></i> Replace Summary Report</span></a>';
+                $replaceSummaryRportBtn = '<a class="btn btn-primary btn-xs" href="/reports/finalize/replace-summary-report/id/' . base64_encode($aRow['shipment_id']) . '" style=" margin-left: 10px; "><span><i class="icon-exchange"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Replace Summary Report") . '</span></a>';
             }
             $row[] = $sendReportMail . $replaceSummaryRportBtn . $view;
             $output['aaData'][] = $row;

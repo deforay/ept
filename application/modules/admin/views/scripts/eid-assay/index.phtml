@@ -34,16 +34,24 @@
 </style>
 <div class="tabContainer">
     <ul class="tabs">
-        <li class="tab-link <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>" data-tab="tab-1"><?= $this->translate->_("EID Extraction Assay"); ?></li>
-        <li class="tab-link <?php echo ($this->source == "detection") ? 'current' : ''; ?>" data-tab="tab-2"><?= $this->translate->_("EID Detection Assay"); ?></li>
+        <li class="tab-link <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>"
+            data-tab="tab-1"><?= $this->translate->_("EID Extraction Assay"); ?></li>
+        <li class="tab-link <?php echo ($this->source == "detection") ? 'current' : ''; ?>" data-tab="tab-2">
+            <?= $this->translate->_("EID Detection Assay"); ?></li>
     </ul>
 
-    <div id="tab-1" class="tab-content <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>">
+    <div id="tab-1"
+        class="tab-content <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>">
         <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of all EID Extraction Assay"); ?></div>
-            <div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'extraction'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
+            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+                <?= $this->translate->_("List of all EID Extraction Assay"); ?></div>
+            <div style="margin-top:10px;"><a
+                    href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'extraction'), 'default', true); ?>"
+                    class="btn btn-primary" style="float:right;"><i
+                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
         </h4>
-        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="eidExtractionAssayTable">
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+            id="eidExtractionAssayTable">
             <thead>
                 <tr>
                     <th style="width:80%;"><?= $this->translate->_("Name"); ?></th>
@@ -52,17 +60,23 @@
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                    <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="tab-2" class="tab-content <?php echo ($this->source == "detection") ? 'current' : ''; ?>">
         <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("List of All Eid Detection Assay"); ?></div>
-            <div style="margin-top:10px;"><a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'detection'), 'default', true); ?>" class="btn btn-primary" style="float:right;"><i class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
+            <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+                <?= $this->translate->_("List of All Eid Detection Assay"); ?></div>
+            <div style="margin-top:10px;"><a
+                    href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'detection'), 'default', true); ?>"
+                    class="btn btn-primary" style="float:right;"><i
+                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
         </h4>
-        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="eidDetectionAssayTable">
+        <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+            id="eidDetectionAssayTable">
             <thead>
                 <tr>
                     <th style="width:80%;"><?= $this->translate->_("Name"); ?></th>
@@ -71,15 +85,16 @@
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+                    <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
 <script charset="utf-8">
-    $(document).ready(function() {
-        $('ul.tabs li').click(function() {
+    $(document).ready(function () {
+        $('ul.tabs li').click(function () {
             var tab_id = $(this).attr('data-tab');
 
             $('ul.tabs li').removeClass('current');
@@ -93,11 +108,9 @@
     /* Table initialisation */
     var exTable = null;
     var dtTable = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
         exTable = $('#eidExtractionAssayTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -105,11 +118,11 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                }
+                "sClass": ""
+            },
+            {
+                "sClass": "center"
+            }
             ],
             "aaSorting": [
                 [0, "ASC"]
@@ -117,7 +130,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 aoData.push({
                     "name": "fromSource",
                     "value": "extraction"
@@ -133,9 +146,7 @@
         });
 
         dtTable = $('#eidDetectionAssayTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -143,11 +154,11 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                }
+                "sClass": ""
+            },
+            {
+                "sClass": "center"
+            }
             ],
             "aaSorting": [
                 [0, "ASC"]
@@ -155,7 +166,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 aoData.push({
                     "name": "fromSource",
                     "value": "detection"
@@ -176,12 +187,12 @@
         if (window.confirm("<?= $this->translate->_("Are you sure you wish to change this assay status to"); ?> " + switchStatus + " ?")) {
             $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'change-status')); ?>", {
-                    formSource: formSource,
-                    id: eidId,
-                    switchStatus: switchStatus,
-                    format: "html"
-                },
-                function(data) {
+                formSource: formSource,
+                id: eidId,
+                switchStatus: switchStatus,
+                format: "html"
+            },
+                function (data) {
                     if (data == 0) {
                         alert("Status not updated..Please try again once.");
                     }

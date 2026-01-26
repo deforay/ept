@@ -1,10 +1,12 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Evaluate PT Survey"); ?></div>
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <?= $this->translate->_("Evaluate PT Survey"); ?></div>
 
 </h4>
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="distroTable">
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
+    id="distroTable">
     <thead>
         <tr>
             <th><?= $this->translate->_("PT Survey Date"); ?></th>
@@ -25,20 +27,18 @@
 <div id="shipments" style="clear:both;margin-top:30px;"></div>
 <script src="<?php echo $this->baseUrl("js/reports.js"); ?>"></script>
 <script type="text/javascript" charset="utf-8">
-    $('#myModal').on('hidden.bs.modal', function() {
+    $('#myModal').on('hidden.bs.modal', function () {
         $(this).removeData('bs.modal');
     });
     /* Table initialisation */
     var oTable = null;
     var currentHighlighted = null;
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         currentHighlighted = getCookie('did');
 
         oTable = $('#distroTable').dataTable({
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page"
-            },
+
             "bJQueryUI": false,
             "bAutoWidth": false,
             "bInfo": true,
@@ -46,21 +46,21 @@
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [{
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center",
-                    "bSortable": false
-                }
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
+            }
             ],
             "aaSorting": [
                 [0, "desc"]
@@ -69,13 +69,13 @@
             //"bSortClasses": false,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index', 'format' => 'html')); ?>",
-            "fnServerData": function(sSource, aoData, fnCallback) {
+            "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
                     "url": sSource,
                     "data": aoData,
-                    "success": function(json) {
+                    "success": function (json) {
                         fnCallback(json);
                         if (currentHighlighted != null && currentHighlighted != "" && currentHighlighted != 0) {
                             $("#dist" + currentHighlighted + " td").addClass("highliter");
@@ -101,17 +101,17 @@
         $("#distroTable tr td").removeClass("highliter");
         $("#dist" + currentHighlighted + " td").addClass("highliter");
         $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'get-shipments']); ?>", {
-                did: did,
-                userConfig: userConfiguration,
-                format: "html"
-            },
-            function(data) {
+            did: did,
+            userConfig: userConfiguration,
+            format: "html"
+        },
+            function (data) {
                 $("#shipments").html(data);
                 <?php
-                if (isset($this->scheme) && isset($this->showcalc)  && $this->scheme == 'vl') {
-                ?>
+                if (isset($this->scheme) && isset($this->showcalc) && $this->scheme == 'vl') {
+                    ?>
                     getVLReferenceScores('<?= $this->showcalc; ?>');
-                <?php
+                    <?php
                 }
                 ?>
                 $.unblockUI();
@@ -121,10 +121,10 @@
     function mailNonParticipants(sid) {
         if (window.confirm("Are you sure you want to send an email reminder to participants who have not yet responded?")) {
             $.post("<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail']); ?>", {
-                    sid: sid,
-                    format: "html"
-                },
-                function(data) {
+                sid: sid,
+                format: "html"
+            },
+                function (data) {
                     if (data > 0) {
                         alert("Mail Sent successfully");
                     }

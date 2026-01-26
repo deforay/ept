@@ -16,14 +16,16 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
 	<h3>
-	<?= $this->translate->_("Corrective Actions and Preventive Action"); ?>
-		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm" onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>
+		<?= $this->translate->_("Corrective Actions and Preventive Action"); ?>
+		<button style="margin-right: 10px;float:right; " class="btn btn-success btn-sm"
+			onclick="generateReport()"><span><?= $this->translate->_("Export Report"); ?></span></button>
 	</h3>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
 		<td>
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly" style="background: #fff" placeholder="Click here to pick a Date Range" />
+			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+				style="background: #fff" placeholder="Click here to pick a Date Range" />
 		</td>
 		<td>
 			<select id="scheme" name="scheme" class="form-control input-sm">
@@ -37,18 +39,23 @@
 			<select id="participantId" name="participantId" class="form-control input-sm">
 				<option value=""> -- <?= $this->translate->_("Select Participant"); ?> --</option>
 				<?php foreach ($this->participants as $row) { ?>
-					<option value="<?php echo $row['participant_id']; ?>"><?php echo $row['first_name'] . $row['last_name'] . '(' . $row['unique_identifier'] . ')'; ?></option>
+					<option value="<?php echo $row['participant_id']; ?>">
+						<?php echo $row['first_name'] . $row['last_name'] . '(' . $row['unique_identifier'] . ')'; ?>
+					</option>
 				<?php } ?>
 			</select>
 		</td>
 		<td>
-			<button style="margin-right: 10px; " class="btn btn-success btn-sm" onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button>
-			<button class="btn btn-danger btn-sm" onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+			<button style="margin-right: 10px; " class="btn btn-success btn-sm"
+				onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button>
+			<button class="btn btn-danger btn-sm"
+				onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
 		</td>
 	</tr>
 </table>
 <div class="table-responsive">
-	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide" id="shipmentTable">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
+		id="shipmentTable">
 		<thead>
 			<tr>
 				<th style="text-align: center;"><?= $this->translate->_("Participant ID"); ?></th>
@@ -76,7 +83,7 @@
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$("#scheme").select2({
 			placeholder: "Select scheme type",
 			allowClear: true
@@ -87,28 +94,28 @@
 		});
 		$('#dateRange').daterangepicker({
 			locale: {
-                    cancelLabel: 'Clear',
-                    format: 'DD-MMM-YYYY',
-                    separator: ' to ',
-                },
-                autoApply: true,
-				showDropdowns: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(366, 'days'),
-				endDate: moment(),
-				maxDate: moment(),
-				ranges: {
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-				}
+				cancelLabel: 'Clear',
+				format: 'DD-MMM-YYYY',
+				separator: ' to ',
 			},
-			function(start, end) {
+			autoApply: true,
+			showDropdowns: true,
+			alwaysShowCalendars: true,
+			autoUpdateInput: true,
+			startDate: moment().subtract(366, 'days'),
+			endDate: moment(),
+			maxDate: moment(),
+			ranges: {
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+			}
+		},
+			function (start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
@@ -136,8 +143,7 @@
 		$.blockUI;
 		oTable = $('#shipmentTable').dataTable({
 			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page",
-				"sEmptyTable": "No data to show"
+				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,
@@ -147,36 +153,36 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center",
-					"bSortable": false
-				}
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center",
+				"bSortable": false
+			}
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -186,7 +192,7 @@
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'index', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				schemeType = $("#scheme").val();
 				dateRange = $("#dateRange").val();
 				participant = $("#participantId").val();
@@ -215,7 +221,7 @@
 					"value": 'participant'
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -224,7 +230,7 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
 				$.unblockUI;
 			},
 		});
@@ -235,10 +241,10 @@
 	function generateReport() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'capa', 'action' => 'capa-export')); ?>", {
-				originatedFrom: "participant",
-				format: "html"
-			},
-			function(data) {
+			originatedFrom: "participant",
+			format: "html"
+		},
+			function (data) {
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				}

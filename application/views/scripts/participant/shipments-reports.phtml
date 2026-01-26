@@ -142,8 +142,7 @@
 		$.blockUI;
 		oTable = $('#shipmentTable').dataTable({
 			"oLanguage": {
-				"sLengthMenu": "_MENU_ records per page",
-				"sEmptyTable": "No data to show"
+				"sEmptyTable": <?= $this->jsTranslate("No data to show") ?>
 			},
 			"bJQueryUI": false,
 			"bAutoWidth": false,

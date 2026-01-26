@@ -1570,11 +1570,59 @@ class Application_Service_Evaluation
 			}
 		}
 
-		// Preload TB response results once per chunk to avoid repeating the heavy join.
+		// Preload TB response results and consensus once per chunk to avoid N+1 queries.
 		$tbResponseByMapId = [];
+		$tbConsensus = null;
 		if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'tb') {
 			$tbModel = new Application_Model_Tb();
 			$tbResponseByMapId = $tbModel->getDataForIndividualPDFBatch($mapIds);
+			$tbConsensus = $tbModel->getConsensusResults($shipmentId); // Fetch consensus once
+		}
+
+		// Preload VL response results once per chunk to avoid N+1 queries.
+		$vlResponseByMapId = [];
+		if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'vl') {
+			$vlModel = new Application_Model_Vl();
+			$shipmentAttrsJson = $shipmentResult[0]['shipment_attributes'] ?? '{}';
+			$vlResponseByMapId = $vlModel->getDataForIndividualPDFBatch($shipmentId, $mapIds, $shipmentAttrsJson);
+		}
+
+		// Preload EID response results once per chunk to avoid N+1 queries.
+		$eidResponseByMapId = [];
+		$eidExtractionAssay = [];
+		$eidDetectionAssay = [];
+		if (!empty($mapIds) && ($shipmentResult[0]['scheme_type'] ?? '') === 'eid') {
+			// Preload assay lookups (static data)
+			$eidExtractionAssay = $schemeService->getEidExtractionAssay();
+			$eidDetectionAssay = $schemeService->getEidDetectionAssay();
+
+			// Batch fetch all EID response results
+			$eidQuery = $db->select()->from(['reseid' => 'response_result_eid'], ['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'])
+				->join(['respr' => 'r_possibleresult'], 'respr.id=reseid.reported_result', ['labResult' => 'respr.response'])
+				->join(['sp' => 'shipment_participant_map'], 'sp.map_id=reseid.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'])
+				->join(['refeid' => 'reference_result_eid'], 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', ['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'])
+				->join(['refpr' => 'r_possibleresult'], 'refpr.id=refeid.reference_result', ['referenceResult' => 'refpr.response'])
+				->where("refeid.control = 0")
+				->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
+				->where('reseid.shipment_map_id IN (?)', $mapIds)
+				->order(['reseid.shipment_map_id ASC', 'refeid.sample_id ASC']);
+
+			$eidRows = $db->fetchAll($eidQuery);
+			foreach ($eidRows as $eidRow) {
+				$mid = (int) ($eidRow['shipment_map_id'] ?? 0);
+				if ($mid <= 0) {
+					continue;
+				}
+				// Post-process with assay names
+				$rowAttributes = json_decode($eidRow['attributes'] ?? '{}', true);
+				$eidRow['extraction_assay_name'] = $eidExtractionAssay[$rowAttributes['extraction_assay']] ?? null;
+				$eidRow['vl_assay'] = $eidDetectionAssay[$rowAttributes['extraction_assay']] ?? null;
+
+				if (!isset($eidResponseByMapId[$mid])) {
+					$eidResponseByMapId[$mid] = [];
+				}
+				$eidResponseByMapId[$mid][] = $eidRow;
+			}
 		}
 
 		$mapIdsToUpdate = [];
@@ -1623,46 +1671,32 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
 			} elseif ($res['scheme_type'] == 'eid') {
-
-				$extractionAssay = $schemeService->getEidExtractionAssay();
-				$detectionAssay = $schemeService->getEidDetectionAssay();
+				// Use batch-loaded EID response data to avoid N+1 queries
 				$attributes = json_decode($res['attributes'], true);
 
+				// Set participant-specific assay values (use preloaded lookup tables)
 				if (isset($attributes['extraction_assay'])) {
-					//$shipmentResult[$i]['extractionAssayVal']=$extractionAssay[$attributes['extraction_assay']];
-					$shipmentResult[$i]['extractionAssayVal'] = $extractionAssay[$attributes['extraction_assay']] ?? "";
+					$shipmentResult[$i]['extractionAssayVal'] = $eidExtractionAssay[$attributes['extraction_assay']] ?? "";
 				}
 				if (isset($attributes['detection_assay'])) {
-					$shipmentResult[$i]['detectionAssayVal'] = $detectionAssay[$attributes['detection_assay']] ?? "";
+					$shipmentResult[$i]['detectionAssayVal'] = $eidDetectionAssay[$attributes['detection_assay']] ?? "";
 				}
 
-				$sQuery = $db->select()->from(['reseid' => 'response_result_eid'], ['reseid.shipment_map_id', 'reseid.sample_id', 'reseid.reported_result'])
-					->join(['respr' => 'r_possibleresult'], 'respr.id=reseid.reported_result', ['labResult' => 'respr.response'])
-					->join(['sp' => 'shipment_participant_map'], 'sp.map_id=reseid.shipment_map_id', ['sp.shipment_id', 'sp.participant_id', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.attributes', 'responseDate' => 'sp.shipment_test_report_date'])
-					->join(['refeid' => 'reference_result_eid'], 'refeid.shipment_id=sp.shipment_id and refeid.sample_id=reseid.sample_id', ['refeid.reference_result', 'refeid.sample_label', 'refeid.mandatory'])
-					->join(['refpr' => 'r_possibleresult'], 'refpr.id=refeid.reference_result', ['referenceResult' => 'refpr.response'])
-					->where("refeid.control = 0")
-					->where(new Zend_Db_Expr("IFNULL(sp.is_excluded, 'no') = 'no'"))
-					->where("reseid.shipment_map_id = ?", $res['map_id'])
-					->order(['refeid.sample_id']);
-
-				$eidDetectionAssayResultSet = $schemeService->getEidDetectionAssay();
-				$result = $db->fetchAll($sQuery);
-				$response = [];
-				foreach ($result as $key => $row) {
-					if (isset($row['attributes'])) {
-						$attributes = json_decode($row['attributes'], true);
-					}
-					$row['extraction_assay_name'] = $extractionAssay[$attributes['extraction_assay']] ?? null;
-					$row['vl_assay'] = $eidDetectionAssayResultSet[$attributes['extraction_assay']] ?? null;
-					$response[$key] = $row;
+				// Use batch-loaded response results
+				$mid = (int) ($res['map_id'] ?? 0);
+				if ($mid > 0 && isset($eidResponseByMapId[$mid])) {
+					$shipmentResult[$i]['responseResult'] = $eidResponseByMapId[$mid];
+				} else {
+					$shipmentResult[$i]['responseResult'] = [];
 				}
-				$shipmentResult[$i]['responseResult'] = $response;
 			} elseif ($res['scheme_type'] == 'vl') {
-				$vlModel = new Application_Model_Vl();
-				$response = $vlModel->getDataForIndividualPDF($shipmentId, $res['participant_id'], $res['attributes'], $res['shipment_attributes']);
-
-				$shipmentResult[$i]['responseResult'] = $response;
+				// Use batch-loaded VL response data to avoid N+1 queries
+				$mid = (int) ($res['map_id'] ?? 0);
+				if ($mid > 0 && isset($vlResponseByMapId[$mid])) {
+					$shipmentResult[$i]['responseResult'] = $vlResponseByMapId[$mid];
+				} else {
+					$shipmentResult[$i]['responseResult'] = [];
+				}
 			} elseif ($res['scheme_type'] == 'covid19') {
 
 				$sQuery = $db->select()->from(array('resc19' => 'response_result_covid19'), array('resc19.shipment_map_id', 'resc19.sample_id', 'resc19.reported_result', 'calculated_score', 'test_type_1', 'lot_no_1', 'exp_date_1', 'test_type_2', 'lot_no_2', 'exp_date_2', 'test_type_3', 'lot_no_3', 'exp_date_3', 'test_result_1', 'test_result_2', 'test_result_3'))
@@ -1679,12 +1713,15 @@ class Application_Service_Evaluation
 				$shipmentResult[$i]['responseResult'] = $db->fetchAll($sQuery);
 				//Zend_Debug::dump($shipmentResult);
 			} elseif ($res['scheme_type'] == 'tb') {
-
-				$tbModel = new Application_Model_Tb();
-				$output = $tbModel->getDataForIndividualPDF($res['map_id'], $res['participant_id']);
-				$shipmentResult[$i]['responseResult'] = $output['responseResult'];
-				$shipmentResult[$i]['previous_six_shipments'] = $output['previous_six_shipments'];
-				$shipmentResult[$i]['consensusResult'] = $tbModel->getConsensusResults($shipmentId);
+				// Use batch-loaded TB response data to avoid N+1 queries
+				$mid = (int) ($res['map_id'] ?? 0);
+				if ($mid > 0 && isset($tbResponseByMapId[$mid])) {
+					$shipmentResult[$i]['responseResult'] = $tbResponseByMapId[$mid];
+				} else {
+					$shipmentResult[$i]['responseResult'] = [];
+				}
+				// Consensus is already preloaded once per chunk (not per participant)
+				$shipmentResult[$i]['consensusResult'] = $tbConsensus;
 			} elseif ($res['is_user_configured'] == 'yes') {
 
 				$sQuery = $db->select()->from(
