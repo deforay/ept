@@ -1,0 +1,27 @@
+<?php
+/**
+ * Common Form Footer for Shipment Add/Edit
+ *
+ * Closes the form opened by form-header.phtml and includes submit buttons.
+ *
+ * Variables expected:
+ * - $this->shipmentData (optional) - Present in EDIT mode, absent in ADD mode
+ */
+
+// Detect mode
+$isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
+?>
+            </div><!-- end #sampleFormFragment -->
+
+            <div style="margin: 0px auto 0px auto; text-align: center;" align="center">
+                <input name="submitbtn" class="btn btn-primary btn-sm" type="button"
+                    onclick="validateNow();return false;" tabindex="7"
+                    value="<?php echo $isEditMode ? $this->translate->_("Update Shipment") : $this->translate->_("Add Shipment"); ?>" />
+                <input class="btn btn-danger btn-sm" type="button" onclick="window.history.go(-1);" tabindex="8"
+                    value="<?= $this->translate->_("Cancel"); ?>" />
+            </div>
+        </form>
+    </fieldset>
+</div>
+
+<?php include dirname(__FILE__) . '/form-scripts.phtml'; ?>

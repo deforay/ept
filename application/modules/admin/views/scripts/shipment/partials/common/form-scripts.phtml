@@ -1,0 +1,126 @@
+<?php
+/**
+ * Common JavaScript for Shipment Add/Edit Forms
+ *
+ * Includes: validation, datepicker setup, duplicate checking, common event handlers
+ */
+
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat = $vHelper->getDateFormat();
+
+// Get shipment ID for duplicate check (edit mode only)
+$shipmentId = '';
+if (isset($this->shipmentData) && !empty($this->shipmentData)) {
+    $shipmentId = $this->shipmentData['shipment']['shipment_id'] ?? '';
+}
+?>
+<style type="text/css">
+    .modal-scrollable {
+        z-index: 1000 !important;
+    }
+    .modal-backdrop {
+        z-index: 900 !important;
+    }
+    #mbd {
+        overflow-y: scroll;
+        max-height: 100%;
+    }
+    thead tr th {
+        text-align: center;
+    }
+</style>
+
+<script>
+var duplicated = false;
+
+/**
+ * Check for duplicate values in database
+ */
+function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
+    if (obj.val() == "" || obj.val() == null) {
+        return;
+    }
+    $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
+        tableName: tableName,
+        fieldName: fieldName,
+        value: obj.val(),
+        fnct: fnct,
+        format: "html"
+    }, function(data) {
+        if (data > 0) {
+            alert(msg, "err");
+            duplicated = true;
+            obj.focus();
+        } else {
+            duplicated = false;
+        }
+    });
+}
+
+/**
+ * Validate form and submit
+ */
+function validateNow() {
+    allowOnlyAlphaNumericAndHyphen('#shipmentCode');
+    flag = deforayValidator.init({
+        formId: 'shipmentForm'
+    });
+    if (flag && !duplicated) {
+        $.blockUI();
+        document.getElementById('shipmentForm').submit();
+    }
+}
+
+/**
+ * Generic row removal function - used by all scheme forms
+ */
+function removeRow(obj) {
+    $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(this).remove();
+    });
+}
+
+/**
+ * Reload datepickers after dynamic row addition
+ */
+function loadCal() {
+    $(".datepicker").removeClass("hasDatepicker");
+    $(".datepicker").datepicker({
+        dateFormat: '<?php echo $dtFormat; ?>'
+    });
+}
+
+$(document).ready(function() {
+    // Initialize datepickers
+    $(".datepicker").datepicker({
+        dateFormat: '<?php echo $dtFormat; ?>'
+    });
+
+    // Shipment code validation
+    $('#shipmentCode').on('input', function(event) {
+        allowOnlyAlphaNumericAndHyphen('#shipmentCode');
+    });
+
+    // Control selection handler - sets score to 0 and readonly when control is selected
+    $("body").on("change", 'select.controlOrNot', function() {
+        var scoreElem = $(this).parent().parent().find('.score');
+        if ($(this).val() == 1) {
+            $(scoreElem).val(0);
+            $(scoreElem).attr('readonly', 'readonly');
+        } else {
+            $(scoreElem).removeAttr('readonly');
+        }
+    });
+
+    // Additional details capture handler
+    $('#captureAdditionalDetails').on("change", function() {
+        if ($(this).val() == 'yes') {
+            $("#additionalDetailLabel").attr("disabled", false);
+            $("#additionalDetailLabel").addClass("isRequired");
+        } else {
+            $("#additionalDetailLabel").attr("disabled", true);
+            $("#additionalDetailLabel").removeClass("isRequired");
+        }
+    });
+});
+</script>

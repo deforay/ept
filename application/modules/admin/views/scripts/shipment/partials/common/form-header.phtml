@@ -1,0 +1,161 @@
+<?php
+/**
+ * Common Form Header for Shipment Add/Edit
+ *
+ * Used by: edit.phtml (direct include), get-sample-form.ajax.phtml (via scheme partials)
+ *
+ * Variables expected:
+ * - $this->shipmentData (optional) - Present in EDIT mode, absent in ADD mode
+ * - $this->selectedDistribution - Distribution ID
+ * - $this->reportType (optional) - For malawi-specific fields
+ * - $this->dtsConfig (optional) - DTS configuration
+ */
+
+// Detect mode
+$isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
+
+// Get shipment data or defaults
+$shipment = $isEditMode ? $this->shipmentData['shipment'] : [];
+
+// Parse DTS config if available
+$dtsConfig = $this->dtsConfig ?? null;
+if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
+    $dtsConfig = json_decode($dtsConfig);
+} elseif (is_array($dtsConfig)) {
+    $dtsConfig = (object) $dtsConfig;
+}
+
+// Date format helper
+$vHelper = $this->getHelper('DateFormat');
+$dtFormat = $vHelper->getDateFormat();
+
+// Determine style based on scheme type
+$schemeType = $isEditMode
+    ? ($shipment['scheme_type'] ?? '')
+    : ($this->scheme ?? '');
+$style = '';
+if ($schemeType == 'tb') {
+    $style = 'style="width: 1550px; margin-left: -208px;"';
+}
+
+// Form action URL
+$formAction = $isEditMode
+    ? $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'edit'))
+    : $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'add'));
+?>
+
+<div class="well" <?php echo $style; ?>>
+    <fieldset class="container">
+        <legend>
+            <?php if ($isEditMode): ?>
+                <?= $this->translate->_("Update Shipment Sample Details"); ?> -
+                <?php echo htmlspecialchars($shipment['shipment_code']); ?>
+            <?php else: ?>
+                <?= $this->translate->_("Add New Shipment"); ?>
+            <?php endif; ?>
+        </legend>
+        <form class="form-horizontal" name="shipmentForm" id="shipmentForm" method="post"
+            action="<?php echo $formAction; ?>" autocomplete="off">
+
+            <?php if ($isEditMode): ?>
+            <!-- Distribution Code (Read-only in edit mode) -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Distribution Code"); ?></label>
+                <div class="col-lg-5">
+                    <input type="text" disabled="disabled" class="form-control"
+                        value="<?php echo htmlspecialchars($shipment['distribution_code']); ?>" />
+                </div>
+                <input type="hidden" name="shipmentId" id="shipmentId"
+                    value="<?php echo htmlspecialchars($shipment['shipment_id']); ?>" class="isRequired"
+                    title="Please choose a Scheme Type on the top of this page" />
+                <input type="hidden" name="selectedDistribution" id="selectedDistribution"
+                    value="<?php echo htmlspecialchars($this->selectedDistribution); ?>" />
+            </div>
+            <?php endif; ?>
+
+            <!-- Shipment Code -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Shipment Code"); ?></label>
+                <div class="col-lg-5">
+                    <input type="text" name="shipmentCode" id="shipmentCode" class="form-control isRequired"
+                        value="<?php echo $isEditMode ? htmlspecialchars($shipment['shipment_code']) : ''; ?>"
+                        title="Please enter the Shipment Code" />
+                </div>
+            </div>
+
+            <!-- Result Due Date -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("Result Due Date"); ?></label>
+                <div class="col-lg-5">
+                    <input type="text" readonly="readonly" name="lastDate" id="lastDate"
+                        class="form-control datepicker isRequired"
+                        value="<?php echo $isEditMode ? $this->dateFormat($shipment['lastdate_response']) : ''; ?>"
+                        title="Please choose the last response date" />
+                </div>
+            </div>
+
+            <!-- Allow Editing Response -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="allowEditingResponse">
+                    <?= $this->translate->_("Allow Editing Response"); ?> <span class="mandatory">*</span>
+                </label>
+                <div class="col-lg-5">
+                    <select id="allowEditingResponse" name="allowEditingResponse"
+                        class="isRequired form-control input-sm" title="Please select allow editing response yes/no">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="yes" <?php echo ($isEditMode && isset($shipment['allow_editing_response']) && $shipment['allow_editing_response'] == 'yes') ? 'selected="selected"' : ''; ?>>Yes</option>
+                        <option value="no" <?php echo ($isEditMode && isset($shipment['allow_editing_response']) && $shipment['allow_editing_response'] == 'no') ? 'selected="selected"' : ''; ?>>No</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Issuing Authority -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="issuingAuthority">
+                    <?= $this->translate->_("Issuing Authority"); ?>
+                </label>
+                <div class="col-lg-5">
+                    <input type="text" id="issuingAuthority" name="issuingAuthority" class="form-control input-sm"
+                        value="<?php echo $isEditMode ? htmlspecialchars($shipment['issuing_authority'] ?? '') : ''; ?>"
+                        title="Please enter the issuing authority" placeholder="Enter the issuing authority" />
+                </div>
+            </div>
+
+            <!-- PT Co-ordinator Name -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label" for="PtCoOrdinatorName">
+                    <?= $this->translate->_("PT Co-ordinator Name"); ?>
+                </label>
+                <div class="col-lg-5">
+                    <input type="text" id="PtCoOrdinatorName" name="PtCoOrdinatorName" class="form-control input-sm"
+                        value="<?php echo $isEditMode ? htmlspecialchars($shipment['pt_co_ordinator_name'] ?? '') : ''; ?>"
+                        title="Please enter the PT Co-ordinator Name" placeholder="Enter the PT Co-ordinator Name" />
+                </div>
+            </div>
+
+            <?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
+            <!-- PT Co-ordinator Email (Malawi only) -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
+                <div class="col-lg-5">
+                    <input type="text" name="ptEmail" id="ptEmail"
+                        value="<?php echo $isEditMode ? htmlspecialchars($shipment['pt_co_ordinator_email'] ?? '') : ''; ?>"
+                        placeholder="Enter PT Co-ordinator email" title="Please enter the PT Co-ordinator email"
+                        class="form-control input-sm isEmail" />
+                </div>
+            </div>
+
+            <!-- PT Co-ordinator Phone (Malawi only) -->
+            <div class="form-group">
+                <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
+                <div class="col-lg-5">
+                    <input type="text" name="ptPhone" id="ptPhone"
+                        value="<?php echo $isEditMode ? htmlspecialchars($shipment['pt_co_ordinator_phone'] ?? '') : ''; ?>"
+                        placeholder="Enter PT Co-ordinator phone number" title="Please enter the PT Co-ordinator phone number"
+                        class="form-control input-sm isNumeric" />
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Sample Form Fragment - scheme-specific content goes here -->
+            <div id="sampleFormFragment">
