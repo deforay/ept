@@ -4102,4 +4102,103 @@ class Application_Service_Shipments
         $shipmentDb = new Application_Model_DbTable_Shipments();
         return $shipmentDb->fetchFinalizedShipmentReportByDmId($dmId);
     }
+
+    /**
+     * Get button states for a shipment based on milestone timestamps.
+     *
+     * Returns an array with milestone states, display status, and button enable/disable flags.
+     * Use this function in any view that needs to show shipment action buttons.
+     *
+     * @param array $shipment Shipment data with evaluated_at, reports_generated_at, finalized_at, shipment_status, updated_on_admin
+     * @return array Button states including:
+     *   - isEvaluated, hasReportsGenerated, isFinalized, isEphemeral: bool milestone/state flags
+     *   - displayStatus: string - Status text (Evaluated, Reports Generated, Finalized, or raw status)
+     *   - evaluateButtonText: string - "Evaluate" or "Re-Evaluate"
+     *   - viewEnabled, evaluateEnabled, generateReportsEnabled, finalizeEnabled: bool button flags
+     */
+    public static function getShipmentButtonStates(array $shipment): array
+    {
+        // Determine milestone states from timestamps
+        $isEvaluated = !empty($shipment['evaluated_at']);
+        $hasReportsGenerated = !empty($shipment['reports_generated_at']);
+        $isFinalized = !empty($shipment['finalized_at']);
+
+        // Get shipment status (handle both 'shipment_status' and 'status' column names)
+        $shipmentStatus = $shipment['shipment_status'] ?? $shipment['status'] ?? '';
+
+        // Check if status is ephemeral (temporary processing state)
+        $isEphemeral = in_array($shipmentStatus, SHIPMENT_EPHEMERAL_STATUSES);
+
+        // Derive display status from milestone timestamps
+        if (!$isEphemeral && $isFinalized) {
+            $displayStatus = 'Finalized';
+        } elseif (!$isEphemeral && $hasReportsGenerated) {
+            $displayStatus = 'Reports Generated';
+        } elseif (!$isEphemeral && $isEvaluated) {
+            $displayStatus = 'Evaluated';
+        } else {
+            $displayStatus = ucfirst($shipmentStatus);
+        }
+
+        // Button text based on evaluated_at timestamp
+        $evaluateButtonText = $isEvaluated ? 'Re-Evaluate' : 'Evaluate';
+
+        // Determine button enable/disable states based on milestones:
+        // - evaluated_at blank: only Evaluate enabled
+        // - evaluated_at set, reports_generated_at blank: Re-Evaluate, View, Generate Reports enabled
+        // - reports_generated_at set: Re-Evaluate, View, Generate Reports, Finalize enabled
+        // - finalized_at set: only View enabled
+        if ($isFinalized) {
+            $viewEnabled = true;
+            $evaluateEnabled = false;
+            $generateReportsEnabled = false;
+            $finalizeEnabled = false;
+        } elseif ($hasReportsGenerated) {
+            $viewEnabled = true;
+            $evaluateEnabled = true;
+            $generateReportsEnabled = true;
+            $finalizeEnabled = true;
+        } elseif ($isEvaluated) {
+            $viewEnabled = true;
+            $evaluateEnabled = true;
+            $generateReportsEnabled = true;
+            $finalizeEnabled = false;
+        } else {
+            $viewEnabled = false;
+            $evaluateEnabled = true;
+            $generateReportsEnabled = false;
+            $finalizeEnabled = false;
+        }
+
+        // Override: Disable buttons when in ephemeral states (draft, ready, queued, processing)
+        if ($isEphemeral) {
+            $evaluateEnabled = false;
+            $generateReportsEnabled = false;
+            $finalizeEnabled = false;
+
+            // Special case: Allow re-evaluation after 15 minutes timeout when queued
+            if ($shipmentStatus === 'queued') {
+                $statusUpdateOn = $shipment['updated_on_admin'] ?? null;
+                if ($statusUpdateOn) {
+                    $timeDiff = time() - strtotime($statusUpdateOn);
+                    if ($timeDiff >= (15 * 60)) {
+                        $evaluateEnabled = true;
+                    }
+                }
+            }
+        }
+
+        return [
+            'isEvaluated' => $isEvaluated,
+            'hasReportsGenerated' => $hasReportsGenerated,
+            'isFinalized' => $isFinalized,
+            'isEphemeral' => $isEphemeral,
+            'displayStatus' => $displayStatus,
+            'evaluateButtonText' => $evaluateButtonText,
+            'viewEnabled' => $viewEnabled,
+            'evaluateEnabled' => $evaluateEnabled,
+            'generateReportsEnabled' => $generateReportsEnabled,
+            'finalizeEnabled' => $finalizeEnabled,
+        ];
+    }
 }

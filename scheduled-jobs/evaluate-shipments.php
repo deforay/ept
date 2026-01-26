@@ -65,8 +65,9 @@ try {
 		$executionTime = ($timeEnd - $timeStart) / 60;
 		$console->writeln("  <fg=green>✓</> Completed in <comment>" . round($executionTime, 2) . "</comment> mins");
 
-		// Set evaluated_at milestone timestamp
+		// Set evaluated_at milestone timestamp and update status
 		$db->update('shipment', [
+			'status' => 'evaluated',
 			'evaluated_at' => new Zend_Db_Expr('NOW()')
 		], $db->quoteInto('shipment_id = ?', $shipmentId));
 

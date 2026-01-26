@@ -3,6 +3,10 @@
 if ($this->shipments == false && count($this->shipments) <= 0) {
 	echo "<br/><br/><br/><h4 style='text-align:center;'>" . $this->translate->_("Unable fetch shipments. Please try again later or contact system admin for help") . "</h4>";
 } else {
+	// Initialize date checks for report generation
+	$currentDate = date('Y-m-d');
+	$distributionDate = $this->shipments[0]['distribution_date'];
+	$canGenerateIndividualReport = ($distributionDate < $currentDate) ? 1 : 0;
 	?>
 
 
@@ -29,6 +33,18 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 				if (count($this->shipments) > 0) {
 					foreach ($this->shipments as $shipment) {
 						$reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
+
+						// Get button states from common function
+						$btnStates = Application_Service_Shipments::getShipmentButtonStates($shipment);
+						$displayStatus = $this->translate->_($btnStates['displayStatus']);
+						$isFinalized = $btnStates['isFinalized'];
+						$generateReportsEnabled = $btnStates['generateReportsEnabled'];
+						$finalizeEnabled = $btnStates['finalizeEnabled'];
+						$hasReportsGenerated = $btnStates['hasReportsGenerated'];
+
+						$generateReportsClass = $generateReportsEnabled ? '' : 'disabled';
+						$finalizeClass = $finalizeEnabled ? '' : 'disabled';
+						$encodedShipmentId = base64_encode($shipment['shipment_id']);
 						?>
 						<tr>
 							<td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
@@ -42,16 +58,38 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;">
 								<?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
 							</td>
-							<td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
+							<td style="text-align: center;"><?= $displayStatus; ?></td>
 							<td style="text-align: center;">
-								<?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0 && $shipment['status'] != 'finalized') { ?>
-									<a class="btn btn-success btn-xs"
-										href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
-												class="icon-edit"></i> <?= $this->translate->_("Report"); ?></span></a>
-								<?php } else { ?>
-									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i>
-											<?= $this->translate->_("Report"); ?></span></a>
-								<?php } ?>
+								<?php if ($reported > 0 && !$isFinalized): ?>
+									<?php if ($hasReportsGenerated): ?>
+										<a class="btn btn-info btn-xs"
+											href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
+											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
+										</a>
+										<a href="javascript:void(0)"
+											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
+											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
+											<i class="icon-refresh"></i> <?= $this->translate->_("Re-generate Reports"); ?>
+										</a>
+									<?php else: ?>
+										<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">
+											<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
+										</a>
+									<?php endif; ?>
+									<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>"
+										href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
+										<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
+									</a>
+								<?php elseif ($isFinalized): ?>
+									<a class="btn btn-info btn-xs"
+										href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
+										<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
+									</a>
+								<?php else: ?>
+									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">
+										<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
+									</a>
+								<?php endif; ?>
 							</td>
 						</tr>
 						<?php

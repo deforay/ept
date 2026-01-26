@@ -82,41 +82,20 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 						? round(($reported / $totalParticipants) * 100, 2)
 						: 0;
 
-					// Determine button states
-					$evaluateButtonEnabled = true;
-					$actionButtonsEnabled = 'disabled';
+					// Get button states from common function
+					$btnStates = Application_Service_Shipments::getShipmentButtonStates($shipment);
+					$isEvaluated = $btnStates['isEvaluated'];
+					$hasReportsGenerated = $btnStates['hasReportsGenerated'];
+					$isFinalized = $btnStates['isFinalized'];
+					$viewEnabled = $btnStates['viewEnabled'];
+					$generateReportsEnabled = $btnStates['generateReportsEnabled'];
+					$finalizeEnabled = $btnStates['finalizeEnabled'];
+					$displayStatus = $this->translate->_($btnStates['displayStatus']);
+					$buttonText = $this->translate->_($btnStates['evaluateButtonText']);
 
-					switch ($shipment['shipment_status']) {
-						case 'queued':
-							$buttonText = $this->translate->_("Queued");
-							$evaluateButtonEnabled = false;
-
-							// Check if re-evaluation is possible (15 minutes after update)
-							$statusUpdateOn = $shipment['updated_on_admin'];
-							$timeDiff = strtotime($currentDate) - strtotime($statusUpdateOn);
-							if ($timeDiff >= (15 * 60)) {
-								$evaluateButtonEnabled = true;
-								$buttonText = $this->translate->_("Re-Evaluate");
-							}
-							break;
-
-						case 'processing':
-							$buttonText = $this->translate->_("Processing");
-							$evaluateButtonEnabled = false;
-							break;
-
-						case 'evaluated':
-							$buttonText = $this->translate->_("Re-Evaluate");
-							$evaluateButtonEnabled = true;
-							$actionButtonsEnabled = '';
-							break;
-
-						default:
-							$buttonText = $this->translate->_("Evaluate");
-							$evaluateButtonEnabled = true;
-					}
-
-					$buttonClass = $evaluateButtonEnabled ? 'enabled' : 'disabled';
+					$evaluateButtonClass = $btnStates['evaluateEnabled'] ? '' : 'disabled';
+					$generateReportsClass = $generateReportsEnabled ? '' : 'disabled';
+					$finalizeClass = $finalizeEnabled ? '' : 'disabled';
 					$encodedShipmentId = base64_encode($shipment['shipment_id']);
 					?>
 
@@ -128,70 +107,73 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 						<td style="text-align: center;"><?= (int) $reported; ?></td>
 						<td style="text-align: center;"><?= $responsePercentage; ?>%</td>
 						<td style="text-align: center;"><?= (int) $passed; ?></td>
-						<td style="text-align: center;"><?= ucfirst($shipment['shipment_status']); ?></td>
+						<td style="text-align: center;"><?= $displayStatus; ?></td>
 						<td style="text-align: center; line-height: 30px;">
-							<?php if ($shipment['shipment_status'] !== 'finalized' && $reported > 0): ?>
+							<?php if ($reported > 0): ?>
 
-								<!-- View Button (only for evaluated shipments) -->
-								<?php if ($shipment['shipment_status'] === 'evaluated'): ?>
-									<a class="btn btn-success btn-xs <?= $buttonClass; ?>"
+								<!-- View Button (enabled when evaluated) -->
+								<?php if ($viewEnabled): ?>
+									<a class="btn btn-success btn-xs"
 										href="/admin/evaluate/shipment/sid/<?= $encodedShipmentId; ?>">
 										<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
 									</a>
 								<?php endif; ?>
 
-								<!-- Evaluate Button -->
-								<a class="btn btn-success btn-xs <?= $buttonClass; ?>"
-									href="javascript:scheduleShipmentEvaluation('<?= $encodedShipmentId; ?>');">
-									<i class="icon-edit"></i> <?= $buttonText; ?>
-								</a>
+								<!-- Evaluate/Re-Evaluate Button -->
+								<?php if (!$isFinalized): ?>
+									<a class="btn btn-success btn-xs <?= $evaluateButtonClass; ?>"
+										href="javascript:scheduleShipmentEvaluation('<?= $encodedShipmentId; ?>');">
+										<i class="icon-edit"></i> <?= $buttonText; ?>
+									</a>
+								<?php endif; ?>
 
-								<!-- VL Range Button (only for VL scheme type) -->
-								<?php if ($shipment['scheme_type'] === 'vl'): ?>
-									<a class="btn btn-success btn-xs <?= $buttonClass; ?>" href="javascript:void(0);"
+								<!-- VL Range Button (only for VL scheme type, not finalized) -->
+								<?php if ($shipment['scheme_type'] === 'vl' && !$isFinalized): ?>
+									<a class="btn btn-success btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
 										onclick="getVLReferenceScores('<?= $encodedShipmentId; ?>')">
 										<i class="icon-edit"></i> <?= $this->translate->_("VL Range"); ?>
 									</a>
 								<?php endif; ?>
 
-								<!-- Report Generation Buttons -->
+								<!-- Report Generation Buttons (not shown when finalized) -->
+								<?php if (!$isFinalized): ?>
 								<div style="display: inline;">
-									<?php if (
-										isset($this->shipmentStatus['generateReport']['status']) &&
-										$this->shipmentStatus['generateReport']['status'] === 'evaluated'
-									): ?>
-										<a class="btn btn-info btn-xs <?= $actionButtonsEnabled; ?>"
+									<?php if ($hasReportsGenerated): ?>
+										<a class="btn btn-info btn-xs"
 											href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
-											<i class="icon-edit"></i> <?= $individualReportTitle; ?>
+											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
+										</a>
+										<a href="javascript:void(0)"
+											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
+											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
+											<i class="icon-refresh"></i> <?= $this->translate->_("Re-generate Reports"); ?>
 										</a>
 									<?php else: ?>
 										<a href="javascript:void(0)"
-											class="btn btn-xs btn-primary <?= $individualReportClass ?: $actionButtonsEnabled; ?>"
+											class="btn btn-xs btn-primary <?= $generateReportsClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-ok"></i> <?= $individualReportTitle; ?>
+											<i class="icon-ok"></i> <?= $this->translate->_("Generate Reports"); ?>
 										</a>
 									<?php endif; ?>
 
-									<?php if (
-										isset($this->shipmentStatus['generateReport']['status']) &&
-										$this->shipmentStatus['generateReport']['status'] === 'finalized'
-									): ?>
-										<a class="btn btn-info btn-xs <?= $actionButtonsEnabled; ?>"
+									<?php if ($isFinalized): ?>
+										<a class="btn btn-info btn-xs"
 											href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
 											<i class="icon-check"></i> <?= $finalReportTitle; ?>
 										</a>
 									<?php else: ?>
 										<a href="javascript:void(0)"
-											class="btn btn-xs btn-primary <?= $finalReportClass ?: $actionButtonsEnabled; ?>"
+											class="btn btn-xs btn-primary <?= $finalizeClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateFinalReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')">
 											<i class="icon-ok"></i> <?= $finalReportTitle; ?>
 										</a>
 									<?php endif; ?>
 								</div>
+								<?php endif; ?>
 
-								<!-- Email Non-Respondents Button -->
-								<?php if ($nonResponse > 0): ?>
-									<a class="btn btn-warning btn-xs <?= $buttonClass; ?>" href="javascript:void(0);"
+								<!-- Email Non-Respondents Button (not shown when finalized) -->
+								<?php if ($nonResponse > 0 && !$isFinalized): ?>
+									<a class="btn btn-warning btn-xs <?= $evaluateButtonClass; ?>" href="javascript:void(0);"
 										onclick="mailNonParticipants('<?= $encodedShipmentId; ?>');">
 										<i class="icon-envelope"></i> Mail <?= (int) $nonResponse; ?>
 										<?= $this->translate->_("Not Responded Participants"); ?>
