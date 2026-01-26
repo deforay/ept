@@ -11,7 +11,6 @@ $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
 $shipmentCode = '';
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
@@ -41,7 +40,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);
