@@ -1,24 +1,25 @@
 <?php
+/**
+ * AJAX Sample Form Loader
+ *
+ * Loads the appropriate scheme form partial based on scheme type.
+ * Used by index.phtml for the ADD shipment flow.
+ */
+
 if ($this->scheme == 'vl') {
-	include('vl-form.phtml');
+	include('partials/schemes/vl.phtml');
 } elseif ($this->scheme == 'eid') {
-
-	include('eid-form.phtml');
+	include('partials/schemes/eid.phtml');
 } elseif ($this->scheme == 'dts') {
-
-	include('dts-form.phtml');
+	include('partials/schemes/dts.phtml');
 } elseif ($this->scheme == 'dbs') {
-
-	include('dbs-form.phtml');
+	include('partials/schemes/dbs.phtml');
 } elseif ($this->scheme == 'tb') {
-
-	include('tb-form.phtml');
+	include('partials/schemes/tb.phtml');
 } elseif ($this->scheme == 'recency') {
-
-	include('recency-form.phtml');
+	include('partials/schemes/recency.phtml');
 } elseif ($this->scheme == 'covid19') {
-
-	include('covid19-form.phtml');
+	include('partials/schemes/covid19.phtml');
 } elseif ($this->scheme == 'generic-test' || $this->userconfig == 'yes') {
-	include('generic-form.phtml');
+	include('partials/schemes/generic.phtml');
 }
