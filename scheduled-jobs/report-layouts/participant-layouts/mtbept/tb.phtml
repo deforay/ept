@@ -17,7 +17,7 @@ if (!empty($resultArray['shipment'])) {
 
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $effectiveDate = (isset($shipmentAttributes['effective_date']) && !empty($shipmentAttributes['effective_date'])) ? $shipmentAttributes['effective_date'] : 'October 2025';
-        $formVersion = (isset($shipmentAttributes['form_version']) && !empty($shipmentAttributes['form_version'])) ? $shipmentAttributes['form_version'] : 'FRM-000214-ILB	';
+        $formVersion = 'FRM-000214-ILB';
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
