@@ -114,7 +114,7 @@ $rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
 						title="Please enter the PT Co-ordinator Name" placeholder="Enter the PT Co-ordinator Name" />
 				</div>
 			</div>
-			<?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi') { ?>
+			<?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi' && $shipmentData['shipment']['scheme_type'] != "vl") { ?>
 				<div class="form-group">
 					<label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
 					<div class="col-lg-5">
