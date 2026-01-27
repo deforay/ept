@@ -34,19 +34,19 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 <label class="col-lg-4 control-label"><span id="pfnameLabel"><?= $this->translate->_("First Name"); ?></span><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
+                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="<?= $this->translate->_("Please enter the Lab Name or First Name here"); ?>" placeholder="<?= $this->translate->_("Please enter the Lab Name or First Name here"); ?>" value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6 individualParticipantNameFields" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="<?= $this->translate->_("Please enter the last name here"); ?>" placeholder="<?= $this->translate->_("Please enter the last name here"); ?>" value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
 
             <div class="form-group col-lg-6 labParticipantNameFields" id="contactnameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Person Name"); ?> </label>
 
-                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" value="<?php echo $this->participant['contact_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="<?= $this->translate->_("Please enter the contact name here"); ?>" placeholder="<?= $this->translate->_("Please enter the contact name here"); ?>" value="<?php echo $this->participant['contact_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
@@ -61,14 +61,14 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
+                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="<?= $this->translate->_("Please enter the email address here"); ?>" value="<?php echo $this->participant['email']; ?>" placeholder="<?= $this->translate->_("Please enter the email address here"); ?>" /></div>
             </div>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="<?= $this->translate->_('Please enter the additional email id here'); ?>" />
-                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
+                    <span class="help"><?= $this->translate->_("(Please enter comma separated multiple emails)"); ?></span>
                 </div>
 
             </div>
@@ -81,7 +81,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
                 <div class="col-lg-8">
-                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="Please repeat the same password" placeholder="<?= $this->translate->_('Please repeat the same password'); ?>" />
+                    <input type="password" id="confirmPassword" name="dmPassword" class="form-control confirmPassword" title="<?= $this->translate->_("Please repeat the same password"); ?>" placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6">
@@ -368,7 +368,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
 
     function validateNow() {
         if ($('#dmPassword').val() == '' && $('#dataManager').val() == '') {
-            alert('Please choose either to log in with your PT account or enter your email ID and password.');
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please choose either to log in with your PT account or enter your email ID and password."); ?>");
             return false;
         }
         $(".bootstrap-select").removeClass('isRequired');

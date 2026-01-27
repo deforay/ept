@@ -29,7 +29,7 @@
         <input type="hidden" id='datamanagerId' name='datamanagerId' />
         <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
         <div class="col-md-12 col-xs-12" align="center">
-            <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="Save Selected" />
+            <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow(); return false;" tabindex="7" value="<?= $this->translate->_("Save Selected"); ?>" />
             <input type="button" onclick="window.location.href = '<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-manager-map'), 'default', true); ?>'" class="btn btn-danger" value="<?= $this->translate->_("Cancel"); ?>" />
         </div>
     </div>
@@ -54,12 +54,12 @@
                 document.getElementById('submitParticipantMap').submit();
                 return false;
             } else {
-                alert("Please upload the file to process.");
+                alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please upload the file to process."); ?>");
                 return false;
             }
         }
         if ($('#alldatamangers').val() == "") {
-            alert("Please select PT Login to map the participants");
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please select PT Login to map the participants."); ?>");
             return false;
         }
 

@@ -1,5 +1,5 @@
-.mandatory{
-  color:red;
+.mandatory {
+  color: red;
 }
 
 
@@ -12,7 +12,7 @@
   vertical-align: middle;
 }
 
-.btn-file > input {
+.btn-file>input {
   position: absolute;
   top: 0;
   right: 0;
@@ -46,7 +46,7 @@
   vertical-align: middle;
 }
 
-.fileupload .thumbnail > img {
+.fileupload .thumbnail>img {
   display: inline-block;
   max-height: 100%;
   vertical-align: middle;
@@ -67,19 +67,19 @@
 
 .fileupload-new .input-append .btn-file {
   -webkit-border-radius: 0 3px 3px 0;
-     -moz-border-radius: 0 3px 3px 0;
-          border-radius: 0 3px 3px 0;
+  -moz-border-radius: 0 3px 3px 0;
+  border-radius: 0 3px 3px 0;
 }
 
 .thumbnail-borderless .thumbnail {
   padding: 0;
   border: none;
   -webkit-border-radius: 0;
-     -moz-border-radius: 0;
-          border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
   -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-          box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
 .fileupload-new.thumbnail-borderless .thumbnail {
@@ -126,23 +126,3 @@
 }
 
 /*************** FILEUPLOAD *********************/
-
-
-.hero-unit{
-  background: #f7f7f7;
-  font-size:13px;
-}
-
-.container{
-  width:980px;
-}
-
-	tr.notHowdyUser td, #notHowdyUserLegend{
-		background-color: #ff9999 !important;
-	}
-	tr.isHowdyUser td, #isHowdyUserLegend{
-		background-color: #b3ff9e !important;
-	}
-	tr.notFavourited td, #notFavouritedLegend{
-		background-color: #ffc291 !important;
-	}
