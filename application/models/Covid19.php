@@ -19,8 +19,7 @@ class Application_Model_Covid19
         $config = Pt_Commons_SchemeConfig::get('covid19');
         $correctiveActions = $schemeService->getCovid19CorrectiveActions();
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
-        Zend_Debug::dump($config);
-        die;
+
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 
@@ -335,7 +334,6 @@ class Application_Model_Covid19
                     $db->update('response_result_covid19', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
                 }
             }
-
             $configuredDocScore = ((isset($config['documentationScore']) && $config['documentationScore'] != "" && $config['documentationScore'] != null) ? $config['documentationScore'] : 0);
             // Response Score
             if ($maxScore == 0 || $totalScore == 0) {
@@ -346,8 +344,7 @@ class Application_Model_Covid19
             }
 
             //Let us now calculate documentation score
-            $documentationScore = 0;
-            $documentationScorePerItem = ($config['documentationScore'] / 3);
+            $documentationScorePerItem = ($configuredDocScore / 3);
 
             // D.1
             if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
@@ -499,7 +496,7 @@ class Application_Model_Covid19
         //$sheet = $excel->getActiveSheet();
         $common = new Application_Service_Common();
         $feedbackOption = $common->getConfig('participant_feedback');
-
+        $configuredDocScore = ((isset($config['documentationScore']) && $config['documentationScore'] != "" && $config['documentationScore'] != null) ? $config['documentationScore'] : 0);
         $styleArray = array(
             'font' => array(
                 'bold' => true,
@@ -1042,7 +1039,7 @@ class Application_Model_Covid19
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit(0, PHPExcel_Cell_DataType::TYPE_STRING);
                 }
                 */
-                $documentScore = (($aRow['documentation_score'] / $config['documentationScore']) * 100);
+                $documentScore = (($aRow['documentation_score'] / $configuredDocScore) * 100);
                 /*
                 $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++), $docScoreRow)->setValueExplicit($documentScore, PHPExcel_Cell_DataType::TYPE_STRING);
                 */
