@@ -3,7 +3,7 @@
 const APP_VERSION = '7.3.4';
 
 // Shipment statuses that indicate temporary/in-progress states (not milestones)
-const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing'];
+const SHIPMENT_EPHEMERAL_STATUSES = ['draft', 'ready', 'queued', 'processing', 'pending'];
 
 // Define application environment
 defined('APPLICATION_ENV')

@@ -107,7 +107,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 						<td style="text-align: center;"><?= (int) $reported; ?></td>
 						<td style="text-align: center;"><?= $responsePercentage; ?>%</td>
 						<td style="text-align: center;"><?= (int) $passed; ?></td>
-						<td style="text-align: center;"><?= $displayStatus; ?></td>
+						<td style="text-align: center;"><?= ucfirst($shipment['shipment_status']); ?></td>
 						<td style="text-align: center; line-height: 30px;">
 							<?php if ($reported > 0): ?>
 

@@ -58,7 +58,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;">
 								<?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
 							</td>
-							<td style="text-align: center;"><?= $displayStatus; ?></td>
+							<td style="text-align: center;"><?= ucfirst($shipment['status']); ?></td>
 							<td style="text-align: center;">
 								<?php if ($reported > 0 && !$isFinalized): ?>
 									<?php if ($hasReportsGenerated): ?>

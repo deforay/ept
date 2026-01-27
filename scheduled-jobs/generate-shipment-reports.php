@@ -59,6 +59,34 @@ ini_set('display_startup_errors', 0);
 ini_set('memory_limit', -1);
 ini_set('max_execution_time', -1);
 
+// Global reference for signal handler cleanup
+$GLOBALS['_reportGenerator'] = null;
+
+// Register signal handlers for graceful shutdown
+if (function_exists('pcntl_signal')) {
+    pcntl_async_signals(true);
+    $signalHandler = function (int $signal) {
+        $isCli = php_sapi_name() === 'cli';
+        $signalName = match ($signal) {
+            SIGTERM => 'SIGTERM',
+            SIGINT => 'SIGINT',
+            SIGHUP => 'SIGHUP',
+            default => "Signal $signal"
+        };
+        ReportGenerator::warn("Received $signalName, cleaning up...", $isCli);
+
+        // Release lock via destructor
+        if (isset($GLOBALS['_reportGenerator'])) {
+            $GLOBALS['_reportGenerator'] = null;
+        }
+
+        exit(128 + $signal);
+    };
+    pcntl_signal(SIGTERM, $signalHandler);
+    pcntl_signal(SIGINT, $signalHandler);
+    pcntl_signal(SIGHUP, $signalHandler);
+}
+
 // =============================================================================
 // CONFIGURATION CLASS
 // =============================================================================
@@ -291,6 +319,16 @@ class ReportGenerator
         $this->db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $this->config = $config;
         $this->opts = $opts;
+    }
+
+    public function __destruct()
+    {
+        // Release lock if still held (e.g., if exception occurred)
+        if (is_resource($this->currentShipmentLock)) {
+            flock($this->currentShipmentLock, LOCK_UN);
+            fclose($this->currentShipmentLock);
+            $this->currentShipmentLock = null;
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -1394,6 +1432,14 @@ class ReportGenerator
                 'processing_started_at' => new Zend_Db_Expr('now()')
             ], 'id=' . $evalRow['id']);
         }
+
+        // Update shipment status to processing
+        if (!empty($evalRow['shipment_id'])) {
+            $this->db->update('shipment', [
+                'status' => 'processing',
+                'updated_on_admin' => new Zend_Db_Expr('now()')
+            ], 'shipment_id=' . $evalRow['shipment_id']);
+        }
     }
 
     /**
@@ -1440,7 +1486,7 @@ class ReportGenerator
         $notifyType = 'individual_reports';
 
         if ($evalRow['report_type'] == 'generateReport') {
-            $reportCompletedStatus = 'evaluated';
+            $reportCompletedStatus = 'reports generated';
             $notifyType = 'individual_reports';
             $link = '/reports/distribution/shipment/sid/' . base64_encode($evalRow['shipment_id']);
         } elseif ($evalRow['report_type'] == 'finalized') {
@@ -1603,6 +1649,9 @@ try {
     $currentConfig = ReportConfig::load();
     $reportGenerator = new ReportGenerator($currentConfig, $cliOpts);
 
+    // Register for signal handler cleanup
+    $GLOBALS['_reportGenerator'] = $reportGenerator;
+
     // -------------------------------------------------------------------------
     // SUBPROCESS MODE (internal - for parallel participant report generation)
     // -------------------------------------------------------------------------
@@ -1642,4 +1691,10 @@ try {
     $isCli = php_sapi_name() === 'cli';
     ReportGenerator::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
     ReportGenerator::log("<fg=gray>{$e->getTraceAsString()}</>", $isCli);
+} finally {
+    // Always release lock, even on exception
+    if (isset($reportGenerator)) {
+        unset($reportGenerator);
+    }
+    $GLOBALS['_reportGenerator'] = null;
 }

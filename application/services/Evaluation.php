@@ -2783,7 +2783,7 @@ class Application_Service_Evaluation
 			->where("report_type = ?", $params['type']));
 		if (!$existData) {
 			$authNameSpace = new Zend_Session_Namespace('administrators');
-			$sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status', )))
+			$sql = $db->select()->from(array('s' => 'shipment'), array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status'))
 				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
 				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
 				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -2807,7 +2807,7 @@ class Application_Service_Evaluation
 				$saved = $db->insert('queue_report_generation', $data);
 				if ($saved > 0) {
 					$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
-					return $db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
+					return $db->update('shipment', array('report_in_queue' => 'yes', 'status' => 'queued'), "shipment_id = " . $shipmentId);
 				}
 			}
 		} else {
@@ -2824,7 +2824,7 @@ class Application_Service_Evaluation
 			if ($updated > 0) {
 				// Reset report_generated flags so progress starts from 0%
 				$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
-				$db->update('shipment', array('report_in_queue' => 'yes'), "shipment_id = " . $shipmentId);
+				$db->update('shipment', array('report_in_queue' => 'yes', 'status' => 'queued'), "shipment_id = " . $shipmentId);
 			}
 			return $updated;
 		}
