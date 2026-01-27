@@ -231,6 +231,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
             </td>
             <td>
                 <a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                <a href="javascript:void(0);" onclick="removeRow(this, 'microscopy')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
             </td>
         </tr>
         <?php endif; ?>
@@ -620,7 +621,10 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         </tr>
                     </table>
                 </td>
-                <td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a></td>
+                <td style=" vertical-align: middle; text-align:center; ">
+                    <a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                    <a href="javascript:void(0);" onclick="removeRow(this, 'molecular')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                </td>
             </tr>
             <?php endif; ?>
         </tbody>

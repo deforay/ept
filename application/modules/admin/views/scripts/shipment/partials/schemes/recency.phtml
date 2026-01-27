@@ -255,6 +255,10 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     <a href="javascript:void(0);" onclick="addRecencyRow(this);" class="btn btn-xs btn-info">
                         <i class="icon-plus"></i>
                     </a>
+                    <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                        title="Remove this row completely">
+                        <i class="icon-minus"></i>
+                    </a>
                 </td>
             </tr>
         <?php endif; ?>
@@ -470,12 +474,12 @@ function addNewAssayBlock(sampleId) {
                         </thead> \
                         <tbody> \
                             <tr> \
-                                <td><select class="form-control" name="assay[\' + sampleId + \'][assay][]"><?php echo $assayChoicesJs; ?></select></td> \
-                                <td><input type="text" name="assay[\' + sampleId + \'][lot][]" class="form-control"/></td> \
-                                <td><input type="text" name="assay[\' + sampleId + \'][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
-                                <td><select class="form-control" name="assay[\' + sampleId + \'][result][]"><?php echo $testResultsJs; ?></select></td> \
+                                <td><select class="form-control" name="assay[' + sampleId + '][assay][]"><?php echo $assayChoicesJs; ?></select></td> \
+                                <td><input type="text" name="assay[' + sampleId + '][lot][]" class="form-control"/></td> \
+                                <td><input type="text" name="assay[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
+                                <td><select class="form-control" name="assay[' + sampleId + '][result][]"><?php echo $testResultsJs; ?></select></td> \
                                 <td> \
-                                    <a href="javascript:void(0);" onclick="addNewAssayRow(this,\' + sampleId + \')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
+                                    <a href="javascript:void(0);" onclick="addNewAssayRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a> \
                                 </td> \
                             </tr> \
                         </tbody> \
@@ -484,7 +488,7 @@ function addNewAssayBlock(sampleId) {
             </div> \
         </div> \
         <div class="modal-footer"> \
-            <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleAssay\' + sampleId + \'\')"><?= $this->translate->_("OK"); ?></button> \
+            <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleAssay' + sampleId + '\')"><?= $this->translate->_("OK"); ?></button> \
         </div> \
     </div>');
 

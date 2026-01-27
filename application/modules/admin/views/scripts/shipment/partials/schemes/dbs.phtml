@@ -600,6 +600,10 @@ $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $test
                     <a href="javascript:void(0);" onclick="addDbsRow(this);" class="btn btn-xs btn-info">
                         <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
                     </a>
+                    <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                        title="Remove this row completely">
+                        <i class="icon-minus"></i>
+                    </a>
                 </td>
             </tr>
         <?php endif; ?>
