@@ -54,6 +54,16 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             $this->view->responseCount = $reportService->getShipmentResponseCount($shipmentId, base64_decode($this->_getParam('shipmentDate')));
             $this->view->shipmentDate = base64_decode($this->_getParam('shipmentDate'));
             $this->view->shipmentCode = base64_decode($this->_getParam('shipmentCode'));
+
+            // Fetch shipment details for display
+            $shipmentService = new Application_Service_Shipments();
+            $shipment = $shipmentService->getShipment($shipmentId);
+            if ($shipment) {
+                $shipmentArray = is_array($shipment) ? $shipment : $shipment->toArray();
+                $btnStates = Application_Service_Shipments::getShipmentButtonStates($shipmentArray);
+                $this->view->shipmentStatus = $btnStates['displayStatus'];
+                $this->view->resultDueDate = $shipmentArray['lastdate_response'] ?? null;
+            }
         } else {
             $this->redirect("/admin/index");
         }

@@ -78,7 +78,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" value="<?php echo $this->participant['additional_email']; ?>" />
-                    <span class="help"><?= $this->translate->_("(Please enter comma separated mutiple email)"); ?></span>
+                    <span class="help"><?= $this->translate->_("(Please enter comma separated multiple emails)"); ?></span>
                 </div>
             </div>
 
@@ -100,16 +100,16 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                     <div class="col-lg-8">
                         <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword"
                             class="form-control isPassword"
-                            title="<?= $this->translate->_("Please enter a valid password and should minimum length of " . ($this->passLength ?? 8)); ?>"
-                            placeholder="Please enter a password" autocomplete="off">
+                            title="<?= $this->translate->_("Please enter a valid password with minimum length of") . " " . ($this->passLength ?? 8); ?>"
+                            placeholder="<?= $this->translate->_("Please enter a password"); ?>" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
                     <div class="col-lg-8">
                         <input type="password" id="confirmPassword" name="dmPassword"
-                            class="form-control confirmPassword" title="Please repeat the same password"
-                            placeholder="Please repeat the same password" />
+                            class="form-control confirmPassword" title="<?= $this->translate->_("Please repeat the same password"); ?>"
+                            placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
                     </div>
                 </div>
             </div>
@@ -339,8 +339,8 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="Update" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="Cancel" />
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </fieldset>
     </form>
@@ -473,7 +473,7 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
 
     function validateNow() {
         if ($('#dmPassword').val() == '' && $('#dataManager').val() == '') {
-            alert('Please choose either to log in with your PT account or enter your email ID and password.');
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please choose either to log in with your PT account or enter your email ID and password."); ?>");
             return false;
         }
         $(".bootstrap-select").removeClass('isRequired');

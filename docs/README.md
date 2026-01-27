@@ -39,12 +39,13 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 ## Documentation Index
 
-### Architecture
+### Architecture & Guides
 
 | Document | Description |
 |----------|-------------|
 | [Architecture Guide](ARCHITECTURE.md) | High-level system architecture, request lifecycle, security, modules, and infrastructure |
 | [Scheme Architecture](SchemeArchitecture.md) | Test scheme organization, data flow, evaluation logic, and report generation |
+| [Admin Module Guide](AdminModuleGuide.md) | Admin panel workflows, controllers, AJAX patterns, and form validation |
 
 ### Quick Links
 

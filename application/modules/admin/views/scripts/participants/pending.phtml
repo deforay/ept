@@ -3,8 +3,7 @@
         <?= $this->translate->_("List of All Pending PT Participants"); ?></div>
     <div style="margin-top:10px;"><a
             href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'index'), 'default', true); ?>"
-            class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Bact to All
-            Participants</a></div>
+            class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Back to All Participants"); ?></a></div>
 </h4>
 
 <br />
@@ -99,7 +98,7 @@
 
     function deleteParticipant(id) {
         if (id > 0) {
-            if (confirm("<?= $this->translate->_("Are you sure you want to delete this participant?"); ?> ")) {
+            if (confirm("<?= Pt_Commons_TranslateUtility::jsTranslate("Are you sure you want to delete this participant?"); ?>")) {
                 // $.blockUI();
                 $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'delete-participant')); ?>", {
                     participantId: id,
@@ -113,7 +112,7 @@
                     });
             }
         } else {
-            alert("<?= $this->translate->_("Someting went wrong Please try again later!"); ?> ")
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Something went wrong. Please try again later."); ?>")
         }
     }
 </script>

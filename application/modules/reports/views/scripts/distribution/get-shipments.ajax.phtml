@@ -1,7 +1,7 @@
 <?php
 
 if ($this->shipments == false && count($this->shipments) <= 0) {
-	echo "<br/><br/><br/><h4 style='text-align:center;'>" . $this->translate->_("Unable fetch shipments. Please try again later or contact system admin for help") . "</h4>";
+	echo "<br/><br/><br/><h4 style='text-align:center;'>" . $this->translate->_("Unable to fetch shipments. Please try again later or contact system admin for help") . "</h4>";
 } else {
 	// Initialize date checks for report generation
 	$currentDate = date('Y-m-d');
@@ -69,7 +69,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										<a href="javascript:void(0)"
 											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-refresh"></i> <?= $this->translate->_("Re-generate Reports"); ?>
+											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
 										</a>
 									<?php else: ?>
 										<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">

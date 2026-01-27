@@ -1,47 +1,110 @@
-<div id="container"></div>
+<div id="container" style="height: 500px;"></div>
 
 <script type="text/javascript">
     $(document).ready(function() {
         // Set up the chart
         <?php
-        $result = explode('#', $this->responseCount);
+        $result = explode('#', $this->responseCount ?? '[]#[]');
+        $responseData = $result[0] ?? '[]';
+        $responseDates = $result[1] ?? '[]';
         ?>
-        response = <?php echo $result[0] ?>;
-        responseDate = <?php echo $result[1] ?>;
+        var response = <?php echo $responseData; ?>;
+        var responseDate = <?php echo $responseDates; ?>;
 
-        shipmentDate = '<?php echo $this->dateFormat($this->shipmentDate) ?>';
-        shipmentCode = '<?php echo $this->shipmentCode ?>';
+        var shipmentDate = '<?php echo $this->dateFormat($this->shipmentDate) ?>';
+        var shipmentCode = '<?php echo $this->shipmentCode ?>';
+        var resultDueDate = '<?php echo !empty($this->resultDueDate) ? $this->dateFormat($this->resultDueDate) : ""; ?>';
+        var shipmentStatus = '<?php echo $this->translate->_($this->shipmentStatus ?? ""); ?>';
+
+        // Check if there's data to display
+        if (!response || response.length === 0) {
+            $('#container').html('<div style="text-align:center; padding:50px;"><h4><?= $this->translate->_("No response data available for this shipment"); ?></h4></div>');
+            return;
+        }
 
         var chart = new Highcharts.Chart({
             chart: {
                 renderTo: 'container',
                 type: 'column',
-                margin: 75,
+                marginTop: 80,
+                marginBottom: 140,
                 options3d: {
                     enabled: true,
-                    alpha: 0,
-                    beta: 0,
-                    depth: 50,
+                    alpha: 5,
+                    beta: 5,
+                    depth: 40,
                     viewDistance: 25
                 }
             },
             title: {
-                text: shipmentCode
+                text: shipmentCode,
+                style: {
+                    fontSize: '20px',
+                    fontWeight: 'bold'
+                }
             },
             subtitle: {
-                text: 'Shipment Date ' + shipmentDate
+                text: '<?= $this->translate->_("Shipment Date"); ?>: ' + shipmentDate +
+                      (resultDueDate ? ' | <?= $this->translate->_("Due Date"); ?>: ' + resultDueDate : '') +
+                      (shipmentStatus ? ' | <?= $this->translate->_("Status"); ?>: ' + shipmentStatus : ''),
+                style: {
+                    fontSize: '13px'
+                }
+            },
+            credits: {
+                enabled: false
             },
             plotOptions: {
                 column: {
-                    depth: 25
+                    depth: 30,
+                    borderRadius: 3,
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function() {
+                            return this.y > 0 ? this.y : '';
+                        },
+                        style: {
+                            fontWeight: 'bold',
+                            fontSize: '12px'
+                        }
+                    }
                 }
             },
             xAxis: {
-                categories: responseDate
+                categories: responseDate,
+                labels: {
+                    rotation: -60,
+                    style: {
+                        fontSize: '10px'
+                    }
+                },
+                gridLineWidth: 1,
+                gridLineColor: '#f0f0f0'
+            },
+            yAxis: {
+                title: {
+                    text: '<?= $this->translate->_("Number of Responses"); ?>'
+                },
+                allowDecimals: false,
+                gridLineColor: '#e0e0e0'
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                headerFormat: '<b>{point.key}</b><br/>',
+                pointFormat: '<?= $this->translate->_("Responses"); ?>: <b>{point.y}</b>'
             },
             series: [{
                 name: shipmentCode,
-                data: response
+                data: response,
+                color: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    stops: [
+                        [0, '#7cb5ec'],
+                        [1, '#4a90d9']
+                    ]
+                }
             }]
         });
 

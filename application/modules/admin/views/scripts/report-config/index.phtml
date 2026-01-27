@@ -1,23 +1,44 @@
 <link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
 <link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
-<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig" method="post" action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>" autocomplete="off" enctype="multipart/form-data">
-	<legend><?= $this->translate->_("PDF Report Settings"); ?> <span class="muted pull-right" style="font-size:15px;"><span class="mandatory">*</span> <?= $this->translate->_("indicates required field"); ?></span></legend>
+<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig" method="post"
+	action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>"
+	autocomplete="off" enctype="multipart/form-data">
+	<legend>
+		<?= $this->translate->_("PDF Report Settings"); ?> <span class="muted pull-right" style="font-size:15px;"><span
+				class="mandatory">*</span>
+			<?= $this->translate->_("indicates required field"); ?>
+		</span>
+	</legend>
 
 	<div class="row">
 		<div class="col-md-6">
-			<label><?= $this->translate->_("Report Header Text (Please enter only one or two lines)"); ?></label>
-			<textarea rows="2" name="content" id="content" cols="60" style="display:block;" class="form-control col-md-6 isRequired"><?php echo $this->result; ?></textarea>
+			<label>
+				<?= $this->translate->_("Report Header Text (Please enter only one or two lines)"); ?>
+			</label>
+			<textarea rows="2" name="content" id="content" cols="60" style="display:block;"
+				class="form-control col-md-6 isRequired"><?php echo $this->result; ?></textarea>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-6">
-			<label class="control-label" for="instituteAddressPosition"><?= $this->translate->_("Institute Address Position"); ?></label>
+			<label class="control-label" for="instituteAddressPosition">
+				<?= $this->translate->_("Institute Address Position"); ?>
+			</label>
 			<div>
-				<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control" title="Please select the institute address position">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-					<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Don't Show"); ?></option>
-					<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Header"); ?></option>
-					<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Footer"); ?></option>
+				<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control"
+					title="Please select the institute address position">
+					<option value="">--
+						<?= $this->translate->_("Select"); ?> --
+					</option>
+					<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>
+						<?= $this->translate->_("Don't Show"); ?>
+					</option>
+					<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>
+						<?= $this->translate->_("Header"); ?>
+					</option>
+					<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>
+						<?= $this->translate->_("Footer"); ?>
+					</option>
 				</select>
 			</div>
 		</div>
@@ -37,12 +58,19 @@
 
 				</div>
 
-				<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+				<div class="fileupload-preview fileupload-exists thumbnail"
+					style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
 				<div>
-					<span class="btn btn-file"><span class="fileupload-new"><?= $this->translate->_("Select image"); ?></span><span class="fileupload-exists"><?= $this->translate->_("Change"); ?></span>
+					<span class="btn btn-file"><span class="fileupload-new">
+							<?= $this->translate->_("Select image"); ?>
+						</span><span class="fileupload-exists">
+							<?= $this->translate->_("Change"); ?>
+						</span>
 
 						<input type="file" name="logo_image" id="logo_image" /></span>
-					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><?= $this->translate->_("Remove"); ?></a>
+					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">
+						<?= $this->translate->_("Remove"); ?>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -52,8 +80,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-6 form-group">
-					<label class=""><?= $this->translate->_("Report Layout"); ?></label>
-					<select class="form-control" name="reportLayout" id="reportLayout" title="Please select the report layout">
+					<label class="">
+						<?= $this->translate->_("Report Layout"); ?>
+					</label>
+					<select class="form-control" name="reportLayout" id="reportLayout"
+						title="Please select the report layout">
 						<?php
 						foreach ($this->reportLayouts as $folder) {
 							if ($folder != '.' && $folder != '..') {
@@ -70,8 +101,12 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6 form-group">
-				<label class="newReport control-label"><?= $this->translate->_("Template Top Margin"); ?></label>
-				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>" id="templateTopMargin" class="form-control" placeholder="Enter the template top margin" title="Please enter template top margin" />
+				<label class="newReport control-label">
+					<?= $this->translate->_("Template Top Margin"); ?>
+				</label>
+				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
+					id="templateTopMargin" class="form-control" placeholder="Enter the template top margin"
+					title="Please enter template top margin" />
 			</div>
 		</div>
 		<div class="row">
@@ -80,16 +115,26 @@
 				if (isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)) {
 					$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf;
 					$reportFormatStatus = true;
-				?>
+					?>
 					<div style="width: auto;" class="oldReport">
-						<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
-						<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File" onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);" style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
+						<embed width="100%" height="auto" class="oldReport" name="plugin"
+							src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
+						<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File"
+							onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);"
+							style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen"
+								aria-hidden="true"></i></a>
 					</div>
-					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Replace Report Layout" onclick="removeReport();">Replace Report Layout</a>
-					<a href="javascript:void(0);" class="btn btn-danger oldReport" title="Delete Report Template" onclick="deleteReport();removeReport();"><i class="icon-trash"></i></a>
+					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Replace Report Layout"
+						onclick="removeReport();">Replace Report Layout</a>
+					<a href="javascript:void(0);" class="btn btn-danger oldReport" title="Delete Report Template"
+						onclick="deleteReport();removeReport();"><i class="icon-trash"></i></a>
 				<?php } ?>
-				<label class="newReport control-label <?= $reportFormatStatus ? 'hide' : ''; ?>"><?= $this->translate->_("Upload Report Template"); ?></label>
-				<input type="file" name="reportTemplate" id="reportTemplate" class="newReport form-control <?= $reportFormatStatus ? 'hide' : ''; ?>" placeholder="Upload report template format" title="Please upload report template format" />
+				<label class="newReport control-label <?= $reportFormatStatus ? 'hide' : ''; ?>">
+					<?= $this->translate->_("Upload Report Template"); ?>
+				</label>
+				<input type="file" name="reportTemplate" id="reportTemplate"
+					class="newReport form-control <?= $reportFormatStatus ? 'hide' : ''; ?>"
+					placeholder="Upload report template format" title="Please upload report template format" />
 				<input type="hidden" name="deleteTemplate" id="deleteTemplate" value="" />
 			</div>
 		</div>
@@ -98,8 +143,12 @@
 	<div class="row">
 		<div class="form-group">
 			<div class="col-lg-offset-2 col-lg-10">
-				<input type="button" class="btn btn-info" value="<?= $this->translate->_("Update"); ?>" onclick="validateNow();return false;">
-				<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>" class="btn btn-danger"><?= $this->translate->_("Cancel"); ?></a>
+				<input type="button" class="btn btn-info" value="<?= $this->translate->_("Update"); ?>"
+					onclick="validateNow();return false;">
+				<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>"
+					class="btn btn-danger">
+					<?= $this->translate->_("Cancel"); ?>
+				</a>
 			</div>
 		</div>
 	</div>
@@ -128,27 +177,27 @@
 	}
 
 
-	$(function() {
+	$(function () {
 
 		$("#docListTable").dataTable();
 
 		function initToolbarBootstrapBindings() {
 			var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
-					'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
-					'Times New Roman', 'Verdana'
-				],
+				'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
+				'Times New Roman', 'Verdana'
+			],
 				fontTarget = $('[title=Font]').siblings('.dropdown-menu');
-			$.each(fonts, function(idx, fontName) {
+			$.each(fonts, function (idx, fontName) {
 				fontTarget.append($('<li><a data-edit="fontName ' + fontName + '" style="font-family:\'' + fontName + '\'">' + fontName + '</a></li>'));
 			});
 			$('a[title]').tooltip({
 				container: 'body'
 			});
-			$('.dropdown-menu input').click(function() {
+			$('.dropdown-menu input').click(function () {
 				return false;
 			})
 
-			$('[data-role=magic-overlay]').each(function() {
+			$('[data-role=magic-overlay]').each(function () {
 				var overlay = $(this),
 					target = $(overlay.data('target'));
 				overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
