@@ -203,7 +203,7 @@ class Application_Service_Reports
             $tbFormPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             $downloadAllTBForms = '';
             if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
-                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . $this->translator->_("Download TB Forms") . '</a>';
+                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_("Download TB Forms") . '</a>';
             }
             //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $responsePercentage = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
@@ -217,9 +217,9 @@ class Application_Service_Reports
             // $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
             $reportedCount = $aRow['reported_count'] ?? 0;
-            $row[] = $reportedCount . ' (<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
+            $row[] = $reportedCount . '<br>(<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
             $row[] = $aRow['number_passed'];
-            $row[] = $this->translator->_(ucfirst($aRow['status']));
+            $row[] = $this->translator->_(ucwords($aRow['status']));
 
             $row[] = trim("$summaryDownload $allReportsDownload $downloadAllTBForms");
             if ($aRow['status'] != "pending") {
@@ -282,7 +282,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('n.network_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')/* ->where("p.status = 'active'") */ ;
         }
 
         if (isset($params['reportType']) && $params['reportType'] == "affiliation") {
@@ -295,7 +295,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('pa.aff_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
@@ -306,7 +306,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
         }
         if (isset($params['reportType']) && $params['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
@@ -408,7 +408,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
                 ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array('p.state', 'p.district'))
@@ -416,14 +416,14 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region', 'p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.state', 'p.district'))
                 ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
@@ -432,7 +432,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
+                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
         }
         //        else{
         //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -3587,7 +3587,7 @@ class Application_Service_Reports
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ))
             ->order("s.shipment_date DESC");
         if ($notFinalized == true) {
             $sQuery = $sQuery->where("s.status = ?", 'finalized');
@@ -4263,7 +4263,7 @@ class Application_Service_Reports
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',));
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ));
         if (isset($startDate) && $startDate != "") {
             $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($startDate));
         }

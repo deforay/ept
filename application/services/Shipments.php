@@ -214,7 +214,7 @@ class Application_Service_Shipments
             }
             $tbFormPath = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . '-TB-FORMS.zip';
             if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
-                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i>' . $this->translator->_("Download TB Forms") . '</a>';
+                $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_("Download TB Forms") . '</a>';
             } elseif ($aRow['scheme_type'] == 'tb' && ($aRow['status'] == 'shipped' || $aRow['status'] == 'evaluated')) {
                 if (isset($aRow['tb_form_generated']) && $aRow['tb_form_generated'] == 'queued') {
                     $txt = $this->translator->_("Generating TB Forms...");
