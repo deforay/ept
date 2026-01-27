@@ -6,7 +6,6 @@ MtJpGraph::load(['bar', 'line', 'pie'], true);
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -42,8 +41,6 @@ if (!empty($resultArray['shipment'])) {
         ) {
             continue;
         }
-
-        //Zend_Debug::dump($result['responseResult'][0]);die;
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);

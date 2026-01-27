@@ -1,8 +1,6 @@
 <?php
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// Zend_Debug::dump($resultArray['shipment']);die;
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testPlatform1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $shipmentCode = '';
@@ -20,7 +18,6 @@ if (!empty($resultArray['shipment'])) {
     //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
-        // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
 
         $geneDetails = [];
@@ -330,7 +327,6 @@ if (!empty($resultArray['shipment'])) {
 
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }
-        // Zend_Debug::dump("came");die;
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 

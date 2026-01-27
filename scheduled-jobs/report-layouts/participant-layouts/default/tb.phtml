@@ -164,7 +164,6 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($labInfo, false, false, true, false, '');
         // if (!isset($result['is_pt_test_not_performed']) || empty($result['is_pt_test_not_performed']) || $result['is_pt_test_not_performed'] != "yes") {
         if (!empty($result['responseResult'])) {
-            // Zend_Debug::dump($result);die;
             if ($tbTestType == 'microscopy') {
                 $labRes = '<span style="font-size:13px;font-weight:bold;">Your laboratory test results :</span><br/>';
                 $labRes .= '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<table style="font-size:11px;" border="1" cellpadding="3">';

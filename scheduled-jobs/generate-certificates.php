@@ -570,7 +570,6 @@ try {
 
 
 	$shipmentParticipantResult = $db->fetchAll($sQuery);
-	//var_dump($shipmentParticipantResult);die;
 	$participants = [];
 
 	foreach ($shipmentParticipantResult as $shipment) {

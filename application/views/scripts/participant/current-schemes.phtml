@@ -1,5 +1,4 @@
 <?php
-// Zend_Debug::dump($this->shipment);die;
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 ?>
 <section class="content-header">
@@ -88,36 +87,36 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			}
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
 			"order": [
 				[7, "desc"],
@@ -128,7 +127,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bAutoWidth": false,
 			"bStateSave": false,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'current-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "currentType",
 					"value": $('input[name=currentType]').filter(':checked').val()
@@ -142,7 +141,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					"value": $("#province").val()
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -155,7 +154,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	}
 
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 
 		$(".select2").select2({
 			allowClear: true
@@ -165,31 +164,31 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		<?php foreach ($this->shipment as $shipment) {
 			if (isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on') { ?>
 				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
-			<?php }
+		<?php }
 		} ?>
 
-		$('#currentType1').click(function () {
+		$('#currentType1').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
 			<?php foreach ($this->shipment as $shipment) { ?>
 				$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
 			<?php } ?>
 			currentSchemes();
 		});
-		$('#currentType2').click(function () {
+		$('#currentType2').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
 			<?php foreach ($this->shipment as $shipment) {
 				if (isset($shipment['response_switch']) && !empty($shipment['response_switch']) && $shipment['response_switch'] == 'on') { ?>
 					$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
-				<?php }
+			<?php }
 			} ?>
 			currentSchemes();
 		});
-		$('#currentType3').click(function () {
+		$('#currentType3').click(function() {
 			$('#shipmentCode').html('<option value="">--Select--</option>');
 			<?php foreach ($this->shipment as $shipment) {
 				if (!isset($shipment['response_switch']) || empty($shipment['response_switch']) || $shipment['response_switch'] == 'off') { ?>
 					$('#shipmentCode').append('<option value="<?php echo $shipment['shipment_code']; ?>"><?php echo $shipment['shipment_code']; ?></option>');
-				<?php }
+			<?php }
 			} ?>
 			currentSchemes();
 		});
@@ -200,12 +199,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
-				schemeType: schemeType,
-				userConfig: userConfiguration,
-				mid: mid,
-				format: "html"
-			},
-				function (data) {
+					schemeType: schemeType,
+					userConfig: userConfiguration,
+					mid: mid,
+					format: "html"
+				},
+				function(data) {
 					alert("<?= $this->translate->_("Response removed successfully"); ?>");
 
 					csTable.fnDraw();
@@ -219,12 +218,12 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 	function downloadPendingSites() {
 		// $.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'download-pending-sites')); ?>", {
-			currentType: $('input[name=currentType]').filter(':checked').val(),
-			shipmentCode: $("#shipmentCode").val(),
-			province: $("#province").val(),
-			format: "html"
-		},
-			function (data) {
+				currentType: $('input[name=currentType]').filter(':checked').val(),
+				shipmentCode: $("#shipmentCode").val(),
+				province: $("#province").val(),
+				format: "html"
+			},
+			function(data) {
 				if (data != '' && data != null && data != undefined) {
 					document.location.href = '/temporary/' + data;
 				} else {

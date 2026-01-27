@@ -118,7 +118,6 @@ if (!empty($resultArray['shipment'])) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
-        // Zend_Debug::dump($attributes['recency_assay']);die;
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);

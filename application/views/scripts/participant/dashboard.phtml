@@ -12,7 +12,6 @@ $participant = [];
 foreach ($this->participants as $row) {
 	$participant[] = $row['participant_id'];
 }
-// Zend_Debug::dump($activeSchemes);die;
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <style>
@@ -366,7 +365,7 @@ foreach ($this->participants as $row) {
 	</div>
 	<?php
 	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-		?>
+	?>
 		<div class="box">
 			<div class="box-body">
 				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - HIV Viral Load"); ?></h3>
@@ -395,7 +394,7 @@ foreach ($this->participants as $row) {
 	<?php } ?>
 	<?php
 	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-		?>
+	?>
 		<div class="box">
 			<div class="box-body">
 				<h3 class="txt text-info"><?= $this->translate->_("Dried Tube Specimen - Tuberculosis"); ?></h3>
@@ -424,7 +423,7 @@ foreach ($this->participants as $row) {
 	<?php } ?>
 	<?php
 	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-		?>
+	?>
 		<div class="box">
 			<div class="box-body">
 				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - Early Infant Diagnosis"); ?></h3>
@@ -454,7 +453,7 @@ foreach ($this->participants as $row) {
 	<?php } ?>
 	<?php
 	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-		?>
+	?>
 		<div class="box">
 			<div class="box-body">
 				<h3 class="txt text-info"><?= $this->translate->_("HIV Serology"); ?></h3>
@@ -483,7 +482,7 @@ foreach ($this->participants as $row) {
 	<?php } ?>
 	<?php
 	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
-		?>
+	?>
 		<div class="box">
 			<div class="box-body">
 				<h3 class="txt text-info"><?= $this->translate->_("Dried Blood Spot - HIV Serology"); ?></h3>
@@ -543,7 +542,7 @@ foreach ($this->participants as $row) {
 
 			<?php
 			if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) {
-				?>
+			?>
 				<table class="table">
 					<tr>
 						<td style="width:100%;">
@@ -562,7 +561,7 @@ foreach ($this->participants as $row) {
 						style="margin-bottom: 15px;"><i class="fa fa-cogs"></i>&nbsp;<b>(<span id="qcCount">0</span>)
 							<?= $this->translate->_("Selected for Bulk Quality Check"); ?></b></a>
 				</div>
-				<?php
+			<?php
 			}
 			?>
 			<table cellpadding="0" cellspacing="0" border="0"
@@ -632,7 +631,7 @@ foreach ($this->participants as $row) {
 	sOneLastShipmentRowColor = [];
 	<?php
 	if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-		?>
+	?>
 
 		function dtsViralLoadSchemes() {
 			s1Table = $('#dtsViralLoadTable').dataTable({
@@ -644,25 +643,25 @@ foreach ($this->participants as $row) {
 				"sPaginationType": "full_numbers",
 				"bRetrieve": true,
 				"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
 				],
-				"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					if ($.inArray(aData[1], sOneLastShipmentRow) == -1) {
 						sOneLastShipmentRow = [];
 						sOneLastShipmentRow.push(aData[1]);
@@ -694,7 +693,7 @@ foreach ($this->participants as $row) {
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function (sSource, aoData, fnCallback) {
+				"fnServerData": function(sSource, aoData, fnCallback) {
 					aoData.push({
 						"name": "scheme",
 						"value": "vl"
@@ -704,7 +703,7 @@ foreach ($this->participants as $row) {
 						"type": "POST",
 						"url": sSource,
 						"data": aoData,
-						"success": function (json) {
+						"success": function(json) {
 							fnCallback(json);
 						}
 					});
@@ -716,7 +715,7 @@ foreach ($this->participants as $row) {
 	sTwoLastShipmentRowColor = [];
 	<?php
 	if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-		?>
+	?>
 
 		function dtsTuberculosisSchemes() {
 			s2Table = $('#dtsTuberculosisTable').dataTable({
@@ -728,25 +727,25 @@ foreach ($this->participants as $row) {
 				"sPaginationType": "full_numbers",
 				"bRetrieve": true,
 				"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
 				],
-				"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					if ($.inArray(aData[1], sTwoLastShipmentRow) == -1) {
 						sTwoLastShipmentRow = [];
 						sTwoLastShipmentRow.push(aData[1]);
@@ -778,7 +777,7 @@ foreach ($this->participants as $row) {
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function (sSource, aoData, fnCallback) {
+				"fnServerData": function(sSource, aoData, fnCallback) {
 					aoData.push({
 						"name": "scheme",
 						"value": "tb"
@@ -798,7 +797,7 @@ foreach ($this->participants as $row) {
 	sThreeLastShipmentRowColor = [];
 	<?php
 	if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-		?>
+	?>
 
 		function dbsEarlyInfantDiagnosisSchemes() {
 			s3Table = $('#earlyInfantDiagnosisTable').dataTable({
@@ -810,25 +809,25 @@ foreach ($this->participants as $row) {
 				"sPaginationType": "full_numbers",
 				"bRetrieve": true,
 				"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
 				],
-				"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					if ($.inArray(aData[1], sThreeLastShipmentRow) == -1) {
 						sThreeLastShipmentRow = [];
 						sThreeLastShipmentRow.push(aData[1]);
@@ -860,7 +859,7 @@ foreach ($this->participants as $row) {
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function (sSource, aoData, fnCallback) {
+				"fnServerData": function(sSource, aoData, fnCallback) {
 					aoData.push({
 						"name": "scheme",
 						"value": "eid"
@@ -880,7 +879,7 @@ foreach ($this->participants as $row) {
 	sFourLastShipmentRowColor = [];
 	<?php
 	if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-		?>
+	?>
 
 		function dtsHIVSerologySchemes() {
 			s4Table = $('#dtsHIVSerologyTable').dataTable({
@@ -892,25 +891,25 @@ foreach ($this->participants as $row) {
 				"sPaginationType": "full_numbers",
 				"bRetrieve": true,
 				"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
 				],
-				"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					if ($.inArray(aData[1], sFourLastShipmentRow) == -1) {
 						sFourLastShipmentRow = [];
 						sFourLastShipmentRow.push(aData[1]);
@@ -942,7 +941,7 @@ foreach ($this->participants as $row) {
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function (sSource, aoData, fnCallback) {
+				"fnServerData": function(sSource, aoData, fnCallback) {
 					aoData.push({
 						"name": "scheme",
 						"value": "dts"
@@ -962,7 +961,7 @@ foreach ($this->participants as $row) {
 	sFiveLastShipmentRowColor = [];
 	<?php
 	if (count($activeSchemes) > 0 && in_array('dbs', $activeSchemes)) {
-		?>
+	?>
 
 		function dbsHIVSerologySchemes() {
 			s4Table = $('#dbsHIVSerologyTable').dataTable({
@@ -974,25 +973,25 @@ foreach ($this->participants as $row) {
 				"sPaginationType": "full_numbers",
 				"bRetrieve": true,
 				"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					},
+					{
+						"sClass": "center"
+					}
 				],
-				"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+				"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 					if ($.inArray(aData[1], sFiveLastShipmentRow) == -1) {
 						sFiveLastShipmentRow = [];
 						sFiveLastShipmentRow.push(aData[1]);
@@ -1024,7 +1023,7 @@ foreach ($this->participants as $row) {
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'scheme', 'format' => 'html')); ?>",
-				"fnServerData": function (sSource, aoData, fnCallback) {
+				"fnServerData": function(sSource, aoData, fnCallback) {
 					aoData.push({
 						"name": "scheme",
 						"value": "dbs"
@@ -1040,57 +1039,57 @@ foreach ($this->participants as $row) {
 			});
 		}
 	<?php } ?>
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$('.multipleSelect').multiselect({
 			includeSelectAllOption: true
 		});
 		<?php
 		if (count($activeSchemes) > 0 && in_array('vl', $activeSchemes)) {
-			?>
+		?>
 			dtsViralLoadSchemes();
 		<?php } ?>
 		<?php
 		if (count($activeSchemes) > 0 && in_array('tb', $activeSchemes)) {
-			?>
+		?>
 			dtsTuberculosisSchemes();
 		<?php } ?>
 		<?php
 		if (count($activeSchemes) > 0 && in_array('eid', $activeSchemes)) {
-			?>
+		?>
 			dbsEarlyInfantDiagnosisSchemes();
 		<?php } ?>
 		<?php
 		if (count($activeSchemes) > 0 && in_array('dts', $activeSchemes)) {
-			?>
+		?>
 			dtsHIVSerologySchemes();
 		<?php } ?>
 		<?php
 		if (!empty($activeSchemes) && in_array('dbs', $activeSchemes)) {
-			?>
+		?>
 			dbsHIVSerologySchemes();
 		<?php } ?>
 
 		$('#dateRange').daterangepicker({
-			maxDate: moment(),
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			autoUpdateInput: true,
-			locale: {
-				cancelLabel: 'Clear',
-				format: 'DD-MMM-YYYY',
-				separator: ' to ',
+				maxDate: moment(),
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				ranges: {
+					'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
 			},
-			ranges: {
-				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-			}
-		},
-			function (start, end) {
+			function(start, end) {
 				$('#dateRange').val(start.format('DD-MMM-YYYY') + ' ' + end.format('DD-MMM-YYYY'));
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
@@ -1149,42 +1148,42 @@ foreach ($this->participants as $row) {
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
 			"aoColumns": [{
-				"bSortable": false
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			}
+					"bSortable": false
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
 			"aaSorting": [
 				[1, "desc"]
 			],
-			"fnDrawCallback": function () {
+			"fnDrawCallback": function() {
 				var checkBoxes = document.getElementsByName("subchk[]");
 				len = checkBoxes.length;
 				for (c = 0; c < len; c++) {
@@ -1197,7 +1196,7 @@ foreach ($this->participants as $row) {
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'all-schemes', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "qualityChecked",
 					"value": $("#qualityChecked").val()
@@ -1208,7 +1207,7 @@ foreach ($this->participants as $row) {
 					$("#qcTopButton").hide();
 				}
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -1221,7 +1220,7 @@ foreach ($this->participants as $row) {
 	}
 
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 		allSchemes();
 		participantChartContainer('', '');
 	});
@@ -1232,12 +1231,12 @@ foreach ($this->participants as $row) {
 		if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'delete-response')); ?>", {
-				schemeType: schemeType,
-				userConfig: userConfiguration,
-				mid: mid,
-				format: "html"
-			},
-				function (data) {
+					schemeType: schemeType,
+					userConfig: userConfiguration,
+					mid: mid,
+					format: "html"
+				},
+				function(data) {
 					alert("Response removed successfully");
 					schemeTable.fnDraw();
 					$.unblockUI();
@@ -1280,11 +1279,11 @@ foreach ($this->participants as $row) {
 		qcDate = $("#qcDate").val();
 		if (participantMapId != "" && qcDate != "") {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'add-qc')); ?>", {
-				mapId: participantMapId,
-				qcDate: qcDate,
-				format: "html"
-			},
-				function (data) {
+					mapId: participantMapId,
+					qcDate: qcDate,
+					format: "html"
+				},
+				function(data) {
 					if (data > 0) {
 						schemeTable.fnDraw();
 						$("#countChecksPending").text("0");
@@ -1326,14 +1325,14 @@ foreach ($this->participants as $row) {
 			/* for shipment vl */
 			$('#participantChartContainerVl').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'vl',
-				render: 'participantChartContainerVl',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'vl',
+					render: 'participantChartContainerVl',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerVl').html(data);
 				});
 		<?php }
@@ -1341,14 +1340,14 @@ foreach ($this->participants as $row) {
 			/* for shipment eid */
 			$('#participantChartContainerEid').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'eid',
-				render: 'participantChartContainerEid',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'eid',
+					render: 'participantChartContainerEid',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerEid').html(data);
 				});
 		<?php }
@@ -1356,14 +1355,14 @@ foreach ($this->participants as $row) {
 			/* for shipment dts */
 			$('#participantChartContainerDts').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'dts',
-				render: 'participantChartContainerDts',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'dts',
+					render: 'participantChartContainerDts',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerDts').html(data);
 				});
 		<?php }
@@ -1371,14 +1370,14 @@ foreach ($this->participants as $row) {
 			/* for shipment dbs */
 			$('#participantChartContainerDbs').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'dbs',
-				render: 'participantChartContainerDbs',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'dbs',
+					render: 'participantChartContainerDbs',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerDbs').html(data);
 				});
 		<?php }
@@ -1386,14 +1385,14 @@ foreach ($this->participants as $row) {
 			/* for shipment recency */
 			$('#participantChartContainerRecency').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'recency',
-				render: 'participantChartContainerRecency',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'recency',
+					render: 'participantChartContainerRecency',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerRecency').html(data);
 				});
 		<?php }
@@ -1401,19 +1400,19 @@ foreach ($this->participants as $row) {
 			/* for shipment covid19 */
 			$('#participantChartContainerCovid19').html("<h3 style=' opacity: 0.4; text-align: center; '>Loading...</h4>");
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'get-participant-scheme-chart')); ?>", {
-				shipmentDate: $('#dateRange').val(),
-				participants: participant,
-				type: type,
-				shipmentType: 'covid19',
-				render: 'participantChartContainerCovid19',
-				format: "html"
-			},
-				function (data) {
+					shipmentDate: $('#dateRange').val(),
+					participants: participant,
+					type: type,
+					shipmentType: 'covid19',
+					render: 'participantChartContainerCovid19',
+					format: "html"
+				},
+				function(data) {
 					$('#participantChartContainerCovid19').html(data);
 				});
 		<?php } ?>
 
-		setTimeout(function () {
+		setTimeout(function() {
 			vl = $("div").hasClass("vl");
 			eid = $("div").hasClass("eid");
 			dts = $("div").hasClass("dts");
@@ -1471,11 +1470,11 @@ foreach ($this->participants as $row) {
 		if (id != "") {
 			// $.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
-				id: id,
-				type: type,
-				format: "html"
-			},
-				function (data) {
+					id: id,
+					type: type,
+					format: "html"
+				},
+				function(data) {
 					$.unblockUI();
 				}
 			);

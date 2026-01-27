@@ -14,7 +14,6 @@ try {
         ->from(array('dm' => 'data_manager'), array('dm_id'))
         ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'dm.dm_id=pcm.ptcc_id', array('country_id', 'state', 'district'))
         ->where("dm.ptcc like 'yes'");
-    // echo($sQuery);die;
     $result = $db->fetchAll($sQuery);
     if (!empty($result)) {
         $dm = new Application_Model_DbTable_DataManagers();

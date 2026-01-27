@@ -195,7 +195,6 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '</tr>';
         }
         $labInfo .= '</table>';
-        // Zend_Debug::dump($result['responseResult']);die;
         //shipment_test_date
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
@@ -409,7 +408,6 @@ if (!empty($resultArray['shipment'])) {
             if (!empty($result['responseResult'])) {
 
                 //Vl report
-                //var_dump($attributes);die;
                 $labRes = '<h5>Platform : ' . $result['responseResult'][0]['vl_assay'] . '</h5>';
                 if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
                     $labRes = '<h5>Platform : ' . $attributes['other_assay'] . '</h5>';

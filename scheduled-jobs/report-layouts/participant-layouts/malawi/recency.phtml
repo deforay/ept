@@ -2,7 +2,6 @@
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -19,7 +18,6 @@ if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    // Zend_Debug::dump($recencyAssay[1]);die;
     $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 
     foreach ($resultArray['shipment'] as $result) {
@@ -30,7 +28,6 @@ if (!empty($resultArray['shipment'])) {
             continue;
         }
 
-        //Zend_Debug::dump($result['responseResult'][0]);die;
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
@@ -135,7 +132,6 @@ if (!empty($resultArray['shipment'])) {
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
         }
-        // Zend_Debug::dump($attributes['recency_assay']);die;
         $sampleRehydrationDate = "";
         if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
@@ -477,9 +473,6 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
         }
-        // if($result['shipment_code'] == 'REC0920-6'){
-        //     echo $docRes;die;
-        // }
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);

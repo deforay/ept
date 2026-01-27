@@ -282,7 +282,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('n.network_id')/* ->where("p.status = 'active'") */ ;
+                ->group('n.network_id')/* ->where("p.status = 'active'") */;
         }
 
         if (isset($params['reportType']) && $params['reportType'] == "affiliation") {
@@ -295,7 +295,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('pa.aff_id')/* ->where("p.status = 'active'") */ ;
+                ->group('pa.aff_id')/* ->where("p.status = 'active'") */;
         }
         if (isset($params['reportType']) && $params['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region'))
@@ -306,7 +306,7 @@ class Application_Service_Reports
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array())
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array())
                 ->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array())
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */ ;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")/* ->where("p.status = 'active'") */;
         }
         if (isset($params['reportType']) && $params['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array())
@@ -408,7 +408,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('n.network_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "affiliation") {
             $sQuery = $dbAdapter->select()->from(array('pa' => 'r_participant_affiliates'))
                 ->joinLeft(array('p' => 'participant'), 'p.affiliation=pa.affiliate', array('p.state', 'p.district'))
@@ -416,14 +416,14 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('pa.aff_id')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "region") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.region', 'p.state', 'p.district'))
                 ->joinLeft(array('shp' => 'shipment_participant_map'), 'shp.participant_id=p.participant_id', array())
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('p.region')->where("p.region IS NOT NULL")->where("p.region != ''")->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         } elseif (isset($parameters['reportType']) && $parameters['reportType'] == "enrolled-programs") {
             $sQuery = $dbAdapter->select()->from(array('p' => 'participant'), array('p.state', 'p.district'))
                 ->joinLeft(array('pe' => 'participant_enrolled_programs_map'), 'pe.participant_id=p.participant_id', array())
@@ -432,7 +432,7 @@ class Application_Service_Reports
                 ->joinLeft(array('s' => 'shipment'), 's.shipment_id=shp.shipment_id', array('shipment_code', 'lastdate_response'))
                 ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->joinLeft(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */ ;
+                ->group('rep.r_epid')->group('s.shipment_id')/* ->where("p.status = 'active'") */;
         }
         //        else{
         //          $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
@@ -1334,7 +1334,6 @@ class Application_Service_Reports
 
     public function getTestKitReport($params)
     {
-        //Zend_Debug::dump($params);die;
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(array('res' => 'response_result_dts'), array('totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.map_id=res.shipment_map_id', array())
@@ -1371,7 +1370,6 @@ class Application_Service_Reports
             } else {
                 $sQuery = $sQuery->joinLeft(array('pa' => 'r_participant_affiliates'), 'p.affiliation=pa.affiliate', array());
             }
-            //echo $sQuery;die;
         }
         if (isset($params['reportType']) && $params['reportType'] == "region") {
             if (isset($params['regionValue']) && $params['regionValue'] != "") {
@@ -1397,13 +1395,11 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($params['endDate']));
         }
         $sQuery = $sQuery->where("tn.TestKit_Name IS NOT NULL");
-        //echo $sQuery;die;
         return $dbAdapter->fetchAll($sQuery);
     }
 
     public function getTestKitDetailedReport($parameters)
     {
-        //Zend_Debug::dump($parameters);die;
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -3042,7 +3038,6 @@ class Application_Service_Reports
 
     public function getTestKitParticipantReport($parameters)
     {
-        //Zend_Debug::dump($parameters);die;
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -3419,8 +3414,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        //echo ($sQuery);die;
-
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -3594,7 +3587,7 @@ class Application_Service_Reports
         $resultArray = [];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ))
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',))
             ->order("s.shipment_date DESC");
         if ($notFinalized == true) {
             $sQuery = $sQuery->where("s.status = ?", 'finalized');
@@ -3696,7 +3689,6 @@ class Application_Service_Reports
                 $sQuery->where('spm.shipment_id IN (' . $impShipmentId . ')');
             }
 
-            //Zend_Debug::dump($shipmentCodeArray);die;
             $shipmentParticipantResult = $db->fetchAll($sQuery);
             $participants = [];
             foreach ($shipmentParticipantResult as $shipment) {
@@ -3849,9 +3841,6 @@ class Application_Service_Reports
         // if (isset($sLimit) && isset($sOffset)) {
         //     $sQuery = $sQuery->limit($sLimit, $sOffset);
         // }
-
-        //echo $sQuery;
-        //die;
 
         $rResult = $dbAdapter->fetchAll($sQuery);
 
@@ -4214,7 +4203,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-        // echo ($sQuery);die;
         $rResult = $dbAdapter->fetchAll($sQuery);
 
         /* Data set length after filtering */
@@ -4275,7 +4263,7 @@ class Application_Service_Reports
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date', ));
+        $sQuery = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.scheme_type', 's.shipment_date',));
         if (isset($startDate) && $startDate != "") {
             $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($startDate));
         }
@@ -5178,9 +5166,6 @@ class Application_Service_Reports
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($parameters['endDate']));
         }
-        //echo $sQuery;
-        //die;
-
         $results = $dbAdapter->fetchAll($sQuery);
 
         // Group results by shipment_code and performance

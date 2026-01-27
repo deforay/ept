@@ -1,7 +1,5 @@
 <?php
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-// Zend_Debug::dump($resultArray['shipment']);die;
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testPlatform1']);die;
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -19,7 +17,6 @@ if (!empty($resultArray['shipment'])) {
     $j = 1;
     //$resultArray['dmResult'];
     foreach ($resultArray['shipment'] as $result) {
-        // Zend_Debug::dump($result);die;
         $geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($result['map_id']);
 
         $geneDetails = [];
@@ -33,8 +30,6 @@ if (!empty($resultArray['shipment'])) {
         ) {
             continue;
         }
-
-        //Zend_Debug::dump($result['responseResult'][0]);die;
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
@@ -358,7 +353,6 @@ if (!empty($resultArray['shipment'])) {
 
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }
-        // Zend_Debug::dump("came");die;
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
             $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
 

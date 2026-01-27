@@ -13,8 +13,6 @@ if (!empty($resultArray['shipment'])) {
     $totalPages = count($resultArray['shipment']);
     $j = 1;
     //$resultArray['dmResult'];
-    // Zend_Debug::dump($resultArray['shipment'][2]);die;
-
     foreach ($resultArray['shipment'] as $result) {
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
@@ -26,8 +24,6 @@ if (!empty($resultArray['shipment'])) {
         ) {
             continue;
         }
-
-        //Zend_Debug::dump($result['responseResult'][0]);die;
 
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);

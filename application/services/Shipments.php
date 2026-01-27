@@ -735,10 +735,7 @@ class Application_Service_Shipments
                     "shipment_id" => $params['shipmentId'],
                     "testkit_id" => $kitId
                 ));
-                //Zend_Debug::dump($kitId);
             }
-            // Zend_Debug::dump($params);
-            // die;
 
             $this->saveAdminData($params);
 
@@ -1774,7 +1771,6 @@ class Application_Service_Shipments
                     );
                 }
             } elseif ($params['schemeId'] == 'vl') {
-                //Zend_Debug::dump($params['vlRef']);die;
                 for ($i = 0; $i < $size; $i++) {
                     $singleSampleScore = ($params['control'][$i] == 1 || $params['mandatory'][$i] != 1) ? 0 : $perSampleScore;
                     $dbAdapter->insert(
@@ -1791,8 +1787,7 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                        ;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2399,8 +2394,7 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
-                    ;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -2732,7 +2726,6 @@ class Application_Service_Shipments
                 // ------------------>
             }
         } elseif (!in_array($scheme, array('eid', 'vl', 'tb', 'dts', 'covid19', 'dbs', 'recency')) || $params['userConfig'] == 'yes') {
-            // Zend_Debug::dump($params);die;
 
             $dbAdapter->delete('reference_result_generic_test', 'shipment_id = ' . $params['shipmentId']);
             for ($i = 0; $i < $size; $i++) {
@@ -2893,7 +2886,6 @@ class Application_Service_Shipments
             ->group('s.scheme_type')
             ->order("sl.scheme_id");
         $resultArray = $db->fetchAll($sQuery);
-        //Zend_Debug::dump($resultArray);die;
         return $resultArray;
     }
 
@@ -2910,7 +2902,6 @@ class Application_Service_Shipments
             ->group('s.shipment_id')
             ->order("s.shipment_id");
         $resultArray = $db->fetchAll($sQuery);
-        //echo($sQuery);die;
         return $resultArray;
     }
 
@@ -3013,14 +3004,12 @@ class Application_Service_Shipments
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
             ->where("sp.shipment_id = ?", $sid)
             ->group("p.participant_id");
-        // echo $sQuery;
-        // die;
         $participantEmails = $db->fetchAll($sQuery);
 
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3054,12 +3043,11 @@ class Application_Service_Shipments
             ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS null OR sp.shipment_test_date like '')")
             ->where("sp.shipment_id = ?", $sid)
             ->group("sp.participant_id");
-        // echo $sQuery;die;
         $participantEmails = $db->fetchAll($sQuery);
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3192,7 +3180,6 @@ class Application_Service_Shipments
 
         // $monthYear = Pt_Commons_General::getMonthsInRange($shipmentDate[0], $shipmentDate[1], 'dashboard');
 
-        // Zend_Debug::dump($monthYear);die;
         // if (count($monthYear) > 0) {
         // foreach ($monthYear as $monthIndex => $monthYr) {
 
@@ -3328,7 +3315,6 @@ class Application_Service_Shipments
                     $newShipmentMailContent = $commonServices->getEmailTemplate('send_participant_report_mail');
                     $indLink = "<a href=" . $domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath) . ">" . $conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($invididualFilePath) . "</a>";
                     $sumLink = "<a href=" . $domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath) . ">" . $conf->domain . DIRECTORY_SEPARATOR . "d" . DIRECTORY_SEPARATOR . base64_encode($summaryFilePath) . "</a>";
-                    // Zend_Debug::dump($newShipmentMailContent);die;
                     $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##IND_REPORT_LINK##', '##SUM_REPORT_LINK##');
                     $replace = array($aRow['participantName'], $aRow['shipment_code'], $aRow['scheme_name'], $indLink, $sumLink);
                     $content = $newShipmentMailContent['mail_content'];
@@ -3626,7 +3612,7 @@ class Application_Service_Shipments
         }
 
         /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
+        for ($i = 0; $i <i count($aColumns); $i++) {
             if (isset($aColumns[$i]) && !empty($aColumns[$i])) {
                 if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
                     if ($sWhere == "") {
@@ -3729,11 +3715,9 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
-                ;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
             }
             $output['aaData'][] = $row;
         }

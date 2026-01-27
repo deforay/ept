@@ -129,8 +129,6 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $referenceResultContent .= '</div>';
     }
     $pdf->writeHTML($referenceResultContent, true, false, true, false, '');
-    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
-
     if (isset($resultArray['shipment']['summaryResult']) && !empty($resultArray['shipment']['summaryResult'])) {
 
 
@@ -395,7 +393,6 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $pdf->writeHTML($additionalInfoContent, true, false, true, false, '');
     }
 
-    // Zend_Debug::dump($resultArray['shipment']['summaryResult']);die;
     if (trim($resultArray['shipment']['summaryResult']['shipment_comment'] ?? '') != "") {
         $comment = '<br><br><table border="0" style="width:100%;font-size:12px;" cellpadding="3">';
 

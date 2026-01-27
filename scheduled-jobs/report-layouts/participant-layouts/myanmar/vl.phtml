@@ -2,8 +2,6 @@
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
-//var_dump($resultArray['shipment'][0]['responseResult'][0]['testkit1']);die;
-
 $shipmentCode = '';
 
 $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
@@ -30,9 +28,6 @@ if (!empty($resultArray['shipment'])) {
         ) {
             continue;
         }
-
-        //Zend_Debug::dump($result['responseResult'][0]);die;
-
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
@@ -387,7 +382,6 @@ if (!empty($resultArray['shipment'])) {
             if (!empty($result['responseResult'])) {
 
                 //Vl report
-                //var_dump($attributes);die;
                 $labRes = '<h5>Platform : ' . $result['responseResult'][0]['vl_assay'] . '</h5>';
                 if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
                     $labRes = '<h5>Platform : ' . $attributes['other_assay'] . '</h5>';

@@ -9,10 +9,6 @@
 		}
 	}
 </style>
-<?php
-/* Zend_Debug::dump($this->countries);
-die; */
-?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
@@ -169,7 +165,7 @@ die; */
 	var paginate = true;
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$("#scheme").select2({
 			placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
 			allowClear: true
@@ -197,29 +193,29 @@ die; */
 		// $.blockUI();
 
 		$('#dateRange').daterangepicker({
-			locale: {
-				cancelLabel: 'Clear',
-				format: 'DD-MMM-YYYY',
-				separator: ' to ',
+				locale: {
+					cancelLabel: 'Clear',
+					format: 'DD-MMM-YYYY',
+					separator: ' to ',
+				},
+				autoApply: true,
+				showDropdowns: true,
+				alwaysShowCalendars: true,
+				autoUpdateInput: true,
+				startDate: moment().subtract(179, 'days'),
+				endDate: moment(),
+				maxDate: moment(),
+				ranges: {
+					'This Month': [moment().startOf('month'), moment().endOf('month')],
+					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+				}
 			},
-			autoApply: true,
-			showDropdowns: true,
-			alwaysShowCalendars: true,
-			autoUpdateInput: true,
-			startDate: moment().subtract(179, 'days'),
-			endDate: moment(),
-			maxDate: moment(),
-			ranges: {
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-			}
-		},
-			function (start, end) {
+			function(start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
@@ -244,20 +240,20 @@ die; */
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			}
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				}
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -267,7 +263,7 @@ die; */
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-response-report', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -301,7 +297,7 @@ die; */
 					"value": endDate
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -310,7 +306,7 @@ die; */
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
 				$.unblockUI();
 			},
 		});
@@ -325,32 +321,32 @@ die; */
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			}
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				}
 			],
 			"aaSorting": [
 				[0, "desc"]
@@ -360,7 +356,7 @@ die; */
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-response', 'format' => 'html')); ?>",
-			"fnServerParams": function (aoData) {
+			"fnServerParams": function(aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -394,7 +390,7 @@ die; */
 					"value": endDate
 				});
 			},
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -403,7 +399,7 @@ die; */
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
 				$.unblockUI();
 			},
 		});
@@ -432,12 +428,12 @@ die; */
 
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-			schemeType: schemeType,
-			startDate: startDate,
-			endDate: endDate,
-			format: "html"
-		},
-			function (data) {
+				schemeType: schemeType,
+				startDate: startDate,
+				endDate: endDate,
+				format: "html"
+			},
+			function(data) {
 				if (data == 0) {
 					shipmentCode = false;
 				} else {
@@ -452,13 +448,13 @@ die; */
 	function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
-			table: table,
-			searchfield: searchfield,
-			returnfield: returnfield,
-			searchvalue: searchvalue,
-			format: "html"
-		},
-			function (data) {
+				table: table,
+				searchfield: searchfield,
+				returnfield: returnfield,
+				searchvalue: searchvalue,
+				format: "html"
+			},
+			function(data) {
 				if (data != 0 && data != '' && data != undefined) {
 					$("#" + returnid).html(data);
 				}
@@ -470,7 +466,7 @@ die; */
 	function exportParticipantData() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'export-participants-response-details', 'format' => 'html')); ?>", {},
-			function (data) {
+			function(data) {
 				$.unblockUI();
 				if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
 					alert('<?= $this->translate->_("Unable to generate download"); ?>');

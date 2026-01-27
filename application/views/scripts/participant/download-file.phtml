@@ -9,12 +9,6 @@ $filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . "/" . $filena
 if ($filename == '' || $filename == null || $foldername == '' || $foldername == null || !file_exists($filePath)) {
     header("location:/participant/file-downloads");
 }
-
-// echo "<br>OFILE : ".$this->parameters['fileName'];
-// echo "<br>FILE : ".$filename;
-// echo "<br>FOLDER : ".$foldername;
-// echo "<br>FULL : ".$filePath;
-// die;
 $mm_type = "application/octet-stream";
 header("Pragma: public");
 header("Expires: 0");

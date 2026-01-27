@@ -1,5 +1,4 @@
 <?php
-// Zend_Debug::dump($this->result);die;
 if ($this->result['total_shipped'] > $this->result['afterDueDate'] && $this->result['afterDueDate'] > 0) {
     $after = round($this->result['total_shipped'] % $this->result['afterDueDate'], 2);
 } elseif ($this->result['afterDueDate'] > 0) {
