@@ -2739,7 +2739,12 @@ final class Application_Model_Dts
 		$isThisRetestField = false;
 
 		if ($allowedAlgorithms === null) {
-			$allowedAlgorithms = isset($config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : [];
+			$allowedAlgorithms = [];
+			if (isset($config['allowedAlgorithms'])) {
+				$allowedAlgorithms = is_array($config['allowedAlgorithms'])
+					? $config['allowedAlgorithms']
+					: explode(",", $config['allowedAlgorithms']);
+			}
 		}
 		if ($dtsSchemeType === null) {
 			$dtsSchemeType = (isset($config['dtsSchemeType']) && $config['dtsSchemeType'] != "") ? $config['dtsSchemeType'] : 'standard';

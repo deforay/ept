@@ -159,7 +159,12 @@ $config = ($this->customConfig);
 
 if ($this->shipment["scheme_type"] == 'dts') {
 	$shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
-	$allowedAlgorithms = isset($config['allowedAlgorithms']) ? explode(",", $config['allowedAlgorithms']) : array();
+	$allowedAlgorithms = [];
+	if (isset($config['allowedAlgorithms'])) {
+		$allowedAlgorithms = is_array($config['allowedAlgorithms'])
+			? $config['allowedAlgorithms']
+			: explode(",", $config['allowedAlgorithms']);
+	}
 	$width = 25;
 	$optionalTest3 = $config['dtsOptionalTest3'];
 	$allowRepeatTests = isset($config['allowRepeatTests']) ? $config['allowRepeatTests'] : 'no';

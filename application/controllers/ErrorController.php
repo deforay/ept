@@ -37,6 +37,32 @@ class ErrorController extends Zend_Controller_Action
             $log->log('Request Parameters', $priority, $errors->request->getParams());
         }
 
+        // Return JSON for AJAX requests
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $this->_helper->layout()->disableLayout();
+            $this->_helper->viewRenderer->setNoRender(true);
+
+            $response = [
+                'status' => 'error',
+                'message' => $this->view->message
+            ];
+
+            // Include exception details in development
+            if ($this->getInvokeArg('displayExceptions') == true && isset($errors->exception)) {
+                $response['exception'] = [
+                    'message' => $errors->exception->getMessage(),
+                    'file' => $errors->exception->getFile(),
+                    'line' => $errors->exception->getLine(),
+                    'trace' => $errors->exception->getTraceAsString()
+                ];
+            }
+
+            $this->getResponse()
+                ->setHeader('Content-Type', 'application/json')
+                ->setBody(json_encode($response));
+            return;
+        }
+
         // conditionally display exceptions
         if ($this->getInvokeArg('displayExceptions') == true) {
             $this->view->exception = $errors->exception;
