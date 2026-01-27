@@ -146,7 +146,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 										<a href="javascript:void(0)"
 											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
-											<i class="icon-refresh"></i> <?= $this->translate->_("Re-generate Reports"); ?>
+											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
 										</a>
 									<?php else: ?>
 										<a href="javascript:void(0)"

@@ -26,9 +26,10 @@ class Application_Service_Reports
 
     public function getAllShipments($parameters)
     {
-        $searchColumns = ['distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 'participant_count', 'reported_count', 'reported_percentage', 'number_passed', 's.status'];
+        // Columns: PT Survey Code, PT Survey Date, Shipment Code, Result Due Date, Scheme, No. of Participants, Responses, Number Passed, Shipment Status
+        $searchColumns = ['distribution_code', "DATE_FORMAT(distribution_date,'%d-%b-%Y')", 's.shipment_code', "DATE_FORMAT(s.lastdate_response,'%d-%b-%Y')", 'sl.scheme_name', 'participant_count', 'reported_count', 'number_passed', 's.status'];
 
-        $orderColumns = ['distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), new Zend_Db_Expr("(SUM(shipment_test_date <> '0000-00-00')/count('participant_id'))*100"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status'];
+        $orderColumns = ['distribution_code', 'distribution_date', 's.shipment_code', 's.lastdate_response', 'sl.scheme_name', new Zend_Db_Expr('count("participant_id")'), new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), new Zend_Db_Expr("SUM(final_result = 1)"), 's.status'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = 'shipment_id';
@@ -94,7 +95,7 @@ class Application_Service_Reports
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'))
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('*', 'evaluated_at', 'reports_generated_at', 'finalized_at'))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(response_status is not null AND response_status like 'responded')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
@@ -170,16 +171,32 @@ class Application_Service_Reports
         //'s.shipment_code' ,'sl.scheme_name' ,'s.number_of_samples' ,
         //'sp.participant_count','sp.reported_count','sp.number_passed','s.status');
         foreach ($rResult as $aRow) {
+            // Get button states early for use in download logic
+            $btnStates = Application_Service_Shipments::getShipmentButtonStates($aRow);
+            $isFinalized = $btnStates['isFinalized'];
+            $hasReportsGenerated = $btnStates['hasReportsGenerated'];
+
             $summaryDownload = $this->translator->_('Unavailable');
             $allReportsDownload = "";
-            if (isset($aRow['status']) && $aRow['status'] == 'finalized') {
-                if (file_exists(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf")) {
-                    $filePath = base64_encode(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf");
-                    $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class=\'btn btn-info btn-xs\'><i class=\'icon-download\'></i> ' . $this->translator->_('Summary Report') . '</a>';
+
+            // Allow downloads for both finalized and draft (reports generated) states
+            if ($isFinalized || $hasReportsGenerated) {
+                $summaryPath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . "-summary.pdf";
+                if (file_exists($summaryPath)) {
+                    $filePath = base64_encode($summaryPath);
+                    if ($isFinalized) {
+                        $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class="btn btn-info btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Summary Report') . '</a>';
+                    } else {
+                        $summaryDownload = '<a target="_blank" href="/d/' . $filePath . '" class="btn btn-warning btn-xs"><i class="icon-download"></i> ' . $this->translator->_('Draft Summary Report') . '</a>';
+                    }
                 }
                 $zipFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $aRow['shipment_code'] . ".zip";
                 if (file_exists($zipFilePath)) {
-                    $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style=' float: none; margin-top: 5px; '><i class='icon-download'></i> &nbsp  " . $this->translator->_("All Reports") . "</a><br>";
+                    if ($isFinalized) {
+                        $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-info btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_("All Reports") . "</a><br>";
+                    } else {
+                        $allReportsDownload = "<a href='/d/" . base64_encode($zipFilePath) . "' class='btn btn-warning btn-xs' target='_blank' style='float: none; margin-top: 5px;'><i class='icon-download'></i> " . $this->translator->_("Draft All Reports") . "</a><br>";
+                    }
                 }
             }
 
@@ -199,10 +216,10 @@ class Application_Service_Reports
             $row[] = $aRow['scheme_name'];
             // $row[] = $aRow['number_of_samples'];
             $row[] = $aRow['participant_count'];
-            $row[] = $aRow['reported_count'] ?? 0;
-            $row[] = '<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . ' %</a>';
+            $reportedCount = $aRow['reported_count'] ?? 0;
+            $row[] = $reportedCount . ' (<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
             $row[] = $aRow['number_passed'];
-            $row[] = ucwords($aRow['status']);
+            $row[] = $this->translator->_($btnStates['displayStatus']);
 
             $row[] = trim("$summaryDownload $allReportsDownload $downloadAllTBForms");
             if ($aRow['status'] != "pending") {
@@ -1608,12 +1625,12 @@ class Application_Service_Reports
             }
 
             if (isset($date) && $date != "" && $endDate != '' && $i < $maxDays) {
-                $sQuery = $sQuery->where("sp.shipment_test_date >= ?", $date);
-                $sQuery = $sQuery->where("sp.shipment_test_date <= ?", $endDate);
+                $sQuery = $sQuery->where("sp.shipment_receipt_date >= ?", $date);
+                $sQuery = $sQuery->where("sp.shipment_receipt_date <= ?", $endDate);
                 $result = $dbAdapter->fetchAll($sQuery);
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
-                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . ' ' . Pt_Commons_DateUtility::humanReadableDateFormat($endDate);
+                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . ' - ' . Pt_Commons_DateUtility::humanReadableDateFormat($endDate);
 
                 // Update date for next iteration
                 $nextDateObj = new DateTime($endDate);
@@ -1622,11 +1639,11 @@ class Application_Service_Reports
             }
 
             if ($i == $maxDays) {
-                $sQuery = $sQuery->where("sp.shipment_test_date >= ?", $date);
+                $sQuery = $sQuery->where("sp.shipment_receipt_date >= ?", $date);
                 $result = $dbAdapter->fetchAll($sQuery);
                 $count = (isset($result[0]['reported_count']) && $result[0]['reported_count'] != "") ? $result[0]['reported_count'] : 0;
                 $responseResult[] = (int) $count;
-                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . '  and Above';
+                $responseDate[] = Pt_Commons_DateUtility::humanReadableDateFormat($date) . ' and Above';
             }
         }
 

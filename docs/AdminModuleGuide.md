@@ -730,7 +730,7 @@ if ($this->reportType == 'malawi') {
 | **DTS** | HIV Serology (Dried Tube Specimen) | Original scheme, core functionality |
 | **VL** | HIV Viral Load | Quantitative testing with Z-score analysis |
 | **EID** | Early Infant Diagnosis | PCR-based infant HIV testing |
-| **TB** | Tuberculosis | Molecular (GeneXpert) + Microscopy |
+| **TB** | Tuberculosis | Molecular (GeneXpert) OR Microscopy |
 | **Recency** | HIV Recency | RTRI-based recent infection testing |
 | **COVID-19** | COVID-19 Testing | Added during pandemic, multi-platform PCR |
 | **DBS** | Dried Blood Spot | EIA and Western Blot testing |
