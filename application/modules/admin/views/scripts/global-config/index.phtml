@@ -486,7 +486,7 @@ $faqResults = json_decode($this->faqs);
 							<option value="generalConfig"><?= $this->translate->_("General Settings"); ?></option>
 							<option value="participantConfig"><?= $this->translate->_("Participant Settings"); ?></option>
 							<option value="emailConfig"><?= $this->translate->_("Email Settings"); ?></option>
-							<option value="homeConfig"><?= $this->translate->_("Home Page Settings"); ?></option>
+							<?php /* <option value="homeConfig"><?= $this->translate->_("Home Page Settings"); ?></option> */ ?>
 						</select>
 					</div>
 				</div>
@@ -988,6 +988,7 @@ $faqResults = json_decode($this->faqs);
 				</div>
 			</div><br>
 
+			<?php /* Home Page Settings section - commented out, managed at /admin/home-section-links instead
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
 				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Home Page Settings"); ?> <b class="caret pull-right"
 					style="text-align:right;"></b></button>
@@ -1245,6 +1246,7 @@ $faqResults = json_decode($this->faqs);
 					</table>
 				</div>
 			</div><br>
+			*/ ?>
 		</fieldset>
 
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">

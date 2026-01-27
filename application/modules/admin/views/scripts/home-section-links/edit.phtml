@@ -1,5 +1,9 @@
 <?php
-$title = $this->translate->_("Edit Home Section Link");
+$title = $this->translate->_("Edit Resource Link");
+$home = $this->home;
+$section1Name = !empty($home->subHeading1) ? $home->subHeading1 : $this->translate->_("Resource Section 1");
+$section2Name = !empty($home->subHeading2) ? $home->subHeading2 : $this->translate->_("Resource Section 2");
+$section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->translate->_("Resource Section 3");
 ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
@@ -9,14 +13,21 @@ $title = $this->translate->_("Edit Home Section Link");
     <form name="editHomeSectionForm" id="editHomeSectionForm" method="post" enctype="multipart/form-data" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-section-links", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validateNow();return false;" autocomplete="off">
         <fieldset>
             <legend><?= $title; ?></legend>
+
+            <div class="alert alert-info" style="margin-bottom: 20px;">
+                <i class="icon-info-sign"></i>
+                <?= $this->translate->_("Resource links appear under the Resource Sections on the home page. Section headings and icons can be configured in"); ?>
+                <a href="<?= $this->url(['module' => 'admin', 'controller' => 'home-config'], 'default', true); ?>"><?= $this->translate->_("Home Page Settings"); ?></a>.
+            </div>
+
             <div class="form-group">
-                <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Section"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-3 control-label" for="section"><?= $this->translate->_("Resource Section"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-5">
-                    <select name="section" id="section" class="form-control isRequired" title="Please choose the section" onchange="getDisplayOrderNo()" style="width:285px;">
-                        <option value="">--<?= $this->translate->_("Select Section"); ?>--</option>
-                        <option value="section1" <?php echo ($this->result['section'] == 'section1') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Section1"); ?></option>
-                        <option value="section2" <?php echo ($this->result['section'] == 'section2') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Section2"); ?></option>
-                        <option value="section3" <?php echo ($this->result['section'] == 'section3') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Section3"); ?></option>
+                    <select name="section" id="section" class="form-control isRequired" title="Please choose the resource section" onchange="getDisplayOrderNo()" style="width:285px;">
+                        <option value="">--<?= $this->translate->_("Select Resource Section"); ?>--</option>
+                        <option value="section1" <?php echo ($this->result['section'] == 'section1') ? "selected='selected'" : ""; ?>><?= $section1Name; ?></option>
+                        <option value="section2" <?php echo ($this->result['section'] == 'section2') ? "selected='selected'" : ""; ?>><?= $section2Name; ?></option>
+                        <option value="section3" <?php echo ($this->result['section'] == 'section3') ? "selected='selected'" : ""; ?>><?= $section3Name; ?></option>
                     </select>
                 </div>
             </div>

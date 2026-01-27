@@ -1,12 +1,7 @@
 <?php
-
-$heading1 = !empty($this->homeContent->heading1) && $this->homeContent->heading1 != "" ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
-$heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
-$heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1 != "" ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
 $home = $this->home;
-$fileLink = (array)json_decode($home->fileLinks);
+$fileLink = (array)json_decode($home->fileLinks ?? '{}');
 $faqResults = $this->faq;
-
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
@@ -16,252 +11,641 @@ $faqResults = $this->faq;
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+	.collapsible {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		cursor: pointer;
+		padding: 14px 18px;
+		width: 100%;
+		border: none;
+		text-align: left;
+		outline: none;
+		font-size: 15px;
+		font-weight: 500;
+		border-radius: 4px 4px 0 0;
+		margin-top: 10px;
+		transition: all 0.2s ease;
+	}
+
+	.collapsible.active {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		border-radius: 4px 4px 0 0;
+	}
+
+	.collapsible:hover {
+		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+	}
+
+	.collapsible .caret {
+		border-top-color: #fff;
+	}
+
+	.collapse-content {
+		padding: 20px;
+		display: block;
+		overflow: hidden;
+		background-color: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-top: none;
+		border-radius: 0 0 4px 4px;
+		margin-bottom: 5px;
+	}
+
+	.collapse-content .row {
+		margin-bottom: 15px;
+		padding-bottom: 15px;
+		border-bottom: 1px solid #eef2f7;
+	}
+
+	.collapse-content .row:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	.collapse-content .control-label {
+		color: #374151;
+		font-weight: 500;
+		margin-bottom: 6px;
+		display: block;
+	}
+
+	.collapse-content .form-control:focus {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	.collapse-content h5 {
+		color: #4a6fa5;
+		font-weight: 600;
+		margin-top: 20px;
+		border-bottom: 2px solid #4a6fa5 !important;
+		padding-bottom: 8px !important;
+	}
+
+	.collapse-content h5 i {
+		margin-right: 8px;
+	}
+
+	.collapse-content .alert-info {
+		background-color: #e8f4fd;
+		border-color: #bee3f8;
+		color: #2c5282;
+	}
+
+	.collapse-content .table {
+		background-color: #fff;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.collapse-content .table thead th {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		font-weight: 500;
+		border: none;
+		padding: 12px;
+	}
+
+	.collapse-content .table tbody tr:hover {
+		background-color: #f0f7ff;
+	}
+
+	.collapse-content .text-muted {
+		color: #6b7280;
+	}
+
+	.feature-card-row {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 15px;
+		margin-bottom: 15px !important;
+		border-bottom: none !important;
+	}
+
+	.feature-card-row:hover {
+		border-color: #4a6fa5;
+		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	}
+
+	.icon-input-wrapper {
+		display: flex;
+		align-items: stretch;
+		gap: 0;
+		position: relative;
+		max-width: 100%;
+	}
+
+	.icon-input-wrapper .form-control {
+		flex: 1;
+		min-width: 0;
+		border-radius: 0;
+		height: 34px;
+	}
+
+	.icon-preview {
+		width: 34px;
+		min-width: 34px;
+		flex-shrink: 0;
+		height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-right: none;
+		border-radius: 4px 0 0 4px;
+		font-size: 16px;
+		color: #4a6fa5;
+	}
+
+	.icon-preview:empty::before {
+		content: '?';
+		color: #cbd5e0;
+	}
+
+	.icon-picker-btn {
+		position: relative;
+		z-index: 5;
+		flex-shrink: 0;
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border: 1px solid #3a5a8a;
+		border-left: none;
+		border-radius: 0 4px 4px 0;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.icon-picker-btn:hover {
+		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+		color: #fff;
+	}
+
+	#iconPickerModal {
+		z-index: 1060 !important;
+	}
+
+	#iconPickerModal .modal-dialog {
+		width: 700px;
+		max-width: 90%;
+		z-index: 1061;
+	}
+
+	#iconPickerModal .modal-content {
+		background: #fff;
+		border-radius: 6px;
+		box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+		position: relative;
+		z-index: 1062;
+	}
+
+	#iconPickerModal .modal-header {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border-radius: 4px 4px 0 0;
+	}
+
+	#iconPickerModal .modal-header .close {
+		color: #fff;
+		opacity: 0.8;
+	}
+
+	#iconSearchInput {
+		margin-top: 15px;
+		border-radius: 4px;
+	}
+
+	.icon-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		max-height: 400px;
+		overflow-y: auto;
+		padding: 10px 0;
+	}
+
+	.icon-item {
+		width: 60px;
+		height: 60px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+
+	.icon-item i {
+		font-size: 22px;
+		color: #374151;
+	}
+
+	.icon-item:hover {
+		background: #e8f4fd;
+		border-color: #4a6fa5;
+		transform: scale(1.05);
+	}
+
+	.icon-item:hover i {
+		color: #4a6fa5;
+	}
+
+	.icon-item .icon-name {
+		position: absolute;
+		bottom: -25px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: #1f2937;
+		color: #fff;
+		font-size: 10px;
+		padding: 3px 6px;
+		border-radius: 3px;
+		white-space: nowrap;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.2s ease;
+		z-index: 10;
+	}
+
+	.icon-item:hover .icon-name {
+		opacity: 1;
+	}
+
+	.icon-item.selected {
+		background: #4a6fa5;
+		border-color: #3a5a8a;
+	}
+
+	.icon-item.selected i {
+		color: #fff;
+	}
+
+	.no-icons-found {
+		text-align: center;
+		padding: 40px;
+		color: #6b7280;
+	}
+
+	.floating-buttons {
+		position: fixed;
+		bottom: 20px;
+		right: 30px;
+		z-index: 1000;
+		display: flex;
+		gap: 10px;
+		background: #fff;
+		padding: 15px 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		border: 1px solid #e2e8f0;
+	}
+
+	.floating-buttons .btn {
+		padding: 10px 25px;
+		font-size: 14px;
+	}
+
+	#addHomePageConfigForm {
+		margin-bottom: 80px !important;
+	}
+
+	legend {
+		color: #1f2937;
+		font-weight: 600;
+		border-bottom: 2px solid #4a6fa5;
+		padding-bottom: 10px;
+	}
+</style>
+
 <div class="well">
 	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
-			<legend><?= $this->translate->_("Home Page Config"); ?></legend>
-			<div class="form-group">
-				<label for="customHomePage" class="col-lg-3 control-label"><?= $this->translate->_("Home Page"); ?><span class="mandatory">*</span></label>
-				<div class="col-lg-6">
-					<select type="text" class="form-control isRequired" id="customHomePage" name="home[customHomePage]" title="Please select the home page option" onchange="showHideCustomPage(this.value)">
-						<option value="no" <?php echo (isset($home->customHomePage) && $home->customHomePage == 'no') ? 'selected="selected"' : ''; ?>>System Design</option>
-						<option value="yes" <?php echo (isset($home->customHomePage) && $home->customHomePage == 'yes') ? 'selected="selected"' : ''; ?>>Custom Design</option>
-					</select>
+			<legend><?= $this->translate->_("Home Page Settings"); ?></legend>
+
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#heroSection">
+				<?= $this->translate->_("Hero Banner"); ?> <b class="caret pull-right"></b>
+			</button>
+			<div class="collapse-content" id="heroSection">
+				<div class="alert alert-info" style="margin: 10px 0;">
+					<i class="icon-info-sign"></i> <?= $this->translate->_("Configure the hero banner displayed at the top of the home page."); ?>
 				</div>
-			</div>
-			<div class="system-design">
+
 				<div class="row">
-					<div class="col-md-6">
-						<label for="homeTitle" class="control-label"><?= $this->translate->_("Title"); ?> <span class="mandatory">*</span></label>
-						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]" class="form-control isRequired" style="background: #fff" placeholder="<?= $this->translate->_('Enter the home section title'); ?>" title="Please enter the home section title" />
-					</div>
-					<div class="col-md-6">
-						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading 1"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading1" name="home[heading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 1'); ?>" title="Please enter a home heading 1"><?php echo $home->heading1 ?? null; ?></textarea>
+					<div class="col-md-12">
+						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Line 1 (Main Title)"); ?></label>
+						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., Welcome to ePT for TB'); ?>"
+							title="<?= $this->translate->_('Enter the main title for the hero banner'); ?>" />
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-6">
-						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading 2"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading2" name="home[heading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 2'); ?>" title="Please enter a home heading 2"><?php echo $home->heading2 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading 3"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeHeading3" name="home[heading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home heading 3'); ?>" title="Please enter a home heading 3"><?php echo $home->heading3 ?? null; ?></textarea>
+					<div class="col-md-12">
+						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Line 2 (Subtitle)"); ?></label>
+						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., Online Proficiency Testing Tool'); ?>"
+							title="<?= $this->translate->_('Enter the subtitle for the hero banner'); ?>" />
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-6">
-						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Sub Heading 1"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 1'); ?>" title="Please enter a home sub heading 1"><?php echo $home->subHeading1 ?? null; ?></textarea>
-					</div>
-					<div class="col-md-6">
-						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Sub Heading 2"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 2'); ?>" title="Please enter a home sub heading 2"><?php echo $home->subHeading2 ?? null; ?></textarea>
+					<div class="col-md-12">
+						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Line 3 (Description)"); ?></label>
+						<textarea id="homeHeading3" name="home[heading3]" class="form-control" rows="3"
+							placeholder="<?= $this->translate->_('Enter a longer description or call to action'); ?>"
+							title="<?= $this->translate->_('Enter the description text for the hero banner'); ?>"><?php echo $home->heading3 ?? null; ?></textarea>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Sub Heading 3"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home sub heading 3'); ?>" title="Please enter a home sub heading 3"><?php echo $home->subHeading3 ?? null; ?></textarea>
+						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
+						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
+							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon 1"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon1" name="home[icon1]" class="form-control isRequired homeSectionIcon" title="Please select the icon 1">
-							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon1 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon1 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon1 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon1 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon1 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon1 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
-						</select>
+						<label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
+						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('Enter the browser page title'); ?>"
+							title="<?= $this->translate->_('Enter the title displayed in browser tab'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon 2"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon2" name="home[icon2]" class="form-control isRequired homeSectionIcon" title="Please select the icon 2">
-							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon2 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon2 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon2 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon2 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon2 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon2 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
-						</select>
+						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., https://example.com/guide.pdf'); ?>"
+							title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon 3"); ?> <span class="mandatory">*</span></label>
-						<select id="homeIcon3" name="home[icon3]" class="form-control isRequired homeSectionIcon" title="Please select the icon 3">
-							<option value="">--<?= $this->translate->_("Select Icon"); ?>--</option>
-							<option value="bx bx-file" data-icon="fa fa-file" <?php echo ($home->icon3 == 'bx bx-file') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Document"); ?></option>
-							<option value="bx bx-download" data-icon="fa fa-download" <?php echo ($home->icon3 == 'bx bx-download') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Download"); ?></option>
-							<option value="bx bx-link-external" data-icon="fa fa-external-link-alt" <?php echo ($home->icon3 == 'bx bx-link-external') ? "selected='selected'" : ""; ?>><?= $this->translate->_("External Link"); ?></option>
-							<option value="bi bi-book-half" data-icon="fa fa-book" <?php echo ($home->icon3 == 'bi bi-book-half') ? "selected='selected'" : ""; ?>><?= $this->translate->_("File"); ?></option>
-							<option value="bx bx-image" data-icon="fa fa-image" <?php echo ($home->icon3 == 'bx bx-image') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Image"); ?></option>
-							<option value="bx bx-video" data-icon="fa fa-video" <?php echo ($home->icon3 == 'bx bx-video') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Video"); ?></option>
-						</select>
+						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., Download Guide'); ?>"
+							title="<?= $this->translate->_('Enter the text for the additional link button'); ?>" />
 					</div>
 				</div>
+			</div><br>
+
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#resourceSections">
+				<?= $this->translate->_("Resource Sections"); ?> <b class="caret pull-right"></b>
+			</button>
+			<div class="collapse-content" id="resourceSections">
+				<div class="alert alert-info" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+					<span><i class="icon-info-sign"></i> <?= $this->translate->_("Configure section headings and icons below. To manage the links that appear under each section:"); ?></span>
+					<a href="<?= $this->url(['module' => 'admin', 'controller' => 'home-section-links'], 'default', true); ?>" class="btn btn-primary btn-sm">
+						<i class="icon-link"></i> <?= $this->translate->_("Manage Resource Links"); ?>
+					</a>
+				</div>
+
+				<!-- Resource Section 1 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 1"); ?></label>
+					</div>
+					<div class="col-md-4">
+						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
+								onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
+					</div>
+					<div class="col-md-8">
+						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading1 ?? null; ?>" id="homeSubHeading1" name="home[subHeading1]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., DOWNLOADS'); ?>" />
+					</div>
+				</div>
+
+				<!-- Resource Section 2 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 2"); ?></label>
+					</div>
+					<div class="col-md-4">
+						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., bi bi-book-half'); ?>"
+								onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
+					</div>
+					<div class="col-md-8">
+						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading2 ?? null; ?>" id="homeSubHeading2" name="home[subHeading2]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., PROCESSES/PROGRAMS'); ?>" />
+					</div>
+				</div>
+
+				<!-- Resource Section 3 -->
+				<div class="row feature-card-row">
+					<div class="col-md-12">
+						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 3"); ?></label>
+					</div>
+					<div class="col-md-4">
+						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+						<div class="icon-input-wrapper">
+							<span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
+								class="form-control icon-input"
+								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
+								onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
+							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
+								<i class="icon-th"></i>
+							</button>
+						</div>
+					</div>
+					<div class="col-md-8">
+						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading3 ?? null; ?>" id="homeSubHeading3" name="home[subHeading3]"
+							class="form-control"
+							placeholder="<?= $this->translate->_('e.g., PROGRESS/IMPROVEMENTS'); ?>" />
+					</div>
+				</div>
+			</div><br>
+
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeLogos">
+				<?= $this->translate->_("Home Page Logos"); ?> <b class="caret pull-right"></b>
+			</button>
+			<div class="collapse-content" id="homeLogos">
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeVideoUrl" name="home[videoUrl]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home section video URL'); ?>" title=" Please enter a home section video URL"><?php echo $home->videoUrl ?? null; ?></textarea>
+						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
+						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
+							<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+								<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+									class="home_left_logo_pic" style="width: 150px;">
+								<a href="javascript:void(0);"
+									onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
+									class="mandatory home_left_logo_pic">x</a>
+								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+									title="<?= $this->translate->_('Select logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif" style="display: none;">
+							<?php } else { ?>
+								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+									title="<?= $this->translate->_('Select logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif">
+							<?php } ?>
+						</div>
+						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
 					</div>
 					<div class="col-md-6">
-						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeAdditionalLink" name="home[additionalLink]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link'); ?>" title=" Please enter a home additional link"><?php echo $home->additionalLink ?? null; ?></textarea>
+						<label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
+						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
+							<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+								<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+									class="home_right_logo_pic" style="width: 150px;">
+								<a href="javascript:void(0);"
+									onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
+									class="mandatory home_right_logo_pic">x</a>
+								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+									title="<?= $this->translate->_('Select logo image'); ?>"
+									style="display: none;" accept="image/png, image/jpeg, image/gif">
+							<?php } else { ?>
+								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+									title="<?= $this->translate->_('Select logo image'); ?>"
+									accept="image/png, image/jpeg, image/gif">
+							<?php } ?>
+						</div>
+						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?> <span class="mandatory">*</span></label>
-						<textarea id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control isRequired" placeholder="<?= $this->translate->_('Enter the home additional link text'); ?>" title=" Please enter a home additional link text"><?php echo $home->additionalLinkText ?? null; ?></textarea>
-					</div>
-				</div>
+			</div><br>
+
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#faqSection">
+				<?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?> <b class="caret pull-right"></b>
+			</button>
+			<div class="collapse-content" id="faqSection">
+				<p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
 				<div class="row">
 					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix" id="faqTable">
 						<thead>
 							<tr>
-								<th style="width:30%;"><?= $this->translate->_("Question"); ?></th>
-								<th style="width:60%;"><?= $this->translate->_("Answer"); ?></th>
-								<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Question"); ?></th>
+								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Answer"); ?></th>
+								<th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Actions"); ?></th>
 							</tr>
 						</thead>
-						<tbody id="faqTable">
+						<tbody id="faqTableBody">
 							<?php if (isset($faqResults) && !empty($faqResults)) {
-								foreach ((array)$faqResults as $faq => $answer) { ?>
+								foreach ((array) $faqResults as $faq => $answer) { ?>
 									<tr>
 										<td>
-											<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"><?php echo $faq; ?></textarea>
+											<textarea name="faqQuestions[]" class="form-control input-sm"
+												placeholder="<?= $this->translate->_('Enter the question'); ?>"><?php echo $faq; ?></textarea>
 										</td>
 										<td>
-											<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"><?php echo $answer; ?></textarea>
+											<textarea name="faqAnswers[]" class="form-control input-sm"
+												placeholder="<?= $this->translate->_('Enter the answer'); ?>"><?php echo $answer; ?></textarea>
 										</td>
 										<td>
-											<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a>
+											<a href="javascript:void(0);" onclick="addTbRow(this);"
+												class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
+												href="javascript:void(0);" onclick="removeRow(this)"
+												class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
 										</td>
 									</tr>
 								<?php }
 							} else { ?>
 								<tr>
 									<td>
-										<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="Enter the question" title="Please enter the question"></textarea>
+										<textarea name="faqQuestions[]" class="form-control input-sm"
+											placeholder="<?= $this->translate->_('Enter the question'); ?>"></textarea>
 									</td>
 									<td>
-										<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="Enter the answers" title="Please enter the question"></textarea>
+										<textarea name="faqAnswers[]" class="form-control input-sm"
+											placeholder="<?= $this->translate->_('Enter the answer'); ?>"></textarea>
 									</td>
 									<td>
-										<a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+										<a href="javascript:void(0);" onclick="addTbRow(this);"
+											class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
 									</td>
 								</tr>
 							<?php } ?>
 						</tbody>
 					</table>
 				</div>
-			</div>
-			<div class="custom-design" style="display: none;">
-				<div class="form-group">
-					<label for="templates" class="col-lg-3 control-label"><?= $this->translate->_("Enter or Choose Template"); ?><span class="mandatory">*</span></label>
-					<div class="col-lg-6">
-						<select id="templates" name="templates" class="custom-input form-control" title="Please select template to fill the form" onchange="fillTemplate();">
-							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-							<?php if (isset($this->htmlHomePage) && !empty($this->htmlHomePage)) { ?>
-								<option value="<?php echo $this->htmlHomePage['section']; ?>" selected='selected'><?php echo $this->htmlHomePage['section']; ?></option>
-							<?php } ?>
-						</select>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-lg-12">
-						<div id="messageEditor" name="messageEditor" class="richtextarea form-control" title="Please enter a Mail Content" placeholder="Enter the Mail Content"></div>
-						<textarea style="display:none;" id="message" name="message"></textarea>
-					</div>
-				</div>
-			</div>
-			<div class="system-design">
-				<h4>Hom Page Links</h4>
-				<table style="width: 100%;margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
-					<thead>
-						<tr align="center">
-							<th style="width:20%;"><?= $this->translate->_("File Name"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("Type"); ?></th>
-							<th style="width:50%;"><?= $this->translate->_("Link Creation"); ?></th>
-							<th style="width:10%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
-						</tr>
-					</thead>
-					<tbody id="faqTable">
-						<?php if (isset($fileLink) && !empty($fileLink)) {
-							foreach ($fileLink as $key => $link) {
-								$link = (array)$link; ?>
-								<tr>
-									<td><input type="text" value="<?php echo $link['name'] ?? ''; ?>" name="fileLink[<?php echo $key; ?>][name]" id="linkName<?php echo $key; ?>" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name" /></td>
-									<td>
-										<select name="fileLink[<?php echo $key; ?>][type]" id="type<?php echo $key; ?>" class="form-control" title="Please select type as link or video" onchange="selectType(<?php echo $key; ?>)">
-											<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-											<option value="link" <?php echo (isset($link['type']) && $link['type'] == 'link') ? 'selected="type"' : ''; ?>><?= $this->translate->_("Link"); ?></option>
-											<option value="file" <?php echo (isset($link['type']) && $link['type'] == 'file') ? 'selected="type"' : ''; ?>><?= $this->translate->_("File"); ?></option>
-										</select>
-									</td>
-									<td class="fileInput<?php echo $key; ?>">
-										<?php if (isset($link['type']) && $link['type'] == 'link') {
-											echo '<input class="form-control" type="text" value=" ' . $link['file'] . '" name="fileLink[' . $key . '][file]" id="file' . $key . '" class="form-control" placeholder="Enter the link for file" title="Please enter the link for file" />';
-										} else {
-											if (isset($link['file']) && !empty($link['file']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $link['file'])) {
-												echo '<div id="replace' . $key . '" style=" display: flex; height: 38px; ">
-														<embed width="100%" height="auto" class="oldReport" name="plugin" src="/uploads/home-links/' . $link['file'] . '" type="application/pdf">
-														<a href="/uploads/home-links/' . $link['file'] . '" target="_blank" class="btn btn-sm btn-primary" title="Replace this file" style=" position: absolute; text-align: right; float: right; "><i class="icon icon-external-link" aria-hidden="true"></i></a>
-														<a href="javascript:void(0);" class="btn btn-sm btn-danger" title="Replace this file" onclick="showFile(' . $key . ');">Replace File Link</a>
-													</div>';
-											} else {
-												echo '<input class="form-control" type="file" name="fileLink[' . $key . '][file]" id="file' . $key . '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />';
-											}
-										} ?>
-									</td>
-									<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
-								</tr>
-							<?php }
-						} else { ?>
-							<tr>
-								<td><input type="text" name="fileLink[1][name]" id="linkName1" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name" /></td>
-								<td>
-									<select name="fileLink[1][type]" id="type1" class="form-control" title="Please select type as link or video" onchange="selectType(1)">
-										<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-										<option value="link"><?= $this->translate->_("Link"); ?></option>
-										<option value="file"><?= $this->translate->_("File"); ?></option>
-									</select>
-								</td>
-								<td class="fileInput1"></td>
-								<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td>
-							</tr>
-						<?php } ?>
-					</tbody>
-				</table>
-			</div>
+			</div><br>
 		</fieldset>
 
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
+			<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo">
+			<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo">
+			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
+				tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
+			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8"
+				value="<?= $this->translate->_("Back"); ?>" />
+		</div>
+
+		<div class="floating-buttons">
+			<button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+				<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+			</button>
+			<button type="button" class="btn btn-danger" onclick="window.location.href='/admin/index';">
+				<i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+			</button>
 		</div>
 	</form>
 </div>
-<br>
+
+<!-- Icon Picker Modal -->
+<div class="modal" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i> <?= $this->translate->_("Select Icon"); ?></h4>
+				<input type="text" class="form-control" id="iconSearchInput" placeholder="<?= $this->translate->_('Search icons...'); ?>">
+			</div>
+			<div class="modal-body">
+				<div class="icon-grid" id="iconGrid"></div>
+				<div class="no-icons-found" id="noIconsFound" style="display: none;">
+					<i class="icon-search" style="font-size: 40px; color: #cbd5e0;"></i>
+					<p><?= $this->translate->_("No icons found matching your search"); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
-<!-- include summernote css/js -->
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/summernote.min.css'); ?>">
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/summernote.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
-<script type="text/javascript">
-	var sampleCounter = 1;
-	var linkCounter = 1;
 
+<script type="text/javascript">
 	function validateNow() {
-		$("#message").val($("#messageEditor").summernote('code'));
 		flag = deforayValidator.init({
 			formId: 'addHomePageConfigForm'
 		});
@@ -271,17 +655,25 @@ $faqResults = $this->faq;
 		}
 	}
 
-	function addFaqRow(obj) {
-		sampleCounter++;
-		var html = '<tr align="center"> \
+	function deleteImg(show, hide, deletefile, file) {
+		$('#' + show).show();
+		$('.' + hide).hide();
+		$('#' + deletefile).val(file);
+	}
+
+	function addTbRow(obj) {
+		let html = '<tr>\
 			<td>\
-				<textarea id="question' + sampleCounter + '" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
+				<textarea name="faqQuestions[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the question"); ?>"></textarea>\
 			</td>\
 			<td>\
-				<textarea id="answer' + sampleCounter + '" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
+				<textarea name="faqAnswers[]" class="form-control input-sm" placeholder="<?= $this->translate->_("Enter the answer"); ?>"></textarea>\
 			</td>\
-			<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
-		</tr>'
+			<td>\
+				<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info" title="<?= $this->translate->_("Add row"); ?>"><i class="icon-plus"></i></a>\
+				&nbsp;&nbsp;<a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger" title="<?= $this->translate->_("Remove row"); ?>"><i class="icon-minus"></i></a>\
+			</td>\
+		</tr>';
 		$(obj.parentNode.parentNode).after(html);
 	}
 
@@ -289,145 +681,161 @@ $faqResults = $this->faq;
 		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
-		if ($("#faqTable tr").length <= 1) {
-			sampleCounter++;
-			var html = '<tr align="center"> \
-				<td>\
-					<textarea id="question' + sampleCounter + '" name="question[]" value="" class="form-control input-sm" placeholder="Please enter the question" title="Please enter the question"></textarea>\
-				</td>\
-				<td>\
-					<textarea id="answer' + sampleCounter + '" name="answer[]" value="" class="form-control input-sm" placeholder="Please enter the answer" title="Please enter the answer"></textarea>\
-				</td>\
-				<td><a href="javascript:void(0);" onclick="addFaqRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
-			</tr>'
-			$(obj.parentNode.parentNode).after(html);
-		}
 	}
 
-	function addLinkRow(obj) {
-		linkCounter++;
-		var html = '<tr> \
-			<td><input type="text" name="fileLink[' + linkCounter + '][name]" id="linkName' + linkCounter + '" class="form-control" placeholder="Enter link or file name" title="Please enter the link or file name"/></td>\
-			<td>\
-				<select name="fileLink[' + linkCounter + '][type]" id="type' + linkCounter + '" class="form-control" title="Please select type as link or video" onchange="selectType(' + linkCounter + ')">\
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>\
-					<option value="link"><?= $this->translate->_("Link"); ?></option>\
-					<option value="file"><?= $this->translate->_("File"); ?></option>\
-				</select>\
-			</td>\
-			<td class="fileInput' + linkCounter + '"></td>\
-			<td style=" vertical-align: middle; text-align:center; "><a href="javascript:void(0);" onclick="addLinkRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a  href="javascript:void(0);" onclick="removeLinkRow(this)" class="btn btn-xs btn-danger"  title="Remove this row completely" alt="Remove this row completely"><i class="icon-minus"></i></a></td> \
-		</tr>'
-		$(obj.parentNode.parentNode).after(html);
-	}
-
-	function selectType(count) {
-		if ($('#type' + count).val() == 'file') {
-			$('.fileInput' + count).html('<input type="file" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />');
-		} else {
-			$('.fileInput' + count).html('<input type="text" name="fileLink[' + count + '][file]" id="file' + count + '" class="form-control" placeholder="Enter file link" title="Please enter file link" />');
-		}
-	}
-
-	function removeLinkRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
-			$(this).remove();
-		});
-	}
-
-	function showFile(cnt) {
-		$('#replace' + cnt).html('<input class="form-control" type="file" name="fileLink[' + cnt + '][file]" id="file' + cnt + '" class="form-control" placeholder="Select file to upload" title="Please select file to upload" />')
-	}
-
-	function showHideCustomPage(value) {
-		if (value == 'yes') {
-			$('.custom-design').show();
-			$('.system-design').hide();
-			$('.custom-input').addClass('isRequired');
-			$('.system-input').removeClass('isRequired');
-		} else {
-			$('.system-design').show();
-			$('.custom-design').hide();
-			$('.system-input').addClass('isRequired');
-			$('.custom-input').removeClass('isRequired');
-		}
-	}
-
+	// Collapsible functionality
 	$(document).ready(function() {
-		showHideCustomPage($('#customHomePage').val());
-		$('#messageEditor').summernote({
-			oninit: function() {
-				$("div.note-editor button[data-event='codeview']").click();
-			},
-			placeholder: 'Please enter the content here',
-			tabsize: 2,
-			height: 200
-		});
-		$("#templates").select2({
-			placeholder: "<?= $this->translate->_("Choose or enter section"); ?>",
-			minimumInputLength: 3,
-			width: '100%',
-			allowClear: true,
-			ajax: {
-				placeholder: "<?= $this->translate->_("Type subject to search"); ?>",
-				url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-sections-list')); ?>",
-				dataType: 'json',
-				delay: 250,
-				data: function(params) {
-					return {
-						search: params.term, // search term
-						page: params.page
-					};
-				},
-				processResults: function(data, params) {
-					params.page = params.page || 1;
-					return {
-						results: data.result,
-						pagination: {
-							more: (params.page * 30) < data.total_count
-						}
-					};
-				},
-				//cache: true
-			},
-			escapeMarkup: function(markup) {
-				return markup;
+		$('.collapsible').on('click', function() {
+			$(this).toggleClass('active');
+			var content = $(this).next('.collapse-content');
+			if (content.is(':visible')) {
+				content.slideUp();
+			} else {
+				content.slideDown();
 			}
 		});
-
-		<?php if (isset($this->htmlHomePage) && !empty($this->htmlHomePage)) { ?>
-			fillTemplate();
-		<?php } ?>
 	});
 
-	function fillTemplate() {
-		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config', 'action' => 'get-html-template-by-section')); ?>", {
-				section: $('#templates').val(),
-				format: "html"
-			},
-			function(data) {
-				if (data != undefined && data != null && data != "") {
-					let obj = jQuery.parseJSON(data);
-					let html = (obj.content);
-					$("#messageEditor").summernote('pasteHTML', html);
-				} else {
-					$("#messageEditor").summernote('code', '');
-				}
-			});
+	// Icon Picker functionality
+	var iconPickerTargetInput = null;
+	var iconPickerTargetPreview = null;
+
+	var availableIcons = [
+		// BoxIcons (bx)
+		'bx bx-file', 'bx bx-file-blank', 'bx bx-folder', 'bx bx-folder-open', 'bx bx-download', 'bx bx-upload',
+		'bx bx-link', 'bx bx-link-external', 'bx bx-image', 'bx bx-video', 'bx bx-music', 'bx bx-camera',
+		'bx bx-home', 'bx bx-search', 'bx bx-cog', 'bx bx-user', 'bx bx-group', 'bx bx-lock', 'bx bx-lock-open',
+		'bx bx-envelope', 'bx bx-bell', 'bx bx-calendar', 'bx bx-time', 'bx bx-star', 'bx bx-heart',
+		'bx bx-check', 'bx bx-x', 'bx bx-plus', 'bx bx-minus', 'bx bx-edit', 'bx bx-trash', 'bx bx-save',
+		'bx bx-refresh', 'bx bx-sync', 'bx bx-copy', 'bx bx-paste', 'bx bx-cut',
+		'bx bx-left-arrow-alt', 'bx bx-right-arrow-alt', 'bx bx-up-arrow-alt', 'bx bx-down-arrow-alt',
+		'bx bx-chevron-left', 'bx bx-chevron-right', 'bx bx-chevron-up', 'bx bx-chevron-down',
+		'bx bx-play', 'bx bx-pause', 'bx bx-stop', 'bx bx-play-circle',
+		'bx bx-bar-chart', 'bx bx-bar-chart-alt', 'bx bx-pie-chart', 'bx bx-line-chart', 'bx bx-trending-up',
+		'bx bx-table', 'bx bx-grid', 'bx bx-list-ul', 'bx bx-list-ol', 'bx bx-filter', 'bx bx-sort',
+		'bx bx-task', 'bx bx-check-circle', 'bx bx-error', 'bx bx-error-circle', 'bx bx-info-circle',
+		'bx bx-help-circle', 'bx bx-question-mark', 'bx bx-shield', 'bx bx-badge', 'bx bx-award',
+		'bx bx-book', 'bx bx-book-open', 'bx bx-bookmark', 'bx bx-bookmarks', 'bx bx-news',
+		'bx bx-briefcase', 'bx bx-building', 'bx bx-buildings', 'bx bx-store', 'bx bx-cart',
+		'bx bx-credit-card', 'bx bx-wallet', 'bx bx-dollar', 'bx bx-receipt',
+		'bx bx-phone', 'bx bx-mobile', 'bx bx-laptop', 'bx bx-desktop', 'bx bx-server', 'bx bx-cloud',
+		'bx bx-cloud-download', 'bx bx-cloud-upload', 'bx bx-data', 'bx bx-hdd',
+		'bx bx-globe', 'bx bx-world', 'bx bx-map', 'bx bx-map-pin', 'bx bx-location-plus',
+		'bx bx-share', 'bx bx-share-alt', 'bx bx-comment', 'bx bx-chat', 'bx bx-message',
+		'bx bx-like', 'bx bx-dislike', 'bx bx-happy', 'bx bx-sad', 'bx bx-smile',
+		'bx bx-wrench', 'bx bx-slider', 'bx bx-customize', 'bx bx-palette',
+		'bx bx-bulb', 'bx bx-bolt', 'bx bx-sun', 'bx bx-moon', 'bx bx-cloud-rain',
+		'bx bx-first-aid', 'bx bx-pulse', 'bx bx-injection', 'bx bx-test-tube',
+		'bx bx-atom', 'bx bx-dna', 'bx bx-virus', 'bx bx-health',
+		// Bootstrap Icons (bi)
+		'bi bi-file', 'bi bi-file-text', 'bi bi-file-pdf', 'bi bi-file-earmark', 'bi bi-folder', 'bi bi-folder2-open',
+		'bi bi-download', 'bi bi-upload', 'bi bi-link', 'bi bi-link-45deg', 'bi bi-image', 'bi bi-camera-video',
+		'bi bi-house', 'bi bi-search', 'bi bi-gear', 'bi bi-person', 'bi bi-people', 'bi bi-lock', 'bi bi-unlock',
+		'bi bi-envelope', 'bi bi-bell', 'bi bi-calendar', 'bi bi-clock', 'bi bi-star', 'bi bi-heart',
+		'bi bi-check', 'bi bi-x', 'bi bi-plus', 'bi bi-dash', 'bi bi-pencil', 'bi bi-trash', 'bi bi-save',
+		'bi bi-book', 'bi bi-book-half', 'bi bi-bookmark', 'bi bi-journal', 'bi bi-newspaper',
+		'bi bi-briefcase', 'bi bi-building', 'bi bi-shop', 'bi bi-cart', 'bi bi-credit-card', 'bi bi-wallet',
+		'bi bi-globe', 'bi bi-map', 'bi bi-pin-map', 'bi bi-geo-alt',
+		'bi bi-bar-chart', 'bi bi-pie-chart', 'bi bi-graph-up', 'bi bi-table', 'bi bi-grid', 'bi bi-list',
+		'bi bi-shield', 'bi bi-award', 'bi bi-trophy', 'bi bi-patch-check',
+		'bi bi-lightbulb', 'bi bi-sun', 'bi bi-moon', 'bi bi-cloud',
+		'bi bi-hospital', 'bi bi-activity', 'bi bi-heart-pulse', 'bi bi-capsule',
+		// Font Awesome style icons (icon-)
+		'icon-home', 'icon-search', 'icon-cog', 'icon-cogs', 'icon-user', 'icon-lock', 'icon-unlock', 'icon-key',
+		'icon-envelope', 'icon-envelope-alt', 'icon-inbox', 'icon-calendar', 'icon-time', 'icon-bell', 'icon-bell-alt',
+		'icon-flag', 'icon-flag-alt', 'icon-bookmark', 'icon-bookmark-empty', 'icon-star', 'icon-star-empty', 'icon-star-half',
+		'icon-heart', 'icon-heart-empty', 'icon-comment', 'icon-comment-alt', 'icon-comments', 'icon-comments-alt',
+		'icon-ok', 'icon-ok-sign', 'icon-ok-circle', 'icon-remove', 'icon-remove-sign', 'icon-remove-circle',
+		'icon-plus', 'icon-plus-sign', 'icon-minus', 'icon-minus-sign', 'icon-check', 'icon-check-sign',
+		'icon-edit', 'icon-edit-sign', 'icon-pencil', 'icon-trash', 'icon-save', 'icon-download', 'icon-upload',
+		'icon-download-alt', 'icon-upload-alt', 'icon-refresh', 'icon-repeat', 'icon-undo', 'icon-copy', 'icon-paste', 'icon-cut',
+		'icon-arrow-left', 'icon-arrow-right', 'icon-arrow-up', 'icon-arrow-down',
+		'icon-chevron-left', 'icon-chevron-right', 'icon-chevron-up', 'icon-chevron-down',
+		'icon-caret-left', 'icon-caret-right', 'icon-caret-up', 'icon-caret-down',
+		'icon-play', 'icon-pause', 'icon-stop', 'icon-play-circle', 'icon-play-sign', 'icon-music', 'icon-film',
+		'icon-camera', 'icon-camera-retro', 'icon-picture', 'icon-facetime-video', 'icon-headphones',
+		'icon-bar-chart', 'icon-table', 'icon-th', 'icon-th-large', 'icon-th-list', 'icon-list', 'icon-list-alt',
+		'icon-list-ul', 'icon-list-ol', 'icon-tasks', 'icon-filter', 'icon-sort', 'icon-sort-down', 'icon-sort-up',
+		'icon-signal', 'icon-dashboard', 'icon-sitemap',
+		'icon-beaker', 'icon-medkit', 'icon-stethoscope', 'icon-ambulance', 'icon-hospital', 'icon-user-md',
+		'icon-fire-extinguisher', 'icon-shield', 'icon-bug',
+		'icon-book', 'icon-file', 'icon-file-alt', 'icon-file-text', 'icon-file-text-alt', 'icon-folder-close',
+		'icon-folder-open', 'icon-folder-close-alt', 'icon-folder-open-alt', 'icon-briefcase', 'icon-suitcase',
+		'icon-gift', 'icon-trophy', 'icon-certificate', 'icon-credit-card', 'icon-money', 'icon-shopping-cart',
+		'icon-ticket', 'icon-tag', 'icon-tags', 'icon-barcode', 'icon-qrcode', 'icon-print',
+		'icon-phone', 'icon-phone-sign', 'icon-mobile-phone', 'icon-bullhorn', 'icon-rss', 'icon-rss-sign',
+		'icon-globe', 'icon-link', 'icon-unlink', 'icon-external-link', 'icon-share', 'icon-share-alt', 'icon-share-sign',
+		'icon-signin', 'icon-signout', 'icon-exchange',
+		'icon-group', 'icon-male', 'icon-female', 'icon-smile', 'icon-frown', 'icon-meh',
+		'icon-thumbs-up', 'icon-thumbs-down', 'icon-thumbs-up-alt', 'icon-thumbs-down-alt',
+		'icon-wrench', 'icon-magic', 'icon-lightbulb', 'icon-bolt', 'icon-fire', 'icon-leaf', 'icon-cloud',
+		'icon-cloud-download', 'icon-cloud-upload', 'icon-umbrella', 'icon-sun', 'icon-moon',
+		'icon-map-marker', 'icon-location-arrow', 'icon-compass', 'icon-road', 'icon-plane', 'icon-truck', 'icon-rocket',
+		'icon-info', 'icon-info-sign', 'icon-question', 'icon-question-sign', 'icon-exclamation', 'icon-exclamation-sign',
+		'icon-warning-sign', 'icon-ban-circle', 'icon-spinner', 'icon-circle', 'icon-circle-blank',
+		'icon-asterisk', 'icon-power-off', 'icon-fullscreen', 'icon-resize-full', 'icon-resize-small',
+		'icon-zoom-in', 'icon-zoom-out', 'icon-expand', 'icon-collapse', 'icon-reorder', 'icon-anchor',
+		'icon-puzzle-piece', 'icon-gamepad', 'icon-keyboard', 'icon-terminal', 'icon-code', 'icon-code-fork',
+		'icon-desktop', 'icon-laptop', 'icon-tablet', 'icon-hdd'
+	];
+
+	function openIconPicker(inputId, previewId) {
+		iconPickerTargetInput = inputId;
+		iconPickerTargetPreview = previewId;
+
+		var gridHtml = '';
+		var currentValue = $('#' + inputId).val();
+
+		availableIcons.forEach(function(icon) {
+			var selectedClass = (icon === currentValue) ? ' selected' : '';
+			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
+			gridHtml += '<i class="' + icon + '"></i>';
+			gridHtml += '<span class="icon-name">' + icon.replace('icon-', '') + '</span>';
+			gridHtml += '</div>';
+		});
+
+		$('#iconGrid').html(gridHtml);
+		$('#noIconsFound').hide();
+		$('#iconSearchInput').val('');
+		$('#iconPickerModal').modal('show');
+		setTimeout(function() { $('#iconSearchInput').focus(); }, 300);
+	}
+
+	function selectIcon(iconClass) {
+		$('#' + iconPickerTargetInput).val(iconClass);
+		$('#' + iconPickerTargetPreview).html('<i class="' + iconClass + '"></i>');
+		$('#iconPickerModal').modal('hide');
+	}
+
+	function updateIconPreview(inputId, previewId) {
+		var iconClass = $('#' + inputId).val();
+		if (iconClass) {
+			$('#' + previewId).html('<i class="' + iconClass + '"></i>');
+		} else {
+			$('#' + previewId).html('');
+		}
 	}
 
 	$(document).ready(function() {
-		$('.homeSectionIcon').select2({
-			templateResult: formatOption,
-			templateSelection: formatOption,
-		});
+		$('#iconSearchInput').on('keyup', function() {
+			var searchTerm = $(this).val().toLowerCase();
+			var visibleCount = 0;
 
-		function formatOption(option) {
-			if (!option.id) {
-				return option.text; // Show placeholder text without icon
+			$('.icon-item').each(function() {
+				var iconName = $(this).data('icon').toLowerCase();
+				if (iconName.includes(searchTerm)) {
+					$(this).show();
+					visibleCount++;
+				} else {
+					$(this).hide();
+				}
+			});
+
+			if (visibleCount === 0) {
+				$('#noIconsFound').show();
+			} else {
+				$('#noIconsFound').hide();
 			}
-			const iconClass = $(option.element).data('icon');
-			return $(`<span>${option.text} <i class="${iconClass}" style="margin-right: 8px;"></i></span>`);
-		}
+		});
 	});
 </script>

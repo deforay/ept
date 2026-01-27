@@ -47,6 +47,60 @@ try {
         return strtolower($value);
     };
 
+    // Special handling for home.* settings
+    // These should be stored as a single JSON object under 'home' key
+    if (isset($envConfig['home'])) {
+        // Support both home.content.* and home.* formats
+        $homeContent = $envConfig['home']['content'] ?? $envConfig['home'];
+
+        // Extract FAQ separately - it's stored in 'faqs' key
+        if (isset($homeContent['faq'])) {
+            $faqValue = $homeContent['faq'];
+            // FAQ is already a JSON string in config.ini, decode and re-encode to validate
+            if (!isset($existingGlobalLookup['faqs'])) {
+                $globalConfigDb->insert([
+                    'name' => 'faqs',
+                    'value' => $faqValue
+                ]);
+                $existingGlobalLookup['faqs'] = true;
+            }
+            unset($homeContent['faq']);
+        }
+
+        // Map config.ini keys to expected home JSON keys
+        $homeData = [];
+        $keyMapping = [
+            'title' => 'title',
+            'heading1' => 'heading1',
+            'heading2' => 'heading2',
+            'heading3' => 'heading3',
+            'video' => 'videoUrl',
+            'additionalLink' => 'additionalLink',
+            'additionalLinkText' => 'additionalLinkText',
+            'homeSectionHeading1' => 'subHeading1',
+            'homeSectionHeading2' => 'subHeading2',
+            'homeSectionHeading3' => 'subHeading3',
+            'homeSectionIcon1' => 'icon1',
+            'homeSectionIcon2' => 'icon2',
+            'homeSectionIcon3' => 'icon3',
+        ];
+
+        foreach ($homeContent as $key => $value) {
+            $mappedKey = $keyMapping[$key] ?? $key;
+            $homeData[$mappedKey] = $value;
+        }
+
+        if (!empty($homeData) && !isset($existingGlobalLookup['home'])) {
+            $globalConfigDb->insert([
+                'name' => 'home',
+                'value' => json_encode($homeData)
+            ]);
+            $existingGlobalLookup['home'] = true;
+        }
+
+        unset($envConfig['home']);
+    }
+
     foreach ($envConfig as $key => $value) {
         $queue = array(array($key, $value));
 

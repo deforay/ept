@@ -32,6 +32,10 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $homeSectionService = new Application_Service_HomeSection();
             $homeSectionService->getAllHomeSectionInGrid($params);
         }
+
+        // Get resource section headings for display
+        $common = new Application_Service_Common();
+        $this->view->home = json_decode($common->getConfig('home'));
     }
 
     public function addAction()
@@ -44,6 +48,10 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $homeSectionService->saveHomeSection($params);
             $this->redirect("/admin/home-section-links");
         }
+
+        // Get resource section headings for dropdown labels
+        $common = new Application_Service_Common();
+        $this->view->home = json_decode($common->getConfig('home'));
     }
 
     public function editAction()
@@ -60,6 +68,10 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $id = (int) base64_decode($this->_getParam('id'));
             $this->view->result = $homeSectionService->getHomeSectionById($id);
         }
+
+        // Get resource section headings for dropdown labels
+        $common = new Application_Service_Common();
+        $this->view->home = json_decode($common->getConfig('home'));
     }
 
     public function getDisplayOrderAction()

@@ -28,50 +28,70 @@ class Admin_HomeConfigController extends Zend_Controller_Action
     public function indexAction()
     {
         try {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             $homeSection = new Application_Service_HomeSection();
+            $common = new Application_Service_Common();
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 
             /** @var Zend_Controller_Request_Http $request */
             $request = $this->getRequest();
             if ($request->isPost()) {
                 $params = $this->getAllParams();
 
-                $link = $request->getPost("fileLink");
-                if (isset($link) && !empty($link)) {
-                    $uploadDirectory = realpath(UPLOAD_PATH);
-                    $common = new Application_Service_Common();
-                    foreach ($link as $key => $l) {
-                        if (isset($_FILES['fileLink']['name'][$key]['file']) && !empty($_FILES['fileLink']['name'][$key]['file'])) {
-                            $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileLink']['name'][$key]['file']);
-                            $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
-                            $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                            $random = Pt_Commons_MiscUtility::generateRandomString(6);
-                            $fileName = $random . "." . $extension;
-
-                            if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'home-links')) {
-                                mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'home-links');
-                            }
-                            if (move_uploaded_file($_FILES['fileLink']['tmp_name'][$key]['file'], $uploadDirectory . DIRECTORY_SEPARATOR . 'home-links' . DIRECTORY_SEPARATOR . $fileName)) {
-                                $link[$key]['file'] = $fileName;
-                            }
-                        }
+                // Handle logo deletions
+                $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
+                if (!is_dir($logosDir)) {
+                    mkdir($logosDir, 0777, true);
+                }
+                if (isset($params['delete_home_left_logo']) && !empty($params['delete_home_left_logo'])) {
+                    $logoPath = $logosDir . DIRECTORY_SEPARATOR . $params['delete_home_left_logo'];
+                    if (file_exists($logoPath)) {
+                        unlink($logoPath);
                     }
-                    $link = json_encode($link, true);
-                    $params['home']['fileLinks'] = $link;
+                    $globalConfigDb->update(array("value" => NULL), "name = 'home_left_logo'");
+                }
+                if (isset($params['delete_home_right_logo']) && !empty($params['delete_home_right_logo'])) {
+                    $logoPath = $logosDir . DIRECTORY_SEPARATOR . $params['delete_home_right_logo'];
+                    if (file_exists($logoPath)) {
+                        unlink($logoPath);
+                    }
+                    $globalConfigDb->update(array("value" => NULL), "name = 'home_right_logo'");
                 }
 
+                // Handle logo uploads
+                foreach (array("home_left_logo", "home_right_logo") as $field) {
+                    if (isset($_FILES[$field]) && !empty($_FILES[$field]['name'])) {
+                        $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES[$field]['name']);
+                        $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                        $extension = strtolower(pathinfo($logosDir . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
+                        $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
+                        if (move_uploaded_file($_FILES[$field]["tmp_name"], $logosDir . DIRECTORY_SEPARATOR . $fileName)) {
+                            $globalConfigDb->update(array("value" => $fileName), "name = '" . $field . "'");
+                        }
+                    }
+                }
+
+                // Handle home config
                 if (isset($params['home']) && !empty($params['home'])) {
                     $home = json_encode($params['home']);
                     $common->saveConfigByName($home, 'home');
                 }
-                $customHomePage = $request->getPost('customHomePage') ?? null;
-                if (isset($customHomePage) && $customHomePage == 'yes') {
-                    $homeSection->saveHomePageHtmlContent($params);
+
+                // Handle FAQ
+                if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
+                    $faqResponse = [];
+                    foreach ($params['faqQuestions'] as $key => $faq) {
+                        if (!empty(trim($faq))) {
+                            $faqResponse[$faq] = $params['faqAnswers'][$key] ?? '';
+                        }
+                    }
+                    $globalConfigDb->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
                 }
             }
-            $common = new Application_Service_Common();
+
             $this->view->home = json_decode($common->getConfig('home'));
             $this->view->faq = json_decode($common->getConfig('faqs'));
+            $this->view->home_left_logo = $common->getConfig('home_left_logo');
+            $this->view->home_right_logo = $common->getConfig('home_right_logo');
 
             $this->view->sections = $homeSection->getAllHtmlHomePage();
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();

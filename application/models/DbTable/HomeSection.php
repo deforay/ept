@@ -74,6 +74,14 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
 
     public function getAllHomeSectionDetails($parameters)
     {
+        // Get resource section names from global config
+        $common = new Application_Service_Common();
+        $home = json_decode($common->getConfig('home'));
+        $sectionNames = [
+            'section1' => !empty($home->subHeading1) ? $home->subHeading1 : 'Resource Section 1',
+            'section2' => !empty($home->subHeading2) ? $home->subHeading2 : 'Resource Section 2',
+            'section3' => !empty($home->subHeading3) ? $home->subHeading3 : 'Resource Section 3',
+        ];
 
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
@@ -183,7 +191,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
 
         foreach ($rResult as $aRow) {
             $row = [];
-            $row[] = ucwords($aRow['section']);
+            $row[] = $sectionNames[$aRow['section']] ?? ucwords($aRow['section']);
             $row[] = $aRow['link'];
             $row[] = $aRow['text'];
             $row[] = $aRow['icon'];
