@@ -206,6 +206,10 @@ $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $
                 <a href="javascript:void(0);" onclick="addGenericRow(this);" class="btn btn-xs btn-info">
                     <i class="icon-plus"></i>
                 </a>
+                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                    title="Remove this row completely">
+                    <i class="icon-minus"></i>
+                </a>
             </td>
         </tr>
         <?php endif; ?>
