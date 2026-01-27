@@ -2337,9 +2337,6 @@ class Application_Service_Shipments
 
     public function updateShipment($params)
     {
-
-        Zend_Debug::dump($params);
-        die;
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
         // To get scheme config
