@@ -5,9 +5,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 class Application_Model_Covid19
 {
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function evaluate($shipmentResult, $shipmentId)
     {
@@ -18,11 +16,11 @@ class Application_Model_Covid19
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-
         $config = Pt_Commons_SchemeConfig::get('covid19');
         $correctiveActions = $schemeService->getCovid19CorrectiveActions();
         $recommendedTesttypes = $schemeService->getRecommededCovid19TestTypes();
-
+        Zend_Debug::dump($config);
+        die;
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 
@@ -812,8 +810,6 @@ class Application_Model_Covid19
         //<-------- Document Score Sheet Heading (Sheet Four)-------
 
         /* if ($result['scheme_type'] == 'covid19') {
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-            $config = new Zend_Config_Ini($file, APPLICATION_ENV);
             $shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 // for Dried Samples, we will have rehydration as one of the documentation scores
@@ -1028,7 +1024,6 @@ class Application_Model_Covid19
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
-                    $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
                     $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
                     $interval = $sampleRehydrationDate->diff($testedOnDate);

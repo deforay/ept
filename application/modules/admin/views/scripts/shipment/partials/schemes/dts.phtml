@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unified DTS (Dried Tube Specimen) Scheme Form
  *
@@ -49,7 +50,6 @@ $rtriEnabled = isset($dtsConfig->rtriEnabled) ? $dtsConfig->rtriEnabled : 'no';
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
-
 // Normalize shipment attributes for EDIT mode
 $shipmentAttribute = [];
 if ($isEditMode) {
@@ -67,7 +67,6 @@ $editPossibleResults = $isEditMode ? ($this->shipmentData['possibleResults'] ?? 
 $samples = $isEditMode
     ? ($this->shipmentData['reference'] ?? [])
     : [];
-
 // Normalize EIA, WB, RHIV, Geenius data for EDIT mode
 $eiaData = $isEditMode ? ($this->shipmentData['eia'] ?? []) : [];
 $wbData = $isEditMode ? ($this->shipmentData['wb'] ?? []) : [];
@@ -385,143 +384,146 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                 $control = $reference['control'] ?? 0;
                 $mandatory = $reference['mandatory'] ?? 1;
         ?>
-        <tr align="center">
-            <td style="text-align: center">
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                    title="Please enter sample name here" placeholder="Please enter sample name here"
-                    value="<?php echo htmlspecialchars($sampleLabel); ?>" />
-                <input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo htmlspecialchars($sampleId); ?>" />
-            </td>
-            <td>
-                <input type="text" value="<?php echo htmlspecialchars($samplePrepDate); ?>"
-                    name="samplePreparationDate[]" readonly="readonly"
-                    class="isRequired form-control input-sm datepicker"
-                    placeholder="Please enter the sample preparation date"
-                    title="Please enter the sample preparation date" />
-            </td>
-            <td>
-                <select name="possibleResults[]" class="isRequired form-control input-sm">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <?php foreach ($editPossibleResults as $pr):
-                        if ($pr['scheme_sub_group'] == 'DTS_FINAL'): ?>
-                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"
-                            <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                            <?php echo htmlspecialchars($pr['response']); ?>
-                        </option>
-                    <?php endif; endforeach; ?>
-                </select>
-            </td>
-            <td class="syphilis-input" style="<?php echo $showSyphilis ? '' : 'display:none'; ?>;">
-                <select name="possibleSyphilisResults[]" class="form-control input-sm">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <?php foreach ($editPossibleResults as $pr):
-                        if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL'): ?>
-                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"
-                            <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                            <?php echo htmlspecialchars($pr['response']); ?>
-                        </option>
-                    <?php endif; endforeach; ?>
-                </select>
-            </td>
-            <td class="rtri-input" style="<?php echo $showRtri ? '' : 'display:none'; ?>;">
-                <select name="possibleRTRIResults[]" class="form-control input-sm">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <?php foreach ($rtriPossibleResults as $pr):
-                        if ($pr['scheme_sub_group'] == 'RECENCY_FINAL'): ?>
-                        <option value="<?php echo htmlspecialchars($pr['id']); ?>"
-                            <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                            <?php echo htmlspecialchars($pr['response']); ?>
-                        </option>
-                    <?php endif; endforeach; ?>
-                </select>
-            </td>
-            <td>
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                    title="Please choose whether this sample is a control">
-                    <option value="0" <?php echo ($control == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
-                    <option value="1" <?php echo ($control == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                </select>
-            </td>
-            <td>
-                <select name="mandatory[]" class="isRequired form-control input-sm"
-                    title="Please choose whether this sample/control is mandatory">
-                    <option value="1" <?php echo ($mandatory == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0" <?php echo ($mandatory == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary"
-                    onclick="showdefModal('sampleEia<?php echo htmlspecialchars($sampleId); ?>', 900, 600); loadCal();">
-                    <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
-                </a>
-                <a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info">
-                    <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
-                </a>
-                <?php if ($counter > 1): ?>
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
-                    title="Remove this row completely"><i class="icon-minus"></i></a>
-                <?php endif; ?>
+                <tr align="center">
+                    <td style="text-align: center">
+                        <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
+                            title="Please enter sample name here" placeholder="Please enter sample name here"
+                            value="<?php echo htmlspecialchars($sampleLabel); ?>" />
+                        <input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo htmlspecialchars($sampleId); ?>" />
+                    </td>
+                    <td>
+                        <input type="text" value="<?php echo htmlspecialchars($samplePrepDate); ?>"
+                            name="samplePreparationDate[]" readonly="readonly"
+                            class="isRequired form-control input-sm datepicker"
+                            placeholder="Please enter the sample preparation date"
+                            title="Please enter the sample preparation date" />
+                    </td>
+                    <td>
+                        <select name="possibleResults[]" class="isRequired form-control input-sm">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <?php foreach ($editPossibleResults as $pr):
+                                if ($pr['scheme_sub_group'] == 'DTS_FINAL'): ?>
+                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>"
+                                        <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
+                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                    </option>
+                            <?php endif;
+                            endforeach; ?>
+                        </select>
+                    </td>
+                    <td class="syphilis-input" style="<?php echo $showSyphilis ? '' : 'display:none'; ?>;">
+                        <select name="possibleSyphilisResults[]" class="form-control input-sm">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <?php foreach ($editPossibleResults as $pr):
+                                if ($pr['scheme_sub_group'] == 'DTS_SYP_FINAL'): ?>
+                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>"
+                                        <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
+                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                    </option>
+                            <?php endif;
+                            endforeach; ?>
+                        </select>
+                    </td>
+                    <td class="rtri-input" style="<?php echo $showRtri ? '' : 'display:none'; ?>;">
+                        <select name="possibleRTRIResults[]" class="form-control input-sm">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <?php foreach ($rtriPossibleResults as $pr):
+                                if ($pr['scheme_sub_group'] == 'RECENCY_FINAL'): ?>
+                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>"
+                                        <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
+                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                    </option>
+                            <?php endif;
+                            endforeach; ?>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="control[]" class="isRequired controlOrNot form-control input-sm"
+                            title="Please choose whether this sample is a control">
+                            <option value="0" <?php echo ($control == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                            <option value="1" <?php echo ($control == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="mandatory[]" class="isRequired form-control input-sm"
+                            title="Please choose whether this sample/control is mandatory">
+                            <option value="1" <?php echo ($mandatory == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                            <option value="0" <?php echo ($mandatory == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        </select>
+                    </td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-xs btn-primary"
+                            onclick="showdefModal('sampleEia<?php echo htmlspecialchars($sampleId); ?>', 900, 600); loadCal();">
+                            <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
+                        </a>
+                        <a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info">
+                            <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
+                        </a>
+                        <?php if ($counter > 1): ?>
+                            <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                                title="Remove this row completely"><i class="icon-minus"></i></a>
+                        <?php endif; ?>
 
-                <!-- EIA/WB/RHIV/Geenius Modal for this sample -->
-                <?php include dirname(__FILE__) . '/_dts-sample-modal.phtml'; ?>
-            </td>
-        </tr>
-        <?php
+                        <!-- EIA/WB/RHIV/Geenius Modal for this sample -->
+                        <?php include dirname(__FILE__) . '/_dts-sample-modal.phtml'; ?>
+                    </td>
+                </tr>
+            <?php
                 $counter++;
             endforeach;
         else:
             // ADD MODE: Display empty row
-        ?>
-        <tr align="center">
-            <td style="text-align: center">
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                    title="Please enter sample name here" placeholder="Please enter sample name here" />
-            </td>
-            <td>
-                <input type="text" name="samplePreparationDate[]" readonly="readonly"
-                    class="isRequired form-control input-sm datepicker"
-                    placeholder="Please enter the sample preparation date"
-                    title="Please enter the sample preparation date" />
-            </td>
-            <td>
-                <select name="possibleResults[]" class="isRequired form-control input-sm">
-                    <?php echo $finalResultsOptions; ?>
-                </select>
-            </td>
-            <td class="syphilis-input" style="display:none;">
-                <select name="possibleSyphilisResults[]" class="form-control input-sm">
-                    <?php echo $syphilisResultsOptions; ?>
-                </select>
-            </td>
-            <td class="rtri-input" style="display:none;">
-                <select name="possibleRTRIResults[]" class="form-control input-sm">
-                    <?php echo $rtriResultsOptions; ?>
-                </select>
-            </td>
-            <td>
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                    title="Please choose whether this sample is a control">
-                    <option value="1"><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <select name="mandatory[]" class="isRequired form-control input-sm"
-                    title="Please choose whether this sample/control is mandatory">
-                    <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0"><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary"
-                    onclick="showdefModal('sampleEia1', 900, 600); loadCal();">
-                    <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
-                </a>
-                <a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info">
-                    <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
-                </a>
-            </td>
-        </tr>
+            ?>
+            <tr align="center">
+                <td style="text-align: center">
+                    <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
+                        title="Please enter sample name here" placeholder="Please enter sample name here" />
+                </td>
+                <td>
+                    <input type="text" name="samplePreparationDate[]" readonly="readonly"
+                        class="isRequired form-control input-sm datepicker"
+                        placeholder="Please enter the sample preparation date"
+                        title="Please enter the sample preparation date" />
+                </td>
+                <td>
+                    <select name="possibleResults[]" class="isRequired form-control input-sm">
+                        <?php echo $finalResultsOptions; ?>
+                    </select>
+                </td>
+                <td class="syphilis-input" style="display:none;">
+                    <select name="possibleSyphilisResults[]" class="form-control input-sm">
+                        <?php echo $syphilisResultsOptions; ?>
+                    </select>
+                </td>
+                <td class="rtri-input" style="display:none;">
+                    <select name="possibleRTRIResults[]" class="form-control input-sm">
+                        <?php echo $rtriResultsOptions; ?>
+                    </select>
+                </td>
+                <td>
+                    <select name="control[]" class="isRequired controlOrNot form-control input-sm"
+                        title="Please choose whether this sample is a control">
+                        <option value="1"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </td>
+                <td>
+                    <select name="mandatory[]" class="isRequired form-control input-sm"
+                        title="Please choose whether this sample/control is mandatory">
+                        <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="0"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </td>
+                <td>
+                    <a href="javascript:void(0);" class="btn btn-xs btn-primary"
+                        onclick="showdefModal('sampleEia1', 900, 600); loadCal();">
+                        <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
+                    </a>
+                    <a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info">
+                        <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
+                    </a>
+                </td>
+            </tr>
         <?php endif; ?>
     </tbody>
 </table>
@@ -535,45 +537,45 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 <!-- JAVASCRIPT -->
 <!-- ============================================================================ -->
 <script type="text/javascript">
-var sampleCounter = <?php echo $isEditMode && count($samples) > 0 ? count($samples) : 1; ?>;
+    var sampleCounter = <?php echo $isEditMode && count($samples) > 0 ? count($samples) : 1; ?>;
 
-$(document).ready(function() {
-    <?php if ($isEditMode && count($samples) > 0): ?>
-    // EDIT mode: Initialize modals for existing samples (blocks are already in HTML)
-    <?php else: ?>
-    // ADD mode: Create initial EIA block
-    addNewEiaBlock('1');
-    <?php endif; ?>
+    $(document).ready(function() {
+        <?php if ($isEditMode && count($samples) > 0): ?>
+            // EDIT mode: Initialize modals for existing samples (blocks are already in HTML)
+        <?php else: ?>
+            // ADD mode: Create initial EIA block
+            addNewEiaBlock('1');
+        <?php endif; ?>
 
-    // Initialize datepickers
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
+        // Initialize datepickers
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+
+        // Syphilis toggle
+        $("#enableSyphilis").change(function() {
+            if ($(this).val() == "yes") {
+                $(".syphilis-input").show();
+                $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
+            } else {
+                $(".syphilis-input").hide();
+                $("select[name='possibleSyphilisResults[]']").removeClass("isRequired");
+            }
+        });
+
+        // RTRI toggle
+        $("#enableRtri").change(function() {
+            if ($(this).val() == "yes") {
+                $(".rtri-input").show();
+            } else {
+                $(".rtri-input").hide();
+            }
+        });
     });
 
-    // Syphilis toggle
-    $("#enableSyphilis").change(function() {
-        if ($(this).val() == "yes") {
-            $(".syphilis-input").show();
-            $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
-        } else {
-            $(".syphilis-input").hide();
-            $("select[name='possibleSyphilisResults[]']").removeClass("isRequired");
-        }
-    });
-
-    // RTRI toggle
-    $("#enableRtri").change(function() {
-        if ($(this).val() == "yes") {
-            $(".rtri-input").show();
-        } else {
-            $(".rtri-input").hide();
-        }
-    });
-});
-
-function addDtsRow(obj) {
-    sampleCounter++;
-    $(obj.parentNode.parentNode).after('<tr align="center"> \
+    function addDtsRow(obj) {
+        sampleCounter++;
+        $(obj.parentNode.parentNode).after('<tr align="center"> \
         <td style="text-align: center"> \
             <input type="text" name="sampleName[]" class="isRequired input-sm form-control" title="Please enter sample name here" placeholder="Please enter sample name here"/> \
         </td> \
@@ -602,38 +604,38 @@ function addDtsRow(obj) {
         </td> \
     </tr>');
 
-    // Show/hide conditional columns based on current selections
-    if ($("#enableSyphilis").val() == "yes") {
-        $(".syphilis-input").show();
-        $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
-    } else {
-        $(".syphilis-input").hide();
-        $("select[name='possibleSyphilisResults[]']").removeClass("isRequired");
+        // Show/hide conditional columns based on current selections
+        if ($("#enableSyphilis").val() == "yes") {
+            $(".syphilis-input").show();
+            $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
+        } else {
+            $(".syphilis-input").hide();
+            $("select[name='possibleSyphilisResults[]']").removeClass("isRequired");
+        }
+
+        if ($("#enableRtri").val() == "yes") {
+            $(".rtri-input").show();
+        } else {
+            $(".rtri-input").hide();
+        }
+
+        // Reinitialize datepickers
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+
+        // Create EIA block for new sample
+        addNewEiaBlock(sampleCounter);
     }
 
-    if ($("#enableRtri").val() == "yes") {
-        $(".rtri-input").show();
-    } else {
-        $(".rtri-input").hide();
+    function removeRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
     }
 
-    // Reinitialize datepickers
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-
-    // Create EIA block for new sample
-    addNewEiaBlock(sampleCounter);
-}
-
-function removeRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function addNewEiaBlock(sampleId) {
-    $("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="dialog">\
+    function addNewEiaBlock(sampleId) {
+        $("#eiaBlockHolder").after('<div id="sampleEia' + sampleId + '" class="dialog">\
         <span onClick="hidedefModal()" class="closeModal"></span>\
         <div class="modal-header">\
             <h4 class="modal-title"><?= $this->translate->_("EIA"); ?></h4>\
@@ -783,10 +785,10 @@ function addNewEiaBlock(sampleId) {
             <button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia' + sampleId + '\')"><?= $this->translate->_("OK"); ?></button>\
         </div>\
     </div>');
-}
+    }
 
-function addNewEiaRow(obj, sampleId) {
-    $(obj.parentNode.parentNode).after('<tr>\
+    function addNewEiaRow(obj, sampleId) {
+        $(obj.parentNode.parentNode).after('<tr>\
         <td><select class="form-control" name="eia[' + sampleId + '][eia][]"><?php echo $eiaChoicesJs; ?></select></td>\
         <td><input type="text" name="eia[' + sampleId + '][lot][]" class="form-control"/></td>\
         <td><input type="text" name="eia[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
@@ -798,13 +800,13 @@ function addNewEiaRow(obj, sampleId) {
             <a href="javascript:void(0);" onclick="removeEiaRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>\
         </td>\
     </tr>');
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    }
 
-function addNewWbRow(obj, sampleWbId) {
-    $(obj.parentNode.parentNode).after('<tr>\
+    function addNewWbRow(obj, sampleWbId) {
+        $(obj.parentNode.parentNode).after('<tr>\
         <td><select class="form-control" name="wb[' + sampleWbId + '][wb][]" style="width:125px;"><?php echo $wbChoicesJs; ?></select></td>\
         <td><input type="text" name="wb[' + sampleWbId + '][lot][]" class="form-control" style="width:100px;"/></td>\
         <td><input type="text" name="wb[' + sampleWbId + '][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;"/></td>\
@@ -823,13 +825,13 @@ function addNewWbRow(obj, sampleWbId) {
             <a href="javascript:void(0);" onclick="removeWbRow(this, ' + sampleWbId + ')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>\
         </td>\
     </tr>');
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    }
 
-function addNewHivRow(obj, sampleId) {
-    $(obj.parentNode.parentNode).after('<tr>\
+    function addNewHivRow(obj, sampleId) {
+        $(obj.parentNode.parentNode).after('<tr>\
         <td><select class="form-control" name="rhiv[' + sampleId + '][kit][]"><?php echo $dtsKitOptionsJs; ?></select></td>\
         <td><input type="text" name="rhiv[' + sampleId + '][lot][]" class="form-control"/></td>\
         <td><input type="text" name="rhiv[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
@@ -839,13 +841,13 @@ function addNewHivRow(obj, sampleId) {
             <a href="javascript:void(0);" onclick="removeHivRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>\
         </td>\
     </tr>');
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    }
 
-function addNewGeeniusRow(obj, sampleId) {
-    $(obj.parentNode.parentNode).after('<tr>\
+    function addNewGeeniusRow(obj, sampleId) {
+        $(obj.parentNode.parentNode).after('<tr>\
         <td><input type="text" name="geenius[' + sampleId + '][lot][]" class="form-control"/></td>\
         <td><input type="text" name="geenius[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>\
         <td><select class="form-control" name="geenius[' + sampleId + '][result][]"><?php echo $testResultsOptionsJs; ?></select></td>\
@@ -854,69 +856,69 @@ function addNewGeeniusRow(obj, sampleId) {
             <a href="javascript:void(0);" onclick="removeGeeniusRow(this)" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>\
         </td>\
     </tr>');
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
-
-function removeEiaRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function removeWbRow(obj, sampleId) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function removeHivRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function removeGeeniusRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function loadCal() {
-    $(".datepicker").removeClass("hasDatepicker");
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
-
-function closeShipmentModal(divId) {
-    // This function copies form values from modal to hidden storage
-    // Content is server-generated with proper escaping
-    var modalDiv = document.getElementById(divId);
-    var mbdDiv = document.getElementById("mbd");
-    if (modalDiv && mbdDiv) {
-        modalDiv.innerHTML = mbdDiv.innerHTML;
-
-        $("#mbd input:text").each(function(i, obj) {
-            $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
-        });
-        $("#mbd select").each(function(i, obj) {
-            $("#" + divId + " select:eq(" + i + ")").val($(this).val());
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
         });
     }
 
-    hidedefModal();
-}
+    function removeEiaRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
 
-function screeningTestPanel(value) {
-    if ($('.dtsTestPanelType')) {
-        if (value == 'no') {
-            $('.dtsTestPanelType').show();
-        } else {
-            $('#dtsTestPanelType').val('');
-            $('.dtsTestPanelType').hide();
+    function removeWbRow(obj, sampleId) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
+
+    function removeHivRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
+
+    function removeGeeniusRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
+
+    function loadCal() {
+        $(".datepicker").removeClass("hasDatepicker");
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    }
+
+    function closeShipmentModal(divId) {
+        // This function copies form values from modal to hidden storage
+        // Content is server-generated with proper escaping
+        var modalDiv = document.getElementById(divId);
+        var mbdDiv = document.getElementById("mbd");
+        if (modalDiv && mbdDiv) {
+            modalDiv.innerHTML = mbdDiv.innerHTML;
+
+            $("#mbd input:text").each(function(i, obj) {
+                $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
+            });
+            $("#mbd select").each(function(i, obj) {
+                $("#" + divId + " select:eq(" + i + ")").val($(this).val());
+            });
+        }
+
+        hidedefModal();
+    }
+
+    function screeningTestPanel(value) {
+        if ($('.dtsTestPanelType')) {
+            if (value == 'no') {
+                $('.dtsTestPanelType').show();
+            } else {
+                $('#dtsTestPanelType').val('');
+                $('.dtsTestPanelType').hide();
+            }
         }
     }
-}
 </script>

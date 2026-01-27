@@ -9,6 +9,8 @@ $shipmentData = $this->shipmentData;
 $shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
+
+
 $style = '';
 if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 	$style = 'style=" width: 1550px; margin-left: -208px; "';
@@ -176,13 +178,13 @@ $rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
 			return;
 		}
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-			tableName: tableName,
-			fieldName: fieldName,
-			value: obj.val(),
-			fnct: fnct,
-			format: "html"
-		},
-			function (data) {
+				tableName: tableName,
+				fieldName: fieldName,
+				value: obj.val(),
+				fnct: fnct,
+				format: "html"
+			},
+			function(data) {
 				if (data > 0) {
 					alert(msg, "err");
 					duplicated = true;
@@ -196,17 +198,16 @@ $rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
 
 	<?php
 	$vHelper = $this->getHelper('DateFormat');
-	$dtFormat = $vHelper->getDateFormat();
 	?>
-	$(document).ready(function () {
+	$(document).ready(function() {
 		$(".datepicker").datepicker({
 			dateFormat: '<?php echo $dtFormat; ?>'
 		});
 
-		$('#shipmentCode').on('input', function (event) {
+		$('#shipmentCode').on('input', function(event) {
 			allowOnlyAlphaNumericAndHyphen('#shipmentCode');
 		});
-		$("body").on("change", 'select.controlOrNot', function () {
+		$("body").on("change", 'select.controlOrNot', function() {
 			var scoreElem = $(this).parent().parent().find('.score');
 			if ($(this).val() == 1) {
 				$(scoreElem).val(0);
@@ -217,7 +218,7 @@ $rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
 
 		});
 
-		$('#captureAdditionalDetails').on("change", function () {
+		$('#captureAdditionalDetails').on("change", function() {
 			if ($(this).val() == 'yes') {
 				$("#additionalDetailLabel").attr("disabled", false);
 				$("#additionalDetailLabel").addClass("isRequired");
