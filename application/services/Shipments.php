@@ -1791,7 +1791,8 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2398,7 +2399,8 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                    ;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -2865,7 +2867,7 @@ class Application_Service_Shipments
     public function getShipmentInReports($distributionId, $shipmentId = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+        $sql = $db->select()->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'status', 'number_of_samples', 'evaluated_at', 'reports_generated_at', 'finalized_at'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
@@ -3018,7 +3020,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3057,7 +3059,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3106,7 +3108,7 @@ class Application_Service_Shipments
     public function getFinalizedShipmentInReports($distributionId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('s' => 'shipment', array('shipment_id', 'shipment_code', 'status', 'number_of_samples')))
+        $sql = $db->select()->from(array('s' => 'shipment'), array('shipment_id', 'shipment_code', 'status', 'number_of_samples'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
             ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
             ->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
@@ -3727,9 +3729,11 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             }
             $output['aaData'][] = $row;
         }

@@ -219,7 +219,7 @@ class Application_Service_Reports
             $reportedCount = $aRow['reported_count'] ?? 0;
             $row[] = $reportedCount . ' (<a href="/reports/shipments/response-chart/id/' . base64_encode($aRow['shipment_id']) . '/shipmentDate/' . base64_encode($aRow['distribution_date']) . '/shipmentCode/' . base64_encode($aRow['distribution_code']) . '" target="_blank" style="text-decoration:underline">' . $responsePercentage . '%</a>)';
             $row[] = $aRow['number_passed'];
-            $row[] = $this->translator->_($btnStates['displayStatus']);
+            $row[] = $this->translator->_(ucfirst($aRow['status']));
 
             $row[] = trim("$summaryDownload $allReportsDownload $downloadAllTBForms");
             if ($aRow['status'] != "pending") {

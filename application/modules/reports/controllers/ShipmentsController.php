@@ -61,7 +61,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
             if ($shipment) {
                 $shipmentArray = is_array($shipment) ? $shipment : $shipment->toArray();
                 $btnStates = Application_Service_Shipments::getShipmentButtonStates($shipmentArray);
-                $this->view->shipmentStatus = $btnStates['displayStatus'];
+                $this->view->shipmentStatus = ucfirst($shipmentArray['shipment_status'] ?? $shipmentArray['status'] ?? '');
                 $this->view->resultDueDate = $shipmentArray['lastdate_response'] ?? null;
             }
         } else {

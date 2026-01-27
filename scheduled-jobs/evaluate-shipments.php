@@ -42,6 +42,12 @@ try {
 		$console->writeln("");
 		$console->writeln("<info>Evaluating shipment:</info> ID <comment>{$shipmentId}</comment> (" . ($index + 1) . "/{$totalShipments})");
 
+		// Update shipment status to processing
+		$db->update('shipment', [
+			'status' => 'processing',
+			'updated_on_admin' => new Zend_Db_Expr('now()')
+		], $db->quoteInto('shipment_id = ?', $shipmentId));
+
 		// Do evaluation
 		$timeStart = microtime(true);
 		$shipmentResult = $evalService->getShipmentToEvaluate($shipmentId, true);
