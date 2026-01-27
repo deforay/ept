@@ -43,7 +43,12 @@ if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
     $dtsConfig = (object) $dtsConfig;
 }
 
-$allowedAlgorithms = isset($dtsConfig->allowedAlgorithms) ? explode(",", $dtsConfig->allowedAlgorithms) : [];
+$allowedAlgorithms = [];
+if (isset($dtsConfig->allowedAlgorithms)) {
+    $allowedAlgorithms = is_array($dtsConfig->allowedAlgorithms)
+        ? $dtsConfig->allowedAlgorithms
+        : explode(",", $dtsConfig->allowedAlgorithms);
+}
 $dtsSchemeType = isset($dtsConfig->dtsSchemeType) ? $dtsConfig->dtsSchemeType : 'standard';
 $rtriEnabled = isset($dtsConfig->rtriEnabled) ? $dtsConfig->rtriEnabled : 'no';
 
