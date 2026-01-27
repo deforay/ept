@@ -215,14 +215,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'url' => $this->url(['module' => 'admin', 'controller' => 'global-config'], 'default', true),
 		'keywords' => ['settings', 'config', 'configuration']
 	];
-	$spotlightItems[] = [
-		'id' => 'home-section-links',
-		'title' => $this->translate->_('Home Section Links'),
-		'category' => $this->translate->_('Configure'),
-		'icon' => 'icon-link',
-		'url' => $this->url(['module' => 'admin', 'controller' => 'home-section-links'], 'default', true),
-		'keywords' => ['home', 'section', 'links']
-	];
+
 	$spotlightItems[] = [
 		'id' => 'home-settings',
 		'title' => $this->translate->_('Home Settings'),
@@ -872,9 +865,6 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 									<li class="divider"></li>
 									<li id="ePTGlobalSettings"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a>
-									</li>
-									<li id="HomeSectionLinks"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links'), 'default', true); ?>"><?= $this->translate->_("Home Section Links"); ?></a>
 									</li>
 									<li id="HomeSettings"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config'), 'default', true); ?>"><?= $this->translate->_("Home Settings"); ?></a>

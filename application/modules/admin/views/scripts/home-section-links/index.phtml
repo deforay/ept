@@ -1,12 +1,27 @@
+<?php
+$home = $this->home;
+$section1Name = !empty($home->subHeading1) ? $home->subHeading1 : $this->translate->_("Resource Section 1");
+$section2Name = !empty($home->subHeading2) ? $home->subHeading2 : $this->translate->_("Resource Section 2");
+$section3Name = !empty($home->subHeading3) ? $home->subHeading3 : $this->translate->_("Resource Section 3");
+?>
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("Home Sections Links"); ?></div>
+        <?= $this->translate->_("Resource Links"); ?></div>
     <div style="margin-top:10px;">
         <a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-section-links', 'action' => 'add'), 'default', true); ?>"
             class="btn btn-primary" style="float:right;"><i
-                class="icon-user"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Home Section"); ?></a>
+                class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New Resource Link"); ?></a>
     </div>
 </h4>
+<div class="alert alert-info" style="margin: 15px 0;">
+    <i class="icon-info-sign"></i>
+    <?= $this->translate->_("These links appear under the Resource Sections on the home page:"); ?>
+    <strong><?= $section1Name; ?></strong>,
+    <strong><?= $section2Name; ?></strong>,
+    <strong><?= $section3Name; ?></strong>.
+    <?= $this->translate->_("To configure section headings and icons, go to"); ?>
+    <a href="<?= $this->url(['module' => 'admin', 'controller' => 'home-config'], 'default', true); ?>"><?= $this->translate->_("Home Page Settings"); ?></a>.
+</div>
 <section class="content">
     <div class="box">
         <div class="box-body">
@@ -14,7 +29,7 @@
                 class="display datatable table table-bordered table-hover table-striped" id="homeSectionTable">
                 <thead>
                     <tr>
-                        <th><?= $this->translate->_("Section"); ?></th>
+                        <th><?= $this->translate->_("Resource Section"); ?></th>
                         <th><?= $this->translate->_("Link"); ?></th>
                         <th><?= $this->translate->_("Display Text"); ?></th>
                         <th><?= $this->translate->_("Icon"); ?></th>

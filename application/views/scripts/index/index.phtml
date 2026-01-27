@@ -34,16 +34,16 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
     $email = (isset($authNameSpace->email) && !empty($authNameSpace->email)) ? $authNameSpace->email : "";
     $faqs = json_decode($this->faqs, true);
 
-    $heading1 = !empty($this->homeContent->heading1) && $this->homeContent->heading1 != "" ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
-    $heading2 = !empty($this->homeContent->heading2) && $this->homeContent->heading1 != "" ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
-    $heading3 = !empty($this->homeContent->heading3) && $this->homeContent->heading1 != "" ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
+    $heading1 = !empty($this->homeContent->heading1) ? $this->homeContent->heading1 : $this->translate->_("Welcome to ePT");
+    $heading2 = !empty($this->homeContent->heading2) ? $this->homeContent->heading2 : $this->translate->_("Online Proficiency Testing Platform");
+    $heading3 = !empty($this->homeContent->heading3) ? $this->homeContent->heading3 : $this->translate->_("Proficiency Testing enables laboratories to assess their performance in conducting test methods within their own laboratories when their data are compared against other laboratories that participate in the same PT.");
 
-    $resourceIcon1 = $this->homeContent->icon1;
-    $resourceIcon2 = $this->homeContent->icon2;
-    $resourceIcon3 = $this->homeContent->icon3;
-    $resourceHeading1 = $this->homeContent->subHeading1;
-    $resourceHeading2 = $this->homeContent->subHeading2;
-    $resourceHeading3 = $this->homeContent->subHeading3;
+    $resourceIcon1 = $this->homeContent->icon1 ?? '';
+    $resourceIcon2 = $this->homeContent->icon2 ?? '';
+    $resourceIcon3 = $this->homeContent->icon3 ?? '';
+    $resourceHeading1 = $this->homeContent->subHeading1 ?? '';
+    $resourceHeading2 = $this->homeContent->subHeading2 ?? '';
+    $resourceHeading3 = $this->homeContent->subHeading3 ?? '';
     $showResource = false;
     $showResource1 = false;
     $showResource2 = false;
