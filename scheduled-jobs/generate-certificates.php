@@ -192,8 +192,35 @@ function renderDocx(string $docxTemplate, array $fields, string $outDocx): bool
 }
 
 
-// Returns path to PDF or null.
-function docxToPdf(string $inDocx, string $outPdf): ?string
+/**
+ * Validate that a DOCX template contains expected placeholder fields.
+ * Returns array of missing field names.
+ */
+function validateDocxTemplate(string $docxPath, array $expectedFields): array
+{
+	if (!file_exists($docxPath)) {
+		return $expectedFields; // All missing if file doesn't exist
+	}
+
+	$missing = [];
+	$content = @file_get_contents('zip://' . $docxPath . '#word/document.xml');
+	if ($content === false) {
+		return $expectedFields;
+	}
+
+	foreach ($expectedFields as $field) {
+		// PhpWord uses ${field} syntax, but Word may split tags
+		// Check for the field name in various forms
+		if (stripos($content, $field) === false) {
+			$missing[] = $field;
+		}
+	}
+
+	return $missing;
+}
+
+// Returns path to PDF or null. Includes retry logic for flaky LibreOffice.
+function docxToPdf(string $inDocx, string $outPdf, int $maxRetries = 2): ?string
 {
 	$soffice = findLibreOffice();
 	if (!$soffice)
@@ -202,36 +229,47 @@ function docxToPdf(string $inDocx, string $outPdf): ?string
 	$dir = dirname($outPdf);
 	@mkdir($dir, 0777, true);
 
-	$tempProfile = '/tmp/lo_profile_' . bin2hex(random_bytes(8));
-	@mkdir($tempProfile, 0700, true);
+	$out = [];
+	$code = 1;
 
-	// Improved LibreOffice command for better output
-	$cmd = escapeshellcmd($soffice) .
-		' --headless' .
-		' --invisible' .
-		' --nodefault' .
-		' --nolockcheck' .
-		' --nologo' .
-		' --norestore' .
-		' --convert-to pdf' .
-		' -env:UserInstallation=file://' . escapeshellarg($tempProfile) .
-		' --outdir ' . escapeshellarg($dir) .
-		' ' . escapeshellarg($inDocx) .
-		' 2>&1';
+	for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+		$tempProfile = '/tmp/lo_profile_' . bin2hex(random_bytes(8));
+		@mkdir($tempProfile, 0700, true);
 
-	exec($cmd, $out, $code);
-	shell_exec('rm -rf ' . escapeshellarg($tempProfile) . ' 2>/dev/null');
+		// Use writer_pdf_Export filter for better DOCX handling
+		$cmd = escapeshellcmd($soffice) .
+			' --headless' .
+			' --invisible' .
+			' --nodefault' .
+			' --nolockcheck' .
+			' --nologo' .
+			' --norestore' .
+			' --convert-to pdf:writer_pdf_Export' .
+			' -env:UserInstallation=file://' . escapeshellarg($tempProfile) .
+			' --outdir ' . escapeshellarg($dir) .
+			' ' . escapeshellarg($inDocx) .
+			' 2>&1';
 
-	$expectedPdf = $dir . '/' . basename(preg_replace('/\.docx$/i', '.pdf', $inDocx));
+		$out = [];
+		exec($cmd, $out, $code);
+		shell_exec('rm -rf ' . escapeshellarg($tempProfile) . ' 2>/dev/null');
 
-	if ($code === 0 && is_file($expectedPdf) && filesize($expectedPdf) > 1000) {
-		if ($expectedPdf !== $outPdf) {
-			rename($expectedPdf, $outPdf);
+		$expectedPdf = $dir . '/' . basename(preg_replace('/\.docx$/i', '.pdf', $inDocx));
+
+		if ($code === 0 && is_file($expectedPdf) && filesize($expectedPdf) > 1000) {
+			if ($expectedPdf !== $outPdf) {
+				rename($expectedPdf, $outPdf);
+			}
+			return $outPdf;
 		}
-		return $outPdf;
+
+		if ($attempt < $maxRetries) {
+			error_log("LibreOffice attempt $attempt failed, retrying...");
+			sleep(1); // Brief pause before retry
+		}
 	}
 
-	error_log("LibreOffice conversion failed (code=$code): " . implode("\n", $out));
+	error_log("LibreOffice conversion failed after $maxRetries attempts (code=$code): " . implode("\n", $out));
 	return null;
 }
 
@@ -357,49 +395,115 @@ function createZipAndGetDownloadUrl(string $folderPath, string $certificateName,
 		}
 	}
 
-	// Add PowerShell script
-	$powershellScript = '@echo off
+	// Add PowerShell script (improved with progress, error handling, COM cleanup)
+	// Using nowdoc to avoid PHP linter confusion with PowerShell syntax
+	$powershellScript = <<<'POWERSHELL'
+@echo off
+setlocal
+cd /d "%~dp0"
 echo Converting DOCX certificates to PDF...
-echo Running from: %~dp0
 echo.
+
 powershell -ExecutionPolicy Bypass -Command "& {
-    Set-Location \"%~dp0\"
+    $ErrorActionPreference = 'SilentlyContinue'
+    $word = $null
     try {
         $word = New-Object -ComObject Word.Application
         $word.Visible = $false
-        Write-Host \"Starting conversion in: $(Get-Location)\"
-        
-        $docxFiles = Get-ChildItem \"*.docx\" -Recurse
-        if ($docxFiles.Count -eq 0) {
-            Write-Host \"No DOCX files found in excellence/ or participation/ folders.\"
-            Write-Host \"Make sure this script is in the correct folder.\"
+        $word.DisplayAlerts = 0
+
+        $docxFiles = Get-ChildItem -Path . -Filter *.docx -Recurse
+        $total = $docxFiles.Count
+
+        if ($total -eq 0) {
+            Write-Host 'No DOCX files found.' -ForegroundColor Yellow
+            Write-Host 'Make sure this script is in the folder with excellence/ and participation/ subfolders.'
         } else {
             $converted = 0
-            $docxFiles | ForEach-Object {
+            $failed = 0
+
+            foreach ($file in $docxFiles) {
+                $current = $converted + $failed + 1
+                Write-Host `"[$current/$total] Converting: $($file.Name)`"
                 try {
-                    Write-Host \"Converting $($_.Name)...\"
-                    $doc = $word.Documents.Open($_.FullName)
-                    $pdfPath = $_.FullName -replace \"\\.docx$\", \".pdf\"
-                    $doc.SaveAs2($pdfPath, 17)
-                    $doc.Close()
+                    $doc = $word.Documents.Open($file.FullName, $false, $true)
+                    $pdfPath = $file.FullName -replace '\.docx$', '.pdf'
+                    $doc.SaveAs2([ref]$pdfPath, [ref]17)
+                    $doc.Close([ref]$false)
                     $converted++
                 } catch {
-                    Write-Host \"Failed to convert $($_.Name): $($_.Exception.Message)\" -ForegroundColor Red
+                    Write-Host `"  FAILED: $_`" -ForegroundColor Red
+                    $failed++
                 }
             }
-            Write-Host \"\"
-            Write-Host \"Conversion complete! Converted $converted files.\"
+
+            Write-Host ''
+            if ($failed -eq 0) {
+                Write-Host `"Done! Converted $converted files successfully.`" -ForegroundColor Green
+            } else {
+                Write-Host `"Complete: $converted succeeded, $failed failed`" -ForegroundColor Yellow
+            }
         }
-        $word.Quit()
     } catch {
-        Write-Host \"Error: Microsoft Word not found or failed to start.\" -ForegroundColor Red
-        Write-Host \"Make sure Microsoft Word is installed.\"
+        Write-Host 'Error: Microsoft Word not found or failed to start.' -ForegroundColor Red
+        Write-Host 'Make sure Microsoft Word is installed.'
+    } finally {
+        if ($word) {
+            $word.Quit()
+            [System.Runtime.Interopservices.Marshal]::ReleaseComObject($word) | Out-Null
+        }
     }
-    Write-Host \"Press any key to close...\"
-    $null = $Host.UI.RawUI.ReadKey(\"NoEcho,IncludeKeyDown\")
-}"';
+    Write-Host ''
+    Write-Host 'Press any key to close...'
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+}"
+POWERSHELL;
 
 	$zip->addFromString('CONVERT-TO-PDF.bat', $powershellScript);
+
+	// Add bash script for Linux/macOS users with LibreOffice
+	$bashScript = '#!/bin/bash
+# Convert DOCX certificates to PDF using LibreOffice
+# Works on Linux and macOS with LibreOffice installed
+
+echo "Converting DOCX certificates to PDF..."
+echo ""
+
+cd "$(dirname "$0")"
+
+# Find LibreOffice binary
+if command -v libreoffice &> /dev/null; then
+    SOFFICE="libreoffice"
+elif command -v soffice &> /dev/null; then
+    SOFFICE="soffice"
+elif [ -x "/Applications/LibreOffice.app/Contents/MacOS/soffice" ]; then
+    SOFFICE="/Applications/LibreOffice.app/Contents/MacOS/soffice"
+else
+    echo "ERROR: LibreOffice not found."
+    echo "Please install LibreOffice or use the Word-based scripts instead."
+    exit 1
+fi
+
+converted=0
+failed=0
+
+find . -name "*.docx" | while read -r file; do
+    echo "Converting: $(basename "$file")"
+    dir=$(dirname "$file")
+    if $SOFFICE --headless --convert-to pdf --outdir "$dir" "$file" > /dev/null 2>&1; then
+        ((converted++))
+    else
+        echo "  FAILED: $file"
+        ((failed++))
+    fi
+done
+
+echo ""
+echo "Conversion complete!"
+echo "Check the excellence/ and participation/ folders for PDF files."
+';
+
+	$zip->addFromString('convert-to-pdf.sh', $bashScript);
 
 	// Add AppleScript for macOS
 	$applescript = 'tell application "Finder"
@@ -486,39 +590,37 @@ Total Files: {$fileCount}
 BULK PDF CONVERSION - READY-TO-RUN SCRIPTS
 ==========================================
 
-WINDOWS USERS (Easiest):
+WINDOWS USERS:
 1. Double-click \"CONVERT-TO-PDF.bat\"
 2. Wait for conversion to complete
 3. PDF files will appear next to DOCX files
+(Requires Microsoft Word)
 
-WINDOWS USERS (Manual):
-1. Open Microsoft Word
-2. File → Open → Select multiple .docx files (Ctrl+click)
-3. For each file: File → Export → Create PDF/XPS
-
-macOS USERS (Script):
-1. Extract all files to Desktop
-2. Double-click \"Convert-Certificates.scpt\"
+macOS USERS (with Microsoft Word):
+1. Double-click \"Convert-Certificates.scpt\"
+2. Select the extracted folder when prompted
 3. Allow script to run (may need to enable in Security settings)
 
-macOS USERS (Manual - Best Quality):
-1. Drag .docx files onto PDF Expert (if installed)
-2. Click \"Convert\" when prompted
-3. Or use Microsoft Word: File → Open multiple → Export each as PDF
+macOS/LINUX USERS (with LibreOffice):
+1. Open Terminal
+2. Run: chmod +x convert-to-pdf.sh && ./convert-to-pdf.sh
+3. PDF files will appear next to DOCX files
 
-TROUBLESHOOTING:
-- Windows script requires Microsoft Word to be installed
-- macOS script requires Microsoft Word to be installed
-- If scripts don't work, use manual conversion methods above
+MANUAL CONVERSION:
+- Windows: Open in Word → File → Export → Create PDF/XPS
+- macOS: Open in Word → File → Save As → PDF
 
 WHAT'S INCLUDED:
-- CONVERT-TO-PDF.bat (Windows automation script)
-- Convert-Certificates.scpt (macOS automation script)
-- excellence/ folder (Excellence certificates)
-- participation/ folder (Participation certificates)
+- CONVERT-TO-PDF.bat    (Windows + Microsoft Word)
+- Convert-Certificates.scpt (macOS + Microsoft Word)
+- convert-to-pdf.sh     (Linux/macOS + LibreOffice)
+- excellence/           (Excellence certificates)
+- participation/        (Participation certificates)
 
-The scripts automatically find and convert all DOCX files to PDF
-while preserving perfect formatting.
+TROUBLESHOOTING:
+- Windows/macOS scripts require Microsoft Word
+- Linux script requires LibreOffice (apt install libreoffice)
+- If formatting looks wrong with LibreOffice, use Microsoft Word instead
 ";
 
 	$zip->addFromString('README.txt', $readme);
@@ -594,7 +696,15 @@ try {
 
 	}
 
+	// Stats tracking
+	$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0];
+	$totalParticipants = count($participants);
+	$currentParticipant = 0;
+
 	foreach ($participants as $participantUID => $arrayVal) {
+		$currentParticipant++;
+		echo "\r[{$currentParticipant}/{$totalParticipants}] Processing: {$participantUID}                    ";
+
 		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
 			if (!isset($arrayVal[$shipmentType]))
 				continue;
@@ -658,14 +768,23 @@ try {
 			if ($certificate && $participated) {
 				$base = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
 				generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode);
+				$stats['excellence']++;
 			} elseif ($participated) {
 				$base = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
 				generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode);
+				$stats['participation']++;
+			} else {
+				$stats['skipped']++;
 			}
 		}
 	}
 
-
+	// Print generation summary
+	echo "\n\n=== Generation Summary ===\n";
+	echo "Excellence certificates:    {$stats['excellence']}\n";
+	echo "Participation certificates: {$stats['participation']}\n";
+	echo "Skipped (no submission):    {$stats['skipped']}\n";
+	echo "Total processed:            " . ($stats['excellence'] + $stats['participation'] + $stats['skipped']) . "\n";
 
 	if ($templateMode === 'docx') {
 		echo "\n=== DOCX CERTIFICATES GENERATED ===\n";
