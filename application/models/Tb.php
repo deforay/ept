@@ -27,7 +27,6 @@ class Application_Model_Tb
         $counter = 0;
         $maxScore = 0;
         $finalResult = null;
-
         $passingScore = Pt_Commons_SchemeConfig::get('tb.passPercentage') ?? 100;
 
         $schemeService = new Application_Service_Schemes();
@@ -490,7 +489,6 @@ class Application_Model_Tb
     {
         try {
             ini_set('memory_limit', '-1');
-            //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
             $config = Pt_Commons_SchemeConfig::get('tb');
 
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1662,7 +1660,6 @@ class Application_Model_Tb
             mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode);
         }
         $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $fileName);
-
         return $fileName;
     }
 

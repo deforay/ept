@@ -539,7 +539,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $config = Pt_Commons_SchemeConfig::get('dts');
         $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
 
-
         if (!isset($params['userId']) && !isset($params['key'])) {
             return [
                 'status' => 'fail',
@@ -739,8 +738,6 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return false;
         }
         /* Return the response data */
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-
         return array(
             'dm_id' => $aResult['dm_id'],
             'view_only_access' => $aResult['view_only_access'],

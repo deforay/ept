@@ -160,7 +160,7 @@ class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract
             $res = [];
 
             $testThreeOptional = false;
-            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3') ?? 'no';
             if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
                 if (isset($params['dtsData']->Section2->data->algorithmUsedSelected) && $params['dtsData']->Section2->data->algorithmUsedSelected == 'myanmarNationalDtsAlgo') {
                     $testThreeOptional = false;

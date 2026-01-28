@@ -11,9 +11,7 @@ use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 class Application_Model_Vl
 {
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {
@@ -27,9 +25,6 @@ class Application_Model_Vl
 
         $db->update('shipment_participant_map', ['is_excluded' => 'no'], "shipment_id = $shipmentId");
         $db->update('shipment_participant_map', ['is_excluded' => 'yes'], "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
-
-
-
 
         $passPercentage = Pt_Commons_SchemeConfig::get('vl.passPercentage') ?? 100;
 

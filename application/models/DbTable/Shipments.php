@@ -93,7 +93,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->group('dm.dm_id')->setIntegrityCheck(false);
         $subResult = $this->fetchAll($subQuery);
         foreach ($subResult as $dm) {
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             if (isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])) {
                 $content = $notParticipatedMailContent['mail_content'];
@@ -1241,7 +1241,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
             $sQuery = $sQuery->where("s.scheme_type = ?", $parameters['scheme']);
         }
-
+        $general = new Application_Service_Common();
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", $general->isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", $general->isoDateFormat($parameters['endDate']));
@@ -2275,7 +2275,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
 
         if ($params['scheme_type'] == 'dts') {
             $dts = [];
-            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+            $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3') ?? 'no';
             $dtsModel = new Application_Model_Dts();
             $dtsSchemeType = (isset($shipment['shipment_attributes']["dtsSchemeType"]) && $shipment['shipment_attributes']["dtsSchemeType"] != '') ? $shipment['shipment_attributes']["dtsSchemeType"] : null;
             $testThreeOptional = false;
