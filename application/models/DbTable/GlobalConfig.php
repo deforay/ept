@@ -14,7 +14,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
         $value = !empty($res[0]) ? $res[0] : null;
 
-        // If value is null, check in config.ini
+        // If value is null, check in global config or scheme config
         if ($value === null) {
             try {
                 $value = Pt_Commons_SchemeConfig::get($name);

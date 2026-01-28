@@ -3,8 +3,6 @@
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'scatter'], true);
-
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'iso17043';
@@ -18,10 +16,10 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
 
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $panelName);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $panelName);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition, 'generic-test');
+        $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, 'generic-test', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, 'generic-test');
     }
 
     // set default header data

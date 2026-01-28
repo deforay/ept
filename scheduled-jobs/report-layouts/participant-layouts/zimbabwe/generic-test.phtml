@@ -11,7 +11,6 @@
 
 // Initialize objects and variables
 $kitDb = new Application_Model_DbTable_Testkitnames();
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $shipmentCode = '';
@@ -57,7 +56,7 @@ if (!empty($resultArray['shipment'])) {
             // Use FPDI report format
             $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $panelName, $approveTxt);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName, $approveTxt);
         } else {
             // Use standard individual PDF format
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -70,7 +69,7 @@ if (!empty($resultArray['shipment'])) {
                 'generic-test',
                 $layout,
                 $evalRow['date_finalised'],
-                $config,
+                "",
                 $watermark,
                 "",
                 $instituteAddressPosition

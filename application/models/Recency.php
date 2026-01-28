@@ -259,10 +259,6 @@ class Application_Model_Recency
 
     // public function getSampleScore()
     // {
-
-    //     $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-    //     $config = new Zend_Config_Ini($file, APPLICATION_ENV);
-
     //     $sampleScore = 0;
     //     return $sampleScore;
     // }
@@ -949,7 +945,6 @@ class Application_Model_Recency
                 if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
 
 
-                    //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
                     $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
                     $interval = $sampleRehydrationDate->diff($testedOnDate);

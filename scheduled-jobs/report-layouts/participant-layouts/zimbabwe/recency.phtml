@@ -1,8 +1,7 @@
 <?php
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
-
+$config = Pt_Commons_SchemeConfig::get('recency');
 $pdfNew = new Zend_Pdf();
 $extractor = new Zend_Pdf_Resource_Extractor();
 $font = Zend_Pdf_Font::fontWithName(Zend_Pdf_Font::FONT_HELVETICA);
@@ -84,8 +83,6 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-        $config = Pt_Commons_SchemeConfig::get('dts');
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentScore = 0;
@@ -395,7 +392,6 @@ if (!empty($resultArray['shipment'])) {
 							<td style="text-align:center;">' . $scoreDoc . '</td>
 					</tr>';
 
-                $config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
                 $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
                 $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
                 $interval = $sampleRehydrationDate->diff($testedOnDate);

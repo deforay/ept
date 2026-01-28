@@ -1,10 +1,5 @@
 <?php
 $dtsConfig = $this->dtsConfig;
-if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
-	$dtsConfig = json_decode($dtsConfig);
-} elseif (is_array($dtsConfig)) {
-	$dtsConfig = (object) $dtsConfig;
-}
 $shipmentData = $this->shipmentData;
 $shipmentAttribute = json_decode($shipmentData['shipment']['shipment_attributes'], true);
 $vHelper = $this->getHelper('DateFormat');
@@ -16,11 +11,11 @@ if ($shipmentData['shipment']['scheme_type'] == 'tb') {
 	$style = 'style=" width: 1550px; margin-left: -208px; "';
 }
 
-$allowedAlgorithms = $dtsConfig->allowedAlgorithms;
+$allowedAlgorithms = $dtsConfig['allowedAlgorithms'];
 if (!is_array($allowedAlgorithms))
 	$allowedAlgorithms = explode(',', $allowedAlgorithms);
-$dtsSchemeType = $dtsConfig->dtsSchemeType ?? 'standard';
-$rtriEnabled = $dtsConfig->rtriEnabled ?? 'no';
+$dtsSchemeType = $dtsConfig['dtsSchemeType'] ?? 'standard';
+$rtriEnabled = $dtsConfig['rtriEnabled'] ?? 'no';
 ?>
 
 <style type="text/css">

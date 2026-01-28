@@ -1,7 +1,8 @@
 <?php
-$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $configData = $this->getGlobalConfig();
+$homeConfig = json_decode($configData['home']);
+$faqs = json_decode($configData['faqs']);
+
 $topBarColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : 'red';
 $configColor = (isset($configData['theme_color']) && !empty($configData['theme_color'])) ? $configData['theme_color'] : '#106eea';
 $topBarColor = ($configData['training_instance'] == 'yes') ? 'red' : $configColor;
@@ -10,10 +11,8 @@ if ($configData['training_instance'] == 'yes') {
     $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 }
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
-$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 $showResource = false;
-if (!empty($config->homeContent->homeSectionHeading1) || !empty($config->homeContent->homeSectionHeading2) || !empty($config->homeContent->homeSectionHeading3)) {
+if (!empty($homeConfig->heading1) || !empty($homeConfig->heading2) || !empty($homeConfig->heading3)) {
     $showResource = true;
 }
 
@@ -100,7 +99,7 @@ $eptLogo = implode('', $logos);
                         <li><a class="nav-link scrollto" href="/#resources"><?= $this->translate->_("Resources"); ?></a>
                         </li>
                     <?php } ?>
-                    <?php if (isset($config->homeContent->faq) && !empty($config->homeContent->faq)) { ?>
+                    <?php if (isset($faqs) && !empty($faqs)) { ?>
                         <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
                     <?php } ?>
                     <li><a class="nav-link scrollto" href="/index#contact">Contact</a></li>

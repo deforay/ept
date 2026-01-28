@@ -489,7 +489,6 @@ class Application_Model_Covid19
 
     public function generateCovid19ExcelReport($shipmentId)
     {
-        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $config = Pt_Commons_SchemeConfig::get('covid19');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

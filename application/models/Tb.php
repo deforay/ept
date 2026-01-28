@@ -1544,7 +1544,6 @@ class Application_Model_Tb
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
         //$applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $config = Pt_Commons_SchemeConfig::get('tb');
         $dataManagerService = new Application_Service_DataManagers();
         $query = $this->db->select()

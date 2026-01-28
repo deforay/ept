@@ -1,15 +1,10 @@
 <?php
 $dtsConfig = $this->dtsConfig;
-if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
-	$dtsConfig = json_decode($dtsConfig);
-} elseif (is_array($dtsConfig)) {
-	$dtsConfig = (object) $dtsConfig;
-}
-$allowedAlgorithms = $dtsConfig->allowedAlgorithms;
+$allowedAlgorithms = $dtsConfig['allowedAlgorithms'];
 if (!is_array($allowedAlgorithms))
 	$allowedAlgorithms = explode(',', $allowedAlgorithms);
-$optionalTest3 = $dtsConfig->dtsOptionalTest3 ?? 'no';
-$allowRepeatTests = $dtsConfig->allowRepeatTests ?? 0;
+$optionalTest3 = $dtsConfig['dtsOptionalTest3'] ?? 'no';
+$allowRepeatTests = $dtsConfig['allowRepeatTests'] ?? 0;
 $shipmentAttributes = isset($this->shipment['shipment_attributes']) ? json_decode($this->shipment['shipment_attributes'], true) : array();
 $syphilisActive = false;
 
@@ -179,7 +174,7 @@ $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '<td style="font-weight:bold;width:25%">Algorithm Used</td>';
 $labInfo .= '<td style="font-weight:bold;width:25%"></td>';
 $labInfo .= '</tr>';
-if ((isset($dtsConfig->displaySampleConditionFields) && $dtsConfig->displaySampleConditionFields == "yes")) {
+if ((isset($dtsConfig['displaySampleConditionFields']) && $dtsConfig['displaySampleConditionFields'] == "yes")) {
 	$labInfo .= '<tr style="background-color:#F7F7F7;">';
 	$labInfo .= '<td style="font-weight:bold;width:25%">Condition Of PT Samples</td> ';
 	$labInfo .= '<td style="font-weight:bold;width:25%"></td>';

@@ -8,7 +8,7 @@ $participantPerformance = $reportService->getParticipantPerformanceReportByShipm
 
 // require_once(CRON_PATH . DIRECTORY_SEPARATOR . 'Common.php');
 
-$config = new Zend_Config_Ini(APPLICATION_PATH . "/configs/config.ini", APPLICATION_ENV);
+$config = Pt_Commons_SchemeConfig::get('dts');
 $appConfig = new Zend_Config_Ini(APPLICATION_PATH . "/configs/application.ini", APPLICATION_ENV);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 

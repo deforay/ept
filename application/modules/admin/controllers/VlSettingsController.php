@@ -29,7 +29,6 @@ class Admin_VlSettingsController extends Zend_Controller_Action
             $common = new Application_Service_Common();
             /** @var Zend_Controller_Request_Http $request */
             $request = $this->getRequest();
-            $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
             if ($request->isPost()) {
                 $params = $this->getAllParams();
                 if (isset($params['vl']) && !empty($params['vl'])) {
@@ -46,8 +45,5 @@ class Admin_VlSettingsController extends Zend_Controller_Action
             error_log($exc->getTraceAsString());
             return "";
         }
-
-
-        $this->view->config = new Zend_Config_Ini($file, APPLICATION_ENV);
     }
 }

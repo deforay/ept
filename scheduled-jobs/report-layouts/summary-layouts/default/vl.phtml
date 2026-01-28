@@ -3,8 +3,6 @@
 use mitoteam\jpgraph\MtJpGraph;
 
 MtJpGraph::load(['bar', 'line', 'pie'], true);
-$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
-
 if ($resultArray['shipment'] != "") {
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -56,7 +54,7 @@ if ($resultArray['shipment'] != "") {
     $methodOfEvaluation = 'iso17043';
     if (isset($reportFormat) && !empty($reportFormat)) {
         $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
+        $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
@@ -65,7 +63,7 @@ if ($resultArray['shipment'] != "") {
         $methodOfEvaluation = $methodOfEvaluation ?? 'iso17043';
 
         if ($methodOfEvaluation == 'iso17043') {
-            $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], $config, $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
+            $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, $evalRow['date_finalised'], $instituteAddressPosition, $layout);
         } else {
             $pdf->setSchemeName($header, $resultArray['shipment']['scheme_name'], $logo, $logoRight, $resultStatus, $resultArray['shipment']['scheme_type'], $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $layout);
         }
