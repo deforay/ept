@@ -1,6 +1,6 @@
 <?php
 $home = $this->home;
-$fileLink = (array)json_decode($home->fileLinks ?? '{}');
+$fileLink = (array) json_decode($home->fileLinks ?? '{}');
 $faqResults = $this->faq;
 ?>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
@@ -13,6 +13,7 @@ $faqResults = $this->faq;
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
 
 <style>
 	.collapsible {
@@ -133,6 +134,19 @@ $faqResults = $this->faq;
 		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
 	}
 
+	.logo-card {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 20px;
+		text-align: center;
+	}
+
+	.logo-card:hover {
+		border-color: #4a6fa5;
+		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	}
+
 	.icon-input-wrapper {
 		display: flex;
 		align-items: stretch;
@@ -206,7 +220,7 @@ $faqResults = $this->faq;
 	#iconPickerModal .modal-content {
 		background: #fff;
 		border-radius: 6px;
-		box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
 		position: relative;
 		z-index: 1062;
 	}
@@ -334,39 +348,45 @@ $faqResults = $this->faq;
 </style>
 
 <div class="well">
-	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
+	<form name="addHomePageConfigForm" id="addHomePageConfigForm" method="post"
+		action="<?php echo $this->url(array("module" => "admin", "controller" => "home-config", "action" => "index"), 'default', true) ?>"
+		class="form-horizontal" enctype="multipart/form-data" autocomplete="off" role="form">
 		<fieldset>
 			<legend><?= $this->translate->_("Home Page Settings"); ?></legend>
 
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#heroSection">
-				<?= $this->translate->_("Hero Banner"); ?> <b class="caret pull-right"></b>
+				<?= $this->translate->_("Hero Content"); ?> <b class="caret pull-right"></b>
 			</button>
 			<div class="collapse-content" id="heroSection">
 				<div class="alert alert-info" style="margin: 10px 0;">
-					<i class="icon-info-sign"></i> <?= $this->translate->_("Configure the hero banner displayed at the top of the home page."); ?>
+					<i class="icon-info-sign"></i>
+					<?= $this->translate->_("Configure the hero banner displayed at the top of the home page."); ?>
 				</div>
 
 				<div class="row">
 					<div class="col-md-12">
-						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Line 1 (Main Title)"); ?></label>
-						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
-							class="form-control"
+						<label for="homeHeading1"
+							class="control-label"><?= $this->translate->_("Line 1 (Main Title)"); ?></label>
+						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1"
+							name="home[heading1]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., Welcome to ePT for TB'); ?>"
 							title="<?= $this->translate->_('Enter the main title for the hero banner'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Line 2 (Subtitle)"); ?></label>
-						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
-							class="form-control"
+						<label for="homeHeading2"
+							class="control-label"><?= $this->translate->_("Line 2 (Subtitle)"); ?></label>
+						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2"
+							name="home[heading2]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., Online Proficiency Testing Tool'); ?>"
 							title="<?= $this->translate->_('Enter the subtitle for the hero banner'); ?>" />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Line 3 (Description)"); ?></label>
+						<label for="homeHeading3"
+							class="control-label"><?= $this->translate->_("Line 3 (Description)"); ?></label>
 						<textarea id="homeHeading3" name="home[heading3]" class="form-control" rows="3"
 							placeholder="<?= $this->translate->_('Enter a longer description or call to action'); ?>"
 							title="<?= $this->translate->_('Enter the description text for the hero banner'); ?>"><?php echo $home->heading3 ?? null; ?></textarea>
@@ -375,8 +395,8 @@ $faqResults = $this->faq;
 				<div class="row">
 					<div class="col-md-6">
 						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
-						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
-							class="form-control"
+						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl"
+							name="home[videoUrl]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
 							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
 					</div>
@@ -390,18 +410,51 @@ $faqResults = $this->faq;
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
-						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
-							class="form-control"
+						<label for="homeAdditionalLink"
+							class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink"
+							name="home[additionalLink]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., https://example.com/guide.pdf'); ?>"
 							title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
-							class="form-control"
+						<label for="homeAdditionalLinkText"
+							class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>"
+							id="homeAdditionalLinkText" name="home[additionalLinkText]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., Download Guide'); ?>"
 							title="<?= $this->translate->_('Enter the text for the additional link button'); ?>" />
+					</div>
+				</div>
+			</div><br>
+
+			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeBannerSection">
+				<?= $this->translate->_("Home Banner Image"); ?> <b class="caret pull-right"></b>
+			</button>
+			<div class="collapse-content" id="homeBannerSection">
+				<p class="text-muted"><?= $this->translate->_("Upload a banner image displayed in the hero section of the home page."); ?></p>
+				<div class="row">
+					<div class="col-md-6">
+						<input type="hidden" id="existImage" name="existImage" value="<?php echo isset($this->banner['image']) && trim($this->banner['image']) != '' ? $this->banner['image'] : ''; ?>" />
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="width: 300px; height: 180px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 2px dashed #e2e8f0;">
+								<?php if (isset($this->banner['image']) && trim($this->banner['image']) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $this->banner['image'])) { ?>
+									<img src="<?php echo $this->baseUrl('uploads/home-banner/' . $this->banner['image']); ?>" style="max-width: 100%; max-height: 100%;" />
+								<?php } else { ?>
+									<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 40px;"></i><br><?= $this->translate->_("No banner uploaded"); ?></span>
+								<?php } ?>
+							</div>
+							<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 300px; max-height: 180px; line-height: 20px;"></div>
+							<div style="margin-top: 10px;">
+								<span class="btn btn-primary btn-file">
+									<span class="fileupload-new"><i class="icon-upload"></i> <?= $this->translate->_("Select Banner Image"); ?></span>
+									<span class="fileupload-exists"><i class="icon-refresh"></i> <?= $this->translate->_("Change"); ?></span>
+									<input type="file" name="home_banner" id="home_banner" accept="image/png, image/jpeg, image/gif" />
+								</span>
+								<a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="icon-remove"></i> <?= $this->translate->_("Remove"); ?></a>
+							</div>
+						</div>
+						<small class="text-muted"><?= $this->translate->_("Recommended size: 1301x531 pixels. Supported formats: JPG, PNG, GIF"); ?></small>
 					</div>
 				</div>
 			</div><br>
@@ -410,9 +463,12 @@ $faqResults = $this->faq;
 				<?= $this->translate->_("Resource Sections"); ?> <b class="caret pull-right"></b>
 			</button>
 			<div class="collapse-content" id="resourceSections">
-				<div class="alert alert-info" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-					<span><i class="icon-info-sign"></i> <?= $this->translate->_("Configure section headings and icons below. To manage the links that appear under each section:"); ?></span>
-					<a href="<?= $this->url(['module' => 'admin', 'controller' => 'home-section-links'], 'default', true); ?>" class="btn btn-primary btn-sm">
+				<div class="alert alert-info"
+					style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+					<span><i class="icon-info-sign"></i>
+						<?= $this->translate->_("Configure section headings and icons below. To manage the links that appear under each section:"); ?></span>
+					<a href="<?= $this->url(['module' => 'admin', 'controller' => 'home-section-links'], 'default', true); ?>"
+						class="btn btn-primary btn-sm">
 						<i class="icon-link"></i> <?= $this->translate->_("Manage Resource Links"); ?>
 					</a>
 				</div>
@@ -420,25 +476,30 @@ $faqResults = $this->faq;
 				<!-- Resource Section 1 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 1"); ?></label>
+						<label class="control-label"
+							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 1"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
 						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
-								class="form-control icon-input"
+							<span class="icon-preview" id="iconPreview1"><i
+									class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1"
+								name="home[icon1]" class="form-control icon-input"
 								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
 								onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
+							<button type="button" class="icon-picker-btn"
+								onclick="openIconPicker('homeIcon1', 'iconPreview1')"
+								title="<?= $this->translate->_('Browse icons'); ?>">
 								<i class="icon-th"></i>
 							</button>
 						</div>
 					</div>
 					<div class="col-md-8">
-						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
-						<input type="text" value="<?php echo $home->subHeading1 ?? null; ?>" id="homeSubHeading1" name="home[subHeading1]"
-							class="form-control"
+						<label for="homeSubHeading1"
+							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading1 ?? null; ?>" id="homeSubHeading1"
+							name="home[subHeading1]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., DOWNLOADS'); ?>" />
 					</div>
 				</div>
@@ -446,25 +507,30 @@ $faqResults = $this->faq;
 				<!-- Resource Section 2 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 2"); ?></label>
+						<label class="control-label"
+							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 2"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
 						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
-								class="form-control icon-input"
+							<span class="icon-preview" id="iconPreview2"><i
+									class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2"
+								name="home[icon2]" class="form-control icon-input"
 								placeholder="<?= $this->translate->_('e.g., bi bi-book-half'); ?>"
 								onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
+							<button type="button" class="icon-picker-btn"
+								onclick="openIconPicker('homeIcon2', 'iconPreview2')"
+								title="<?= $this->translate->_('Browse icons'); ?>">
 								<i class="icon-th"></i>
 							</button>
 						</div>
 					</div>
 					<div class="col-md-8">
-						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
-						<input type="text" value="<?php echo $home->subHeading2 ?? null; ?>" id="homeSubHeading2" name="home[subHeading2]"
-							class="form-control"
+						<label for="homeSubHeading2"
+							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading2 ?? null; ?>" id="homeSubHeading2"
+							name="home[subHeading2]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., PROCESSES/PROGRAMS'); ?>" />
 					</div>
 				</div>
@@ -472,25 +538,30 @@ $faqResults = $this->faq;
 				<!-- Resource Section 3 -->
 				<div class="row feature-card-row">
 					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 3"); ?></label>
+						<label class="control-label"
+							style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Resource Section 3"); ?></label>
 					</div>
 					<div class="col-md-4">
 						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
 						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
-								class="form-control icon-input"
+							<span class="icon-preview" id="iconPreview3"><i
+									class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
+							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3"
+								name="home[icon3]" class="form-control icon-input"
 								placeholder="<?= $this->translate->_('e.g., bx bx-file'); ?>"
 								onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
+							<button type="button" class="icon-picker-btn"
+								onclick="openIconPicker('homeIcon3', 'iconPreview3')"
+								title="<?= $this->translate->_('Browse icons'); ?>">
 								<i class="icon-th"></i>
 							</button>
 						</div>
 					</div>
 					<div class="col-md-8">
-						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
-						<input type="text" value="<?php echo $home->subHeading3 ?? null; ?>" id="homeSubHeading3" name="home[subHeading3]"
-							class="form-control"
+						<label for="homeSubHeading3"
+							class="control-label"><?= $this->translate->_("Section Heading"); ?></label>
+						<input type="text" value="<?php echo $home->subHeading3 ?? null; ?>" id="homeSubHeading3"
+							name="home[subHeading3]" class="form-control"
 							placeholder="<?= $this->translate->_('e.g., PROGRESS/IMPROVEMENTS'); ?>" />
 					</div>
 				</div>
@@ -500,46 +571,63 @@ $faqResults = $this->faq;
 				<?= $this->translate->_("Home Page Logos"); ?> <b class="caret pull-right"></b>
 			</button>
 			<div class="collapse-content" id="homeLogos">
+				<p class="text-muted"><?= $this->translate->_("Upload logos displayed in the header of the home page."); ?></p>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
-						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
-							<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-									class="home_left_logo_pic" style="width: 150px;">
-								<a href="javascript:void(0);"
-									onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
-									class="mandatory home_left_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif" style="display: none;">
-							<?php } else { ?>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif">
-							<?php } ?>
+						<div class="logo-card">
+							<label class="control-label" style="font-weight: 600; color: #4a6fa5; margin-bottom: 15px; display: block;"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
+							<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo" value="">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div class="fileupload-new thumbnail" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background: #fff; border: 2px dashed #e2e8f0; margin: 0 auto;">
+									<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+										<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" style="max-width: 100%; max-height: 100%;" />
+									<?php } else { ?>
+										<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 30px;"></i><br><?= $this->translate->_("No logo"); ?></span>
+									<?php } ?>
+								</div>
+								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px; margin: 0 auto;"></div>
+								<div style="margin-top: 15px; text-align: center;">
+									<span class="btn btn-primary btn-sm btn-file">
+										<span class="fileupload-new"><i class="icon-upload"></i> <?= $this->translate->_("Select Logo"); ?></span>
+										<span class="fileupload-exists"><i class="icon-refresh"></i> <?= $this->translate->_("Change"); ?></span>
+										<input type="file" name="home_left_logo" id="home_left_logo" accept="image/png, image/jpeg, image/gif" />
+									</span>
+									<a href="#" class="btn btn-danger btn-sm fileupload-exists" data-dismiss="fileupload"><i class="icon-remove"></i></a>
+									<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+										<a href="javascript:void(0);" onclick="deleteLogo('home_left_logo', '<?= $this->home_left_logo; ?>');" class="btn btn-danger btn-sm" title="<?= $this->translate->_('Delete current logo'); ?>"><i class="icon-trash"></i></a>
+									<?php } ?>
+								</div>
+							</div>
+							<small class="text-muted" style="display: block; text-align: center; margin-top: 10px;"><?= $this->translate->_("Recommended: 80x80 pixels"); ?></small>
 						</div>
-						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
 					</div>
 					<div class="col-md-6">
-						<label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
-						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
-							<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-									class="home_right_logo_pic" style="width: 150px;">
-								<a href="javascript:void(0);"
-									onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
-									class="mandatory home_right_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									style="display: none;" accept="image/png, image/jpeg, image/gif">
-							<?php } else { ?>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif">
-							<?php } ?>
+						<div class="logo-card">
+							<label class="control-label" style="font-weight: 600; color: #4a6fa5; margin-bottom: 15px; display: block;"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
+							<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo" value="">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div class="fileupload-new thumbnail" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background: #fff; border: 2px dashed #e2e8f0; margin: 0 auto;">
+									<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+										<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" style="max-width: 100%; max-height: 100%;" />
+									<?php } else { ?>
+										<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 30px;"></i><br><?= $this->translate->_("No logo"); ?></span>
+									<?php } ?>
+								</div>
+								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px; margin: 0 auto;"></div>
+								<div style="margin-top: 15px; text-align: center;">
+									<span class="btn btn-primary btn-sm btn-file">
+										<span class="fileupload-new"><i class="icon-upload"></i> <?= $this->translate->_("Select Logo"); ?></span>
+										<span class="fileupload-exists"><i class="icon-refresh"></i> <?= $this->translate->_("Change"); ?></span>
+										<input type="file" name="home_right_logo" id="home_right_logo" accept="image/png, image/jpeg, image/gif" />
+									</span>
+									<a href="#" class="btn btn-danger btn-sm fileupload-exists" data-dismiss="fileupload"><i class="icon-remove"></i></a>
+									<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+										<a href="javascript:void(0);" onclick="deleteLogo('home_right_logo', '<?= $this->home_right_logo; ?>');" class="btn btn-danger btn-sm" title="<?= $this->translate->_('Delete current logo'); ?>"><i class="icon-trash"></i></a>
+									<?php } ?>
+								</div>
+							</div>
+							<small class="text-muted" style="display: block; text-align: center; margin-top: 10px;"><?= $this->translate->_("Recommended: 80x80 pixels"); ?></small>
 						</div>
-						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
 					</div>
 				</div>
 			</div><br>
@@ -548,14 +636,23 @@ $faqResults = $this->faq;
 				<?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?> <b class="caret pull-right"></b>
 			</button>
 			<div class="collapse-content" id="faqSection">
-				<p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
+				<p class="text-muted">
+					<?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?>
+				</p>
 				<div class="row">
-					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix" id="faqTable">
+					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
+						id="faqTable">
 						<thead>
 							<tr>
-								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Question"); ?></th>
-								<th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Answer"); ?></th>
-								<th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Actions"); ?></th>
+								<th style="text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Question"); ?>
+								</th>
+								<th style="text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Answer"); ?>
+								</th>
+								<th style="width:5%;text-align: center;vertical-align:middle;">
+									<?= $this->translate->_("Actions"); ?>
+								</th>
 							</tr>
 						</thead>
 						<tbody id="faqTableBody">
@@ -571,10 +668,11 @@ $faqResults = $this->faq;
 												placeholder="<?= $this->translate->_('Enter the answer'); ?>"><?php echo $answer; ?></textarea>
 										</td>
 										<td>
-											<a href="javascript:void(0);" onclick="addTbRow(this);"
-												class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
-												href="javascript:void(0);" onclick="removeRow(this)"
-												class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
+											<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"
+												title="<?= $this->translate->_('Add row'); ?>"><i
+													class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);"
+												onclick="removeRow(this)" class="btn btn-xs btn-danger"
+												title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
 										</td>
 									</tr>
 								<?php }
@@ -589,8 +687,8 @@ $faqResults = $this->faq;
 											placeholder="<?= $this->translate->_('Enter the answer'); ?>"></textarea>
 									</td>
 									<td>
-										<a href="javascript:void(0);" onclick="addTbRow(this);"
-											class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
+										<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"
+											title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
 									</td>
 								</tr>
 							<?php } ?>
@@ -600,9 +698,9 @@ $faqResults = $this->faq;
 			</div><br>
 		</fieldset>
 
+		<br>
+		<br>
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-			<input type="hidden" name="delete_home_right_logo" id="delete_home_right_logo">
-			<input type="hidden" name="delete_home_left_logo" id="delete_home_left_logo">
 			<input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
 				tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
 			<input class="btn btn-danger" type="button" onclick="window.location.href='/admin/index';" tabindex="8"
@@ -625,9 +723,12 @@ $faqResults = $this->faq;
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i> <?= $this->translate->_("Select Icon"); ?></h4>
-				<input type="text" class="form-control" id="iconSearchInput" placeholder="<?= $this->translate->_('Search icons...'); ?>">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i>
+					<?= $this->translate->_("Select Icon"); ?></h4>
+				<input type="text" class="form-control" id="iconSearchInput"
+					placeholder="<?= $this->translate->_('Search icons...'); ?>">
 			</div>
 			<div class="modal-body">
 				<div class="icon-grid" id="iconGrid"></div>
@@ -643,6 +744,7 @@ $faqResults = $this->faq;
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-fileupload.js'); ?>"></script>
 
 <script type="text/javascript">
 	function validateNow() {
@@ -659,6 +761,18 @@ $faqResults = $this->faq;
 		$('#' + show).show();
 		$('.' + hide).hide();
 		$('#' + deletefile).val(file);
+	}
+
+	function deleteLogo(field, filename) {
+		if (confirm('<?= $this->translate->_("Are you sure you want to delete this logo?"); ?>')) {
+			$('#delete_' + field).val(filename);
+			// Hide the current logo preview and show placeholder
+			var container = $('#' + field).closest('.fileupload');
+			container.find('.fileupload-new.thumbnail img').remove();
+			container.find('.fileupload-new.thumbnail').html('<span class="text-muted" style="text-align: center;"><i class="icon-picture" style="font-size: 30px;"></i><br><?= $this->translate->_("No logo"); ?></span>');
+			// Hide the delete button
+			container.find('a[onclick^="deleteLogo"]').hide();
+		}
 	}
 
 	function addTbRow(obj) {
@@ -678,14 +792,14 @@ $faqResults = $this->faq;
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+		$(obj.parentNode.parentNode).fadeOut("normal", function () {
 			$(this).remove();
 		});
 	}
 
 	// Collapsible functionality
-	$(document).ready(function() {
-		$('.collapsible').on('click', function() {
+	$(document).ready(function () {
+		$('.collapsible').on('click', function () {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -786,7 +900,7 @@ $faqResults = $this->faq;
 		var gridHtml = '';
 		var currentValue = $('#' + inputId).val();
 
-		availableIcons.forEach(function(icon) {
+		availableIcons.forEach(function (icon) {
 			var selectedClass = (icon === currentValue) ? ' selected' : '';
 			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
 			gridHtml += '<i class="' + icon + '"></i>';
@@ -798,7 +912,7 @@ $faqResults = $this->faq;
 		$('#noIconsFound').hide();
 		$('#iconSearchInput').val('');
 		$('#iconPickerModal').modal('show');
-		setTimeout(function() { $('#iconSearchInput').focus(); }, 300);
+		setTimeout(function () { $('#iconSearchInput').focus(); }, 300);
 	}
 
 	function selectIcon(iconClass) {
@@ -816,12 +930,12 @@ $faqResults = $this->faq;
 		}
 	}
 
-	$(document).ready(function() {
-		$('#iconSearchInput').on('keyup', function() {
+	$(document).ready(function () {
+		$('#iconSearchInput').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 			var visibleCount = 0;
 
-			$('.icon-item').each(function() {
+			$('.icon-item').each(function () {
 				var iconName = $(this).data('icon').toLowerCase();
 				if (iconName.includes(searchTerm)) {
 					$(this).show();

@@ -36,7 +36,7 @@ class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Acti
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService = new Application_Service_Shipments();
-            $shipmentService->getShipmentFinalaizedByrticipants($params);
+            $shipmentService->getShipmentFinalizedByParticipants($params);
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();

@@ -86,12 +86,16 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                     }
                     $globalConfigDb->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
                 }
+
+                // Handle home banner upload
+                $common->updateHomeBanner($params);
             }
 
             $this->view->home = json_decode($common->getConfig('home'));
             $this->view->faq = json_decode($common->getConfig('faqs'));
             $this->view->home_left_logo = $common->getConfig('home_left_logo');
             $this->view->home_right_logo = $common->getConfig('home_right_logo');
+            $this->view->banner = $common->getHomeBannerDetails();
 
             $this->view->sections = $homeSection->getAllHtmlHomePage();
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();

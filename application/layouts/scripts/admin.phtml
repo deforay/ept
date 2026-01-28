@@ -218,7 +218,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 
 	$spotlightItems[] = [
 		'id' => 'home-settings',
-		'title' => $this->translate->_('Home Settings'),
+		'title' => $this->translate->_('Home Page Settings'),
 		'category' => $this->translate->_('Configure'),
 		'icon' => 'icon-home',
 		'url' => $this->url(['module' => 'admin', 'controller' => 'home-config'], 'default', true),
@@ -263,14 +263,6 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'icon' => 'icon-envelope-alt',
 		'url' => '/admin/mail-template',
 		'keywords' => ['mail', 'template', 'email']
-	];
-	$spotlightItems[] = [
-		'id' => 'home-banner',
-		'title' => $this->translate->_('Home Banner'),
-		'category' => $this->translate->_('Configure'),
-		'icon' => 'icon-picture',
-		'url' => $this->url(['module' => 'admin', 'controller' => 'home-banner'], 'default', true),
-		'keywords' => ['home', 'banner', 'image']
 	];
 	$spotlightItems[] = [
 		'id' => 'partners',
@@ -867,7 +859,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'global-config'), 'default', true); ?>"><?= $this->translate->_("ePT Global Settings"); ?></a>
 									</li>
 									<li id="HomeSettings"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config'), 'default', true); ?>"><?= $this->translate->_("Home Settings"); ?></a>
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-config'), 'default', true); ?>"><?= $this->translate->_("Home Page Settings"); ?></a>
 									</li>
 									<li id="PDFReportSettings"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config'), 'default', true); ?>"><?= $this->translate->_("PDF Report Settings"); ?></a>
@@ -883,9 +875,6 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 									<li id="MailTemplate"><a href="/admin/mail-template">
 											<?= $this->translate->_("Mail Template"); ?></a></li>
 									<li class="divider"></li>
-									<li id="HomeBanner"><a
-											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'home-banner'), 'default', true); ?>"><?= $this->translate->_("Home Banner"); ?></a>
-									</li>
 									<li id="Partners"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'partners'), 'default', true); ?>"><?= $this->translate->_("Partners"); ?></a>
 									</li>
@@ -1167,8 +1156,6 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#ManageCustomTests').addClass('active');
 			} else if (splitsUrl[2] == 'global-config') {
 				$('#ePTGlobalSettings').addClass('active');
-			} else if (splitsUrl[2] == 'home-section-links') {
-				$('#HomeSectionLinks').addClass('active');
 			} else if (splitsUrl[2] == 'home-config') {
 				$('#HomeSettings').addClass('active');
 			} else if (splitsUrl[2] == 'report-config') {
@@ -1181,8 +1168,6 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#FailedEmails').addClass('active');
 			} else if (splitsUrl[2] == 'mail-template') {
 				$('#MailTemplate').addClass('active');
-			} else if (splitsUrl[2] == 'home-banner') {
-				$('#HomeBanner').addClass('active');
 			} else if (splitsUrl[2] == 'partners') {
 				$('#Partners').addClass('active');
 			} else if (splitsUrl[2] == 'contact-us') {
