@@ -37,13 +37,8 @@ final class Application_Model_Dts
 	{
 
 		ini_set('memory_limit', '-1');
-
-		$counter = 0;
 		$maxScore = 0;
 		$scoreHolder = [];
-
-		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		//$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$config = Pt_Commons_SchemeConfig::get('dts');
 		$schemeService = new Application_Service_Schemes();
 		$shipmentAttributes = json_decode($shipmentResult[0]['shipment_attributes'], true);
@@ -895,7 +890,7 @@ final class Application_Model_Dts
 		$documentationScore = round($documentationScore);
 		$grandTotal = $responseScore + $documentationScore;
 		$passPercentage = $config['passPercentage'] ?? 100;
-		if ($grandTotal < $config['passPercentage']) {
+		if ($grandTotal < $passPercentage) {
 			$scoreResult = 'Fail';
 			$failureReason[] = [
 				'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($grandTotal) . "</strong> and Required Score is <strong>" . round($passPercentage) . "</strong>)",
@@ -1163,10 +1158,7 @@ final class Application_Model_Dts
 		$customField2 = $globalConfigDb->getValue('custom_field_2') ?? null;
 		$haveCustom = $globalConfigDb->getValue('custom_field_needed') ?? null;
 
-		//$file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
-		//$config = new Zend_Config_Ini($file, APPLICATION_ENV);
 		$config = Pt_Commons_SchemeConfig::get('dts');
-
 		$finalResultArray = $this->getFinalResults();
 
 		$excel = new Spreadsheet();
@@ -1525,7 +1517,9 @@ final class Application_Model_Dts
 		}
 
 		//$shipmentAttributes = json_decode($aRow['shipment_attributes'], true);
-
+		$attributes = is_array($shipmentResult[0]['attributes'])
+			? $shipmentResult[0]['attributes']
+			: (json_decode($shipmentResult[0]['attributes'], true) ?? []);
 		if (empty($shipmentAttributes['sampleType']) || $shipmentAttributes['sampleType'] === 'dried') {
 			// for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
 			$totalDocumentationItems = 5;
@@ -2072,6 +2066,7 @@ final class Application_Model_Dts
 
 		$excel->setActiveSheetIndex(0);
 
+		$authNameSpace = new Zend_Session_Namespace('datamanagers');
 		$firstName = $authNameSpace->first_name;
 		$lastName = $authNameSpace->last_name;
 

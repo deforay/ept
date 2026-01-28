@@ -353,8 +353,8 @@ class Application_Model_CustomTest
 
     public function generateGenericTestExcelReport($shipmentId, $schemeType = 'generic-test')
     {
-        //$config = new Zend_Config_Ini(APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini", APPLICATION_ENV);
         $config = Pt_Commons_SchemeConfig::get('covid19');
+        $documentationScore = $config['documentationScore'];
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $excel = new Spreadsheet();
         //$sheet = $excel->getActiveSheet();
@@ -653,8 +653,8 @@ class Application_Model_CustomTest
                 $panelScoreSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
                 $documentScore = (($aRow['documentation_score'] / 10) * 100);
-                if ($config['documentationScore'] > 0) {
-                    $documentScore = (($aRow['documentation_score'] / $config['documentationScore']) * 100);
+                if ($documentationScore > 0) {
+                    $documentScore = (($aRow['documentation_score'] / $documentationScore) * 100);
                 }
 
 
