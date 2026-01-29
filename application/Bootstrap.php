@@ -82,13 +82,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->translate = $translate;
     }
 
-    private static function generateCSRF()
+    private static function generateCSRF(): void
     {
         $csrfNamespace = new Zend_Session_Namespace('csrf');
         if (empty($csrfNamespace->token)) {
-            $csrfNamespace->token = bin2hex(random_bytes(32)); // Generate a 64-character random token
+            $csrfNamespace->token = bin2hex(random_bytes(32));
+            $csrfNamespace->tokenTime = time();
         }
-
-        $csrfNamespace->tokenTime = time();
     }
 }
