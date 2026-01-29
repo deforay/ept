@@ -77,15 +77,13 @@ class Admin_HomeConfigController extends Zend_Controller_Action
                 }
 
                 // Handle FAQ
-                if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
-                    $faqResponse = [];
-                    foreach ($params['faqQuestions'] as $key => $faq) {
-                        if (!empty(trim($faq))) {
-                            $faqResponse[$faq] = $params['faqAnswers'][$key] ?? '';
-                        }
+                $faqResponse = [];
+                foreach ($params['faqQuestions'] as $key => $faq) {
+                    if (!empty(trim($faq))) {
+                        $faqResponse[$faq] = $params['faqAnswers'][$key] ?? '';
                     }
-                    $globalConfigDb->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
                 }
+                $globalConfigDb->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
 
                 // Handle home banner upload
                 $common->updateHomeBanner($params);

@@ -671,7 +671,7 @@ $faqResults = $this->faq;
 											<a href="javascript:void(0);" onclick="addTbRow(this);" class="btn btn-xs btn-info"
 												title="<?= $this->translate->_('Add row'); ?>"><i
 													class="icon-plus"></i></a>&nbsp;&nbsp;<a href="javascript:void(0);"
-												onclick="removeRow(this)" class="btn btn-xs btn-danger"
+												onclick="removeRow(this);" class="btn btn-xs btn-danger"
 												title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
 										</td>
 									</tr>
@@ -792,14 +792,14 @@ $faqResults = $this->faq;
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function () {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
 	}
 
 	// Collapsible functionality
-	$(document).ready(function () {
-		$('.collapsible').on('click', function () {
+	$(document).ready(function() {
+		$('.collapsible').on('click', function() {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -900,7 +900,7 @@ $faqResults = $this->faq;
 		var gridHtml = '';
 		var currentValue = $('#' + inputId).val();
 
-		availableIcons.forEach(function (icon) {
+		availableIcons.forEach(function(icon) {
 			var selectedClass = (icon === currentValue) ? ' selected' : '';
 			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
 			gridHtml += '<i class="' + icon + '"></i>';
@@ -912,7 +912,9 @@ $faqResults = $this->faq;
 		$('#noIconsFound').hide();
 		$('#iconSearchInput').val('');
 		$('#iconPickerModal').modal('show');
-		setTimeout(function () { $('#iconSearchInput').focus(); }, 300);
+		setTimeout(function() {
+			$('#iconSearchInput').focus();
+		}, 300);
 	}
 
 	function selectIcon(iconClass) {
@@ -930,12 +932,12 @@ $faqResults = $this->faq;
 		}
 	}
 
-	$(document).ready(function () {
-		$('#iconSearchInput').on('keyup', function () {
+	$(document).ready(function() {
+		$('#iconSearchInput').on('keyup', function() {
 			var searchTerm = $(this).val().toLowerCase();
 			var visibleCount = 0;
 
-			$('.icon-item').each(function () {
+			$('.icon-item').each(function() {
 				var iconName = $(this).data('icon').toLowerCase();
 				if (iconName.includes(searchTerm)) {
 					$(this).show();
