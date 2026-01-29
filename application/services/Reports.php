@@ -2023,6 +2023,8 @@ class Application_Service_Reports
         );
         try {
             $excel = new Spreadsheet();
+            $params['dateStartDate'] = $this->common->isoDateFormat($params['dateStartDate']);
+            $params['dateEndDate'] = $this->common->isoDateFormat($params['dateEndDate']);
 
             $output = [];
             $sheet = $excel->getActiveSheet();
@@ -2139,6 +2141,7 @@ class Application_Service_Reports
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
+            $sQuerySession = new Zend_Session_Namespace('CorrectiveActionsExcel');
             $sQuerySession->correctiveActionsQuery = '';
             error_log("GENERATE-PARTICIPANT-CORRECTIVE-ACTIONS--REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
@@ -2238,6 +2241,8 @@ class Application_Service_Reports
             $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
+                        $sQuerySession = new Zend_Session_Namespace('shipmentExportExcel');
+
             $sQuerySession->shipmentExportQuery = '';
             error_log("GENERATE-SHIPMENT_RESPONSE-REPORT-EXCEL--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
@@ -5080,9 +5085,11 @@ class Application_Service_Reports
             $totalRange = 'A' . $row . ':' . chr(64 + count($totalData)) . $row;
             $sheet->getStyle($totalRange)->getFont()->setBold(true);
 
-            // Auto-size columns
-            foreach (range('A', chr(64 + count($headers))) as $columnID) {
-                $sheet->getColumnDimension($columnID)->setAutoSize(true);
+            // Auto-size columns safely
+            $highestColumn = Coordinate::stringFromColumnIndex(count($headers));
+            //foreach (range('A', chr(64 + count($headers))) as $columnID) {
+            foreach (range('A', $highestColumn) as $columnID) {
+                    $sheet->getColumnDimension($columnID)->setAutoSize(true);
             }
 
             // Add borders to all data
