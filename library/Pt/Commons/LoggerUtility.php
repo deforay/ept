@@ -1,6 +1,5 @@
 <?php
 
-use Throwable;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;

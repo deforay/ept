@@ -387,133 +387,17 @@ if [[ "${php_version}" != "${desired_php_version}" ]]; then
 else
     print success "PHP version is already ${desired_php_version}."
 fi
+
+
+# Ensure OPCache is installed and enabled
+ensure_opcache
+
+# Ensure Composer is installed
+ensure_composer
+
 php_version="${desired_php_version}"
+configure_php_ini "${php_version}"
 
-# Modify php.ini as needed
-print header "Configuring PHP"
-
-desired_error_reporting="error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING"
-desired_post_max_size="post_max_size = 1G"
-desired_upload_max_filesize="upload_max_filesize = 1G"
-desired_strict_mode="session.use_strict_mode = 1"
-desired_opcache_enable="opcache.enable=1"
-desired_opcache_enable_cli="opcache.enable_cli=0"
-desired_opcache_memory="opcache.memory_consumption=256"
-desired_opcache_max_files="opcache.max_accelerated_files=40000"
-desired_opcache_validate="opcache.validate_timestamps=0"
-desired_opcache_jit="opcache.jit=disable"
-desired_opcache_interned="opcache.interned_strings_buffer=16"
-desired_opcache_override="opcache.enable_file_override=1"
-
-update_php_ini() {
-    local ini_file=$1
-    local timestamp
-    timestamp=$(date +%Y%m%d%H%M%S)
-    local backup_file="${ini_file}.bak.${timestamp}"
-    local changes_needed=false
-
-    print info "Checking PHP settings in $ini_file..."
-
-    local er_set pms_set umf_set sm_set
-    local opcache_enable_set opcache_enable_cli_set opcache_memory_set opcache_max_files_set opcache_validate_set opcache_jit_set
-    local opcache_interned_set opcache_override_set
-
-    er_set=$(grep -q "^${desired_error_reporting}$" "$ini_file" && echo true || echo false)
-    pms_set=$(grep -q "^${desired_post_max_size}$" "$ini_file" && echo true || echo false)
-    umf_set=$(grep -q "^${desired_upload_max_filesize}$" "$ini_file" && echo true || echo false)
-    sm_set=$(grep -q "^${desired_strict_mode}$" "$ini_file" && echo true || echo false)
-    opcache_enable_set=$(grep -q "^${desired_opcache_enable}$" "$ini_file" && echo true || echo false)
-    opcache_enable_cli_set=$(grep -q "^${desired_opcache_enable_cli}$" "$ini_file" && echo true || echo false)
-    opcache_memory_set=$(grep -q "^${desired_opcache_memory}$" "$ini_file" && echo true || echo false)
-    opcache_max_files_set=$(grep -q "^${desired_opcache_max_files}$" "$ini_file" && echo true || echo false)
-    opcache_validate_set=$(grep -q "^${desired_opcache_validate}$" "$ini_file" && echo true || echo false)
-    opcache_jit_set=$(grep -q "^${desired_opcache_jit}$" "$ini_file" && echo true || echo false)
-    opcache_interned_set=$(grep -q "^${desired_opcache_interned}$" "$ini_file" && echo true || echo false)
-    opcache_override_set=$(grep -q "^${desired_opcache_override}$" "$ini_file" && echo true || echo false)
-
-    if [ "$er_set" = false ] || [ "$pms_set" = false ] || [ "$umf_set" = false ] || [ "$sm_set" = false ] \
-      || [ "$opcache_enable_set" = false ] || [ "$opcache_enable_cli_set" = false ] || [ "$opcache_memory_set" = false ] \
-      || [ "$opcache_max_files_set" = false ] || [ "$opcache_validate_set" = false ] || [ "$opcache_jit_set" = false ] \
-      || [ "$opcache_interned_set" = false ] || [ "$opcache_override_set" = false ]; then
-        changes_needed=true
-        cp "$ini_file" "$backup_file"
-        print info "Changes needed. Backup created at $backup_file"
-    fi
-
-    if [ "$changes_needed" = true ]; then
-        local temp_file
-        temp_file=$(mktemp)
-
-        while IFS= read -r line; do
-            if [[ "$line" =~ ^[[:space:]]*error_reporting[[:space:]]*= ]] && [ "$er_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_error_reporting" >>"$temp_file"; er_set=true
-            elif [[ "$line" =~ ^[[:space:]]*post_max_size[[:space:]]*= ]] && [ "$pms_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_post_max_size" >>"$temp_file"; pms_set=true
-            elif [[ "$line" =~ ^[[:space:]]*upload_max_filesize[[:space:]]*= ]] && [ "$umf_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_upload_max_filesize" >>"$temp_file"; umf_set=true
-            elif [[ "$line" =~ ^[[:space:]]*session\.use_strict_mode[[:space:]]*= ]] && [ "$sm_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_strict_mode" >>"$temp_file"; sm_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.enable[[:space:]]*= ]] && [ "$opcache_enable_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_enable" >>"$temp_file"; opcache_enable_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.enable_cli[[:space:]]*= ]] && [ "$opcache_enable_cli_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_enable_cli" >>"$temp_file"; opcache_enable_cli_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.memory_consumption[[:space:]]*= ]] && [ "$opcache_memory_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_memory" >>"$temp_file"; opcache_memory_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.max_accelerated_files[[:space:]]*= ]] && [ "$opcache_max_files_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_max_files" >>"$temp_file"; opcache_max_files_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.validate_timestamps[[:space:]]*= ]] && [ "$opcache_validate_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_validate" >>"$temp_file"; opcache_validate_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.jit[[:space:]]*= ]] && [ "$opcache_jit_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_jit" >>"$temp_file"; opcache_jit_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.interned_strings_buffer[[:space:]]*= ]] && [ "$opcache_interned_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_interned" >>"$temp_file"; opcache_interned_set=true
-            elif [[ "$line" =~ ^[[:space:]]*opcache\.enable_file_override[[:space:]]*= ]] && [ "$opcache_override_set" = false ]; then
-                echo ";$line" >>"$temp_file"; echo "$desired_opcache_override" >>"$temp_file"; opcache_override_set=true
-            else
-                echo "$line" >>"$temp_file"
-            fi
-        done <"$ini_file"
-
-        # Append any directives that were entirely missing
-        [ "$er_set" = true ] || echo "$desired_error_reporting" >>"$temp_file"
-        [ "$pms_set" = true ] || echo "$desired_post_max_size" >>"$temp_file"
-        [ "$umf_set" = true ] || echo "$desired_upload_max_filesize" >>"$temp_file"
-        [ "$sm_set" = true ] || echo "$desired_strict_mode" >>"$temp_file"
-        [ "$opcache_enable_set" = true ] || echo "$desired_opcache_enable" >>"$temp_file"
-        [ "$opcache_enable_cli_set" = true ] || echo "$desired_opcache_enable_cli" >>"$temp_file"
-        [ "$opcache_memory_set" = true ] || echo "$desired_opcache_memory" >>"$temp_file"
-        [ "$opcache_max_files_set" = true ] || echo "$desired_opcache_max_files" >>"$temp_file"
-        [ "$opcache_validate_set" = true ] || echo "$desired_opcache_validate" >>"$temp_file"
-        [ "$opcache_jit_set" = true ] || echo "$desired_opcache_jit" >>"$temp_file"
-        [ "$opcache_interned_set" = true ] || echo "$desired_opcache_interned" >>"$temp_file"
-        [ "$opcache_override_set" = true ] || echo "$desired_opcache_override" >>"$temp_file"
-
-        mv "$temp_file" "$ini_file"
-        print success "Updated PHP settings in $ini_file"
-
-        # Remove backup once successful
-        [ -f "$backup_file" ] && rm "$backup_file" && print info "Removed backup file $backup_file"
-    else
-        print info "PHP settings are already correctly set in $ini_file"
-    fi
-}
-
-# Ensure opcache is present & enabled for mod_php
-if ! php -m | grep -qi '^opcache$'; then
-    print info "Installing/enabling OPcache for PHP ${desired_php_version} (mod_php)..."
-    apt-get update -y
-    apt-get install -y "php${desired_php_version}-opcache" || true
-    phpenmod -v "${desired_php_version}" -s ALL opcache 2>/dev/null || phpenmod opcache 2>/dev/null || true
-fi
-
-# Apply changes to PHP configuration files
-for phpini in /etc/php/${php_version}/apache2/php.ini /etc/php/${php_version}/cli/php.ini; do
-    if [ -f "$phpini" ]; then
-        update_php_ini "$phpini"
-    else
-        print warning "PHP configuration file not found: $phpini"
-    fi
-done
 
 # Validate Apache config and reload to apply PHP INI changes
 if apache2ctl -t; then
