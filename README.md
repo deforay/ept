@@ -5,7 +5,7 @@ Welcome to the Open Source repository of the e-Proficiency Testing (ePT) softwar
 #### Pre-requisites
 * Apache2
 * MySQL 8+
-* PHP 8.2+
+* PHP 8.4
 
 #### Supported PT Schemes
 * HIV Serology

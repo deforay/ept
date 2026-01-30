@@ -28,7 +28,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 ### Technology Stack
 
-- **Framework**: Zend Framework 1 (PHP 8.2+)
+- **Framework**: Zend Framework 1 (PHP 8.4)
 - **Database**: MySQL 8+
 - **Web Server**: Apache 2 with mod_rewrite
 - **Background Jobs**: Crunz scheduler
@@ -107,7 +107,7 @@ ept/
 
 - Apache 2 with mod_rewrite
 - MySQL 8+
-- PHP 8.2+
+- PHP 8.4
 - Composer
 
 ### Installation
