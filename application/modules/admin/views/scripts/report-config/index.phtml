@@ -1,159 +1,429 @@
 <link href="<?php echo $this->baseUrl('css/editor.css'); ?>" rel="stylesheet">
 <link href="<?php echo $this->baseUrl('css/fileupload_style.css'); ?>" rel="stylesheet">
-<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig" method="post"
-	action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>"
-	autocomplete="off" enctype="multipart/form-data">
-	<legend>
-		<?= $this->translate->_("PDF Report Settings"); ?> <span class="muted pull-right" style="font-size:15px;"><span
-				class="mandatory">*</span>
-			<?= $this->translate->_("indicates required field"); ?>
-		</span>
-	</legend>
 
-	<div class="row">
-		<div class="col-md-6">
-			<label>
-				<?= $this->translate->_("Report Header Text (Please enter only one or two lines)"); ?>
-			</label>
-			<textarea rows="2" name="content" id="content" cols="60" style="display:block;"
-				class="form-control col-md-6 isRequired"><?php echo $this->result; ?></textarea>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-6">
-			<label class="control-label" for="instituteAddressPosition">
-				<?= $this->translate->_("Institute Address Position"); ?>
-			</label>
-			<div>
-				<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control"
-					title="Please select the institute address position">
-					<option value="">--
-						<?= $this->translate->_("Select"); ?> --
-					</option>
-					<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>
-						<?= $this->translate->_("Don't Show"); ?>
-					</option>
-					<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>
-						<?= $this->translate->_("Header"); ?>
-					</option>
-					<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>
-						<?= $this->translate->_("Footer"); ?>
-					</option>
-				</select>
-			</div>
-		</div>
-	</div>
+<style>
+	/* Main container styling */
+	.report-config-container {
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+		padding: 0;
+		margin-bottom: 80px;
+	}
 
-	<div class="row">
-		<div class="col-md-8">
-			<input type="hidden" name="existImage" value="<?php echo $this->logo; ?>" />
-			<div class="fileupload fileupload-new" data-provides="fileupload">
+	/* Legend/Header styling */
+	.report-config-container legend {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		font-weight: 500;
+		font-size: 16px;
+		padding: 14px 20px;
+		margin: 0;
+		border: none;
+		border-radius: 8px 8px 0 0;
+	}
 
-				<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-					<?php if (trim($this->logo) != "") { ?>
-						<img src="<?php echo $this->baseUrl('uploads/logo/' . $this->logo); ?>" />
-					<?php } else { ?>
-						<img src="<?php echo $this->baseUrl('images/logo-generate.gif'); ?>" />
-					<?php } ?>
+	.report-config-container legend .muted {
+		color: rgba(255, 255, 255, 0.85);
+		font-size: 13px;
+	}
 
+	.report-config-container legend .mandatory {
+		color: #ffcdd2;
+	}
+
+	/* Form content area */
+	.form-content {
+		padding: 25px;
+		background-color: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-top: none;
+		border-radius: 0 0 8px 8px;
+	}
+
+	/* Section styling */
+	.config-section {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.config-section:hover {
+		border-color: #4a6fa5;
+		box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+	}
+
+	.config-section h5 {
+		color: #4a6fa5;
+		font-weight: 600;
+		margin-top: 0;
+		margin-bottom: 20px;
+		padding-bottom: 10px;
+		border-bottom: 2px solid #4a6fa5;
+	}
+
+	.config-section h5 i {
+		margin-right: 8px;
+	}
+
+	/* Row spacing */
+	.config-section .row {
+		margin-bottom: 20px;
+	}
+
+	.config-section .row:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Label styling */
+	.config-section label,
+	.form-content label {
+		color: #374151;
+		font-weight: 500;
+		margin-bottom: 8px;
+		display: block;
+	}
+
+	/* Form control styling */
+	.config-section .form-control:focus {
+		border-color: #4a6fa5;
+		box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+	}
+
+	/* File upload styling */
+	.file-upload-section {
+		background: #fff;
+		border: 2px dashed #cbd5e0;
+		border-radius: 8px;
+		padding: 20px;
+		text-align: center;
+		transition: all 0.2s ease;
+	}
+
+	.file-upload-section:hover {
+		border-color: #4a6fa5;
+		background: #f0f7ff;
+	}
+
+	.file-upload-section .thumbnail {
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 10px;
+		background: #fff;
+		margin: 0 auto 15px auto;
+	}
+
+	.file-upload-section .btn-file {
+		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		padding: 8px 16px;
+		transition: all 0.2s ease;
+	}
+
+	.file-upload-section .btn-file:hover {
+		background: linear-gradient(135deg, #5a7fb5 0%, #4a6a9a 100%);
+	}
+
+	/* Template preview styling */
+	.template-preview {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		padding: 15px;
+		margin-bottom: 15px;
+	}
+
+	.template-preview embed {
+		border-radius: 4px;
+		border: 1px solid #e2e8f0;
+	}
+
+	/* Button styling */
+	.btn-actions {
+		display: flex;
+		gap: 10px;
+		margin-top: 10px;
+	}
+
+	/* Floating action buttons */
+	.floating-buttons {
+		position: fixed;
+		bottom: 20px;
+		right: 30px;
+		z-index: 1000;
+		display: flex;
+		gap: 10px;
+		background: #fff;
+		padding: 15px 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+		border: 1px solid #e2e8f0;
+	}
+
+	.floating-buttons .btn {
+		padding: 10px 25px;
+		font-size: 14px;
+	}
+
+	/* Small/muted text */
+	.text-muted {
+		color: #6b7280;
+		font-size: 12px;
+		margin-top: 5px;
+	}
+
+	/* Alert info boxes */
+	.alert-info-custom {
+		background-color: #e8f4fd;
+		border: 1px solid #bee3f8;
+		color: #2c5282;
+		border-radius: 6px;
+		padding: 12px 15px;
+		margin-bottom: 20px;
+	}
+
+	.alert-info-custom i {
+		margin-right: 8px;
+	}
+
+	/* Horizontal rule */
+	hr {
+		border: none;
+		border-top: 1px solid #e2e8f0;
+		margin: 25px 0;
+	}
+</style>
+
+<div class="report-config-container">
+	<form class="form-horizontal" role="form" name="addReportConfig" id="addReportConfig" method="post"
+		action="<?php echo $this->url(array('module' => 'admin', 'controller' => 'report-config', 'action' => 'index'), 'default', true); ?>"
+		autocomplete="off" enctype="multipart/form-data">
+		<legend>
+			<i class="icon-file-text"></i> <?= $this->translate->_("PDF Report Settings"); ?>
+			<span class="muted pull-right">
+				<span class="mandatory">*</span> <?= $this->translate->_("indicates required field"); ?>
+			</span>
+		</legend>
+
+		<div class="form-content">
+			<!-- Header Text Section -->
+			<div class="config-section">
+				<h5><i class="icon-edit"></i> <?= $this->translate->_("Report Header Configuration"); ?></h5>
+
+				<div class="row">
+					<div class="col-md-8">
+						<label for="content">
+							<?= $this->translate->_("Report Header Text"); ?> <span class="mandatory">*</span>
+						</label>
+						<textarea rows="3" name="content" id="content" style="display:block;"
+							class="form-control isRequired"
+							placeholder="<?= $this->translate->_('Enter the text that will appear in the report header (1-2 lines recommended)'); ?>"
+							title="<?= $this->translate->_('Enter report header text'); ?>"><?php echo $this->result; ?></textarea>
+						<small class="text-muted"><?= $this->translate->_("This text appears at the top of generated PDF reports. Keep it concise."); ?></small>
+					</div>
+					<div class="col-md-4">
+						<label for="instituteAddressPosition">
+							<?= $this->translate->_("Institute Address Position"); ?>
+						</label>
+						<select name="instituteAddressPosition" id="instituteAddressPosition" class="form-control"
+							title="<?= $this->translate->_('Select where to display the institute address'); ?>">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="dont-show" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "dont-show") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("Don't Show"); ?>
+							</option>
+							<option value="header" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "header") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("Header"); ?>
+							</option>
+							<option value="footer" <?php echo (isset($this->instituteAddressPosition) && $this->instituteAddressPosition == "footer") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("Footer"); ?>
+							</option>
+						</select>
+						<small class="text-muted"><?= $this->translate->_("Choose where to display your institute address on reports."); ?></small>
+					</div>
 				</div>
+			</div>
 
-				<div class="fileupload-preview fileupload-exists thumbnail"
-					style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
-				<div>
-					<span class="btn btn-file"><span class="fileupload-new">
-							<?= $this->translate->_("Select image"); ?>
-						</span><span class="fileupload-exists">
-							<?= $this->translate->_("Change"); ?>
-						</span>
+			<!-- Logo Section -->
+			<div class="config-section">
+				<h5><i class="icon-picture"></i> <?= $this->translate->_("Report Logo"); ?></h5>
 
-						<input type="file" name="logo_image" id="logo_image" /></span>
-					<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">
-						<?= $this->translate->_("Remove"); ?>
+				<div class="row">
+					<div class="col-md-6">
+						<input type="hidden" name="existImage" value="<?php echo $this->logo; ?>" />
+						<div class="file-upload-section">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div class="fileupload-new thumbnail" style="width: 200px; height: 150px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+									<?php
+									$logoPath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
+									$hasValidLogo = trim($this->logo) != "" && file_exists($logoPath);
+									?>
+									<?php if ($hasValidLogo) { ?>
+										<img src="<?php echo $this->baseUrl('uploads/logo/' . $this->logo); ?>" alt="<?= $this->translate->_('Current logo'); ?>" style="max-width: 100%; max-height: 100%;" />
+									<?php } else { ?>
+										<div style="text-align: center; color: #9ca3af;">
+											<i class="icon-picture" style="font-size: 48px; display: block; margin-bottom: 10px;"></i>
+											<span style="font-size: 12px;"><?= $this->translate->_("No logo uploaded"); ?></span>
+										</div>
+									<?php } ?>
+								</div>
+
+								<div class="fileupload-preview fileupload-exists thumbnail"
+									style="max-width: 200px; max-height: 150px; line-height: 20px; margin: 0 auto;"></div>
+
+								<div class="btn-actions" style="justify-content: center; margin-top: 15px;">
+									<span class="btn btn-file">
+										<span class="fileupload-new"><i class="icon-upload"></i> <?= $this->translate->_("Select image"); ?></span>
+										<span class="fileupload-exists"><i class="icon-refresh"></i> <?= $this->translate->_("Change"); ?></span>
+										<input type="file" name="logo_image" id="logo_image" accept="image/png, image/jpeg, image/gif" />
+									</span>
+									<a href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">
+										<i class="icon-remove"></i> <?= $this->translate->_("Remove"); ?>
+									</a>
+								</div>
+							</div>
+						</div>
+						<small class="text-muted" style="display: block; text-align: center; margin-top: 10px;">
+							<?= $this->translate->_("Recommended: PNG or JPG format, max 200x150 pixels"); ?>
+						</small>
+					</div>
+				</div>
+			</div>
+
+			<!-- Layout & Template Section -->
+			<div class="config-section">
+				<h5><i class="icon-cogs"></i> <?= $this->translate->_("Layout & Template Settings"); ?></h5>
+
+				<?php if (isset($this->reportLayouts) && !empty($this->reportLayouts)) { ?>
+					<div class="row">
+						<div class="col-md-6">
+							<label for="reportLayout">
+								<?= $this->translate->_("Report Layout"); ?>
+							</label>
+							<select class="form-control" name="reportLayout" id="reportLayout"
+								title="<?= $this->translate->_('Select the report layout template'); ?>">
+								<?php
+								foreach ($this->reportLayouts as $folder) {
+									if ($folder != '.' && $folder != '..') {
+										$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml', '', $folder)) ? 'selected="selected"' : "";
+										echo '<option value=' . str_replace('.phtml', '', $folder) . ' ' . $selected . '>' . ucwords(str_replace('.phtml', '', $folder)) . '</option>';
+									}
+								}
+								?>
+							</select>
+							<small class="text-muted"><?= $this->translate->_("Select a predefined layout for your reports."); ?></small>
+						</div>
+						<div class="col-md-6">
+							<label for="templateTopMargin">
+								<?= $this->translate->_("Template Top Margin"); ?>
+							</label>
+							<div class="input-group">
+								<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
+									id="templateTopMargin" class="form-control"
+									placeholder="<?= $this->translate->_('e.g., 40'); ?>"
+									title="<?= $this->translate->_('Enter template top margin in pixels'); ?>" />
+								<span class="input-group-addon">px</span>
+							</div>
+							<small class="text-muted"><?= $this->translate->_("Adjust the top margin of the report content."); ?></small>
+						</div>
+					</div>
+				<?php } else { ?>
+					<div class="row">
+						<div class="col-md-6">
+							<label for="templateTopMargin">
+								<?= $this->translate->_("Template Top Margin"); ?>
+							</label>
+							<div class="input-group">
+								<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
+									id="templateTopMargin" class="form-control"
+									placeholder="<?= $this->translate->_('e.g., 40'); ?>"
+									title="<?= $this->translate->_('Enter template top margin in pixels'); ?>" />
+								<span class="input-group-addon">px</span>
+							</div>
+							<small class="text-muted"><?= $this->translate->_("Adjust the top margin of the report content."); ?></small>
+						</div>
+					</div>
+				<?php } ?>
+
+				<hr>
+
+				<div class="row">
+					<div class="col-md-8">
+						<label><?= $this->translate->_("Upload Report Template"); ?></label>
+
+						<?php
+						$reportFormatStatus = false;
+						if (isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)) {
+							$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf;
+							$reportFormatStatus = true;
+						?>
+							<div class="template-preview oldReport">
+								<embed width="100%" height="200" name="plugin"
+									src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
+								<div class="btn-actions" style="margin-top: 15px;">
+									<a href="javascript:void(0);" class="btn btn-sm btn-primary"
+										title="<?= $this->translate->_('View Full Size'); ?>"
+										onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);">
+										<i class="icon-fullscreen"></i> <?= $this->translate->_("View Full Size"); ?>
+									</a>
+									<a href="javascript:void(0);" class="btn btn-sm btn-default"
+										title="<?= $this->translate->_('Replace Template'); ?>"
+										onclick="removeReport();">
+										<i class="icon-refresh"></i> <?= $this->translate->_("Replace"); ?>
+									</a>
+									<a href="javascript:void(0);" class="btn btn-sm btn-danger"
+										title="<?= $this->translate->_('Delete Template'); ?>"
+										onclick="deleteReport();removeReport();">
+										<i class="icon-trash"></i> <?= $this->translate->_("Delete"); ?>
+									</a>
+								</div>
+							</div>
+						<?php } ?>
+
+						<div class="file-upload-section newReport <?= $reportFormatStatus ? 'hide' : ''; ?>">
+							<i class="icon-cloud-upload" style="font-size: 40px; color: #4a6fa5; margin-bottom: 10px; display: block;"></i>
+							<p style="margin-bottom: 15px; color: #6b7280;"><?= $this->translate->_("Upload a PDF template for your reports"); ?></p>
+							<input type="file" name="reportTemplate" id="reportTemplate"
+								class="form-control"
+								accept=".pdf"
+								placeholder="<?= $this->translate->_('Upload report template format'); ?>"
+								title="<?= $this->translate->_('Select a PDF file to use as report template'); ?>" />
+						</div>
+						<input type="hidden" name="deleteTemplate" id="deleteTemplate" value="" />
+						<small class="text-muted"><?= $this->translate->_("Upload a PDF file to use as a background template for reports."); ?></small>
+					</div>
+				</div>
+			</div>
+
+			<!-- Action Buttons (inline) -->
+			<div class="row" style="margin-top: 20px;">
+				<div class="col-md-12 text-center">
+					<button type="button" class="btn btn-primary btn-lg" onclick="validateNow();return false;">
+						<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+					</button>
+					<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>"
+						class="btn btn-danger btn-lg">
+						<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
 					</a>
 				</div>
 			</div>
 		</div>
-	</div>
+	</form>
+</div>
 
-	<?php if (isset($this->reportLayouts) && !empty($this->reportLayouts)) { ?>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6 form-group">
-					<label class="">
-						<?= $this->translate->_("Report Layout"); ?>
-					</label>
-					<select class="form-control" name="reportLayout" id="reportLayout"
-						title="Please select the report layout">
-						<?php
-						foreach ($this->reportLayouts as $folder) {
-							if ($folder != '.' && $folder != '..') {
-								$selected = (isset($this->reportLayoutsResult) && $this->reportLayoutsResult == str_replace('.phtml', '', $folder)) ? 'selected="selected"' : "";
-								echo '<option value=' . str_replace('.phtml', '', $folder) . ' ' . $selected . '>' . ucwords(str_replace('.phtml', '', $folder)) . '</option>';
-							}
-						}
-						?>
-					</select>
-				</div>
-			</div>
-		</div>
-	<?php } ?>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 form-group">
-				<label class="newReport control-label">
-					<?= $this->translate->_("Template Top Margin"); ?>
-				</label>
-				<input type="text" name="templateTopMargin" value="<?php echo $this->templateTopMargin ?? ''; ?>"
-					id="templateTopMargin" class="form-control" placeholder="Enter the template top margin"
-					title="Please enter template top margin" />
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-6 form-group">
-				<?php $reportFormatStatus = false;
-				if (isset($this->reportFormatPdf) && !empty($this->reportFormatPdf) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf)) {
-					$filePath = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $this->reportFormatPdf;
-					$reportFormatStatus = true;
-					?>
-					<div style="width: auto;" class="oldReport">
-						<embed width="100%" height="auto" class="oldReport" name="plugin"
-							src="/uploads/report-formats/<?php echo $this->reportFormatPdf; ?>" type="application/pdf">
-						<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File"
-							onclick="layoutModal('/d/<?php echo base64_encode($filePath); ?>', 800, 700);"
-							style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen"
-								aria-hidden="true"></i></a>
-					</div>
-					<a href="javascript:void(0);" class="btn btn-default oldReport mandatory" title="Replace Report Layout"
-						onclick="removeReport();">Replace Report Layout</a>
-					<a href="javascript:void(0);" class="btn btn-danger oldReport" title="Delete Report Template"
-						onclick="deleteReport();removeReport();"><i class="icon-trash"></i></a>
-				<?php } ?>
-				<label class="newReport control-label <?= $reportFormatStatus ? 'hide' : ''; ?>">
-					<?= $this->translate->_("Upload Report Template"); ?>
-				</label>
-				<input type="file" name="reportTemplate" id="reportTemplate"
-					class="newReport form-control <?= $reportFormatStatus ? 'hide' : ''; ?>"
-					placeholder="Upload report template format" title="Please upload report template format" />
-				<input type="hidden" name="deleteTemplate" id="deleteTemplate" value="" />
-			</div>
-		</div>
-	</div>
-	<hr>
-	<div class="row">
-		<div class="form-group">
-			<div class="col-lg-offset-2 col-lg-10">
-				<input type="button" class="btn btn-info" value="<?= $this->translate->_("Update"); ?>"
-					onclick="validateNow();return false;">
-				<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>"
-					class="btn btn-danger">
-					<?= $this->translate->_("Cancel"); ?>
-				</a>
-			</div>
-		</div>
-	</div>
-
-</form>
+<!-- Floating Action Buttons -->
+<div class="floating-buttons">
+	<button type="button" class="btn btn-primary" onclick="validateNow();return false;">
+		<i class="icon-ok"></i> <?= $this->translate->_("Update"); ?>
+	</button>
+	<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'index', 'action' => 'index'), 'default', true); ?>"
+		class="btn btn-danger">
+		<i class="icon-arrow-left"></i> <?= $this->translate->_("Cancel"); ?>
+	</a>
+</div>
 
 <script src="<?php echo $this->baseUrl('js/jquery.hotkeys.js'); ?>"></script>
 <script src="<?php echo $this->baseUrl('js/bootstrap-wysiwyg.js'); ?>"></script>
@@ -161,7 +431,6 @@
 
 <script type="text/javascript">
 	duplicateName = true;
-
 
 	function validateNow() {
 		desc = $("#editor").html();
@@ -171,38 +440,36 @@
 		});
 		if (flag) {
 			if (duplicateName) {
+				$.blockUI();
 				document.getElementById('addReportConfig').submit();
 			}
 		}
 	}
 
-
-	$(function () {
-
+	$(function() {
 		$("#docListTable").dataTable();
 
 		function initToolbarBootstrapBindings() {
 			var fonts = ['Serif', 'Sans', 'Arial', 'Arial Black', 'Courier',
-				'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
-				'Times New Roman', 'Verdana'
-			],
+					'Courier New', 'Comic Sans MS', 'Helvetica', 'Impact', 'Lucida Grande', 'Lucida Sans', 'Tahoma', 'Times',
+					'Times New Roman', 'Verdana'
+				],
 				fontTarget = $('[title=Font]').siblings('.dropdown-menu');
-			$.each(fonts, function (idx, fontName) {
+			$.each(fonts, function(idx, fontName) {
 				fontTarget.append($('<li><a data-edit="fontName ' + fontName + '" style="font-family:\'' + fontName + '\'">' + fontName + '</a></li>'));
 			});
 			$('a[title]').tooltip({
 				container: 'body'
 			});
-			$('.dropdown-menu input').click(function () {
+			$('.dropdown-menu input').click(function() {
 				return false;
 			})
 
-			$('[data-role=magic-overlay]').each(function () {
+			$('[data-role=magic-overlay]').each(function() {
 				var overlay = $(this),
 					target = $(overlay.data('target'));
 				overlay.css('opacity', 0).css('position', 'absolute').offset(target.offset()).width(target.outerWidth()).height(target.outerHeight());
 			});
-
 		};
 
 		function showErrorAlert(reason, detail) {
@@ -220,23 +487,16 @@
 		$('#editor').wysiwyg({
 			fileUploadError: showErrorAlert
 		});
-
-
-
 	});
-
 
 	function pasteHtmlAtCaret(html) {
 		var sel, range;
 		if (window.getSelection) {
-			// IE9 and non-IE
 			sel = window.getSelection();
 			if (sel.getRangeAt && sel.rangeCount) {
 				range = sel.getRangeAt(0);
 				range.deleteContents();
 
-				// Range.createContextualFragment() would be useful here but is
-				// non-standard and not supported in all browsers (IE9, for one)
 				var el = document.createElement("div");
 				el.innerHTML = html;
 				var frag = document.createDocumentFragment(),
@@ -246,7 +506,6 @@
 				}
 				range.insertNode(frag);
 
-				// Preserve the selection
 				if (lastNode) {
 					range = range.cloneRange();
 					range.setStartAfter(lastNode);
@@ -256,7 +515,6 @@
 				}
 			}
 		} else if (document.selection && document.selection.type != "Control") {
-			// IE < 9
 			document.selection.createRange().pasteHTML(html);
 		}
 	}
@@ -267,7 +525,7 @@
 	}
 
 	function deleteReport() {
-		if (confirm("Are you sure want to remove the template? once deleted can't be undone!")) {
+		if (confirm("<?= $this->translate->_('Are you sure you want to remove the template? This action cannot be undone!'); ?>")) {
 			$('#deleteTemplate').val('yes');
 		}
 	}
