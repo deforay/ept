@@ -19,11 +19,6 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 /**
- * @see Zend_Mail
- */
-require_once 'Zend/Mail.php';
-
-/**
  * Class for sending an email.
  *
  * @category   Zend

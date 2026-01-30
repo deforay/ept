@@ -34,7 +34,6 @@ set_include_path(implode(PATH_SEPARATOR, [
 
 /** Zend_Application */
 require_once ROOT_PATH . '/vendor/autoload.php';
-require_once 'Zend/Application.php';
 
 // Create application, bootstrap, and run
 $application = new Zend_Application(

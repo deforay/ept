@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f7899acf35090a9fcf2e2538c413422",
+    "content-hash": "a6b40029256bfcc2753c428258cc7c89",
     "packages": [
         {
             "name": "amitdugar/archiveutil",
@@ -2305,71 +2305,6 @@
             "time": "2025-08-05T09:57:14+00:00"
         },
         {
-            "name": "shardj/zf1-future",
-            "version": "1.24.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Shardj/zf1-future.git",
-                "reference": "3582cce4bcf2c820191be56cf17fdef0addf0771"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Shardj/zf1-future/zipball/3582cce4bcf2c820191be56cf17fdef0addf0771",
-                "reference": "3582cce4bcf2c820191be56cf17fdef0addf0771",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1",
-                "symfony/polyfill-ctype": "^1.30",
-                "symfony/polyfill-mbstring": "^1.30",
-                "symfony/polyfill-php81": "^1.30",
-                "symfony/polyfill-php83": "^1.30"
-            },
-            "replace": {
-                "zendframework/zendframework1": ">=1.12.20"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3",
-                "php-parallel-lint/php-parallel-lint": "^1.3",
-                "phpstan/phpstan": "^1.4 || ^2.0",
-                "phpunit/phpunit": "^7|^8|^9",
-                "rector/rector": "0.12.19 || ^1.2 || ^2.0",
-                "yoast/phpunit-polyfills": "^2.0"
-            },
-            "suggest": {
-                "ext-mbstring": "Multibyte strings handling"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.12.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Zend_": "library/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "library/"
-            ],
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Zend Framework 1. The aim is to keep ZF1 working with the latest PHP versions",
-            "homepage": "https://github.com/Shardj/zf1-future/",
-            "keywords": [
-                "ZF1",
-                "framework"
-            ],
-            "support": {
-                "issues": "https://github.com/Shardj/zf1-future/issues",
-                "source": "https://github.com/Shardj/zf1-future/tree/release-1.24.4"
-            },
-            "time": "2025-06-26T19:09:46+00:00"
-        },
-        {
             "name": "symfony/clock",
             "version": "v7.4.0",
             "source": {
@@ -3753,39 +3688,31 @@
             "time": "2024-12-23T08:48:59+00:00"
         },
         {
-            "name": "symfony/polyfill-php81",
-            "version": "v1.33.0",
+            "name": "symfony/polyfill-php70",
+            "version": "v1.20.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/polyfill-php81.git",
-                "reference": "4a4cfc2d253c21a5ad0e53071df248ed48c6ce5c"
+                "url": "https://github.com/symfony/polyfill-php70.git",
+                "reference": "5f03a781d984aae42cebd18e7912fa80f02ee644"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php81/zipball/4a4cfc2d253c21a5ad0e53071df248ed48c6ce5c",
-                "reference": "4a4cfc2d253c21a5ad0e53071df248ed48c6ce5c",
+                "url": "https://api.github.com/repos/symfony/polyfill-php70/zipball/5f03a781d984aae42cebd18e7912fa80f02ee644",
+                "reference": "5f03a781d984aae42cebd18e7912fa80f02ee644",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=7.1"
             },
-            "type": "library",
+            "type": "metapackage",
             "extra": {
                 "thanks": {
                     "url": "https://github.com/symfony/polyfill",
                     "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php81\\": ""
                 },
-                "classmap": [
-                    "Resources/stubs"
-                ]
+                "branch-alias": {
+                    "dev-main": "1.20-dev"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -3801,7 +3728,7 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony polyfill backporting some PHP 8.1+ features to lower PHP versions",
+            "description": "Symfony polyfill backporting some PHP 7.0+ features to lower PHP versions",
             "homepage": "https://symfony.com",
             "keywords": [
                 "compatibility",
@@ -3810,7 +3737,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php81/tree/v1.33.0"
+                "source": "https://github.com/symfony/polyfill-php70/tree/v1.20.0"
             },
             "funding": [
                 {
@@ -3822,15 +3749,11 @@
                     "type": "github"
                 },
                 {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-09T11:45:10+00:00"
+            "time": "2020-10-23T14:02:19+00:00"
         },
         {
             "name": "symfony/polyfill-php83",
@@ -4725,6 +4648,236 @@
                 }
             ],
             "time": "2025-11-21T10:58:21+00:00"
+        },
+        {
+            "name": "zf1s/zf1",
+            "version": "1.15.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zf1s/zf1.git",
+                "reference": "e44a92ee08aef57fa2e28782b401413a1e27f689"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zf1s/zf1/zipball/e44a92ee08aef57fa2e28782b401413a1e27f689",
+                "reference": "e44a92ee08aef57fa2e28782b401413a1e27f689",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/polyfill-php70": "^1.19"
+            },
+            "replace": {
+                "zendframework/zendframework1": ">=1.12.20",
+                "zf1s/zend-acl": "self.version",
+                "zf1s/zend-amf": "self.version",
+                "zf1s/zend-application": "self.version",
+                "zf1s/zend-auth": "self.version",
+                "zf1s/zend-barcode": "self.version",
+                "zf1s/zend-cache": "self.version",
+                "zf1s/zend-captcha": "self.version",
+                "zf1s/zend-cloud": "self.version",
+                "zf1s/zend-codegenerator": "self.version",
+                "zf1s/zend-config": "self.version",
+                "zf1s/zend-console-getopt": "self.version",
+                "zf1s/zend-controller": "self.version",
+                "zf1s/zend-crypt": "self.version",
+                "zf1s/zend-currency": "self.version",
+                "zf1s/zend-date": "self.version",
+                "zf1s/zend-db": "self.version",
+                "zf1s/zend-debug": "self.version",
+                "zf1s/zend-dojo": "self.version",
+                "zf1s/zend-dom": "self.version",
+                "zf1s/zend-eventmanager": "self.version",
+                "zf1s/zend-exception": "self.version",
+                "zf1s/zend-feed": "self.version",
+                "zf1s/zend-file": "self.version",
+                "zf1s/zend-file-transfer": "self.version",
+                "zf1s/zend-filter": "self.version",
+                "zf1s/zend-form": "self.version",
+                "zf1s/zend-gdata": "self.version",
+                "zf1s/zend-http": "self.version",
+                "zf1s/zend-json": "self.version",
+                "zf1s/zend-layout": "self.version",
+                "zf1s/zend-ldap": "self.version",
+                "zf1s/zend-loader": "self.version",
+                "zf1s/zend-locale": "self.version",
+                "zf1s/zend-log": "self.version",
+                "zf1s/zend-mail": "self.version",
+                "zf1s/zend-markup": "self.version",
+                "zf1s/zend-measure": "self.version",
+                "zf1s/zend-memory": "self.version",
+                "zf1s/zend-mime": "self.version",
+                "zf1s/zend-mobile": "self.version",
+                "zf1s/zend-navigation": "self.version",
+                "zf1s/zend-oauth": "self.version",
+                "zf1s/zend-openid": "self.version",
+                "zf1s/zend-paginator": "self.version",
+                "zf1s/zend-pdf": "self.version",
+                "zf1s/zend-progressbar": "self.version",
+                "zf1s/zend-queue": "self.version",
+                "zf1s/zend-reflection": "self.version",
+                "zf1s/zend-registry": "self.version",
+                "zf1s/zend-rest": "self.version",
+                "zf1s/zend-search": "self.version",
+                "zf1s/zend-search-lucene": "self.version",
+                "zf1s/zend-serializer": "self.version",
+                "zf1s/zend-server": "self.version",
+                "zf1s/zend-service": "self.version",
+                "zf1s/zend-service-akismet": "self.version",
+                "zf1s/zend-service-amazon": "self.version",
+                "zf1s/zend-service-audioscrobbler": "self.version",
+                "zf1s/zend-service-console": "self.version",
+                "zf1s/zend-service-delicious": "self.version",
+                "zf1s/zend-service-ebay": "self.version",
+                "zf1s/zend-service-flickr": "self.version",
+                "zf1s/zend-service-livedocx": "self.version",
+                "zf1s/zend-service-rackspace": "self.version",
+                "zf1s/zend-service-recaptcha": "self.version",
+                "zf1s/zend-service-shorturl": "self.version",
+                "zf1s/zend-service-slideshare": "self.version",
+                "zf1s/zend-service-strikeiron": "self.version",
+                "zf1s/zend-service-twitter": "self.version",
+                "zf1s/zend-service-windowsazure": "self.version",
+                "zf1s/zend-service-yahoo": "self.version",
+                "zf1s/zend-session": "self.version",
+                "zf1s/zend-soap": "self.version",
+                "zf1s/zend-stdlib": "self.version",
+                "zf1s/zend-tag": "self.version",
+                "zf1s/zend-test": "self.version",
+                "zf1s/zend-text": "self.version",
+                "zf1s/zend-timesync": "self.version",
+                "zf1s/zend-tool": "self.version",
+                "zf1s/zend-translate": "self.version",
+                "zf1s/zend-uri": "self.version",
+                "zf1s/zend-validate": "self.version",
+                "zf1s/zend-version": "self.version",
+                "zf1s/zend-view": "self.version",
+                "zf1s/zend-wildfire": "self.version",
+                "zf1s/zend-xml": "self.version",
+                "zf1s/zend-xmlrpc": "self.version"
+            },
+            "require-dev": {
+                "ext-ctype": "*",
+                "ext-dom": "*",
+                "ext-gd": "*",
+                "ext-iconv": "*",
+                "ext-ldap": "*",
+                "ext-mbstring": "*",
+                "ext-reflection": "*",
+                "ext-session": "*",
+                "ext-simplexml": "*",
+                "ext-spl": "*",
+                "ext-xml": "*",
+                "ext-zlib": "*",
+                "php-parallel-lint/php-parallel-lint": "1.3.0",
+                "staabm/annotate-pull-request-from-checkstyle": "1.5.0",
+                "zf1s/dbunit": "1.3.3",
+                "zf1s/phpunit": "3.7.43"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Zend_Db": "packages/zend-db/library/",
+                    "Zend_Acl": "packages/zend-acl/library/",
+                    "Zend_Amf": "packages/zend-amf/library/",
+                    "Zend_Dom": "packages/zend-dom/library/",
+                    "Zend_Log": "packages/zend-log/library/",
+                    "Zend_Pdf": "packages/zend-pdf/library/",
+                    "Zend_Tag": "packages/zend-tag/library/",
+                    "Zend_Uri": "packages/zend-uri/library/",
+                    "Zend_Xml": "packages/zend-xml/library/",
+                    "Zend_Auth": "packages/zend-auth/library/",
+                    "Zend_Date": "packages/zend-date/library/",
+                    "Zend_Dojo": "packages/zend-dojo/library/",
+                    "Zend_Feed": "packages/zend-feed/library/",
+                    "Zend_File": "packages/zend-file/library/",
+                    "Zend_Form": "packages/zend-form/library/",
+                    "Zend_Http": "packages/zend-http/library/",
+                    "Zend_Json": "packages/zend-json/library/",
+                    "Zend_Ldap": "packages/zend-ldap/library/",
+                    "Zend_Mail": "packages/zend-mail/library/",
+                    "Zend_Mime": "packages/zend-mime/library/",
+                    "Zend_Rest": "packages/zend-rest/library/",
+                    "Zend_Soap": "packages/zend-soap/library/",
+                    "Zend_Test": "packages/zend-test/library/",
+                    "Zend_Text": "packages/zend-text/library/",
+                    "Zend_Tool": "packages/zend-tool/library/",
+                    "Zend_View": "packages/zend-view/library/",
+                    "Zend_Cache": "packages/zend-cache/library/",
+                    "Zend_Cloud": "packages/zend-cloud/library/",
+                    "Zend_Crypt": "packages/zend-crypt/library/",
+                    "Zend_Debug": "packages/zend-debug/library/",
+                    "Zend_Gdata": "packages/zend-gdata/library/",
+                    "Zend_Oauth": "packages/zend-oauth/library/",
+                    "Zend_Queue": "packages/zend-queue/library/",
+                    "Zend_Config": "packages/zend-config/library/",
+                    "Zend_Filter": "packages/zend-filter/library/",
+                    "Zend_Layout": "packages/zend-layout/library/",
+                    "Zend_Loader": "packages/zend-loader/library/",
+                    "Zend_Locale": "packages/zend-locale/library/",
+                    "Zend_Markup": "packages/zend-markup/library/",
+                    "Zend_Memory": "packages/zend-memory/library/",
+                    "Zend_Mobile": "packages/zend-mobile/library/",
+                    "Zend_OpenId": "packages/zend-openid/library/",
+                    "Zend_Search": "packages/zend-search/library/",
+                    "Zend_Server": "packages/zend-server/library/",
+                    "Zend_Stdlib": "packages/zend-stdlib/library/",
+                    "Zend_XmlRpc": "packages/zend-xmlrpc/library/",
+                    "Zend_Barcode": "packages/zend-barcode/library/",
+                    "Zend_Captcha": "packages/zend-captcha/library/",
+                    "Zend_Measure": "packages/zend-measure/library/",
+                    "Zend_Service": "packages/zend-service/library/",
+                    "Zend_Session": "packages/zend-session/library/",
+                    "Zend_Version": "packages/zend-version/library/",
+                    "Zend_Currency": "packages/zend-currency/library/",
+                    "Zend_Registry": "packages/zend-registry/library/",
+                    "Zend_TimeSync": "packages/zend-timesync/library/",
+                    "Zend_Validate": "packages/zend-validate/library/",
+                    "Zend_Wildfire": "packages/zend-wildfire/library/",
+                    "Zend_Exception": "packages/zend-exception/library/",
+                    "Zend_Paginator": "packages/zend-paginator/library/",
+                    "Zend_Translate": "packages/zend-translate/library/",
+                    "Zend_Controller": "packages/zend-controller/library/",
+                    "Zend_Navigation": "packages/zend-navigation/library/",
+                    "Zend_Reflection": "packages/zend-reflection/library/",
+                    "Zend_Serializer": "packages/zend-serializer/library/",
+                    "Zend_Application": "packages/zend-application/library/",
+                    "Zend_ProgressBar": "packages/zend-progressbar/library/",
+                    "Zend_EventManager": "packages/zend-eventmanager/library/",
+                    "Zend_Service_Ebay": "packages/zend-service-ebay/library/",
+                    "Zend_CodeGenerator": "packages/zend-codegenerator/library/",
+                    "Zend_File_Transfer": "packages/zend-file-transfer/library/",
+                    "Zend_Search_Lucene": "packages/zend-search-lucene/library/",
+                    "Zend_Service_Yahoo": "packages/zend-service-yahoo/library/",
+                    "Zend_Console_Getopt": "packages/zend-console-getopt/library/",
+                    "Zend_Service_Amazon": "packages/zend-service-amazon/library/",
+                    "Zend_Service_Flickr": "packages/zend-service-flickr/library/",
+                    "Zend_Service_Akismet": "packages/zend-service-akismet/library/",
+                    "Zend_Service_Console": "packages/zend-service-console/library/",
+                    "Zend_Service_Twitter": "packages/zend-service-twitter/library/",
+                    "Zend_Service_LiveDocx": "packages/zend-service-livedocx/library/",
+                    "Zend_Service_ShortUrl": "packages/zend-service-shorturl/library/",
+                    "Zend_Service_SqlAzure": "packages/zend-service-windowsazure/library/",
+                    "Zend_Service_Delicious": "packages/zend-service-delicious/library/",
+                    "Zend_Service_Rackspace": "packages/zend-service-rackspace/library/",
+                    "Zend_Service_ReCaptcha": "packages/zend-service-recaptcha/library/",
+                    "Zend_Service_SlideShare": "packages/zend-service-slideshare/library/",
+                    "Zend_Service_StrikeIron": "packages/zend-service-strikeiron/library/",
+                    "Zend_Service_WindowsAzure": "packages/zend-service-windowsazure/library/",
+                    "Zend_Service_Audioscrobbler": "packages/zend-service-audioscrobbler/library/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Zend Framework 1 complete package, PHP 5.3-8.3 compatible. Please consider using individual zf1s/zend-* packages instead - see README.",
+            "support": {
+                "issues": "https://github.com/zf1s/zf1/issues",
+                "source": "https://github.com/zf1s/zf1/tree/1.15.5"
+            },
+            "time": "2024-04-18T08:48:59+00:00"
         }
     ],
     "packages-dev": [

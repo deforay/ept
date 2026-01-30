@@ -29,11 +29,11 @@
         "psr/http-message": "^1.1",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
-        "shardj/zf1-future": "^1.24",
         "symfony/console": "^7.4",
         "symfony/mailer": "^7.4",
         "symfony/uid": "^7.4",
-        "tecnickcom/tcpdf": "^6.10"
+        "tecnickcom/tcpdf": "^6.10",
+        "zf1s/zf1": "^1.15"
     },
     "config": {
         "preferred-install": "dist",
