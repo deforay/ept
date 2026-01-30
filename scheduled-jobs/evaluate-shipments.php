@@ -72,9 +72,13 @@ try {
 		$console->writeln("  <fg=green>✓</> Completed in <comment>" . round($executionTime, 2) . "</comment> mins");
 
 		// Set evaluated_at milestone timestamp and update status
+		// we also nullify reports_generated_at and finalized_at fields
+		// so that any report generation or finalization jobs can be re-run if needed
 		$db->update('shipment', [
 			'status' => 'evaluated',
-			'evaluated_at' => new Zend_Db_Expr('NOW()')
+			'evaluated_at' => new Zend_Db_Expr('NOW()'),
+			'reports_generated_at' => null,
+			'finalized_at' => null,
 		], $db->quoteInto('shipment_id = ?', $shipmentId));
 
 		$link = "/admin/evaluate/shipment/sid/" . base64_encode($shipmentResult[0]['shipment_id']);
