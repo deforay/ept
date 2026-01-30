@@ -9,6 +9,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 final class Pt_Commons_MiscUtility
 {
@@ -770,7 +771,7 @@ final class Pt_Commons_MiscUtility
             // Force decoration (ANSI support) if running in a TTY terminal
             // This fixes progress bar not overwriting lines
             $decorated = \defined('STDOUT') && \function_exists('posix_isatty') && @posix_isatty(STDOUT);
-            $out = new ConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, $decorated);
+            $out = new ConsoleOutput(OutputInterface::VERBOSITY_NORMAL, $decorated);
         }
         return $out;
     }
@@ -927,7 +928,7 @@ final class Pt_Commons_MiscUtility
 
     public static function updateHeartbeat($table, $idColumn, $id, $everyNIterations = 10)
     {
-        $key = $table . '_' . $id;
+        $key = "{$table}_$id";
 
         if (!isset(self::$heartbeatCounter[$key])) {
             self::$heartbeatCounter[$key] = 0;

@@ -50,7 +50,7 @@ try {
 
 /* ---------------------- CLI flags ---------------------- */
 
-$options = getopt("yqd");  // -y auto-continue on error, -q quiet, -d dry-run
+$options = getopt("yqdv:");  // -y auto-continue on error, -q quiet, -d dry-run, -v version
 $autoContinueOnError = isset($options['y']);
 $quietMode           = isset($options['q']);
 $DRY_RUN             = isset($options['d']); // global-ish flag (read inside helpers)
@@ -362,6 +362,14 @@ if (table_exists($db, 'system_config')) {
     $currentVersion = '0.0.0';
     if (!$quietMode) {
         echo "Note: system_config table not found. Running all migrations from the beginning.\n";
+    }
+}
+
+// Override version if -v flag is provided
+if (isset($options['v'])) {
+    $currentVersion = $options['v'];
+    if (!$quietMode) {
+        echo "Starting from version: $currentVersion (overridden by -v flag)\n";
     }
 }
 

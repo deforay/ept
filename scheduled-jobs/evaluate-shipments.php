@@ -16,11 +16,8 @@ if (empty($shipmentsToEvaluate)) {
 	exit(1);
 }
 
-if (is_array($shipmentsToEvaluate)) {
-	$shipmentsToEvaluate = implode(",", $shipmentsToEvaluate);
-} else {
-	$shipmentsToEvaluate = [$shipmentsToEvaluate];
-}
+$shipmentsToEvaluate = (is_array($shipmentsToEvaluate)) ?
+	implode(",", $shipmentsToEvaluate) : [$shipmentsToEvaluate];
 
 
 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
