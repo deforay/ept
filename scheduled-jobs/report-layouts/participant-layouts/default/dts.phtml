@@ -506,15 +506,15 @@ if (!empty($resultArray['shipment'])) {
             foreach ($result['responseResult'] as $response) {
                 $errMsg = '';
                 if ($response['calculated_score'] == 'Pass') {
-                    $img = ROOT_PATH . '/images/check.jpg';
+                    $img = WEB_ROOT . '/images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                 } elseif ($response['calculated_score'] == 'Fail') {
                     $errMsg = (isset($response['algorithm_result']) && !empty($response['algorithm_result']) && $response['algorithm_result'] == 'Fail') ? '(Algorithm)' : '(Interpretation)';
-                    $img = ROOT_PATH . '/images/cross.jpg';
+                    $img = WEB_ROOT . '/images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
-                    $img = UPLOAD_PATH . '/../images/minus.jpg';
+                    $img = WEB_ROOT . '/images/minus.jpg';
                     $score = "N.A.";
                 }
                 /* Addition testkit field */
@@ -626,8 +626,8 @@ if (!empty($resultArray['shipment'])) {
             $documentationScorePerItem = (!empty($documentationScore) && (int) $documentationScore > 0) ? round(($documentationScore / $totalDocumentationItems), 2) : 'N.A.';
             $scoreText = (isset($documentationScore) && !empty($documentationScore) && $documentationScore == 0) ? Pt_Commons_TranslateUtility::safeTranslate("Your Response") : Pt_Commons_TranslateUtility::safeTranslate("Score");
             $img = [];
-            $imgPass = ROOT_PATH . '/images/check.jpg';
-            $imgFail = ROOT_PATH . '/images/cross.jpg';
+            $imgPass = WEB_ROOT . '/images/check.jpg';
+            $imgFail = WEB_ROOT . '/images/cross.jpg';
             $docRes = '<span style="font-weight:bold;font-size:12px;">' . Pt_Commons_TranslateUtility::safeTranslate('Your documentation score') . ' <span style="font-size:11px;">(' . Pt_Commons_TranslateUtility::safeTranslate('maximum possible score') . ' : ' . $documentationScore . ')</span></span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
 						<tr style="background-color:#dbe4ee;">

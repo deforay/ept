@@ -289,11 +289,11 @@ if (!empty($resultArray['shipment'])) {
                 // echo (var_export($geneDetails[$response['sample_id']], true));
 
                 if ($response['calculated_score'] == 'Pass') {
-                    $img = ROOT_PATH . '/images/check.jpg';
+                    $img = WEB_ROOT . '/images/check.jpg';
 
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                 } elseif ($response['calculated_score'] == 'Fail') {
-                    $img = ROOT_PATH . '/images/cross.jpg';
+                    $img = WEB_ROOT . '/images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
                     $img = UPLOAD_PATH . '/../images/minus.jpg';

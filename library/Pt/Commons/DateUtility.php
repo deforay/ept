@@ -90,7 +90,13 @@ final class Pt_Commons_DateUtility
             return false;
         }
 
-        return self::parseDate($date, null, true) instanceof DateTimeImmutable;
+        $parsed = self::parseDate($date, null, true);
+        if (!$parsed instanceof DateTimeImmutable) {
+            return false;
+        }
+        // Reject year 0 dates (e.g., 0000-11-30 which formats as -0001)
+        $year = (int) $parsed->format('Y');
+        return $year >= 1000 && $year <= 9999;
     }
 
     public static function humanReadableDateFormat($date, $includeTime = false, ?string $format = null, $withSeconds = false): mixed

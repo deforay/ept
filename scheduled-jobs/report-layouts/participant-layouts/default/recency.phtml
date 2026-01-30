@@ -298,11 +298,11 @@ if (!empty($resultArray['shipment'])) {
                 foreach ($result['responseResult'] as $response) {
 
                     if ($response['calculated_score'] == 'Pass') {
-                        $img = ROOT_PATH . '/images/check.jpg';
+                        $img = WEB_ROOT . '/images/check.jpg';
 
                         $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                     } elseif ($response['calculated_score'] == 'Fail') {
-                        $img = ROOT_PATH . '/images/cross.jpg';
+                        $img = WEB_ROOT . '/images/cross.jpg';
                         $score = ($response['control'] == 0) ? 0 : "N.A.";
                     } else {
                         $img = UPLOAD_PATH . '/../images/minus.jpg';
@@ -340,8 +340,8 @@ if (!empty($resultArray['shipment'])) {
                 $attributes = json_decode($result['attributes'], true);
 
                 $img = [];
-                $imgPass = ROOT_PATH . '/images/check.jpg';
-                $imgFail = ROOT_PATH . '/images/cross.jpg';
+                $imgPass = WEB_ROOT . '/images/check.jpg';
+                $imgFail = WEB_ROOT . '/images/cross.jpg';
 
                 $docRes = '<span style="font-weight:bold;font-size:14px;">Your documentation score :</span> <br/>
 					<table border="1" style="font-size:12px;width:100%;">
