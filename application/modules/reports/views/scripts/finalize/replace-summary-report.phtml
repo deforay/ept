@@ -10,7 +10,8 @@ $shipment = $this->shipment[0];
     <div id="allShipmentList">
 
         <legend>
-            <h4>Replace The Summary Report For <?php echo $shipment['shipment_code']; ?> (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
+            <h4><?= $this->htmlTranslate("Replace The Summary Report For"); ?> <?php echo $shipment['shipment_code']; ?>
+                (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
         </legend>
 
     </div>
@@ -22,30 +23,49 @@ $shipment = $this->shipment[0];
         if (file_exists(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . 'replace-report' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '-summary.pdf')) { ?>
             <div class="fileexist">
 
-                <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept Current File</a>
-                <a href="javascript:void(0);" class="btn btn-sm btn-warning" title="Upload New File" onclick="removeReport();">Upload New File</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-success"
+                    title="<?= $this->htmlTranslate("Confirm Summary File Replacement"); ?>"
+                    onclick="approveReport();"><?= $this->htmlTranslate("Confirm Summary File Replacement"); ?></a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning"
+                    title="<?= $this->htmlTranslate("Upload New File"); ?>"
+                    onclick="removeReport();"><?= $this->htmlTranslate("Upload New File"); ?></a>
+                <br>
                 <br>
                 <div style="width: auto;">
-                    <embed width="70%" height="600px" class="oldReport" name="plugin" src="/temporary/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>" type="application/pdf">
-                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View / Expend Current File" onclick="layoutModal('/d/<?php echo base64_encode($summaryFilePath); ?>', 800, 700);" style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
+                    <embed width="70%" height="600px" class="oldReport" name="plugin"
+                        src="/temporary/replace-report/<?php echo $shipment['shipment_code'] . '-summary.pdf'; ?>"
+                        type="application/pdf">
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary"
+                        title="<?= $this->htmlTranslate("View / Expand Current File"); ?>"
+                        onclick="layoutModal('/d/<?php echo base64_encode($summaryFilePath); ?>', 800, 700);"
+                        style=" position: absolute; margin-left: -35px; "><i class="icon-fullscreen" aria-hidden="true"></i></a>
                 </div>
-                <a href="javascript:void(0);" class="btn btn-sm btn-success" title="Accept Current File" onclick="approveReport();">Accept Current File</a>
-                <a href="javascript:void(0);" class="btn btn-sm btn-warning" title="Upload New File" onclick="removeReport();">Upload New File</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-success"
+                    title="<?= $this->htmlTranslate("Confirm Summary File Replacement"); ?>"
+                    onclick="approveReport();"><?= $this->htmlTranslate("Confirm Summary File Replacement"); ?></a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-warning"
+                    title="<?= $this->htmlTranslate("Upload New File"); ?>"
+                    onclick="removeReport();"><?= $this->htmlTranslate("Upload New File"); ?></a>
+                <br>
                 <br>
             </div>
-        <?php $replaceHide = true;
+            <?php $replaceHide = true;
         } ?>
         <div class="fileupload" <?php echo ($replaceHide) ? 'style="display:none;"' : '' ?>>
-            <form name="replaceSummaryReportForm" id="replaceSummaryReportForm" method="post" action="<?php echo $this->url(array("module" => "reports", "controller" => "finalize", "action" => "replace-summary-report"), 'default', true) ?>" class="form-horizontal bs-example" role="form" enctype="multipart/form-data">
+            <form name="replaceSummaryReportForm" id="replaceSummaryReportForm" method="post"
+                action="<?php echo $this->url(array("module" => "reports", "controller" => "finalize", "action" => "replace-summary-report"), 'default', true) ?>"
+                class="form-horizontal bs-example" role="form" enctype="multipart/form-data">
                 <div style="width:50%;display:flex;">
                     <div>
-                        <label class="control-label pull-left" for="replaceSummaryReport">Replace Summary Report</label>
-                        <input class="form-control" type="file" name="replaceSummaryReport" id="replaceSummaryReport" title="Please upload the summary report PDF to replace" />
+                        <label class="control-label pull-left"
+                            for="replaceSummaryReport"><?= $this->htmlTranslate("Replace Summary Report"); ?></label>
+                        <input class="form-control" type="file" name="replaceSummaryReport" id="replaceSummaryReport"
+                            title="<?= $this->htmlTranslate("Please upload the summary report PDF to replace"); ?>" />
                         <input type="hidden" name="schipmentId" value="<?php echo $this->id; ?>" />
                         <input type="hidden" name="shipmentCode" value="<?php echo $shipment['shipment_code']; ?>" />
                     </div>
                     <div style="margin-top: 35px;margin-left: 22px;">
-                        <button type="submit" class="btn btn-sm btn-primary">Upload</button>
+                        <button type="submit" class="btn btn-sm btn-primary"><?= $this->htmlTranslate("Upload"); ?></button>
                     </div>
                 </div>
             </form>
@@ -54,31 +74,31 @@ $shipment = $this->shipment[0];
 </div>
 
 <script type="text/javascript" charset="utf-8">
-    $(document).ready(function() {});
+    $(document).ready(function () { });
 
     function removeReport() {
-        if (confirm("Are you sure want to upload new Summary PDF?")) {
+        if (confirm("<?= $this->jsTranslate("Are you sure you want to upload a new Summary PDF?"); ?>")) {
             $('.fileupload').show();
             $('.fileexist').hide();
         }
     }
 
     function approveReport() {
-        if (confirm("Are you sure you want to replace the Summary Result for this shipment? This cannot be undone.")) {
+        if (confirm("<?= $this->jsTranslate("Are you sure you want to replace the Summary Report for this shipment? This cannot be undone."); ?>")) {
             $.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'finalize', 'action' => 'approve-replace-summary-report'], 'default', true); ?>", {
-                    shipmentId: '<?php echo $this->shipment[0]['shipment_id']; ?>',
-                    shipmentCode: '<?php echo $this->shipment[0]['shipment_code']; ?>'
-                },
-                function(data) {
+                shipmentId: '<?php echo $this->shipment[0]['shipment_id']; ?>',
+                shipmentCode: '<?php echo $this->shipment[0]['shipment_code']; ?>'
+            },
+                function (data) {
                     if (data && data == 'permission-issue') {
-                        alert('Incorrect folder permissions. Please reach out to technical support.')
+                        alert("<?= $this->jsTranslate("Incorrect folder permissions. Please reach out to technical support."); ?>")
                     } else if (data && data == 'format-wrong') {
-                        alert('Incorrect file format. Please upload PDF')
+                        alert("<?= $this->jsTranslate("Incorrect file format. Please upload a PDF."); ?>")
                     } else if (data == 1) {
-                        alert("Successfully accept the summary report for shipment (<?php echo $this->shipment[0]['shipment_code']; ?>)");
+                        alert("<?= $this->jsTranslate("Successfully replaced the summary report for shipment"); ?> (<?php echo $this->shipment[0]['shipment_code']; ?>).");
                         window.location.reload();
                     } else {
-                        alert('Unable to upload file. Please try again later.')
+                        alert("<?= $this->jsTranslate("Unable to upload file. Please try again later."); ?>")
                     }
                 })
         }

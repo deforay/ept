@@ -4062,16 +4062,15 @@ class Application_Service_Shipments
             if (file_exists($from)) {
                 if (is_file($from)) {
                     if (copy($from, $to)) {
-                        if (unlink($from)) {
-                            return 1;
-                        } else {
-                            $alertMsg->message = 'Old file not removed';
+                        if (!unlink($from)) {
+                            error_log("Warning: Could not remove temp file: {$from}");
                         }
+                        return 1;
                     } else {
                         $alertMsg->message = 'File not copied';
                     }
                 } else {
-                    $alertMsg->message = 'Is not file';
+                    $alertMsg->message = 'Invalid file';
                 }
             }
             return 0;
