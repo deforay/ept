@@ -98,6 +98,7 @@
                 <option value="Evaluation">Evaluation</option>
                 <option value="Certificate Generation">Certificate Generation</option>
                 <option value="Email Reports">Email Reports</option>
+                <option value="Send Emails">Send Emails</option>
             </select>
         </td>
         <td>
@@ -313,6 +314,7 @@
             'evaluated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
             'finalized': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Finalized' },
             'completed': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Completed' },
+            'reports generated': { cls: 'job-status-completed', icon: 'icon-ok', label: 'Reports Generated' },
             'cancelled': { cls: 'job-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
         };
 
@@ -321,6 +323,11 @@
     }
 
     function formatActions(row) {
+        // Email queue jobs cannot be cancelled via this interface
+        if (row.queue_type === 'email_queue') {
+            return '<span class="text-muted">-</span>';
+        }
+
         // Only show cancel button for cancellable statuses
         var cancellableStatuses = ['pending', 'not-evaluated', 'not-finalized', 'processing'];
         if (cancellableStatuses.indexOf(row.status) === -1) {
@@ -374,14 +381,21 @@
             percent + '%</div></div>';
 
         if (row.progress_completed !== null && row.progress_total !== null) {
-            html += '<small class="text-muted">' + row.progress_completed + '/' + row.progress_total + ' reports</small>';
+            var unit = row.job_type === 'Send Emails' ? 'emails' : 'reports';
+            html += '<small class="text-muted">' + row.progress_completed + '/' + row.progress_total + ' ' + unit + '</small>';
         }
 
         // Add summary status if available
         if (row.summary_status) {
-            var summaryLabel = row.summary_status === 'completed' ?
-                '<span style="color:#5cb85c;"><i class="icon-ok"></i> Summary done</span>' :
-                '<span class="text-muted"><i class="icon-clock"></i> Summary pending</span>';
+            var summaryLabel;
+            if (row.job_type === 'Send Emails' && row.summary_status.indexOf('failed') !== -1) {
+                // Show failed count for emails
+                summaryLabel = '<span style="color:#d9534f;"><i class="icon-warning-sign"></i> ' + row.summary_status + '</span>';
+            } else if (row.summary_status === 'completed') {
+                summaryLabel = '<span style="color:#5cb85c;"><i class="icon-ok"></i> Summary done</span>';
+            } else {
+                summaryLabel = '<span class="text-muted"><i class="icon-clock"></i> Summary pending</span>';
+            }
             html += '<br>' + summaryLabel;
         }
 

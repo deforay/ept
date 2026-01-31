@@ -22,22 +22,12 @@ class Application_Service_Evaluation
 		$aColumns = ["DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status'];
 		$orderColumns = ['distribution_date', 'distribution_code', 's.shipment_code', 'd.status'];
 
-		/* Indexed column (used for fast and accurate table cardinality) */
-		$sIndexColumn = 'distribution_id';
-
-
-		/*
-		 * Paging
-		 */
 		$sLimit = "";
 		if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
 			$sOffset = $parameters['iDisplayStart'];
 			$sLimit = $parameters['iDisplayLength'];
 		}
 
-		/*
-		 * Ordering
-		 */
 		$sOrder = "";
 		if (isset($parameters['iSortCol_0'])) {
 			$sOrder = "";
@@ -51,12 +41,6 @@ class Application_Service_Evaluation
 			$sOrder = substr_replace($sOrder, "", -2);
 		}
 
-		/*
-		 * Filtering
-		 * NOTE this does not match the built-in DataTables filtering which does it
-		 * word by word on any field. It's possible to do here, but concerned about efficiency
-		 * on very large tables, and MySQL's regex functionality is very limited
-		 */
 		$sWhere = "";
 		if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
 			$searchArray = explode(" ", $parameters['sSearch']);
@@ -95,17 +79,11 @@ class Application_Service_Evaluation
 			}
 		}
 
-
-		/*
-		 * SQL queries
-		 * Get data to display
-		 */
-
 		$dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 		$sQuery = $dbAdapter->select()->from(array('d' => 'distributions'))
-			->joinLeft(array('s' => 'shipment'), 's.distribution_id=d.distribution_id', array('shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")))
-			->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('is_user_configured'))
+			->joinLeft(['s' => 'shipment'], 's.distribution_id=d.distribution_id', ['shipments' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.shipment_code SEPARATOR ', ')"), 'not_finalized_count' => new Zend_Db_Expr("SUM(IF(s.status!='finalized',1,0))")])
+			->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['is_user_configured'])
 			->where("s.status!='finalized'")
 			->group('s.distribution_id');
 
@@ -142,12 +120,12 @@ class Application_Service_Evaluation
 		/*
 		 * Output
 		 */
-		$output = array(
+		$output = [
 			"sEcho" => isset($parameters['sEcho']) ? intval($parameters['sEcho']) : 0,
 			"iTotalRecords" => $iTotal,
 			"iTotalDisplayRecords" => $iFilteredTotal,
-			"aaData" => array()
-		);
+			"aaData" => []
+		];
 
 
 		$shipmentDb = new Application_Model_DbTable_Shipments();
@@ -173,11 +151,11 @@ class Application_Service_Evaluation
 	public function getShipments($distributionId)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$sql = $db->select()->from(array('s' => 'shipment'))
-			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('map_id', 'responseDate' => 'shipment_test_report_date', 'report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name', 'is_user_configured'))
-			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id')
+		$sql = $db->select()->from(['s' => 'shipment'])
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+			->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['map_id', 'responseDate' => 'shipment_test_report_date', 'report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)"), 'last_not_participated_mailed_on', 'last_not_participated_mail_count', 'shipment_status' => 's.status'])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
+			->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
 			->where("s.distribution_id = ?", $distributionId)
 			->group('s.shipment_id');
 
@@ -188,10 +166,10 @@ class Application_Service_Evaluation
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(array('s' => 'shipment'), array(''))
-			->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array(''))
-			->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")))
-			->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array(''))
-			->joinLeft(array('rr' => 'r_results'), 'sp.final_result=rr.result_id', array(''))
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', [''])
+			->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')")])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', [''])
+			->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id', [''])
 			->where("s.shipment_id = ?", $shipmentId)
 			//->where("sp.is_excluded!='yes' AND sp.is_pt_test_not_performed is NULL")
 			->where("s.distribution_id = ?", $distributionId)
@@ -205,7 +183,7 @@ class Application_Service_Evaluation
 		// Update heartbeat
 		$db->update(
 			'shipment',
-			array('last_heartbeat' => new Zend_Db_Expr('NOW()')),
+			['last_heartbeat' => new Zend_Db_Expr('NOW()')],
 			"shipment_id = {$shipmentId}"
 		);
 
@@ -2764,13 +2742,13 @@ class Application_Service_Evaluation
 	{
 		$authNameSpace = new Zend_Session_Namespace('administrators');
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
-		$data = array(
+		$data = [
 			'shipment_id' => $shipmentId,
 			'initated_by' => $authNameSpace->admin_id,
 			'requested_on' => new Zend_Db_Expr('now()'),
 			'last_updated_on' => new Zend_Db_Expr('now()'),
 			'status' => 'pending'
-		);
+		];
 		$db->insert('queue_report_generation', $data);
 	}
 
@@ -2784,16 +2762,16 @@ class Application_Service_Evaluation
 		if (!$existData) {
 			$authNameSpace = new Zend_Session_Namespace('administrators');
 			$sql = $db->select()->from(array('s' => 'shipment'), array('shipment_id', 'shipment_code', 'status', 'number_of_samples', 'shipment_status' => 's.status'))
-				->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_code', 'distribution_date'))
-				->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id')
-				->join(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('scheme_name'))
-				->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country'))
-				->join(array('c' => 'countries'), 'p.country=c.id', array('country_name' => 'iso_name'))
-				->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
+				->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+				->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id')
+				->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+				->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['first_name', 'last_name', 'lab_name', 'unique_identifier', 'country'])
+				->join(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
+				->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result')
 				->where("s.shipment_id = ?", $shipmentId);
 			$shipmentResult = $db->fetchAll($sql);
 			if (isset($shipmentResult) && count($shipmentResult) > 0) {
-				$data = array(
+				$data = [
 					'shipment_id' => $shipmentId,
 					'report_type' => $params['type'],
 					'requested_by' => $authNameSpace->admin_id,
@@ -2803,28 +2781,29 @@ class Application_Service_Evaluation
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()'),
 					'status' => 'pending'
-				);
+				];
 				$saved = $db->insert('queue_report_generation', $data);
 				if ($saved > 0) {
-					$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
-					return $db->update('shipment', array('report_in_queue' => 'yes', 'status' => 'queued'), "shipment_id = " . $shipmentId);
+					$db->update('shipment_participant_map', ['report_generated' => 'no'], "shipment_id = " . $shipmentId);
+					return $db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], "shipment_id = " . $shipmentId);
 				}
 			}
 		} else {
-			$data = array(
+			$data = [
 				'shipment_id' => $shipmentId,
 				'report_type' => $params['type'],
 				'last_updated_on' => new Zend_Db_Expr('now()'),
 				'previous_status' => 'evaluated',
+				'requested_on' => new Zend_Db_Expr('now()'),
 				'processing_started_at' => new Zend_Db_Expr('NOW()'),
 				'last_heartbeat' => new Zend_Db_Expr('NOW()'),
 				'status' => 'pending'
-			);
+			];
 			$updated = $db->update('queue_report_generation', $data, "id = " . $existData['id']);
 			if ($updated > 0) {
 				// Reset report_generated flags so progress starts from 0%
 				$db->update('shipment_participant_map', array('report_generated' => 'no'), "shipment_id = " . $shipmentId);
-				$db->update('shipment', array('report_in_queue' => 'yes', 'status' => 'queued'), "shipment_id = " . $shipmentId);
+				$db->update('shipment', ['report_in_queue' => 'yes', 'status' => 'queued'], "shipment_id = " . $shipmentId);
 			}
 			return $updated;
 		}
@@ -3027,8 +3006,8 @@ class Application_Service_Evaluation
 			}
 		}
 
-		// Query scheduled jobs
-		if (empty($filterJobType) || $filterJobType !== 'Report Generation') {
+		// Query scheduled jobs (excluding Send Emails which has its own tracking)
+		if (empty($filterJobType) || !in_array($filterJobType, ['Report Generation', 'Send Emails'])) {
 			$scheduledJobsQuery = $db->select()
 				->from(['sj' => 'scheduled_jobs'], [
 					'job_id',
@@ -3050,6 +3029,8 @@ class Application_Service_Evaluation
 				->joinLeft(['sa' => 'system_admin'], 'sj.requested_by = sa.admin_id', [
 					'requested_by_name' => new Zend_Db_Expr("CONCAT(sa.first_name, ' ', sa.last_name)")
 				])
+				// Exclude send-emails jobs from scheduled_jobs since we track them via temp_mail
+				->where("sj.job NOT LIKE '%send-emails%'")
 				->order('sj.job_id DESC');
 
 			// Apply job type filter
@@ -3086,6 +3067,76 @@ class Application_Service_Evaluation
 				$job['progress_total'] = null;
 				$job['summary_status'] = null;
 				$allJobs[] = $job;
+			}
+		}
+
+		// Query email queue (temp_mail) for Send Emails tracking
+		if (empty($filterJobType) || $filterJobType === 'Send Emails') {
+			// Group emails by date to show daily email batches
+			$emailStatsQuery = $db->select()
+				->from(['tm' => 'temp_mail'], [
+					'queue_date' => new Zend_Db_Expr("DATE(tm.queued_on)"),
+					'total_emails' => new Zend_Db_Expr("COUNT(*)"),
+					'sent_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status = 'sent' THEN 1 ELSE 0 END)"),
+					'pending_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status IN ('pending', 'picked-to-process') THEN 1 ELSE 0 END)"),
+					'failed_count' => new Zend_Db_Expr("SUM(CASE WHEN tm.status = 'not-sent' THEN 1 ELSE 0 END)"),
+					'first_queued' => new Zend_Db_Expr("MIN(tm.queued_on)"),
+					'last_activity' => new Zend_Db_Expr("MAX(COALESCE(tm.sent_at, tm.updated_at, tm.queued_on))")
+				])
+				->group('DATE(tm.queued_on)')
+				->order('queue_date DESC');
+
+			// Apply date range filter
+			$emailStatsQuery->where("DATE(tm.queued_on) >= ?", $dateFrom);
+			$emailStatsQuery->where("DATE(tm.queued_on) <= ?", $dateTo);
+
+			// Apply status filter for email jobs
+			if (!empty($filterStatus)) {
+				if ($filterStatus === 'pending') {
+					$emailStatsQuery->having("pending_count > 0");
+				} elseif ($filterStatus === 'completed') {
+					$emailStatsQuery->having("pending_count = 0 AND failed_count = 0");
+				} elseif ($filterStatus === 'processing') {
+					$emailStatsQuery->having("pending_count > 0 AND sent_count > 0");
+				}
+			}
+
+			$emailStatsResult = $db->fetchAll($emailStatsQuery);
+
+			foreach ($emailStatsResult as $emailBatch) {
+				$total = (int) $emailBatch['total_emails'];
+				$sent = (int) $emailBatch['sent_count'];
+				$pending = (int) $emailBatch['pending_count'];
+				$failed = (int) $emailBatch['failed_count'];
+
+				// Determine status based on counts
+				$status = 'completed';
+				if ($pending > 0) {
+					$status = $sent > 0 ? 'processing' : 'pending';
+				} elseif ($failed > 0 && $sent === 0) {
+					$status = 'failed';
+				}
+
+				$progress = $total > 0 ? round(($sent / $total) * 100, 1) : 0;
+
+				$allJobs[] = [
+					'job_id' => 'email_' . $emailBatch['queue_date'],
+					'queue_type' => 'email_queue',
+					'job_type' => 'Send Emails',
+					'status' => $status,
+					'report_type' => null,
+					'started_at' => $emailBatch['first_queued'],
+					'last_heartbeat' => $emailBatch['last_activity'],
+					'requested_on' => $emailBatch['first_queued'],
+					'job' => null,
+					'shipment_code' => date('M j, Y', strtotime($emailBatch['queue_date'])),
+					'shipment_id' => null,
+					'requested_by_name' => 'System',
+					'progress' => $progress,
+					'progress_completed' => $sent,
+					'progress_total' => $total,
+					'summary_status' => $failed > 0 ? "{$failed} failed" : null,
+				];
 			}
 		}
 

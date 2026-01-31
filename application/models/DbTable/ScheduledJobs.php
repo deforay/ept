@@ -41,7 +41,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             $safeShipmentIdStr = escapeshellarg(implode(",", $shipmentId));
 
             return $this->insert([
-                "job" => "generate-certificates.php -s " . $safeShipmentIdStr . " -c " . $safeCertName,
+                "job" => "generate-certificates.php -s $safeShipmentIdStr -c $safeCertName",
                 "requested_on" => new Zend_Db_Expr('now()'),
                 "requested_by" => $authNameSpace->admin_id,
             ]);

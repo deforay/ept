@@ -12,7 +12,7 @@ $dtsResultsMap = $dtsResults = [];
 $possibleDtsResults = $schemeService->getPossibleResults('dts');
 foreach ($possibleDtsResults as $pr) {
     $dtsResults[$pr['id']] = $pr['response'];
-    if (in_array($pr['scheme_sub_group'], array('DTS_TEST', 'DTS_FINAL'))) {
+    if (in_array($pr['scheme_sub_group'], ['DTS_TEST', 'DTS_FINAL'])) {
         $dtsResultsMap[$pr['response']] = $pr['result_code'];
     }
 }
@@ -55,8 +55,8 @@ if ($totalPages > 0) {
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
         // set header and footer fonts
-        $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
+        $pdf->setHeaderFont(['freesans', '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont(['freesans', '', PDF_FONT_SIZE_DATA]);
 
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -105,8 +105,9 @@ if ($totalPages > 0) {
 
         $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
-        if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms))
+        if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
             $allowedAlgorithms = explode(',', $allowedAlgorithms);
+        }
         $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
         $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
@@ -131,26 +132,15 @@ if ($totalPages > 0) {
         }
 
         $dwidth = 100;
-        if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-            $testThreeHidden = false;
-            $testTwoHidden = false;
-            $screeningTest = false;
-            $allowRepeatTests = "no";
-            $shipmentAttributesScreeningTestDisplay = "";
-            $testThreeOptionalDisplay = "";
-            $dswidth = 20;
-            $width = 15;
+        if (($testTwoHidden)) {
+            $width = 16.7;
+        } elseif ($testThreeHidden) {
+            $width = 14.3;
         } else {
-            if (($testTwoHidden)) {
-                $width = 16.7;
-            } elseif ($testThreeHidden) {
-                $width = 14.3;
-            } else {
-                $width = 12.5;
-            }
-
-            $dswidth = 20;
+            $width = 12.5;
         }
+
+        $dswidth = 20;
 
 
         if ($allowRepeatTests == "yes") {
@@ -170,16 +160,16 @@ if ($totalPages > 0) {
             $noTest = 3;
         }
 
-        if ($dtsSchemeType == 'malawi' || $dtsSchemeType == 'myanmar') {
-            $testThreeHidden = false;
-            $testTwoHidden = false;
-            $screeningTest = false;
-            $allowRepeatTests = "no";
-            $shipmentAttributesScreeningTestDisplay = "";
-            $testThreeOptionalDisplay = "";
-            $dswidth = 20;
-            $width = 15;
-        }
+
+        $testThreeHidden = false;
+        $testTwoHidden = false;
+        $screeningTest = false;
+        $allowRepeatTests = "no";
+        $shipmentAttributesScreeningTestDisplay = "";
+        $testThreeOptionalDisplay = "";
+        $dswidth = 20;
+        $width = 15;
+
         if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
@@ -188,18 +178,8 @@ if ($totalPages > 0) {
             $width = 22.5;
         }
 
-        $ghanaNationalDtsAlgo = false;
-        if ($dtsSchemeType == 'ghana') {
-            $ghanaNationalDtsAlgo = true;
-        }
-        // if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && isset($this->participant['anc']) && $this->participant['anc'] == "yes" && $ghanaNationalDtsAlgo) {
-        if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes" && $ghanaNationalDtsAlgo) {
-            $syphilisActive = true;
-        }
         $isThisRetestField = false;
-        if ($dtsSchemeType == 'ghana' && $syphilisActive) {
-            $isThisRetestField = true;
-        }
+
 
         $shipmentAttributesSampleTypeDisplay = "";
         if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
@@ -281,13 +261,7 @@ if ($totalPages > 0) {
         $labInfo .= '	<td><strong>Response Date</strong><br>' . $responseDate . '</td>';
         $labInfo .= '	<td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>';
         $labInfo .= '	<td>';
-        if (isset($attributes['algorithm'])) {
-            if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
-            } else {
-                $labInfo .= '	<strong>Algorithm</strong><br>' . ucwords($attributes['algorithm']);
-            }
-        }
+        $labInfo .= '	<strong>Algorithm</strong><br>Myanmar National Algorithm';
         $labInfo .= ' </td>';
         $labInfo .= '</tr>';
         $labInfo .= '<tr><td>';
@@ -546,17 +520,11 @@ if ($totalPages > 0) {
             } else {
                 // for Non Dried Samples, we will NOT have rehydration documentation scores
                 // there are 2 conditions for rehydration so 5 - 2 = 3
-                $totalDocumentationItems = 3;
                 // Myanmar does not have Supervisor scoring so it has one less documentation item
-                if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $totalDocumentationItems -= 1;
-                }
+                // so total documentation items = 3 - 1 = 2
+                $totalDocumentationItems = 2;
             }
 
-            if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                // For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
-                $totalDocumentationItems += 4;
-            }
 
             $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
 
@@ -630,65 +598,8 @@ if ($totalPages > 0) {
 							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>
                         </tr>';
 
-            // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
-            if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
-                if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
 
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>
-                            </tr>';
-            }
 
-            if (isset($attributes['algorithm']) && $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                if (!empty($attributes['condition_pt_samples'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>
-                            </tr>';
-
-                $scoreDoc = 0;
-                $img = $imgFail;
-
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
-                            </tr>';
-
-                if (!empty($attributes['room_temperature'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>
-                            </tr>';
-
-                if (!empty($attributes['stop_watch'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>
-                            </tr>';
-            }
 
             $docRes .= '</table>';
 
