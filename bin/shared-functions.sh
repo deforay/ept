@@ -834,6 +834,7 @@ configure_php_ini() {
     local desired_log_errors="log_errors = On"
     local desired_post_max_size="post_max_size = 1G"
     local desired_upload_max_filesize="upload_max_filesize = 1G"
+    local desired_session_auto_start="session.auto_start = 0"
     local desired_strict_mode="session.use_strict_mode = 1"
     local desired_sid_length="session.sid_length = 48"
     local desired_sid_bits="session.sid_bits_per_character = 6"
@@ -860,7 +861,7 @@ configure_php_ini() {
         print info "Checking PHP settings in $ini_file..."
 
         # Check which settings are already correctly set
-        local er_set de_set le_set pms_set umf_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set expose_set
+        local er_set de_set le_set pms_set umf_set auto_start_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set expose_set
         local opcache_enable_set opcache_enable_cli_set opcache_memory_set opcache_max_files_set
         local opcache_validate_set opcache_save_comments_set opcache_jit_set opcache_interned_set opcache_override_set
 
@@ -869,6 +870,7 @@ configure_php_ini() {
         le_set=$(grep -q "^${desired_log_errors}$" "$ini_file" && echo true || echo false)
         pms_set=$(grep -q "^${desired_post_max_size}$" "$ini_file" && echo true || echo false)
         umf_set=$(grep -q "^${desired_upload_max_filesize}$" "$ini_file" && echo true || echo false)
+        auto_start_set=$(grep -q "^${desired_session_auto_start}$" "$ini_file" && echo true || echo false)
         sm_set=$(grep -q "^${desired_strict_mode}$" "$ini_file" && echo true || echo false)
         sid_len_set=$(grep -q "^${desired_sid_length}$" "$ini_file" && echo true || echo false)
         sid_bits_set=$(grep -q "^${desired_sid_bits}$" "$ini_file" && echo true || echo false)
@@ -885,8 +887,8 @@ configure_php_ini() {
         opcache_override_set=$(grep -q "^${desired_opcache_override}$" "$ini_file" && echo true || echo false)
 
         # If ANY are missing, we need to rewrite
-        if [ "$er_set" = false ] || [ "$de_set" = false ] || [ "$le_set" = false ] || [ "$pms_set" = false ] || [ "$umf_set" = false ] || [ "$sm_set" = false ] \
-            || [ "$sid_len_set" = false ] || [ "$sid_bits_set" = false ] || [ "$gc_maxlifetime_set" = false ] \
+        if [ "$er_set" = false ] || [ "$de_set" = false ] || [ "$le_set" = false ] || [ "$pms_set" = false ] || [ "$umf_set" = false ] \
+            || [ "$auto_start_set" = false ] || [ "$sm_set" = false ] || [ "$sid_len_set" = false ] || [ "$sid_bits_set" = false ] || [ "$gc_maxlifetime_set" = false ] \
             || [ "$expose_set" = false ] \
             || [ "$opcache_enable_set" = false ] || [ "$opcache_enable_cli_set" = false ] || [ "$opcache_memory_set" = false ] \
             || [ "$opcache_max_files_set" = false ] || [ "$opcache_validate_set" = false ] || [ "$opcache_save_comments_set" = false ] || [ "$opcache_jit_set" = false ] \
@@ -912,6 +914,8 @@ configure_php_ini() {
                     echo ";$line" >>"$temp_file"; echo "$desired_post_max_size" >>"$temp_file"; pms_set=true
                 elif [[ "$line" =~ ^[[:space:]]*upload_max_filesize[[:space:]]*= ]] && [ "$umf_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_upload_max_filesize" >>"$temp_file"; umf_set=true
+                elif [[ "$line" =~ ^[[:space:]]*session\.auto_start[[:space:]]*= ]] && [ "$auto_start_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_session_auto_start" >>"$temp_file"; auto_start_set=true
                 elif [[ "$line" =~ ^[[:space:]]*session\.use_strict_mode[[:space:]]*= ]] && [ "$sm_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_strict_mode" >>"$temp_file"; sm_set=true
                 elif [[ "$line" =~ ^[[:space:]]*session\.sid_length[[:space:]]*= ]] && [ "$sid_len_set" = false ]; then
@@ -951,6 +955,7 @@ configure_php_ini() {
             [ "$le_set" = true ] || echo "$desired_log_errors" >>"$temp_file"
             [ "$pms_set" = true ] || echo "$desired_post_max_size" >>"$temp_file"
             [ "$umf_set" = true ] || echo "$desired_upload_max_filesize" >>"$temp_file"
+            [ "$auto_start_set" = true ] || echo "$desired_session_auto_start" >>"$temp_file"
             [ "$sm_set" = true ] || echo "$desired_strict_mode" >>"$temp_file"
             [ "$sid_len_set" = true ] || echo "$desired_sid_length" >>"$temp_file"
             [ "$sid_bits_set" = true ] || echo "$desired_sid_bits" >>"$temp_file"
