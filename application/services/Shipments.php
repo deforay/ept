@@ -4151,7 +4151,7 @@ class Application_Service_Shipments
             $generateReportsEnabled = true;
             $finalizeEnabled = false;
         } else {
-            $viewEnabled = false;
+            $viewEnabled = true;
             $evaluateEnabled = true;
             $generateReportsEnabled = false;
             $finalizeEnabled = false;

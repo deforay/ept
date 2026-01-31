@@ -1429,10 +1429,13 @@ foreach ($this->allTestKits as $kit) {
             </div>
             <?php if ($adminAccess) {
                 $show = "display : none;";
+                $showReadOnly = "";
                 if (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "yes") {
                     $show = "";
+                    $showReadOnly = "display : none;";
                 } else {
                     $show = "display : none;";
+                    $showReadOnly = "";
                 } ?>
                 <table class="table table-bordered table-striped table-hover" style="width:100%;margin:30px auto 0 auto;">
                     <tr>
@@ -1450,9 +1453,25 @@ foreach ($this->allTestKits as $kit) {
                             </select>
                         </td>
                     </tr>
+                    <tr class="scoreReadOnlyRow" style="<?php echo $showReadOnly; ?>">
+                        <td style="width:25%;vertical-align: middle">
+                            <label class="form-label"><?= $this->translate->_("Shipment Score"); ?></label>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <?php echo $this->shipment['shipment_score']; ?>
+                        </td>
+                    </tr>
+                    <tr class="scoreReadOnlyRow" style="<?php echo $showReadOnly; ?>">
+                        <td style="width:25%;vertical-align: middle">
+                            <label class="form-label"><?= $this->translate->_("Documentation Score"); ?></label>
+                        </td>
+                        <td style="vertical-align: middle">
+                            <?php echo $this->shipment['documentation_score']; ?>
+                        </td>
+                    </tr>
                     <tr class="manualOverrideRow" style="<?php echo $show; ?>">
                         <td style="width:25%;vertical-align: middle"><label style="color: #ff6163;" class="form-label"
-                                for="shipmentScore"><?= $this->translate->_("Shipement Score"); ?> <span
+                                for="shipmentScore"><?= $this->translate->_("Shipment Score"); ?> <span
                                     class="mandatory">*</span></label></td>
                         <td style="vertical-align: middle">
                             <input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore"
@@ -2007,9 +2026,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                    class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                                    </td>');
+                                                                                                                                        class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                                            <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                                        </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {
@@ -2054,8 +2073,10 @@ foreach ($this->allTestKits as $kit) {
     function manualOverrideChange(value) {
         if (value == 'yes') {
             $('.manualOverrideRow').show();
+            $('.scoreReadOnlyRow').hide();
         } else {
             $('.manualOverrideRow').hide();
+            $('.scoreReadOnlyRow').show();
         }
     }
 </script>

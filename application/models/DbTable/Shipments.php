@@ -93,7 +93,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->group('dm.dm_id')->setIntegrityCheck(false);
         $subResult = $this->fetchAll($subQuery);
         foreach ($subResult as $dm) {
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             if (isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])) {
                 $content = $notParticipatedMailContent['mail_content'];
@@ -2334,7 +2334,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             } else {
                 $dts['Section1']['status'] = false;
             }
-            // First participant details end // Section 1 end // Section 2 start // Shipement Result start
+            // First participant details end // Section 1 end // Section 2 start // Shipment Result start
             $modeOfReceiptSelect = [];
             foreach ($modeOfReceipt as $receipt) {
                 $modeOfReceiptSelect[] = array(
@@ -2343,7 +2343,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                     'selected' => ($shipment["mode_id"] == $receipt['mode_id']) ? 'selected' : ''
                 );
             }
-            // Shipement Result end // For algorithmUsed start
+            // Shipment Result end // For algorithmUsed start
             $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
             if (!empty($allowedAlgorithms) && !is_array($allowedAlgorithms)) {
                 $allowedAlgorithms = explode(',', $allowedAlgorithms);
@@ -3893,7 +3893,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             } else {
                 $covid19['Section1']['status'] = false;
             }
-            // First participant details end // Section 1 end // Section 2 start // Shipement Result start
+            // First participant details end // Section 1 end // Section 2 start // Shipment Result start
             $modeOfReceiptSelect = [];
             foreach ($modeOfReceipt as $receipt) {
                 $modeOfReceiptSelect[] = array(

@@ -14,7 +14,8 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 		<div class="modal-header">
 			<h4 class="modal-title"><?= $this->translate->_("Shipments Under PT Survey"); ?>
 				<?php echo $this->shipments[0]['distribution_code']; ?>
-				(<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)</h4>
+				(<?php echo $this->dateFormat($this->shipments[0]['distribution_date']); ?>)
+			</h4>
 		</div>
 		<div class="modal-body">
 			<table class="table table-bordered table-striped table-hover">
@@ -62,17 +63,15 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 							<td style="text-align: center;">
 								<?php if ($reported > 0 && !$isFinalized): ?>
 									<?php if ($hasReportsGenerated): ?>
-										<a class="btn btn-info btn-xs"
-											href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
+										<a class="btn btn-info btn-xs" href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
 											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
 										</a>
-										<a href="javascript:void(0)"
-											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
+										<a href="javascript:void(0)" class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">
 											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
 										</a>
 									<?php else: ?>
-										<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)">
+										<a class="btn btn-primary btn-xs <?= $generateReportsClass; ?>" href="javascript:void(0)">
 											<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
 										</a>
 									<?php endif; ?>
@@ -81,8 +80,7 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 										<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
 									</a>
 								<?php elseif ($isFinalized): ?>
-									<a class="btn btn-info btn-xs"
-										href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
+									<a class="btn btn-info btn-xs" href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
 										<i class="icon-eye-open"></i> <?= $this->translate->_("View"); ?>
 									</a>
 								<?php else: ?>

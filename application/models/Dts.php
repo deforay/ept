@@ -602,7 +602,23 @@ final class Application_Model_Dts
 						}
 					}
 
-					if ($result['reference_result'] == $result['reported_result']) {
+					// Screening: Check if test result is consistent with reported interpretation (global rule)
+					$screeningConsistent = true;
+					if ($isScreening) {
+						$screeningConsistent = $this->isTestResultConsistentWithReported($result1, $reportedResultCode);
+						if (!$screeningConsistent) {
+							$failureReason[] = [
+								'warning' => "<strong>" . $result['sample_label'] . "</strong> - Test result inconsistent with reported interpretation (0 score)",
+								'correctiveAction' => $correctiveActions[3]
+							];
+							$correctiveActionList[] = 3;
+						}
+					}
+
+					if (!$screeningConsistent) {
+						// Screening: Test result inconsistent with reported → 0 score
+						$correctResponse = false;
+					} elseif ($result['reference_result'] == $result['reported_result']) {
 						if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
 							$totalScore += ($scoreForSample + $scoreForAlgorithm);
 							$correctResponse = true;
@@ -628,6 +644,23 @@ final class Application_Model_Dts
 							// $totalScore remains the same	if algoResult == fail and there is no allocated score for algo
 							$correctResponse = false;
 						}
+					} elseif ($isScreening && $dtsSchemeType === 'myanmar' &&
+						$this->areResultsEquivalent($result['reference_result'], $result['reported_result'])) {
+						// Myanmar Screening: half score for equivalent results (R↔P, NR↔N)
+						$halfSampleScore = $scoreForSample / 2;
+						if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
+							$totalScore += ($halfSampleScore + $scoreForAlgorithm);
+							$correctResponse = true;
+						} elseif ($correctRTRIResponse && $correctSyphilisResponse && ($scorePercentageForAlgorithm > 0 && $algoResult == 'Fail')) {
+							$totalScore += $halfSampleScore;
+							$correctResponse = false;
+						} else {
+							$correctResponse = false;
+						}
+						$failureReason[] = [
+							'warning' => "<strong>" . $result['sample_label'] . "</strong> - Equivalent result reported (half score awarded)",
+							'correctiveAction' => $correctiveActions[3]
+						];
 					} else {
 						if ($result['sample_score'] > 0) {
 
@@ -2150,6 +2183,47 @@ final class Application_Model_Dts
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$query = $db->select()->from('r_possibleresult', ['result_code'])->where("id = ?", $resultId);
 		return $db->fetchOne($query) ?? '-';
+	}
+
+	/**
+	 * Check if two result IDs are equivalent (for Myanmar Screening half-score rule).
+	 * Equivalent pairs: REACTIVE(1) ↔ POSITIVE(4), NONREACTIVE(2) ↔ NEGATIVE(5)
+	 */
+	private function areResultsEquivalent($resultId1, $resultId2): bool
+	{
+		$equivalentPairs = [
+			[1, 4], // REACTIVE ↔ POSITIVE
+			[2, 5], // NONREACTIVE ↔ NEGATIVE
+		];
+
+		foreach ($equivalentPairs as $pair) {
+			if (($resultId1 == $pair[0] && $resultId2 == $pair[1]) ||
+				($resultId1 == $pair[1] && $resultId2 == $pair[0])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if test result (Result-1) is consistent with reported interpretation.
+	 * For Myanmar Screening: REACTIVE test → must report POSITIVE/REACTIVE
+	 *                        NONREACTIVE test → must report NEGATIVE/NONREACTIVE
+	 * @param string $testResultCode Result code from test_result_1 (R, NR, etc.)
+	 * @param string $reportedResultCode Result code from reported_result (P, N, R, NR, etc.)
+	 */
+	private function isTestResultConsistentWithReported(string $testResultCode, string $reportedResultCode): bool
+	{
+		// REACTIVE test (R) is consistent with POSITIVE (P) or REACTIVE (R)
+		if ($testResultCode === 'R') {
+			return in_array($reportedResultCode, ['P', 'R']);
+		}
+		// NONREACTIVE test (NR) is consistent with NEGATIVE (N) or NONREACTIVE (NR)
+		if ($testResultCode === 'NR') {
+			return in_array($reportedResultCode, ['N', 'NR']);
+		}
+		// For other cases (invalid, etc.), consider consistent
+		return true;
 	}
 
 	public function addSampleNameInArray($shipmentId, $headings)
