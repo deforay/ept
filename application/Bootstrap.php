@@ -5,6 +5,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
+        date_default_timezone_set($timezone);
 
         // Skip session handling in CLI mode
         if (php_sapi_name() !== 'cli') {
@@ -14,10 +15,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             }
 
             // Generate CSRF token if not already generated
-            self::generateCSRF();
+            Application_Service_SecurityService::generateCSRF();
         }
 
-        date_default_timezone_set($timezone);
+
 
         /** @var Zend_Controller_Router_Rewrite $router */
 
@@ -99,14 +100,5 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $this->bootstrap('view');
         $view = $this->getResource('view');
         $view->translate = $translate;
-    }
-
-    private static function generateCSRF(): void
-    {
-        $csrfNamespace = new Zend_Session_Namespace('csrf');
-        if (empty($csrfNamespace->token)) {
-            $csrfNamespace->token = bin2hex(random_bytes(32));
-            $csrfNamespace->tokenTime = time();
-        }
     }
 }

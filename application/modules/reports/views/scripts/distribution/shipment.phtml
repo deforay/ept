@@ -209,7 +209,7 @@ if (!empty($this->shipment)) {
                 $shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
                 $individualReports = "";
                 $invididualFilePath = "";
-                if ($shipment['status'] == 'evaluated' && $shipment['final_result'] != 3) {
+                if ($shipment['status'] == 'reports generated' && $shipment['final_result'] != 3) {
                     $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
                     if (!file_exists($invididualFilePath)) {
                         // Search this file name using the map id
