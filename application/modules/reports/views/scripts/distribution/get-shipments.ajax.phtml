@@ -71,12 +71,17 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 											<i class="icon-refresh"></i> <?= $this->translate->_("Regenerate Reports"); ?>
 										</a>
 									<?php else: ?>
-										<a class="btn btn-primary btn-xs <?= $generateReportsClass; ?>" href="javascript:void(0)">
+										<a class="btn btn-primary btn-xs <?= $generateReportsClass; ?>" href="javascript:void(0)"
+											<?php if ($generateReportsEnabled): ?>
+											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')"
+											<?php endif; ?>>
 											<i class="icon-edit"></i> <?= $this->translate->_("Generate Reports"); ?>
 										</a>
 									<?php endif; ?>
-									<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>"
-										href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
+									<a class="btn btn-primary btn-xs <?= $finalizeClass; ?>" href="javascript:void(0)"
+										<?php if ($finalizeEnabled): ?>
+										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
+										<?php endif; ?>>
 										<i class="icon-check"></i> <?= $this->translate->_("Finalize"); ?>
 									</a>
 								<?php elseif ($isFinalized): ?>

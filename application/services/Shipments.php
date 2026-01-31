@@ -4159,6 +4159,7 @@ class Application_Service_Shipments
 
         // Override: Disable buttons when in ephemeral states (draft, ready, queued, processing)
         if ($isEphemeral) {
+            $viewEnabled = false;
             $evaluateEnabled = false;
             $generateReportsEnabled = false;
             $finalizeEnabled = false;

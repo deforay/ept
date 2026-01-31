@@ -156,18 +156,13 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 										</a>
 									<?php endif; ?>
 
-									<?php if ($isFinalized): ?>
-										<a class="btn btn-info btn-xs"
-											href="/reports/distribution/finalize/sid/<?= $encodedShipmentId; ?>">
-											<i class="icon-check"></i> <?= $finalReportTitle; ?>
-										</a>
-									<?php else: ?>
-										<a href="javascript:void(0)"
-											class="btn btn-xs btn-primary <?= $finalizeClass; ?>"
-											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateFinalReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')">
-											<i class="icon-ok"></i> <?= $finalReportTitle; ?>
-										</a>
-									<?php endif; ?>
+									<a href="<?= $finalizeEnabled ? 'javascript:void(0)' : 'javascript:void(0)'; ?>"
+										class="btn btn-xs btn-primary <?= $finalizeClass; ?>"
+										<?php if ($finalizeEnabled): ?>
+										onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateFinalReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'finalized')"
+										<?php endif; ?>>
+										<i class="icon-ok"></i> <?= $finalReportTitle; ?>
+									</a>
 								</div>
 								<?php endif; ?>
 
