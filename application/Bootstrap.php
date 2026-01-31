@@ -8,13 +8,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 
         // Skip session handling in CLI mode
         if (php_sapi_name() !== 'cli') {
-            // Handle session initialization
+            // Start a session if it's not already started
             if (session_status() == PHP_SESSION_NONE) {
-                Zend_Session::start();
-            } elseif (session_status() == PHP_SESSION_ACTIVE) {
-                // Session already started (e.g., by session.auto_start in php.ini)
-                // Destroy it and let Zend_Session manage it properly
-                session_write_close();
                 Zend_Session::start();
             }
 
