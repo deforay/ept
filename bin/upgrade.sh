@@ -3,6 +3,20 @@
 # To use this script:
 # sudo wget -O /usr/local/bin/ept-update https://raw.githubusercontent.com/deforay/ept/master/bin/upgrade.sh && sudo chmod +x /usr/local/bin/ept-update
 # sudo ept-update
+#
+# Options:
+#   -p PATH   Specify the EPT installation path (e.g., -p /var/www/ept)
+#   -A        Auto-detect and update ALL EPT installations in /var/www
+#   -i        Interactive instance selection (use with -A to pick specific instances)
+#   -s        Skip Ubuntu system updates
+#   -b        Skip backup prompts
+#
+# Examples:
+#   sudo ept-update                      # Interactive single instance
+#   sudo ept-update -p /var/www/ept      # Specific path
+#   sudo ept-update -A                   # Update all instances in /var/www
+#   sudo ept-update -A -i                # Detect instances, pick which to update
+#   sudo ept-update -A -s -b             # Non-interactive, update all instances
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -50,6 +64,23 @@ resolve_ept_path() {
     fi
 }
 
+# Detect all valid EPT installations in a directory
+detect_ept_installations() {
+    local search_dir="${1:-/var/www}"
+    local found_paths=()
+
+    for dir in "$search_dir"/*/; do
+        [ -d "$dir" ] || continue
+        # Remove trailing slash for cleaner paths
+        dir="${dir%/}"
+        if is_valid_application_path "$dir"; then
+            found_paths+=("$dir")
+        fi
+    done
+
+    printf '%s\n' "${found_paths[@]}"
+}
+
 # Strip surrounding quotes from secrets copied from INI files.
 sanitize_ini_secret() {
     local val="${1-}"
@@ -66,15 +97,20 @@ sanitize_ini_secret() {
 # Initialize flags
 skip_ubuntu_updates=false
 skip_backup=false
+auto_detect=false
+interactive_select=false
 ept_path=""
+declare -a ept_paths=()
 
 log_file="/tmp/ept-upgrade-$(date +'%Y%m%d-%H%M%S').log"
 
 # Parse command-line options
-while getopts ":sbp:" opt; do
+while getopts ":sbAip:" opt; do
     case $opt in
         s) skip_ubuntu_updates=true ;;
         b) skip_backup=true ;;
+        A) auto_detect=true ;;
+        i) interactive_select=true ;;
         p) ept_path="$OPTARG" ;;
         *) : ;; # ignore
     esac
@@ -89,27 +125,95 @@ current_trap=$(trap -p ERR)
 # Disable the error trap temporarily
 trap - ERR
 
-# Prompt for the EPT path if not provided via the command-line argument
-if [ -z "$ept_path" ]; then
+# Handle path resolution based on mode
+if [ "$auto_detect" = true ]; then
+    # Warn if -p was also specified
+    if [ -n "$ept_path" ]; then
+        print warning "-A flag specified, ignoring -p ${ept_path}"
+    fi
+    # Auto-detect mode: scan /var/www for all valid installations
+    print info "Scanning /var/www for EPT installations..."
+    mapfile -t detected_paths < <(detect_ept_installations /var/www)
+
+    if [ ${#detected_paths[@]} -eq 0 ]; then
+        print error "No valid EPT installations found in /var/www"
+        log_action "Auto-detect found no valid installations"
+        exit 1
+    fi
+
+    # Show numbered list
+    echo ""
+    print info "Found ${#detected_paths[@]} installation(s):"
+    for i in "${!detected_paths[@]}"; do
+        echo "  $((i+1))) ${detected_paths[$i]}"
+    done
+    echo ""
+
+    if [ "$interactive_select" = true ]; then
+        # Interactive mode: let user pick which instances to update
+        printf "Enter instance numbers to update (e.g., 1,2,3) or press Enter for all: "
+        read -r selection < /dev/tty
+
+        if [ -z "$selection" ]; then
+            ept_paths=("${detected_paths[@]}")
+        else
+            IFS=',' read -ra selected_nums <<< "$selection"
+            for num in "${selected_nums[@]}"; do
+                num=$(echo "$num" | xargs)  # trim whitespace
+                idx=$((num - 1))
+                if [[ $idx -ge 0 ]] && [[ $idx -lt ${#detected_paths[@]} ]]; then
+                    ept_paths+=("${detected_paths[$idx]}")
+                fi
+            done
+        fi
+
+        if [ ${#ept_paths[@]} -eq 0 ]; then
+            print error "No valid instances selected"
+            exit 1
+        fi
+    else
+        # Non-interactive: use all detected instances
+        ept_paths=("${detected_paths[@]}")
+    fi
+
+    print info "Will update ${#ept_paths[@]} instance(s):"
+    for p in "${ept_paths[@]}"; do
+        print info "  - $p"
+    done
+    log_action "Selected ${#ept_paths[@]} installations for update: ${ept_paths[*]}"
+elif [ -n "$ept_path" ]; then
+    # Single path provided via -p flag
+    ept_path="$(resolve_ept_path "$ept_path")"
+    if ! is_valid_application_path "$ept_path"; then
+        print error "The specified path does not appear to be a valid EPT installation. Please check the path and try again."
+        log_action "Invalid EPT path specified: $ept_path"
+        exit 1
+    fi
+    ept_paths=("$ept_path")
+    print info "EPT path is set to ${ept_path}"
+    log_action "EPT path is set to ${ept_path}"
+else
+    # Interactive prompt for path (existing behavior)
     echo "Enter the EPT installation path [press enter for /var/www/ept]: "
     if read -t 60 ept_path && [ -n "$ept_path" ]; then
-        :
+        : # user provided a value
     else
         ept_path=""
     fi
+    ept_path="$(resolve_ept_path "$ept_path")"
+    if ! is_valid_application_path "$ept_path"; then
+        print error "The specified path does not appear to be a valid EPT installation. Please check the path and try again."
+        log_action "Invalid EPT path specified: $ept_path"
+        exit 1
+    fi
+    ept_paths=("$ept_path")
+    print info "EPT path is set to ${ept_path}"
+    log_action "EPT path is set to ${ept_path}"
 fi
 
-# Resolve EPT path
-ept_path="$(resolve_ept_path "$ept_path")"
-
-print info "EPT path is set to ${ept_path}"
-log_action "EPT path is set to ${ept_path}"
-
-# Check if the EPT path is valid
-if ! is_valid_application_path "$ept_path"; then
-    print error "The specified path does not appear to be a valid EPT installation. Please check the path and try again."
-    log_action "Invalid EPT path specified: $ept_path"
-    exit 1
+# For single-instance mode, set ept_path for backward compatibility with existing code
+if [ ${#ept_paths[@]} -eq 1 ]; then
+    ept_path="${ept_paths[0]}"
 fi
 
 # Restore the previous error trap
@@ -312,14 +416,17 @@ print info "Removed all MySQL backup files matching *.bak.*"
 
 print info "Applying SET PERSIST sql_mode='' to override MySQL defaults..."
 
+# Use first instance for config extraction (for multi-instance mode)
+first_ept_path="${ept_paths[0]}"
+
 # Determine which password to use (from INI or prompt)
 if [ -n "$mysql_root_password" ]; then
     mysql_pw="$mysql_root_password"
     print info "Using user-provided MySQL root password"
-elif [ -f "${ept_path}/application/configs/application.ini" ]; then
-    mysql_pw="$(extract_mysql_password_from_config "${ept_path}/application/configs/application.ini" production || true)"
+elif [ -f "${first_ept_path}/application/configs/application.ini" ]; then
+    mysql_pw="$(extract_mysql_password_from_config "${first_ept_path}/application/configs/application.ini" production || true)"
     mysql_pw="$(sanitize_ini_secret "$mysql_pw")"
-    ini_user="$(extract_mysql_user_from_config "${ept_path}/application/configs/application.ini" production || true)"
+    ini_user="$(extract_mysql_user_from_config "${first_ept_path}/application/configs/application.ini" production || true)"
     ini_user="$(sanitize_ini_secret "$ini_user")"
     if [ "$ini_user" != "root" ]; then
         print warning "application.ini contains DB user '${ini_user:-<empty>}', not 'root'. Prompting for MySQL root password..."
@@ -463,8 +570,10 @@ fi
 
 log_action "Ubuntu packages updated/installed."
 
-# set_permissions "${ept_path}" "quick"
-set_permissions "${ept_path}/logs" "full"
+# Set initial log permissions for all instances
+for p in "${ept_paths[@]}"; do
+    set_permissions "$p/logs" "full"
+done
 
 # Function to list databases and get the database list
 get_databases() {
@@ -531,36 +640,214 @@ if [ "$skip_backup" = false ]; then
         log_action "Skipping database backup as per user request."
     fi
 
-    if ask_yes_no "Do you want to backup the EPT folder before updating?" "no"; then
-        print info "Backing up old EPT folder..."
+    # Ask the user if they want to backup the EPT folder(s)
+    backup_prompt="Do you want to backup the EPT folder before updating?"
+    if [ ${#ept_paths[@]} -gt 1 ]; then
+        backup_prompt="Do you want to backup all ${#ept_paths[@]} EPT folders before updating?"
+    fi
+
+    if ask_yes_no "$backup_prompt" "no"; then
         timestamp=$(date +%Y%m%d-%H%M%S)
-        backup_folder="/var/ept-backup/www/ept-backup-$timestamp"
-        mkdir -p "${backup_folder}"
-        rsync -a --delete --exclude "public/temporary/" --inplace --whole-file --info=progress2 "${ept_path}/" "${backup_folder}/" &
-        rsync_pid=$!
-        spinner "${rsync_pid}"
-        log_action "EPT folder backed up to ${backup_folder}"
+        for p in "${ept_paths[@]}"; do
+            folder_name=$(basename "$p")
+            backup_folder="/var/ept-backup/www/${folder_name}-backup-$timestamp"
+            print info "Backing up $p..."
+            mkdir -p "${backup_folder}"
+            rsync -a --delete --exclude "public/temporary/" --inplace --whole-file --info=progress2 "$p/" "${backup_folder}/" &
+            rsync_pid=$!
+            spinner "${rsync_pid}"
+            log_action "EPT folder $p backed up to ${backup_folder}"
+        done
     else
         print info "Skipping EPT folder backup as per user request."
         log_action "Skipping EPT folder backup as per user request."
     fi
 fi
 
-[ -d "${ept_path}/run-once" ] && rm -rf "${ept_path}/run-once"
+# Track which instances were updated for summary
+declare -a updated_instances=()
+declare -a failed_instances=()
 
-print info "Calculating checksums of current composer files..."
-CURRENT_COMPOSER_JSON_CHECKSUM="none"
-CURRENT_COMPOSER_LOCK_CHECKSUM="none"
+# Function to upgrade a single instance
+upgrade_instance() {
+    local ept_path="$1"
+    local instance_num="$2"
+    local total_instances="$3"
+    local temp_dir="$4"
 
-if [ -f "${ept_path}/composer.json" ]; then
-    CURRENT_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" | awk '{print $1}')
-    print info "Current composer.json checksum: ${CURRENT_COMPOSER_JSON_CHECKSUM}"
-fi
-if [ -f "${ept_path}/composer.lock" ]; then
-    CURRENT_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" | awk '{print $1}')
-    print info "Current composer.lock checksum: ${CURRENT_COMPOSER_LOCK_CHECKSUM}"
-fi
+    print header "Upgrading instance ${instance_num}/${total_instances}: ${ept_path}"
+    log_action "Starting upgrade for instance: ${ept_path}"
 
+    # Remove old run-once directory
+    [ -d "${ept_path}/run-once" ] && rm -rf "${ept_path}/run-once"
+
+    # Calculate checksums of current composer files for this instance
+    local CURRENT_COMPOSER_JSON_CHECKSUM="none"
+    local CURRENT_COMPOSER_LOCK_CHECKSUM="none"
+
+    if [ -f "${ept_path}/composer.json" ]; then
+        CURRENT_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" | awk '{print $1}')
+    fi
+    if [ -f "${ept_path}/composer.lock" ]; then
+        CURRENT_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" | awk '{print $1}')
+    fi
+
+    # Build symlink exclude list for this instance
+    local exclude_file="$(mktemp)"
+    local symlinks_found=0
+    while IFS= read -r -d '' symlink; do
+        local rel="${symlink#"$ept_path/"}"
+        printf '%s\n' "$rel" >>"$exclude_file"
+        symlinks_found=$((symlinks_found + 1))
+    done < <(find "$ept_path" -type l -not -path "*/.*" -print0 2>/dev/null)
+
+    if [ $symlinks_found -gt 0 ]; then
+        print info "Preserving $symlinks_found symlinks."
+    fi
+
+    # Rsync from temp to this instance
+    rsync -a --inplace --whole-file --info=progress2 \
+        --exclude-from="$exclude_file" \
+        "$temp_dir/ept-master/" "$ept_path/" &
+    local rsync_pid=$!
+    spinner "${rsync_pid}"
+    wait ${rsync_pid}
+    local rsync_status=$?
+
+    rm -f "$exclude_file"
+
+    if [ $rsync_status -ne 0 ]; then
+        print error "Error occurred during rsync for $ept_path"
+        log_action "Error during rsync operation. Path was: $ept_path"
+        return 1
+    fi
+
+    print success "Files copied to ${ept_path}."
+    log_action "Files copied to ${ept_path}."
+
+    # Set proper permissions
+    set_permissions "${ept_path}" "quick"
+
+    # Run Composer Install as www-data
+    print info "Running composer operations..."
+    cd "${ept_path}" || return 1
+
+    sudo -u www-data composer config process-timeout 30000 --no-interaction
+    sudo -u www-data composer clear-cache --no-interaction
+
+    local NEED_FULL_INSTALL=false
+
+    if [ ! -d "${ept_path}/vendor" ]; then
+        NEED_FULL_INSTALL=true
+    else
+        local NEW_COMPOSER_JSON_CHECKSUM="none"
+        local NEW_COMPOSER_LOCK_CHECKSUM="none"
+
+        if [ -f "${ept_path}/composer.json" ]; then
+            NEW_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
+        else
+            NEED_FULL_INSTALL=true
+        fi
+
+        if [ -f "${ept_path}/composer.lock" ] && [ "$NEED_FULL_INSTALL" = false ]; then
+            NEW_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
+        else
+            NEED_FULL_INSTALL=true
+        fi
+
+        if [ "$NEED_FULL_INSTALL" = false ]; then
+            if [ "$CURRENT_COMPOSER_JSON_CHECKSUM" = "none" ] || [ "$CURRENT_COMPOSER_LOCK_CHECKSUM" = "none" ] ||
+                [ "$NEW_COMPOSER_JSON_CHECKSUM" = "none" ] || [ "$NEW_COMPOSER_LOCK_CHECKSUM" = "none" ] ||
+                [ "$CURRENT_COMPOSER_JSON_CHECKSUM" != "$NEW_COMPOSER_JSON_CHECKSUM" ] ||
+                [ "$CURRENT_COMPOSER_LOCK_CHECKSUM" != "$NEW_COMPOSER_LOCK_CHECKSUM" ]; then
+                NEED_FULL_INSTALL=true
+            fi
+        fi
+    fi
+
+    # Download and install vendor if needed
+    if [ "$NEED_FULL_INSTALL" = true ]; then
+        print info "Installing dependencies..."
+        if curl --output /dev/null --silent --head --fail "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"; then
+            # Check if vendor.tar.gz already downloaded (shared across instances)
+            if [ ! -f "/tmp/ept-vendor.tar.gz" ]; then
+                download_file "/tmp/ept-vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz" "Downloading vendor packages..."
+                download_file "/tmp/ept-vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256" "Downloading checksum..." 2>/dev/null || \
+                    download_file "/tmp/ept-vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5" "Downloading checksum..."
+            fi
+
+            # Verify checksum
+            if [ -f "/tmp/ept-vendor.tar.gz.sha256" ]; then
+                if (cd /tmp && sha256sum -c ept-vendor.tar.gz.sha256 2>/dev/null); then
+                    tar -xzf /tmp/ept-vendor.tar.gz -C "${ept_path}" &
+                    local vendor_tar_pid=$!
+                    spinner "${vendor_tar_pid}"
+                    wait ${vendor_tar_pid}
+
+                    chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+                    chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
+
+                    sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
+                else
+                    sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
+                fi
+            elif [ -f "/tmp/ept-vendor.tar.gz.md5" ]; then
+                if (cd /tmp && md5sum -c ept-vendor.tar.gz.md5 2>/dev/null); then
+                    tar -xzf /tmp/ept-vendor.tar.gz -C "${ept_path}" &
+                    local vendor_tar_pid=$!
+                    spinner "${vendor_tar_pid}"
+                    wait ${vendor_tar_pid}
+
+                    chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
+                    chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
+
+                    sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev --no-interaction
+                else
+                    sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
+                fi
+            else
+                sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
+            fi
+        else
+            sudo -u www-data composer install --prefer-dist --no-dev --no-interaction
+        fi
+    fi
+
+    sudo -u www-data composer dump-autoload -o --no-interaction
+    print success "Composer operations completed."
+
+    # Database connectivity and migrations
+    print info "Checking database connectivity..."
+    php "${ept_path}/vendor/bin/db-tools" db:test --all
+
+    print info "Running database migrations..."
+    sudo -u www-data composer post-update
+
+    # Run run-once scripts
+    print info "Running run-once scripts..."
+    sudo -u www-data php "${ept_path}/bin/run-once.php"
+
+    # Make runner script executable (only for first instance)
+    if [ "$instance_num" -eq 1 ]; then
+        chmod +x "${ept_path}/runner" 2>/dev/null
+        sudo rm /usr/local/bin/runner 2>/dev/null || true
+        sudo ln -s "${ept_path}/runner" /usr/local/bin/runner 2>/dev/null
+
+        if [ -L "/usr/local/bin/runner" ]; then
+            print success "ept runner command installed globally"
+        fi
+    fi
+
+    # Cron job setup
+    setup_cron "${ept_path}"
+
+    print success "Instance ${ept_path} updated successfully."
+    log_action "Instance ${ept_path} update complete."
+
+    return 0
+}
+
+# Download EPT package ONCE (shared across all instances)
 print header "Downloading EPT"
 
 download_file "master.tar.gz" "https://codeload.github.com/deforay/ept/tar.gz/refs/heads/master" "Downloading EPT package..." || {
@@ -569,7 +856,7 @@ download_file "master.tar.gz" "https://codeload.github.com/deforay/ept/tar.gz/re
     exit 1
 }
 
-# Extract the tar.gz file into temporary directory
+# Extract the tar.gz file into temporary directory ONCE
 temp_dir=$(mktemp -d)
 print info "Extracting files from master.tar.gz..."
 
@@ -578,190 +865,51 @@ tar_pid=$!
 spinner "${tar_pid}"
 wait ${tar_pid}
 
-# Build symlink exclude list (safe, no eval; handles spaces)
-exclude_file="$(mktemp)"
-symlinks_found=0
-while IFS= read -r -d '' symlink; do
-    rel="${symlink#"$ept_path/"}"
-    printf '%s\n' "$rel" >>"$exclude_file"
-    symlinks_found=$((symlinks_found + 1))
-done < <(find "$ept_path" -type l -not -path "*/.*" -print0 2>/dev/null)
+print success "EPT package ready for deployment to ${#ept_paths[@]} instance(s)."
 
-print info "Found $symlinks_found symlinks that will be preserved."
-
-# Sync files, preserving symlinks in destination
-rsync -a --inplace --whole-file --info=progress2 \
-    --exclude-from="$exclude_file" \
-    "$temp_dir/ept-master/" "$ept_path/" &
-rsync_pid=$!
-spinner "${rsync_pid}"
-wait ${rsync_pid}; rsync_status=$?
-
-rm -f "$exclude_file"
-
-if [ $rsync_status -ne 0 ]; then
-    print error "Error occurred during rsync. Logging and continuing..."
-    log_action "Error during rsync operation. Path was: $ept_path"
-else
-    print success "Files copied successfully, preserving symlinks where necessary."
-    log_action "Files copied successfully."
-fi
-
-# Cleanup temp & tar
-[ -d "$temp_dir/ept-master/" ] && rm -rf "$temp_dir/ept-master/"
-[ -d "$temp_dir" ] && rm -rf "$temp_dir"
-[ -f master.tar.gz ] && rm master.tar.gz
-
-print success "EPT copied to ${ept_path}."
-log_action "EPT copied to ${ept_path}."
-
-# Set proper permissions
-set_permissions "${ept_path}" "quick"
-
-# Run Composer Install as www-data
-print header "Running composer operations"
-cd "${ept_path}" || exit 1
-
-sudo -u www-data composer config process-timeout 30000
-sudo -u www-data composer clear-cache
-
-echo "Checking if composer dependencies need updating..."
-NEED_FULL_INSTALL=false
-
-if [ ! -d "${ept_path}/vendor" ]; then
-    print info "Vendor directory doesn't exist. Full installation needed."
-    NEED_FULL_INSTALL=true
-else
-    NEW_COMPOSER_JSON_CHECKSUM="none"
-    NEW_COMPOSER_LOCK_CHECKSUM="none"
-
-    if [ -f "${ept_path}/composer.json" ]; then
-        NEW_COMPOSER_JSON_CHECKSUM=$(md5sum "${ept_path}/composer.json" 2>/dev/null | awk '{print $1}')
-        print info "New composer.json checksum: ${NEW_COMPOSER_JSON_CHECKSUM}"
+# Process each instance
+total_instances=${#ept_paths[@]}
+for i in "${!ept_paths[@]}"; do
+    if upgrade_instance "${ept_paths[$i]}" "$((i+1))" "$total_instances" "$temp_dir"; then
+        updated_instances+=("${ept_paths[$i]}")
     else
-        print warning "composer.json is missing after extraction. Full installation needed."
-        NEED_FULL_INSTALL=true
+        failed_instances+=("${ept_paths[$i]}")
     fi
+done
 
-    if [ -f "${ept_path}/composer.lock" ] && [ "$NEED_FULL_INSTALL" = false ]; then
-        NEW_COMPOSER_LOCK_CHECKSUM=$(md5sum "${ept_path}/composer.lock" 2>/dev/null | awk '{print $1}')
-        print info "New composer.lock checksum: ${NEW_COMPOSER_LOCK_CHECKSUM}"
-    else
-        print warning "composer.lock is missing after extraction. Full installation needed."
-        NEED_FULL_INSTALL=true
-    fi
-
-    if [ "$NEED_FULL_INSTALL" = false ]; then
-        if [ "$CURRENT_COMPOSER_JSON_CHECKSUM" = "none" ] || [ "$CURRENT_COMPOSER_LOCK_CHECKSUM" = "none" ] ||
-           [ "$NEW_COMPOSER_JSON_CHECKSUM" = "none" ] || [ "$NEW_COMPOSER_LOCK_CHECKSUM" = "none" ] ||
-           [ "$CURRENT_COMPOSER_JSON_CHECKSUM" != "$NEW_COMPOSER_JSON_CHECKSUM" ] ||
-           [ "$CURRENT_COMPOSER_LOCK_CHECKSUM" != "$NEW_COMPOSER_LOCK_CHECKSUM" ]; then
-            print info "Composer files have changed or were missing. Full installation needed."
-            NEED_FULL_INSTALL=true
-        else
-            print info "Composer files haven't changed. Skipping full installation."
-            NEED_FULL_INSTALL=false
-        fi
-    fi
+# Cleanup temp files
+if [ -d "$temp_dir" ]; then
+    rm -rf "$temp_dir"
+fi
+if [ -f master.tar.gz ]; then
+    rm master.tar.gz
+fi
+if [ -f "/tmp/ept-vendor.tar.gz" ]; then
+    rm /tmp/ept-vendor.tar.gz
+fi
+if [ -f "/tmp/ept-vendor.tar.gz.sha256" ]; then
+    rm /tmp/ept-vendor.tar.gz.sha256
+fi
+if [ -f "/tmp/ept-vendor.tar.gz.md5" ]; then
+    rm /tmp/ept-vendor.tar.gz.md5
 fi
 
-# Download vendor.tar.gz if needed
-if [ "$NEED_FULL_INSTALL" = true ]; then
-    print info "Dependency update needed. Checking for vendor packages..."
+# Reload Apache
+apache2ctl -k graceful || systemctl reload apache2 || systemctl restart apache2
 
-    if curl --output /dev/null --silent --head --fail "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz"; then
-        # Download tar + checksums (with cache-bust)
-        download_file "vendor.tar.gz" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz" "Downloading vendor packages..." || { print error "Failed to download vendor.tar.gz"; exit 1; }
-
-        if download_file "vendor.tar.gz.sha256" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.sha256" "Downloading SHA-256..." ; then
-            print info "Verifying SHA-256..."
-            if ! sha256sum -c vendor.tar.gz.sha256; then
-                print error "SHA-256 verification failed"; exit 1
-            fi
-            rm -f vendor.tar.gz.sha256
-        else
-            print warning "SHA-256 not available; falling back to MD5."
-            download_file "vendor.tar.gz.md5" "https://github.com/deforay/ept/releases/download/vendor-latest/vendor.tar.gz.md5" "Downloading MD5..." || { print error "Failed to download vendor.tar.gz.md5"; exit 1; }
-            print info "Verifying MD5..."
-            if ! md5sum -c vendor.tar.gz.md5; then
-                print error "MD5 verification failed"; exit 1
-            fi
-            rm -f vendor.tar.gz.md5
-        fi
-        print success "Checksum verification passed"
-
-        print info "Extracting files from vendor.tar.gz..."
-        tar -xzf vendor.tar.gz -C "${ept_path}" &
-        vendor_tar_pid=$!
-        spinner "${vendor_tar_pid}" "Extracting vendor files..."
-        wait ${vendor_tar_pid}; vendor_tar_status=$?
-
-        if [ $vendor_tar_status -ne 0 ]; then
-            print error "Failed to extract vendor.tar.gz"
-            exit 1
-        fi
-
-        rm -f vendor.tar.gz
-
-        # Fix permissions on the vendor directory
-        print info "Setting permissions on vendor directory..."
-        chown -R www-data:www-data "${ept_path}/vendor" 2>/dev/null || true
-        chmod -R 755 "${ept_path}/vendor" 2>/dev/null || true
-
-        print success "Vendor files successfully installed"
-
-        # Finalize composer (no network build)
-        print info "Finalizing composer installation..."
-        sudo -u www-data composer install --no-scripts --no-autoloader --prefer-dist --no-dev
-    else
-        print warning "Vendor package not found in GitHub releases. Proceeding with regular composer install."
-        print info "Running full composer install (this may take a while)..."
-        sudo -u www-data composer install --prefer-dist --no-dev
-    fi
-else
-    print info "Dependencies are up to date. Skipping vendor download."
+# Print summary
+print header "Upgrade Summary"
+if [ ${#updated_instances[@]} -gt 0 ]; then
+    print success "Successfully updated ${#updated_instances[@]} instance(s):"
+    for p in "${updated_instances[@]}"; do
+        print info "  ✓ $p"
+    done
+fi
+if [ ${#failed_instances[@]} -gt 0 ]; then
+    print error "Failed to update ${#failed_instances[@]} instance(s):"
+    for p in "${failed_instances[@]}"; do
+        print error "  ✗ $p"
+    done
 fi
 
-# Always generate the optimized autoloader
-sudo -u www-data composer dump-autoload -o
-
-print success "Composer operations completed."
-log_action "Composer operations completed."
-
-apache2ctl -k graceful || systemctl reload apache2
-
-# Setup db-tools with config from application.ini
-print header "Testing database connection"
-php "${ept_path}/vendor/bin/db-tools" db:test --all
-
-# Run the database migrations and other post-update tasks
-print header "Running database migrations and other post-update tasks"
-sudo -u www-data composer post-update &
-pid=$!
-spinner "$pid"
-wait $pid
-
-print success "Database migrations and post-update tasks completed."
-log_action "Database migrations and post-update tasks completed."
-
-# Run any run-once scripts for this EPT path
-print header "Running run-once scripts"
-sudo -u www-data php "${ept_path}/bin/run-once.php"
-
-# Make the runner script executable
-chmod +x "${ept_path}/runner" 2>/dev/null
-sudo rm /usr/local/bin/runner 2>/dev/null || true
-sudo ln -s "${ept_path}/runner" /usr/local/bin/runner 2>/dev/null
-
-if [ -L "/usr/local/bin/runner" ]; then
-    print success "✅ ept runner command installed successfully!"
-    print info "You can now use: runner migrate, runner tasks etc."
-fi
-
-# Cron job setup
-setup_cron "${ept_path}"
-
-apache2ctl -k graceful || systemctl reload apache2
-
-print success "EPT update complete."
-log_action "EPT update complete."
+log_action "Upgrade complete. Updated: ${#updated_instances[@]}, Failed: ${#failed_instances[@]}"
