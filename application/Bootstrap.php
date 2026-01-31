@@ -6,13 +6,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
 
-        // Start a session if it's not already started
-        if (session_status() == PHP_SESSION_NONE) {
-            Zend_Session::start();
-        }
+        // Skip session handling in CLI mode
+        if (php_sapi_name() !== 'cli') {
+            // Start a session if it's not already started
+            if (session_status() == PHP_SESSION_NONE) {
+                Zend_Session::start();
+            }
 
-        // Generate CSRF token if not already generated
-        self::generateCSRF();
+            // Generate CSRF token if not already generated
+            self::generateCSRF();
+        }
 
         date_default_timezone_set($timezone);
 
@@ -31,22 +34,29 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             mkdir($directoryPath, 0777, true);
         }
 
-        $session = new Zend_Session_Namespace('cacheSpace');
-        if (isset($session->defaultCache)) {
-            Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));
-        } else {
-            $frontendOptions = [
-                'lifetime' => 7200000000,
-                'automatic_serialization' => true
-            ];
-            $backendOptions = [
-                'cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR
-            ];
-            $frontend = "Core";
-            $backend = "File";
+        // Set up metadata cache (skip session-based caching in CLI mode)
+        $frontendOptions = [
+            'lifetime' => 7200000000,
+            'automatic_serialization' => true
+        ];
+        $backendOptions = [
+            'cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR
+        ];
+        $frontend = "Core";
+        $backend = "File";
 
+        if (php_sapi_name() !== 'cli') {
+            $session = new Zend_Session_Namespace('cacheSpace');
+            if (isset($session->defaultCache)) {
+                Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));
+            } else {
+                $cache = Zend_Cache::factory($frontend, $backend, $frontendOptions, $backendOptions);
+                $session->defaultCache = serialize($cache);
+                Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
+            }
+        } else {
+            // In CLI mode, just create the cache directly without session storage
             $cache = Zend_Cache::factory($frontend, $backend, $frontendOptions, $backendOptions);
-            $session->defaultCache = serialize($cache);
             Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
         }
     }
@@ -55,12 +65,21 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $locale = "en_US"; // default locale
 
-        $authNameSpace = new Zend_Session_Namespace('datamanagers');
+        if (php_sapi_name() !== 'cli') {
+            $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
-        if (isset($authNameSpace->language) && !empty(trim($authNameSpace->language))) {
-            $locale = trim($authNameSpace->language);
+            if (isset($authNameSpace->language) && !empty(trim($authNameSpace->language))) {
+                $locale = trim($authNameSpace->language);
+            } else {
+                // Get locale from database (global_config table with built-in fallback to config.ini)
+                $this->bootstrap('db');
+                $dbLocale = Application_Service_Common::getConfig('locale');
+                if (!empty($dbLocale)) {
+                    $locale = trim($dbLocale);
+                }
+            }
         } else {
-            // Get locale from database (global_config table with built-in fallback to config.ini)
+            // In CLI mode, get locale from database directly
             $this->bootstrap('db');
             $dbLocale = Application_Service_Common::getConfig('locale');
             if (!empty($dbLocale)) {
