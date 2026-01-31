@@ -15,6 +15,8 @@
         selectedActionIndex: -1,
         isSearching: false,
         maxHistoryItems: 5,
+        isMouseMoving: false,
+        mouseMovementTimeout: null,
 
         init: function() {
             this.bindEvents();
@@ -201,6 +203,7 @@
 
             // Hover on menu result
             $(document).on('mouseenter', '.spotlight-result-item:not(.spotlight-entity-item)', function() {
+                if (!self.isMouseMoving) return;
                 self.expandedEntityIndex = -1;
                 self.selectedActionIndex = -1;
                 self.selectedIndex = $(this).data('index');
@@ -209,6 +212,7 @@
 
             // Hover on entity item
             $(document).on('mouseenter', '.spotlight-entity-item', function() {
+                if (!self.isMouseMoving) return;
                 self.selectedIndex = -1;
                 self.selectedActionIndex = -1;
                 // Keep expanded state
@@ -216,8 +220,20 @@
 
             // Hover on action item
             $(document).on('mouseenter', '.spotlight-action-item', function() {
+                if (!self.isMouseMoving) return;
                 self.selectedActionIndex = $(this).data('action-index');
                 self.updateActionSelection();
+            });
+
+            // Track mouse movement to distinguish actual hover from static mouse under modal
+            $(document).on('mousemove', '#spotlightResults', function() {
+                self.isMouseMoving = true;
+                $('.spotlight-dialog').addClass('spotlight-mouse-active');
+                clearTimeout(self.mouseMovementTimeout);
+                self.mouseMovementTimeout = setTimeout(function() {
+                    self.isMouseMoving = false;
+                    $('.spotlight-dialog').removeClass('spotlight-mouse-active');
+                }, 100);
             });
         },
 
@@ -235,6 +251,8 @@
             this.entityResults = [];
             this.expandedEntityIndex = -1;
             this.selectedActionIndex = -1;
+            this.isMouseMoving = false;
+            $('.spotlight-dialog').removeClass('spotlight-mouse-active');
             $('#spotlightModal').fadeIn(150);
             $('#spotlightInput').val('').focus();
             this.showDefaultResults();
