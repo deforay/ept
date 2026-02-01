@@ -4025,14 +4025,19 @@ class Application_Service_Shipments
                 $extension = strtolower(pathinfo($tempUploadDirectory . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = $params['shipmentCode'] . "-summary." . $extension;
                 if (in_array($extension, $allowedExtensions)) {
-                    if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report') && !is_dir($this->tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
-                        if (mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
+                    if (!file_exists($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report')) {
+                        if (!mkdir($tempUploadDirectory . DIRECTORY_SEPARATOR . 'replace-report', 0777, true)) {
                             $alertMsg->message = "File not uploaded. Directory permission required for replacing the file.";
+                            error_log("ERROR: Could not create directory: {$tempUploadDirectory}/replace-report");
                             return false;
                         }
                     }
                     if (move_uploaded_file($_FILES["replaceSummaryReport"]["tmp_name"], $tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName)) {
                         return true;
+                    } else {
+                        error_log("ERROR: Could not move uploaded file to: {$tempUploadDirectory}/replace-report/{$fileName}");
+                        $alertMsg->message = "File not uploaded. Please try again.";
+                        return false;
                     }
                 } else {
                     $alertMsg->message = "File not uploaded. Incorrect format. Please use a valid PDF format.";
@@ -4059,6 +4064,15 @@ class Application_Service_Shipments
 
             $from = $this->tempUploadDirectory . DIRECTORY_SEPARATOR . "replace-report" . DIRECTORY_SEPARATOR . $fileName;
             $to = $pathname . DIRECTORY_SEPARATOR . $fileName;
+
+            // Ensure destination directory exists
+            if (!file_exists($pathname)) {
+                if (!mkdir($pathname, 0777, true)) {
+                    error_log("ERROR: Could not create directory: {$pathname}");
+                    return 'permission-issue';
+                }
+            }
+
             if (file_exists($from)) {
                 if (is_file($from)) {
                     if (copy($from, $to)) {
