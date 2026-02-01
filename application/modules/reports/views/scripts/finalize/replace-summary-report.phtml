@@ -90,13 +90,17 @@ $shipment = $this->shipment[0];
                 shipmentCode: '<?php echo $this->shipment[0]['shipment_code']; ?>'
             },
                 function (data) {
-                    if (data && data == 'permission-issue') {
-                        alert("<?= $this->jsTranslate("Incorrect folder permissions. Please reach out to technical support."); ?>")
-                    } else if (data && data == 'format-wrong') {
-                        alert("<?= $this->jsTranslate("Incorrect file format. Please upload a PDF."); ?>")
-                    } else if (data == 1) {
+                    if (data == 1) {
                         alert("<?= $this->jsTranslate("Successfully replaced the summary report for shipment"); ?> (<?php echo $this->shipment[0]['shipment_code']; ?>).");
                         window.location.reload();
+                    } else if (data == 'permission-issue') {
+                        alert("<?= $this->jsTranslate("Incorrect folder permissions. Please reach out to technical support."); ?>")
+                    } else if (data == 'format-wrong') {
+                        alert("<?= $this->jsTranslate("Incorrect file format. Please upload a PDF."); ?>")
+                    } else if (data == 'file-not-found') {
+                        alert("<?= $this->jsTranslate("File not found. Please upload the file first."); ?>")
+                    } else if (data == 'system-error') {
+                        alert("<?= $this->jsTranslate("A system error occurred. Please check the logs and contact technical support."); ?>")
                     } else {
                         alert("<?= $this->jsTranslate("Unable to upload file. Please try again later."); ?>")
                     }

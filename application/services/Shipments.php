@@ -4067,19 +4067,24 @@ class Application_Service_Shipments
                         }
                         return 1;
                     } else {
-                        $alertMsg->message = 'File not copied';
+                        error_log("ERROR: File not copied from {$from} to {$to}");
+                        return 'permission-issue';
                     }
                 } else {
-                    $alertMsg->message = 'Invalid file';
+                    error_log("ERROR: {$from} is not a valid file");
+                    return 'format-wrong';
                 }
+            } else {
+                error_log("ERROR: File not found at {$from}");
+                return 'file-not-found';
             }
-            return 0;
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
+            return 'system-error';
         }
     }
 
