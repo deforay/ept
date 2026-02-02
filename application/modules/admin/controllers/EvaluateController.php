@@ -26,6 +26,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             ->addActionContext('vl-range', 'html')
             ->addActionContext('assay-formats', 'html')
             ->addActionContext('exclude-participant', 'html')
+            ->addActionContext('shipment-participants', 'json')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -365,6 +366,27 @@ class Admin_EvaluateController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->result = $participantService->excludeParticipantById($params);
+        }
+    }
+
+    public function shipmentParticipantsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        if ($this->hasParam('sid')) {
+            $shipmentId = (int) base64_decode($this->_getParam('sid'));
+            $params = $this->getAllParams();
+            $evalService = new Application_Service_Evaluation();
+            $result = $evalService->getShipmentParticipantsPaginated($shipmentId, $params);
+            echo json_encode($result);
+        } else {
+            echo json_encode([
+                'sEcho' => 0,
+                'iTotalRecords' => 0,
+                'iTotalDisplayRecords' => 0,
+                'aaData' => []
+            ]);
         }
     }
 }

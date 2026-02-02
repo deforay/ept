@@ -24,6 +24,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             ->addActionContext('generate-summary-reports', 'html')
             ->addActionContext('get-job-progress', 'json')
             ->addActionContext('cancel-job', 'json')
+            ->addActionContext('shipment-participants', 'json')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -146,6 +147,27 @@ class Reports_DistributionController extends Zend_Controller_Action
             }
         } else {
             echo json_encode(['success' => false, 'message' => 'Missing shipment ID']);
+        }
+    }
+
+    public function shipmentParticipantsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        if ($this->hasParam('sid')) {
+            $shipmentId = (int) base64_decode($this->_getParam('sid'));
+            $params = $this->getAllParams();
+            $evalService = new Application_Service_Evaluation();
+            $result = $evalService->getShipmentParticipantsPaginated($shipmentId, $params);
+            echo json_encode($result);
+        } else {
+            echo json_encode([
+                'sEcho' => 0,
+                'iTotalRecords' => 0,
+                'iTotalDisplayRecords' => 0,
+                'aaData' => []
+            ]);
         }
     }
 }

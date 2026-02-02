@@ -20,6 +20,7 @@ class CommonController extends Zend_Controller_Action
             ->addActionContext('get-finalised-shipments-by-scheme', 'html')
             ->addActionContext('testkit-list', 'html')
             ->addActionContext('update-report-download-datetime', 'html')
+            ->addActionContext('get-corrective-actions', 'html')
             ->initContext();
     }
 
@@ -240,6 +241,23 @@ class CommonController extends Zend_Controller_Action
             $email = $this->_getParam('email') ?? null;
             $length = $commonService->getConfig('participant_login_password_length') ?? 8;
             $this->view->result = $commonService->validatePassword($password, $name, $email, $length);
+        }
+    }
+
+    public function getCorrectiveActionsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        if ($this->hasParam('mid')) {
+            $mapId = (int) $this->_getParam('mid');
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $failureReason = $db->fetchOne(
+                $db->select()
+                    ->from('shipment_participant_map', 'failure_reason')
+                    ->where('map_id = ?', $mapId)
+            );
+            $this->view->warnings = json_decode($failureReason, true) ?: [];
+        } else {
+            $this->view->warnings = [];
         }
     }
 }

@@ -218,6 +218,50 @@ class Application_Service_Evaluation
 		} elseif ($shipmentResult[0]['scheme_type'] == 'dbs') {
 			$counter = 0;
 			$maxScore = 0;
+
+			// Pre-fetch all EIA names for this shipment to avoid N+1 queries
+			$eiaNameMap = [];
+			$allEiaIds = $db->fetchCol(
+				$db->select()
+					->distinct()
+					->from(['rrd' => 'response_result_dbs'], [])
+					->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
+					->columns([
+						new Zend_Db_Expr('DISTINCT rrd.eia_1'),
+					])
+					->where('sp.shipment_id = ?', $shipmentId)
+					->where('rrd.eia_1 IS NOT NULL AND rrd.eia_1 != 0')
+			);
+			$eia2Ids = $db->fetchCol(
+				$db->select()
+					->distinct()
+					->from(['rrd' => 'response_result_dbs'], [])
+					->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
+					->columns([new Zend_Db_Expr('DISTINCT rrd.eia_2')])
+					->where('sp.shipment_id = ?', $shipmentId)
+					->where('rrd.eia_2 IS NOT NULL AND rrd.eia_2 != 0')
+			);
+			$eia3Ids = $db->fetchCol(
+				$db->select()
+					->distinct()
+					->from(['rrd' => 'response_result_dbs'], [])
+					->join(['sp' => 'shipment_participant_map'], 'rrd.shipment_map_id = sp.map_id', [])
+					->columns([new Zend_Db_Expr('DISTINCT rrd.eia_3')])
+					->where('sp.shipment_id = ?', $shipmentId)
+					->where('rrd.eia_3 IS NOT NULL AND rrd.eia_3 != 0')
+			);
+			$allEiaIds = array_filter(array_unique(array_merge($allEiaIds, $eia2Ids, $eia3Ids)));
+			if (!empty($allEiaIds)) {
+				$eiaRows = $db->fetchAll(
+					$db->select()
+						->from('r_dbs_eia', ['eia_id', 'eia_name'])
+						->where('eia_id IN (?)', $allEiaIds)
+				);
+				foreach ($eiaRows as $row) {
+					$eiaNameMap[$row['eia_id']] = $row['eia_name'];
+				}
+			}
+
 			foreach ($shipmentResult as $shipment) {
 				Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
 				$createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
@@ -307,18 +351,15 @@ class Application_Service_Evaluation
 					}
 
 
-					$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia', 'eia_name')->where("eia_id = '" . $results[0]['eia_1'] . "'"));
-					$testKit1 = $testKitName[0];
+					// Use pre-fetched EIA names instead of individual queries
+					$testKit1 = $eiaNameMap[$results[0]['eia_1']] ?? '';
 					$testKit2 = "";
-					if (trim($results[0]['eia_2']) != 0) {
-						$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia', 'eia_name')->where("eia_id = '" . $results[0]['eia_2'] . "'"));
-						$testKit2 = $testKitName[0];
+					if (trim($results[0]['eia_2'] ?? '') != 0) {
+						$testKit2 = $eiaNameMap[$results[0]['eia_2']] ?? '';
 					}
-
 					$testKit3 = "";
-					if (trim($results[0]['eia_3']) != 0) {
-						$testKitName = $db->fetchCol($db->select()->from('r_dbs_eia', 'eia_name')->where("eia_id = '" . $results[0]['eia_3'] . "'"));
-						$testKit3 = $testKitName[0];
+					if (trim($results[0]['eia_3'] ?? '') != 0) {
+						$testKit3 = $eiaNameMap[$results[0]['eia_3']] ?? '';
 					}
 					if ($expDate1 != "") {
 						if ($testedOn > ($expDate1)) {
@@ -3268,5 +3309,168 @@ class Application_Service_Evaluation
 		} catch (Exception $e) {
 			return ['success' => false, 'message' => 'Error cancelling job: ' . $e->getMessage()];
 		}
+	}
+
+	/**
+	 * Get shipment participants with server-side pagination for DataTables
+	 *
+	 * @param int $shipmentId
+	 * @param array $parameters DataTables parameters (sEcho, iDisplayStart, iDisplayLength, sSearch, etc.)
+	 * @return array DataTables-compatible response
+	 */
+	public function getShipmentParticipantsPaginated($shipmentId, $parameters)
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		$aColumns = [
+			'sp.map_id',
+			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ',COALESCE(p.last_name,''),'(',p.unique_identifier,')')"),
+			'p.state',
+			'p.district',
+			'sp.shipment_score',
+			'sp.documentation_score',
+			'res.result_name',
+			'sp.response_status',
+			'sp.shipment_test_report_date',
+		];
+
+		$sLimit = "";
+		if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
+			$sOffset = $parameters['iDisplayStart'];
+			$sLimit = $parameters['iDisplayLength'];
+		}
+
+		$sOrder = [];
+		if (isset($parameters['iSortCol_0'])) {
+			for ($i = 0; $i < intval($parameters['iSortingCols'] ?? 1); $i++) {
+				$colIdx = intval($parameters['iSortCol_' . $i] ?? 0);
+				if (isset($parameters['bSortable_' . $colIdx]) && $parameters['bSortable_' . $colIdx] == "true") {
+					if (isset($aColumns[$colIdx])) {
+						$sOrder[] = $aColumns[$colIdx] . " " . ($parameters['sSortDir_' . $i] ?? 'asc');
+					}
+				}
+			}
+		}
+
+		$sWhere = "";
+		if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
+			$searchArray = explode(" ", $parameters['sSearch']);
+			$sWhereSub = "";
+			foreach ($searchArray as $search) {
+				if ($sWhereSub == "") {
+					$sWhereSub .= "(";
+				} else {
+					$sWhereSub .= " AND (";
+				}
+				$sWhereSub .= "p.first_name LIKE '%" . addslashes($search) . "%' OR ";
+				$sWhereSub .= "p.last_name LIKE '%" . addslashes($search) . "%' OR ";
+				$sWhereSub .= "p.unique_identifier LIKE '%" . addslashes($search) . "%' OR ";
+				$sWhereSub .= "p.state LIKE '%" . addslashes($search) . "%' OR ";
+				$sWhereSub .= "p.district LIKE '%" . addslashes($search) . "%'";
+				$sWhereSub .= ")";
+			}
+			$sWhere .= $sWhereSub;
+		}
+
+		$sQuery = $db->select()
+			->from(['sp' => 'shipment_participant_map'], [
+				new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'),
+				'sp.shipment_id',
+				'sp.participant_id',
+				'sp.shipment_score',
+				'sp.documentation_score',
+				'sp.final_result',
+				'sp.response_status',
+				'sp.shipment_test_report_date',
+				'sp.evaluation_status',
+				'sp.failure_reason',
+				'sp.manual_override',
+			])
+			->join(['s' => 'shipment'], 's.shipment_id = sp.shipment_id', [
+				'shipment_code',
+				'scheme_type',
+				'shipment_status' => 's.status',
+			])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
+			->join(['p' => 'participant'], 'p.participant_id = sp.participant_id', [
+				'first_name',
+				'last_name',
+				'unique_identifier',
+				'state',
+				'district',
+			])
+			->joinLeft(['res' => 'r_results'], 'res.result_id = sp.final_result', ['result_name'])
+			->where('sp.shipment_id = ?', $shipmentId);
+
+		if (isset($sWhere) && $sWhere != "") {
+			$sQuery = $sQuery->where($sWhere);
+		}
+
+		if (!empty($sOrder)) {
+			$sQuery = $sQuery->order($sOrder);
+		} else {
+			$sQuery = $sQuery->order(['p.first_name ASC', 'p.last_name ASC']);
+		}
+
+		if (isset($sLimit) && $sLimit !== "" && isset($sOffset)) {
+			$sQuery = $sQuery->limit($sLimit, $sOffset);
+		}
+
+		$rResult = $db->fetchAll($sQuery);
+		$iTotal = $iFilteredTotal = $db->fetchOne('SELECT FOUND_ROWS()');
+
+		$output = [
+			"sEcho" => intval($parameters['sEcho'] ?? 0),
+			"iTotalRecords" => $iTotal,
+			"iTotalDisplayRecords" => $iFilteredTotal,
+			"aaData" => []
+		];
+
+		foreach ($rResult as $aRow) {
+			$row = [];
+
+			// Determine button class based on result
+			$btnClassName = "btn-success";
+			if (isset($aRow['final_result']) && $aRow['final_result'] == 2) {
+				$btnClassName = "btn-danger";
+			} elseif (!empty($aRow['failure_reason'])) {
+				$warnings = json_decode($aRow['failure_reason'], true);
+				if (!empty($warnings)) {
+					$btnClassName = "btn-warning";
+				}
+			}
+
+			// Determine response status text
+			$responseStatus = "Not Responded";
+			if ($aRow['response_status'] == "responded") {
+				$responseStatus = "Responded";
+			} elseif ($aRow['response_status'] == "nottested") {
+				$responseStatus = "Not Tested";
+			}
+
+			// Determine result text
+			$resultText = 'Not Evaluated';
+			if (isset($aRow['final_result']) && $aRow['final_result'] != "" && $aRow['final_result'] != 0) {
+				$resultText = $aRow['result_name'] ?? 'Not Evaluated';
+			}
+
+			// Format the row data
+			$row[] = $aRow['map_id']; // Hidden column for expand functionality
+			$row[] = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '"><i class="icon-plus"></i></a>';
+			$row[] = htmlspecialchars($aRow['first_name'] . ' ' . $aRow['last_name'] . ' (' . $aRow['unique_identifier'] . ')');
+			$row[] = htmlspecialchars($aRow['state'] ?? '');
+			$row[] = htmlspecialchars($aRow['district'] ?? '');
+			$row[] = number_format((float)($aRow['shipment_score'] ?? 0), 2);
+			$row[] = number_format((float)($aRow['documentation_score'] ?? 0), 2);
+			$row[] = $resultText;
+			$row[] = $responseStatus;
+			$row[] = !empty($aRow['shipment_test_report_date']) && $aRow['shipment_test_report_date'] != '0000-00-00 00:00:00'
+				? date('d-M-Y', strtotime($aRow['shipment_test_report_date']))
+				: '-';
+
+			$output['aaData'][] = $row;
+		}
+
+		return $output;
 	}
 }
