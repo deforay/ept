@@ -6,6 +6,7 @@ require_once __DIR__ . '/../cli-bootstrap.php';
 const ALLOWED_JOB_SCRIPTS = [
     'generate-certificates.php',
     'evaluate-shipments.php',
+    'distribute-certificates.php',
 ];
 
 /**

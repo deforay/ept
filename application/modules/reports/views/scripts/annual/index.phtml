@@ -3,7 +3,10 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <legend>
-	<h3><?= $this->translate->_("Annual Performance Report"); ?></h3>
+	<h3 style="display: inline-block;"><?= $this->translate->_("Annual Performance Report"); ?></h3>
+	<a href="<?= $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true); ?>" class="btn btn-default btn-sm" style="float: right; margin-top: 5px;">
+		<i class="icon-list-alt"></i> <?= $this->translate->_("View All Certificate Batches"); ?>
+	</a>
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 
@@ -49,12 +52,63 @@
 		<a href="javascript:void(0);" onclick="genarateCertificate(this);" class="btn-sm btn btn-info certificate-anchor"><i class="icon-certificate"></i> Generate Certificates</a>
 	</div>
 </div>
+
+<!-- Certificate Generation Progress Section -->
+<div id="certificateProgressSection" class="col-lg-12" style="display: none; margin-top: 2em;">
+	<div id="certificateProgressIndicator" style="display: none;">
+		<div class="alert alert-info">
+			<i class="icon-spinner icon-spin"></i> <span id="progressMessage">Generating certificates...</span>
+		</div>
+	</div>
+
+	<div id="certificateErrorSection" style="display: none;">
+		<div class="alert alert-danger">
+			<strong>Error:</strong> <span id="certificateErrorMessage"></span>
+		</div>
+	</div>
+
+	<div id="certificateStatsSection" style="display: none;">
+		<h4>Certificate Generation Summary</h4>
+		<table class="table table-bordered table-striped" style="width: 50%;">
+			<tbody>
+				<tr>
+					<td><strong>Excellence Certificates</strong></td>
+					<td id="excellenceCount">0</td>
+				</tr>
+				<tr>
+					<td><strong>Participation Certificates</strong></td>
+					<td id="participationCount">0</td>
+				</tr>
+				<tr>
+					<td><strong>Skipped (No certificates)</strong></td>
+					<td id="skippedCount">0</td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="margin-top: 1em;">
+			<a href="javascript:void(0);" id="downloadZipBtn" class="btn btn-success btn-sm" target="_blank" style="margin-right: 10px;">
+				<i class="icon-download"></i> Download ZIP
+			</a>
+			<a href="javascript:void(0);" onclick="approveCertificates();" id="approveDistributeBtn" class="btn btn-primary btn-sm">
+				<i class="icon-ok"></i> Approve &amp; Distribute
+			</a>
+		</div>
+	</div>
+
+	<div id="certificateDistributionSection" style="display: none;">
+		<div class="alert alert-success">
+			<i class="icon-ok"></i> <span id="distributionMessage">Certificates approved! Distribution has been scheduled and will begin shortly.</span>
+		</div>
+	</div>
+</div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript">
 	var startDate = "";
 	var endDate = "";
-	shipmentCode = false;
+	var shipmentCode = false;
+	var currentBatchId = null;
+	var pollingInterval = null;
 	$(document).ready(function() {
 		$("#scheme").select2({
 				placeholder: "Select one or more schemes",
@@ -187,8 +241,18 @@
 					if (data == 9999999) {
 						alert("Please ensure the template files for the selected scheme(s) are available and readable");
 					} else if (data > 0) {
-						alert("Certificate generation will start shortly");
+						// Store batch_id and start polling
+						currentBatchId = parseInt(data);
 						$(obj).attr("disabled", true);
+
+						// Show progress section and indicator
+						resetCertificateUI();
+						$("#certificateProgressSection").show();
+						$("#certificateProgressIndicator").show();
+						$("#progressMessage").text("Generating certificates...");
+
+						// Start polling for status
+						startStatusPolling();
 					} else {
 						alert("No matched shipment for selected date range.");
 					}
@@ -197,5 +261,155 @@
 		} else {
 			alert("Please enter the certificate name to proceed")
 		}
+	}
+
+	function resetCertificateUI() {
+		$("#certificateProgressIndicator").hide();
+		$("#certificateErrorSection").hide();
+		$("#certificateStatsSection").hide();
+		$("#certificateDistributionSection").hide();
+	}
+
+	function startStatusPolling() {
+		// Clear any existing polling
+		if (pollingInterval) {
+			clearInterval(pollingInterval);
+		}
+
+		// Poll every 3 seconds
+		pollingInterval = setInterval(function() {
+			checkCertificateStatus();
+		}, 3000);
+	}
+
+	function stopStatusPolling() {
+		if (pollingInterval) {
+			clearInterval(pollingInterval);
+			pollingInterval = null;
+		}
+	}
+
+	function checkCertificateStatus() {
+		if (!currentBatchId) {
+			stopStatusPolling();
+			return;
+		}
+
+		$.get("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'get-certificate-status'], 'default', true); ?>", {
+			batch_id: currentBatchId,
+			format: "json"
+		}, function(response) {
+			if (!response.success) {
+				stopStatusPolling();
+				showCertificateError(response.error_message || "Failed to get status");
+				return;
+			}
+
+			switch (response.status) {
+				case 'pending':
+				case 'processing':
+					// Still generating, update message and continue polling
+					$("#progressMessage").text(response.status === 'processing' ? "Processing certificates..." : "Waiting to start...");
+					break;
+
+				case 'generated':
+					// Generation complete, show stats and buttons
+					stopStatusPolling();
+					showCertificateStats(response);
+					break;
+
+				case 'failed':
+					// Generation failed
+					stopStatusPolling();
+					showCertificateError(response.error_message || "Certificate generation failed");
+					break;
+
+				case 'approved':
+				case 'distributing':
+				case 'distributed':
+					// Already approved/distributed
+					stopStatusPolling();
+					showDistributionStatus(response.status);
+					break;
+
+				default:
+					// Unknown status, continue polling
+					break;
+			}
+		}).fail(function() {
+			// Request failed, but keep polling
+			console.error("Failed to check certificate status");
+		});
+	}
+
+	function showCertificateError(message) {
+		resetCertificateUI();
+		$("#certificateProgressSection").show();
+		$("#certificateErrorSection").show();
+		$("#certificateErrorMessage").text(message);
+	}
+
+	function showCertificateStats(data) {
+		resetCertificateUI();
+		$("#certificateProgressSection").show();
+		$("#certificateStatsSection").show();
+
+		$("#excellenceCount").text(data.excellence_count);
+		$("#participationCount").text(data.participation_count);
+		$("#skippedCount").text(data.skipped_count);
+
+		if (data.download_url) {
+			$("#downloadZipBtn").attr("href", data.download_url).show();
+		} else {
+			$("#downloadZipBtn").hide();
+		}
+	}
+
+	function showDistributionStatus(status) {
+		resetCertificateUI();
+		$("#certificateProgressSection").show();
+		$("#certificateDistributionSection").show();
+
+		var message = "Certificates approved!";
+		switch (status) {
+			case 'approved':
+				message = "Certificates approved! Distribution has been scheduled and will begin shortly.";
+				break;
+			case 'distributing':
+				message = "Certificates are being distributed...";
+				break;
+			case 'distributed':
+				message = "Certificates have been successfully distributed!";
+				break;
+		}
+		$("#distributionMessage").text(message);
+	}
+
+	function approveCertificates() {
+		if (!currentBatchId) {
+			alert("No batch selected");
+			return;
+		}
+
+		if (!confirm("Are you sure you want to approve and distribute these certificates?")) {
+			return;
+		}
+
+		$.blockUI();
+		$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'annual', 'action' => 'approve-certificates'], 'default', true); ?>", {
+			batch_id: currentBatchId,
+			format: "json"
+		}, function(response) {
+			$.unblockUI();
+
+			if (response.success) {
+				showDistributionStatus('approved');
+			} else {
+				alert(response.message || "Failed to approve certificates");
+			}
+		}).fail(function() {
+			$.unblockUI();
+			alert("Failed to approve certificates. Please try again.");
+		});
 	}
 </script>

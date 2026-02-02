@@ -37,14 +37,29 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params['certificateName'])) {
                 throw new Exception('Invalid certificate name: only alphanumeric characters and hyphens are allowed');
             }
-            $safeCertName = escapeshellarg($params['certificateName']);
-            $safeShipmentIdStr = escapeshellarg(implode(",", $shipmentId));
 
-            return $this->insert([
-                "job" => "generate-certificates.php -s $safeShipmentIdStr -c $safeCertName",
+            // Create a batch record first
+            $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
+            $shipmentIdsStr = implode(",", $shipmentId);
+            $batchId = $certificateBatchesDb->createBatch([
+                'batch_name' => $params['certificateName'],
+                'shipment_ids' => $shipmentIdsStr,
+                'created_by' => $authNameSpace->admin_id,
+                'status' => 'pending'
+            ]);
+
+            $safeCertName = escapeshellarg($params['certificateName']);
+            $safeShipmentIdStr = escapeshellarg($shipmentIdsStr);
+            $safeBatchId = intval($batchId);
+
+            $this->insert([
+                "job" => "generate-certificates.php -s $safeShipmentIdStr -c $safeCertName -b $safeBatchId",
                 "requested_on" => new Zend_Db_Expr('now()'),
                 "requested_by" => $authNameSpace->admin_id,
             ]);
+
+            // Return batch_id instead of job_id for status polling
+            return $batchId;
         } else {
             $resp = 0;
         }
@@ -69,6 +84,28 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
 
         return $this->insert([
             "job" => "evaluate-shipments.php -s " . escapeshellarg($safeShipmentId),
+            "requested_on" => new Zend_Db_Expr('now()'),
+            "requested_by" => $authNameSpace->admin_id,
+        ]);
+    }
+
+    /**
+     * Schedule certificate distribution job for a batch
+     *
+     * @param int $batchId The batch ID to distribute
+     * @return int The job_id of the created job
+     */
+    public function scheduleCertificateDistribution($batchId)
+    {
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $safeBatchId = intval($batchId);
+
+        if ($safeBatchId <= 0) {
+            return 0;
+        }
+
+        return $this->insert([
+            "job" => "distribute-certificates.php -b " . escapeshellarg($safeBatchId),
             "requested_on" => new Zend_Db_Expr('now()'),
             "requested_by" => $authNameSpace->admin_id,
         ]);

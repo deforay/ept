@@ -304,6 +304,14 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'url' => $this->url(['module' => 'admin', 'controller' => 'job-tracking'], 'default', true),
 		'keywords' => ['job', 'tracking', 'queue']
 	];
+	$spotlightItems[] = [
+		'id' => 'certificate-batches',
+		'title' => $this->translate->_('Certificate Batches'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-certificate',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'certificate-batches'], 'default', true),
+		'keywords' => ['certificate', 'batch', 'generation', 'approval']
+	];
 }
 
 if (!$pstatus && (in_array('config-ept', $privileges) || in_array('manage-participants', $privileges))) {
@@ -891,6 +899,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 									<li id="JobTracking"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'job-tracking'), 'default', true); ?>"><?= $this->translate->_("Job Tracking"); ?></a>
 									</li>
+									<li id="CertificateBatches"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches'), 'default', true); ?>"><?= $this->translate->_("Certificate Batches"); ?></a>
+									</li>
 								<?php } ?>
 							</ul>
 						</li>
@@ -1190,6 +1201,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#FinalizeReports').addClass('active');
 			} else if (splitsUrl[2] == 'job-tracking') {
 				$('#JobTracking').addClass('active');
+			} else if (splitsUrl[2] == 'certificate-batches') {
+				$('#CertificateBatches').addClass('active');
 			} else if (splitsUrl[2] == 'shipment-response-report') {
 				$('#ShipmentResponseReport').addClass('active');
 			} else if (splitsUrl[2] == 'testing-facility-by-ownership') {

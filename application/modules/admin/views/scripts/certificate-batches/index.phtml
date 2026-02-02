@@ -1,0 +1,549 @@
+<link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
+<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
+
+<style>
+    .batch-status-pending {
+        background-color: #f0ad4e;
+        color: #fff;
+    }
+
+    .batch-status-generating {
+        background-color: #5bc0de;
+        color: #fff;
+    }
+
+    .batch-status-generated {
+        background-color: #5cb85c;
+        color: #fff;
+    }
+
+    .batch-status-approved {
+        background-color: #337ab7;
+        color: #fff;
+    }
+
+    .batch-status-distributed {
+        background-color: #5cb85c;
+        color: #fff;
+    }
+
+    .batch-status-failed {
+        background-color: #d9534f;
+        color: #fff;
+    }
+
+    .batch-status-cancelled {
+        background-color: #777;
+        color: #fff;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .count-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin: 1px;
+    }
+
+    .count-excellence {
+        background-color: #dff0d8;
+        color: #3c763d;
+    }
+
+    .count-participation {
+        background-color: #d9edf7;
+        color: #31708f;
+    }
+
+    .count-skipped {
+        background-color: #fcf8e3;
+        color: #8a6d3b;
+    }
+
+    .btn-action {
+        padding: 3px 8px;
+        font-size: 11px;
+        margin: 1px;
+    }
+
+    .auto-refresh-indicator {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #d9edf7;
+        border-radius: 3px;
+        font-size: 12px;
+        color: #31708f;
+    }
+
+    .auto-refresh-indicator i {
+        margin-right: 5px;
+    }
+
+    .auto-refresh-paused {
+        background: #fcf8e3;
+        color: #8a6d3b;
+    }
+</style>
+
+<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
+    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
+        <i class="icon-certificate"></i> <?= $this->translate->_("Certificate Batches"); ?>
+    </div>
+    <div class="pull-right" style="margin-top: 5px;">
+        <span id="autoRefreshIndicator" class="auto-refresh-indicator">
+            <i class="icon-refresh icon-spin"></i>
+            <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>
+        </span>
+        <button class="btn btn-sm btn-info" onclick="refreshBatches()" style="margin-left: 10px;">
+            <i class="icon-refresh"></i>
+            <?= $this->translate->_("Refresh Now"); ?>
+        </button>
+    </div>
+</h4>
+
+<!-- Filter Controls -->
+<table style="margin:20px 0;" class="table table-bordered">
+    <tr>
+        <td style="width:200px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Status"); ?>
+        </td>
+        <td style="width:250px;text-align: center;font-weight:bold;">
+            <?= $this->translate->_("Date Range"); ?>
+        </td>
+        <td style="width:40px;text-align: center;font-weight:bold;"></td>
+    </tr>
+    <tr>
+        <td>
+            <select id="filterStatus" name="filterStatus" class="form-control input-sm" onchange="applyFilters();">
+                <option value="">-- All Statuses --</option>
+                <option value="pending">Pending</option>
+                <option value="generating">Generating</option>
+                <option value="generated">Generated</option>
+                <option value="approved">Approved</option>
+                <option value="distributed">Distributed</option>
+                <option value="failed">Failed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </td>
+        <td>
+            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+                style="background: #fff" placeholder="Click to select date range" />
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm" onclick="resetFilters()">
+                <span><?= $this->translate->_("Reset"); ?></span>
+            </button>
+        </td>
+    </tr>
+</table>
+
+<!-- Batches Table -->
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover" id="batchesTable">
+    <thead>
+        <tr>
+            <th><?= $this->translate->_("Batch Name"); ?></th>
+            <th><?= $this->translate->_("Shipments"); ?></th>
+            <th><?= $this->translate->_("Status"); ?></th>
+            <th><?= $this->translate->_("Excellence"); ?></th>
+            <th><?= $this->translate->_("Participation"); ?></th>
+            <th><?= $this->translate->_("Skipped"); ?></th>
+            <th><?= $this->translate->_("Created On"); ?></th>
+            <th><?= $this->translate->_("Actions"); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="8" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
+<script type="text/javascript" charset="utf-8">
+    var oTable = null;
+    var autoRefreshInterval = null;
+    var startDate = "";
+    var endDate = "";
+    var hasActiveBatches = false;
+
+    $(document).ready(function () {
+        initDateRangePicker();
+        initBatchesTable();
+        startAutoRefresh();
+    });
+
+    function initDateRangePicker() {
+        // Default: last 3 months to today
+        var defaultStart = moment().subtract(3, 'months');
+        var defaultEnd = moment();
+
+        startDate = defaultStart.format('DD-MMM-YYYY');
+        endDate = defaultEnd.format('DD-MMM-YYYY');
+        $('#dateRange').val(startDate + ' to ' + endDate);
+
+        $('#dateRange').daterangepicker({
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MMM-YYYY',
+                separator: ' to ',
+            },
+            autoApply: true,
+            showDropdowns: true,
+            alwaysShowCalendars: true,
+            autoUpdateInput: true,
+            startDate: defaultStart,
+            endDate: defaultEnd,
+            ranges: {
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last 3 Months': [moment().subtract(3, 'months'), moment()],
+                'Last 6 Months': [moment().subtract(6, 'months'), moment()],
+                'Last 12 Months': [moment().subtract(12, 'months'), moment()],
+                'This Year': [moment().startOf('year'), moment()],
+                'All Time': [moment('2020-01-01'), moment()]
+            }
+        }, function (start, end) {
+            startDate = start.format('DD-MMM-YYYY');
+            endDate = end.format('DD-MMM-YYYY');
+            $('#dateRange').val(startDate + ' to ' + endDate);
+            applyFilters();
+        });
+
+        $('#dateRange').on('cancel.daterangepicker', function () {
+            startDate = "";
+            endDate = "";
+            $(this).val('');
+            applyFilters();
+        });
+    }
+
+    function initBatchesTable() {
+        oTable = $('#batchesTable').dataTable({
+            "bJQueryUI": false,
+            "bAutoWidth": false,
+            "bInfo": true,
+            "bScrollCollapse": true,
+            "sPaginationType": "bootstrap",
+            "bRetrieve": true,
+            "aoColumns": [
+                { "sClass": "center" },
+                { "sClass": "center", "bSortable": false },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center" },
+                { "sClass": "center", "bSortable": false }
+            ],
+            "aaSorting": [[6, "desc"]],
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'get-all-batches')); ?>",
+            "fnServerParams": function (aoData) {
+                aoData.push({ "name": "status", "value": $('#filterStatus').val() });
+                aoData.push({ "name": "dateFrom", "value": startDate });
+                aoData.push({ "name": "dateTo", "value": endDate });
+            },
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": function (json) {
+                        // Check for active batches
+                        hasActiveBatches = false;
+
+                        // Transform data for display
+                        if (json.aaData) {
+                            json.aaData = json.aaData.map(function (row) {
+                                // Check if this batch is active (pending or generating)
+                                if (row.status === 'pending' || row.status === 'generating') {
+                                    hasActiveBatches = true;
+                                }
+
+                                return [
+                                    formatBatchName(row),
+                                    formatShipments(row),
+                                    formatStatusBadge(row.status),
+                                    formatCount(row.excellence_count, 'excellence'),
+                                    formatCount(row.participation_count, 'participation'),
+                                    formatCount(row.skipped_count, 'skipped'),
+                                    formatDateTime(row.created_on),
+                                    formatActions(row)
+                                ];
+                            });
+                        }
+
+                        // Update auto-refresh indicator
+                        updateAutoRefreshIndicator();
+
+                        fnCallback(json);
+                    }
+                });
+            }
+        });
+    }
+
+    function formatBatchName(row) {
+        var name = escapeHtml(row.batch_name);
+        if (row.created_by_name) {
+            name += '<br><small class="text-muted">by ' + escapeHtml(row.created_by_name) + '</small>';
+        }
+        if (row.error_message) {
+            name += '<br><small class="text-danger"><i class="icon-warning-sign"></i> ' + escapeHtml(row.error_message) + '</small>';
+        }
+        return name;
+    }
+
+    function formatShipments(row) {
+        if (!row.shipment_codes) {
+            // Fallback: show shipment IDs count
+            if (row.shipment_ids) {
+                var ids = row.shipment_ids.split(',');
+                return '<span class="text-muted">' + ids.length + ' shipment(s)</span>';
+            }
+            return '<span class="text-muted">-</span>';
+        }
+
+        var codes = row.shipment_codes.split(',');
+        if (codes.length <= 3) {
+            return codes.map(function(c) { return '<span class="label label-default">' + escapeHtml(c.trim()) + '</span>'; }).join(' ');
+        }
+        // Show first 2 and a count
+        var html = '<span class="label label-default">' + escapeHtml(codes[0].trim()) + '</span> ';
+        html += '<span class="label label-default">' + escapeHtml(codes[1].trim()) + '</span> ';
+        html += '<span class="text-muted">+' + (codes.length - 2) + ' more</span>';
+        return html;
+    }
+
+    function formatStatusBadge(status) {
+        var statusConfig = {
+            'pending': { cls: 'batch-status-pending', icon: 'icon-clock', label: 'Pending' },
+            'generating': { cls: 'batch-status-generating', icon: 'icon-spinner icon-spin', label: 'Generating' },
+            'generated': { cls: 'batch-status-generated', icon: 'icon-ok', label: 'Generated' },
+            'approved': { cls: 'batch-status-approved', icon: 'icon-thumbs-up', label: 'Approved' },
+            'distributed': { cls: 'batch-status-distributed', icon: 'icon-envelope', label: 'Distributed' },
+            'failed': { cls: 'batch-status-failed', icon: 'icon-remove', label: 'Failed' },
+            'rejected': { cls: 'batch-status-failed', icon: 'icon-ban-circle', label: 'Rejected' },
+            'cancelled': { cls: 'batch-status-cancelled', icon: 'icon-ban-circle', label: 'Cancelled' }
+        };
+
+        var config = statusConfig[status] || { cls: 'batch-status-pending', icon: 'icon-question', label: status };
+        return '<span class="status-badge ' + config.cls + '"><i class="' + config.icon + '"></i> ' + config.label + '</span>';
+    }
+
+    function formatCount(count, type) {
+        count = parseInt(count) || 0;
+        if (count === 0) {
+            return '<span class="text-muted">-</span>';
+        }
+        return '<span class="count-badge count-' + type + '">' + count + '</span>';
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '<span class="text-muted">-</span>';
+
+        var date = new Date(dateStr.replace(' ', 'T'));
+        var now = new Date();
+        var diff = Math.floor((now - date) / 1000);
+
+        var timeAgo = '';
+        if (diff < 60) {
+            timeAgo = diff + 's ago';
+        } else if (diff < 3600) {
+            timeAgo = Math.floor(diff / 60) + 'm ago';
+        } else if (diff < 86400) {
+            timeAgo = Math.floor(diff / 3600) + 'h ago';
+        } else {
+            timeAgo = Math.floor(diff / 86400) + 'd ago';
+        }
+
+        // Format as readable date
+        var options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+        var formatted = date.toLocaleDateString('en-US', options);
+
+        return '<span title="' + formatted + '">' + timeAgo + '</span>';
+    }
+
+    function formatActions(row) {
+        var actions = [];
+
+        // Download ZIP button (if download_url exists)
+        if (row.download_url) {
+            actions.push('<a href="' + row.download_url + '" class="btn btn-success btn-action" target="_blank" title="Download ZIP">' +
+                '<i class="icon-download"></i> Download</a>');
+        }
+
+        // Approve & Distribute button (if status is generated)
+        if (row.status === 'generated') {
+            actions.push('<button class="btn btn-primary btn-action" onclick="approveBatch(' + row.batch_id + ')" title="Approve and distribute certificates">' +
+                '<i class="icon-ok"></i> Approve</button>');
+            actions.push('<button class="btn btn-danger btn-action" onclick="rejectBatch(' + row.batch_id + ')" title="Reject this batch">' +
+                '<i class="icon-remove"></i> Reject</button>');
+        }
+
+        // Cancel button (if status is pending or generating)
+        if (row.status === 'pending' || row.status === 'generating') {
+            actions.push('<button class="btn btn-danger btn-action" onclick="cancelBatch(' + row.batch_id + ')" title="Cancel this batch">' +
+                '<i class="icon-remove"></i> Cancel</button>');
+        }
+
+        if (actions.length === 0) {
+            return '<span class="text-muted">-</span>';
+        }
+
+        return actions.join(' ');
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function approveBatch(batchId) {
+        if (!confirm('Are you sure you want to approve this batch and schedule certificate distribution?\n\nThis will send certificates to all participants via email.')) {
+            return;
+        }
+
+        $.ajax({
+            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'approve-batch')); ?>',
+            type: 'POST',
+            data: {
+                batch_id: batchId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    alert('Certificates approved and distribution scheduled successfully.');
+                    refreshBatches();
+                } else {
+                    alert('Failed to approve batch: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Error approving batch. Please try again.');
+            }
+        });
+    }
+
+    function cancelBatch(batchId) {
+        if (!confirm('Are you sure you want to cancel this batch?')) {
+            return;
+        }
+
+        $.ajax({
+            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'cancel-batch')); ?>',
+            type: 'POST',
+            data: {
+                batch_id: batchId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    alert('Batch cancelled successfully.');
+                    refreshBatches();
+                } else {
+                    alert('Failed to cancel batch: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Error cancelling batch. Please try again.');
+            }
+        });
+    }
+
+    function rejectBatch(batchId) {
+        if (!confirm('Are you sure you want to reject this batch?\n\nThe certificates will NOT be distributed to participants.')) {
+            return;
+        }
+
+        $.ajax({
+            url: '<?php echo $this->url(array('module' => 'admin', 'controller' => 'certificate-batches', 'action' => 'reject-batch')); ?>',
+            type: 'POST',
+            data: {
+                batch_id: batchId
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    alert('Batch rejected successfully.');
+                    refreshBatches();
+                } else {
+                    alert('Failed to reject batch: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('Error rejecting batch. Please try again.');
+            }
+        });
+    }
+
+    function refreshBatches() {
+        if (oTable) {
+            oTable.fnDraw(false); // false = don't reset pagination
+        }
+    }
+
+    function applyFilters() {
+        if (oTable) {
+            oTable.fnDraw();
+        }
+    }
+
+    function resetFilters() {
+        $('#filterStatus').val('');
+        // Reset date range to default (last 3 months)
+        var defaultStart = moment().subtract(3, 'months');
+        var defaultEnd = moment();
+        startDate = defaultStart.format('DD-MMM-YYYY');
+        endDate = defaultEnd.format('DD-MMM-YYYY');
+        $('#dateRange').val(startDate + ' to ' + endDate);
+        $('#dateRange').data('daterangepicker').setStartDate(defaultStart);
+        $('#dateRange').data('daterangepicker').setEndDate(defaultEnd);
+        applyFilters();
+    }
+
+    function startAutoRefresh() {
+        autoRefreshInterval = setInterval(function () {
+            refreshBatches();
+        }, 5000); // Refresh every 5 seconds
+    }
+
+    function stopAutoRefresh() {
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+        }
+    }
+
+    function updateAutoRefreshIndicator() {
+        var $indicator = $('#autoRefreshIndicator');
+        if (hasActiveBatches) {
+            $indicator.removeClass('auto-refresh-paused');
+            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>');
+        } else {
+            $indicator.removeClass('auto-refresh-paused');
+            $indicator.html('<i class="icon-refresh icon-spin"></i> <?= $this->translate->_("Auto-refreshing every 5 seconds"); ?>');
+        }
+    }
+
+    // Clean up on page leave
+    $(window).on('beforeunload', function () {
+        stopAutoRefresh();
+    });
+</script>

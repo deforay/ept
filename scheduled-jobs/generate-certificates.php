@@ -3,15 +3,44 @@ require_once __DIR__ . '/../cli-bootstrap.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
-$cliOptions = getopt("s:c:t:");
+$cliOptions = getopt("s:c:t:b:");
 $shipmentsToGenerate = $cliOptions['s'] ?? null;
 $certificateName = !empty($cliOptions['c']) ? $cliOptions['c'] : date('Y');
 $templateMode = strtolower($cliOptions['t'] ?? 'pdf');   // 'pdf' | 'docx'
+$batchId = !empty($cliOptions['b']) ? (int) $cliOptions['b'] : null;
+
+// Always initialize batch model - auto-create batch if not provided
+$certificateBatchesModel = new Application_Model_DbTable_CertificateBatches();
+
+if ($batchId) {
+	// Existing batch - just update status
+	$certificateBatchesModel->updateStatus($batchId, 'generating');
+} else {
+	// No batch provided - auto-create one for tracking
+	// This ensures CLI runs are also tracked in the dashboard
+	if (is_array($shipmentsToGenerate)) {
+		$shipmentIdsForBatch = implode(",", $shipmentsToGenerate);
+	} else {
+		$shipmentIdsForBatch = $shipmentsToGenerate ?? '';
+	}
+
+	$batchId = $certificateBatchesModel->createBatch([
+		'batch_name' => $certificateName,
+		'shipment_ids' => $shipmentIdsForBatch,
+		'created_by' => 0, // CLI execution (no admin user)
+		'status' => 'generating'
+	]);
+
+	echo "Auto-created batch #{$batchId} for tracking\n";
+}
 
 if (is_array($shipmentsToGenerate))
 	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
 if (empty($shipmentsToGenerate)) {
 	error_log("Please specify the shipment ids with -s");
+	$certificateBatchesModel->updateStatus($batchId, 'failed', [
+		'error_message' => 'No shipment IDs specified'
+	]);
 	exit(1);
 }
 
@@ -361,13 +390,13 @@ function generateCertificate(string $shipmentType, string $certificateType, arra
 			throw new Exception("DOCX render failed");
 
 		// No PDF conversion - let users handle this locally
-		error_log("DOCX certificate generated: $outDocx");
+		//error_log("DOCX certificate generated: $outDocx");
 		return;
 	}
 
 	throw new Exception("Unknown template mode: $mode");
 }
-function createZipAndGetDownloadUrl(string $folderPath, string $certificateName, string $urlToTempFolder): ?string
+function createZipAndGetDownloadUrl(string $folderPath, string $certificateName, string $urlToTempFolder, string $mode = 'pdf'): ?string
 {
 	$zipFileName = "certificates-{$certificateName}-" . date('Y-m-d-H-i-s') . ".zip";
 	$zipPath = $folderPath . DIRECTORY_SEPARATOR . $zipFileName;
@@ -379,20 +408,47 @@ function createZipAndGetDownloadUrl(string $folderPath, string $certificateName,
 		return null;
 	}
 
-	// Add all DOCX files from both excellence and participation folders
+	// Determine file extension based on mode
+	$fileExtension = ($mode === 'docx') ? '*.docx' : '*.pdf';
+
+	// Add all certificate files from both excellence and participation folders
 	$folders = ['excellence', 'participation'];
 	$fileCount = 0;
 
 	foreach ($folders as $folder) {
 		$fullFolderPath = $folderPath . DIRECTORY_SEPARATOR . $folder;
 		if (is_dir($fullFolderPath)) {
-			$files = glob($fullFolderPath . DIRECTORY_SEPARATOR . "*.docx");
+			$files = glob($fullFolderPath . DIRECTORY_SEPARATOR . $fileExtension);
 			foreach ($files as $file) {
 				$relativeName = $folder . '/' . basename($file);
 				$zip->addFile($file, $relativeName);
 				$fileCount++;
 			}
 		}
+	}
+
+	// For PDF mode, just add a simple README and close
+	if ($mode === 'pdf') {
+		$readme = "CERTIFICATE FILES - PDF FORMAT
+======================================
+
+Generated on: " . date('Y-m-d H:i:s') . "
+Certificate Name: {$certificateName}
+Total Files: {$fileCount}
+
+CONTENTS:
+- excellence/      Excellence certificates (participants who passed all panels)
+- participation/   Participation certificates (participants who submitted but didn't pass all)
+
+These PDF certificates are ready to use - no conversion needed.
+";
+		$zip->addFromString('README.txt', $readme);
+		$zip->close();
+
+		if (file_exists($zipPath)) {
+			return $urlToTempFolder . '/' . $zipFileName;
+		}
+		return null;
 	}
 
 	// Add PowerShell script (improved with progress, error handling, COM cleanup)
@@ -703,7 +759,7 @@ try {
 
 	foreach ($participants as $participantUID => $arrayVal) {
 		$currentParticipant++;
-		echo "\r[{$currentParticipant}/{$totalParticipants}] Processing: {$participantUID}                    ";
+		echo "\r[{$currentParticipant}/{$totalParticipants}] Processing for Participant Code : {$participantUID}                    ";
 
 		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
 			if (!isset($arrayVal[$shipmentType]))
@@ -786,26 +842,25 @@ try {
 	echo "Skipped (no submission):    {$stats['skipped']}\n";
 	echo "Total processed:            " . ($stats['excellence'] + $stats['participation'] + $stats['skipped']) . "\n";
 
-	if ($templateMode === 'docx') {
-		echo "\n=== DOCX CERTIFICATES GENERATED ===\n";
-		echo "Creating ZIP file for download...\n";
+	// Create ZIP for download (both PDF and DOCX modes)
+	echo "\n=== Creating ZIP file for download... ===\n";
+	$downloadUrl = createZipAndGetDownloadUrl($folderPath, $certificateName, $urlToTempFolder, $templateMode);
 
-		$downloadUrl = createZipAndGetDownloadUrl($folderPath, $certificateName, $urlToTempFolder);
-
-		if ($downloadUrl) {
-			echo "\n✅ SUCCESS: Certificates packaged successfully!\n";
-			echo "\n📁 DOWNLOAD LINK:\n";
-			echo "$downloadUrl\n\n";
+	if ($downloadUrl) {
+		echo "\n✅ SUCCESS: Certificates packaged successfully!\n";
+		echo "\n📁 DOWNLOAD LINK:\n";
+		echo "$downloadUrl\n\n";
+		if ($templateMode === 'docx') {
 			echo "📋 INSTRUCTIONS:\n";
 			echo "1. Download the ZIP file from the link above\n";
 			echo "2. Extract the ZIP file\n";
 			echo "3. Read the README.txt file for PDF conversion instructions\n";
 			echo "4. Use the included PowerShell script for bulk conversion\n\n";
 			echo "💡 TIP: The PowerShell script will convert all DOCX files to PDF automatically\n";
-		} else {
-			echo "\n❌ ERROR: Failed to create ZIP file\n";
-			echo "Individual DOCX files are available in: $folderPath\n";
 		}
+	} else {
+		echo "\n❌ ERROR: Failed to create ZIP file\n";
+		echo "Individual files are available in: $folderPath\n";
 	}
 
 	if (!empty($allShipmentsProcessed)) {
@@ -820,7 +875,21 @@ try {
 			$downloadUrlForNotification
 		);
 	}
+
+	// Update batch status on success
+	$certificateBatchesModel->updateStatus($batchId, 'generated', [
+		'excellence_count' => $stats['excellence'],
+		'participation_count' => $stats['participation'],
+		'skipped_count' => $stats['skipped'],
+		'download_url' => $downloadUrl ?? null,
+		'folder_path' => $folderPath
+	]);
 } catch (Exception $e) {
 	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
+
+	// Update batch status on failure
+	$certificateBatchesModel->updateStatus($batchId, 'failed', [
+		'error_message' => $e->getMessage()
+	]);
 }
