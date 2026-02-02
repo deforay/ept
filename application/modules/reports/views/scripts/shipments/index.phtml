@@ -8,6 +8,100 @@
 
 		}
 	}
+
+	#shipmentTable {
+		table-layout: fixed;
+		width: 100%;
+	}
+
+	#shipmentTable th,
+	#shipmentTable td {
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+	}
+
+	/* Column widths - total 100% */
+	#shipmentTable th:nth-child(1),
+	#shipmentTable td:nth-child(1) {
+		width: 11%;
+	}
+
+	/* PT Survey Code */
+
+	#shipmentTable th:nth-child(2),
+	#shipmentTable td:nth-child(2) {
+		width: 7%;
+	}
+
+	/* PT Survey Date */
+
+	#shipmentTable th:nth-child(3),
+	#shipmentTable td:nth-child(3) {
+		width: 10%;
+	}
+
+	/* Shipment Code */
+
+	#shipmentTable th:nth-child(4),
+	#shipmentTable td:nth-child(4) {
+		width: 7%;
+	}
+
+	/* Result Due Date */
+
+	#shipmentTable th:nth-child(5),
+	#shipmentTable td:nth-child(5) {
+		width: 7%;
+	}
+
+	/* Scheme */
+
+	#shipmentTable th:nth-child(6),
+	#shipmentTable td:nth-child(6) {
+		width: 8%;
+	}
+
+	/* No. of Participants */
+
+	#shipmentTable th:nth-child(7),
+	#shipmentTable td:nth-child(7) {
+		width: 8%;
+	}
+
+	/* Responses */
+
+	#shipmentTable th:nth-child(8),
+	#shipmentTable td:nth-child(8) {
+		width: 7%;
+	}
+
+	/* Number Passed */
+
+	#shipmentTable th:nth-child(9),
+	#shipmentTable td:nth-child(9) {
+		width: 8%;
+	}
+
+	/* Shipment Status */
+
+	#shipmentTable th:nth-child(10),
+	#shipmentTable td:nth-child(10) {
+		width: 13%;
+	}
+
+	/* Download Participant Reports */
+
+	#shipmentTable th:nth-child(11),
+	#shipmentTable td:nth-child(11) {
+		width: 14%;
+	}
+
+	/* Download Excel */
+
+	/* Allow button text to wrap */
+	#shipmentTable .btn {
+		white-space: normal;
+	}
 </style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery3.min.js'); ?>"></script>
@@ -58,11 +152,11 @@
 			<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
 			<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
 			<!-- <th style="text-align: center;">No. of Samples</th> -->
-			<th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Participants"); ?></th>
 			<th style="text-align: center;"><?= $this->translate->_("Responses"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Download Participant Reports"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Passed"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
+			<th style="text-align: center;"><?= $this->translate->_("Download Reports"); ?></th>
 			<th style="text-align: center;"><?= $this->translate->_("Download Excel"); ?></th>
 		</tr>
 	</thead>
