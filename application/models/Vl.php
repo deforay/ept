@@ -11,7 +11,9 @@ use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 class Application_Model_Vl
 {
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {
@@ -1597,12 +1599,12 @@ class Application_Model_Vl
 
                 $sample = $row['sample_id'];
                 $row['vl_assay'] = $vlAssayId;
-                $row['no_of_responses'] = $skippedResponseCounter[$vlAssayId];
+                $row['no_of_responses'] = $skippedResponseCounter[$vlAssayId] ?? 0;
 
                 // if there are no responses then continue
                 // (this is especially put to check and remove vl assay = 6 if no one used "Others")
                 // Why? because we manually inserted "6" into skippedAssays at the top of this function
-                if (empty($row['no_of_responses'])) {
+                if (empty($row['no_of_responses']) || $row['no_of_responses'] == 0) {
                     continue;
                 }
 

@@ -152,10 +152,10 @@ if ($resultArray['shipment'] != "") {
                             $sample[$k]['NumberPassed'] = 0;
                         }
                         if (!empty($val['use_range']) && $val['use_range'] == 'manual') {
-                            $val['low_limit'] = $val['manual_low'] ?: $val['low_limit'];
-                            $val['high_limit'] = $val['manual_high'] ?: $val['high_limit'];
-                            $val['median'] = $val['manual_median'] ?: $val['median'];
-                            $val['sd'] = $val['manual_sd'] ?: $val['sd'];
+                            $val['low_limit'] = $val['manual_low'] ?? $val['low_limit'];
+                            $val['high_limit'] = $val['manual_high'] ?? $val['high_limit'];
+                            $val['median'] = $val['manual_median'] ?? $val['median'];
+                            $val['sd'] = $val['manual_sd'] ?? $val['sd'];
 
                             $sample[$k]['response'] += $val['no_of_responses'];
                             $sample[$k]['median'] = $val['median'];
@@ -243,16 +243,16 @@ if ($resultArray['shipment'] != "") {
                 $calRes .= '<th style="background-color:#8ECF64;text-align:center;font-size:10;width:40%;" colspan="2">Participants with <br/>Passing Results <br/>(z ≤ ± 3.0)</th>
                                     </tr>';
                 foreach ($sample as $point => $label) {
-                    $score = round((($label['NumberPassed'] / $label['response']) * 100));
+                    $score = $label['NumberPassed'] > 0 ? round((($label['NumberPassed'] / $label['response']) * 100)) : 0;
                     $calRes .= '<tr>';
                     $calRes .= '
-                            <td style="font-weight:normal;text-align:center;width:20%;">' . $label['label'] . '</td>
-                            <td style="font-weight:normal;text-align:center;width:20%;">' . $label['response'] . '</td>
-                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'], 2), 2, '.', '') . '</td>';
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . ($label['label'] ?? '') . '</td>
+                            <td style="font-weight:normal;text-align:center;width:20%;">' . ($label['response'] ?? '') . '</td>
+                            <td style="font-weight:normal;text-align:center;">' . number_format(round($label['median'] ?? 0, 2), 2, '.', '') . '</td>';
                     // $calRes .= '<td style="font-weight:normal;text-align:center;">' . number_format(round($label['lowLimit'], 2), 2, '.', '') . '</td>
                     // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['highLimit'], 2), 2, '.', '') . '</td>
                     // <td style="font-weight:normal;text-align:center;">' . number_format(round($label['sd'], 2), 2, '.', '') . '</td>
-                    $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . $label['NumberPassed'] . '</td>
+                    $calRes .= '<td style="font-weight:normal;text-align:center;width:20%;">' . ($label['NumberPassed'] ?? '') . '</td>
                             <td style="font-weight:normal;text-align:center;width:20%;">' . $score . '%</td>
                         </tr>';
                     $noOfPaResponseTxt = $label['response'];
