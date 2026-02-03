@@ -290,7 +290,7 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>
-                       </tr>';
+                </tr>';
 
                 // Add result rows
                 foreach ($result['responseResult'] as $key => $response) {
@@ -311,8 +311,8 @@ if (!empty($resultArray['shipment'])) {
                     $evaluationScore = $passPercentage / $result['number_of_samples'];
                     $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
 
-                    $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>
-                           </tr>';
+                    $labRes .= '<td style="text-align:center;">' . round($response['calculated_score'], 2) . '</td>
+                    </tr>';
                 }
 
                 // Add testing score row
@@ -325,8 +325,8 @@ if (!empty($resultArray['shipment'])) {
                     $shipmentScoreColspan += 1;
 
                 $labRes .= '<tr>
-                    <td colspan="' . $shipmentScoreColspan . '">TESTING SCORE</td>
-                    <td style="text-align:center;">' . $result['shipment_score'] . '</td>
+                    <td style="text-align:right;" colspan="' . $shipmentScoreColspan . '">TESTING SCORE </td>
+                    <td style="text-align:center;">' . round($result['shipment_score'], 2) . '</td>
                 </tr></table><br>';
 
                 $pdf->SetLeftMargin(15);
@@ -362,8 +362,8 @@ if (!empty($resultArray['shipment'])) {
             $summaryCount = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores</span><br/>
                 <table border="1" style="font-size:12px;width:100%;">
                     <tr>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total No# of Participants Enrolled</td>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total No# of Participants That Participated</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Enrolled</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants That Participated</td>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
                     </tr>
                     <tr>

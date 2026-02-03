@@ -285,12 +285,12 @@ if ($resultArray['shipment'] != "") {
                 $calRes .= '</table>';
                 $pdf->writeHTML($calRes, true, false, true, false, '');
             }
-        }
-
-        $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
-        $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '
+            $note = '<h5>Number of Participants for each VL platform with less than 18 participants (Total ' . $noOfPaResponseTxt . '):</h5>';
+            $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '
         <i><br>*Values from Abbott m2000 RealTime platform were used as a reference to evaluate results for VL platforms with less than 18 participants in this PT round.</i>
         </span><br><hr>';
+
+        }
 
         $pdf->writeHTML($note, true, false, true, false, '');
 

@@ -288,7 +288,7 @@ if (!empty($resultArray['shipment'])) {
             // Add testing score row
             $shipmentScoreColspan = 7 - ($testThreeOptionalDisplay != "" ? 1 : 0) - ($screeningTestDisplay != "" ? 1 : 0);
             $labRes .= '<tr>
-                <td colspan="' . $shipmentScoreColspan . '">TESTING SCORE</td>
+                <td style="text-align:right;" colspan="' . $shipmentScoreColspan . '">TESTING SCORE </td>
                 <td style="text-align:center;">' . $result['shipment_score'] . '</td>
             </tr></table><br>';
 
@@ -450,8 +450,8 @@ if (!empty($resultArray['shipment'])) {
             $labTxt = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores:</span><br/>
                 <table border="1" style="font-size:12px;width:100%;">
                     <tr>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants Enrolled</td>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants That Participated</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total Number of Participants Enrolled</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total Number of Participants That Participated</td>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
                     </tr>
                     <tr>
@@ -460,8 +460,8 @@ if (!empty($resultArray['shipment'])) {
                         <td style="text-align:center;width:20%;">' . (round($participantPerformance['total_responses'] / $participantPerformance['total_shipped'], 2) * 100) . '%</td>
                     </tr>
                     <tr>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of Participants submitted results</td>
-                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of participants with satisfactory performance</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total Number of Participants submitted results</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total Number of participants with satisfactory performance</td>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
                     </tr>
                     <tr>
