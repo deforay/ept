@@ -61,7 +61,7 @@ class Application_Model_Vl
                 $createdOn = null;
             }
 
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
 
             if (!empty($createdOn) && $createdOn <= $lastDate) {
 

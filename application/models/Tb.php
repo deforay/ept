@@ -69,11 +69,11 @@ class Application_Model_Tb
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
 
             $results = $this->getTbSamplesForParticipant($shipmentId, $shipment['participant_id']);
 
-            if ($createdOn->format('Y-m-d') > $lastDate->format('Y-m-d')) {
+            if ($createdOn > $lastDate) {
                 $failureReason[] = [
                     'warning' => "Response was submitted after the last response date."
                 ];

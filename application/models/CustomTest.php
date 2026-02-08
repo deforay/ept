@@ -124,7 +124,7 @@ class Application_Model_CustomTest
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
             $results = $this->getSamplesForParticipant($shipmentId, $shipment['participant_id']);
             $totalScore = 0;
             $calculatedScore = 0;

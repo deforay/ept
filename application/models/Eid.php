@@ -37,7 +37,7 @@ class Application_Model_Eid
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
 
             $results = $schemeService->getEidSamples($shipmentId, $shipment['participant_id']);
             $totalScore = 0;

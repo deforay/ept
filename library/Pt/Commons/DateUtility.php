@@ -313,6 +313,11 @@ final class Pt_Commons_DateUtility
         return [$startDate, $endDate];
     }
 
+    public static function endOfDay(string $date): DateTimeImmutable
+    {
+        return (new DateTimeImmutable($date))->setTime(23, 59, 59);
+    }
+
     public static function getDateBeforeMonths(int $months): string
     {
         return (new DateTimeImmutable())->modify("-{$months} months")->format('Y-m-d');

@@ -58,7 +58,7 @@ class Application_Model_Covid19
 
 
             //Response was submitted after the last response date.
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
             if ($createdOn > $lastDate) {
                 $lastDateResult = 'Fail';
                 $failureReason[] = array(

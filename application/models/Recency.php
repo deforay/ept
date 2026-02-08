@@ -49,7 +49,7 @@ class Application_Model_Recency
                 $createdOn = new DateTime('1970-01-01');
             }
 
-            $lastDate = new DateTime($shipment['lastdate_response']);
+            $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
 
             if ($createdOn <= $lastDate) {
 
