@@ -19,13 +19,14 @@ class Pt_Reports_FpdiReport extends Fpdi
     public $approveTxt = "";
     public $instance = "";
     public $staticFooterHtml = "";
+    public $shipmentAttributes = "";
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
-    public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "")
+    public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "", $shipmentAttributes = "")
     {
         $this->resultStatus = $resultStatus;
         $this->dateTime = $dateTime;
@@ -37,6 +38,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         $this->schemeType = $schemeType;
         $this->approveTxt = $approveTxt;
         $this->staticFooterHtml = $staticFooterHtml;
+        $this->shipmentAttributes = $shipmentAttributes;
 
         $reportService = new Application_Service_Reports();
         $commonService = new Application_Service_Common();
@@ -152,13 +154,18 @@ class Pt_Reports_FpdiReport extends Fpdi
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
 
         // Append dynamic content to footer HTML
-
+        $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? null;
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
-        $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
+        if ($this->layout != 'zimbabwe') {
+            $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
+        } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate)) {
+            $completeFooterHtml .= '<div style="text-align:left; font-size:7px; margin-top:2px;">Effective Date: ' . $effectiveDate . '</div>';
+        }
+        $completeFooterHtml .= '<div style="text-align:right; font-size:7px; margin-top:2px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div>';
+
 
         // Append page numbers
 
-        $completeFooterHtml .= '<div style="text-align:right; font-size:7px; margin-top:2px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div>';
 
         // Handle special cases
 
