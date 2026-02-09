@@ -131,6 +131,13 @@ if (!empty($resultArray['shipment'])) {
             $otherTestPossibleResults[$row['result_code']] = $row['response'];
         }
 
+        // Add report title
+        $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
+        // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . '</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+
         // Build laboratory information table
         $labInfo = '<table cellpadding="3" style="font-size:11px;">
             <tr>
@@ -146,22 +153,21 @@ if (!empty($resultArray['shipment'])) {
             <tr>
                 <td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>
                 <td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>
-                <td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>
+                <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
             </tr>
             <tr>
-                <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
                 <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>
                 <td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>
-            </tr>
-            <tr>
                 <td><strong>Response Date</strong><br>' . $responseDate . '</td>
-                <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
-                <td><strong>Report Issue Date</strong><br>' . date('d-m-Y H:i:s') . '</td>
             </tr>
             <tr>
+                <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
                 <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
                 <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>
+            </tr>
+            <tr>
                 <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>
+                <td><strong>Date of Approval</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
             </tr>
             <tr>';
 
@@ -334,26 +340,28 @@ if (!empty($resultArray['shipment'])) {
             }
         }
 
+        $totalScore = $result['shipment_score'] + $result['documentation_score'];
+        $grade = ($totalScore >= $passPercentage) ? 'Satisfactory' : 'Unsatisfactory';
         // Overall score table
-        if (isset($result['documentation_score']) && $result['documentation_score'] > 0) {
-            $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>';
-            $totalScoreTxt = '<table border="1" style="font-size:12px;width:100%;">
-                <tr>
-                    <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Testing Score</td>
-                    <td style="text-align:center;width:25%;">' . round($result['shipment_score']) . '</td>
-                </tr>
-                <tr>
-                    <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Documentation Score</td>
-                    <td style="text-align:center;width:25%;">' . round($result['documentation_score']) . '</td>
-                </tr>
-                <tr>
-                    <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Total</td>
-                    <td style="text-align:center;width:25%;">' . round($result['shipment_score'] + $result['documentation_score']) . '</td>
-                </tr>
-            </table>';
-        } else {
-            $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score : ' . round($result['shipment_score'] + $result['documentation_score']) . '</span><br/>';
-        }
+        $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>
+                <table border="1" style="font-size:12px;width:100%;">
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Testing Score</td>
+                        <td style="text-align:center;width:25%;">' . round($result['shipment_score']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Documentation Score</td>
+                        <td style="text-align:center;width:25%;">' . round($result['documentation_score']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Total</td>
+                        <td style="text-align:center;width:25%;">' . round($result['shipment_score'] + $result['documentation_score']) . '</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Overall Grading</td>
+                        <td style="text-align:center;width:25%;">' . $grade . '</td>
+                    </tr>
+                </table>';
         $pdf->writeHTML($totalScoreTxt, true, false, true, false, '');
 
         // Summary count if provided
@@ -405,11 +413,11 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage();
         $overallScore = ((int) $passPercentage == 100) ? $passPercentage : "&gt; $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
-
+        $scorePerSample = $result['shipment_score'] / count($result['responseResult']);
         $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                         <ul>
                             <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
-                            <li>A testing score of 15 is awarded for any result reported correctly</li>
+                            <li>A testing score of ' . $scorePerSample . ' is awarded for any result reported correctly</li>
                             <li>A grading of satisfactory is assigned when the participant overall score is ' . $overallScore . '%</li>
                             <li>A grading of Unsatisfactory is assigned when the participant overall score is ' . $unsatisfactoryScore . '%</li>
                             <li>A grading of ungraded is assigned when the participant has not submitted PT results</li>
@@ -438,21 +446,23 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Additional information
-        $additionalInfo = '<span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
-            <ol>
-                <li>The person authorizing/Approving PT Reports: Rufaro Magadu (PT scheme Manager).</li>
-                <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
-                <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
-                <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
-                <li>The report Number is the Shipment Code on the PT report</li>
-                <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
-                <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
-                <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
-                <li>The participant has 15 days to appeal the performance score from the date the report is released.</li>
-                <li>The PT scheme is a qualitative scheme and runs two times a year.</li>
-                <li>For more inquires, Queries, comments and reactions about the PT report, contact the PT scheme coordinator on +242-668908 or eqa@nmrl.org.zw.</li>
-                <li>More information on the PT scheme can be obtained from each PT round instructions sent to participants or contact the PT scheme coordinator on+263-242-668908 or eqa@nmrl.org.zw or ,the PT scheme manager on +263-772621554 or the PT laboratory at eqa@nmrl.org.zw.</li>
-            </ol>';
+        $additionalInfo = '<br><br><span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
+        <ol>
+            <li>The person authorizing/Approving PT Reports: Lucia Sisya (PT scheme Manager).</li>
+            <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
+            <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
+            <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
+            <li>The report Number is the ' . $result['shipment_code'] . ' on the PT report</li>
+            <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
+            <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
+            <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
+            <li>The participant has 15 days to appeal the performance score from the date the report is released.</li>
+            <li>The PT scheme is a qualitative scheme and runs two times a year.</li>
+            <li>Advisory services are provided internally by the PT team. This team comprises of personnel with technical expertise and experience in the field of testing, sampling as well as statistics for the PT scheme. NMRL will seek for external advisory services where it is required.</li>
+            <li>PT reports are issued solely to the participating laboratory and are intended for internal quality assurance purposes. Participants may share their reports with accreditation bodies or regulatory authorities as evidence of participation and performance. PT reports or results shall not be used for marketing, advertising or public comparison without written consent from the provider.</li>
+            <li>For more inquires, Queries, comments and reactions about the PT report, contact the PT scheme coordinator on +242-668908 or eqa@nmrl.org.zw.</li>
+            <li>More information on the PT scheme can be obtained from each PT round instructions sent to participants or contact the PT scheme coordinator on+263-242-668908 or eqa@nmrl.org.zw or ,the PT scheme manager on +263-772621554 or the PT laboratory at eqa@nmrl.org.zw.</li>
+        </ol>';
         $pdf->writeHTML($additionalInfo, true, false, true, false, '');
 
         // Check testkit approved or not (if needed)
@@ -517,13 +527,13 @@ if (!empty($resultArray['shipment'])) {
         $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
         $html = '<p style="font-size:12px;text-align:center;"> - ' . $eodReportText . ' - </p>';
 
-        $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        /* $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? null;
         if (!empty($approveTxt)) {
             $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . ' &nbsp; | &nbsp; Date of approval: ' . ($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span><br>';
         }
         $html .= '<span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
-
+ */
 
         $pdf->writeHTML($html, true, false, true, false, '');
         // Clear output buffer if exists
