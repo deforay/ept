@@ -47,7 +47,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
                 '/vl/response',
                 '/tb/response',
                 '/recency/response',
-                '/generic-test/response',
+                '/custom-test/response',
                 '/tb/assay-formats',
             ];
             foreach ($adminAllowedURI as $uri) {

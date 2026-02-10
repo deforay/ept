@@ -399,7 +399,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $buttonType = 'btn-danger';
             }
             if (isset($aRow['is_user_configured']) && $aRow['is_user_configured'] == 'yes') {
-                $aRow['scheme_type'] = 'generic-test';
+                $aRow['scheme_type'] = 'custom-test';
             }
 
             $download = '';
