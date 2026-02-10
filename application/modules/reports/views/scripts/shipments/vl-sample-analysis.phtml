@@ -12,6 +12,56 @@
 
         }
     }
+    .vl-assay-section {
+        margin-top: 25px;
+    }
+    .vl-assay-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+    }
+    .vl-assay-grid-wrapper {
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+    .vl-assay-card {
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        padding: 10px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .vl-assay-card h5 {
+        margin: 0 0 6px 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .vl-assay-meta {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 6px;
+    }
+    .vl-toggle {
+        display: inline-flex;
+        border: 1px solid #3b5a9a;
+        border-radius: 6px;
+        overflow: hidden;
+        vertical-align: middle;
+        margin: 0 6px;
+    }
+    .vl-toggle .vl-toggle-btn {
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        background: #fff;
+        color: #3b5a9a;
+        border: none;
+    }
+    .vl-toggle .vl-toggle-btn.active {
+        background: #3b5a9a;
+        color: #fff;
+    }
 </style>
 <legend>
     <h3>VL Sample Analysis</h3>
@@ -52,6 +102,25 @@
 
 <br />
 
+<div class="vl-assay-section">
+    <h4 id="vlAssayDistributionsTitle" class="hide">VL Response Distribution by Assay</h4>
+    <div id="vlScatterAxisToggle" class="vl-assay-meta dontPrint hide" style="margin-bottom:6px;">
+        <span style="margin-right:6px;">X-axis</span>
+        <div class="vl-toggle" id="vlScatterAxisMode">
+            <button type="button" class="vl-toggle-btn active" data-mode="participants">Participants</button>
+            <button type="button" class="vl-toggle-btn" data-mode="log10">log10 VL</button>
+        </div>
+    </div>
+    <div id="vlAssayDistributions" class="vl-assay-grid-wrapper">
+        <div class="vl-assay-meta">Select a shipment and click Get Report to view distributions.</div>
+    </div>
+    <div id="vlAssayDistributionsNote" class="vl-assay-meta hide" style="margin-top:6px;">
+        Note: Each chart aggregates all log10 reported viral loads for an assay across all samples in the shipment. Values outside assay sample ranges are excluded; 0 values are counted as Undetectable.
+    </div>
+</div>
+
+<br />
+
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
     id="shipmentTable">
     <thead>
@@ -78,6 +147,8 @@
     var endDate = "";
     var paginate = true;
     $(document).ready(function () {
+        var defaultStart = moment().subtract(24, 'month');
+        var defaultEnd = moment();
         $('#dateRange').daterangepicker({
             locale: {
                 cancelLabel: 'Clear',
@@ -88,6 +159,8 @@
             showDropdowns: true,
             alwaysShowCalendars: true,
             autoUpdateInput: true,
+            startDate: defaultStart,
+            endDate: defaultEnd,
             ranges: {
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
@@ -103,6 +176,10 @@
                 endDate = end.format('DD-MMM-YYYY');
                 getShipmentCodes();
             });
+        startDate = defaultStart.format('DD-MMM-YYYY');
+        endDate = defaultEnd.format('DD-MMM-YYYY');
+        $('#dateRange').val(startDate + ' to ' + endDate);
+        getShipmentCodes();
     });
 
     function getShipmentCodes() {
@@ -201,6 +278,7 @@
             });
             if (barChart) {
                 showBarChart();
+                showAssayDistributions();
             }
         }
     }
@@ -216,6 +294,28 @@
             function (data) {
                 $("#shipmentchart").html(data);
                 $.unblockUI();
+            });
+    }
+
+    function showAssayDistributions() {
+        shipmentId = $("#shipmentId").val();
+        $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'vl-assay-distribution-plot')); ?>", {
+            shipmentId: shipmentId,
+            start: startDate,
+            end: endDate,
+            format: "html"
+        },
+            function (data) {
+                $("#vlAssayDistributions").html(data);
+                if (data && data.indexOf('vl-assay-card') !== -1) {
+                    $("#vlAssayDistributionsTitle").removeClass("hide");
+                    $("#vlAssayDistributionsNote").removeClass("hide");
+                    $("#vlScatterAxisToggle").removeClass("hide");
+                } else {
+                    $("#vlAssayDistributionsTitle").addClass("hide");
+                    $("#vlAssayDistributionsNote").addClass("hide");
+                    $("#vlScatterAxisToggle").addClass("hide");
+                }
             });
     }
 </script>

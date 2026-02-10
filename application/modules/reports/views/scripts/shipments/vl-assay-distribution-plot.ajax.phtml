@@ -1,0 +1,234 @@
+<?php
+$distributions = $this->distributions ?? [];
+?>
+<?php if (empty($distributions)) { ?>
+    <div class="vl-assay-meta">No distribution data found for this shipment.</div>
+<?php } else { ?>
+    <?php foreach ($distributions as $dist) { ?>
+        <div class="vl-assay-card" style="margin-bottom:16px;">
+            <h5 title="<?php echo $this->escape($dist['fullName']); ?>">
+                Assay: <?php echo $this->escape($dist['name']); ?>
+            </h5>
+            <div class="vl-assay-meta">
+                Total Responses: <?php echo (int) $dist['count']; ?>
+                <?php if (!empty($dist['undetectable'])) { ?>
+                    | Undetectable: <?php echo (int) $dist['undetectable']; ?>
+                <?php } ?>
+            </div>
+            <div class="vl-assay-grid" style="grid-template-columns: repeat(3, minmax(200px, 1fr));">
+                <?php foreach ($dist['samples'] as $sample) { ?>
+                    <div>
+                        <div class="vl-assay-meta" style="font-weight:600;">
+                            <?php echo $this->escape($sample['label']); ?> (<?php echo (int) $sample['count']; ?>)
+                        </div>
+                        <div class="vl-assay-meta" style="margin-top:-2px;">
+                            <?php if ($sample['median'] !== null && $sample['sd'] !== null) { ?>
+                                Median: <?php echo round($sample['median'], 2); ?> | SD: <?php echo round($sample['sd'], 2); ?>
+                            <?php } ?>
+                        </div>
+                        <div id="vl-assay-chart-<?php echo (int) $dist['assayId']; ?>-<?php echo (int) $sample['sampleId']; ?>" style="height: 200px;"></div>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    <?php } ?>
+    <script type="text/javascript">
+        (function () {
+            var distributions = <?php echo json_encode($distributions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+            if (!distributions || !distributions.length || typeof Highcharts === 'undefined') {
+                return;
+            }
+
+            window.vlAssayDistributionsData = distributions;
+
+            function renderVlAssayCharts(mode) {
+                distributions.forEach(function (dist) {
+                    if (!dist.samples) {
+                        return;
+                    }
+                    dist.samples.forEach(function (sample) {
+                        var chartId = 'vl-assay-chart-' + dist.assayId + '-' + sample.sampleId;
+                        var isLog = mode === 'log10';
+                        var xTitle = isLog ? '' : '';
+                        function toLogPoints(points) {
+                            var mapped = [];
+                            if (!points) {
+                                return mapped;
+                            }
+                            points.forEach(function (pt, idx) {
+                                var jitter = (((idx + 1) % 11) - 5) / 50;
+                                mapped.push({ x: pt.y, y: jitter, z: pt.z });
+                            });
+                            return mapped;
+                        }
+
+                        var inlierData = isLog ? toLogPoints(sample.points) : sample.points;
+                        var warnData = isLog ? toLogPoints(sample.warnPoints) : sample.warnPoints;
+                        var failData = isLog ? toLogPoints(sample.failPoints) : sample.failPoints;
+                        var plotLineLow = sample.lowLimit;
+                        var plotLineHigh = sample.highLimit;
+                        var medianLine = sample.median;
+                        var allValues = [];
+                        ['points', 'warnPoints', 'failPoints'].forEach(function (key) {
+                            if (sample[key]) {
+                                sample[key].forEach(function (pt) {
+                                    allValues.push(pt.y);
+                                });
+                            }
+                        });
+                        var rangeMin = allValues.length ? Math.min.apply(null, allValues) : 0;
+                        var rangeMax = allValues.length ? Math.max.apply(null, allValues) : 7;
+                        if (plotLineLow !== null) {
+                            rangeMin = Math.min(rangeMin, plotLineLow);
+                            rangeMax = Math.max(rangeMax, plotLineLow);
+                        }
+                        if (plotLineHigh !== null) {
+                            rangeMin = Math.min(rangeMin, plotLineHigh);
+                            rangeMax = Math.max(rangeMax, plotLineHigh);
+                        }
+                        if (medianLine !== null) {
+                            rangeMin = Math.min(rangeMin, medianLine);
+                            rangeMax = Math.max(rangeMax, medianLine);
+                        }
+                        var padding = 0.5;
+                        rangeMin = Math.max(0, rangeMin - padding);
+                        rangeMax = Math.min(7, rangeMax + padding);
+                        var span = rangeMax - rangeMin;
+                        var tickInterval = span <= 1 ? 0.2 : (span <= 2 ? 0.5 : 1);
+                        var xAxis = isLog ? {
+                            title: { text: xTitle },
+                            min: rangeMin,
+                            max: rangeMax,
+                            tickInterval: tickInterval,
+                            startOnTick: true,
+                            endOnTick: true,
+                            labels: { style: { fontSize: '9px' } },
+                            plotLines: [
+                                plotLineLow !== null ? { value: plotLineLow, color: '#888', width: 1, dashStyle: 'ShortDash' } : null,
+                                plotLineHigh !== null ? { value: plotLineHigh, color: '#888', width: 1, dashStyle: 'ShortDash' } : null,
+                                medianLine !== null ? { value: medianLine, color: '#4a4a4a', width: 1 } : null
+                            ].filter(Boolean),
+                            plotBands: (plotLineLow !== null && plotLineHigh !== null) ? [{
+                                from: plotLineLow,
+                                to: plotLineHigh,
+                                color: 'rgba(100, 149, 237, 0.12)'
+                            }] : []
+                        } : {
+                            title: { text: xTitle },
+                            labels: { style: { fontSize: '9px' } },
+                            tickLength: 0
+                        };
+                        var yAxis = isLog ? {
+                            title: { text: '' },
+                            min: -0.25,
+                            max: 0.25,
+                            labels: { enabled: false }
+                        } : {
+                            title: { text: 'log10 VL', rotation: -90, align: 'middle', x: -10, y: 0 },
+                            min: rangeMin,
+                            max: rangeMax,
+                            startOnTick: false,
+                            endOnTick: false,
+                            maxPadding: 0,
+                            minPadding: 0,
+                            labels: { style: { fontSize: '9px' } },
+                            plotLines: [
+                                plotLineLow !== null ? { value: plotLineLow, color: '#888', width: 1, dashStyle: 'ShortDash' } : null,
+                                plotLineHigh !== null ? { value: plotLineHigh, color: '#888', width: 1, dashStyle: 'ShortDash' } : null,
+                                medianLine !== null ? { value: medianLine, color: '#4a4a4a', width: 1 } : null
+                            ].filter(Boolean),
+                            plotBands: (plotLineLow !== null && plotLineHigh !== null) ? [{
+                                from: plotLineLow,
+                                to: plotLineHigh,
+                                color: 'rgba(100, 149, 237, 0.12)'
+                            }] : []
+                        };
+                        var tooltip = isLog ? {
+                            headerFormat: '',
+                            pointFormat: 'log10 VL: <b>{point.x:.2f}</b><br/>z: <b>{point.z:.2f}</b>'
+                        } : {
+                            headerFormat: '',
+                            pointFormat: 'Participant #{point.x}<br/>log10 VL: <b>{point.y:.2f}</b><br/>z: <b>{point.z:.2f}</b>'
+                        };
+
+                        Highcharts.chart(chartId, {
+                            chart: {
+                                type: 'scatter',
+                                margin: isLog ? [20, 10, 75, 50] : [20, 10, 75, 50]
+                            },
+                            title: { text: '' },
+                            credits: { enabled: false },
+                            legend: {
+                                enabled: true,
+                                align: 'center',
+                                verticalAlign: 'bottom',
+                                y: 6,
+                                itemStyle: { fontSize: '9px' },
+                                itemMarginTop: 2,
+                                itemMarginBottom: 2
+                            },
+                            xAxis: xAxis,
+                            yAxis: yAxis,
+                            tooltip: tooltip,
+                            plotOptions: {
+                                scatter: {
+                                    marker: {
+                                        radius: 3,
+                                        symbol: 'circle'
+                                    },
+                                    color: '#7cb5ec'
+                                }
+                            },
+                            series: [
+                                {
+                                    name: 'Acceptable (|z| < 2)',
+                                    type: 'scatter',
+                                    data: inlierData,
+                                    color: '#2e7d32'
+                                },
+                                {
+                                    name: 'Warning (2 ≤ |z| < 3)',
+                                    type: 'scatter',
+                                    data: warnData,
+                                    color: '#f9a825'
+                                },
+                                {
+                                    name: 'Unacceptable (|z| ≥ 3)',
+                                    type: 'scatter',
+                                    data: failData,
+                                    color: '#c62828'
+                                }
+                            ]
+                        });
+                    });
+                });
+            }
+
+            var modeToggle = document.getElementById('vlScatterAxisMode');
+            var initialMode = 'participants';
+            if (modeToggle) {
+                var activeBtn = modeToggle.querySelector('.vl-toggle-btn.active');
+                if (activeBtn && activeBtn.dataset && activeBtn.dataset.mode) {
+                    initialMode = activeBtn.dataset.mode;
+                }
+            }
+            renderVlAssayCharts(initialMode);
+
+            if (modeToggle && !modeToggle.dataset.bound) {
+                modeToggle.dataset.bound = 'true';
+                modeToggle.addEventListener('click', function (e) {
+                    var target = e.target;
+                    if (!target.classList.contains('vl-toggle-btn')) {
+                        return;
+                    }
+                    var buttons = modeToggle.querySelectorAll('.vl-toggle-btn');
+                    buttons.forEach(function (btn) {
+                        btn.classList.remove('active');
+                    });
+                    target.classList.add('active');
+                    renderVlAssayCharts(target.dataset.mode || 'participants');
+                });
+            }
+        })();
+    </script>
+<?php } ?>

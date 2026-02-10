@@ -3586,6 +3586,313 @@ class Application_Service_Reports
         return $totalResult;
     }
 
+    // VL response distribution by assay for a given shipment (ranges already computed in reference_vl_calculation)
+    public function getVlAssayResponseDistributions($params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        if (empty($params['shipmentId'])) {
+            return [];
+        }
+
+        $shipmentId = $params['shipmentId'];
+        $shipment = $db->fetchRow($db->select()->from(['s' => 'shipment'], ['shipment_attributes'])->where('s.shipment_id = ?', $shipmentId));
+        $shipmentAttributes = !empty($shipment['shipment_attributes']) ? json_decode($shipment['shipment_attributes'], true) : [];
+        $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
+
+        $assayQuery = $db->select()
+            ->from(array('vl' => 'r_vl_assay'), array('vl.id', 'vl.name', 'vl.short_name'))
+            ->where("`status` like 'active'")
+            ->order('vl.short_name ASC');
+        $assays = $db->fetchAll($assayQuery);
+        if (empty($assays)) {
+            return [];
+        }
+
+        $assayLookup = [];
+        foreach ($assays as $assay) {
+            $assayLookup[$assay['id']] = $assay;
+        }
+
+        $valueQuery = $db->select()
+            ->from(array('rrv' => 'response_result_vl'), array('rrv.sample_id', 'rrv.reported_viral_load', 'rrv.is_result_invalid', 'rrv.z_score'))
+            ->join(
+                array('sp' => 'shipment_participant_map'),
+                'sp.map_id = rrv.shipment_map_id',
+                array('sp.attributes')
+            )
+            ->joinLeft(
+                array('ref' => 'reference_result_vl'),
+                'ref.shipment_id = sp.shipment_id AND ref.sample_id = rrv.sample_id',
+                array('ref.sample_label', 'ref.reference_result')
+            )
+            ->joinLeft(
+                array('rvc' => 'reference_vl_calculation'),
+                'rvc.shipment_id = sp.shipment_id AND rvc.sample_id = rrv.sample_id AND rvc.vl_assay = sp.attributes->>"$.vl_assay"',
+                array(
+                    'rvc.low_limit',
+                    'rvc.high_limit',
+                    'rvc.manual_low_limit',
+                    'rvc.manual_high_limit',
+                    'rvc.mean',
+                    'rvc.sd',
+                    'rvc.median',
+                    'rvc.manual_mean',
+                    'rvc.manual_sd',
+                    'rvc.manual_median',
+                    'rvc.use_range',
+                    'rvc.no_of_responses'
+                )
+            )
+            ->where('sp.shipment_id = ?', $shipmentId)
+            ->where('rrv.reported_viral_load IS NOT NULL')
+            ->where("rrv.reported_viral_load != ''");
+
+        $rows = $db->fetchAll($valueQuery);
+        if (empty($rows)) {
+            return [];
+        }
+
+        $fallbackRanges = [];
+        $fallbackThreshold = null;
+        if ($methodOfEvaluation === 'iso17043') {
+            $fallbackThreshold = 18;
+        } elseif ($methodOfEvaluation === 'standard') {
+            $fallbackThreshold = 8;
+        }
+
+        if ($fallbackThreshold !== null) {
+            $maxAssay = $db->fetchOne(
+                $db->select()
+                    ->from(['rvc' => 'reference_vl_calculation'], ['vl_assay'])
+                    ->where('rvc.shipment_id = ?', $shipmentId)
+                    ->group('rvc.vl_assay')
+                    ->order('SUM(rvc.no_of_responses) DESC')
+                    ->limit(1)
+            );
+
+            if (!empty($maxAssay)) {
+                $fallbackRows = $db->fetchAll(
+                    $db->select()
+                        ->from(['rvc' => 'reference_vl_calculation'], [
+                            'sample_id',
+                            'low_limit',
+                            'high_limit',
+                            'manual_low_limit',
+                            'manual_high_limit',
+                            'mean',
+                            'sd',
+                            'manual_mean',
+                            'manual_sd',
+                            'use_range'
+                        ])
+                        ->where('rvc.shipment_id = ?', $shipmentId)
+                        ->where('rvc.vl_assay = ?', $maxAssay)
+                );
+
+                foreach ($fallbackRows as $row) {
+                    $fallbackRanges[$row['sample_id']] = $row;
+                }
+            }
+        }
+
+        $sampleLabels = [];
+        $sampleResponseCounts = [];
+        $sampleValues = [];
+        $sampleLimits = [];
+        $undetectable = [];
+        foreach ($rows as $row) {
+            $invalidValues = ['invalid', 'error'];
+            if (!empty($row['is_result_invalid']) && in_array($row['is_result_invalid'], $invalidValues)) {
+                continue;
+            }
+
+            $attributes = json_decode($row['attributes'], true);
+            if (empty($attributes) || empty($attributes['vl_assay'])) {
+                continue;
+            }
+            $assayId = $attributes['vl_assay'];
+            if (!isset($assayLookup[$assayId])) {
+                continue;
+            }
+
+            $value = (float) $row['reported_viral_load'];
+            if (!is_numeric($value)) {
+                continue;
+            }
+
+            if (!empty($row['sample_label'])) {
+                $sampleLabels[$row['sample_id']] = $row['sample_label'];
+            }
+            if (isset($row['no_of_responses']) && $row['no_of_responses'] !== null) {
+                if (!isset($sampleResponseCounts[$assayId])) {
+                    $sampleResponseCounts[$assayId] = [];
+                }
+                $current = $sampleResponseCounts[$assayId][$row['sample_id']] ?? 0;
+                $sampleResponseCounts[$assayId][$row['sample_id']] = max($current, (int) $row['no_of_responses']);
+            }
+
+            if (!isset($sampleValues[$assayId])) {
+                $sampleValues[$assayId] = [];
+            }
+            if (!isset($sampleValues[$assayId][$row['sample_id']])) {
+                $sampleValues[$assayId][$row['sample_id']] = [];
+            }
+
+            if ($value <= 0) {
+                if (!isset($undetectable[$assayId])) {
+                    $undetectable[$assayId] = 0;
+                }
+                $undetectable[$assayId]++;
+                $value = 0.0;
+            }
+
+            $useRange = $row['use_range'] ?? 'calculated';
+            $lowLimit = null;
+            $highLimit = null;
+            $meanValue = null;
+            $medianValue = null;
+            $sdValue = null;
+            if ($useRange === 'manual') {
+                $lowLimit = isset($row['manual_low_limit']) ? (float) $row['manual_low_limit'] : null;
+                $highLimit = isset($row['manual_high_limit']) ? (float) $row['manual_high_limit'] : null;
+                $meanValue = isset($row['manual_mean']) ? (float) $row['manual_mean'] : null;
+                $medianValue = isset($row['manual_median']) ? (float) $row['manual_median'] : null;
+                $sdValue = isset($row['manual_sd']) ? (float) $row['manual_sd'] : null;
+            } else {
+                $lowLimit = isset($row['low_limit']) ? (float) $row['low_limit'] : null;
+                $highLimit = isset($row['high_limit']) ? (float) $row['high_limit'] : null;
+                $meanValue = isset($row['mean']) ? (float) $row['mean'] : null;
+                $medianValue = isset($row['median']) ? (float) $row['median'] : null;
+                $sdValue = isset($row['sd']) ? (float) $row['sd'] : null;
+            }
+
+            if ($fallbackThreshold !== null && $useRange !== 'manual') {
+                $responseCount = isset($row['no_of_responses']) ? (int) $row['no_of_responses'] : 0;
+                if ($responseCount < $fallbackThreshold && isset($fallbackRanges[$row['sample_id']])) {
+                    $fallback = $fallbackRanges[$row['sample_id']];
+                    if (!empty($fallback['use_range']) && $fallback['use_range'] === 'manual') {
+                        $lowLimit = isset($fallback['manual_low_limit']) ? (float) $fallback['manual_low_limit'] : $lowLimit;
+                        $highLimit = isset($fallback['manual_high_limit']) ? (float) $fallback['manual_high_limit'] : $highLimit;
+                        $meanValue = isset($fallback['manual_mean']) ? (float) $fallback['manual_mean'] : $meanValue;
+                        $medianValue = isset($fallback['manual_median']) ? (float) $fallback['manual_median'] : $medianValue;
+                        $sdValue = isset($fallback['manual_sd']) ? (float) $fallback['manual_sd'] : $sdValue;
+                    } else {
+                        $lowLimit = isset($fallback['low_limit']) ? (float) $fallback['low_limit'] : $lowLimit;
+                        $highLimit = isset($fallback['high_limit']) ? (float) $fallback['high_limit'] : $highLimit;
+                        $meanValue = isset($fallback['mean']) ? (float) $fallback['mean'] : $meanValue;
+                        $medianValue = isset($fallback['median']) ? (float) $fallback['median'] : $medianValue;
+                        $sdValue = isset($fallback['sd']) ? (float) $fallback['sd'] : $sdValue;
+                    }
+                }
+            }
+
+            if (!isset($sampleLimits[$assayId])) {
+                $sampleLimits[$assayId] = [];
+            }
+            if (!isset($sampleLimits[$assayId][$row['sample_id']])) {
+                $sampleLimits[$assayId][$row['sample_id']] = [
+                    'low' => $lowLimit,
+                    'high' => $highLimit,
+                    'mean' => $meanValue,
+                    'median' => $medianValue,
+                    'sd' => $sdValue,
+                ];
+            }
+
+            $sampleValues[$assayId][$row['sample_id']][] = [
+                'value' => $value,
+                'z' => isset($row['z_score']) ? (float) $row['z_score'] : null,
+            ];
+        }
+
+        $distributions = [];
+        foreach ($assayLookup as $assayId => $assay) {
+            if (empty($sampleValues[$assayId])) {
+                continue;
+            }
+            $samples = [];
+            $totalCount = 0;
+            $sampleList = $sampleValues[$assayId];
+            uksort($sampleList, function ($a, $b) use ($sampleLabels) {
+                $labelA = $sampleLabels[$a] ?? (string) $a;
+                $labelB = $sampleLabels[$b] ?? (string) $b;
+                return strnatcasecmp($labelA, $labelB);
+            });
+            foreach ($sampleList as $sampleId => $values) {
+                if (empty($values)) {
+                    continue;
+                }
+                $points = [];
+                $warnPoints = [];
+                $failPoints = [];
+                $logPoints = [];
+                $logWarnPoints = [];
+                $logFailPoints = [];
+                $index = 1;
+                $limits = $sampleLimits[$assayId][$sampleId] ?? ['low' => null, 'high' => null];
+                foreach ($values as $entry) {
+                    $val = $entry['value'];
+                    $z = isset($entry['z']) ? (float) $entry['z'] : null;
+                    $jitter = (($index % 11) - 5) / 50;
+                    if ($z === null) {
+                        $points[] = ['x' => $index, 'y' => $val, 'z' => null];
+                        $logPoints[] = ['x' => $val, 'y' => $jitter, 'z' => null];
+                    } elseif (abs($z) < 2) {
+                        $points[] = ['x' => $index, 'y' => $val, 'z' => $z];
+                        $logPoints[] = ['x' => $val, 'y' => $jitter, 'z' => $z];
+                    } elseif (abs($z) < 3) {
+                        $warnPoints[] = ['x' => $index, 'y' => $val, 'z' => $z];
+                        $logWarnPoints[] = ['x' => $val, 'y' => $jitter, 'z' => $z];
+                    } else {
+                        $failPoints[] = ['x' => $index, 'y' => $val, 'z' => $z];
+                        $logFailPoints[] = ['x' => $val, 'y' => $jitter, 'z' => $z];
+                    }
+                    $index++;
+                }
+                $displayCount = count($values);
+                $samples[] = [
+                    'sampleId' => $sampleId,
+                    'label' => $sampleLabels[$sampleId] ?? ('Sample ' . $sampleId),
+                    'count' => $displayCount,
+                    'points' => $points,
+                    'warnPoints' => $warnPoints,
+                    'failPoints' => $failPoints,
+                    'logPoints' => $logPoints,
+                    'logWarnPoints' => $logWarnPoints,
+                    'logFailPoints' => $logFailPoints,
+                    'lowLimit' => $limits['low'],
+                    'highLimit' => $limits['high'],
+                    'mean' => $limits['mean'],
+                    'median' => $limits['median'],
+                    'sd' => $limits['sd'],
+                ];
+                $totalCount = max($totalCount, $displayCount);
+            }
+
+            if (empty($samples)) {
+                continue;
+            }
+
+            $distributions[] = array(
+                'assayId' => $assayId,
+                'name' => $assay['short_name'] ?? $assay['name'],
+                'fullName' => $assay['name'],
+                'count' => $totalCount,
+                'undetectable' => $undetectable[$assayId] ?? 0,
+                'samples' => $samples,
+            );
+        }
+
+        usort($distributions, function ($a, $b) {
+            if ($a['count'] === $b['count']) {
+                return strcmp($a['name'], $b['name']);
+            }
+            return $b['count'] <=> $a['count'];
+        });
+
+        return $distributions;
+    }
+
     public function getShipmentsByDate($schemeType, $startDate, $endDate, $notFinalized = true)
     {
 
