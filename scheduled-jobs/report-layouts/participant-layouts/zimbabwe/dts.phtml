@@ -43,12 +43,13 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportDir) && !is_dir($reportDir)) {
             mkdir($reportDir);
         }
+        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true);
 
         // Initialize PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (!empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name']);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], $config, $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], $config, $watermark, "", $instituteAddressPosition);
@@ -78,7 +79,6 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $attributes = json_decode($result['attributes'] ?? '{}', true);
-        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true);
 
         // Format response dates
         $responseDate = "";
@@ -118,7 +118,7 @@ if (!empty($resultArray['shipment'])) {
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
         // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . ' (' . $result['shipment_code'] . ')</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         // }
 
@@ -137,22 +137,22 @@ if (!empty($resultArray['shipment'])) {
             <tr>
                 <td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>
                 <td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>
-                <td><strong>Result Due Date</strong><br>' . $result['lastdate_response'] . '</td>
+                <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
             </tr>
             <tr>
-                <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
                 <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>
                 <td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>
+                <td><strong>Response Date</strong><br>' . $responseDate . '</td>
             </tr>
             <tr>
-                <td><strong>Response Date</strong><br>' . $responseDate . '</td>
                 <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
                 <td><strong>Report Issue Date</strong><br>' . date('d-m-Y H:i:s') . '</td>
+                <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
             </tr>
             <tr>
-                <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
                 <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>
                 <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>
+                <td><strong>Date of Approval</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
             </tr>
             <tr>';
 
@@ -514,7 +514,7 @@ if (!empty($resultArray['shipment'])) {
                     <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
                     <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
                     <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
-                    <li>The report Number is the Shipment Code on the PT report</li>
+                    <li>The report Number is the ' . $result['shipment_code'] . ' on the PT report</li>
                     <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
                     <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
                     <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
@@ -575,7 +575,7 @@ if (!empty($resultArray['shipment'])) {
 
         // Thank you message and report footer
         // $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
-        $html = '<br><p style="font-size:12px;">Thank you for participating in the ' . $result['scheme_name'] . ' Proficiency Testing Program.</p>';
+        /* $html = '<br><p style="font-size:12px;">Thank you for participating in the ' . $result['scheme_name'] . ' Proficiency Testing Program.</p>';
 
         $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
         $html .= '<br><br><p style="font-size:12px;text-align:center;">- ' . $eodReportText . ' -</p>';
@@ -592,7 +592,7 @@ if (!empty($resultArray['shipment'])) {
         $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
 
 
-        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->writeHTML($html, true, false, true, false, ''); */
 
         // Clear output buffer if exists
         if (ob_get_contents()) {

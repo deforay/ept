@@ -313,8 +313,11 @@ final class Pt_Commons_DateUtility
         return [$startDate, $endDate];
     }
 
-    public static function endOfDay(string $date): DateTimeImmutable
+    public static function endOfDay(?string $date): ?DateTimeImmutable
     {
+        if ($date === null) {
+            return null;
+        }
         return (new DateTimeImmutable($date))->setTime(23, 59, 59);
     }
 

@@ -1118,19 +1118,19 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			quickActions: <?php echo json_encode($this->translate->_('Quick Actions')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
-			$this->translate->_('Recent'),
-			$this->translate->_('Recent Shipments'),
-			$this->translate->_('Quick Actions'),
-			$this->translate->_('Navigation'),
-			$this->translate->_('Configure'),
-			$this->translate->_('Manage'),
-			$this->translate->_('Analyze'),
-			$this->translate->_('Reports')
-		]); ?>;
+											$this->translate->_('Recent'),
+											$this->translate->_('Recent Shipments'),
+											$this->translate->_('Quick Actions'),
+											$this->translate->_('Navigation'),
+											$this->translate->_('Configure'),
+											$this->translate->_('Manage'),
+											$this->translate->_('Analyze'),
+											$this->translate->_('Reports')
+										]); ?>;
 	</script>
 
 	<script type="text/javascript">
-		$(function () {
+		$(function() {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
@@ -1245,8 +1245,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 
-			$('.autoSelectIfOnlyOneOption').each(function () {
-				var nonEmptyOptions = $(this).find('option').filter(function () {
+			$('.autoSelectIfOnlyOneOption').each(function() {
+				var nonEmptyOptions = $(this).find('option').filter(function() {
 					return this.value.trim() !== "";
 				});
 
@@ -1255,7 +1255,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				}
 			});
 
-			$(".checkNum").keydown(function (e) {
+			$(".checkNum").keydown(function(e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A
@@ -1274,7 +1274,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 				alert(<?php echo json_encode($alertMsg->message); ?>);
-				<?php $alertMsg->message = "";
+			<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
 		});
@@ -1317,9 +1317,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-				nid: id
-			},
-				function (data) { })
+					nid: id
+				},
+				function(data) {})
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
@@ -1330,9 +1330,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function markasRead() {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-				nid: 'all'
-			},
-				function (data) {
+					nid: 'all'
+				},
+				function(data) {
 					if (data > 0) {
 						$('.readc').removeAttr('style');
 						$('.count-notify').html('');
@@ -1357,11 +1357,11 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			let formData = $('#' + formId).serialize();
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
-				formPost: formData,
-				scheme: schemeId,
-				file: schemeId
-			},
-				function (data) {
+					formPost: formData,
+					scheme: schemeId,
+					file: schemeId
+				},
+				function(data) {
 					if (data) {
 						window.open('/d/' + data, '_blank');
 					}

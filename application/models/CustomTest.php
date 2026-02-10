@@ -229,7 +229,7 @@ class Application_Model_CustomTest
                                 if ($result['sample_score'] > 0) {
                                     $failureReason[] = [
                                         'warning' => "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly",
-                                        'correctiveAction' => "Review and refer to National HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result."
+                                        'correctiveAction' => "Review and refer to Hepatitis-B HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result."
                                     ];
                                 }
                             }
@@ -245,7 +245,7 @@ class Application_Model_CustomTest
                         $totalScore = 0;
                         $failureReason[] = [
                             'warning' => "Testing is not performed with country approved test kit.",
-                            'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per National HIV Testing algorithm. Review and refer to SOP for testing"
+                            'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing"
                         ];
                     }
                 }
@@ -254,7 +254,7 @@ class Application_Model_CustomTest
                     $maxScore = $totalScore = 0;
                     $failureReason[] = [
                         'warning' => "Testing is not performed with country approved test kit.",
-                        'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample(s) as per National HIV Testing algorithm. Review and refer to SOP for testing"
+                        'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample(s) as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing"
                     ];
                 } */
 
