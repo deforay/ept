@@ -159,16 +159,12 @@ class Pt_Reports_FpdiReport extends Fpdi
         if ($this->layout != 'zimbabwe') {
             $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
         } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate)) {
-            $completeFooterHtml .= '<div style="text-align:left; font-size:7px; margin-top:2px;">Effective Date: ' . $effectiveDate . '</div>';
+            $this->Cell(0, 6, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
         }
-        $completeFooterHtml .= '<div style="text-align:right; font-size:7px; margin-top:2px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div>';
-
-
-        // Append page numbers
+        $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
 
 
         // Handle special cases
-
         if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {
             if (isset($this->approveTxt) && !empty($this->approveTxt)) {
                 $text = "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}";

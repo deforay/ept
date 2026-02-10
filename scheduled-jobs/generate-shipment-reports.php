@@ -431,7 +431,7 @@ class ReportGenerator
         if (!is_file($file)) {
             throw new RuntimeException("Template not found: {$file}");
         }
-        (static function () use ($file, $context): void{
+        (static function () use ($file, $context): void {
             extract($context, EXTR_OVERWRITE);
             require $file;
         })();
@@ -1162,11 +1162,11 @@ class ReportGenerator
                         'scheme_type',
                         'shipment_attributes',
                         'pt_co_ordinator_name',
-                        'distribution_id',
-                        'date_finalised' => new Zend_Db_Expr('NULL')
+                        'distribution_id'
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
+                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id', ['date_finalised'])
                 ->where("s.shipment_id = ?", $shipmentId)
         );
     }
@@ -1210,11 +1210,11 @@ class ReportGenerator
                         'scheme_type',
                         'shipment_attributes',
                         'pt_co_ordinator_name',
-                        'distribution_id',
-                        'date_finalised' => new Zend_Db_Expr('NULL')
+                        'distribution_id'
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
+                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id', ['date_finalised'])
                 ->where("s.shipment_id = ?", $this->opts->shipmentId);
 
             $evalRow = $this->db->fetchRow($shipmentRow);
@@ -1267,9 +1267,9 @@ class ReportGenerator
                 }
                 self::warn(
                     "Shipment {$this->opts->shipmentId} appears locked (lock file: {$info['path']}). " .
-                    "Proceeding due to --force" .
-                    ($ttlOk ? " (lockTtl={$this->opts->lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
-                    " This can corrupt output if another job is actually running.",
+                        "Proceeding due to --force" .
+                        ($ttlOk ? " (lockTtl={$this->opts->lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
+                        " This can corrupt output if another job is actually running.",
                     $this->opts->isCli
                 );
                 return null;
@@ -1326,7 +1326,7 @@ class ReportGenerator
             }
             self::warn(
                 "Shipment {$shipmentId} appears locked (lock file: {$info['path']}). " .
-                "Proceeding due to --force. This can corrupt output if another job is actually running.",
+                    "Proceeding due to --force. This can corrupt output if another job is actually running.",
                 $this->opts->isCli
             );
             return null;
@@ -1686,7 +1686,6 @@ try {
         $reportGenerator->summaryReport();                       // Generate summary PDF (single-threaded, one per shipment)
         $reportGenerator->completeShipmentReports();             // ZIP, notifications, release lock
     }
-
 } catch (Exception $e) {
     $isCli = php_sapi_name() === 'cli';
     ReportGenerator::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);

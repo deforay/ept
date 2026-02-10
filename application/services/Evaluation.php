@@ -2821,6 +2821,7 @@ class Application_Service_Evaluation
 					'previous_status' => 'evaluated',
 					'processing_started_at' => new Zend_Db_Expr('NOW()'),
 					'last_heartbeat' => new Zend_Db_Expr('NOW()'),
+					'date_finalised' => new Zend_Db_Expr('NOW()'),
 					'status' => 'pending'
 				];
 				$saved = $db->insert('queue_report_generation', $data);
@@ -2838,6 +2839,7 @@ class Application_Service_Evaluation
 				'requested_on' => new Zend_Db_Expr('now()'),
 				'processing_started_at' => new Zend_Db_Expr('NOW()'),
 				'last_heartbeat' => new Zend_Db_Expr('NOW()'),
+				'date_finalised' => new Zend_Db_Expr('NOW()'),
 				'status' => 'pending'
 			];
 			$updated = $db->update('queue_report_generation', $data, "id = " . $existData['id']);
@@ -2856,9 +2858,7 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
-	{
-	}
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
 
 	/**
 	 * Get job progress for a specific shipment (for AJAX polling)
