@@ -146,25 +146,21 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
-                <td><strong>Report Issue Date</strong><br>' . date('d-m-Y H:i:s') . '</td>
+                <td><strong>Report Issue Date</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
                 <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
             </tr>
             <tr>
                 <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>
                 <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>
                 <td><strong>Date of Approval</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
-            </tr>
-            <tr>';
+            </tr>';
 
         // Add custom fields if available
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '<td>' . (!empty($customField1) ? '<strong>' . $customField1 . '</strong><br>' . ($result['custom_field_1'] ?? '') : '') . '</td>
-                        <td>' . (!empty($customField2) ? '<strong>' . $customField2 . '</strong><br>' . ($result['custom_field_2'] ?? '') : '') . '</td>';
-        } else {
-            $labInfo .= '<td></td><td></td>';
+            $labInfo .= '<tr><td>' . (!empty($customField1) ? '<strong>' . $customField1 . '</strong><br>' . ($result['custom_field_1'] ?? '') : '') . '</td>
+                        <td>' . (!empty($customField2) ? '<strong>' . $customField2 . '</strong><br>' . ($result['custom_field_2'] ?? '') : '') . '</td></tr>';
         }
-
-        $labInfo .= '</tr></table>';
+        $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
         // $pdf->AddPage();
         // Process test results if available
