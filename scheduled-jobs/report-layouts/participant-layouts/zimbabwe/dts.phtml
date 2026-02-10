@@ -146,7 +146,7 @@ if (!empty($resultArray['shipment'])) {
             </tr>
             <tr>
                 <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
-                <td><strong>Report Issue Date</strong><br>' . date('d-m-Y H:i:s') . '</td>
+                <td><strong>Report Issue Date</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
                 <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
             </tr>
             <tr>
