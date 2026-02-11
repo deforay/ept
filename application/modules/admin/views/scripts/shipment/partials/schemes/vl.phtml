@@ -53,7 +53,8 @@ if ($isEditMode && isset($this->shipmentData['shipment']['shipment_attributes'])
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
-
+$vlConfig = $this->config;
+$reportVersion = isset($vlConfig['reportVersion']) ? $vlConfig['reportVersion'] : '';
 // Counter for samples
 $count = 0;
 ?>
@@ -84,6 +85,13 @@ $count = 0;
                 <?= $this->translate->_("Legacy"); ?>
             </option>
         </select>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
+            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['report_version'] ?? $reportVersion; ?>" />
     </div>
 </div>
 

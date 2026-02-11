@@ -53,6 +53,9 @@ class Admin_CustomTestController extends Zend_Controller_Action
             if (isset($params['genericConfig']['disableOtherTestkit']) && !empty($params['genericConfig']['disableOtherTestkit'])) {
                 $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
             }
+            if (isset($params['genericConfig']['reportVersion']) && !empty($params['genericConfig']['reportVersion'])) {
+                $generic['reportVersion'] = $params['genericConfig']['reportVersion'];
+            }
             if (isset($generic) && !empty($generic)) {
                 $common->saveSchemeConfigByName(json_encode($generic), $schemeCode);
             }
@@ -61,8 +64,6 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $schemeService->setRecommededCustomTestTypes($params);
             $this->redirect("/admin/custom-test");
         }
-        $dtsModel = new Application_Model_Dts();
-        $this->view->allTestKits = $dtsModel->getAllDtsTestKitList(false, 'custom-tests');
     }
 
     public function editAction()
@@ -82,6 +83,9 @@ class Admin_CustomTestController extends Zend_Controller_Action
             if (isset($params['genericConfig']['disableOtherTestkit']) && !empty($params['genericConfig']['disableOtherTestkit'])) {
                 $generic['disableOtherTestkit'] = $params['genericConfig']['disableOtherTestkit'];
             }
+            if (isset($params['genericConfig']['reportVersion']) && !empty($params['genericConfig']['reportVersion'])) {
+                $generic['reportVersion'] = $params['genericConfig']['reportVersion'];
+            }
             if (isset($generic) && !empty($generic)) {
                 $common->saveSchemeConfigByName(json_encode($generic), $schemeCode);
             }
@@ -99,5 +103,6 @@ class Admin_CustomTestController extends Zend_Controller_Action
         }
         $this->view->disableOtherTestkit = Pt_Commons_SchemeConfig::get($schemeCode . '.disableOtherTestkit');
         $this->view->passingScore = Pt_Commons_SchemeConfig::get($schemeCode . '.passingScore');
+        $this->view->reportVersion = Pt_Commons_SchemeConfig::get($schemeCode . '.reportVersion');
     }
 }

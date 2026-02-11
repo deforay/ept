@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TODO: Sub-scheme (Multiple Sub-Tests) Feature
  * =============================================
@@ -89,6 +90,12 @@
 					<div class="col-lg-8">
 						<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
 						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label for="reportVersion" class="col-lg-4 control-label"><?= $this->translate->_("Report Version"); ?></label>
+					<div class="col-lg-8">
+						<input type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
 					</div>
 				</div>
 			</div>
@@ -339,10 +346,10 @@
 		});
 
 		// Check if both result types exist
-		if (!hasTestResult || !hasFinalInterpretation) {
+		/* if (!hasTestResult || !hasFinalInterpretation) {
 			alert('You must have at least one "Test Result" and one "Final Interpretation" result type.');
 			return false;
-		}
+		} */
 
 		return true;
 	}

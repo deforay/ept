@@ -21,6 +21,12 @@ $vl = $this->vlConfig ?? [];
                 </div>
             </div>
             <div class="form-group">
+                <label for="reportVersion" class="col-lg-3 control-label"><?= $this->translate->_("Report Version"); ?></label>
+                <div class="col-lg-9">
+                    <input type="text" id="reportVersion" name="vl[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $vl['reportVersion'] ?? null; ?>" title="Please enter the report version" />
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="contentForIndividualVlReports" class="col-lg-3 control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-8">
                     <div id="content" name="content" class="richtextarea form-control" title="Please enter content for individual VL reports" placeholder="Enter content for individual VL reports"><?php echo htmlspecialchars_decode($vl['contentForIndividualVlReports']); ?></div>

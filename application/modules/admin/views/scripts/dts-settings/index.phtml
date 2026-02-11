@@ -329,8 +329,8 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                         </div>
                     </div>
 
-                    <div class="row rtrifields" style="display: none;">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 rtrifields" style="display: none;">
                             <label for="rtriEnabled">
                                 <?= $this->translate->_("Enable RTRI"); ?>
                             </label>
@@ -342,6 +342,11 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                             </div>
                             <input type="hidden" name="dts[rtriEnabled]" id="rtriEnabled"
                                 value="<?php echo $dts->rtriEnabled ?? "no"; ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
+                            <input type="text" id="reportVersion" name="dts[reportVersion]" class="form-control" placeholder="Enter the report version" title="<?= $this->translate->_('Please enter the report version'); ?>" value="<?php echo $dts->reportVersion ?? null; ?>" />
+                            <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
                         </div>
                     </div>
 
@@ -483,7 +488,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                             <li><?= $this->translate->_("Responses without the enforced test kits will not pass for the respective samples."); ?></li>
                             <li><?= $this->translate->_("Leave the following options blank if you don't want to enforce test kit checks."); ?></li>
                             <li><strong><a href="/admin/testkit/standard-kit" style="text-decoration:underline; color: #b45309;">
-                                <i class="icon-external-link"></i> <?= $this->translate->_("Please map test kits for each test before configuring below"); ?></a></strong>
+                                        <i class="icon-external-link"></i> <?= $this->translate->_("Please map test kits for each test before configuring below"); ?></a></strong>
                             </li>
                         </ul>
                     </div>
@@ -507,7 +512,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -529,7 +534,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -551,7 +556,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -579,7 +584,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -602,7 +607,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -625,7 +630,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -652,7 +657,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -674,7 +679,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -696,7 +701,7 @@ $disableOtherTestkit = (isset($dts->disableOtherTestkit) && !empty($dts->disable
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                            <?php }
+                                        <?php }
                                         } ?>
                                     </select>
                                 </div>

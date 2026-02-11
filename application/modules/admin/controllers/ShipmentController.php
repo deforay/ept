@@ -89,7 +89,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $this->view->scheme = $sid = strtolower($this->_getParam('sid'));
             $this->view->schemeDetails = $scheme->getSchemeById($sid);
             $this->view->userconfig = $userconfig = strtolower($this->_getParam('userconfig'));
-
+            $this->view->config = Pt_Commons_SchemeConfig::get($sid);
             if ($sid == 'vl') {
                 $vlModel       = new Application_Model_Vl();
                 $this->view->vlControls = $scheme->getSchemeControls($sid);
@@ -98,8 +98,6 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->eidControls = $scheme->getSchemeControls($sid);
                 $this->view->eidPossibleResults = $scheme->getPossibleResults('eid', 'admin');
             } elseif ($sid == 'dts') {
-
-                $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
                 $reportService = new Application_Service_Reports();
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';

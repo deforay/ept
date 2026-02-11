@@ -36,22 +36,16 @@
 $isEditMode = isset($this->shipmentData) && !empty($this->shipmentData);
 
 // Parse DTS configuration
-$dtsConfig = $this->dtsConfig;
-if (is_string($dtsConfig) && Application_Service_Common::isJSON($dtsConfig)) {
-    $dtsConfig = json_decode($dtsConfig);
-} elseif (is_array($dtsConfig)) {
-    $dtsConfig = (object) $dtsConfig;
-}
-
+$dtsConfig = $this->config;
 $allowedAlgorithms = [];
 if (isset($dtsConfig->allowedAlgorithms)) {
     $allowedAlgorithms = is_array($dtsConfig->allowedAlgorithms)
         ? $dtsConfig->allowedAlgorithms
         : explode(",", $dtsConfig->allowedAlgorithms);
 }
-$dtsSchemeType = isset($dtsConfig->dtsSchemeType) ? $dtsConfig->dtsSchemeType : 'standard';
-$rtriEnabled = isset($dtsConfig->rtriEnabled) ? $dtsConfig->rtriEnabled : 'no';
-
+$dtsSchemeType = isset($dtsConfig['dtsSchemeType']) ? $dtsConfig['dtsSchemeType'] : 'standard';
+$reportVersion = isset($dtsConfig['reportVersion']) ? $dtsConfig['reportVersion'] : '';
+$rtriEnabled = isset($dtsConfig['rtriEnabled']) ? $dtsConfig['rtriEnabled'] : 'no';
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
@@ -200,7 +194,6 @@ if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $th
         </div>
     </div>
 <?php }
-
 // ============================================================================
 // ENABLE RTRI (updated-3-tests scheme type only)
 // ============================================================================
@@ -353,7 +346,13 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
         </select>
     </div>
 </div>
-
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
+            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['report_version'] ?? $reportVersion; ?>" />
+    </div>
+</div>
 <!-- ============================================================================ -->
 <!-- SAMPLE TABLE -->
 <!-- ============================================================================ -->

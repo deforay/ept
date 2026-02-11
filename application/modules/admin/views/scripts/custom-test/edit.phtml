@@ -6,7 +6,7 @@ foreach ($this->result['possibleResult'] as $key => $row) {
 }
 // Sort each sub_scheme group: Test Results (TEST) first, then Final Interpretations (FINAL)
 foreach ($qualitativeRows as $subScheme => &$rows) {
-	usort($rows, function($a, $b) {
+	usort($rows, function ($a, $b) {
 		$order = ['TEST' => 0, 'FINAL' => 1];
 		$aOrder = $order[$a['scheme_sub_group']] ?? 2;
 		$bOrder = $order[$b['scheme_sub_group']] ?? 2;
@@ -96,6 +96,12 @@ unset($rows);
 								<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->customTestsRecommendedTestkits) && in_array($testkit['TESTKITNAMEID'], $this->customTestsRecommendedTestkits)) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
 							<?php } ?>
 						</select>
+					</div>
+				</div>
+				<div class="form-group col-lg-6">
+					<label for="reportVersion" class="col-lg-4 control-label"><?= $this->translate->_("Report Version"); ?></label>
+					<div class="col-lg-8">
+						<input value="<?php echo $this->reportVersion ?? null; ?>" type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
 					</div>
 				</div>
 			</div>
