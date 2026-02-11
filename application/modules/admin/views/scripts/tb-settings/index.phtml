@@ -19,7 +19,12 @@ $tb = $this->tbConfig ?? [];
                     <input type="number" id="tbPassPercentage" name="tb[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $tb['passPercentage'] ?? 95; ?>" />
                 </div>
             </div>
-
+            <div class="form-group">
+                <label for="reportVersion" class="col-lg-3 control-label"><?= $this->translate->_("Report Version"); ?></label>
+                <div class="col-lg-9">
+                    <input type="text" id="reportVersion" name="tb[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $tb['reportVersion'] ?? null; ?>" title="Please enter the report version" />
+                </div>
+            </div>
             <div class="form-group">
                 <label for="contactInfo" class="col-lg-3 control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
                 <div class="col-lg-8">

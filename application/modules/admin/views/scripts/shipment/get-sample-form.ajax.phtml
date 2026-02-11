@@ -1,11 +1,11 @@
 <?php
+
 /**
  * AJAX Sample Form Loader
  *
  * Loads the appropriate scheme form partial based on scheme type.
  * Used by index.phtml for the ADD shipment flow.
  */
-
 if ($this->scheme == 'vl') {
 	include('partials/schemes/vl.phtml');
 } elseif ($this->scheme == 'eid') {

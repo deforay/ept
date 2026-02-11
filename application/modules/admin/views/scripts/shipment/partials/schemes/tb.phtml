@@ -59,7 +59,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
-
+$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
 // Get current TB test type for edit mode
 $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 ?>
@@ -94,7 +94,13 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         </div>
     </div>
 <?php } ?>
-
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
+            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['report_version'] ?? $reportVersion; ?>" />
+    </div>
+</div>
 <div class="form-group">
     <label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Select Type of TB Test"); ?></label>
     <div class="col-lg-5">
@@ -105,7 +111,6 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         </select>
     </div>
 </div>
-
 <!-- Microscopy Table -->
 <table style="width: <?php echo $isEditMode ? '1050px' : '100%'; ?>; margin: 0 auto;" border="1" class="hide table table-bordered table-striped reftable clearfix" id="microscopy">
     <thead>

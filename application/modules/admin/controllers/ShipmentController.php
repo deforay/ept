@@ -201,13 +201,13 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
                 $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
+                $this->view->config = Pt_Commons_SchemeConfig::get($response['shipment']['scheme_type']);
                 if ($response['shipment']['scheme_type'] == 'dts') {
                     $this->view->wb = $schemeService->getDbsWb();
                     $this->view->eia = $schemeService->getDbsEia();
                     $this->view->dtsPossibleResults = $schemeService->getPossibleResults('dts', 'admin');
                     $this->view->rtriPossibleResults = $schemeService->getPossibleResults('recency', 'admin');
                     $this->view->allTestKits = $schemeService->getAllDtsTestKit();
-                    $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');
                 } elseif ($response['shipment']['scheme_type'] == 'covid19') {
                     $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'admin');
                     $this->view->allTestTypes = $schemeService->getAllCovid19TestType();
