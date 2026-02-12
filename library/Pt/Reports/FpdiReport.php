@@ -144,7 +144,6 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
 
         // Add dynamic content to the same HTML block
-
         $finalizeReport = "";
         if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
             $finalizeReport = " | {$this->reportType} REPORT | FINALIZED ";
@@ -157,16 +156,19 @@ class Pt_Reports_FpdiReport extends Fpdi
         $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? null;
         $reportVersion = $this->shipmentAttributes['report_version'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.reportVersion');
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
+        $completeFooterHtml = '<table>';
+        $completeFooterHtml .= '<tr>';
         if ($this->layout != 'zimbabwe') {
-            $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
+            $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">Report generated on ' . $reportDate . $finalizeReport . '</div></td>';
         } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate)) {
-            $this->Cell(0, 6, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Effective Date ' . $effectiveDate . '</div></td>';
         }
         if (isset($reportVersion) && !empty($reportVersion)) {
-            $this->Cell(0, 6, $reportVersion, 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">' . $reportVersion . '</div></td>';
         }
-        $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-
+        $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div></td>';
+        $completeFooterHtml .= '</tr>';
+        $completeFooterHtml .= '</table>';
 
         // Handle special cases
         if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {

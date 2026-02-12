@@ -137,47 +137,81 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // Build laboratory information table
-        $labInfo = '<table cellpadding="3" style="font-size:11px;">
-            <tr>
-                <td><strong>Performing Participant</strong><br>' . $result['first_name'] . " " . $result['last_name'] . '</td>
-                <td><strong>Participant Code</strong><br>' . $result['unique_identifier'] . '</td>
-                <td><strong>Participant District</strong><br>' . $result['district'] . '</td>
-            </tr>
-            <tr>
-                <td><strong>Participant Institute</strong><br>' . $result['institute_name'] . '</td>
-                <td><strong>Testing Point</strong><br>' . $result['department_name'] . '</td>
-                <td><strong>Scheme Name</strong><br>' . $result['scheme_name'] . '</td>
-            </tr>
-            <tr>
-                <td><strong>Scheme Round + Year</strong><br>' . $result['shipment_code'] . '</td>
-                <td><strong>Shipment Date</strong><br>' . $result['shipment_date'] . '</td>
-                <td><strong>Panel Receipt Date</strong><br>' . $shipmentReceiptDate . '</td>
-            </tr>
-            <tr>
-                <td style="' . $sampleTypeDisplay . '"><strong>Rehydration Date</strong><br>' . $sampleRehydrationDate . '</td>
-                <td><strong>Shipment Test Date</strong><br>' . $shipmentTestDate . '</td>
-                <td><strong>Response Date</strong><br>' . $responseDate . '</td>
-            </tr>
-            <tr>
-                <td><strong>Supervisor Name</strong><br>' . ($result['participant_supervisor'] ?? '') . '</td>
-                <td><strong>Scheme Coordinator</strong><br>' . $result['pt_co_ordinator_name'] . '</td>
-                <td><strong>Shipment Code</strong><br>' . $result['shipment_code'] . '</td>
-            </tr>
-            <tr>
-                <td><strong>PT Panel Name and Date</strong><br>' . $result['distribution_code'] . ' (' . $result['shipment_date'] . ')</td>
-                <td><strong>Date of Approval</strong><br>' . Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised']) . '</td>
-            </tr>
-            <tr>';
+        // Prepare all fields with their labels and values
+        $fields = [
+            ['label' => 'Performing Participant', 'value' => $result['first_name'] . " " . $result['last_name']],
+            ['label' => 'Participant Code', 'value' => $result['unique_identifier']],
+            ['label' => 'Participant District', 'value' => $result['district']],
+            ['label' => 'Participant Institute', 'value' => $result['institute_name']],
+            ['label' => 'Testing Point', 'value' => $result['department_name']],
+            ['label' => 'Scheme Name', 'value' => $result['scheme_name']],
+            ['label' => 'Scheme Round + Year', 'value' => $result['shipment_code']],
+        ];
+
+        // Add optional fields only if they have values
+        if (!empty($result['shipment_date'])) {
+            $fields[] = ['label' => 'Shipment Date', 'value' => $result['shipment_date']];
+        }
+        if (!empty($shipmentReceiptDate)) {
+            $fields[] = ['label' => 'Panel Receipt Date', 'value' => $shipmentReceiptDate];
+        }
+        if (!empty($sampleRehydrationDate)) {
+            $fields[] = ['label' => 'Rehydration Date', 'value' => $sampleRehydrationDate, 'style' => $sampleTypeDisplay];
+        }
+        if (!empty($shipmentTestDate)) {
+            $fields[] = ['label' => 'Shipment Test Date', 'value' => $shipmentTestDate];
+        }
+        if (!empty($responseDate)) {
+            $fields[] = ['label' => 'Response Date', 'value' => $responseDate];
+        }
+        if (!empty($result['participant_supervisor'])) {
+            $fields[] = ['label' => 'Supervisor Name', 'value' => $result['participant_supervisor']];
+        }
+        if (!empty($result['pt_co_ordinator_name'])) {
+            $fields[] = ['label' => 'Scheme Coordinator', 'value' => $result['pt_co_ordinator_name']];
+        }
+
+        $fields[] = ['label' => 'Shipment Code', 'value' => $result['shipment_code']];
+        $fields[] = ['label' => 'PT Panel Name and Date', 'value' => $result['distribution_code'] . ' (' . $result['shipment_date'] . ')'];
+
+        if (!empty($evalRow['date_finalised'])) {
+            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
+        }
 
         // Add custom fields if available
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '<td>' . (!empty($customField1) ? '<strong>' . $customField1 . '</strong><br>' . ($result['custom_field_1'] ?? '') : '') . '</td>
-                        <td>' . (!empty($customField2) ? '<strong>' . $customField2 . '</strong><br>' . ($result['custom_field_2'] ?? '') : '') . '</td>';
-        } else {
-            $labInfo .= '<td></td><td></td>';
+            if (!empty($customField1) && !empty($result['custom_field_1'])) {
+                $fields[] = ['label' => $customField1, 'value' => $result['custom_field_1']];
+            }
+            if (!empty($customField2) && !empty($result['custom_field_2'])) {
+                $fields[] = ['label' => $customField2, 'value' => $result['custom_field_2']];
+            }
         }
 
-        $labInfo .= '</tr></table>';
+        // Build table with 3 columns per row
+        $labInfo = '<table cellpadding="3" style="font-size:11px;">';
+        $columnsPerRow = 3;
+        $fieldCount = count($fields);
+
+        for ($i = 0; $i < $fieldCount; $i += $columnsPerRow) {
+            $labInfo .= '<tr>';
+
+            for ($j = 0; $j < $columnsPerRow; $j++) {
+                $index = $i + $j;
+                if ($index < $fieldCount) {
+                    $field = $fields[$index];
+                    $style = isset($field['style']) ? ' style="' . $field['style'] . '"' : '';
+                    $labInfo .= '<td' . $style . '><strong>' . $field['label'] . '</strong><br>' . $field['value'] . '</td>';
+                } else {
+                    // Empty cell for alignment
+                    $labInfo .= '<td>&nbsp;</td>';
+                }
+            }
+
+            $labInfo .= '</tr>';
+        }
+
+        $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
         // Parse user test configuration

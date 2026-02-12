@@ -1,7 +1,7 @@
 <?php
 $covid19Config = $this->covid19Config ?? [];
-$allowedAlgorithms = $covid19Config['allowedAlgorithms'] ?? null;
-if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
+$allowedAlgorithms = $covid19Config['allowedAlgorithms'] ?? [];
+if ($allowedAlgorithms !== null && is_array($allowedAlgorithms)) {
     $allowedAlgorithms = explode(',', $allowedAlgorithms);
 }
 ?>
@@ -24,6 +24,12 @@ if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
                 <label for="covid19AllowedAlgorithms" class="col-lg-3 control-label">Allowed Algorithms</label>
                 <div class="col-lg-6 input-group">
                     <textarea id="covid19AllowedAlgorithms" name="covid19[allowedAlgorithms]" class="form-control" placeholder="Enter the Documentation Score Percentage" title="Please enter the Documentation Score Percentage"><?php echo $allowedAlgorithms; ?></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reportVersion" class="col-lg-3 control-label"><?= $this->translate->_("Report Version"); ?></label>
+                <div class="col-lg-9">
+                    <input type="text" id="reportVersion" name="covid19[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $covid19Config['reportVersion'] ?? null; ?>" title="Please enter the report version" />
                 </div>
             </div>
 
