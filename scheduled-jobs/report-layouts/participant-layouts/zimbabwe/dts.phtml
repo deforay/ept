@@ -163,9 +163,6 @@ if (!empty($resultArray['shipment'])) {
         if (!empty($result['distribution_code']) && !empty($result['shipment_date'])) {
             $fields[] = ['label' => 'PT Panel Name and Date', 'value' => $result['distribution_code'] . ' (' . $result['shipment_date'] . ')'];
         }
-        if (!empty($evalRow['date_finalised'])) {
-            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
-        }
 
         // Add custom fields if available
         if (isset($haveCustom) && $haveCustom == 'yes') {
@@ -177,6 +174,9 @@ if (!empty($resultArray['shipment'])) {
             }
         }
 
+        if (!empty($evalRow['date_finalised'])) {
+            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
+        }
         // Build table with 3 columns per row
         $labInfo = '<table cellpadding="3" style="font-size:11px;">';
         $columnsPerRow = 3;
@@ -611,7 +611,7 @@ if (!empty($resultArray['shipment'])) {
 
         // Thank you message and report footer
         $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
-        $html .= '<br><br><p style="font-size:12px;text-align:center;">- ' . $eodReportText . ' -</p>';
+        $html = '<br><br><p style="font-size:12px;text-align:center;">- ' . $eodReportText . ' -</p>';
         // $html = '<p style="font-size:12px;">You have received a score of ' . round($totalScore, 2) . '%.</p>';
         /* $html = '<br><p style="font-size:12px;">Thank you for participating in the ' . $result['scheme_name'] . ' Proficiency Testing Program.</p>';
 

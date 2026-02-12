@@ -174,10 +174,6 @@ if (!empty($resultArray['shipment'])) {
         $fields[] = ['label' => 'Shipment Code', 'value' => $result['shipment_code']];
         $fields[] = ['label' => 'PT Panel Name and Date', 'value' => $result['distribution_code'] . ' (' . $result['shipment_date'] . ')'];
 
-        if (!empty($evalRow['date_finalised'])) {
-            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
-        }
-
         // Add custom fields if available
         if (isset($haveCustom) && $haveCustom == 'yes') {
             if (!empty($customField1) && !empty($result['custom_field_1'])) {
@@ -186,6 +182,10 @@ if (!empty($resultArray['shipment'])) {
             if (!empty($customField2) && !empty($result['custom_field_2'])) {
                 $fields[] = ['label' => $customField2, 'value' => $result['custom_field_2']];
             }
+        }
+
+        if (!empty($evalRow['date_finalised'])) {
+            $fields[] = ['label' => 'Date of Approval', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])];
         }
 
         // Build table with 3 columns per row
