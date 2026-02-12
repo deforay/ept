@@ -155,11 +155,15 @@ class Pt_Reports_FpdiReport extends Fpdi
 
         // Append dynamic content to footer HTML
         $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? null;
+        $reportVersion = $this->shipmentAttributes['report_version'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.reportVersion');
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         if ($this->layout != 'zimbabwe') {
             $completeFooterHtml .= '<br><div style="text-align:center; font-size:7px; margin-top:3px;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
         } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate)) {
             $this->Cell(0, 6, 'Effective Date:' . $effectiveDate, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+        }
+        if (isset($reportVersion) && !empty($reportVersion)) {
+            $this->Cell(0, 6, $reportVersion, 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
         $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
 
