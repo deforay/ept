@@ -2,6 +2,7 @@
     "name": "deforay/ept",
     "description": "Open Source Online PT Management System",
     "homepage": "https://github.com/deforay/ept",
+    "license": "AGPL-3.0-only",
     "type": "project",
     "authors": [
         {
