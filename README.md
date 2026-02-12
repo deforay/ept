@@ -55,6 +55,10 @@ You also need to add a scheduled job. Following is an example on a Linux system
 * Once you have the software set up, you can visit the admin panel http://ept.example.org/admin and log in with the admin credentials.
 * Now you can start adding Participants, Participant logins, PT Surveys, Shipments etc.
 
+### License ###
+
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE.md) (AGPL-3.0).
+
 ### Who do I talk to? ###
 
 * You can reach us at amit (at) deforay (dot) com
