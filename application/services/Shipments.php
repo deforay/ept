@@ -1726,6 +1726,7 @@ class Application_Service_Shipments
             }
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
             $shipmentAttributes['report_version'] = $params['reportVersion'] ?? null;
+            $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
             $data = array(
                 'shipment_code' => $params['shipmentCode'],
                 'allow_editing_response' => $params['allowEditingResponse'],
@@ -2802,6 +2803,7 @@ class Application_Service_Shipments
         }
         $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
         $shipmentAttributes['report_version'] = $params['reportVersion'] ?? null;
+        $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
 
         $dbAdapter->update(
             'shipment',

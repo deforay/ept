@@ -153,17 +153,15 @@ class Pt_Reports_FpdiReport extends Fpdi
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
 
         // Append dynamic content to footer HTML
-        $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? null;
+        $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.effectiveDate');
         $reportVersion = $this->shipmentAttributes['report_version'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.reportVersion');
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $completeFooterHtml = '<table>';
         $completeFooterHtml .= '<tr>';
         if ($this->layout != 'zimbabwe') {
             $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">Report generated on ' . $reportDate . $finalizeReport . '</div></td>';
-        } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate)) {
+        } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate) && isset($reportVersion) && !empty($reportVersion)) {
             $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Effective Date ' . $effectiveDate . '</div></td>';
-        }
-        if (isset($reportVersion) && !empty($reportVersion)) {
             $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">' . $reportVersion . '</div></td>';
         }
         $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div></td>';

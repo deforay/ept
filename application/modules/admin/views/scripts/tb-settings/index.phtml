@@ -24,8 +24,8 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <input type="text" id="reportVersion" name="tb[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $tb['reportVersion'] ?? null; ?>" title="Please enter the report version" />
                 </div>
                 <div class="col-md-6">
-                    <label for="reportEffectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
-                    <input type="text" id="reportEffectiveDate" name="tb[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $tb['reportEffectiveDate'] ?? null; ?>" />
+                    <label for="effectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="tb[effectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $tb['effectiveDate'] ?? null; ?>" />
                     <small class="text-muted"><?= $this->translate->_("Please select the report effective date that shows in the report PDF footer."); ?></small>
                 </div>
             </div>

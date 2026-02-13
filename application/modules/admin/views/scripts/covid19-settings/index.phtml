@@ -233,8 +233,8 @@ if ($allowedAlgorithms !== null && is_array($allowedAlgorithms)) {
                     <input type="text" id="reportVersion" name="covid19[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $covid19Config['reportVersion'] ?? null; ?>" title="Please enter the report version" />
                 </div>
                 <div class="col-md-6">
-                    <label for="reportEffectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
-                    <input type="text" id="reportEffectiveDate" name="covid19[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $covid19Config['reportEffectiveDate'] ?? null; ?>" />
+                    <label for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="effectiveDate" name="covid19[effectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $covid19Config['effectiveDate'] ?? null; ?>" />
                     <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
                 </div>
             </div>

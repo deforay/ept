@@ -61,6 +61,7 @@ $possibleResultsHtml .= '</select>';
 // Escape for JavaScript string
 $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $possibleResultsHtml);
 $reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
+$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
 ?>
 
 <?php if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
@@ -83,6 +84,13 @@ $reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVe
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['report_version'] ?? $reportVersion; ?>" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
+            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
     </div>
 </div>
 <!-- Generic Sample Table -->
