@@ -33,87 +33,72 @@
 		<fieldset>
 			<legend><?= $this->translate->_("Add New Custom Test"); ?></legend>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="text" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This name already exists. Please try something else.')" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
+					<input type="text" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, null, 'This name already exists. Please try something else.')" />
 				</div>
 
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="text" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This code already exists. Please try something else.')" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
+					<input type="text" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, null, 'This code already exists. Please try something else.')" />
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
-					<div class="col-lg-8">
-						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
-							<option value="1" selected="selected">1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
+					<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
+						<option value="1" selected="selected">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+					</select>
 				</div>
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Status"); ?></label>
-					<div class="col-lg-8">
-						<select id="status" name="status" class="form-control" title="Please select the status">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="active" selected="selected">Active</option>
-							<option value="inactive">Inactive</option>
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="status"><?= $this->translate->_("Status"); ?></label>
+					<select id="status" name="status" class="form-control" title="Please select the status">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="active" selected="selected">Active</option>
+						<option value="inactive">Inactive</option>
+					</select>
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" value="100" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
+					<input type="text" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" value="100" />
 				</div>
-				<div class="form-group col-lg-6">
-					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
-						&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" value="no" checked="checked" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
-					</div>
+				<div class="col-lg-6">
+					<label for="disableOtherTestkit" class="control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+					<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" value="no" checked="checked" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label for="testkit1" class="col-lg-4 control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
-					<div class="col-lg-8">
-						<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label for="testkit1" class="control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
+					<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
+					</select>
 				</div>
-				<div class="form-group col-lg-6">
-					<label for="reportVersion" class="col-lg-4 control-label"><?= $this->translate->_("Report Version"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
-					</div>
+				<div class="col-lg-6">
+					<label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+					<input type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
-					<div class="col-lg-8">
-						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
-							<option value="yes">Yes</option>
-							<option value="no" selected="selected">No</option>
-						</select>
-					</div>
+				<div class="col-md-6">
+					<label for="reportEffectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+					<input type="text" id="reportEffectiveDate" name="genericConfig[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" />
+					<small class="text-muted"><?= $this->translate->_("Please select the report effective date that shows in the report PDF footer."); ?></small>
 				</div>
-				<div class="form-group col-lg-6" id="additionalDetailLabelGroup" style="display: none;">
-					<label class="col-lg-4 control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
+					<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
+						<option value="yes">Yes</option>
+						<option value="no" selected="selected">No</option>
+					</select>
+				</div>
+				<div class="col-lg-6" id="additionalDetailLabelGroup" style="display: none;">
+					<label class="control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
+					<input type="text" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
 				</div>
 			</div>
 			<hr>

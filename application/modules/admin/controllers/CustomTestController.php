@@ -86,6 +86,9 @@ class Admin_CustomTestController extends Zend_Controller_Action
             if (isset($params['genericConfig']['reportVersion']) && !empty($params['genericConfig']['reportVersion'])) {
                 $generic['reportVersion'] = $params['genericConfig']['reportVersion'];
             }
+            if (isset($params['genericConfig']['reportEffectiveDate']) && !empty($params['genericConfig']['reportEffectiveDate'])) {
+                $generic['reportEffectiveDate'] = $params['genericConfig']['reportEffectiveDate'];
+            }
             if (isset($generic) && !empty($generic)) {
                 $common->saveSchemeConfigByName(json_encode($generic), $schemeCode);
             }
@@ -104,5 +107,6 @@ class Admin_CustomTestController extends Zend_Controller_Action
         $this->view->disableOtherTestkit = Pt_Commons_SchemeConfig::get($schemeCode . '.disableOtherTestkit');
         $this->view->passingScore = Pt_Commons_SchemeConfig::get($schemeCode . '.passingScore');
         $this->view->reportVersion = Pt_Commons_SchemeConfig::get($schemeCode . '.reportVersion');
+        $this->view->reportEffectiveDate = Pt_Commons_SchemeConfig::get($schemeCode . '.reportEffectiveDate');
     }
 }

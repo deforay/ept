@@ -1,43 +1,43 @@
-<?php
-if (Application_Service_Common::isJSON($this->recencyConfig))
-    $recency = json_decode($this->recencyConfig);
-else
-    $recency = (object)$this->recencyConfig;
-
-?>
+<?php $recency = $this->recencyConfig; ?>
 <div class="well">
     <form name="recencySettingsForm" id="recencySettingsForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "recency-settings", "action" => "index"), 'default', true) ?>" class="form-horizontal" role="form">
         <fieldset>
             <legend><?= $this->translate->_("Rapid HIV Recency Testing Settings"); ?></legend>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
+                    <input type="number" id="recencyPassPercentage" name="recency[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $recency['passPercentage']; ?>" />
+                </div>
 
-            <div class="form-group">
-                <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyPassPercentage" name="recency[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $recency->passPercentage; ?>" />
+                <div class="col-md-6">
+                    <label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
+                    <input type="number" id="recencyPanelScore" name="recency[panelScore]" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $recency['panelScore']; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Panel/Shipment Score"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyPanelScore" name="recency[panelScore]" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Panel Score breakup" value="<?php echo $recency->panelScore; ?>" oninput="$('#recencyDocumentationScore').val(100 - $(this).val());">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="recencyPassPercentage" class="control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
+                    <input type="number" id="recencyDocumentationScore" name="recency[documentationScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $recency['documentationScore']; ?>" oninput="$('#recencyPanelScore').val(100 - $(this).val());">
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="recencyPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Documentation Score"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
-                    <input type="number" id="recencyDocumentationScore" name="recency[documentationScore]" size="50" maxlength="45" class="isRequired isNumeric form-control" placeholder="0" title="Please enter the Documentation Score breakup" value="<?php echo $recency->documentationScore; ?>" oninput="$('#recencyPanelScore').val(100 - $(this).val());">
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label for="sampleRehydrateDays" class="col-lg-3 control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-6">
+                <div class="col-md-6">
+                    <label for="sampleRehydrateDays" class="control-label"><?= $this->translate->_("No. of Days for Sample Rehydration"); ?> <span class="mandatory">*</span></label>
                     <select class="form-control isRequired" id="sampleRehydrateDays" name="recency[sampleRehydrateDays]" title="Please select no. of days for sample rehydration">
-                        <option value="0" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
-                        <option value="1" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
-                        <option value="2" <?php echo (isset($recency->sampleRehydrateDays) && $recency->sampleRehydrateDays == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
+                        <option value="0" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "0") ? " selected='selected' " : ""; ?>>0 - <?= $this->translate->_("Allow Same Day Testing"); ?></option>
+                        <option value="1" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "1") ? " selected='selected' " : ""; ?>>1 - <?= $this->translate->_("Testing after 1 day only"); ?></option>
+                        <option value="2" <?php echo (isset($recency['sampleRehydrateDays']) && $recency['sampleRehydrateDays'] == "2") ? " selected='selected' " : ""; ?>>2 - <?= $this->translate->_("Testing after 2 days only"); ?></option>
                     </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+                    <input type="text" id="reportVersion" name="recency[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $recency['reportVersion'] ?? null; ?>" title="Please enter the report version" />
+                </div>
+                <div class="col-md-6">
+                    <label for="reportEffectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="reportEffectiveDate" name="recency[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $recency['reportEffectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
                 </div>
             </div>
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">

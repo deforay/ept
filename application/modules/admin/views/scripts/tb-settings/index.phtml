@@ -1,5 +1,7 @@
 <?php
 $tb = $this->tbConfig ?? [];
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat =  $genderHelper->getDateFormat();
 ?>
 <style>
     .modal-backdrop.in {
@@ -12,22 +14,24 @@ $tb = $this->tbConfig ?? [];
             <legend><?= $this->translate->_("TB Settings"); ?>
                 <!-- <a href="javascript:void(0);" onclick="exportConfig('tbSettingsForm', 'tb');" class="btn btn-sm btn-success" style="float:right;margin-right: 10px;"><i class="eyeicon icon-download"></i>&nbsp;&nbsp;<?= $this->translate->_("Export Config"); ?></a> -->
             </legend>
-
-            <div class="form-group">
-                <label for="tbPassPercentage" class="col-lg-3 control-label"><?= $this->translate->_("Passing Score"); ?> <span class="mandatory">*</span></label>
-                <div class="col-lg-1" style="min-width:110px;">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="tbPassPercentage" class="control-label"><?= $this->translate->_("Passing Score"); ?> <span class="mandatory">*</span></label>
                     <input type="number" id="tbPassPercentage" name="tb[passPercentage]" max="100" class="isRequired isNumeric form-control" placeholder="95" value="<?php echo $tb['passPercentage'] ?? 95; ?>" />
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="reportVersion" class="col-lg-3 control-label"><?= $this->translate->_("Report Version"); ?></label>
-                <div class="col-lg-9">
+                <div class="col-md-6">
+                    <label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
                     <input type="text" id="reportVersion" name="tb[reportVersion]" class="form-control" placeholder="Enter the report version" value="<?php echo $tb['reportVersion'] ?? null; ?>" title="Please enter the report version" />
                 </div>
+                <div class="col-md-6">
+                    <label for="reportEffectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+                    <input type="text" id="reportEffectiveDate" name="tb[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $tb['reportEffectiveDate'] ?? null; ?>" />
+                    <small class="text-muted"><?= $this->translate->_("Please select the report effective date that shows in the report PDF footer."); ?></small>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="contactInfo" class="col-lg-3 control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
-                <div class="col-lg-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <label for="contactInfo" class="control-label"><?= $this->translate->_("Contact Information Content"); ?><span class="mandatory">*</span></label>
                     <div id="contactInfoEditor" name="contactInfoEditor" class="richtextarea form-control" title="Please enter a Contact Information Content" placeholder="Enter the Contact Information Content"><?php echo htmlspecialchars_decode($tb['contactInfo']); ?></div>
                     <textarea style="display:none;" id="contactInfo" name="tb[contactInfo]"></textarea>
                 </div>

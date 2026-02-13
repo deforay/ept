@@ -35,92 +35,79 @@ unset($rows);
 		<fieldset>
 			<legend><?= $this->translate->_("Update Custom Test"); ?></legend>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This name already exists. Please try something else.')" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="schemeName"><?= $this->translate->_("Custom Test Name"); ?> <span class="mandatory">*</span></label>
+					<input type="text" value="<?php echo $this->result['schemeResult']['scheme_name'] ?? null; ?>" id="schemeName" name="schemeName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the custom test name" placeholder="Enter the custom test name" onblur="checkDuplicate('scheme_list', 'scheme_name', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This name already exists. Please try something else.')" />
 				</div>
 
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This code already exists. Please try something else.')" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="schemeCode"><?= $this->translate->_("Custom Test Code"); ?> <span class="mandatory">*</span></label>
+					<input type="text" value="<?php echo $this->result['schemeResult']['scheme_id'] ?? null; ?>" id="schemeCode" name="schemeCode" size="50" maxlength="255" class="form-control isRequired" title="Please enter the custom test code" placeholder="Enter the custom test code" onblur="checkDuplicate('scheme_list', 'scheme_id', this, '<?php echo "scheme_id##" . $this->result['schemeResult']['scheme_id']; ?>'', 'This code already exists. Please try something else.')" />
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
-					<div class="col-lg-8">
-						<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
-							<option value="">--<?= $this->translate->_("Select"); ?>--</option>
-							<option value="1" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 1) ? 'selected="selected"' : null; ?>>1</option>
-							<option value="2" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 2) ? 'selected="selected"' : null; ?>>2</option>
-							<option value="3" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 3) ? 'selected="selected"' : null; ?>>3</option>
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="numberOfTests"><?= $this->translate->_("Number of Tests"); ?></label>
+					<select id="numberOfTests" name="genericConfig[numberOfTests]" class="form-control" title="Please select the number of tests">
+						<option value="">--<?= $this->translate->_("Select"); ?>--</option>
+						<option value="1" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 1) ? 'selected="selected"' : null; ?>>1</option>
+						<option value="2" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 2) ? 'selected="selected"' : null; ?>>2</option>
+						<option value="3" <?php echo (isset($jsonConfig['numberOfTests']) && $jsonConfig['numberOfTests'] == 3) ? 'selected="selected"' : null; ?>>3</option>
+					</select>
 				</div>
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="status"><?= $this->translate->_("Status"); ?></label>
-					<div class="col-lg-8">
-						<select id="status" name="status" class="form-control" title="Please select the status">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="active" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'active') ? 'selected="selected"' : null; ?>>Active</option>
-							<option value="inactive" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'inactive') ? 'selected="selected"' : null; ?>>Inactive</option>
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="status"><?= $this->translate->_("Status"); ?></label>
+					<select id="status" name="status" class="form-control" title="Please select the status">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="active" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'active') ? 'selected="selected"' : null; ?>>Active</option>
+						<option value="inactive" <?php echo (isset($this->result['schemeResult']['status']) && $this->result['schemeResult']['status'] == 'inactive') ? 'selected="selected"' : null; ?>>Inactive</option>
+					</select>
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" value="<?php echo $this->passingScore ?? ''; ?>" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="passingScore"><?= $this->translate->_("Passing Score"); ?></label>
+					<input type="text" value="<?php echo $this->passingScore ?? ''; ?>" id="passingScore" name="genericConfig[passingScore]" class="form-control" title="Please enter the passing score" placeholder="Enter the passing score" />
 				</div>
-				<div class="form-group col-lg-6">
-					<label for="disableOtherTestkit" class="col-lg-4 control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
-					<div class="col-lg-8">
-						<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" <?php echo (isset($this->disableOtherTestkit) && $this->disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
-						&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" <?php echo (!isset($this->disableOtherTestkit) || $this->disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
-					</div>
+				<div class="col-lg-6">
+					<label for="disableOtherTestkit" class="control-label"><?= $this->translate->_("Disable Other Test Kit"); ?> <span class="mandatory">*</span></label>
+					<input type="radio" class="" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitYes" <?php echo (isset($this->disableOtherTestkit) && $this->disableOtherTestkit == "yes") ? " checked='checked' " : ""; ?> value="yes" title="Please select whether to disable other test kits" /> <?= $this->translate->_("Yes"); ?>
+					&nbsp;<input type="radio" class="isRequired" name="genericConfig[disableOtherTestkit]" id="disableOtherTestkitNo" <?php echo (!isset($this->disableOtherTestkit) || $this->disableOtherTestkit == "no") ? " checked='checked' " : ""; ?> value="no" title="Please select whether to disable other test kits" /> <?= $this->translate->_("No"); ?>
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label for="testkit1" class="col-lg-4 control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
-					<div class="col-lg-8">
-						<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
-							<?php foreach ($this->allTestKits as $key => $testkit) { ?>
-								<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->customTestsRecommendedTestkits) && in_array($testkit['TESTKITNAMEID'], $this->customTestsRecommendedTestkits)) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
-							<?php } ?>
-						</select>
-					</div>
+				<div class="col-lg-6">
+					<label for="testkit1" class="control-label"><?= $this->translate->_("Enforce these Test kits"); ?></label>
+					<select name="customTestkit[]" id="customTestkit" class="form-control" multiple="multiple" title="Please Choose Test Kit" style="width: 100%;">
+						<?php foreach ($this->allTestKits as $key => $testkit) { ?>
+							<option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->customTestsRecommendedTestkits) && in_array($testkit['TESTKITNAMEID'], $this->customTestsRecommendedTestkits)) ? 'selected' : ''; ?>><?php echo $testkit['TESTKITNAME'] ?></option>
+						<?php } ?>
+					</select>
 				</div>
-				<div class="form-group col-lg-6">
-					<label for="reportVersion" class="col-lg-4 control-label"><?= $this->translate->_("Report Version"); ?></label>
-					<div class="col-lg-8">
-						<input value="<?php echo $this->reportVersion ?? null; ?>" type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
-					</div>
+				<div class="col-lg-6">
+					<label for="reportVersion" class="control-label"><?= $this->translate->_("Report Version"); ?></label>
+					<input value="<?php echo $this->reportVersion ?? null; ?>" type="text" name="genericConfig[reportVersion]" id="reportVersion" class="form-control" placeholder="Enter the report version" title="Please enter the report version">
 				</div>
 			</div>
 			<div class="row">
-				<div class="form-group col-lg-6">
-					<label class="col-lg-4 control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
-					<div class="col-lg-8">
-						<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
-							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-							<option value="yes" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'selected="selected"' : null; ?>>Yes</option>
-							<option value="no" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'no') ? 'selected="selected"' : null; ?>>No</option>
-						</select>
-					</div>
+				<div class="col-md-6">
+					<label for="reportEffectiveDate" class="control-label"><?= $this->translate->_("Report Effective Date"); ?></label>
+					<input value="<?php echo $this->reportEffectiveDate ?? null; ?>" type="text" id="reportEffectiveDate" name="genericConfig[reportEffectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $tb['reportEffectiveDate'] ?? null; ?>" />
+					<small class="text-muted"><?= $this->translate->_("Please select the report effective date that shows in the report PDF footer."); ?></small>
 				</div>
-				<div class="form-group col-lg-6" id="additionalDetailLabelGroup" style="<?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? '' : 'display: none;'; ?>">
-					<label class="col-lg-4 control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
-					<div class="col-lg-8">
-						<input type="text" value="<?php echo $jsonConfig['additionalDetailLabel'] ?? null; ?>" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'isRequired' : ''; ?>" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
-					</div>
+				<div class="col-lg-6">
+					<label class="control-label" for="captureAdditionalDetails"><?= $this->translate->_("Capture Additional Detail"); ?></label>
+					<select id="captureAdditionalDetails" name="genericConfig[captureAdditionalDetails]" class="form-control" title="Please select whether to capture additional details">
+						<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+						<option value="yes" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'selected="selected"' : null; ?>>Yes</option>
+						<option value="no" <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'no') ? 'selected="selected"' : null; ?>>No</option>
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6" id="additionalDetailLabelGroup" style="<?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? '' : 'display: none;'; ?>">
+					<label class="control-label" for="additionalDetailLabel"><?= $this->translate->_("Additional Detail Label"); ?></label>
+					<input type="text" value="<?php echo $jsonConfig['additionalDetailLabel'] ?? null; ?>" id="additionalDetailLabel" name="genericConfig[additionalDetailLabel]" class="form-control <?php echo (isset($jsonConfig['captureAdditionalDetails']) && $jsonConfig['captureAdditionalDetails'] == 'yes') ? 'isRequired' : ''; ?>" title="Please enter the label for additional details" placeholder="Enter the label for additional details" />
 				</div>
 			</div>
 			<hr>

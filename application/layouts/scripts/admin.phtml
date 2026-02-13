@@ -5,7 +5,8 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 /* Notification Section Start */
 $notifyData = $this->getNotification();
 $configData = $this->getGlobalConfig();
-
+$genderHelper = $this->getHelper('DateFormat');
+$dtFormat =  $genderHelper->getDateFormat();
 $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
@@ -1277,6 +1278,11 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
+
+			$(".datepicker").datepicker({
+				dateFormat: '<?php echo $dtFormat; ?>',
+				// minDate: 'today',
+			});
 		});
 
 		function validatePassword(passwordField, confirmField = null) {
