@@ -12,11 +12,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Deploy to GitHub Pages
+  build:
+    name: Build Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,5 +35,22 @@ jobs:
       - name: Install dependencies
         run: pip install mkdocs-material
 
+      - name: Build site
+        run: mkdocs build --strict
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
+        id: deployment
+        uses: actions/deploy-pages@v4
