@@ -1,0 +1,3063 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation and training curriculum for the ePT Proficiency Testing system">
+      
+      
+      
+        <link rel="canonical" href="https://deforay.github.io/ept/SchemeArchitecture/">
+      
+      
+        <link rel="prev" href="../ARCHITECTURE/">
+      
+      
+        <link rel="next" href="../AdminModuleGuide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Scheme Architecture - ePT Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scheme-architecture-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ePT Documentation" class="md-header__button md-logo" aria-label="ePT Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ePT Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Scheme Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/deforay/ept" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deforay/ept
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ePT Documentation" class="md-nav__button md-logo" aria-label="ePT Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ePT Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/deforay/ept" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deforay/ept
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheme Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheme Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheme-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheme Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheme Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-model-applicationmodelsschemephp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Model (application/models/{Scheme}.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-controller-applicationcontrollersschemecontrollerphp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Controller (application/controllers/{Scheme}Controller.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-response-view-applicationviewsscriptsschemeresponsephtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Response View (application/views/scripts/{scheme}/response.phtml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dbtable-applicationmodelsdbtableresponseschemephp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. DbTable (application/models/DbTable/Response{Scheme}.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-admin-partial-partialsschemesschemephtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Admin Partial (partials/schemes/{scheme}.phtml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#participant-response-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Participant Response Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shipment-creation-flow-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipment Creation Flow (Admin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Tables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-scheme-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Scheme Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table Relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-a-new-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding a New Scheme
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding a New Scheme">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Create Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-dbtable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Create DbTable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-create-response-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Create Response View
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-create-admin-partial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Create Admin Partial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-update-routers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Update Routers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-update-service-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Update Service Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-create-database-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Create Database Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheme-specific-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheme-Specific Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheme-Specific Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dts-dried-tube-specimen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DTS (Dried Tube Specimen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vl-viral-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VL (Viral Load)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tb-tuberculosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TB (Tuberculosis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eid-early-infant-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EID (Early Infant Diagnosis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covid-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        COVID-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbs-dried-blood-spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DBS (Dried Blood Spot)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shipment-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipment Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Formula
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report-generation-excel-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Generation &amp; Excel Export
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Report Generation &amp; Excel Export">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#report-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excel-report-methods-by-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excel Report Methods by Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pdf-generation-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PDF Generation Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-service-applicationservicesreportsphp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Service (application/services/Reports.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-output-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Output Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excel-report-structure-example-dts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excel Report Structure (Example: DTS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-export-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Export Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-reports-for-new-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Reports for New Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AdminModuleGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TranslationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part1-setup-and-participants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 1: System Setup & Participants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part2-surveys-and-shipments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 2: PT Survey & Shipment Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part3-participant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 3: Participant — Results & Reports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part4-evaluation-and-reports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 4: Evaluation, Reports & Finalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/exercises/dts-hiv-serology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DTS HIV Serology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheme-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheme Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheme Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-model-applicationmodelsschemephp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Model (application/models/{Scheme}.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-controller-applicationcontrollersschemecontrollerphp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Controller (application/controllers/{Scheme}Controller.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-response-view-applicationviewsscriptsschemeresponsephtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Response View (application/views/scripts/{scheme}/response.phtml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-dbtable-applicationmodelsdbtableresponseschemephp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. DbTable (application/models/DbTable/Response{Scheme}.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-admin-partial-partialsschemesschemephtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Admin Partial (partials/schemes/{scheme}.phtml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#participant-response-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Participant Response Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shipment-creation-flow-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipment Creation Flow (Admin)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Tables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database Tables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-scheme-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Scheme Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-relationships" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table Relationships
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-a-new-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding a New Scheme
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding a New Scheme">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-create-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Create Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-dbtable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Create DbTable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create Controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-create-response-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Create Response View
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-create-admin-partial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Create Admin Partial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-update-routers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Update Routers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-update-service-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Update Service Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-create-database-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Create Database Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheme-specific-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheme-Specific Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheme-Specific Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dts-dried-tube-specimen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DTS (Dried Tube Specimen)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vl-viral-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VL (Viral Load)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tb-tuberculosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TB (Tuberculosis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eid-early-infant-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EID (Early Infant Diagnosis)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covid-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        COVID-19
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dbs-dried-blood-spot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DBS (Dried Blood Spot)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shipment-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipment Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Formula
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#report-generation-excel-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Generation &amp; Excel Export
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Report Generation &amp; Excel Export">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#report-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excel-report-methods-by-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excel Report Methods by Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pdf-generation-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PDF Generation Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Controllers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-service-applicationservicesreportsphp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Service (application/services/Reports.php)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#report-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Report Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-output-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Output Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excel-report-structure-example-dts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excel Report Structure (Example: DTS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-export-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Export Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-reports-for-new-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Reports for New Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="scheme-architecture-guide">Scheme Architecture Guide<a class="headerlink" href="#scheme-architecture-guide" title="Permanent link">&para;</a></h1>
+<p>This document explains how test schemes (DTS, VL, EID, TB, Recency, COVID-19, DBS, Custom Tests) are organized in the EPT project. Use this as a reference when maintaining existing schemes or adding new ones.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#directory-structure">Directory Structure</a></li>
+<li><a href="#scheme-components">Scheme Components</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#adding-a-new-scheme">Adding a New Scheme</a></li>
+<li><a href="#scheme-specific-details">Scheme-Specific Details</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Each scheme in EPT follows a consistent MVC architecture:</p>
+<div class="highlight"><pre><span></span><code>graph TB
+    subgraph &quot;Participant Flow&quot;
+        P[Participant] --&gt; PC[&quot;{Scheme}Controller&quot;]
+        PC --&gt; PV[&quot;views/scripts/{scheme}/response.phtml&quot;]
+        PC --&gt; SS[&quot;Shipments Service&quot;]
+    end
+
+    subgraph &quot;Admin Flow&quot;
+        A[Admin] --&gt; SC[&quot;ShipmentController&quot;]
+        SC --&gt; AP[&quot;partials/schemes/{scheme}.phtml&quot;]
+        SC --&gt; ES[&quot;Evaluation Service&quot;]
+    end
+
+    subgraph &quot;Data Layer&quot;
+        SS --&gt; DT[&quot;DbTable/Response{Scheme}&quot;]
+        ES --&gt; M[&quot;Model/{Scheme}.php&quot;]
+        DT --&gt; DB[(Database)]
+        M --&gt; DB
+    end
+
+    subgraph &quot;Database Tables&quot;
+        DB --&gt; RR[&quot;response_result_{scheme}&quot;]
+        DB --&gt; REF[&quot;reference_result_{scheme}&quot;]
+        DB --&gt; SPM[&quot;shipment_participant_map&quot;]
+    end
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Model</strong></td>
+<td>Evaluation logic, scoring, reports</td>
+<td><code>application/models/{Scheme}.php</code></td>
+</tr>
+<tr>
+<td><strong>Controller</strong></td>
+<td>Request handling, response entry</td>
+<td><code>application/controllers/{Scheme}Controller.php</code></td>
+</tr>
+<tr>
+<td><strong>Views</strong></td>
+<td>Participant response forms</td>
+<td><code>application/views/scripts/{scheme}/</code></td>
+</tr>
+<tr>
+<td><strong>DbTable</strong></td>
+<td>Database persistence</td>
+<td><code>application/models/DbTable/Response{Scheme}.php</code></td>
+</tr>
+<tr>
+<td><strong>Admin Partial</strong></td>
+<td>Shipment add/edit forms</td>
+<td><code>application/modules/admin/views/scripts/shipment/partials/schemes/{scheme}.phtml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>application/
+├── models/
+│   ├── Dts.php                    # DTS evaluation &amp; reports
+│   ├── Vl.php                     # VL evaluation &amp; reports
+│   ├── Tb.php                     # TB evaluation &amp; reports
+│   ├── Eid.php                    # EID evaluation &amp; reports
+│   ├── Recency.php                # Recency evaluation &amp; reports
+│   ├── Covid19.php                # COVID-19 evaluation &amp; reports
+│   ├── CustomTest.php             # Custom Tests evaluation
+│   └── DbTable/
+│       ├── ResponseDts.php        # response_result_dts table
+│       ├── ResponseVl.php         # response_result_vl table
+│       ├── ResponseTb.php         # response_result_tb table
+│       ├── ResponseEid.php        # response_result_eid table
+│       ├── ResponseRecency.php    # response_result_recency table
+│       ├── ResponseCovid19.php    # response_result_covid19 table
+│       ├── ResponseDbs.php        # response_result_dbs table
+│       ├── ResponseGenericTest.php # response_result_generic_test table (Custom Tests)
+│       ├── Shipments.php          # shipment table
+│       └── ShipmentParticipantMap.php # shipment_participant_map table
+│
+├── controllers/
+│   ├── DtsController.php          # DTS response entry
+│   ├── VlController.php           # VL response entry
+│   ├── TbController.php           # TB response entry
+│   ├── EidController.php          # EID response entry
+│   ├── RecencyController.php      # Recency response entry
+│   ├── Covid19Controller.php      # COVID-19 response entry
+│   ├── DbsController.php          # DBS response entry
+│   └── CustomTestController.php   # Custom Tests response entry
+│
+├── views/scripts/
+│   ├── dts/response.phtml         # DTS response form
+│   ├── vl/response.phtml          # VL response form
+│   ├── tb/response.phtml          # TB response form
+│   ├── eid/response.phtml         # EID response form
+│   ├── recency/response.phtml     # Recency response form
+│   ├── covid19/response.phtml     # COVID-19 response form
+│   ├── dbs/response.phtml         # DBS response form
+│   └── custom-test/response.phtml # Custom Tests response form
+│
+├── services/
+│   ├── Shipments.php              # updateDtsResults(), updateVlResults(), etc.
+│   ├── Schemes.php                # getPossibleResults(), getSchemeControls(), etc.
+│   ├── Evaluation.php             # Evaluation workflow management
+│   └── Reports.php                # Report generation
+│
+└── modules/admin/views/scripts/shipment/
+    ├── edit.phtml                 # Slim wrapper (includes partials)
+    ├── get-sample-form.ajax.phtml # AJAX loader for ADD flow
+    └── partials/
+        ├── common/
+        │   ├── form-header.phtml  # Shared header fields
+        │   ├── form-footer.phtml  # Submit buttons
+        │   └── form-scripts.phtml # Shared JavaScript
+        └── schemes/
+            ├── dts.phtml          # DTS shipment form
+            ├── vl.phtml           # VL shipment form
+            ├── tb.phtml           # TB shipment form
+            ├── eid.phtml          # EID shipment form
+            ├── recency.phtml      # Recency shipment form
+            ├── covid19.phtml      # COVID-19 shipment form
+            ├── dbs.phtml          # DBS shipment form
+            └── generic.phtml      # Custom Tests shipment form
+</code></pre></div>
+<hr />
+<h2 id="scheme-components">Scheme Components<a class="headerlink" href="#scheme-components" title="Permanent link">&para;</a></h2>
+<h3 id="1-model-applicationmodelsschemephp">1. Model (<code>application/models/{Scheme}.php</code>)<a class="headerlink" href="#1-model-applicationmodelsschemephp" title="Permanent link">&para;</a></h3>
+<p>Each scheme model contains the <code>evaluate()</code> method - the core evaluation logic:</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)</span>
+<span class="x">{</span>
+<span class="x">    // 1. Fetch reference results</span>
+<span class="x">    // 2. Compare participant responses vs reference</span>
+<span class="x">    // 3. Calculate scores (response + documentation)</span>
+<span class="x">    // 4. Determine pass/fail</span>
+<span class="x">    // 5. Update shipment_participant_map with results</span>
+<span class="x">    // 6. Return evaluation summary</span>
+<span class="x">}</span>
+</code></pre></div>
+<p><strong>Key Methods in Models:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evaluate()</code></td>
+<td>Core scoring logic</td>
+</tr>
+<tr>
+<td><code>generate{Scheme}ExcelReport()</code></td>
+<td>Excel report generation</td>
+</tr>
+<tr>
+<td><code>getDataForIndividualPDFBatch()</code></td>
+<td>PDF report data</td>
+</tr>
+<tr>
+<td><code>get{Scheme}Samples()</code></td>
+<td>Retrieve sample data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Model Sizes (complexity indicator):</strong>
+- TB.php: 133K (most complex - molecular/microscopy)
+- VL.php: 114K (Z-score calculations)
+- DTS.php: 111K (multiple algorithms)
+- Covid19.php: 79K
+- CustomTest.php: 79K
+- Recency.php: 63K
+- Eid.php: 21K (simplest)</p>
+<h3 id="2-controller-applicationcontrollersschemecontrollerphp">2. Controller (<code>application/controllers/{Scheme}Controller.php</code>)<a class="headerlink" href="#2-controller-applicationcontrollersschemecontrollerphp" title="Permanent link">&para;</a></h3>
+<p>Handles participant response entry:</p>
+<div class="highlight"><pre><span></span><code><span class="x">public function responseAction()</span>
+<span class="x">{</span>
+<span class="x">    if ($this-&gt;getRequest()-&gt;isPost()) {</span>
+<span class="x">        // Save results via service layer</span>
+<span class="x">        $this-&gt;shipmentService-&gt;update{Scheme}Results($data);</span>
+<span class="x">        // Redirect appropriately</span>
+<span class="x">    } else {</span>
+<span class="x">        // Load form data</span>
+<span class="x">        $this-&gt;view-&gt;samples = $this-&gt;schemeService-&gt;get{Scheme}Samples();</span>
+<span class="x">        $this-&gt;view-&gt;possibleResults = $this-&gt;schemeService-&gt;getPossibleResults();</span>
+<span class="x">        // Render response.phtml</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+<p><strong>Common Controller Actions:</strong>
+- <code>responseAction()</code> - Main response entry (GET: show form, POST: save)
+- <code>downloadAction()</code> - Download reference data/reports
+- <code>deleteAction()</code> - Delete response (if applicable)</p>
+<h3 id="3-response-view-applicationviewsscriptsschemeresponsephtml">3. Response View (<code>application/views/scripts/{scheme}/response.phtml</code>)<a class="headerlink" href="#3-response-view-applicationviewsscriptsschemeresponsephtml" title="Permanent link">&para;</a></h3>
+<p>Participant-facing form for entering test results. Common elements:</p>
+<ul>
+<li>Laboratory/Participant information</li>
+<li>Receipt and testing dates</li>
+<li>Assay/kit selection</li>
+<li>Results table (scheme-specific columns)</li>
+<li>QC section (conditional)</li>
+<li>Supervisor review</li>
+<li>File upload (some schemes)</li>
+<li>Manual override (admin only)</li>
+</ul>
+<h3 id="4-dbtable-applicationmodelsdbtableresponseschemephp">4. DbTable (<code>application/models/DbTable/Response{Scheme}.php</code>)<a class="headerlink" href="#4-dbtable-applicationmodelsdbtableresponseschemephp" title="Permanent link">&para;</a></h3>
+<p>Database persistence layer:</p>
+<div class="highlight"><pre><span></span><code><span class="x">class Application_Model_DbTable_ResponseDts extends Zend_Db_Table_Abstract</span>
+<span class="x">{</span>
+<span class="x">    protected $_name = &#39;response_result_dts&#39;;</span>
+<span class="x">    protected $_primary = array(&#39;shipment_map_id&#39;, &#39;sample_id&#39;);</span>
+
+<span class="x">    public function updateResults($params)</span>
+<span class="x">    {</span>
+<span class="x">        // Insert or update response records</span>
+<span class="x">    }</span>
+
+<span class="x">    public function updateResultsByAPI($params, $dm)</span>
+<span class="x">    {</span>
+<span class="x">        // API-based result submission</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+<h3 id="5-admin-partial-partialsschemesschemephtml">5. Admin Partial (<code>partials/schemes/{scheme}.phtml</code>)<a class="headerlink" href="#5-admin-partial-partialsschemesschemephtml" title="Permanent link">&para;</a></h3>
+<p>Unified shipment add/edit form that works for both flows:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?php</span>
+<span class="c1">// Mode detection</span>
+<span class="nv">$isEditMode</span> <span class="o">=</span> <span class="nb">isset</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shipmentData</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shipmentData</span><span class="p">);</span>
+
+<span class="c1">// Normalize data</span>
+<span class="nv">$samples</span> <span class="o">=</span> <span class="nv">$isEditMode</span>
+    <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shipmentData</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span>
+    <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">schemeControls</span><span class="p">;</span>
+
+<span class="nv">$possibleResults</span> <span class="o">=</span> <span class="nv">$isEditMode</span>
+    <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">shipmentData</span><span class="p">[</span><span class="s1">&#39;possibleResults&#39;</span><span class="p">]</span>
+    <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">schemePossibleResults</span><span class="p">;</span>
+<span class="cp">?&gt;</span>
+<span class="x">&lt;!-- Form HTML works for both ADD and EDIT --&gt;</span>
+</code></pre></div>
+<hr />
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
+<h3 id="participant-response-flow">Participant Response Flow<a class="headerlink" href="#participant-response-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant P as Participant
+    participant D as Dashboard
+    participant C as {Scheme}Controller
+    participant S as Shipments Service
+    participant DB as Database
+
+    P-&gt;&gt;D: View available shipments
+    D-&gt;&gt;P: Show scheme list
+    P-&gt;&gt;C: Click &quot;Enter Results&quot; (GET)
+    C-&gt;&gt;C: Load samples, testkits, possible results
+    C-&gt;&gt;P: Render response.phtml form
+    P-&gt;&gt;C: Submit results (POST)
+    C-&gt;&gt;S: update{Scheme}Results($data)
+    S-&gt;&gt;DB: Insert/Update response_result_{scheme}
+    S-&gt;&gt;DB: Update shipment_participant_map status
+    DB--&gt;&gt;C: Success
+    C-&gt;&gt;P: Redirect to dashboard
+</code></pre></div>
+<h3 id="evaluation-flow">Evaluation Flow<a class="headerlink" href="#evaluation-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant A as Admin
+    participant EC as EvaluateController
+    participant ES as Evaluation Service
+    participant M as {Scheme} Model
+    participant DB as Database
+
+    A-&gt;&gt;EC: Trigger evaluation
+    EC-&gt;&gt;ES: getShipmentToEvaluate()
+    ES-&gt;&gt;DB: Load participant responses
+    DB--&gt;&gt;ES: Response data
+    ES-&gt;&gt;M: evaluate($shipmentResult, $shipmentId)
+    M-&gt;&gt;DB: Fetch reference_result_{scheme}
+    DB--&gt;&gt;M: Reference data
+    M-&gt;&gt;M: Compare responses vs reference
+    M-&gt;&gt;M: Calculate scores
+    M-&gt;&gt;M: Determine pass/fail
+    M-&gt;&gt;DB: Update shipment_participant_map
+    Note over DB: shipment_score, documentation_score,&lt;br/&gt;final_result, failure_reason
+    M--&gt;&gt;EC: Evaluation complete
+    EC-&gt;&gt;A: Show results
+</code></pre></div>
+<h3 id="shipment-creation-flow-admin">Shipment Creation Flow (Admin)<a class="headerlink" href="#shipment-creation-flow-admin" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant A as Admin
+    participant I as index.phtml
+    participant SC as ShipmentController
+    participant AJAX as get-sample-form.ajax
+    participant P as partials/schemes/{scheme}
+    participant DB as Database
+
+    A-&gt;&gt;I: Select scheme from dropdown
+    I-&gt;&gt;SC: getSampleFormAction() [AJAX]
+    SC-&gt;&gt;AJAX: Load form partial
+    AJAX-&gt;&gt;P: Include scheme partial
+    P--&gt;&gt;A: Render form fields
+    A-&gt;&gt;A: Fill in sample details
+    A-&gt;&gt;SC: Submit (addAction/editAction)
+    SC-&gt;&gt;DB: Save to shipment table
+    SC-&gt;&gt;DB: Save to reference_result_{scheme}
+    DB--&gt;&gt;SC: Success
+    SC-&gt;&gt;A: Redirect to shipment list
+</code></pre></div>
+<hr />
+<h2 id="database-tables">Database Tables<a class="headerlink" href="#database-tables" title="Permanent link">&para;</a></h2>
+<h3 id="core-tables">Core Tables<a class="headerlink" href="#core-tables" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shipment</code></td>
+<td>Shipment metadata, status, configuration</td>
+</tr>
+<tr>
+<td><code>shipment_participant_map</code></td>
+<td>Links shipments to participants, stores scores</td>
+</tr>
+<tr>
+<td><code>scheme_list</code></td>
+<td>Scheme definitions and configuration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="per-scheme-tables">Per-Scheme Tables<a class="headerlink" href="#per-scheme-tables" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Response Table</th>
+<th>Reference Table</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DTS</td>
+<td><code>response_result_dts</code></td>
+<td><code>reference_result_dts</code></td>
+</tr>
+<tr>
+<td>VL</td>
+<td><code>response_result_vl</code></td>
+<td><code>reference_result_vl</code></td>
+</tr>
+<tr>
+<td>TB</td>
+<td><code>response_result_tb</code></td>
+<td><code>reference_result_tb</code></td>
+</tr>
+<tr>
+<td>EID</td>
+<td><code>response_result_eid</code></td>
+<td><code>reference_result_eid</code></td>
+</tr>
+<tr>
+<td>Recency</td>
+<td><code>response_result_recency</code></td>
+<td><code>reference_result_recency</code></td>
+</tr>
+<tr>
+<td>COVID-19</td>
+<td><code>response_result_covid19</code></td>
+<td><code>reference_result_covid19</code></td>
+</tr>
+<tr>
+<td>DBS</td>
+<td><code>response_result_dbs</code></td>
+<td><code>reference_result_dbs</code></td>
+</tr>
+<tr>
+<td>Custom Tests</td>
+<td><code>response_result_generic_test</code></td>
+<td>(uses scheme config)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-relationships">Table Relationships<a class="headerlink" href="#table-relationships" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>erDiagram
+    shipment ||--o{ shipment_participant_map : &quot;has participants&quot;
+    shipment ||--o{ reference_result : &quot;has reference samples&quot;
+    shipment_participant_map ||--o{ response_result : &quot;has responses&quot;
+    participant ||--o{ shipment_participant_map : &quot;enrolled in&quot;
+
+    shipment {
+        int shipment_id PK
+        string shipment_code
+        string scheme_type
+        int distribution_id
+        string status
+        json shipment_attributes
+    }
+
+    shipment_participant_map {
+        int map_id PK
+        int shipment_id FK
+        int participant_id FK
+        string response_status
+        decimal shipment_score
+        decimal documentation_score
+        int final_result
+        json failure_reason
+    }
+
+    reference_result {
+        int shipment_id PK
+        string sample_id PK
+        string reference_result
+        int sample_score
+    }
+
+    response_result {
+        int shipment_map_id PK
+        string sample_id PK
+        string reported_result
+        timestamp created_on
+    }
+</code></pre></div>
+<hr />
+<h2 id="adding-a-new-scheme">Adding a New Scheme<a class="headerlink" href="#adding-a-new-scheme" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-create-model">Step 1: Create Model<a class="headerlink" href="#step-1-create-model" title="Permanent link">&para;</a></h3>
+<p>Create <code>application/models/NewScheme.php</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="x">class Application_Model_NewScheme</span>
+<span class="x">{</span>
+<span class="x">    public function evaluate($shipmentResult, $shipmentId, $reEvaluate = false)</span>
+<span class="x">    {</span>
+<span class="x">        // Implement evaluation logic</span>
+<span class="x">    }</span>
+
+<span class="x">    public function generateNewSchemeExcelReport($shipmentId)</span>
+<span class="x">    {</span>
+<span class="x">        // Implement report generation</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+<h3 id="step-2-create-dbtable">Step 2: Create DbTable<a class="headerlink" href="#step-2-create-dbtable" title="Permanent link">&para;</a></h3>
+<p>Create <code>application/models/DbTable/ResponseNewScheme.php</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="x">class Application_Model_DbTable_ResponseNewScheme extends Zend_Db_Table_Abstract</span>
+<span class="x">{</span>
+<span class="x">    protected $_name = &#39;response_result_newscheme&#39;;</span>
+<span class="x">    protected $_primary = array(&#39;shipment_map_id&#39;, &#39;sample_id&#39;);</span>
+
+<span class="x">    public function updateResults($params) { /* ... */ }</span>
+<span class="x">}</span>
+</code></pre></div>
+<h3 id="step-3-create-controller">Step 3: Create Controller<a class="headerlink" href="#step-3-create-controller" title="Permanent link">&para;</a></h3>
+<p>Create <code>application/controllers/NewschemeController.php</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="x">class NewschemeController extends Zend_Controller_Action</span>
+<span class="x">{</span>
+<span class="x">    public function responseAction()</span>
+<span class="x">    {</span>
+<span class="x">        // Handle GET and POST</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+</code></pre></div>
+<h3 id="step-4-create-response-view">Step 4: Create Response View<a class="headerlink" href="#step-4-create-response-view" title="Permanent link">&para;</a></h3>
+<p>Create <code>application/views/scripts/newscheme/response.phtml</code></p>
+<h3 id="step-5-create-admin-partial">Step 5: Create Admin Partial<a class="headerlink" href="#step-5-create-admin-partial" title="Permanent link">&para;</a></h3>
+<p>Create <code>application/modules/admin/views/scripts/shipment/partials/schemes/newscheme.phtml</code></p>
+<h3 id="step-6-update-routers">Step 6: Update Routers<a class="headerlink" href="#step-6-update-routers" title="Permanent link">&para;</a></h3>
+<p>Add to <code>get-sample-form.ajax.phtml</code>:
+<div class="highlight"><pre><span></span><code><span class="x">} elseif ($this-&gt;scheme == &#39;newscheme&#39;) {</span>
+<span class="x">    include(&#39;partials/schemes/newscheme.phtml&#39;);</span>
+<span class="x">}</span>
+</code></pre></div></p>
+<p>Add to <code>edit.phtml</code>:
+<div class="highlight"><pre><span></span><code><span class="x">} elseif ($shipmentData[&#39;shipment&#39;][&#39;scheme_type&#39;] == &#39;newscheme&#39;) {</span>
+<span class="x">    include dirname(__FILE__) . &#39;/partials/schemes/newscheme.phtml&#39;;</span>
+<span class="x">}</span>
+</code></pre></div></p>
+<h3 id="step-7-update-service-layer">Step 7: Update Service Layer<a class="headerlink" href="#step-7-update-service-layer" title="Permanent link">&para;</a></h3>
+<p>Add to <code>Shipments.php</code>:
+<div class="highlight"><pre><span></span><code><span class="x">public function updateNewSchemeResults($data)</span>
+<span class="x">{</span>
+<span class="x">    // Implement result saving logic</span>
+<span class="x">}</span>
+</code></pre></div></p>
+<h3 id="step-8-create-database-tables">Step 8: Create Database Tables<a class="headerlink" href="#step-8-create-database-tables" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">reference_result_newscheme</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">shipment_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sample_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+<span class="w">    </span><span class="c1">-- scheme-specific fields</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">shipment_id</span><span class="p">,</span><span class="w"> </span><span class="n">sample_id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">response_result_newscheme</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">shipment_map_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">sample_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+<span class="w">    </span><span class="c1">-- scheme-specific fields</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">shipment_map_id</span><span class="p">,</span><span class="w"> </span><span class="n">sample_id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+<hr />
+<h2 id="scheme-specific-details">Scheme-Specific Details<a class="headerlink" href="#scheme-specific-details" title="Permanent link">&para;</a></h2>
+<h3 id="dts-dried-tube-specimen">DTS (Dried Tube Specimen)<a class="headerlink" href="#dts-dried-tube-specimen" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: High (multiple algorithms, RTRI support, syphilis testing)</li>
+<li><strong>Key Features</strong>:</li>
+<li>2 or 3 test panel configuration</li>
+<li>Multiple testing algorithms (Serial, Parallel, etc.)</li>
+<li>EIA/WB/Geenius modals for detailed results</li>
+<li>Optional syphilis and RTRI testing</li>
+<li>Algorithm-based scoring</li>
+</ul>
+<h3 id="vl-viral-load">VL (Viral Load)<a class="headerlink" href="#vl-viral-load" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: High (quantitative analysis)</li>
+<li><strong>Key Features</strong>:</li>
+<li>Z-score based evaluation</li>
+<li>Assay-specific range calculations</li>
+<li>TND (Target Not Detected) handling</li>
+<li>Log10 conversion support</li>
+<li>File upload for raw data</li>
+</ul>
+<h3 id="tb-tuberculosis">TB (Tuberculosis)<a class="headerlink" href="#tb-tuberculosis" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: High (multiple assay types)</li>
+<li><strong>Key Features</strong>:</li>
+<li>Molecular vs Microscopy test types</li>
+<li>GeneXpert MTB/RIF and Ultra support</li>
+<li>Rif resistance detection</li>
+<li>Probe values (A, B, C, D, E)</li>
+<li>Instrument tracking</li>
+<li>Draft save capability</li>
+</ul>
+<h3 id="eid-early-infant-diagnosis">EID (Early Infant Diagnosis)<a class="headerlink" href="#eid-early-infant-diagnosis" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: Low (simplest scheme)</li>
+<li><strong>Key Features</strong>:</li>
+<li>Binary result matching</li>
+<li>CT/OD value capture</li>
+<li>Extraction assay selection</li>
+</ul>
+<h3 id="recency">Recency<a class="headerlink" href="#recency" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: Medium</li>
+<li><strong>Key Features</strong>:</li>
+<li>RTRI algorithm support</li>
+<li>Control/Verification/Longterm line interpretation</li>
+<li>Recency classification (Negative/Recent/Long-term)</li>
+</ul>
+<h3 id="covid-19">COVID-19<a class="headerlink" href="#covid-19" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: Medium</li>
+<li><strong>Key Features</strong>:</li>
+<li>1-3 test platform support</li>
+<li>PCR reagent tracking</li>
+<li>Gene type identification</li>
+<li>Platform validation</li>
+</ul>
+<h3 id="dbs-dried-blood-spot">DBS (Dried Blood Spot)<a class="headerlink" href="#dbs-dried-blood-spot" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: Medium-High</li>
+<li><strong>Key Features</strong>:</li>
+<li>Multiple EIA tests (up to 3)</li>
+<li>Western Blot with 9 protein bands</li>
+<li>OD and cutoff values</li>
+</ul>
+<h3 id="custom-tests">Custom Tests<a class="headerlink" href="#custom-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Complexity</strong>: Configurable</li>
+<li><strong>Key Features</strong>:</li>
+<li>Supports qualitative and quantitative tests</li>
+<li>Configurable pass/fail thresholds</li>
+<li>Dynamic field configuration</li>
+<li>Custom test kit management</li>
+</ul>
+<hr />
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<p>Scheme configuration is managed via <code>Pt_Commons_SchemeConfig::get('{scheme}')</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="x">$config = Pt_Commons_SchemeConfig::get(&#39;dts&#39;);</span>
+<span class="x">// Returns: allowedAlgorithms, dtsSchemeType, rtriEnabled, etc.</span>
+</code></pre></div>
+<p>Configuration sources:
+1. Database: <code>scheme_list.user_test_config</code> (JSON)
+2. System config files
+3. Model defaults</p>
+<hr />
+<h2 id="shipment-lifecycle">Shipment Lifecycle<a class="headerlink" href="#shipment-lifecycle" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>stateDiagram-v2
+    [*] --&gt; Draft: Create shipment
+    Draft --&gt; Ready: Add samples &amp; reference data
+    Ready --&gt; Shipped: Ship to participants
+    Shipped --&gt; ResponseCollection: Participants enter results
+    ResponseCollection --&gt; Evaluation: Admin triggers evaluation
+    Evaluation --&gt; Evaluated: Scores calculated
+    Evaluated --&gt; Finalized: Generate reports
+    Finalized --&gt; [*]
+
+    note right of ResponseCollection
+        Participants submit via
+        {scheme}/response.phtml
+    end note
+
+    note right of Evaluation
+        Model::evaluate() compares
+        responses vs reference
+    end note
+</code></pre></div>
+<h2 id="scoring-formula">Scoring Formula<a class="headerlink" href="#scoring-formula" title="Permanent link">&para;</a></h2>
+<p>Most schemes follow this pattern:</p>
+<div class="highlight"><pre><span></span><code>flowchart LR
+    subgraph Input
+        CR[Correct Responses]
+        MP[Max Possible]
+        DI[Documentation Items]
+    end
+
+    subgraph Calculation
+        RS[&quot;Response Score&lt;br/&gt;(CR/MP) × (100-Doc%)&quot;]
+        DS[&quot;Documentation Score&lt;br/&gt;Sum of item scores&quot;]
+    end
+
+    subgraph Output
+        FS[Final Score]
+        PF{Pass/Fail}
+    end
+
+    CR --&gt; RS
+    MP --&gt; RS
+    DI --&gt; DS
+    RS --&gt; FS
+    DS --&gt; FS
+    FS --&gt; PF
+    PF --&gt;|&quot;&gt;= Threshold&quot;| Pass
+    PF --&gt;|&quot;&lt; Threshold&quot;| Fail
+</code></pre></div>
+<p><strong>Formula:</strong></p>
+<div class="highlight"><pre><span></span><code>Response Score = (Correct Responses / Max Possible) × (100 - Documentation%)
+Documentation Score = Sum of documentation item scores
+Final Score = Response Score + Documentation Score
+Pass = Final Score &gt;= Passing Percentage (configurable per scheme)
+</code></pre></div>
+<hr />
+<h2 id="report-generation-excel-export">Report Generation &amp; Excel Export<a class="headerlink" href="#report-generation-excel-export" title="Permanent link">&para;</a></h2>
+<h3 id="report-architecture">Report Architecture<a class="headerlink" href="#report-architecture" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>flowchart TB
+    subgraph &quot;User Interface&quot;
+        A[Admin] --&gt; RC[Report Controllers]
+        RC --&gt; RV[Report Views]
+    end
+
+    subgraph &quot;Service Layer&quot;
+        RC --&gt; RS[Reports Service]
+        RS --&gt; ES[Evaluation Service]
+    end
+
+    subgraph &quot;Model Layer&quot;
+        RS --&gt; DM[&quot;{Scheme} Model&quot;]
+        DM --&gt; GER[&quot;generate{Scheme}ExcelReport()&quot;]
+        DM --&gt; GDP[&quot;getDataFor{Type}PDF()&quot;]
+    end
+
+    subgraph &quot;Output&quot;
+        GER --&gt; XLSX[Excel .xlsx]
+        GDP --&gt; PDF[PDF Reports]
+        XLSX --&gt; ZIP[ZIP Archive]
+        PDF --&gt; ZIP
+    end
+</code></pre></div>
+<h3 id="excel-report-methods-by-scheme">Excel Report Methods by Scheme<a class="headerlink" href="#excel-report-methods-by-scheme" title="Permanent link">&para;</a></h3>
+<p>Each scheme model has a dedicated Excel report generation method:</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Model Method</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DTS</td>
+<td><code>generateDtsRapidHivExcelReport($shipmentId)</code></td>
+<td>Multi-sheet XLSX with test results, scores</td>
+</tr>
+<tr>
+<td>VL</td>
+<td><code>generateDtsViralLoadExcelReport($shipmentId)</code></td>
+<td>Participant details, assay results, Z-scores</td>
+</tr>
+<tr>
+<td>TB</td>
+<td><code>generateTbExcelReport($shipmentId)</code></td>
+<td>Participant list, MTB/RIF results</td>
+</tr>
+<tr>
+<td>EID</td>
+<td><code>generateDbsEidExcelReport($shipmentId)</code></td>
+<td>EID PT results, assay info</td>
+</tr>
+<tr>
+<td>Recency</td>
+<td><code>generateRecencyExcelReport($shipmentId)</code></td>
+<td>Lab info, recency PT results</td>
+</tr>
+<tr>
+<td>COVID-19</td>
+<td><code>generateCovid19ExcelReport($shipmentId)</code></td>
+<td>Instructions, test types, responses</td>
+</tr>
+<tr>
+<td>Custom Tests</td>
+<td><code>generateGenericTestExcelReport($shipmentId, $schemeType)</code></td>
+<td>Participant list, test responses</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pdf-generation-methods">PDF Generation Methods<a class="headerlink" href="#pdf-generation-methods" title="Permanent link">&para;</a></h3>
+<p>Some schemes support individual and summary PDF reports:</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Individual PDF</th>
+<th>Summary PDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TB</td>
+<td><code>getDataForIndividualPDFBatch($mapIds)</code></td>
+<td><code>getDataForSummaryPDF($shipmentId)</code></td>
+</tr>
+<tr>
+<td>VL</td>
+<td><code>getDataForIndividualPDFBatch($shipmentId, $mapIds, $attributes)</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td>Custom Tests</td>
+<td>-</td>
+<td><code>getDataForSummaryPDF($shipmentId)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="report-controllers">Report Controllers<a class="headerlink" href="#report-controllers" title="Permanent link">&para;</a></h3>
+<p>Located in <code>application/modules/reports/controllers/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Controller</th>
+<th>Key Actions</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShipmentsController</code></td>
+<td><code>indexAction</code>, <code>shipmentsExportAction</code></td>
+<td>Shipment overview reports</td>
+</tr>
+<tr>
+<td><code>ShipmentResponseController</code></td>
+<td><code>indexAction</code>, <code>shipmentsExportPdfAction</code></td>
+<td>Response reports</td>
+</tr>
+<tr>
+<td><code>FinalizeController</code></td>
+<td><code>shipmentsAction</code>, <code>sendReportMailAction</code></td>
+<td>Finalized reports</td>
+</tr>
+<tr>
+<td><code>ParticipantPerformanceController</code></td>
+<td><code>indexAction</code>, <code>exportAction</code></td>
+<td>Performance analytics</td>
+</tr>
+<tr>
+<td><code>ParticipantTrendsController</code></td>
+<td><code>indexAction</code></td>
+<td>Trend analysis</td>
+</tr>
+<tr>
+<td><code>CorrectiveActionsController</code></td>
+<td><code>indexAction</code></td>
+<td>Corrective action reports</td>
+</tr>
+<tr>
+<td><code>TbResultsController</code></td>
+<td><code>indexAction</code></td>
+<td>TB-specific results</td>
+</tr>
+<tr>
+<td><code>TbAllSitesResultsController</code></td>
+<td><code>indexAction</code></td>
+<td>Multi-site TB reports</td>
+</tr>
+</tbody>
+</table>
+<h3 id="report-service-applicationservicesreportsphp">Report Service (<code>application/services/Reports.php</code>)<a class="headerlink" href="#report-service-applicationservicesreportsphp" title="Permanent link">&para;</a></h3>
+<p>Central orchestration for report generation:</p>
+<div class="highlight"><pre><span></span><code><span class="x">// Route to scheme-specific Excel generation</span>
+<span class="x">public function getShipmentParticipant($shipmentId, $schemeType = null)</span>
+<span class="x">{</span>
+<span class="x">    switch ($schemeType) {</span>
+<span class="x">        case &#39;dts&#39;: return $this-&gt;dtsModel-&gt;generateDtsRapidHivExcelReport($shipmentId);</span>
+<span class="x">        case &#39;vl&#39;: return $this-&gt;vlModel-&gt;generateDtsViralLoadExcelReport($shipmentId);</span>
+<span class="x">        case &#39;tb&#39;: return $this-&gt;tbModel-&gt;generateTbExcelReport($shipmentId);</span>
+<span class="x">        // ... etc</span>
+<span class="x">    }</span>
+<span class="x">}</span>
+
+<span class="x">// Generate overview report</span>
+<span class="x">public function exportShipmentsReport($params)</span>
+<span class="x">{</span>
+<span class="x">    // Creates &quot;Shipment Response Overview&quot; Excel</span>
+<span class="x">    // Columns: scheme, shipment code, sample label, responses, pass rates</span>
+<span class="x">}</span>
+</code></pre></div>
+<h3 id="report-flow">Report Flow<a class="headerlink" href="#report-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
+    participant A as Admin
+    participant RC as ReportController
+    participant RS as Reports Service
+    participant M as {Scheme} Model
+    participant DB as Database
+    participant F as File System
+
+    A-&gt;&gt;RC: Request report (shipmentsExportAction)
+    RC-&gt;&gt;RS: getShipmentParticipant($shipmentId, $scheme)
+    RS-&gt;&gt;M: generate{Scheme}ExcelReport($shipmentId)
+    M-&gt;&gt;DB: Fetch participant data
+    M-&gt;&gt;DB: Fetch response data
+    M-&gt;&gt;DB: Fetch reference data
+    DB--&gt;&gt;M: Data
+    M-&gt;&gt;M: Build Excel with PhpSpreadsheet
+    M-&gt;&gt;F: Save .xlsx to temp
+    F--&gt;&gt;RC: File path
+    RC-&gt;&gt;A: Download file
+</code></pre></div>
+<h3 id="file-output-locations">File Output Locations<a class="headerlink" href="#file-output-locations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Path</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Temp exports</td>
+<td><code>TEMP_UPLOAD_PATH/</code></td>
+<td><code>shipment-response-1706284800.xlsx</code></td>
+</tr>
+<tr>
+<td>Summary PDFs</td>
+<td><code>/downloads/reports/{code}/</code></td>
+<td><code>DTS-2024-01-summary.pdf</code></td>
+</tr>
+<tr>
+<td>Individual PDFs</td>
+<td><code>/downloads/reports/{code}/</code></td>
+<td><code>DTS-2024-01-{participant}.pdf</code></td>
+</tr>
+<tr>
+<td>ZIP archives</td>
+<td><code>/downloads/reports/</code></td>
+<td><code>DTS-2024-01.zip</code></td>
+</tr>
+<tr>
+<td>TB Forms</td>
+<td><code>TEMP_UPLOAD_PATH/</code></td>
+<td><code>DTS-2024-01-TB-FORMS.zip</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="excel-report-structure-example-dts">Excel Report Structure (Example: DTS)<a class="headerlink" href="#excel-report-structure-example-dts" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>DTS-Shipment-Report.xlsx
+├── Sheet 1: Instructions
+│   └── Tab descriptions, color coding legend
+├── Sheet 2: Participant List
+│   └── Lab ID, Name, Country, Region, Site Type
+├── Sheet 3: PT Results
+│   └── Sample, Test 1/2/3 Results, Final Result, Score
+├── Sheet 4: Panel Score
+│   └── Per-sample scoring breakdown
+├── Sheet 5: Documentation Score
+│   └── Receipt date, rehydration, testing date scores
+└── Sheet 6: Total Score
+    └── Response + Documentation = Final Score, Pass/Fail
+</code></pre></div>
+<h3 id="supported-export-formats">Supported Export Formats<a class="headerlink" href="#supported-export-formats" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Library</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Excel (.xlsx)</td>
+<td>PhpOffice\PhpSpreadsheet</td>
+<td>Detailed data export, analysis</td>
+</tr>
+<tr>
+<td>PDF</td>
+<td>TCPDF/Custom</td>
+<td>Individual certificates, summaries</td>
+</tr>
+<tr>
+<td>ZIP</td>
+<td>ZipArchive</td>
+<td>Bulk downloads, all reports bundled</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adding-reports-for-new-scheme">Adding Reports for New Scheme<a class="headerlink" href="#adding-reports-for-new-scheme" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Add Excel method to Model</strong>:
+<div class="highlight"><pre><span></span><code><span class="x">public function generateNewSchemeExcelReport($shipmentId)</span>
+<span class="x">{</span>
+<span class="x">    $excel = new Spreadsheet();</span>
+<span class="x">    // Build sheets...</span>
+<span class="x">    $writer = IOFactory::createWriter($excel, &#39;Xlsx&#39;);</span>
+<span class="x">    $filename = &#39;newscheme-&#39; . $shipmentId . &#39;.xlsx&#39;;</span>
+<span class="x">    $writer-&gt;save(TEMP_UPLOAD_PATH . &#39;/&#39; . $filename);</span>
+<span class="x">    return $filename;</span>
+<span class="x">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Add to Reports Service</strong>:
+<div class="highlight"><pre><span></span><code><span class="x">case &#39;newscheme&#39;:</span>
+<span class="x">    return $this-&gt;newSchemeModel-&gt;generateNewSchemeExcelReport($shipmentId);</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Add PDF support (optional)</strong>:
+<div class="highlight"><pre><span></span><code><span class="x">public function getDataForIndividualPDFBatch($mapIds)</span>
+<span class="x">{</span>
+<span class="x">    // Fetch data for PDF generation</span>
+<span class="x">}</span>
+</code></pre></div></p>
+</li>
+</ol>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/deforay/ept/blob/master/application/modules/admin/views/scripts/shipment/partials/README.md">Admin Shipment Forms</a></li>
+<li>Database migrations in <code>/database/migrations/</code></li>
+<li>API documentation for external integrations</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/deforay/ept" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

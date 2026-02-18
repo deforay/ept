@@ -1,0 +1,2255 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation and training curriculum for the ePT Proficiency Testing system">
+      
+      
+      
+        <link rel="canonical" href="https://deforay.github.io/ept/ARCHITECTURE/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../SchemeArchitecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Architecture - ePT Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ept-code-architecture-php-84-zend-framework-1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ePT Documentation" class="md-header__button md-logo" aria-label="ePT Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ePT Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/deforay/ept" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deforay/ept
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ePT Documentation" class="md-nav__button md-logo" aria-label="ePT Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ePT Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/deforay/ept" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deforay/ept
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-level overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-lifecycle-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request lifecycle (web)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request lifecycle (web)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bootstrap responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#front-controller-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front controller plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules-and-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modules and controllers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-and-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error handling and logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error handling and logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-based-cache-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File-based cache (default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-cache-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis cache (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduled-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheduled jobs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduled jobs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#job-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Job schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#job-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Job queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#email-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Email infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#email-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-sending" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email sending
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API services
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-migrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database migrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database migrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migration-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-once-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run-once scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#library-and-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Library and helpers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-and-public-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets and public files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes-for-maintainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes for maintainers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SchemeArchitecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheme Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AdminModuleGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TranslationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part1-setup-and-participants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 1: System Setup & Participants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part2-surveys-and-shipments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 2: PT Survey & Shipment Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part3-participant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 3: Participant — Results & Reports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/part4-evaluation-and-reports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part 4: Evaluation, Reports & Finalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../training/exercises/dts-hiv-serology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DTS HIV Serology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-level overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-lifecycle-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request lifecycle (web)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request lifecycle (web)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bootstrap responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#front-controller-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front controller plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSRF protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules-and-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modules and controllers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-and-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error handling and logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error handling and logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-controller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error controller
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file-based-cache-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File-based cache (default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-cache-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis cache (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduled-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scheduled jobs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduled jobs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#job-schedule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Job schedule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#job-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Job queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#email-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Email infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#email-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email queue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-sending" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email sending
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API services
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-migrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database migrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Database migrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#migration-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-once-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run-once scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#library-and-helpers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Library and helpers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-and-public-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets and public files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes-for-maintainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes for maintainers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ept-code-architecture-php-84-zend-framework-1">ePT Code Architecture (PHP 8.4 + Zend Framework 1)<a class="headerlink" href="#ept-code-architecture-php-84-zend-framework-1" title="Permanent link">&para;</a></h1>
+<p>This document describes the high-level structure and execution flow of the ePT codebase.</p>
+<h2 id="high-level-overview">High-level overview<a class="headerlink" href="#high-level-overview" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Zend Framework 1 (ZF1) MVC app with default module plus <code>admin</code>, <code>api</code>, and <code>reports</code> modules.</li>
+<li>Controllers orchestrate requests and delegate to service classes (<code>application/services</code>).</li>
+<li>Service classes use ZF1 <code>Zend_Db_Table</code> models (<code>application/models/DbTable</code>) and other models.</li>
+<li>Views live under <code>application/views</code> and module-specific <code>application/modules/*/views</code>, with layouts under <code>application/layouts</code>.</li>
+<li>Background work runs via Crunz scheduled jobs in <code>scheduled-jobs/</code>.</li>
+<li>Multi-scheme support: DTS, VL, EID, TB, Recency, and Generic test types.</li>
+</ul>
+<h2 id="entry-points">Entry points<a class="headerlink" href="#entry-points" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Web: <code>public/index.php</code></li>
+<li>CLI bootstrap (used by scripts/jobs): <code>cli-bootstrap.php</code></li>
+<li>Scheduled tasks: <code>scheduled-jobs/ScheduledTasks.php</code> (Crunz)</li>
+<li>CLI utilities: <code>bin/*.php</code>, <code>db-tools.php</code>, <code>runner/</code></li>
+</ul>
+<h2 id="request-lifecycle-web">Request lifecycle (web)<a class="headerlink" href="#request-lifecycle-web" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>flowchart TD
+  A[HTTP Request] --&gt; B[public/index.php]
+  B --&gt; C[Zend_Application]
+  C --&gt; D[Bootstrap.php]
+  D --&gt; E[Front Controller + Router]
+  E --&gt; F[Pt_Plugins_PreSetter]
+  F --&gt; G[Controller Action]
+  G --&gt; H[Application_Service_*]
+  H --&gt; I[Model DbTable + Zend_Db]
+  I --&gt; J[(MySQL)]
+  G --&gt; K[View + Layout]
+  K --&gt; L[HTTP Response]
+</code></pre></div>
+<h3 id="bootstrap-responsibilities">Bootstrap responsibilities<a class="headerlink" href="#bootstrap-responsibilities" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Loads configuration from <code>application/configs/application.ini</code>.</li>
+<li>Starts session, sets timezone, initializes CSRF token.</li>
+<li>Configures routes for captcha and downloads.</li>
+<li>Sets a default metadata cache for <code>Zend_Db_Table</code>.</li>
+<li>Initializes translation (<code>application/languages</code>).</li>
+</ul>
+<h3 id="front-controller-plugin">Front controller plugin<a class="headerlink" href="#front-controller-plugin" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>library/Pt/Plugins/PreSetter.php</code> enforces:</li>
+<li>CSRF checks on requests.</li>
+<li>Authentication rules for default vs admin/report modules.</li>
+<li>Layout switching for admin/report contexts.</li>
+</ul>
+<h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
+<h3 id="csrf-protection">CSRF protection<a class="headerlink" href="#csrf-protection" title="Permanent link">&para;</a></h3>
+<p><code>Application_Service_SecurityService</code> handles CSRF tokens:</p>
+<ul>
+<li>Generates 64-character tokens via <code>bin2hex(random_bytes(32))</code>.</li>
+<li>Stored in session namespace <code>csrf</code>.</li>
+<li>Validates POST/PUT/PATCH/DELETE requests using timing-safe <code>hash_equals()</code>.</li>
+<li>Token source: <code>X-CSRF-Token</code> header or <code>csrf_token</code> POST parameter.</li>
+<li>Exempt: CLI requests, XHR, API module, error controller.</li>
+</ul>
+<h3 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h3>
+<p>Session-based authentication using <code>Zend_Session_Namespace</code>:</p>
+<ul>
+<li><strong>Data managers</strong> (participants): <code>datamanagers</code> session namespace.</li>
+<li><strong>Administrators</strong>: <code>administrators</code> session namespace.</li>
+<li>Features:</li>
+<li>Email verification workflow.</li>
+<li>Login attempt ban system (configurable temp/permanent bans).</li>
+<li>Force password reset capability.</li>
+<li>CAPTCHA verification before login.</li>
+<li>Session tracking via <code>UserLoginHistory</code>.</li>
+</ul>
+<h3 id="authorization">Authorization<a class="headerlink" href="#authorization" title="Permanent link">&para;</a></h3>
+<p><code>Pt_Plugins_PreSetter</code> enforces access control:</p>
+<ul>
+<li>Frontend access requires <code>datamanagers</code> session.</li>
+<li>Admin module access requires <code>administrators</code> session.</li>
+<li>Admins can access specific frontend URIs: <code>/dts/response</code>, <code>/eid/response</code>, <code>/vl/response</code>, <code>/tb/response</code>, <code>/recency/response</code>, <code>/generic-test/response</code>, <code>/tb/assay-formats</code>.</li>
+<li>Unauthenticated users redirected to login.</li>
+<li>Disabled for: error controller, auth controller, captcha, shipment-form.</li>
+</ul>
+<h3 id="input-validation">Input validation<a class="headerlink" href="#input-validation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Pt_Commons_MiscUtility</code>: Sanitization utilities.</li>
+<li><code>sanitizeFilename()</code>: Regex-based filename sanitization.</li>
+<li><code>toUtf8()</code>: Recursive UTF-8 encoding conversion.</li>
+<li><code>cleanString()</code>: Removes invisible Unicode characters, BOM, ZWSP.</li>
+<li><code>Application_Service_Common::parseRecipients()</code>: Email validation with comma/semicolon splitting.</li>
+<li>Email validation via <code>filter_var(FILTER_VALIDATE_EMAIL)</code>.</li>
+</ul>
+<h2 id="modules-and-controllers">Modules and controllers<a class="headerlink" href="#modules-and-controllers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Default module controllers live in <code>application/controllers</code>.</li>
+<li>Module controllers live in <code>application/modules/{admin,api,reports}/controllers</code>.</li>
+<li>Common patterns:</li>
+<li>Controllers call service layer classes like <code>Application_Service_Common</code>, <code>Application_Service_Shipments</code>.</li>
+<li>Services call <code>Application_Model_DbTable_*</code> for persistence.</li>
+</ul>
+<h2 id="service-layer">Service layer<a class="headerlink" href="#service-layer" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Located in <code>application/services/</code>.</li>
+<li>Contains business logic for:</li>
+<li>Shipments, participants, evaluations, reports, security, etc.</li>
+<li>Encourages reuse across web, API, and scheduled jobs.</li>
+</ul>
+<h2 id="data-access">Data access<a class="headerlink" href="#data-access" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>application/models/DbTable/*</code> uses <code>Zend_Db_Table_Abstract</code> conventions.</li>
+<li>Configured via <code>resources.db.*</code> in <code>application/configs/application.ini</code>.</li>
+<li>Database schema and utilities live under <code>database/</code> and <code>db-tools.php</code>.</li>
+</ul>
+<h2 id="error-handling-and-logging">Error handling and logging<a class="headerlink" href="#error-handling-and-logging" title="Permanent link">&para;</a></h2>
+<h3 id="error-controller">Error controller<a class="headerlink" href="#error-controller" title="Permanent link">&para;</a></h3>
+<p><code>application/controllers/ErrorController.php</code> handles application errors:</p>
+<ul>
+<li><strong>404 errors</strong>: <code>EXCEPTION_NO_ROUTE</code>, <code>EXCEPTION_NO_CONTROLLER</code>, <code>EXCEPTION_NO_ACTION</code>.</li>
+<li><strong>500 errors</strong>: All other application exceptions.</li>
+<li>Logs errors with priority levels (NOTICE for 404, CRIT for 500).</li>
+<li>Conditionally displays stack traces based on <code>displayExceptions</code> config.</li>
+</ul>
+<h3 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h3>
+<p><code>library/Pt/Commons/LoggerUtility.php</code> provides application logging via Monolog:</p>
+<ul>
+<li>Rotating file handler with 30-day retention.</li>
+<li>Log file: <code>/logs/logfile.log</code> with date format <code>Y-m-d</code>.</li>
+<li>Fallback to stderr if logs directory not writable.</li>
+<li>Static methods: <code>logError()</code> and <code>logInfo()</code>.</li>
+<li>Auto-captures caller file/line information via backtrace.</li>
+</ul>
+<h2 id="caching">Caching<a class="headerlink" href="#caching" title="Permanent link">&para;</a></h2>
+<h3 id="file-based-cache-default">File-based cache (default)<a class="headerlink" href="#file-based-cache-default" title="Permanent link">&para;</a></h3>
+<p>Configured in <code>application/Bootstrap.php</code>:</p>
+<ul>
+<li>Backend: File-based (<code>application/cache/</code>).</li>
+<li>Lifetime: Extended (7200000000 seconds).</li>
+<li>Used for <code>Zend_Db_Table</code> metadata caching.</li>
+</ul>
+<h3 id="redis-cache-optional">Redis cache (optional)<a class="headerlink" href="#redis-cache-optional" title="Permanent link">&para;</a></h3>
+<p><code>library/Pt/Cache/Backend/Redis.php</code> provides Redis caching:</p>
+<ul>
+<li>Custom <code>Zend_Cache</code> backend implementation.</li>
+<li>Tag-based caching support.</li>
+<li>TTL management via Redis expiration.</li>
+<li>Transaction support (<code>multi()</code>/<code>exec()</code>).</li>
+<li>Key prefixing for namespace isolation.</li>
+</ul>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>application/configs/application.ini</code>:</li>
+<li>ZF1 bootstrap settings, DB connection, module paths, mail settings.</li>
+<li><code>application/configs/config.ini</code>:</li>
+<li>Domain-specific defaults (evaluation thresholds, site content, locale).</li>
+<li><code>constants.php</code>:</li>
+<li>Global paths and version.</li>
+</ul>
+<h2 id="scheduled-jobs">Scheduled jobs<a class="headerlink" href="#scheduled-jobs" title="Permanent link">&para;</a></h2>
+<p>Crunz executes task definitions in <code>scheduled-jobs/ScheduledTasks.php</code>.</p>
+<div class="highlight"><pre><span></span><code>flowchart TD
+  A[Cron: vendor/bin/crunz schedule:run] --&gt; B[Crunz Schedule]
+  B --&gt; C[scheduled-jobs/*.php]
+  C --&gt; D[cli-bootstrap.php]
+  D --&gt; E[Application_Service_*]
+  E --&gt; F[DbTable + Zend_Db]
+  E --&gt; G[Filesystem outputs]
+  E --&gt; H[Email notifications]
+</code></pre></div>
+<h3 id="job-schedule">Job schedule<a class="headerlink" href="#job-schedule" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Frequency</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generate-shipment-reports.php</code></td>
+<td>Every minute</td>
+<td>Report generation</td>
+</tr>
+<tr>
+<td><code>execute-job-queue.php</code></td>
+<td>Every minute</td>
+<td>Job queue processor</td>
+</tr>
+<tr>
+<td><code>send-emails.php</code></td>
+<td>Every minute</td>
+<td>Email queue processor</td>
+</tr>
+<tr>
+<td><code>reset-stale-jobs.php</code></td>
+<td>Every 15 min</td>
+<td>Stale job recovery</td>
+</tr>
+<tr>
+<td><code>db-tools backup</code></td>
+<td>Daily 00:45</td>
+<td>Database backup</td>
+</tr>
+<tr>
+<td><code>db-tools purge-binlogs</code></td>
+<td>Daily 04:05</td>
+<td>MySQL binary log cleanup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="job-queue">Job queue<a class="headerlink" href="#job-queue" title="Permanent link">&para;</a></h3>
+<p><code>Application_Model_DbTable_ScheduledJobs</code> manages the <code>scheduled_jobs</code> table:</p>
+<ul>
+<li>Statuses: <code>pending</code> → <code>processing</code> → <code>completed</code>.</li>
+<li>Jobs scheduled via: <code>scheduleCertificationGeneration()</code>, <code>scheduleEvaluation()</code>.</li>
+<li><code>execute-job-queue.php</code> fetches pending jobs (FIFO) and executes via shell.</li>
+</ul>
+<h2 id="email-infrastructure">Email infrastructure<a class="headerlink" href="#email-infrastructure" title="Permanent link">&para;</a></h2>
+<h3 id="email-queue">Email queue<a class="headerlink" href="#email-queue" title="Permanent link">&para;</a></h3>
+<p><code>Application_Model_DbTable_TempMail</code> manages the <code>temp_mail</code> table:</p>
+<ul>
+<li>Statuses: <code>pending</code> → <code>picked-to-process</code> → <code>sent</code>/<code>failed</code>/<code>not-sent</code>.</li>
+<li>Failure types: <code>smtp-auth</code>, <code>connectivity</code>, <code>bad-recipient</code>, <code>rate-limit</code>, <code>content</code>, <code>other</code>.</li>
+</ul>
+<h3 id="email-sending">Email sending<a class="headerlink" href="#email-sending" title="Permanent link">&para;</a></h3>
+<p><code>scheduled-jobs/send-emails.php</code> processes the email queue:</p>
+<ul>
+<li>Uses Symfony Mailer (replaces Zend_Mail).</li>
+<li>Batches recipients (To + Cc + Bcc) up to 100 per email.</li>
+<li>File-based lock (<code>/tmp/ept_mail_cron.lock</code>) with 10-minute TTL.</li>
+<li>Attachments: 15MB per file limit, 22MB total per message.</li>
+</ul>
+<h3 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h3>
+<p>Mail settings stored in <code>system_config.mail</code> (JSON):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;smtp.example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">587</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;ssl&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tls&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fromEmail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fromName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ePT System&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="health-monitoring">Health monitoring<a class="headerlink" href="#health-monitoring" title="Permanent link">&para;</a></h3>
+<p><code>Application_Service_Common::getEmailHealthStatus()</code> tracks failure rates:</p>
+<ul>
+<li>Configurable window (default 7 days).</li>
+<li>Severity levels: ok, warning (&gt;5%), critical (&gt;15%).</li>
+</ul>
+<h2 id="api-module">API module<a class="headerlink" href="#api-module" title="Permanent link">&para;</a></h2>
+<h3 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h3>
+<p>API controllers in <code>application/modules/api/controllers/</code>:</p>
+<ul>
+<li><code>LoginController</code>: Authentication, password reset.</li>
+<li><code>ShipmentsController</code>: Shipment data endpoints.</li>
+<li><code>ParticipantController</code>: Participant data endpoints.</li>
+<li><code>InitController</code>: Initialization/setup.</li>
+<li><code>AggregatedInsightsController</code>: Analytics/reporting.</li>
+</ul>
+<h3 id="response-format">Response format<a class="headerlink" href="#response-format" title="Permanent link">&para;</a></h3>
+<ul>
+<li>JSON-only responses (no XML).</li>
+<li>Request parsing: <code>json_decode(file_get_contents('php://input'))</code>.</li>
+<li>Response: <code>json_encode($result, JSON_PRETTY_PRINT)</code>.</li>
+</ul>
+<h3 id="api-services">API services<a class="headerlink" href="#api-services" title="Permanent link">&para;</a></h3>
+<p><code>Application_Service_ApiServices</code> provides:</p>
+<ul>
+<li>Authentication via <code>authToken</code>.</li>
+<li>Data marshaling for all test schemes (DTS, VL, EID, TB, Recency, Generic).</li>
+<li>Reference data: test kits, possible results, not-tested reasons.</li>
+</ul>
+<h2 id="database-migrations">Database migrations<a class="headerlink" href="#database-migrations" title="Permanent link">&para;</a></h2>
+<h3 id="migration-system">Migration system<a class="headerlink" href="#migration-system" title="Permanent link">&para;</a></h3>
+<p><code>bin/migrate.php</code> handles database migrations:</p>
+<ul>
+<li>SQL-based migrations in <code>database/migrations/</code>.</li>
+<li>Version tracking via <code>system_config.app_version</code>.</li>
+<li>Uses <code>version_compare()</code> to run only newer migrations.</li>
+<li>Idempotent DDL helper functions.</li>
+<li>Flags: <code>--dry-run</code>, <code>-y</code> (auto-continue), <code>-q</code> (quiet).</li>
+</ul>
+<h3 id="run-once-scripts">Run-once scripts<a class="headerlink" href="#run-once-scripts" title="Permanent link">&para;</a></h3>
+<p><code>bin/run-once.php</code> executes one-time setup scripts:</p>
+<ul>
+<li>Tracking table: <code>run_once_scripts</code>.</li>
+<li>Idempotent execution prevention.</li>
+</ul>
+<h2 id="library-and-helpers">Library and helpers<a class="headerlink" href="#library-and-helpers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Custom libraries live under <code>library/Pt</code>.</li>
+<li>Notable areas:</li>
+<li><code>Pt/Plugins</code> (request-level hooks)</li>
+<li><code>Pt/Helper/View</code> (view helpers)</li>
+<li><code>Pt/Reports</code> (report generation helpers)</li>
+<li><code>Pt/Commons</code> (utilities: logging, sanitization)</li>
+<li><code>Pt/Cache</code> (Redis backend)</li>
+</ul>
+<h2 id="assets-and-public-files">Assets and public files<a class="headerlink" href="#assets-and-public-files" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Public entry and assets under <code>public/</code>.</li>
+<li>Uploads and temporary files under:</li>
+<li><code>public/uploads</code></li>
+<li><code>public/temporary</code></li>
+</ul>
+<h2 id="directory-map">Directory map<a class="headerlink" href="#directory-map" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>application/
+  Bootstrap.php           # Application initialization
+  cache/                  # File-based cache storage
+  configs/
+    application.ini       # ZF1 settings, DB, mail
+    config.ini            # Domain-specific defaults
+  controllers/            # Default module controllers
+  languages/              # Translation files
+  layouts/                # View layouts
+  models/
+    DbTable/              # Zend_Db_Table models
+  modules/
+    admin/                # Admin panel module
+    api/                  # REST API module
+    reports/              # Reports module
+  services/               # Business logic layer
+  views/                  # View scripts
+
+library/
+  Pt/
+    Cache/                # Redis cache backend
+    Commons/              # Utilities (logging, misc)
+    Helper/               # View helpers
+    Plugins/              # Controller plugins
+    Reports/              # Report generation
+
+public/
+  index.php               # Web entry point
+  assets/                 # Static assets
+  uploads/                # User uploads
+  temporary/              # Temporary files
+
+scheduled-jobs/
+  ScheduledTasks.php      # Crunz schedule definitions
+  *.php                   # Individual job scripts
+
+database/
+  migrations/             # SQL migration files
+  schema/                 # Database schema
+
+bin/
+  migrate.php             # Migration runner
+  run-once.php            # One-time script runner
+  *.php                   # CLI utilities
+
+logs/                     # Application logs
+</code></pre></div>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<p>The codebase does not currently have automated tests. Unit and integration tests would improve maintainability.</p>
+<h2 id="notes-for-maintainers">Notes for maintainers<a class="headerlink" href="#notes-for-maintainers" title="Permanent link">&para;</a></h2>
+<ul>
+<li>ZF1 modules share the same services/models; avoid duplicating business logic in controllers.</li>
+<li>Prefer adding new shared behavior in <code>application/services</code> and keep controllers thin.</li>
+<li>Use <code>cli-bootstrap.php</code> for any new CLI tooling that needs ZF1 configs/services.</li>
+<li>The codebase integrates modern libraries (Monolog, Symfony Mailer) alongside ZF1 components.</li>
+<li>All background processing is cron-based (no daemon workers).</li>
+<li>Session-based authentication only; no OAuth/JWT support.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/deforay/ept" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
