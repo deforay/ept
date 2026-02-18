@@ -1,0 +1,70 @@
+site_name: ePT Documentation
+site_description: Documentation and training curriculum for the ePT Proficiency Testing system
+site_url: https://deforay.github.io/ept/
+repo_url: https://github.com/deforay/ept
+repo_name: deforay/ept
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.follow
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: README.md
+  - Guides:
+      - Architecture: ARCHITECTURE.md
+      - Scheme Architecture: SchemeArchitecture.md
+      - Admin Module: AdminModuleGuide.md
+      - Translation: TranslationGuide.md
+  - Training:
+      - Overview: training/README.md
+      - "Part 1: System Setup & Participants": training/part1-setup-and-participants.md
+      - "Part 2: PT Survey & Shipment Management": training/part2-surveys-and-shipments.md
+      - "Part 3: Participant — Results & Reports": training/part3-participant.md
+      - "Part 4: Evaluation, Reports & Finalization": training/part4-evaluation-and-reports.md
+  - Exercises:
+      - "DTS HIV Serology": training/exercises/dts-hiv-serology.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/deforay/ept
