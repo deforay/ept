@@ -11,8 +11,6 @@ This exercise walks through a complete PT cycle for the **Dried Tube Specimen (D
 - Admin login credentials (PT Administrator or PT Manager)
 - The participant bulk import Excel template (downloaded in Step 1)
 
-> For questions, reach out to amit@deforay.com
-
 ---
 
 ## Exercise Overview
