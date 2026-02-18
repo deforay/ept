@@ -112,7 +112,7 @@ ept/
 
 ### Installation
 
-See the main [README](../README.md) for installation instructions.
+See the main [README](https://github.com/deforay/ept#readme) for installation instructions.
 
 ### Configuration
 

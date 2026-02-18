@@ -9,7 +9,7 @@ This document provides a comprehensive guide to the ePT Admin Module, covering w
 1. [Overview](#overview)
 2. [User Roles](#user-roles)
 3. [Business Workflow](#business-workflow)
-4. [Authentication & Authorization](#authentication--authorization)
+4. [Authentication and Authorization](#authentication-and-authorization)
 5. [Module Structure](#module-structure)
 6. [Key Controllers](#key-controllers)
 7. [AJAX Patterns](#ajax-patterns)
@@ -205,7 +205,7 @@ For each shipment:
 
 ---
 
-## Authentication & Authorization
+## Authentication and Authorization
 
 ### Session Management
 

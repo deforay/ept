@@ -842,6 +842,6 @@ public function getDataForIndividualPDFBatch($mapIds)
 
 ## Related Documentation
 
-- [Admin Shipment Forms](../application/modules/admin/views/scripts/shipment/partials/README.md)
+- [Admin Shipment Forms](https://github.com/deforay/ept/blob/master/application/modules/admin/views/scripts/shipment/partials/README.md)
 - Database migrations in `/database/migrations/`
 - API documentation for external integrations
