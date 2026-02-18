@@ -39,6 +39,17 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 ## Documentation Index
 
+### Training Curriculum
+
+| Document | Audience | Duration |
+| -------- | -------- | -------- |
+| [Training Overview](training/README.md) | All | — |
+| [Part 1: System Setup & Participants](training/part1-setup-and-participants.md) | Admin | ~10 min |
+| [Part 2: PT Survey & Shipment Management](training/part2-surveys-and-shipments.md) | Admin | ~10 min |
+| [Part 3: Participant — Results & Reports](training/part3-participant.md) | Participant | ~5–10 min |
+| [Part 4: Evaluation, Reports & Finalization](training/part4-evaluation-and-reports.md) | Admin | ~10 min |
+| [Exercise: DTS HIV Serology](training/exercises/dts-hiv-serology.md) | All | ~20–30 min |
+
 ### Architecture & Guides
 
 | Document | Description |
@@ -46,6 +57,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 | [Architecture Guide](ARCHITECTURE.md) | High-level system architecture, request lifecycle, security, modules, and infrastructure |
 | [Scheme Architecture](SchemeArchitecture.md) | Test scheme organization, data flow, evaluation logic, and report generation |
 | [Admin Module Guide](AdminModuleGuide.md) | Admin panel workflows, controllers, AJAX patterns, and form validation |
+| [Translation Guide](TranslationGuide.md) | Internationalization and adding new languages |
 
 ### Quick Links
 
