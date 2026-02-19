@@ -1,7 +1,9 @@
 <?php
 
-
-
+use Pt_Commons_JsonUtility;
+use Application_Model_DbTable_SchemeConfig;
+use Zend_Config_Ini;
+use Zend_Config;
 final class Pt_Commons_SchemeConfig
 {
     public static function get($name, bool $useCache = true)
@@ -39,7 +41,7 @@ final class Pt_Commons_SchemeConfig
                             $result = isset($config->evaluation->$name) ? $config->evaluation->$name : null;
                     }
                 }
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 // Log error if needed
                 error_log("Error reading config.ini: " . $e->getMessage());
             }

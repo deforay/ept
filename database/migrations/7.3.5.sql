@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS certificate_batches (
 -- p_detected_fields: JSON array of field names detected in participation certificate PDF
 -- e_detected_fields: JSON array of field names detected in excellence certificate PDF
 ALTER TABLE `certificate_templates`
-    ADD COLUMN IF NOT EXISTS `p_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for participation certificate' AFTER `participation_certificate`,
+    ADD COLUMN IF NOT EXISTS `p_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for participation certificate' AFTER `participation_certificate`;
+ALTER TABLE `certificate_templates`    
     ADD COLUMN IF NOT EXISTS `e_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for excellence certificate' AFTER `excellence_certificate`;
 
 

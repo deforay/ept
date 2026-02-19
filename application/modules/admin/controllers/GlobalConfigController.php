@@ -1,5 +1,10 @@
 <?php
 
+use Zend_Controller_Request_Http;
+use Zend_Session_Namespace;
+use Application_Service_Common;
+use Zend_Controller_Action;
+
 class Admin_GlobalConfigController extends Zend_Controller_Action
 {
 

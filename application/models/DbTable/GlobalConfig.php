@@ -1,5 +1,11 @@
 <?php
 
+use Pt_Commons_SchemeConfig;
+use Zend_Db_Table_Abstract;
+use Pt_Commons_MiscUtility;
+use Application_Model_DbTable_SchemeList;
+use Application_Model_DbTable_AuditLog;
+
 class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 {
 
@@ -18,7 +24,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         if ($value === null) {
             try {
                 $value = Pt_Commons_SchemeConfig::get($name);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 // Log error or handle exception as needed
                 $value = null;
             }
@@ -67,33 +73,33 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                 $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
                 if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                    $this->update(array("value" => $fileName), "name = '" . $field . "'");
+                    $this->update(["value" => $fileName], "name = '" . $field . "'");
                 }
             }
         }
 
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->update(array("value" => json_encode($params['emailConfig'], true)), "name = 'mail'");
+            $this->update(["value" => json_encode($params['emailConfig'], true)], "name = 'mail'");
             unset($params['emailConfig']);
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
-            $this->update(array("value" => json_encode($params['covid19'], true)), "name = 'covid19'");
+            $this->update(["value" => json_encode($params['covid19'], true)], "name = 'covid19'");
             unset($params['covid19']);
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
-            $this->update(array("value" => json_encode($params['vl'], true)), "name = 'vl'");
+            $this->update(["value" => json_encode($params['vl'], true)], "name = 'vl'");
             unset($params['vl']);
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
-            $this->update(array("value" => json_encode($params['recency'], true)), "name = 'recency'");
+            $this->update(["value" => json_encode($params['recency'], true)], "name = 'recency'");
             unset($params['recency']);
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
-            $this->update(array("value" => json_encode($params['tb'], true)), "name = 'tb'");
+            $this->update(["value" => json_encode($params['tb'], true)], "name = 'tb'");
             unset($params['tb']);
         }
         if (isset($params['home']) && !empty($params['home'])) {
-            $this->update(array("value" => json_encode($params['home'], true)), "name = 'home'");
+            $this->update(["value" => json_encode($params['home'], true)], "name = 'home'");
             unset($params['home']);
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
@@ -101,7 +107,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             foreach ($params['faqQuestions'] as $key => $faq) {
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
-            $this->update(array("value" => json_encode($faqResponse, true)), "name = 'faqs'");
+            $this->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
         }
@@ -114,7 +120,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
                     $schemeDb->update(array('status' => 'active'), "scheme_id='" . $schemeId . "'");
                 }
             } else {
-                $this->update(array('value' => $fieldValue), "name='" . $fieldName . "'");
+                $this->update(['value' => $fieldValue], "name='" . $fieldName . "'");
             }
         }
         $auditDb = new Application_Model_DbTable_AuditLog();
@@ -133,6 +139,10 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 
     public function saveConfigByName($value, $name)
     {
-        return $this->update(array("value" => $value), "name = '" . $name . "'");
+        $row = $this->fetchRow(['name = ?' => $name]);
+        if ($row) {
+            return $this->update(["value" => $value], ['name = ?' => $name]);
+        }
+        return $this->insert(["name" => $name, "value" => $value]);
     }
 }

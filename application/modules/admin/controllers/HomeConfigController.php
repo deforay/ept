@@ -1,5 +1,13 @@
 <?php
 
+use Pt_Commons_MiscUtility;
+use Zend_Controller_Action;
+use Zend_Controller_Action_Helper_AjaxContext;
+use Zend_Session_Namespace;
+use Application_Service_Common;
+use Zend_Controller_Request_Http;
+use Application_Service_HomeSection;
+
 class Admin_HomeConfigController extends Zend_Controller_Action
 {
 
@@ -96,9 +104,9 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $this->view->banner = $common->getHomeBannerDetails();
 
             $this->view->sections = $homeSection->getAllHomeSection();
-           // echo "<pre>"; print_r($this->view->sections); die;
+            // echo "<pre>"; print_r($this->view->sections); die;
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();
-        } catch (Exception $exc) {
+        } catch (\Throwable $exc) {
             error_log("HOME-CONFIG--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }
