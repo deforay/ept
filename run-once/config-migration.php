@@ -9,6 +9,9 @@ if (php_sapi_name() !== 'cli') {
 require_once __DIR__ . '/../cli-bootstrap.php';
 
 try {
+    $console = Pt_Commons_MiscUtility::console();
+    $console->writeln('<info>[config-migration]</info> Starting configuration migration...');
+
     // Load configuration using Zend_Config_Ini
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/config.ini', APPLICATION_ENV);
 
@@ -20,9 +23,14 @@ try {
         $schemeConfigDb->select()->from($schemeConfigDb->info('name'), array('scheme_config_name'))
     );
     $existingLookup = array_flip($existingKeys);
+    $schemeInserted = 0;
+    $schemeSkipped = 0;
+    $schemeTotal = 0;
 
-    foreach ($envConfig['evaluation'] as $key => $value) {
+    foreach (($envConfig['evaluation'] ?? []) as $key => $value) {
+        $schemeTotal++;
         if (isset($existingLookup[$key])) {
+            $schemeSkipped++;
             continue;
         }
 
@@ -30,7 +38,14 @@ try {
             'scheme_config_name' => $key,
             'scheme_config_value' => is_array($value) ? json_encode($value, true) : $value
         ]);
+        $schemeInserted++;
     }
+    $console->writeln(sprintf(
+        '<comment>[config-migration]</comment> Scheme config: total=%d, inserted=%d, skipped(existing)=%d',
+        $schemeTotal,
+        $schemeInserted,
+        $schemeSkipped
+    ));
 
     unset($envConfig['evaluation']);
 
@@ -39,6 +54,9 @@ try {
         $globalConfigDb->select()->from($globalConfigDb->info('name'), array('name'))
     );
     $existingGlobalLookup = array_flip($existingGlobalKeys);
+    $globalInserted = 0;
+    $globalSkipped = 0;
+    $globalTotal = 0;
 
     $toSnakeCase = static function ($value) {
         $value = str_replace('.', '_', $value);
@@ -56,6 +74,7 @@ try {
         // Extract FAQ separately - it's stored in 'faqs' key
         if (isset($homeContent['faq'])) {
             $faqValue = $homeContent['faq'];
+            $globalTotal++;
             // FAQ is already a JSON string in config.ini, decode and re-encode to validate
             if (!isset($existingGlobalLookup['faqs'])) {
                 $globalConfigDb->insert([
@@ -63,6 +82,9 @@ try {
                     'value' => $faqValue
                 ]);
                 $existingGlobalLookup['faqs'] = true;
+                $globalInserted++;
+            } else {
+                $globalSkipped++;
             }
             unset($homeContent['faq']);
         }
@@ -91,11 +113,16 @@ try {
         }
 
         if (!empty($homeData) && !isset($existingGlobalLookup['home'])) {
+            $globalTotal++;
             $globalConfigDb->insert([
                 'name' => 'home',
                 'value' => json_encode($homeData)
             ]);
             $existingGlobalLookup['home'] = true;
+            $globalInserted++;
+        } elseif (!empty($homeData)) {
+            $globalTotal++;
+            $globalSkipped++;
         }
 
         unset($envConfig['home']);
@@ -115,7 +142,9 @@ try {
             }
 
             $snakeKey = $toSnakeCase($currentKey);
+            $globalTotal++;
             if (isset($existingGlobalLookup[$snakeKey])) {
+                $globalSkipped++;
                 continue;
             }
 
@@ -124,9 +153,21 @@ try {
                 'value' => is_array($currentValue) ? json_encode($currentValue, true) : $currentValue
             ]);
             $existingGlobalLookup[$snakeKey] = true;
+            $globalInserted++;
         }
     }
-} catch (Exception $e) {
+
+    $console->writeln(sprintf(
+        '<comment>[config-migration]</comment> Global config: total=%d, inserted=%d, skipped(existing)=%d',
+        $globalTotal,
+        $globalInserted,
+        $globalSkipped
+    ));
+    $console->writeln('<info>[config-migration]</info> Migration finished successfully.');
+} catch (\Throwable $e) {
+    Pt_Commons_MiscUtility::console()->writeln(
+        sprintf('<error>[config-migration]</error> Migration failed: %s', $e->getMessage())
+    );
     Pt_Commons_LoggerUtility::logError($e->getMessage(), [
         'line' => $e->getLine(),
         'file' => $e->getFile(),

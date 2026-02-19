@@ -31,3 +31,7 @@ CREATE TABLE IF NOT EXISTS certificate_batches (
 ALTER TABLE `certificate_templates`
     ADD COLUMN IF NOT EXISTS `p_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for participation certificate' AFTER `participation_certificate`,
     ADD COLUMN IF NOT EXISTS `e_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for excellence certificate' AFTER `excellence_certificate`;
+
+
+--Insert home name in globalconfig
+INSERT INTO `global_config` (`name`, `value`) VALUES ('home', '');
