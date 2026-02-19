@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unified COVID-19 Scheme Form
  *
@@ -69,6 +70,9 @@ $testKitHtml = '<option value="">--' . $this->translate->_("Select") . '--</opti
 foreach ($testKitOptions as $typeId => $typeName) {
     $testKitHtml .= '<option value="' . htmlspecialchars($typeId) . '">' . htmlspecialchars($typeName) . '</option>';
 }
+
+$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
+$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
 ?>
 
 <style type="text/css">
@@ -87,28 +91,41 @@ foreach ($testKitOptions as $typeId => $typeName) {
 </style>
 
 <?php if (isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
-<div class="form-group">
-    <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
-    <div class="col-lg-5">
-        <input type="text" name="ptEmail" id="ptEmail"
-            value="<?php echo $isEditMode && isset($this->shipmentData['shipment']['pt_co_ordinator_email']) ? htmlspecialchars($this->shipmentData['shipment']['pt_co_ordinator_email']) : ''; ?>"
-            placeholder="Enter PT Co-ordinator email"
-            title="Please enter the PT Co-ordinator email"
-            class="form-control input-sm isEmail" />
+    <div class="form-group">
+        <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Email"); ?></label>
+        <div class="col-lg-5">
+            <input type="text" name="ptEmail" id="ptEmail"
+                value="<?php echo $isEditMode && isset($this->shipmentData['shipment']['pt_co_ordinator_email']) ? htmlspecialchars($this->shipmentData['shipment']['pt_co_ordinator_email']) : ''; ?>"
+                placeholder="Enter PT Co-ordinator email"
+                title="Please enter the PT Co-ordinator email"
+                class="form-control input-sm isEmail" />
+        </div>
     </div>
-</div>
-<div class="form-group">
-    <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
-    <div class="col-lg-5">
-        <input type="text" name="ptPhone" id="ptPhone"
-            value="<?php echo $isEditMode && isset($this->shipmentData['shipment']['pt_co_ordinator_phone']) ? htmlspecialchars($this->shipmentData['shipment']['pt_co_ordinator_phone']) : ''; ?>"
-            placeholder="Enter PT Co-ordinator phone number"
-            title="Please enter the PT Co-ordinator phone number"
-            class="form-control input-sm isNumeric" />
+    <div class="form-group">
+        <label class="col-lg-3 control-label"><?= $this->translate->_("PT Co-ordinator Phone Number"); ?></label>
+        <div class="col-lg-5">
+            <input type="text" name="ptPhone" id="ptPhone"
+                value="<?php echo $isEditMode && isset($this->shipmentData['shipment']['pt_co_ordinator_phone']) ? htmlspecialchars($this->shipmentData['shipment']['pt_co_ordinator_phone']) : ''; ?>"
+                placeholder="Enter PT Co-ordinator phone number"
+                title="Please enter the PT Co-ordinator phone number"
+                class="form-control input-sm isNumeric" />
+        </div>
     </div>
-</div>
 <?php endif; ?>
-
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
+            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
+            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+    </div>
+</div>
 <!-- COVID-19 Sample Table -->
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="covid19SampleTable">
     <thead>
@@ -119,7 +136,7 @@ foreach ($testKitOptions as $typeId => $typeName) {
             <th style="width:10%; text-align: center;"><?= $this->translate->_("Control?"); ?></th>
             <th style="width:10%; text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
             <?php if ($isEditMode): ?>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Score"); ?></th>
+                <th style="width:10%; text-align: center;"><?= $this->translate->_("Score"); ?></th>
             <?php endif; ?>
             <th style="width:20%; text-align: center;"><?= $this->translate->_("Option"); ?></th>
         </tr>
@@ -138,127 +155,127 @@ foreach ($testKitOptions as $typeId => $typeName) {
                 $mandatory = $sample['mandatory'] ?? '';
                 $score = $sample['sample_score'] ?? '';
         ?>
-        <tr align="center">
-            <td style="text-align: center">
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                    value="<?php echo htmlspecialchars($sampleLabel); ?>"
-                    title="Please enter sample name here" placeholder="Please enter sample name here" />
-                <input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo htmlspecialchars($sampleId); ?>" />
-            </td>
-            <td>
-                <input type="text" name="samplePreparationDate[]" readonly="readonly"
-                    class="isRequired form-control input-sm datepicker"
-                    value="<?php echo htmlspecialchars($samplePrepDate); ?>"
-                    placeholder="Please enter the sample preparation date"
-                    title="Please enter the sample preparation date" />
-            </td>
-            <td>
-                <select name="possibleResults[]" class="isRequired form-control input-sm">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <?php foreach ($possibleResultsSource as $pr):
-                        if ($pr['scheme_sub_group'] == 'COVID19_FINAL'):
-                    ?>
-                    <option value="<?php echo htmlspecialchars($pr['id']); ?>"
-                        <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
-                        <?php echo htmlspecialchars($pr['response']); ?>
-                    </option>
-                    <?php
-                        endif;
-                    endforeach;
-                    ?>
-                </select>
-            </td>
-            <td>
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                    title="Please choose whether this sample is a control">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <option value="1" <?php echo ($control == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0" <?php echo ($control == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <select name="mandatory[]" class="isRequired form-control input-sm"
-                    title="Please choose whether this sample/control is mandatory">
-                    <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                    <option value="1" <?php echo ($mandatory == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0" <?php echo ($mandatory == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
-                    placeholder="Score" title="Please enter the score for this control/sample"
-                    value="<?php echo htmlspecialchars($score); ?>" />
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary"
-                    onclick="showdefModal('typeName<?php echo htmlspecialchars($sampleId); ?>', 900, 600); loadCal();">
-                    <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
-                </a>
-                <a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info">
-                    <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
-                </a>
-                <?php if ($counter > 1): ?>
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
-                    title="Remove this row completely">
-                    <i class="icon-minus"></i>
-                </a>
-                <?php endif; ?>
-            </td>
-        </tr>
-        <?php
+                <tr align="center">
+                    <td style="text-align: center">
+                        <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
+                            value="<?php echo htmlspecialchars($sampleLabel); ?>"
+                            title="Please enter sample name here" placeholder="Please enter sample name here" />
+                        <input type="hidden" id="sampleId" name="sampleId[]" value="<?php echo htmlspecialchars($sampleId); ?>" />
+                    </td>
+                    <td>
+                        <input type="text" name="samplePreparationDate[]" readonly="readonly"
+                            class="isRequired form-control input-sm datepicker"
+                            value="<?php echo htmlspecialchars($samplePrepDate); ?>"
+                            placeholder="Please enter the sample preparation date"
+                            title="Please enter the sample preparation date" />
+                    </td>
+                    <td>
+                        <select name="possibleResults[]" class="isRequired form-control input-sm">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <?php foreach ($possibleResultsSource as $pr):
+                                if ($pr['scheme_sub_group'] == 'COVID19_FINAL'):
+                            ?>
+                                    <option value="<?php echo htmlspecialchars($pr['id']); ?>"
+                                        <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
+                                        <?php echo htmlspecialchars($pr['response']); ?>
+                                    </option>
+                            <?php
+                                endif;
+                            endforeach;
+                            ?>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="control[]" class="isRequired controlOrNot form-control input-sm"
+                            title="Please choose whether this sample is a control">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <option value="1" <?php echo ($control == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                            <option value="0" <?php echo ($control == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="mandatory[]" class="isRequired form-control input-sm"
+                            title="Please choose whether this sample/control is mandatory">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <option value="1" <?php echo ($mandatory == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
+                            <option value="0" <?php echo ($mandatory == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
+                            placeholder="Score" title="Please enter the score for this control/sample"
+                            value="<?php echo htmlspecialchars($score); ?>" />
+                    </td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-xs btn-primary"
+                            onclick="showdefModal('typeName<?php echo htmlspecialchars($sampleId); ?>', 900, 600); loadCal();">
+                            <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
+                        </a>
+                        <a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info">
+                            <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
+                        </a>
+                        <?php if ($counter > 1): ?>
+                            <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                                title="Remove this row completely">
+                                <i class="icon-minus"></i>
+                            </a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php
                 $counter++;
             endforeach;
         else:
             // ADD mode or EDIT mode with no samples - show empty row
-        ?>
-        <tr align="center">
-            <td style="text-align: center">
-                <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                    title="Please enter sample name here" placeholder="Please enter sample name here" />
-            </td>
-            <td>
-                <input type="text" name="samplePreparationDate[]" readonly="readonly"
-                    class="isRequired form-control input-sm datepicker"
-                    placeholder="Please enter the sample preparation date"
-                    title="Please enter the sample preparation date" />
-            </td>
-            <td>
-                <?php echo $possibleResultsHtml; ?>
-            </td>
-            <td>
-                <select name="control[]" class="isRequired controlOrNot form-control input-sm"
-                    title="Please choose whether this sample is a control">
-                    <option value="1"><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <td>
-                <select name="mandatory[]" class="isRequired form-control input-sm"
-                    title="Please choose whether this sample/control is mandatory">
-                    <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
-                    <option value="0"><?= $this->translate->_("No"); ?></option>
-                </select>
-            </td>
-            <?php if ($isEditMode): ?>
-            <td>
-                <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
-                    placeholder="Score" title="Please enter the score for this control/sample" />
-            </td>
-            <?php endif; ?>
-            <td>
-                <a href="javascript:void(0);" class="btn btn-xs btn-primary"
-                    onclick="showdefModal('sampleEia1', 900, 600); loadCal();">
-                    <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
-                </a>
-                <a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info">
-                    <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
-                </a>
-                <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
-                    title="Remove this row completely">
-                    <i class="icon-minus"></i>
-                </a>
-            </td>
-        </tr>
+            ?>
+            <tr align="center">
+                <td style="text-align: center">
+                    <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
+                        title="Please enter sample name here" placeholder="Please enter sample name here" />
+                </td>
+                <td>
+                    <input type="text" name="samplePreparationDate[]" readonly="readonly"
+                        class="isRequired form-control input-sm datepicker"
+                        placeholder="Please enter the sample preparation date"
+                        title="Please enter the sample preparation date" />
+                </td>
+                <td>
+                    <?php echo $possibleResultsHtml; ?>
+                </td>
+                <td>
+                    <select name="control[]" class="isRequired controlOrNot form-control input-sm"
+                        title="Please choose whether this sample is a control">
+                        <option value="1"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </td>
+                <td>
+                    <select name="mandatory[]" class="isRequired form-control input-sm"
+                        title="Please choose whether this sample/control is mandatory">
+                        <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="0"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </td>
+                <?php if ($isEditMode): ?>
+                    <td>
+                        <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm"
+                            placeholder="Score" title="Please enter the score for this control/sample" />
+                    </td>
+                <?php endif; ?>
+                <td>
+                    <a href="javascript:void(0);" class="btn btn-xs btn-primary"
+                        onclick="showdefModal('sampleEia1', 900, 600); loadCal();">
+                        <i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?>
+                    </a>
+                    <a href="javascript:void(0);" onclick="addCovid19Row(this);" class="btn btn-xs btn-info">
+                        <i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?>
+                    </a>
+                    <a href="javascript:void(0);" onclick="removeRow(this)" class="btn btn-xs btn-danger"
+                        title="Remove this row completely">
+                        <i class="icon-minus"></i>
+                    </a>
+                </td>
+            </tr>
         <?php endif; ?>
     </tbody>
 </table>
@@ -269,33 +286,33 @@ foreach ($testKitOptions as $typeId => $typeName) {
 
 <!-- COVID-19-specific JavaScript -->
 <script type="text/javascript">
-var sampleCounter = <?php echo $isEditMode ? count($samples) : 1; ?>;
+    var sampleCounter = <?php echo $isEditMode ? count($samples) : 1; ?>;
 
-$(document).ready(function() {
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
+    $(document).ready(function() {
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+
+        <?php if ($isEditMode && count($samples) > 0): ?>
+            // EDIT mode: create platform name blocks for each existing sample
+            <?php
+            $i = 1;
+            foreach ($samples as $sample):
+            ?>
+                addNewPlatformNameBlock('<?php echo $i; ?>');
+            <?php
+                $i++;
+            endforeach;
+            ?>
+        <?php else: ?>
+            // ADD mode: create initial platform name block
+            addNewPlatformNameBlock('1');
+        <?php endif; ?>
     });
 
-    <?php if ($isEditMode && count($samples) > 0): ?>
-    // EDIT mode: create platform name blocks for each existing sample
-    <?php
-    $i = 1;
-    foreach ($samples as $sample):
-    ?>
-    addNewPlatformNameBlock('<?php echo $i; ?>');
-    <?php
-        $i++;
-    endforeach;
-    ?>
-    <?php else: ?>
-    // ADD mode: create initial platform name block
-    addNewPlatformNameBlock('1');
-    <?php endif; ?>
-});
-
-function addCovid19Row(obj) {
-    sampleCounter++;
-    var html = '<tr align="center"> \
+    function addCovid19Row(obj) {
+        sampleCounter++;
+        var html = '<tr align="center"> \
         <td style="text-align: center"> \
             <input type="text" name="sampleName[]" class="isRequired input-sm form-control" \
                 title="Please enter sample name here" placeholder="Please enter sample name here"/> \
@@ -339,62 +356,62 @@ function addCovid19Row(obj) {
                 title="Remove this row completely"><i class="icon-minus"></i></a> \
         </td> \
     </tr>';
-    $(obj.parentNode.parentNode).after(html);
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-    addNewPlatformNameBlock(sampleCounter);
-}
+        $(obj.parentNode.parentNode).after(html);
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+        addNewPlatformNameBlock(sampleCounter);
+    }
 
-function removeRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
+    function removeRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
 
-function addNewPlatformNameBlock(sampleId) {
-    var modalHtml = '<div id="typeName' + sampleId + '" class="dialog">' +
-        '<span onClick="hidedefModal()" class="closeModal"></span>' +
-        '<div class="modal-header">' +
+    function addNewPlatformNameBlock(sampleId) {
+        var modalHtml = '<div id="typeName' + sampleId + '" class="dialog">' +
+            '<span onClick="hidedefModal()" class="closeModal"></span>' +
+            '<div class="modal-header">' +
             '<h4 class="modal-title"><?= $this->translate->_("COVID-19 TYPE OF TESTING"); ?></h4>' +
-        '</div>' +
-        '<div class="modal-body">' +
-            '<div class="row">' +
-                '<div>' +
-                    '<table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix">' +
-                        '<thead>' +
-                            '<tr align="center">' +
-                                '<th style="width:20%; text-align: center;"><?= $this->translate->_("Platform Name"); ?></th>' +
-                                '<th style="width:10%; text-align: center;"><?= $this->translate->_("Lot"); ?></th>' +
-                                '<th style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th>' +
-                                '<th style="width:15%; text-align: center;"><?= $this->translate->_("Result"); ?></th>' +
-                                '<th style="width: 5%; text-align: center;"><?= $this->translate->_("Options"); ?></th>' +
-                            '</tr>' +
-                        '</thead>' +
-                        '<tbody>' +
-                            '<tr>' +
-                                '<td><select class="form-control" name="rtype[' + sampleId + '][type][]"><?php echo $testKitHtml; ?></select></td>' +
-                                '<td><input type="text" name="rtype[' + sampleId + '][lot][]" class="form-control"/></td>' +
-                                '<td><input type="text" name="rtype[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>' +
-                                '<td><select class="form-control" name="rtype[' + sampleId + '][result][]"><?php echo $testResultsHtml; ?></select></td>' +
-                                '<td>' +
-                                    '<a href="javascript:void(0);" onclick="addNewPlatformRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>' +
-                                '</td>' +
-                            '</tr>' +
-                        '</tbody>' +
-                    '</table>' +
-                '</div>' +
             '</div>' +
-        '</div>' +
-        '<div class="modal-footer">' +
+            '<div class="modal-body">' +
+            '<div class="row">' +
+            '<div>' +
+            '<table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix">' +
+            '<thead>' +
+            '<tr align="center">' +
+            '<th style="width:20%; text-align: center;"><?= $this->translate->_("Platform Name"); ?></th>' +
+            '<th style="width:10%; text-align: center;"><?= $this->translate->_("Lot"); ?></th>' +
+            '<th style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th>' +
+            '<th style="width:15%; text-align: center;"><?= $this->translate->_("Result"); ?></th>' +
+            '<th style="width: 5%; text-align: center;"><?= $this->translate->_("Options"); ?></th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody>' +
+            '<tr>' +
+            '<td><select class="form-control" name="rtype[' + sampleId + '][type][]"><?php echo $testKitHtml; ?></select></td>' +
+            '<td><input type="text" name="rtype[' + sampleId + '][lot][]" class="form-control"/></td>' +
+            '<td><input type="text" name="rtype[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td>' +
+            '<td><select class="form-control" name="rtype[' + sampleId + '][result][]"><?php echo $testResultsHtml; ?></select></td>' +
+            '<td>' +
+            '<a href="javascript:void(0);" onclick="addNewPlatformRow(this,' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>' +
+            '</td>' +
+            '</tr>' +
+            '</tbody>' +
+            '</table>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="modal-footer">' +
             '<button type="button" class="btn btn-primary" onclick="closeShipmentModal(\'sampleEia' + sampleId + '\')"><?= $this->translate->_("OK"); ?></button>' +
-        '</div>' +
-    '</div>';
-    $("#eiaBlockHolder").after(modalHtml);
-}
+            '</div>' +
+            '</div>';
+        $("#eiaBlockHolder").after(modalHtml);
+    }
 
-function addNewPlatformRow(obj, sampleId) {
-    $(obj.parentNode.parentNode).after('<tr> \
+    function addNewPlatformRow(obj, sampleId) {
+        $(obj.parentNode.parentNode).after('<tr> \
         <td><select class="form-control" name="rtype[' + sampleId + '][type][]"><?php echo $testKitHtml; ?></select></td> \
         <td><input type="text" name="rtype[' + sampleId + '][lot][]" class="form-control"/></td> \
         <td><input type="text" name="rtype[' + sampleId + '][expiry][]" class="form-control datepicker" readonly="readonly"/></td> \
@@ -405,43 +422,43 @@ function addNewPlatformRow(obj, sampleId) {
                 title="Remove this row completely"><i class="icon-minus"></i></a> \
         </td> \
     </tr>');
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
-
-function removePlatformRow(obj) {
-    $(obj.parentNode.parentNode).fadeOut("normal", function() {
-        $(this).remove();
-    });
-}
-
-function loadCal() {
-    $(".datepicker").removeClass("hasDatepicker");
-    $(".datepicker").datepicker({
-        dateFormat: '<?php echo $dtFormat; ?>'
-    });
-}
-
-function closeShipmentModal(divId) {
-    var mbdEl = document.getElementById("mbd");
-    var targetEl = document.getElementById(divId);
-    if (mbdEl && targetEl) {
-        // Note: This preserves the original behavior from the existing codebase
-        // The innerHTML assignment copies form content between modal instances
-        targetEl.textContent = '';
-        while (mbdEl.firstChild) {
-            targetEl.appendChild(mbdEl.firstChild.cloneNode(true));
-        }
-
-        $("#mbd input:text").each(function(i, obj) {
-            $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
-        });
-        $("#mbd select").each(function(i, obj) {
-            $("#" + divId + " select:eq(" + i + ")").val($(this).val());
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
         });
     }
 
-    hidedefModal();
-}
+    function removePlatformRow(obj) {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+            $(this).remove();
+        });
+    }
+
+    function loadCal() {
+        $(".datepicker").removeClass("hasDatepicker");
+        $(".datepicker").datepicker({
+            dateFormat: '<?php echo $dtFormat; ?>'
+        });
+    }
+
+    function closeShipmentModal(divId) {
+        var mbdEl = document.getElementById("mbd");
+        var targetEl = document.getElementById(divId);
+        if (mbdEl && targetEl) {
+            // Note: This preserves the original behavior from the existing codebase
+            // The innerHTML assignment copies form content between modal instances
+            targetEl.textContent = '';
+            while (mbdEl.firstChild) {
+                targetEl.appendChild(mbdEl.firstChild.cloneNode(true));
+            }
+
+            $("#mbd input:text").each(function(i, obj) {
+                $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
+            });
+            $("#mbd select").each(function(i, obj) {
+                $("#" + divId + " select:eq(" + i + ")").val($(this).val());
+            });
+        }
+
+        hidedefModal();
+    }
 </script>

@@ -11,9 +11,7 @@ use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
 class Application_Model_Vl
 {
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {

@@ -23,8 +23,10 @@ if (!empty($resultArray['shipment'])) {
         if ($isCli) {
             echo "Processing for:" . $result['first_name'] . ' ' . $result['last_name'] . PHP_EOL;
         }
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
 
+        /* for Shipment attributes functionality start */
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
@@ -34,7 +36,7 @@ if (!empty($resultArray['shipment'])) {
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName, $result['scheme_type'], "", "", $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $panelName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition, $resultArray['shipment'][0]['issuing_authority']);

@@ -60,6 +60,7 @@ if (isset($this->assay) && !empty($this->assay)) {
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
 $reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
+$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
 // Get current TB test type for edit mode
 $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 ?>
@@ -99,6 +100,13 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
+            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
     </div>
 </div>
 <div class="form-group">

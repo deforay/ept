@@ -5,6 +5,7 @@ use mitoteam\jpgraph\MtJpGraph;
 MtJpGraph::load(['bar', 'line', 'scatter'], true);
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
     $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'iso17043';
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {

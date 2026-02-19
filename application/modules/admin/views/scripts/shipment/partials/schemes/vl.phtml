@@ -55,6 +55,7 @@ $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
 $vlConfig = $this->config;
 $reportVersion = isset($vlConfig['reportVersion']) ? $vlConfig['reportVersion'] : '';
+$effectiveDate = isset($vlConfig['effectiveDate']) ? $vlConfig['effectiveDate'] : '';
 // Counter for samples
 $count = 0;
 ?>
@@ -94,7 +95,13 @@ $count = 0;
             title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
     </div>
 </div>
-
+<div class="form-group">
+    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <div class="col-lg-5">
+        <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
+            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+    </div>
+</div>
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
     <thead>
         <tr align="center">
