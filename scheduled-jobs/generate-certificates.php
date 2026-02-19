@@ -2,45 +2,64 @@
 require_once __DIR__ . '/../cli-bootstrap.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
+use Symfony\Component\Process\Process;
 
-$cliOptions = getopt("s:c:t:b:");
+$cliOptions = getopt("s:c:t:b:", ["procs:", "worker", "offset:", "limit:"]);
 $shipmentsToGenerate = $cliOptions['s'] ?? null;
 $certificateName = !empty($cliOptions['c']) ? $cliOptions['c'] : date('Y');
 $templateMode = strtolower($cliOptions['t'] ?? 'pdf');   // 'pdf' | 'docx'
 $batchId = !empty($cliOptions['b']) ? (int) $cliOptions['b'] : null;
+$isWorker = isset($cliOptions['worker']);
+$workerOffset = isset($cliOptions['offset']) ? (int) $cliOptions['offset'] : 0;
+$workerLimit = isset($cliOptions['limit']) ? (int) $cliOptions['limit'] : 0;
+$procsCount = isset($cliOptions['procs']) ? (int) $cliOptions['procs'] : Pt_Commons_MiscUtility::getCpuCount();
+if ($procsCount < 1) $procsCount = 1;
 
-// Always initialize batch model - auto-create batch if not provided
-$certificateBatchesModel = new Application_Model_DbTable_CertificateBatches();
-
-if ($batchId) {
-	// Existing batch - just update status
-	$certificateBatchesModel->updateStatus($batchId, 'generating');
-} else {
-	// No batch provided - auto-create one for tracking
-	// This ensures CLI runs are also tracked in the dashboard
-	if (is_array($shipmentsToGenerate)) {
-		$shipmentIdsForBatch = implode(",", $shipmentsToGenerate);
-	} else {
-		$shipmentIdsForBatch = $shipmentsToGenerate ?? '';
+// Check proc_open availability for parallel processing
+if (!$isWorker && $procsCount > 1) {
+	$disabled = array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions'))));
+	if (!function_exists('proc_open') || in_array('proc_open', $disabled, true)) {
+		echo "Parallel processing disabled: proc_open not available. Using single process.\n";
+		$procsCount = 1;
 	}
+}
 
-	$batchId = $certificateBatchesModel->createBatch([
-		'batch_name' => $certificateName,
-		'shipment_ids' => $shipmentIdsForBatch,
-		'created_by' => 0, // CLI execution (no admin user)
-		'status' => 'generating'
-	]);
+// Workers skip batch management - handled by main process
+if (!$isWorker) {
+	$certificateBatchesModel = new Application_Model_DbTable_CertificateBatches();
 
-	echo "Auto-created batch #{$batchId} for tracking\n";
+	if ($batchId) {
+		// Existing batch - just update status
+		$certificateBatchesModel->updateStatus($batchId, 'generating');
+	} else {
+		// No batch provided - auto-create one for tracking
+		// This ensures CLI runs are also tracked in the dashboard
+		if (is_array($shipmentsToGenerate)) {
+			$shipmentIdsForBatch = implode(",", $shipmentsToGenerate);
+		} else {
+			$shipmentIdsForBatch = $shipmentsToGenerate ?? '';
+		}
+
+		$batchId = $certificateBatchesModel->createBatch([
+			'batch_name' => $certificateName,
+			'shipment_ids' => $shipmentIdsForBatch,
+			'created_by' => 0, // CLI execution (no admin user)
+			'status' => 'generating'
+		]);
+
+		echo "Auto-created batch #{$batchId} for tracking\n";
+	}
 }
 
 if (is_array($shipmentsToGenerate))
 	$shipmentsToGenerate = implode(",", $shipmentsToGenerate);
 if (empty($shipmentsToGenerate)) {
 	error_log("Please specify the shipment ids with -s");
-	$certificateBatchesModel->updateStatus($batchId, 'failed', [
-		'error_message' => 'No shipment IDs specified'
-	]);
+	if (isset($certificateBatchesModel)) {
+		$certificateBatchesModel->updateStatus($batchId, 'failed', [
+			'error_message' => 'No shipment IDs specified'
+		]);
+	}
 	exit(1);
 }
 
@@ -306,7 +325,9 @@ function docxToPdf(string $inDocx, string $outPdf, int $maxRetries = 2): ?string
 $generalModel = new Pt_Commons_General();
 $certificatePaths = [];
 $folderPath = TEMP_UPLOAD_PATH . "/certificates/$certificateName";
-Pt_Commons_General::rmdirRecursive($folderPath);
+if (!$isWorker) {
+	Pt_Commons_General::rmdirRecursive($folderPath);
+}
 $certificatePaths[] = $excellenceCertPath = "$folderPath/excellence";
 $certificatePaths[] = $participationCertPath = "$folderPath/participation";
 foreach ($certificatePaths as $p)
@@ -719,7 +740,7 @@ try {
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
 		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response', 'shipment_date'])
 		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
-		// ->where("spm.final_result = 1 OR spm.final_result = 2")
+		->where("spm.final_result = 1 OR spm.final_result = 2")
 		// ->where("spm.is_excluded NOT LIKE 'yes'")
 		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
@@ -752,14 +773,81 @@ try {
 
 	}
 
-	// Stats tracking
-	$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0];
-	$totalParticipants = count($participants);
-	$currentParticipant = 0;
+	// Worker mode: process only the assigned slice of participants
+	if ($isWorker) {
+		$participants = array_slice($participants, $workerOffset, $workerLimit, true);
+	}
 
-	foreach ($participants as $participantUID => $arrayVal) {
-		$currentParticipant++;
-		echo "\r[{$currentParticipant}/{$totalParticipants}] Processing for Participant Code : {$participantUID}                    ";
+	$totalParticipants = count($participants);
+
+	if (!$isWorker && $procsCount > 1 && $totalParticipants > 1) {
+		// ---- Parallel mode: spawn worker subprocesses ----
+		echo "\nGenerating certificates using {$procsCount} parallel processes for {$totalParticipants} participants...\n";
+
+		$phpBinary = defined('PHP_BINARY') && PHP_BINARY !== '' ? PHP_BINARY : 'php';
+		$batchSize = (int) ceil($totalParticipants / $procsCount);
+		$processes = [];
+
+		for ($offset = 0; $offset < $totalParticipants; $offset += $batchSize) {
+			$limit = min($batchSize, $totalParticipants - $offset);
+			$cmd = [
+				$phpBinary, __FILE__,
+				'--worker',
+				'-s', $shipmentsToGenerate,
+				'-c', $certificateName,
+				'-t', $templateMode,
+				'--offset', (string) $offset,
+				'--limit', (string) $limit,
+			];
+
+			try {
+				$process = new Process($cmd);
+				$process->setTimeout(null);
+				$process->start();
+				$processes[] = ['process' => $process, 'offset' => $offset];
+			} catch (Throwable $e) {
+				echo "Failed to start worker (offset {$offset}): {$e->getMessage()}\n";
+			}
+		}
+
+		// Monitor workers and show progress
+		while (!empty($processes)) {
+			foreach ($processes as $key => $procData) {
+				if (!$procData['process']->isRunning()) {
+					if (!$procData['process']->isSuccessful()) {
+						$err = trim($procData['process']->getErrorOutput());
+						echo "Worker (offset {$procData['offset']}) failed: {$err}\n";
+					}
+					unset($processes[$key]);
+				}
+			}
+
+			$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
+			$genCount = count(glob($excellenceCertPath . "/*.{$ext}") ?: [])
+					  + count(glob($participationCertPath . "/*.{$ext}") ?: []);
+			echo "\r  [{$genCount}] Certificates generated...    ";
+
+			usleep(250000);
+		}
+		echo "\n";
+
+		// Count final stats from generated files
+		$ext = ($templateMode === 'docx') ? 'docx' : 'pdf';
+		$stats = [
+			'excellence' => count(glob($excellenceCertPath . "/*.{$ext}") ?: []),
+			'participation' => count(glob($participationCertPath . "/*.{$ext}") ?: []),
+			'skipped' => 0,
+		];
+	} else {
+		// ---- Sequential mode (single process or worker subprocess) ----
+		$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0];
+		$currentParticipant = 0;
+
+		foreach ($participants as $participantUID => $arrayVal) {
+			$currentParticipant++;
+			if (!$isWorker) {
+				echo "\r[{$currentParticipant}/{$totalParticipants}] Processing for Participant Code : {$participantUID}                    ";
+			}
 
 		foreach ($shipmentCodeArray as $shipmentType => $shipmentsList) {
 			if (!isset($arrayVal[$shipmentType]))
@@ -833,6 +921,12 @@ try {
 				$stats['skipped']++;
 			}
 		}
+		}
+
+		// Workers exit after generating their chunk
+		if ($isWorker) {
+			exit(0);
+		}
 	}
 
 	// Print generation summary
@@ -877,19 +971,24 @@ try {
 	}
 
 	// Update batch status on success
-	$certificateBatchesModel->updateStatus($batchId, 'generated', [
-		'excellence_count' => $stats['excellence'],
-		'participation_count' => $stats['participation'],
-		'skipped_count' => $stats['skipped'],
-		'download_url' => $downloadUrl ?? null,
-		'folder_path' => $folderPath
-	]);
+	if (isset($certificateBatchesModel)) {
+		$certificateBatchesModel->updateStatus($batchId, 'generated', [
+			'excellence_count' => $stats['excellence'],
+			'participation_count' => $stats['participation'],
+			'skipped_count' => $stats['skipped'],
+			'download_url' => $downloadUrl ?? null,
+			'folder_path' => $folderPath,
+			'error_message' => null
+		]);
+	}
 } catch (Exception $e) {
 	error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
 	error_log($e->getTraceAsString());
 
 	// Update batch status on failure
-	$certificateBatchesModel->updateStatus($batchId, 'failed', [
-		'error_message' => $e->getMessage()
-	]);
+	if (isset($certificateBatchesModel)) {
+		$certificateBatchesModel->updateStatus($batchId, 'failed', [
+			'error_message' => $e->getMessage()
+		]);
+	}
 }

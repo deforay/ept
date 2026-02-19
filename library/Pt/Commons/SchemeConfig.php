@@ -1,7 +1,6 @@
 <?php
 
 
-
 final class Pt_Commons_SchemeConfig
 {
     public static function get($name, bool $useCache = true)
@@ -39,7 +38,7 @@ final class Pt_Commons_SchemeConfig
                             $result = isset($config->evaluation->$name) ? $config->evaluation->$name : null;
                     }
                 }
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 // Log error if needed
                 error_log("Error reading config.ini: " . $e->getMessage());
             }

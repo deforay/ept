@@ -3979,7 +3979,7 @@ class Application_Service_Reports
                 ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
                 ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('unique_identifier', 'first_name', 'last_name', 'email', 'city', 'district', 'state', 'address', 'institute_name'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('country_name' => 'iso_name'))
-                // ->where("spm.final_result = 1 OR spm.final_result = 2")
+                ->where("spm.final_result = 1 OR spm.final_result = 2")
                 // ->where("spm.is_excluded NOT LIKE 'yes'")
                 ->order("unique_identifier ASC")
                 ->order("scheme_type ASC");

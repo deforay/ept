@@ -1,5 +1,6 @@
 <?php
 
+
 class Admin_GlobalConfigController extends Zend_Controller_Action
 {
 

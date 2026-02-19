@@ -396,6 +396,10 @@ foreach ($versions as $version) {
         $totalMigrations++;
 
         $sql_contents = file_get_contents($file);
+        // Normalize SQL comments: "-- comment" requires a space after "--" per the
+        // SQL standard, but migration files sometimes omit it (e.g. "--Insert ...").
+        // Without the space the parser treats the line as a statement, causing errors.
+        $sql_contents = preg_replace('/^(\s*--)(?=\S)/m', '$1 ', $sql_contents);
         $parser = new Parser($sql_contents);
 
         // pre-build/trim statements for accurate per-version progress
