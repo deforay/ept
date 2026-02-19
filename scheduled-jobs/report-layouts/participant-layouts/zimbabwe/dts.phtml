@@ -42,7 +42,8 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportDir) && !is_dir($reportDir)) {
             mkdir($reportDir);
         }
-        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true);
+        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true) ?? [];
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
         // Initialize PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (!empty($reportFormat)) {

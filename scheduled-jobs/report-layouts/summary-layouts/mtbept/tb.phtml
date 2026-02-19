@@ -8,7 +8,7 @@ MtJpGraph::load(['bar', 'line', 'pie'], true);
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
-    $effectiveDate = (isset($shipmentAttributes['effective_date']) && !empty($shipmentAttributes['effective_date'])) ? $shipmentAttributes['effective_date'] : 'October 2025';
+    $effectiveDate = (isset($shipmentAttributes['effectiveDate']) && !empty($shipmentAttributes['effectiveDate'])) ? $shipmentAttributes['effectiveDate'] : 'October 2025';
     $formVersion = 'FRM-000215-ILB';
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);

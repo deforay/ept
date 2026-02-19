@@ -23,7 +23,9 @@ if (!empty($resultArray['shipment'])) {
     // Process each shipment result
     foreach ($resultArray['shipment'] as $result) {
         // Parse shipment attributes
-        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes = json_decode($result['shipment_attributes'] ?? '{}', true);
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
+
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
         $attributes = json_decode($result['attributes'] ?? '{}', true);
 

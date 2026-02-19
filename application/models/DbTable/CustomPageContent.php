@@ -8,7 +8,7 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
 
     public function saveHomePageContent($params)
     {
-        try{
+        try {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $templates  = $params['templates'] ?? 'home';
             $data = array(
@@ -22,13 +22,13 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
             /* Check IF Exist or not */
             $sql = $this->select()->where('title like "' . $templates . '"');
             $exist = $this->fetchRow($sql);
-            $this->update(array("status" => 'inactive'), "title != '".$templates."'");
+            $this->update(array("status" => 'inactive'), "title != '" . $templates . "'");
             if (isset($exist) && !empty($exist)) {
                 return $this->update($data, "id = " . $exist['id']);
             } else {
                 return $this->insert($data);
             }
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
             // changes made in the transaction, even those that succeeded.
@@ -37,18 +37,20 @@ class Application_Model_DbTable_CustomPageContent extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchActiveHtmlHomePage($title = null){
+    public function fetchActiveHtmlHomePage($title = null)
+    {
         $sql = $this->getAdapter()->select()->from(array('hs' => $this->_name), array('title', 'content'));
-        if(isset($title) && !empty($title)){
-            $sql = $sql->where("title like '%" .$title . "%'");
+        if (isset($title) && !empty($title)) {
+            $sql = $sql->where("title like '%" . $title . "%'");
             return $this->getAdapter()->fetchAll($sql);
-        }else{
+        } else {
             $sql = $sql->where("status= ? ", 'active');
         }
         return $this->getAdapter()->fetchRow($sql);
     }
 
-    public function fetchAllHtmlHomePage(){
+    public function fetchAllHtmlHomePage()
+    {
         $sql = $this->getAdapter()->select()->from(array('hs' => $this->_name), array('title'))->group('title')->order('title ASC');
         return $this->getAdapter()->fetchRow($sql);
     }

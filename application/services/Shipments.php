@@ -1725,7 +1725,7 @@ class Application_Service_Shipments
                 $shipmentAttributes['dtsSchemeType'] = 'standard';
             }
             $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
-            $shipmentAttributes['report_version'] = $params['reportVersion'] ?? null;
+            $shipmentAttributes['reportVersion'] = $params['reportVersion'] ?? null;
             $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
             $data = array(
                 'shipment_code' => $params['shipmentCode'],
@@ -2802,7 +2802,7 @@ class Application_Service_Shipments
             $shipmentAttributes['tb_test_type'] = $params['tbTest'];
         }
         $shipmentAttributes['collect_qc_data'] = $params['collectQcData'] ?? null;
-        $shipmentAttributes['report_version'] = $params['reportVersion'] ?? null;
+        $shipmentAttributes['reportVersion'] = $params['reportVersion'] ?? null;
         $shipmentAttributes['effectiveDate'] = $params['effectiveDate'] ?? null;
 
         $dbAdapter->update(
@@ -3823,7 +3823,7 @@ class Application_Service_Shipments
             $sQuery = $sQuery->join(['map' => 'dts_shipment_corrective_action_map'], 'map.shipment_map_id=spm.map_id', ['*'])
                 ->join(['c' => 'r_dts_corrective_actions'], 'c.action_id=map.corrective_action_id', ['*'])
                 ->group('c.action_id');
-            $rResult = $db->fetchAll($sQuerySession->capaQuery);
+            $rResult = $db->fetchAll($sQuery);
 
             foreach ($rResult as $aRow) {
                 $row = [];
@@ -4210,5 +4210,27 @@ class Application_Service_Shipments
             'generateReportsEnabled' => $generateReportsEnabled,
             'finalizeEnabled' => $finalizeEnabled,
         ];
+    }
+
+    public static function getShipmentAttributes($sid, $value = "")
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $sQuery = $db->select()->from(array('s' => 'shipment'), ['shipment_attributes'])
+            ->where('s.shipment_id = ?', $sid);
+        $result = $db->fetchRow($sQuery);
+
+        $shipmentAttributes = [];
+        if (!empty($result['shipment_attributes'])) {
+            $shipmentAttributes = json_decode($result['shipment_attributes'], true) ?? [];
+        }
+        if ($value != "") {
+            return isset($shipmentAttributes[$value])
+                ? $shipmentAttributes[$value]
+                : (Pt_Commons_SchemeConfig::get($result['scheme_type'] . $value) ?? null);
+        } else {
+            return isset($shipmentAttributes['reportVersion'])
+                ? $shipmentAttributes['reportVersion']
+                : (Pt_Commons_SchemeConfig::get($result['scheme_type'] . 'reportVersion') ?? null);
+        }
     }
 }
