@@ -1531,7 +1531,7 @@ class Application_Model_Tb
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $config['organization_name'] = $config['organization_name'] ?? $globalConfigDb->getValue('institute_name');
         $config['form_title'] = $config['form_title'] ?? $globalConfigDb->getValue('tb_form_title');
-        $config['effective_date'] = $config['effective_date'] ?? $globalConfigDb->getValue('tb_form_effective_date');
+        $config['effectiveDate'] = $config['effectiveDate'] ?? $globalConfigDb->getValue('tb_form_effective_date');
         $config['form_version'] = $config['form_version'] ?? $globalConfigDb->getValue('tb_form_version');
 
         return $config;
@@ -1639,7 +1639,7 @@ class Application_Model_Tb
         if (isset($result[0]['shipment_attributes']) && !empty($result[0]['shipment_attributes'])) {
             $shipmentAttribute = json_decode($result[0]['shipment_attributes'], true);
             $GLOBALS['formVersion'] = $shipmentAttribute['form_version'] ?? '';
-            $GLOBALS['effectiveDate'] = $shipmentAttribute['effective_date'] ?? '';
+            $GLOBALS['effectiveDate'] = $shipmentAttribute['effectiveDate'] ?? '';
             $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';
         }
 

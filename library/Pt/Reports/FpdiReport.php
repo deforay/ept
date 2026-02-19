@@ -138,7 +138,6 @@ class Pt_Reports_FpdiReport extends Fpdi
         $completeFooterHtml = "";
 
         // Add static footer content if provided
-
         if (!empty($this->staticFooterHtml)) {
             $completeFooterHtml .= $this->staticFooterHtml;
         }
@@ -151,10 +150,12 @@ class Pt_Reports_FpdiReport extends Fpdi
             $finalizeReport = " | {$this->reportType} REPORT ";
         }
         $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
-
         // Append dynamic content to footer HTML
-        $effectiveDate = $this->shipmentAttributes['effectiveDate'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.effectiveDate');
-        $reportVersion = $this->shipmentAttributes['report_version'] ?? Pt_Commons_SchemeConfig::get($this->schemeType . '.reportVersion');
+        if (isset($this->shipmentAttributes['shipment_id']) && !empty($this->shipmentAttributes['shipment_id'])) {
+            $shipmentService = new Application_Service_Shipments();
+            $effectiveDate = $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'effectiveDate');
+            $reportVersion = $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'reportVersion');
+        }
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $completeFooterHtml = '<table>';
         $completeFooterHtml .= '<tr>';
