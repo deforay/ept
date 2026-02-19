@@ -719,7 +719,7 @@ try {
 	$sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.attributes', 'spm.shipment_test_report_date', 'spm.shipment_id', 'spm.participant_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.final_result'])
 		->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'scheme_type', 'lastdate_response', 'shipment_date'])
 		->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['unique_identifier', 'first_name', 'last_name', 'email', 'city', 'state', 'address', 'country', 'institute_name'])
-		// ->where("spm.final_result = 1 OR spm.final_result = 2")
+		->where("spm.final_result = 1 OR spm.final_result = 2")
 		// ->where("spm.is_excluded NOT LIKE 'yes'")
 		->order("unique_identifier ASC")
 		->order("scheme_type ASC");
