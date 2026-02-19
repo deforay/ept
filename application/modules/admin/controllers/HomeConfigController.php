@@ -1,13 +1,5 @@
 <?php
 
-use Pt_Commons_MiscUtility;
-use Zend_Controller_Action;
-use Zend_Controller_Action_Helper_AjaxContext;
-use Zend_Session_Namespace;
-use Application_Service_Common;
-use Zend_Controller_Request_Http;
-use Application_Service_HomeSection;
-
 class Admin_HomeConfigController extends Zend_Controller_Action
 {
 

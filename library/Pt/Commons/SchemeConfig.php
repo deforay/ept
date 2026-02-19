@@ -1,9 +1,6 @@
 <?php
 
-use Pt_Commons_JsonUtility;
-use Application_Model_DbTable_SchemeConfig;
-use Zend_Config_Ini;
-use Zend_Config;
+
 final class Pt_Commons_SchemeConfig
 {
     public static function get($name, bool $useCache = true)

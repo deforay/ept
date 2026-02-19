@@ -6,7 +6,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
-use Application_Model_DbTable_GlobalConfig;
+
 class Application_Service_Common
 {
     const MAIL_FAILURE_REASON_MAX = 1000;

@@ -1,11 +1,5 @@
 <?php
 
-use Pt_Commons_SchemeConfig;
-use Zend_Db_Table_Abstract;
-use Pt_Commons_MiscUtility;
-use Application_Model_DbTable_SchemeList;
-use Application_Model_DbTable_AuditLog;
-
 class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 {
 
