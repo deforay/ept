@@ -23,8 +23,10 @@ if (!empty($resultArray['shipment'])) {
 
     // Process each shipment result
     foreach ($resultArray['shipment'] as $result) {
-        // Parse shipment attributes
+        /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
+
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
         $attributes = json_decode($result['attributes'] ?? '{}', true);
 
@@ -58,7 +60,7 @@ if (!empty($resultArray['shipment'])) {
             // Use FPDI report format
             $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName, $approveTxt);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName,  $result['scheme_type'], $approveTxt, "", $shipmentAttributes);
         } else {
             // Use standard individual PDF format
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);

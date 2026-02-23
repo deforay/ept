@@ -96,9 +96,9 @@ class Admin_HomeConfigController extends Zend_Controller_Action
             $this->view->banner = $common->getHomeBannerDetails();
 
             $this->view->sections = $homeSection->getAllHomeSection();
-           // echo "<pre>"; print_r($this->view->sections); die;
+            // echo "<pre>"; print_r($this->view->sections); die;
             $this->view->htmlHomePage = $homeSection->getActiveHtmlHomePage();
-        } catch (Exception $exc) {
+        } catch (\Throwable $exc) {
             error_log("HOME-CONFIG--" . $exc->getMessage());
             error_log($exc->getTraceAsString());
         }

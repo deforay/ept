@@ -11,8 +11,9 @@ if (!empty($resultArray['shipment'])) {
 
     foreach ($resultArray['shipment'] as $result) {
 
+        /* for Shipment attributes functionality start */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
-
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
 
@@ -71,7 +72,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             if ($methodOfEvaluation == 'iso17043') {

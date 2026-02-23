@@ -1,8 +1,6 @@
 <?php
 
 if ($resultArray['shipment'] != "") {
-    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']);
     }
@@ -11,7 +9,7 @@ if ($resultArray['shipment'] != "") {
     $reportFormat = $reportService->getReportConfigValue('report-format');
 
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
-
+    $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
     $formVersion = $shipmentAttributes['formVersion'] ?? '';
     $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
     $issuingAuthority = $resultArray['shipment']['issuing_authority'] ?? '';

@@ -14,6 +14,7 @@ if ($resultArray['shipment'] != "") {
     $reportFormat = $reportService->getReportConfigValue('report-format');
 
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
     $formVersion = $shipmentAttributes['formVersion'] ?? '';
     $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
     $issuingAuthority = $resultArray['shipment']['issuing_authority'] ?? '';
@@ -57,7 +58,6 @@ if ($resultArray['shipment'] != "") {
         $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "SUMMARY", $layout, $resultArray['shipment']['scheme_name'], $resultArray['shipment']['scheme_type'], "", $staticFooterHtml);
     } else {
         $pdf = new Pt_Reports_SummaryPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
         $methodOfEvaluation = $methodOfEvaluation ?? 'iso17043';
@@ -289,7 +289,6 @@ if ($resultArray['shipment'] != "") {
             $note .= '<span style="text-align:justify;font-size:9;font-weight:normal;">' . $assayNameTxt . '
         <i><br>*Values from Abbott m2000 RealTime platform were used as a reference to evaluate results for VL platforms with less than 18 participants in this PT round.</i>
         </span><br><hr>';
-
         }
 
         $pdf->writeHTML($note, true, false, true, false, '');
