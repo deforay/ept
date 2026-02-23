@@ -328,37 +328,54 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
 
                     <div class="col-lg-12">
                         <form name="contactForm" id="contactForm" action="<?php echo $this->url(array("controller" => "index", "action" => "index"), null, true) ?>" method="post" role="form" class="php-email-form">
+                            <input type="text" name="website_url" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+                            <input type="hidden" name="form_token" id="form_token" value="<?php echo $this->escape($this->formToken); ?>">
                             <div class="row">
                                 <div class="col form-group">
-                                    <input type="text" name="firstName" class="form-control" id="firstName" placeholder="First Name" title="Please enter the first name">
+                                    <div class="form-floating">
+                                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="First Name" title="Please enter the first name">
+                                        <label for="firstName"><?= $this->translate->_("First Name"); ?></label>
+                                    </div>
                                 </div>
                                 <div class="col form-group">
-                                    <input type="email" class="form-control" name="lastName" id="lastName" placeholder="Last Name" title="Please enter the last name">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name" title="Please enter the last name">
+                                        <label for="lastName"><?= $this->translate->_("Last Name"); ?></label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col form-group">
-                                    <input type="text" name="participantId" class="form-control" id="participantId" placeholder="Participant Code/ID">
+                                    <div class="form-floating">
+                                        <input type="text" name="participantId" class="form-control" id="participantId" placeholder="Participant Code/ID">
+                                        <label for="participantId"><?= $this->translate->_("Participant Code/ID"); ?></label>
+                                    </div>
                                 </div>
                                 <div class="col form-group">
-                                    <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email *" value="<?php echo $email; ?>" title="Please enter the email">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control isRequired" name="email" id="email" placeholder="Your Email" value="<?php echo $email; ?>" title="Please enter the email">
+                                        <label for="email"><?= $this->translate->_("Your Email"); ?> <span class="text-danger">*</span></label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col form-group">
-                                    <select type="text" class="form-control isRequired" name="subject" id="subject" placeholder="Select Subject" title="Please select the subject">
-                                        <option value="">-- <?= $this->translate->_("Select Subject"); ?> * --</option>
-                                        <option value="Need support with Login Credentials"><?= $this->translate->_("Need support with Login Credentials"); ?></option>
-                                        <option value="Need support with PT Result Submission"><?= $this->translate->_("Need support with PT Result Submission"); ?></option>
-                                        <option value="Interested to participate in next PT round"><?= $this->translate->_("Interested to participate in next PT round"); ?></option>
-                                        <option value="Need technical Support with the Online PT Platform"><?= $this->translate->_("Need technical Support with the Online PT Platform"); ?></option>
-                                        <option value="Feedback or Query"><?= $this->translate->_("Feedback or Query"); ?></option>
-                                        <option value="Something Else"><?= $this->translate->_("Something Else"); ?></option>
-                                    </select>
+                                    <div class="form-floating">
+                                        <select class="form-select isRequired" name="subject" id="subject" title="Please select the subject">
+                                            <option value=""><?= $this->translate->_("Select Subject"); ?></option>
+                                            <option value="Need support with Login Credentials"><?= $this->translate->_("Need support with Login Credentials"); ?></option>
+                                            <option value="Need support with PT Result Submission"><?= $this->translate->_("Need support with PT Result Submission"); ?></option>
+                                            <option value="Interested to participate in next PT round"><?= $this->translate->_("Interested to participate in next PT round"); ?></option>
+                                            <option value="Need technical Support with the Online PT Platform"><?= $this->translate->_("Need technical Support with the Online PT Platform"); ?></option>
+                                            <option value="Feedback or Query"><?= $this->translate->_("Feedback or Query"); ?></option>
+                                            <option value="Something Else"><?= $this->translate->_("Something Else"); ?></option>
+                                        </select>
+                                        <label for="subject"><?= $this->translate->_("Subject"); ?> <span class="text-danger">*</span></label>
+                                    </div>
                                 </div>
                                 <div class="col form-group">
-                                    <select type="text" class="form-control isRequired" name="country" id="country" placeholder="Select Country" title="Please select the country">
-                                        <option value="">-- <?= $this->translate->_("Select Country"); ?> * --</option>
+                                    <select class="form-select isRequired" name="country" id="country" title="Please select the country">
+                                        <option value=""><?= $this->translate->_("Select Country"); ?></option>
                                         <?php foreach ($this->countriesList as $cou) { ?>
                                             <option value="<?php echo $cou['iso_name']; ?>"><?php echo $cou['iso_name']; ?></option>
                                         <?php } ?>
@@ -366,26 +383,19 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                 </div>
                             </div>
                             <div class="form-group">
-                                <textarea class="form-control isRequired" name="message" id="message" rows="5" placeholder="Message *" title="Please enter the message to send"></textarea>
+                                <div class="form-floating">
+                                    <textarea class="form-control isRequired" name="message" id="message" placeholder="Message" style="height:150px" title="Please enter the message to send"></textarea>
+                                    <label for="message"><?= $this->translate->_("Message"); ?> <span class="text-danger">*</span></label>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <table border="0" style="width:35%;margin-top: 10px;margin:0 auto;border:1px solid #eee;">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div style="float:left;margin:5px;">
-                                                    <img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
-                                                </div>
-                                            </td>
-                                            <td style="padding-top:3px;" align="center">
-                                                <input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" class="form-control" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
-
-                                                <button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i> <?= $this->translate->_("Get New Image"); ?></button>
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="d-flex align-items-center justify-content-center gap-3">
+                                    <img id="capChaw" src="/captcha/<?php echo rand(); ?>" style="height:50px" />
+                                    <div>
+                                        <input type="text" id="challengeResponse" class="form-control form-control-sm" placeholder="<?= $this->translate->_("Enter text from image"); ?>" title="Please enter the text from the image." maxlength="40" style="width:200px">
+                                        <button onclick="getCaptcha('capChaw');return false;" class="btn btn-sm btn-outline-secondary mt-1" type="button"><i class="bi bi-arrow-clockwise"></i> <?= $this->translate->_("Get New Image"); ?></button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="my-3">
                                 <div class="loading"><?= $this->translate->_("Loading"); ?></div>
@@ -406,6 +416,13 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo $this->baseUrl("js/deforayValidation.js"); ?>"></script>
     <script type="text/javascript">
+        if (typeof TomSelect !== 'undefined') {
+            new TomSelect('#country', {
+                allowEmptyOption: true,
+                placeholder: '<?= $this->translate->_("Select Country"); ?> *'
+            });
+        }
+
         function validateContactUs() {
             flag = deforayValidator.init({
                 formId: 'contactForm'
@@ -433,6 +450,8 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                         subject: $("#subject").val(),
                                         country: $("#country").val(),
                                         message: $("#message").val(),
+                                        website_url: $("input[name='website_url']").val(),
+                                        form_token: $("#form_token").val(),
                                         format: "html"
                                     })
                                     .done(function(data) {

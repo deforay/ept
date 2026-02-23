@@ -62,6 +62,9 @@ $eptLogo = implode('', $logos);
     <!-- Template Main CSS File -->
     <link href="/assets/home/home.css" rel="stylesheet">
 
+    <!-- Tom Select for searchable dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
     <!-- Template Color CSS File -->
     <?php if (isset($configColor) && !empty($configColor)) { ?>
         <link rel="stylesheet" href="/css/<?php echo $configColor; ?>-theme.css" />
@@ -194,10 +197,12 @@ $eptLogo = implode('', $logos);
     <!-- Template Main JS File -->
     <script src="/assets/home/home.js"></script>
 
+    <!-- Tom Select for searchable dropdowns -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
     <script type="text/javascript">
         function getCaptcha(captchaDivId) {
             $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
-            $("#" + captchaDivId).load();
         }
     </script>
 

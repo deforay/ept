@@ -257,5 +257,4 @@
 
 function getCaptcha(captchaDivId) {
   $("#" + captchaDivId).attr("src", '/captcha/' + Math.random());
-  $("#" + captchaDivId).load();
 }

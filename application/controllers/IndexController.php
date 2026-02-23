@@ -26,6 +26,32 @@ class IndexController extends Zend_Controller_Action
         if ($request->isPost()) {
             $this->_helper->layout()->disableLayout();
             $params = $request->getPost();
+
+            // Anti-spam: honeypot check
+            if (!empty($params['website_url'])) {
+                $this->view->message = 1;
+                return;
+            }
+
+            // Anti-spam: HMAC timestamp check
+            $formToken = $params['form_token'] ?? '';
+            if (!str_contains($formToken, '.')) {
+                $this->view->message = 1;
+                return;
+            }
+            [$timestamp, $hash] = explode('.', $formToken, 2);
+            $secret = Application_Service_Common::getFormSecret();
+            $expected = hash_hmac('sha256', $timestamp, $secret);
+            if (!hash_equals($expected, $hash)) {
+                $this->view->message = 1;
+                return;
+            }
+            $elapsed = time() - (int)$timestamp;
+            if ($elapsed < 5 || $elapsed > 3600) {
+                $this->view->message = 1;
+                return;
+            }
+
             $common = new Application_Service_Common();
             $this->view->message = $common->contactForm($params);
         } else {
@@ -51,6 +77,12 @@ class IndexController extends Zend_Controller_Action
             } else {
                 $this->view->htmlHomePage = "";
             }
+
+            // Generate HMAC token for contact form anti-spam
+            $secret = Application_Service_Common::getFormSecret();
+            $timestamp = time();
+            $hash = hash_hmac('sha256', (string)$timestamp, $secret);
+            $this->view->formToken = $timestamp . '.' . $hash;
         }
     }
 }

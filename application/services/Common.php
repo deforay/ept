@@ -184,6 +184,33 @@ class Application_Service_Common
         $gc = new Application_Model_DbTable_GlobalConfig();
         return $gc->getValue($name);
     }
+
+    public static function getFormSecret(): string
+    {
+        $envFile = APPLICATION_PATH . '/configs/.env';
+        $secret = null;
+
+        if (file_exists($envFile)) {
+            foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+                if (str_starts_with(trim($line), '#')) {
+                    continue;
+                }
+                [$key, $val] = explode('=', $line, 2);
+                if (trim($key) === 'FORM_SECRET') {
+                    $secret = trim($val);
+                    break;
+                }
+            }
+        }
+
+        if (empty($secret)) {
+            $secret = bin2hex(random_bytes(32));
+            file_put_contents($envFile, "FORM_SECRET=$secret" . PHP_EOL, FILE_APPEND | LOCK_EX);
+        }
+
+        return $secret;
+    }
+
     public function contactForm($params)
     {
         $name = (isset($params['firstName']) && !empty($params['firstName'])) ? true : false;
