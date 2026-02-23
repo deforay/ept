@@ -4,7 +4,7 @@ $fparam = base64_decode(urldecode($this->parameters['fileName']));
 $fparam = explode("#######", $fparam);
 $filename = $fparam[0];
 $foldername = $fparam[1];
-$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . "/" . $filename;
+$filePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $foldername . DIRECTORY_SEPARATOR .'certificates'. "/" . $filename;
 
 if ($filename == '' || $filename == null || $foldername == '' || $foldername == null || !file_exists($filePath)) {
     header("location:/participant/file-downloads");
