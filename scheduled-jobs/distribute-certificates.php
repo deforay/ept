@@ -100,7 +100,7 @@ try {
                 $participantUID = $matches[1];
 
                 // Create participant download folder if it doesn't exist
-                $participantFolder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $participantUID;
+                $participantFolder = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $participantUID . DIRECTORY_SEPARATOR . "certificates";
 
                 if (!is_dir($participantFolder)) {
                     if (!@mkdir($participantFolder, 0777, true)) {
