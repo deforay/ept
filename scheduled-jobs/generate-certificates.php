@@ -1,4 +1,60 @@
 <?php
+// scheduled-jobs/generate-certificates.php
+//
+// Generates excellence and participation certificates for shipment participants.
+//
+// =============================================================================
+// HOW THIS SCRIPT WORKS
+// =============================================================================
+//
+// When you run this script, it queries participants for the given shipments
+// and generates a certificate for each eligible participant. For each
+// participant × shipment-type combination, it:
+//   1. Checks if the participant passed all panels → excellence certificate
+//   2. Otherwise, if they submitted results → participation certificate
+//   3. Otherwise → skipped
+//
+// Certificates are generated from templates (PDF or DOCX) and packaged
+// into a ZIP file for download.
+//
+// TEMPLATE MODES (-t flag):
+//   pdf  - Uses AcroForm PDF templates filled via pdftk
+//   docx - Uses DOCX templates with placeholder substitution via PhpWord
+//
+// Templates are looked up in scheduled-jobs/certificate-templates/ with the
+// naming convention: {scheme}-{type}.{ext} (e.g., vl-e.pdf, eid-p.docx)
+//
+// PARALLEL PROCESSING (--procs flag):
+//   When generating for many participants, the script can split the work
+//   across multiple CPU cores. The main process spawns worker subprocesses,
+//   each handling a slice of participants.
+//
+//   The --worker flag is internal - it tells a subprocess which chunk to
+//   process. You don't need to use --worker directly.
+//
+// =============================================================================
+// USAGE
+// =============================================================================
+//
+//   php generate-certificates.php [options]
+//
+// Options:
+//   -s ID[,ID,...]    Shipment IDs to generate certificates for (required)
+//   -c NAME           Certificate batch name (default: current year)
+//   -t MODE           Template mode: pdf or docx (default: pdf)
+//   -b ID             Existing batch ID to update (otherwise auto-created)
+//   --procs=N         Number of parallel worker processes (default: CPU count)
+//   --worker          Internal: run as subprocess for parallel processing
+//   --offset=N        Internal: worker start offset
+//   --limit=N         Internal: worker batch size
+//
+// Examples:
+//   php generate-certificates.php -s 101
+//   php generate-certificates.php -s 101,102,103 -c "2026-Round1"
+//   php generate-certificates.php -s 101,102 -t docx
+//   php generate-certificates.php -s 101 -t docx --procs=4
+//   php generate-certificates.php -s 101,102 -b 5
+
 require_once __DIR__ . '/../cli-bootstrap.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -345,74 +401,84 @@ $eidAssayArray = $schemeService->getEidExtractionAssay();
 
 $certificates = Application_Service_Common::getConfig('certificates');
 
+/* ---------- Template map ---------- */
+
+$GLOBALS['certificateTemplates'] = [
+	'excellence' => [
+		'dts' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.docx",
+		],
+		'eid' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.docx",
+		],
+		'vl' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.docx",
+		],
+	],
+	'participation' => [
+		'dts' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.docx",
+		],
+		'eid' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.docx",
+		],
+		'vl' => [
+			'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
+			'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.docx",
+		],
+	],
+];
+
 /* ---------- Template resolver that supports both modes ---------- */
 
-function generateCertificate(string $shipmentType, string $certificateType, array $fields, string $outputFileBase, string $mode): void
+function generateCertificate(string $shipmentType, string $certificateType, array $fields, string $outputFileBase, string $mode): bool
 {
-	// Map both PDF and DOCX templates;
-	$templates = [
-		'excellence' => [
-			'dts' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-e.docx",
-			],
-			'eid' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-e.docx",
-			],
-			'vl' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-e.docx",
-			],
-		],
-		'participation' => [
-			'dts' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/dts-p.docx",
-			],
-			'eid' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/eid-p.docx",
-			],
-			'vl' => [
-				'pdf' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.pdf",
-				'docx' => SCHEDULED_JOBS_FOLDER . "/certificate-templates/vl-p.docx",
-			],
-		],
-	];
+	$templates = $GLOBALS['certificateTemplates'];
 
 	$t = $templates[$certificateType][$shipmentType] ?? null;
 	if (!$t) {
-		echo "No template found for $certificateType - $shipmentType. Skipping.\n";
-		return;
-		//throw new Exception("$certificateType template map missing for $shipmentType");
+		echo "WARNING: No template configured for $certificateType - $shipmentType. Skipping.\n";
+		return false;
+	}
+
+	$tpl = $t[$mode] ?? '';
+
+	if (empty($tpl)) {
+		echo "WARNING: No $mode template path defined for $certificateType - $shipmentType. Skipping.\n";
+		return false;
+	}
+
+	if (!is_file($tpl)) {
+		echo "WARNING: Template file not found: $tpl. Skipping.\n";
+		return false;
+	}
+
+	if (!is_readable($tpl)) {
+		echo "WARNING: Template file is not readable: $tpl. Skipping.\n";
+		return false;
 	}
 
 	if ($mode === 'pdf') {
-		$tpl = $t['pdf'] ?? '';
-		if (!is_file($tpl))
-			throw new Exception("PDF template not found: $tpl");
 		$ok = fillPdfTemplate($tpl, $fields, $outputFileBase . ".pdf");
-		if (!$ok)
-			throw new Exception("PDF fill failed for $tpl");
-		return;
+		if (!$ok) {
+			echo "WARNING: Failed to fill PDF template $tpl. Skipping.\n";
+			return false;
+		}
+		return true;
 	}
 
 	if ($mode === 'docx') {
-		$tpl = $t['docx'] ?? '';
-		if (!is_file($tpl)) {
-			echo "DOCX template not found: $tpl. Skipping.\n";
-			return;
-			//throw new Exception("DOCX template not found: $tpl");
-		}
-
 		$outDocx = "$outputFileBase.docx";
-		if (!renderDocx($tpl, $fields, $outDocx))
-			throw new Exception("DOCX render failed");
-
-		// No PDF conversion - let users handle this locally
-		//error_log("DOCX certificate generated: $outDocx");
-		return;
+		if (!renderDocx($tpl, $fields, $outDocx)) {
+			echo "WARNING: Failed to render DOCX template $tpl. Skipping.\n";
+			return false;
+		}
+		return true;
 	}
 
 	throw new Exception("Unknown template mode: $mode");
@@ -780,6 +846,36 @@ try {
 
 	$totalParticipants = count($participants);
 
+	// Pre-check: verify templates exist for all scheme types in this run
+	if (!$isWorker) {
+		$schemeTypes = array_keys($shipmentCodeArray);
+		$templateProblems = [];
+		foreach ($schemeTypes as $scheme) {
+			foreach (['excellence', 'participation'] as $certType) {
+				$t = $GLOBALS['certificateTemplates'][$certType][$scheme] ?? null;
+				if (!$t) {
+					$templateProblems[] = "No template configured for {$certType} - {$scheme}";
+					continue;
+				}
+				$tpl = $t[$templateMode] ?? '';
+				if (empty($tpl)) {
+					$templateProblems[] = "No {$templateMode} template path for {$certType} - {$scheme}";
+				} elseif (!is_file($tpl)) {
+					$templateProblems[] = "Template file not found: {$tpl}";
+				} elseif (!is_readable($tpl)) {
+					$templateProblems[] = "Template file not readable: {$tpl}";
+				}
+			}
+		}
+		if (!empty($templateProblems)) {
+			echo "\nWARNING: Template issues detected:\n";
+			foreach ($templateProblems as $problem) {
+				echo "  - {$problem}\n";
+			}
+			echo "\n";
+		}
+	}
+
 	if (!$isWorker && $procsCount > 1 && $totalParticipants > 1) {
 		// ---- Parallel mode: spawn worker subprocesses ----
 		echo "\nGenerating certificates using {$procsCount} parallel processes for {$totalParticipants} participants...\n";
@@ -814,10 +910,6 @@ try {
 		while (!empty($processes)) {
 			foreach ($processes as $key => $procData) {
 				if (!$procData['process']->isRunning()) {
-					if (!$procData['process']->isSuccessful()) {
-						$err = trim($procData['process']->getErrorOutput());
-						echo "Worker (offset {$procData['offset']}) failed: {$err}\n";
-					}
 					unset($processes[$key]);
 				}
 			}
@@ -837,10 +929,11 @@ try {
 			'excellence' => count(glob($excellenceCertPath . "/*.{$ext}") ?: []),
 			'participation' => count(glob($participationCertPath . "/*.{$ext}") ?: []),
 			'skipped' => 0,
+			'template_errors' => 0,
 		];
 	} else {
 		// ---- Sequential mode (single process or worker subprocess) ----
-		$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0];
+		$stats = ['excellence' => 0, 'participation' => 0, 'skipped' => 0, 'template_errors' => 0];
 		$currentParticipant = 0;
 
 		foreach ($participants as $participantUID => $arrayVal) {
@@ -911,12 +1004,18 @@ try {
 
 			if ($certificate && $participated) {
 				$base = $excellenceCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-				generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode);
-				$stats['excellence']++;
+				if (generateCertificate($shipmentType, 'excellence', $fields, $base, $templateMode)) {
+					$stats['excellence']++;
+				} else {
+					$stats['template_errors']++;
+				}
 			} elseif ($participated) {
 				$base = $participationCertPath . DIRECTORY_SEPARATOR . str_replace('/', '_', $participantUID) . "-" . strtoupper($shipmentType) . "-" . $certificateName;
-				generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode);
-				$stats['participation']++;
+				if (generateCertificate($shipmentType, 'participation', $fields, $base, $templateMode)) {
+					$stats['participation']++;
+				} else {
+					$stats['template_errors']++;
+				}
 			} else {
 				$stats['skipped']++;
 			}
@@ -930,31 +1029,53 @@ try {
 	}
 
 	// Print generation summary
+	$totalCerts = $stats['excellence'] + $stats['participation'];
+	$templateErrors = $stats['template_errors'] ?? 0;
+
 	echo "\n\n=== Generation Summary ===\n";
+	echo "Participants matched:       {$totalParticipants}\n";
 	echo "Excellence certificates:    {$stats['excellence']}\n";
 	echo "Participation certificates: {$stats['participation']}\n";
 	echo "Skipped (no submission):    {$stats['skipped']}\n";
-	echo "Total processed:            " . ($stats['excellence'] + $stats['participation'] + $stats['skipped']) . "\n";
+	if ($templateErrors > 0) {
+		echo "Template errors:            {$templateErrors}\n";
+	}
+	echo "Total certificates:         {$totalCerts}\n";
 
-	// Create ZIP for download (both PDF and DOCX modes)
-	echo "\n=== Creating ZIP file for download... ===\n";
-	$downloadUrl = createZipAndGetDownloadUrl($folderPath, $certificateName, $urlToTempFolder, $templateMode);
+	$downloadUrl = null;
 
-	if ($downloadUrl) {
-		echo "\n✅ SUCCESS: Certificates packaged successfully!\n";
-		echo "\n📁 DOWNLOAD LINK:\n";
-		echo "$downloadUrl\n\n";
-		if ($templateMode === 'docx') {
-			echo "📋 INSTRUCTIONS:\n";
-			echo "1. Download the ZIP file from the link above\n";
-			echo "2. Extract the ZIP file\n";
-			echo "3. Read the README.txt file for PDF conversion instructions\n";
-			echo "4. Use the included PowerShell script for bulk conversion\n\n";
-			echo "💡 TIP: The PowerShell script will convert all DOCX files to PDF automatically\n";
+	if ($totalCerts === 0) {
+		echo "\nNo certificates were generated. Skipping ZIP creation.\n";
+		if ($templateErrors > 0) {
+			echo "Please check that the certificate templates exist and are valid.\n";
+		}
+		// Check if multiple shipments of the same scheme type were selected
+		foreach ($shipmentCodeArray as $schemeType => $codes) {
+			if (count($codes) > 1) {
+				echo "NOTE: Multiple {$schemeType} shipments were selected (" . implode(', ', $codes) . ").\n";
+				echo "      A participant must have participated in ALL selected shipments to receive a certificate.\n";
+			}
 		}
 	} else {
-		echo "\n❌ ERROR: Failed to create ZIP file\n";
-		echo "Individual files are available in: $folderPath\n";
+		// Create ZIP for download (both PDF and DOCX modes)
+		echo "\n=== Creating ZIP file for download... ===\n";
+		$downloadUrl = createZipAndGetDownloadUrl($folderPath, $certificateName, $urlToTempFolder, $templateMode);
+
+		if ($downloadUrl) {
+			echo "\nSUCCESS: Certificates packaged successfully!\n";
+			echo "\nDOWNLOAD LINK:\n";
+			echo "$downloadUrl\n\n";
+			if ($templateMode === 'docx') {
+				echo "INSTRUCTIONS:\n";
+				echo "1. Download the ZIP file from the link above\n";
+				echo "2. Extract the ZIP file\n";
+				echo "3. Read the README.txt file for PDF conversion instructions\n";
+				echo "4. Use the included PowerShell script for bulk conversion\n\n";
+			}
+		} else {
+			echo "\nERROR: Failed to create ZIP file\n";
+			echo "Individual files are available in: $folderPath\n";
+		}
 	}
 
 	if (!empty($allShipmentsProcessed)) {
@@ -970,15 +1091,23 @@ try {
 		);
 	}
 
-	// Update batch status on success
+	// Update batch status
 	if (isset($certificateBatchesModel)) {
-		$certificateBatchesModel->updateStatus($batchId, 'generated', [
+		$batchStatus = $totalCerts > 0 ? 'generated' : 'failed';
+		$errorMessage = null;
+		if ($totalCerts === 0) {
+			$errorMessage = $templateErrors > 0
+				? "No certificates generated. {$templateErrors} template error(s) encountered."
+				: "No certificates generated. No eligible participants found.";
+		}
+
+		$certificateBatchesModel->updateStatus($batchId, $batchStatus, [
 			'excellence_count' => $stats['excellence'],
 			'participation_count' => $stats['participation'],
 			'skipped_count' => $stats['skipped'],
-			'download_url' => $downloadUrl ?? null,
+			'download_url' => $downloadUrl,
 			'folder_path' => $folderPath,
-			'error_message' => null
+			'error_message' => $errorMessage
 		]);
 	}
 } catch (Exception $e) {

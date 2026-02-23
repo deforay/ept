@@ -1624,35 +1624,15 @@ section {
   background: #3b8af2;
 }
 
-.contact .php-email-form .form-floating > .form-control,
-.contact .php-email-form .form-floating > .form-select {
-  height: calc(3.5rem + 2px);
-  padding: 1rem 0.75rem;
-  border-radius: 0.375rem;
-}
-
-.contact .php-email-form .form-floating > .form-control:focus,
-.contact .php-email-form .form-floating > .form-select:focus {
-  border-color: #106eea;
-  box-shadow: 0 0 0 0.2rem rgba(16, 110, 234, 0.15);
-}
-
-.contact .php-email-form .form-floating > label {
-  padding: 1rem 0.75rem;
-  color: #6c757d;
-}
-
-.contact .php-email-form .form-floating > textarea.form-control {
-  height: auto;
-  min-height: 150px;
-}
-
-.contact .php-email-form .form-control-sm {
-  border-radius: 0.375rem;
-}
-
+.contact .php-email-form .form-control,
 .contact .php-email-form .form-select {
   border-radius: 0.375rem;
+}
+
+.contact .php-email-form .form-control:focus,
+.contact .php-email-form .form-select:focus {
+  border-color: #106eea;
+  box-shadow: 0 0 0 0.2rem rgba(16, 110, 234, 0.15);
 }
 
 @keyframes animate-loading {

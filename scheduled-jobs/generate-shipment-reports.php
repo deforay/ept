@@ -49,6 +49,15 @@
 //   --offset=N        Internal: worker start offset
 //   --limit=N         Internal: worker batch size
 //   --reportType=X    Internal: report type for worker
+//
+// Examples:
+//   php generate-shipment-reports.php
+//   php generate-shipment-reports.php --shipment=101
+//   php generate-shipment-reports.php --shipment=101 -p
+//   php generate-shipment-reports.php --shipment=101 -s
+//   php generate-shipment-reports.php --procs=4
+//   php generate-shipment-reports.php --shipment=101 --force
+//   php generate-shipment-reports.php --shipment=101 --debug
 
 require_once __DIR__ . '/../cli-bootstrap.php';
 
