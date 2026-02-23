@@ -127,7 +127,7 @@ if (!empty($resultArray['shipment'])) {
             $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:11;">Individual Report</span><br>';
             $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         }
-        $labInfo = '<table cellpadding="4" style="font-size:11px;width:100%;">';
+        $labInfo = '<br><br><br><table cellpadding="4" style="font-size:11px;width:100%;">';
 
         $labInfo .= '<tr>';
         $labInfo .= '	<td width="52%"><strong>Laboratory ID: </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
