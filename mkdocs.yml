@@ -36,6 +36,9 @@ theme:
 
 nav:
   - Home: README.md
+  - Setup & Operations:
+      - Setup: setup.md
+      - CLI Tools: cli-tools.md
   - Guides:
       - Architecture: ARCHITECTURE.md
       - Scheme Architecture: SchemeArchitecture.md

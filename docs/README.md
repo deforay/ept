@@ -59,6 +59,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 | [Scheme Architecture](SchemeArchitecture.md) | Test scheme organization, data flow, evaluation logic, and report generation |
 | [Admin Module Guide](AdminModuleGuide.md) | Admin panel workflows, controllers, AJAX patterns, and form validation |
 | [Translation Guide](TranslationGuide.md) | Internationalization and adding new languages |
+| [CLI Tools Reference](cli-tools.md) | Password resets, migrations, admin seeding, and other bin/ scripts for tech support |
 
 ### Quick Links
 
