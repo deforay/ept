@@ -4,10 +4,6 @@
 
 declare(strict_types=1);
 
-use App\Services\CommonService;
-use App\Services\DatabaseService;
-use App\Utilities\LoggerUtility;
-use App\Registries\ContainerRegistry;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -48,7 +44,7 @@ try {
 
     function hashPassword(string $password): string
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return password_hash($password, PASSWORD_BCRYPT, ['cost' => 14]);
     }
 
     function generateSecurePassword(int $length = 12): string
@@ -348,7 +344,7 @@ try {
             'force_password_reset' => $forceReset ? 1 : 0,
         ];
 
-        $result = $db->update('data_manager', $updateData, 'primary_email = "' . $email . '"');
+        $result = $db->update('data_manager', $updateData, $db->quoteInto('primary_email = ?', $email));
 
         if ($result) {
             $io->success('Password updated successfully!');

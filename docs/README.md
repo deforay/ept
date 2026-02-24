@@ -54,6 +54,7 @@ ePT is an open-source proficiency testing system for laboratory quality assuranc
 
 | Document | Description |
 |----------|-------------|
+| [Setup Guide](setup.md) | Installing ePT on Ubuntu and Windows |
 | [Architecture Guide](ARCHITECTURE.md) | High-level system architecture, request lifecycle, security, modules, and infrastructure |
 | [Scheme Architecture](SchemeArchitecture.md) | Test scheme organization, data flow, evaluation logic, and report generation |
 | [Admin Module Guide](AdminModuleGuide.md) | Admin panel workflows, controllers, AJAX patterns, and form validation |
@@ -124,7 +125,7 @@ ept/
 
 ### Installation
 
-See the main [README](https://github.com/deforay/ept#readme) for installation instructions.
+See the [Setup Guide](setup.md) for complete installation and configuration instructions.
 
 ### Configuration
 
