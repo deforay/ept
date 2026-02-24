@@ -92,7 +92,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 ->group('dm.dm_id')->setIntegrityCheck(false);
             $subResult = $this->fetchAll($subQuery);
             foreach ($subResult as $dm) {
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
                 $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -284,8 +284,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $query = $this->getAdapter()->select()->distinct()->from(array('sp' => 'shipment_participant_map'), array('shipment_id'))
             ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('scheme_type', 'year' => "YEAR(shipment_date)"))
             ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.participant_id'))
+            ->joinLeft(array('cb' => 'certificate_batches'), 'sp.shipment_id IN(cb.shipment_ids)', array('batch_name'))
             ->where("sp.participant_id = ?", $pId)
-            ->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
+            // ->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
             ->where("sp.shipment_test_date!='0000-00-00'")
             ->group('year')
             ->group('s.scheme_type');

@@ -1433,10 +1433,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         $sql = $sql->where(
             $db->quoteInto("first_name LIKE ?", $searchPattern) . " OR " .
-            $db->quoteInto("last_name LIKE ?", $searchPattern) . " OR " .
-            $db->quoteInto("unique_identifier LIKE ?", $searchPattern) . " OR " .
-            $db->quoteInto("institute_name LIKE ?", $searchPattern) . " OR " .
-            $db->quoteInto("region LIKE ?", $searchPattern)
+                $db->quoteInto("last_name LIKE ?", $searchPattern) . " OR " .
+                $db->quoteInto("unique_identifier LIKE ?", $searchPattern) . " OR " .
+                $db->quoteInto("institute_name LIKE ?", $searchPattern) . " OR " .
+                $db->quoteInto("region LIKE ?", $searchPattern)
         )
             ->where("status like 'active'");
         return $this->fetchAll($sql);

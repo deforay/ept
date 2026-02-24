@@ -25,8 +25,7 @@
                             foreach ($this->download as $uniqueId) {
                                 $path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'] . DIRECTORY_SEPARATOR . 'certificates';
                                 if (is_dir($path) && count(scandir($path)) > 2) {
-                                    $lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name'];
-                        ?>
+                                    $lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name']; ?>
                                     <?php
                                     $files = [];
                                     foreach (scandir($path) as $fileName) {

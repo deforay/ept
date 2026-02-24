@@ -16,7 +16,7 @@
 						<th><?= $this->translate->_("Participant Id"); ?></th>
 						<th><?= $this->translate->_("Participant"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
-						<th>Status");?></th>
+						<th><?= $this->translate->_("Status"); ?></th>
 						<th style="width:100px;">
 							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
@@ -45,36 +45,36 @@
 			"sPaginationType": "full_numbers",
 			"bRetrieve": true,
 			"aoColumns": [{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": ""
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center"
-			},
-			{
-				"sClass": "center",
-				"bSortable": false
-			}
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": ""
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center"
+				},
+				{
+					"sClass": "center",
+					"bSortable": false
+				}
 			],
 			"aaSorting": [
 				[0, "desc"]
@@ -82,7 +82,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'defaulted-schemes', 'format' => 'html')); ?>",
-			"fnServerData": function (sSource, aoData, fnCallback) {
+			"fnServerData": function(sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -96,7 +96,7 @@
 
 
 
-	$(document).ready(function () {
+	$(document).ready(function() {
 		defaultSchemes();
 	});
 
@@ -105,12 +105,12 @@
 		if (window.confirm("<?= $this->translate->_("Are you sure you want to remove this response? This cannot be undone!"); ?> ")) {
 			$.blockUI();
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'dts', 'action' => 'delete')); ?>", {
-				mid: mid,
-				schemeType: schemeType,
-				userConfig: userConfiguration,
-				format: "html"
-			},
-				function (data) {
+					mid: mid,
+					schemeType: schemeType,
+					userConfig: userConfiguration,
+					format: "html"
+				},
+				function(data) {
 					alert("Response removed successfully");
 
 					dsTable.fnDraw();
