@@ -137,8 +137,11 @@ sudo ./ept-setup.sh
 ```
 
 ```bash
-# With a database SQL file
+# With a local database SQL file
 sudo ./ept-setup.sh --db /path/to/ept-base.sql
+
+# With a URL to a database SQL file (supports .sql, .gz, .zip)
+sudo ./ept-setup.sh --db https://example.com/ept-base.sql.gz
 
 # With a custom database name
 sudo ./ept-setup.sh --db-name myept
@@ -149,7 +152,7 @@ sudo ./ept-setup.sh --db-strategy rename
 
 | Flag | Description |
 |------|-------------|
-| `--db FILE` | SQL file to import into the database |
+| `--db FILE_OR_URL` | Local file path or URL to a SQL file (.sql, .gz, .zip) to import |
 | `--db-name NAME` | Database name (default: `ept`) |
 | `--db-strategy` | What to do if the database already exists: `drop`, `rename` (default), or `use` |
 

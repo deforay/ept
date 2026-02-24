@@ -268,15 +268,32 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Validate SQL file if specified
+# Validate SQL file/URL if specified
 if [[ -n "$ept_sql_file" ]]; then
-    if [[ "$ept_sql_file" != /* ]]; then
-        ept_sql_file="$(pwd)/$ept_sql_file"
-    fi
-    if [[ ! -f "$ept_sql_file" ]]; then
-        echo "SQL file not found: $ept_sql_file. Please check the path."
-        log_action "SQL file not found: $ept_sql_file. Please check the path."
-        exit 1
+    if [[ "$ept_sql_file" =~ ^https?:// ]]; then
+        # Download the SQL file from URL
+        sql_url="$ept_sql_file"
+        sql_filename=$(basename "$sql_url" | sed 's/[?#].*//')
+        # Preserve the original extension (.sql, .sql.gz, .gz, .zip)
+        ept_sql_file="/tmp/${sql_filename}"
+
+        print info "Downloading SQL file from: ${sql_url}"
+        if ! download_file "$ept_sql_file" "$sql_url" "Downloading SQL file..."; then
+            print error "Failed to download SQL file from: ${sql_url}"
+            log_action "Failed to download SQL file from: ${sql_url}"
+            exit 1
+        fi
+        print success "SQL file downloaded to: ${ept_sql_file}"
+        log_action "SQL file downloaded from ${sql_url} to ${ept_sql_file}"
+    else
+        if [[ "$ept_sql_file" != /* ]]; then
+            ept_sql_file="$(pwd)/$ept_sql_file"
+        fi
+        if [[ ! -f "$ept_sql_file" ]]; then
+            echo "SQL file not found: $ept_sql_file. Please check the path."
+            log_action "SQL file not found: $ept_sql_file. Please check the path."
+            exit 1
+        fi
     fi
 fi
 

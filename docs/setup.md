@@ -28,10 +28,14 @@ exit
 
 **SSL (optional):** If the server has a public IP and you enter a real domain name (e.g., `ept.example.org`), the setup script will offer to install a free SSL certificate via Let's Encrypt (Certbot). This is optional and defaults to no.
 
-If you have a database SQL file to import, you can pass it as an argument:
+If you have a database SQL file to import, you can pass it as a local path or URL:
 
 ```bash
+# Local file
 sudo ./ept-setup.sh --db /path/to/ept-base.sql
+
+# URL (supports .sql, .gz, .zip)
+sudo ./ept-setup.sh --db https://example.com/ept-base.sql.gz
 ```
 
 ### Post-Installation
