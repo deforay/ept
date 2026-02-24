@@ -1283,11 +1283,13 @@ class Application_Model_Tb
 					AS 'sitesScoring100',
 				SUM(CASE WHEN (`spm`.response_status is not null AND
                                 `spm`.response_status like 'responded' AND
+                                (IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes') AND
                                 `spm`.attributes is not null AND
                                 `spm`.attributes->>'$.assay_name' = 1) THEN 1 ELSE 0 END)
 					AS 'mtb_rif',
 				SUM(CASE WHEN (`spm`.response_status is not null AND
                                 `spm`.response_status like 'responded' AND
+                                (IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes') AND
                                 `spm`.attributes is not null AND
                                 `spm`.attributes->>'$.assay_name' = 2) THEN 1 ELSE 0 END)
 					AS 'mtb_rif_ultra',
@@ -1344,6 +1346,7 @@ class Application_Model_Tb
         INNER JOIN `r_tb_assay` as `rta` ON `rta`.id = `spm`.attributes->>'$.assay_name'
         WHERE `s`.shipment_id = $shipmentId
         AND (`spm`.response_status is not null AND `spm`.response_status like 'responded' AND `spm`.attributes is not null)
+        AND (IFNULL(`spm`.is_pt_test_not_performed, 'no') != 'yes')
         GROUP BY `ref`.sample_label, tb_assay_id
         ORDER BY tb_assay_id, `ref`.sample_label";
         // error_log($tQuery);
@@ -1370,6 +1373,7 @@ class Application_Model_Tb
             )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.response_status = 'responded'")
+            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes'")
             ->where("rta.id = 1")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
@@ -1414,6 +1418,7 @@ class Application_Model_Tb
             )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
             ->where("spm.shipment_id = ?", $shipmentId)
             ->where("spm.response_status = 'responded'")
+            ->where("IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes'")
             ->where("rta.id = 2")
             ->group("ref.sample_id")
             ->order("ref.sample_id");
