@@ -1078,7 +1078,7 @@ try {
 		}
 	}
 
-	if (!empty($allShipmentsProcessed)) {
+	if (!empty($allShipmentsProcessed) && $totalCerts > 0) {
 		$downloadUrlForNotification = null;
 		if ($templateMode === 'docx' && isset($downloadUrl) && $downloadUrl) {
 			$downloadUrlForNotification = $downloadUrl;
@@ -1096,9 +1096,16 @@ try {
 		$batchStatus = $totalCerts > 0 ? 'generated' : 'failed';
 		$errorMessage = null;
 		if ($totalCerts === 0) {
-			$errorMessage = $templateErrors > 0
-				? "No certificates generated. {$templateErrors} template error(s) encountered."
-				: "No certificates generated. No eligible participants found.";
+			if ($templateErrors > 0) {
+				$errorMessage = "No certificates generated. {$templateErrors} template error(s) encountered.";
+			} else {
+				$errorMessage = "No certificates generated. No eligible participants found.";
+				foreach ($shipmentCodeArray as $schemeType => $codes) {
+					if (count($codes) > 1) {
+						$errorMessage .= " Multiple {$schemeType} shipments selected (" . implode(', ', $codes) . ") — participants must have participated in all.";
+					}
+				}
+			}
 		}
 
 		$certificateBatchesModel->updateStatus($batchId, $batchStatus, [

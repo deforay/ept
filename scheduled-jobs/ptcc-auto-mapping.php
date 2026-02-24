@@ -11,8 +11,8 @@ try {
     Zend_Db_Table::setDefaultAdapter($db);
     /* To get list of ptcc manager */
     $sQuery = $db->select()
-        ->from(array('dm' => 'data_manager'), array('dm_id'))
-        ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'dm.dm_id=pcm.ptcc_id', array('country_id', 'state', 'district'))
+        ->from(['dm' => 'data_manager'], ['dm_id'])
+        ->joinLeft(['pcm' => 'ptcc_countries_map'], 'dm.dm_id=pcm.ptcc_id', ['country_id', 'state', 'district'])
         ->where("dm.ptcc like 'yes'");
     $result = $db->fetchAll($sQuery);
     if (!empty($result)) {
