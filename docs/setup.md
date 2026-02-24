@@ -31,8 +31,8 @@ exit
 If you have a database SQL file to import, you can pass it as a local path or URL:
 
 ```bash
-# Local file
-sudo ./ept-setup.sh --db /path/to/ept-base.sql
+# Local file (supports .sql, .gz, .zip)
+sudo ./ept-setup.sh --db /path/to/ept-base.sql.gz
 
 # URL (supports .sql, .gz, .zip)
 sudo ./ept-setup.sh --db https://example.com/ept-base.sql.gz
