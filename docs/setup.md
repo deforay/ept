@@ -203,4 +203,4 @@ php bin\migrate.php -yq
 
 - **GitHub**: [deforay/ept](https://github.com/deforay/ept)
 - **Contact**: amit@deforay.com
-- **License**: [AGPL-3.0](../LICENSE.md)
+- **License**: [AGPL-3.0](https://github.com/deforay/ept/blob/master/LICENSE.md)
