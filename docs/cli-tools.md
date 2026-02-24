@@ -128,7 +128,7 @@ This is called automatically during setup and upgrades. Typically you don't need
 
 ### Setup (Fresh Install)
 
-Automated installation script for Ubuntu. Downloads ePT, installs the LAMP stack, configures Apache, MySQL, and cron jobs.
+Automated installation script for Ubuntu. Downloads ePT, installs the LAMP stack, configures Apache, MySQL, cron jobs, and optionally sets up SSL.
 
 ```bash
 sudo wget -O ept-setup.sh https://raw.githubusercontent.com/deforay/ept/master/bin/setup.sh
@@ -153,7 +153,30 @@ sudo ./ept-setup.sh --db-strategy rename
 | `--db-name NAME` | Database name (default: `ept`) |
 | `--db-strategy` | What to do if the database already exists: `drop`, `rename` (default), or `use` |
 
+During setup, if the server has a public IP and the domain name looks like a real domain (e.g., `ept.example.org`), the script will offer to set up SSL via Let's Encrypt. This is optional and defaults to no.
+
 See the [Setup Guide](setup.md) for full installation instructions.
+
+### SSL Setup (Post-Install)
+
+If you skipped SSL during setup or want to add it later, you can set it up manually with Certbot:
+
+```bash
+# Install Certbot
+sudo apt-get install -y certbot python3-certbot-apache
+
+# Request a certificate (replace with your domain)
+sudo certbot --apache -d yourdomain.example.org
+
+# Verify auto-renewal is active
+sudo certbot renew --dry-run
+```
+
+After installing the certificate, update `application/configs/application.ini`:
+
+```ini
+domain = https://yourdomain.example.org/
+```
 
 ### Update (Existing Install)
 

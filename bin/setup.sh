@@ -533,6 +533,47 @@ restart_service apache || {
     exit 1
 }
 
+# --- Optional SSL setup with Certbot ---
+setup_ssl=false
+
+# Check if hostname looks like a real domain (not localhost/ept/IP-only)
+if [[ "$hostname" == *.* && "$hostname" != "localhost" && ! "$hostname" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    # Check if the server has a public IP by querying an external service
+    public_ip=$(curl -s --max-time 5 https://ifconfig.me 2>/dev/null || echo "")
+
+    if [[ -n "$public_ip" ]]; then
+        print info "Public IP detected: ${public_ip}"
+
+        current_trap_ssl=$(trap -p ERR)
+        trap - ERR
+
+        if ask_yes_no "Do you want to set up SSL (HTTPS) using Let's Encrypt for ${hostname}?" "no"; then
+            setup_ssl=true
+        fi
+
+        eval "$current_trap_ssl"
+    fi
+fi
+
+if [ "$setup_ssl" = true ]; then
+    print info "Installing Certbot..."
+    apt-get install -y certbot python3-certbot-apache >/dev/null 2>&1 || {
+        print warning "Failed to install Certbot. Skipping SSL setup."
+        setup_ssl=false
+    }
+fi
+
+if [ "$setup_ssl" = true ]; then
+    print info "Requesting SSL certificate for ${hostname}..."
+    if certbot --apache -d "${hostname}" --non-interactive --agree-tos --register-unsafely-without-email --redirect; then
+        print success "SSL certificate installed for ${hostname}"
+        log_action "SSL certificate installed via Certbot for ${hostname}."
+    else
+        print warning "Certbot failed. You can retry later with: sudo certbot --apache -d ${hostname}"
+        log_action "Certbot SSL setup failed for ${hostname}."
+    fi
+fi
+
 #=============================================================================
 # PHASE 5: CONFIGURE ePT
 #=============================================================================
@@ -646,7 +687,11 @@ if [ -f "$app_ini" ]; then
     sed -i "s|^resources.db.params.dbname\s*=.*|resources.db.params.dbname = ${ept_db_name}|" "$app_ini"
 
     # Update domain
-    sed -i "s|^domain\s*=.*|domain = http://${hostname}/|" "$app_ini"
+    if [ "$setup_ssl" = true ]; then
+        sed -i "s|^domain\s*=.*|domain = https://${hostname}/|" "$app_ini"
+    else
+        sed -i "s|^domain\s*=.*|domain = http://${hostname}/|" "$app_ini"
+    fi
 
     # Generate a random security salt if still empty
     current_salt=$(grep "^security.salt" "$app_ini" | sed "s/^security.salt\s*=\s*//;s/^['\"]//;s/['\"]$//" | xargs)

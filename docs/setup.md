@@ -26,6 +26,8 @@ exit
 
 **Critical:** When prompted during installation, provide the MySQL password and domain name with accuracy.
 
+**SSL (optional):** If the server has a public IP and you enter a real domain name (e.g., `ept.example.org`), the setup script will offer to install a free SSL certificate via Let's Encrypt (Certbot). This is optional and defaults to no.
+
 If you have a database SQL file to import, you can pass it as an argument:
 
 ```bash
@@ -34,8 +36,8 @@ sudo ./ept-setup.sh --db /path/to/ept-base.sql
 
 ### Post-Installation
 
-- Following successful setup completion, access ePT through http://ept/admin in your browser
-- The system will prompt you to log in with the admin credentials from the SQL import
+- Following successful setup completion, access ePT through `http://ept/admin` (or `https://yourdomain/admin` if SSL was configured) in your browser
+- If no SQL file was provided, the setup will prompt you to create an initial admin account
 - Change the default admin password immediately after first login
 - Configure your organization settings, add participants, create PT surveys, and set up shipments
 
