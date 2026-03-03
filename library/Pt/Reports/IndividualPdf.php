@@ -313,7 +313,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         }
         $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
-        if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && isset($this->config) && $this->config != "" && $this->layout != 'zimbabwe') {
+        if (($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') && $this->layout != 'zimbabwe') {
             // $this->Cell(0, 10, 'ILB-', 0, false, 'L', 0, '', 0, false, 'T', 'M');
 
             // $this->Ln();
@@ -327,7 +327,6 @@ class Pt_Reports_IndividualPdf extends Fpdi
                     $this->writeHTML($html, true, false, true, false, '');
                 }
                 $this->Cell(0, 6, 'Page ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-            } else {
             }
         } else {
             // if (isset($this->layout) && $this->layout == 'zimbabwe') {
