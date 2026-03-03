@@ -238,54 +238,58 @@ if (!empty($resultArray['shipment'])) {
         // $htmlSubTitle .= '</table>';
         // $pdf->writeHTML($htmlSubTitle, true, false, true, false, '');
 
-        if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) || isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
-            $notTestedInfo = '<hr>';
-            $notTestedInfo .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
-            if (isset($result['ntr_reason']) && !empty($result['ntr_reason']) && (!isset($result['pt_test_not_performed_comments']) || empty($result['pt_test_not_performed_comments']))) {
-                $notTestedInfo .= '<tr style="background-color:#777777;color:#FFFFFF;">';
-                $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
-                $notTestedInfo .= '</tr>';
-                $notTestedInfo .= '<tr>';
-                $ntrReason = (isset($result['ntr_reason']) && !empty($result['ntr_reason'])) ? $result['ntr_reason'] : '';
-                $notTestedInfo .= '	<td style="width:100%;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $ntrReason . '</td>';
-                $notTestedInfo .= '</tr>';
-            }
-            if (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) {
-                $notTestedInfo .= '<tr style="background-color:#777777;color:#FFFFFF;">';
-                $notTestedInfo .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
-                $notTestedInfo .= '</tr>';
-                $notTestedInfo .= '<tr>';
-                $ptntrcmnts = (isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments'])) ? $result['pt_test_not_performed_comments'] : '';
-                $notTestedInfo .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $ptntrcmnts . '</p></td>';
-                $notTestedInfo .= '</tr>';
-            }
-            $notTestedInfo .= '</table>';
+        // Participant Comments section (from shipment_participant_map)
+        $hasNtrReason = isset($result['ntr_reason']) && !empty($result['ntr_reason']);
+        $hasPtComments = isset($result['pt_test_not_performed_comments']) && !empty($result['pt_test_not_performed_comments']);
 
-            $pdf->writeHTML($notTestedInfo, true, false, true, false, '');
+        if ($hasNtrReason || $hasPtComments) {
+            $participantComment = '<hr>';
+            $participantComment .= '<table cellpadding="4" style="font-size:12px;width:100%;">';
+            $participantComment .= '<tr style="background-color:#777777;color:#FFFFFF;">';
+            $participantComment .= '	<td style="width:100%;text-align:center;"><strong>Participant Comments</strong></td>';
+            $participantComment .= '</tr>';
+
+            if ($hasNtrReason && !$hasPtComments) {
+                $participantComment .= '<tr>';
+                $participantComment .= '	<td style="width:100%;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $result['ntr_reason'] . '</td>';
+                $participantComment .= '</tr>';
+            }
+
+            if ($hasPtComments) {
+                $participantComment .= '<tr>';
+                $participantComment .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $result['pt_test_not_performed_comments'] . '</p></td>';
+                $participantComment .= '</tr>';
+            }
+
+            $participantComment .= '</table>';
+            $pdf->writeHTML($participantComment, true, false, true, false, '');
         }
 
-        // Comments section - always show heading (no border, just header bar)
-        $comment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
-        $comment .= '<tr style="background-color:#777777;color:#FFFFFF;">';
-        $comment .= '	<td style="text-align:center;"><strong>Comments</strong></td>';
-        $comment .= '</tr>';
+        // Admin Comments section
+        $hasEvalComments = trim($result['evaluationComments'] ?? '') != "";
+        $hasOptionalEvalComments = trim($result['optional_eval_comment'] ?? '') != "";
 
-        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
-            if (trim($result['evaluationComments'] ?? '') != "") {
-                $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
-                $comment .= '</tr>';
+        if ($hasEvalComments || $hasOptionalEvalComments) {
+            $adminComment = '<table style="width:100%;font-size:12px;" cellpadding="3">';
+            $adminComment .= '<tr style="background-color:#777777;color:#FFFFFF;">';
+            $adminComment .= '	<td style="text-align:center;"><strong>Evaluation Comments</strong></td>';
+            $adminComment .= '</tr>';
+
+            if ($hasEvalComments) {
+                $adminComment .= '<tr>';
+                $adminComment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['evaluationComments']) . '</td>';
+                $adminComment .= '</tr>';
             }
 
-            if (trim($result['optional_eval_comment'] ?? '') != "") {
-                $comment .= '<tr>';
-                $comment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
-                $comment .= '</tr>';
+            if ($hasOptionalEvalComments) {
+                $adminComment .= '<tr>';
+                $adminComment .= '   <td style="width:100%;text-align:justify;font-size:11px;">' . nl2br($result['optional_eval_comment']) . '</td>';
+                $adminComment .= '</tr>';
             }
+
+            $adminComment .= '</table>';
+            $pdf->writeHTML($adminComment, true, false, true, false, '');
         }
-
-        $comment .= '</table>';
-        $pdf->writeHTML($comment, true, false, true, false, '');
 
         // Report Issued by - at bottom of page 1
         $authorised = "_____________________";
