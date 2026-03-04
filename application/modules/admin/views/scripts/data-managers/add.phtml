@@ -283,14 +283,14 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     var duplicated = false;
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-        $("#dmUserId").change(function () {
+        $("#dmUserId").change(function() {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'check-dm-duplicate')); ?>", {
-                value: this.value,
-                format: "html"
-            },
-                function (data) {
+                    value: this.value,
+                    format: "html"
+                },
+                function(data) {
                     if (data > 0) {
                         if (confirm("This email is already linked to a Data Manager account. Do you want to add this user as a PTCC? If you choose yes, then this data manager will be converted to PTCC and all old Participant mappings will be removed")) {
                             $('#respond').append('<input type="hidden" id="userSystemId" name="userSystemId" value="' + data + '" />');
@@ -321,13 +321,13 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-all-countries')); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
+                data: function(params) {
                     return {
                         search: params.term, // search term
                         page: params.page
                     };
                 },
-                processResults: function (data, params) {
+                processResults: function(data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -338,7 +338,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                 },
                 //cache: true
             },
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }
         });
@@ -383,11 +383,11 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             labelField: 'text', // This should match the 'text' in your AJAX response
             searchField: 'text', // This will allow searching by 'text'
             options: [], // Initial empty options; will be populated dynamically
-            onInitialize: function () {
+            onInitialize: function() {
                 // Add the 'isRequired' class to the generated input
                 // this.$control.addClass('isRequired');
             },
-            load: function (query, callback) {
+            load: function(query, callback) {
                 if (query.length < 3) return callback(); // Don't send an empty query
                 $.ajax({
                     url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
@@ -397,11 +397,11 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                         search: query,
                         page: 1 // Adjust as needed
                     },
-                    success: function (response) {
+                    success: function(response) {
                         console.log("AJAX response received:", response); // Log the response
                         if (response && response.result) {
                             callback(
-                                response.result.map(function (item) {
+                                response.result.map(function(item) {
                                     return {
                                         id: item.id, // Matches 'valueField'
                                         text: item.text // Matches 'labelField'
@@ -413,7 +413,7 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                             callback();
                         }
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         console.error("AJAX error:", textStatus, errorThrown); // Log errors
                         callback();
                     }
@@ -437,15 +437,15 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     }
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-        objValue = document.getElementById(obj).value;
+        objValue = $(obj).val();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-            tableName: tableName,
-            fieldName: fieldName,
-            value: objValue,
-            fnct: fnct,
-            format: "html"
-        },
-            function (data) {
+                tableName: tableName,
+                fieldName: fieldName,
+                value: objValue,
+                fnct: fnct,
+                format: "html"
+            },
+            function(data) {
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
@@ -460,11 +460,11 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     function getStates(cid) {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", {
-            cid: cid,
-            type: 'multiple',
-            format: "html"
-        },
-            function (data) {
+                cid: cid,
+                type: 'multiple',
+                format: "html"
+            },
+            function(data) {
                 if (data != "" && data != undefined) {
                     $('#province').html(data);
                 }
@@ -475,11 +475,11 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     function getdistricts(pid) {
         $.blockUI();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", {
-            pid: pid,
-            type: 'multiple',
-            format: "html"
-        },
-            function (data) {
+                pid: pid,
+                type: 'multiple',
+                format: "html"
+            },
+            function(data) {
                 if (data != "" && data != undefined) {
                     $('#district').html(data);
                 }
@@ -518,12 +518,12 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
     function validPassword() {
         if ($('#dmPassword').val() != '') {
             $.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'validate-password')); ?>", {
-                name: $('#fname').val() + ' ' + $('#lname').val(),
-                email: $('#dmUserId').val(),
-                password: $('#dmPassword').val(),
-                format: "html"
-            },
-                function (data) {
+                    name: $('#fname').val() + ' ' + $('#lname').val(),
+                    email: $('#dmUserId').val(),
+                    password: $('#dmPassword').val(),
+                    format: "html"
+                },
+                function(data) {
                     if (data == 'success') {
                         validateNow();
                     }

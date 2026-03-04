@@ -1293,8 +1293,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 			let regex = /^(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 			if (!regex.test($(passwordField).val())) {
-				$(passwordField).val() = "";
-				$(passwordField).val('');
+				$(passwordField).val(''); // ✅ This is the correct way to clear the field
 				alert("Please ensure that the password has minimum 8 characters. Enter at least one number, one special character, and one alphabet.");
 				return false;
 			}
@@ -1304,7 +1303,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				return false;
 			}
 
-			return true; // If all checks pass
+			return true;
 		}
 
 

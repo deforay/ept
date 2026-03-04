@@ -193,7 +193,7 @@
     });
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-        objValue = document.getElementById(obj).value;
+        objValue = $(obj).val();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
                 tableName: tableName,
                 fieldName: fieldName,
@@ -216,9 +216,9 @@
     function validateNow() {
         checkDduplicateId = checkDuplicate('data_manager', 'primary_email', 'userId', null, 'This email already exists as a primary email for another user. Please choose another email.')
         if (!checkDduplicateId) {
-            if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
-                validatePassword($('#dmPassword'), $('#confirmPassword'));
-            }
+            /*  if ($('#dmPassword').val() != '' || $('#confirmPassword').val() != '') {
+                 validatePassword($('#dmPassword'), $('#confirmPassword'));
+             } */
             flag = deforayValidator.init({
                 formId: 'addUserForm'
             });

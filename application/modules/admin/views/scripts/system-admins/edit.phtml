@@ -123,7 +123,7 @@ if ($this->admin['privileges'] != "") {
 
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
-        objValue = document.getElementById(obj).value;
+        objValue = $(obj).val();
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
                 tableName: tableName,
                 fieldName: fieldName,
