@@ -311,7 +311,7 @@ if (!empty($resultArray['shipment'])) {
         } else {
             // Qualitative results
             if (isset($result['responseResult']) && !empty($result['responseResult'])) {
-                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
+                $labRes = '<span style="font-weight: bold;font-size:13px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
                 $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
                     <tr style="background-color:#dbe4ee;width:100%;">
                         <td style="text-align:center;font-weight:bold;">Sample ID</td>
@@ -401,6 +401,8 @@ if (!empty($resultArray['shipment'])) {
         // Summary count if provided
         if (isset($shipmentsUnderDistro) && !empty($shipmentsUnderDistro)) {
             $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
+            $passRate = round(($shipmentsUnderDistro['number_passed'] / $shipmentsUnderDistro['reported_count']) * 100);
+
             $summaryCount = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores</span><br/>
                 <table border="1" style="font-size:12px;width:100%;">
                     <tr>
@@ -412,6 +414,16 @@ if (!empty($resultArray['shipment'])) {
                         <td style="text-align:center;width:35%;">' . $shipmentsUnderDistro['participant_count'] . '</td>
                         <td style="text-align:center;width:45%;">' . $shipmentsUnderDistro['reported_count'] . '</td>
                         <td style="text-align:center;width:20%;">' . $responseRate . '%</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Submitted Results</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants Satisfactory Performance</td>
+                        <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;width:35%;">' . $shipmentsUnderDistro['reported_count'] . '</td>
+                        <td style="text-align:center;width:45%;">' . $shipmentsUnderDistro['number_passed'] . '</td>
+                        <td style="text-align:center;width:20%;">' . $passRate . '%</td>
                     </tr>
                 </table>';
             $pdf->writeHTML($summaryCount, true, false, true, false, '');
@@ -486,7 +498,7 @@ if (!empty($resultArray['shipment'])) {
             <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
             <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
             <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
-            <li>The report Number is the ' . $result['shipment_code'] . ' on the PT report</li>
+            <li>The report number is the Participant Code on the PT Report</li>
             <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
             <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
             <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
