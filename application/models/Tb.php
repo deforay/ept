@@ -563,7 +563,7 @@ class Application_Model_Tb
                 ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
                 ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
                 ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id', ['short_name', 'assayName' => 'name'])
-                ->joinLeft(['ntr' => 'r_response_vl_not_tested_reason'], 'spm.vl_not_tested_reason =ntr.vl_not_tested_reason_id', ['ntTestedReason' => 'vl_not_tested_reason'])
+                ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'spm.vl_not_tested_reason = ntr.ntr_id', ['ntTestedReason' => 'ntr_reason'])
                 ->where("s.shipment_id = ?", $shipmentId)
                 ->group(['spm.map_id']);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');

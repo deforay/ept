@@ -133,3 +133,10 @@ CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_question_map` (
 
 ALTER TABLE `global_config` CHANGE `value` `value` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
 UPDATE `global_config` SET `value` = null WHERE `value` = '' ;
+
+-- Fix: Old "Other" reason for not testing stored as 0 (from 'other' string → INT conversion)
+-- Update to 9999 sentinel value for proper form pre-selection
+UPDATE `shipment_participant_map`
+SET `vl_not_tested_reason` = 9999
+WHERE `is_pt_test_not_performed` = 'yes'
+  AND `vl_not_tested_reason` = 0;
