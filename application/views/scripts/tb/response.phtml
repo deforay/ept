@@ -160,7 +160,13 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
 											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
 									<?php } ?>
-									<option value="other" <?php echo ($this->shipment['vl_not_tested_reason'] == 'other' || $this->shipment['vl_not_tested_reason'] == '9999') ? 'selected="selected"' : ''; ?>>
+									<?php
+									$ntrVal = $this->shipment['vl_not_tested_reason'] ?? '';
+									$isOther = in_array((string)$ntrVal, ['other', '9999', '0'], true)
+										&& !empty($this->shipment['is_pt_test_not_performed'])
+										&& $this->shipment['is_pt_test_not_performed'] == 'yes';
+									?>
+									<option value="9999" <?= $isOther ? 'selected="selected"' : ''; ?>>
 										<?= $this->translate->_("Other (please explain in comment box below)"); ?>
 									</option>
 								</select>
@@ -674,6 +680,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 
 		testNotPerformed($('#isPtTestNotPerformed').val());
+		checkComments($('#vlNotTestedReason').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
 		$('#supervisorApproval').change(function () {
 			if ($('#supervisorApproval').val() == 'yes') {
@@ -934,7 +941,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	function checkComments(val) {
-		if (val == 'other') {
+		if (val == '9999') {
 			$('#ptNotTestedComments').addClass('isRequired');
 			$('.ptNotTestedCommentsAsterisk').show();
 		} else {

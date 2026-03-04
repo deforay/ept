@@ -249,13 +249,11 @@ if (!empty($resultArray['shipment'])) {
         $comment .= '	<td style="width:100%;text-align:center;"><strong>Comments</strong></td>';
         $comment .= '</tr>';
 
-        if ($hasNtrReason && !$hasPtComments) {
+        if ($hasNtrReason) {
             $comment .= '<tr>';
             $comment .= '	<td style="width:100%;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $result['ntr_reason'] . '</td>';
             $comment .= '</tr>';
-        }
-
-        if ($hasPtComments) {
+        } elseif ($hasPtComments) {
             $comment .= '<tr>';
             $comment .= '	<td style="width:100%;"><p style="text-align:justify;">Xpert testing site was unable to participate in ' . $result['shipment_code'] . ' due to the following reason(s): ' . $result['pt_test_not_performed_comments'] . '</p></td>';
             $comment .= '</tr>';
