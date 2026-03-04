@@ -30,7 +30,10 @@ foreach ($this->tbPossibleResults as $pr) {
 if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	unset($possibleResults['trace']);
 }
-
+$notPerformedStyle = 'display:none;';
+if (isset($this->shipment['vl_not_tested_reason']) && ($this->shipment['vl_not_tested_reason'] == 9999)) {
+	$notPerformedStyle = '';
+}
 ?>
 <style>
 	th {
@@ -155,7 +158,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<?php
 									foreach ($this->allNotTestedReason as $reason) {
-										?>
+									?>
 										<option
 											data-collect-panel-receipt-date="<?= $reason['collect_panel_receipt_date']; ?>"
 											value="<?= $reason['ntr_id']; ?>" <?php echo ($this->shipment['vl_not_tested_reason'] == $reason['ntr_id']) ? 'selected="selected"' : ''; ?>><?php echo ($reason['ntr_reason']); ?></option>
@@ -172,13 +175,13 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 								</select>
 							</td>
 						</tr>
-						<tr class="ptNotPerformedSection"
-							style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? '' : 'display:none;'; ?>background:none;">
-							<td colspan="4"><label><?= $this->translate->_("Comments"); ?><span
+						<tr class="ptNotTestedComment"
+							style="<?php echo $notPerformedStyle; ?>background:none;">
+							<td colspan="4"><label for="ptNotTestedComments"><?= $this->translate->_("Comments"); ?><span
 										class="mandatory ptNotTestedCommentsAsterisk"
 										style="display: none;">*</span></label> : <textarea id="ptNotTestedComments"
 									name="ptNotTestedComments" class="form-control"
-									title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
+									placeholder="Enter the comments" title="Please enter comments"><?php echo $this->shipment['pt_test_not_performed_comments']; ?></textarea>
 							</td>
 						</tr>
 					</table>
@@ -228,9 +231,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 												data-type="<?php echo $row['assay_type']; ?>"
 												data-drug="<?php echo $row['drug_resistance_test']; ?>"
 												data-short="<?php echo $row['short_name']; ?>" <?php if (isset($this->shipment['attributes']['assay_name']) && $this->shipment['attributes']['assay_name'] == $row['id'])
-													   echo " selected "; ?>>
+																									echo " selected "; ?>>
 												<?php echo ucwords($row['name']); ?></option>
-										<?php }
+									<?php }
 									} ?>
 								</select>
 							</td>
@@ -244,7 +247,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 									class="form-control" tittle="Please type or select other assay/method">
 									<option value="">--Select--</option>
 									<option value="Microscopy" <?php if (isset($this->shipment['attributes']['other_assay_name']) && $this->shipment['attributes']['other_assay_name'] == "Microscopy")
-										echo " selected "; ?>>Microscopy</option>
+																	echo " selected "; ?>>Microscopy</option>
 								</select>
 							</td>
 						</tr>
@@ -403,19 +406,21 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 									class="form-control vlResultValues isRequired">
 									<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 									<option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
-										echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
+															echo " selected "; ?>><?= $this->translate->_("Yes"); ?></option>
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
-										echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
+															echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
 							<th class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<label for="participantSupervisor"><?= $this->translate->_("Supervisor Name"); ?> <span
-										class="mandatory vlResultValuesAsterisk ">*</span></label></th>
+										class="mandatory vlResultValuesAsterisk ">*</span></label>
+							</th>
 							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<input name="participantSupervisor" id="participantSupervisor" type="text"
 									class="form-control <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "isRequired" : "" ?>"
 									title="Please enter the supervisor name" placeholder="Enter the supervisor name"
-									value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
+									value="<?php echo $this->shipment['participant_supervisor']; ?>" />
+							</td>
 						</tr>
 						<tr>
 							<th><?= $this->translate->_("Comments"); ?> </th>
@@ -501,7 +506,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 														value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label
 														for="manualCorrective<?php echo $i; ?>"> </label></td>
 											</tr>
-											<?php $i++;
+										<?php $i++;
 										} ?>
 									</table>
 								</td>
@@ -606,9 +611,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	let timeOut;
-	$(document).ready(function () {
+	$(document).ready(function() {
 
-		$('#assayName').on('change', function () {
+		$('#assayName').on('change', function() {
 			if ($(this).find(':selected').data('short') == 'other') {
 				$('.generic-tb-assay').show();
 				if ($('#otherAssayName option').length == 2) {
@@ -680,9 +685,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 
 
 		testNotPerformed($('#isPtTestNotPerformed').val());
-		checkComments($('#vlNotTestedReason').val());
+		// checkComments($('#vlNotTestedReason').val());
 		$('#supervisorApproval,#attestation,#isPtTestNotPerformed').change();
-		$('#supervisorApproval').change(function () {
+		$('#supervisorApproval').change(function() {
 			if ($('#supervisorApproval').val() == 'yes') {
 				$('#labSupervisor').show();
 				$('#labSupervisor,#participantSupervisor').addClass('isRequired');
@@ -696,7 +701,7 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			}
 		});
 
-		$('#attestation').change(function () {
+		$('#attestation').change(function() {
 			if ($('#attestation').val() == 'yes') {
 				$('.attestation-statement').show();
 				$('.attestation').addClass('isRequired');
@@ -706,10 +711,10 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			}
 		});
 
-		$('#isPtTestNotPerformed').change(function () {
+		$('#isPtTestNotPerformed').change(function() {
 			testNotPerformed(this.value);
 		});
-		$('#isExcluded').change(function () {
+		$('#isExcluded').change(function() {
 			if (this.value == 'yes') {
 				if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
 					showdefModal('removeParticipant', 500, 250);
@@ -740,19 +745,19 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	}
 
 	function removeInstrumentFacilityRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function () {
+		$(obj.parentNode.parentNode).fadeOut("normal", function() {
 			$(this).remove();
 		});
 	}
 
-	$('.oneDecimal').keypress(function () {
+	$('.oneDecimal').keypress(function() {
 		var $this = $(this);
 		$this.val($this.val().replace(/[^\d.]/g, ''));
 	});
 
-	$(".oneDecimal").on("blur", function (el) {
+	$(".oneDecimal").on("blur", function(el) {
 		clearTimeout(timeOut)
-		timeOut = setTimeout(function () {
+		timeOut = setTimeout(function() {
 			var newVal = Number($(el.target).val()).toFixed(1);
 			if ($.isNumeric(newVal)) {
 				$(el.target).val(newVal);
@@ -771,14 +776,14 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	function removeParticipantConfirmation() {
 		if ($('#removeParticipantPassword').val() != '') {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-				participantId: $('#participantId').val(),
-				shipmentId: $('#shipmentId').val(),
-				smid: $('#smid').val(),
-				password: $('#removeParticipantPassword').val(),
-				testType: 'tb',
-				format: "html"
-			},
-				function (data) {
+					participantId: $('#participantId').val(),
+					shipmentId: $('#shipmentId').val(),
+					smid: $('#smid').val(),
+					password: $('#removeParticipantPassword').val(),
+					testType: 'tb',
+					format: "html"
+				},
+				function(data) {
 					if (!data) {
 						alert('Entered Password was wrong please try again later');
 						return false;
@@ -809,11 +814,11 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 			return false;
 		}
 		$(".oneDecimal").css('background-color', '');
-		$(".isRequired").each(function () {
+		$(".isRequired").each(function() {
 			requiredClassFields.push($(this).attr("name"));
 		});
 		$('#requiredFields').val(requiredClassFields.join(","));
-		$(".oneDecimal").each(function () {
+		$(".oneDecimal").each(function() {
 			if ($(this).val() != "" && !$.isNumeric($(this).val())) {
 				$(this).css('background-color', 'yellow');
 				proceed = false;
@@ -911,15 +916,15 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 		if (_short != "") {
 			$.blockUI();
 			$.get("/tb/assay-formats?assayId=" + _assayId + "&type=" + _short + "&sid=<?php echo $this->shipId; ?>&pid=<?php echo $this->participantId; ?>&eid=<?php echo $this->eID; ?>&assayType=" + _type + "&assayDrug=" + _drug + "&requestFrom=" + _reqF, {
-				format: "html"
-			},
-				function (data) {
+					format: "html"
+				},
+				function(data) {
 					$.unblockUI();
 					if (data != "") {
 						$("#ptPanelTable").html(data);
 						detectedResultChange();
 						if (instrumentSn.length > 0) {
-							$.each(instrumentSn, function (key, value) {
+							$.each(instrumentSn, function(key, value) {
 								$('.instruments').append($("<option></option>").attr("value", value).text(value));
 							});
 						}
@@ -943,9 +948,9 @@ if (isset($this->type) && $this->type != "xpert-mtb-rif-ultra") {
 	function checkComments(val) {
 		if (val == '9999') {
 			$('#ptNotTestedComments').addClass('isRequired');
-			$('.ptNotTestedCommentsAsterisk').show();
+			$('.ptNotTestedCommentsAsterisk, .ptNotTestedComment').show();
 		} else {
-			$('.ptNotTestedCommentsAsterisk').hide();
+			$('.ptNotTestedCommentsAsterisk, .ptNotTestedComment').hide();
 			$('#ptNotTestedComments').removeClass('isRequired');
 		}
 	}
