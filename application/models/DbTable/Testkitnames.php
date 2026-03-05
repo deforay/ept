@@ -101,6 +101,10 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if (trim($params['testKitStage']) != "") {
+            if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
+                // First reset all testkits for this stage to 0
+                $db->update('scheme_testkit_map', array($params['testKitStage'] => '0'), "1=1");
+            }
             if (isset($params["testKitData"]) && $params["testKitData"] != '' && count($params["testKitData"]) > 0) {
                 foreach ($params["testKitData"] as $data) {
                     if (in_array($params['testKitStage'], ['testkit_1', 'testkit_2', 'testkit_3'])) {
