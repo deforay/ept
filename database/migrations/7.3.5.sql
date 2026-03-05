@@ -29,15 +29,27 @@ CREATE TABLE IF NOT EXISTS certificate_batches (
 -- p_detected_fields: JSON array of field names detected in participation certificate PDF
 -- e_detected_fields: JSON array of field names detected in excellence certificate PDF
 ALTER TABLE `certificate_templates`
-    ADD COLUMN IF NOT EXISTS `p_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for participation certificate' AFTER `participation_certificate`;
+    ADD COLUMN `p_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for participation certificate' AFTER `participation_certificate`;
 ALTER TABLE `certificate_templates`    
-    ADD COLUMN IF NOT EXISTS `e_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for excellence certificate' AFTER `excellence_certificate`;
+    ADD COLUMN `e_detected_fields` TEXT NULL COMMENT 'JSON array of detected PDF form fields for excellence certificate' AFTER `excellence_certificate`;
 
 
 -- Insert home name in globalconfig
 INSERT INTO `global_config` (`name`, `value`) VALUES ('home', '');
 
 -- Amit 02-Mar-2026
+
+
+CREATE TABLE IF NOT EXISTS `r_participant_feedback_form` (
+  `rpff_id` int NOT NULL AUTO_INCREMENT,
+  `shipment_id` int NOT NULL,
+  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `form_content` text COLLATE utf8mb4_general_ci,
+  PRIMARY KEY (`rpff_id`),
+  KEY `shipment_id` (`shipment_id`),
+  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 
 CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
