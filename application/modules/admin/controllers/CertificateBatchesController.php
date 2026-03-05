@@ -60,6 +60,9 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
     public function getBatchStatusAction()
     {
         $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        header('Content-Type: application/json');
 
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -77,7 +80,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         if ($batchId <= 0) {
             $response['error_message'] = 'Invalid batch ID';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
@@ -86,7 +89,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         if (!$batch) {
             $response['error_message'] = 'Batch not found';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
@@ -98,7 +101,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         $response['download_url'] = $batch['download_url'] ?? null;
         $response['error_message'] = $batch['error_message'] ?? null;
 
-        $this->view->assign($response);
+        echo json_encode($response);
     }
 
     /**
@@ -108,6 +111,9 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
     public function approveBatchAction()
     {
         $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        header('Content-Type: application/json');
 
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
@@ -119,7 +125,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         if (!$request->isPost()) {
             $response['message'] = 'Invalid request method';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
@@ -127,7 +133,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         if ($batchId <= 0) {
             $response['message'] = 'Invalid batch ID';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
@@ -136,13 +142,13 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         if (!$batch) {
             $response['message'] = 'Batch not found';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
         if ($batch['status'] !== 'generated') {
             $response['message'] = 'Batch must be in generated status to approve';
-            $this->view->assign($response);
+            echo json_encode($response);
             return;
         }
 
@@ -164,7 +170,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
             $response['message'] = 'Failed to schedule distribution job';
         }
 
-        $this->view->assign($response);
+        echo json_encode($response);
     }
 
     /**

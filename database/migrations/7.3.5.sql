@@ -140,3 +140,6 @@ UPDATE `shipment_participant_map`
 SET `vl_not_tested_reason` = 9999
 WHERE `is_pt_test_not_performed` = 'yes'
   AND `vl_not_tested_reason` = 0;
+
+  
+ALTER TABLE `r_participant_feedback_form` ADD `form_show_to` VARCHAR(50) NULL DEFAULT NULL AFTER `form_content`;
