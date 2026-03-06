@@ -811,7 +811,7 @@ class Application_Model_Tb
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
                             // For participants who selected N/A for MTB NOT Detected, we will treat RIF as Not Detected
                             if (strtolower($aRow['response'][$k]['mtb_detected']) == 'not-detected' && $aRow['response'][$k]['rif_resistance'] == 'N/A') {
-                                $aRow['response'][$k]['rif_resistance'] = 'not-detected';
+                                $aRow['response'][$k]['rif_resistance'] = 'N/A';
                             }
                             if (strtolower($aRow['response'][$k]['mtb_detected']) == 'error') {
                                 $aRow['response'][$k]['rif_resistance'] = 'error';

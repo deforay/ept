@@ -38,6 +38,33 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'tester_name' => isset($params['testerName'][$key]) && !empty($params['testerName'][$key]) ? $params['testerName'][$key] : null,
                 'error_code' => isset($params['errCode'][$key]) && !empty($params['errCode'][$key]) ? $params['errCode'][$key] : null
             ];
+            if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
+                /* To skip field to save while PT test not performed */
+                foreach (
+                    [
+                        'mtb_detected',
+                        'rif_resistance',
+                        'probe_d',
+                        'probe_c',
+                        'probe_e',
+                        'probe_b',
+                        'probe_a',
+                        'is1081_is6110',
+                        'rpo_b1',
+                        'rpo_b2',
+                        'rpo_b3',
+                        'rpo_b4',
+                        'instrument_serial_no',
+                        'gene_xpert_module_no',
+                        'test_date',
+                        'tester_name',
+                        'error_code',
+                    ] as $field
+                ) {
+
+                    $data[$field] = null;
+                }
+            }
             /* Check if assay xpert or ultra */
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
