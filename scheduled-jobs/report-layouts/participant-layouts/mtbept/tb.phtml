@@ -158,7 +158,8 @@ if (!empty($resultArray['shipment'])) {
             $participantResult .= '    </tr>';
             foreach ($result['responseResult'] as $key => $response) {
                 $i = $key + 5;
-                $testerName = $response['tester_name'] ?? $result['first_name'] . ' ' . $result['last_name'];
+                $testerName = trim(($result['first_name'] ?? '') . ' ' . ($result['last_name'] ?? ''));
+                $testerName ??= trim($result['lab_name'] ?? '');
 
                 $participantResult .= '<tr style="width:100%;">';
                 $participantResult .= '        <td colspan="4" style="font-size:11px;text-align:left;background-color:lightgray;width:100%;font-weight:bold;">Sample ID : ' . $response['sample_label'] . '</td>';

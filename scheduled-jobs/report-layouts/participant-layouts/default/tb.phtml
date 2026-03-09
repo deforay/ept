@@ -201,7 +201,8 @@ if (!empty($resultArray['shipment'])) {
                 $labRes .= '    </tr>';
                 foreach ($result['responseResult'] as $key => $response) {
                     $i = ($key + 5);
-                    $testerName = $response['tester_name'] ?? $result['first_name'] . ' ' . $result['last_name'];
+                    $testerName = trim(($result['first_name'] ?? '') . ' ' . ($result['last_name'] ?? ''));
+                    $testerName ??= trim($result['lab_name'] ?? '');
 
                     $labRes .= '    <tr style="width:100%;">';
                     $labRes .= '        <td colspan="4" style="font-size:11px;text-align:left;background-color:lightgray;width:100%;font-weight:bold;">Sample ID : ' . $response['sample_label'] . '</td>';
@@ -240,57 +241,6 @@ if (!empty($resultArray['shipment'])) {
                 }
                 $labRes .= '</table>';
             }
-
-
-
-
-
-
-            /* $colspan = "2";
-                if ($result['responseResult'][0]['drug_resistance_test'] != "yes") {
-                    $colspan = "1";
-                }
-                $labRes = '<span style="font-weight: bold;font-size:13px;">Your laboratory test results : <br/></span>';
-                $labRes .= '<table style="font-size:11px;" border="1" cellpadding="3" style="width:100%;border-color: #b7dde7;">';
-                $labRes .= '<tr style="background-color:#b7dde7;width:100%;">';
-                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . $colspan . '">Expected Results</td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;" colspan="' . $colspan . '">Your Results</td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;"></td>';
-                $labRes .= '</tr>';
-                $labRes .= '<tr style="background-color:#b7dde7;">';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
-                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-                if ($result['responseResult'][0]['drug_resistance_test'] == "yes") {
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-                }
-                $labRes .= '<td style="text-align:center;font-weight:bold;">MTB Detected</td>';
-                if ($result['responseResult'][0]['drug_resistance_test'] == "yes") {
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">RIF Resistance</td>';
-                }
-                $labRes .= '<td style="text-align:center;font-weight:bold;">Score</td>';
-                $labRes .= '</tr>';
-                //Sample codes
-                $testerName = '';
-                foreach ($result['responseResult'] as $response) {
-                    $labRes .= '<tr>';
-                    $labRes .= '<td style="text-align:center;font-weight:bold;border-bottom:solid 2px #b7dde7;">' . $response['sample_label'] . '</td>';
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['reference_mtb_detected'])) . '</td>';
-                    if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
-                    }
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['mtb_detected'])) . '</td>';
-                    if ($response['drug_resistance_test'] == "yes") {
-                        $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . ucwords(str_replace("-", " ", $response['rif_resistance'])) . '</td>';
-                    }
-                    $labRes .= '<td style="text-align:center;border-bottom:solid 2px #b7dde7;">' . $response['calculated_score'] . '</td>';
-                    $labRes .= '</tr>';
-                    if (empty($testerName)) {
-                        $testerName = $response['tester_name'] ?? null;
-                    }
-                }
-
-                $labRes .= '</table>'; */
 
             if (empty($testerName)) {
                 $testerName = $result['first_name'] . ' ' . $result['last_name'];
