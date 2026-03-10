@@ -166,7 +166,7 @@ if (!empty($resultArray['shipment'])) {
                 $participantResult .= '</tr>';
                 $participantResult .= '<tr style="width:100%;">';
                 $participantResult .= '        <td style="font-size:11px;width:40%;text-align:left;">Expected Results</td>';
-                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", ($response['reference_mtb_detected']))) . '</td>';
+                $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", TbModel::normalizeMTBDetection($response['reference_mtb_detected']))) . '</td>';
                 $participantResult .= '        <td style="font-size:11px;width:25%;text-align:center;">' . ucwords(str_replace("-", " ", $response['reference_rif_resistance'])) . '</td>';
                 $participantResult .= '        <td style="width:10%;text-align:center;"></td>';
                 $participantResult .= '    </tr>';

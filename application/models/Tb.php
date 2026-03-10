@@ -394,7 +394,7 @@ class Application_Model_Tb
 
     public static function normalizeMTBDetection($value)
     {
-        return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace']) ? 'detected' : $value;
+        return in_array(strtolower($value), ['very-low', 'low', 'medium', 'high', 'trace', 'very low']) ? 'detected' : $value;
     }
 
     public function getTbSamplesForParticipant($sId, $pId, $type = null)
