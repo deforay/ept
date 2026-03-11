@@ -64,9 +64,9 @@ class Application_Model_Tb
 
             $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
             if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
-                $createdOn = new DateTime($createdOnUser[0]);
+                $createdOn = new DateTimeImmutable($createdOnUser[0]);
             } else {
-                $createdOn = new DateTime('1970-01-01');
+                $createdOn = new DateTimeImmutable('1970-01-01');
             }
 
             $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
@@ -81,7 +81,10 @@ class Application_Model_Tb
                 $shipment['is_response_late'] = 'yes';
                 $db->update(
                     'shipment_participant_map',
-                    ['failure_reason' => json_encode($failureReason)],
+                    [
+                        'failure_reason' => json_encode($failureReason),
+                        'response_status' => 'late'
+                    ],
                     "map_id = " . $shipment['map_id']
                 );
             } else {

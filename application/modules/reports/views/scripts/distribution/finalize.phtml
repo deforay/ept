@@ -9,7 +9,8 @@ if (!empty($this->shipment)) {
             <legend>
                 <h4><?= $this->translate->_("All Shipments Under PT Survey"); ?>
                     <?php echo $this->shipment[0]['distribution_code']; ?>
-                    (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)</h4>
+                    (<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)
+                </h4>
             </legend>
 
             <table class="table table-bordered table-striped table-hover">
@@ -74,7 +75,8 @@ if (!empty($this->shipment)) {
     <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
         <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
             <?= $this->translate->_("You are currently generating reports for Shipment"); ?>
-            <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> </div>
+            <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
+        </div>
         <div style="margin-top:10px;">
             <a href="<?php echo $this->url(array('module' => 'reports', 'controller' => 'finalize', 'action' => 'index'), 'default', true); ?>"
                 class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
@@ -190,6 +192,8 @@ if (!empty($this->shipment)) {
                     $responseStatus = "Not Responded";
                 } elseif ($shipment['response_status'] == "responded") {
                     $responseStatus = "Responded";
+                } elseif ($shipment['response_status'] == "late") {
+                    $responseStatus = "Late Response";
                 } else {
                     $responseStatus = "Not Tested";
                 }
@@ -200,7 +204,8 @@ if (!empty($this->shipment)) {
                                 class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="text-align:center;vertical-align:middle;">
-                        <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
+                        <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?>
+                    </td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['state'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['district'] ?></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
@@ -210,7 +215,8 @@ if (!empty($this->shipment)) {
                     </td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
                     <td style="text-align:left;vertical-align:middle;">
-                        <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?></td>
+                        <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?>
+                    </td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
                     <td style="display:none;"><?php echo $shipment['map_id']; ?></td>
 
@@ -422,10 +428,10 @@ if (!empty($this->shipment)) {
                 url: '/common/get-corrective-actions/mid/' + mapId,
                 data: { format: 'html' },
                 async: false,
-                success: function(html) {
+                success: function (html) {
                     sOut = '<div style="padding-left:50px;">' + html + '</div>';
                 },
-                error: function() {
+                error: function () {
                     sOut = '<div class="text-muted">Failed to load corrective actions</div>';
                 }
             });

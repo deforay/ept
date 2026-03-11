@@ -440,7 +440,7 @@ class ReportGenerator
         if (!is_file($file)) {
             throw new RuntimeException("Template not found: {$file}");
         }
-        (static function () use ($file, $context): void {
+        (static function () use ($file, $context): void{
             extract($context, EXTR_OVERWRITE);
             require $file;
         })();
@@ -1276,9 +1276,9 @@ class ReportGenerator
                 }
                 self::warn(
                     "Shipment {$this->opts->shipmentId} appears locked (lock file: {$info['path']}). " .
-                        "Proceeding due to --force" .
-                        ($ttlOk ? " (lockTtl={$this->opts->lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
-                        " This can corrupt output if another job is actually running.",
+                    "Proceeding due to --force" .
+                    ($ttlOk ? " (lockTtl={$this->opts->lockTtlMinutes}m, age={$ageMinutes}m)." : ".") .
+                    " This can corrupt output if another job is actually running.",
                     $this->opts->isCli
                 );
                 return null;
@@ -1335,7 +1335,7 @@ class ReportGenerator
             }
             self::warn(
                 "Shipment {$shipmentId} appears locked (lock file: {$info['path']}). " .
-                    "Proceeding due to --force. This can corrupt output if another job is actually running.",
+                "Proceeding due to --force. This can corrupt output if another job is actually running.",
                 $this->opts->isCli
             );
             return null;

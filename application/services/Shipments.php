@@ -1286,7 +1286,7 @@ class Application_Service_Shipments
         $db->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
-            $attributes = array(
+            $attributes = [
                 "assay_name" => (isset($params['assayName']) && !empty($params['assayName'])) ? $params['assayName'] : "",
                 "other_assay_name" => (isset($params['otherAssayName']) && !empty($params['otherAssayName'])) ? $params['otherAssayName'] : "",
                 "assay_lot_number" => (isset($params['assayLot']) && !empty($params['assayLot'])) ? $params['assayLot'] : "",
@@ -1295,10 +1295,10 @@ class Application_Service_Shipments
                 "date_of_xpert_instrument_calibration" => (isset($params['geneXpertInstrument']) && !empty($params['geneXpertInstrument'])) ? $params['geneXpertInstrument'] : "",
                 "attestation" => (isset($params['attestation']) && !empty($params['attestation'])) ? $params['attestation'] : "",
                 "instrument_sn" => (isset($params['instrumentSn']) && !empty($params['instrumentSn'])) ? $params['instrumentSn'] : ""
-            );
+            ];
             $attributes = json_encode($attributes);
 
-            $data = array(
+            $data = [
                 "shipment_receipt_date" => (isset($params['receiptDate']) && !empty($params['receiptDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['receiptDate']) : '',
                 "shipment_test_date" => (isset($params['shipmentTestDate']) && !empty($params['shipmentTestDate'])) ? Pt_Commons_DateUtility::isoDateFormat($params['shipmentTestDate']) : '',
                 "attributes" => $attributes,
@@ -1308,7 +1308,7 @@ class Application_Service_Shipments
                 "user_comment" => $params['userComments'],
                 "mode_id" => (isset($params['modeOfReceipt']) && !empty($params['modeOfReceipt'])) ? $params['modeOfReceipt'] : "",
                 "response_status" => $responseStatus,
-            );
+            ];
 
             if (!empty($authNameSpace->dm_id)) {
                 $data["updated_by_user"] = $authNameSpace->dm_id ?? null;
@@ -1347,13 +1347,13 @@ class Application_Service_Shipments
             if (isset($params['serialNo']) && sizeof($params['serialNo']) > 0) {
                 $tbInstrumentDb = new Application_Model_DbTable_TBInstruments();
                 foreach ($params['serialNo'] as $key => $tbInstrument) {
-                    $instrumentData = array(
+                    $instrumentData = [
                         'participant_id' => $params['participantId'],
                         'map_id' => $params['smid'],
                         'instrument_serial' => $params['serialNo'][$key],
                         'instrument_installed_on' => Pt_Commons_DateUtility::isoDateFormat($params['installedOn'][$key]),
                         'instrument_last_calibrated_on' => Pt_Commons_DateUtility::isoDateFormat($params['lastCalibrated'][$key])
-                    );
+                    ];
                     if (isset($params['instrumentId'][$key]) && !empty($params['instrumentId'][$key])) {
                         $instrumentData['updated_by'] = $authNameSpace->dm_id ?? null;
                         $instrumentData['updated_on'] = new Zend_Db_Expr('now()');
@@ -1793,7 +1793,8 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2400,7 +2401,8 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                    ;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -3017,7 +3019,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3055,7 +3057,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3723,9 +3725,11 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             }
             $output['aaData'][] = $row;
         }

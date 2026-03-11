@@ -644,8 +644,10 @@ final class Application_Model_Dts
 							// $totalScore remains the same	if algoResult == fail and there is no allocated score for algo
 							$correctResponse = false;
 						}
-					} elseif ($isScreening && $dtsSchemeType === 'myanmar' &&
-						$this->areResultsEquivalent($result['reference_result'], $result['reported_result'])) {
+					} elseif (
+						$isScreening && $dtsSchemeType === 'myanmar' &&
+						$this->areResultsEquivalent($result['reference_result'], $result['reported_result'])
+					) {
 						// Myanmar Screening: half score for equivalent results (R↔P, NR↔N)
 						$halfSampleScore = $scoreForSample / 2;
 						if ($correctRTRIResponse && $correctSyphilisResponse && $algoResult != 'Fail') {
@@ -974,17 +976,21 @@ final class Application_Model_Dts
 		$shipmentResultEntry['final_result'] = $finalResult;
 		if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
 			// let us update the total score in DB
+			$excludedUpdateData = [
+				'shipment_score' => 0,
+				'documentation_score' => 0,
+				'final_result' => 3,
+				'is_followup' => 'yes',
+				'is_excluded' => 'yes',
+				'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
+				'is_response_late' => $shipment['is_response_late']
+			];
+			if ($shipment['is_response_late'] == 'yes') {
+				$excludedUpdateData['response_status'] = 'late';
+			}
 			$this->db->update(
 				'shipment_participant_map',
-				[
-					'shipment_score' => 0,
-					'documentation_score' => 0,
-					'final_result' => 3,
-					'is_followup' => 'yes',
-					'is_excluded' => 'yes',
-					'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
-					'is_response_late' => $shipment['is_response_late']
-				],
+				$excludedUpdateData,
 				$mapWhere
 			);
 		} else {
@@ -1001,30 +1007,38 @@ final class Application_Model_Dts
 					}
 
 					$shipmentResultEntry['display_result'] = $finalResultArray[$shipmentOverall['final_result']];
+					$overrideUpdateData = [
+						'shipment_score' => $shipmentOverall['shipment_score'],
+						'documentation_score' => $shipmentOverall['documentation_score'],
+						'final_result' => $shipmentOverall['final_result'],
+					];
+					if ($shipment['is_response_late'] == 'yes') {
+						$overrideUpdateData['response_status'] = 'late';
+					}
 					$this->db->update(
 						'shipment_participant_map',
-						[
-							'shipment_score' => $shipmentOverall['shipment_score'],
-							'documentation_score' => $shipmentOverall['documentation_score'],
-							'final_result' => $shipmentOverall['final_result'],
-						],
+						$overrideUpdateData,
 						$mapWhere
 					);
 				}
 			} else {
 
 				// let us update the total score in DB
+				$normalUpdateData = [
+					'shipment_score' => $responseScore,
+					'documentation_score' => $documentationScore,
+					'final_result' => $finalResult,
+					'is_followup' => $shipment['is_followup'],
+					'is_excluded' => $shipment['is_excluded'],
+					'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
+					'is_response_late' => $shipment['is_response_late']
+				];
+				if ($shipment['is_response_late'] == 'yes') {
+					$normalUpdateData['response_status'] = 'late';
+				}
 				$this->db->update(
 					'shipment_participant_map',
-					[
-						'shipment_score' => $responseScore,
-						'documentation_score' => $documentationScore,
-						'final_result' => $finalResult,
-						'is_followup' => $shipment['is_followup'],
-						'is_excluded' => $shipment['is_excluded'],
-						'failure_reason' => JsonUtility::encodeUtf8Json($failureReason),
-						'is_response_late' => $shipment['is_response_late']
-					],
+					$normalUpdateData,
 					$mapWhere
 				);
 			}
@@ -2197,8 +2211,10 @@ final class Application_Model_Dts
 		];
 
 		foreach ($equivalentPairs as $pair) {
-			if (($resultId1 == $pair[0] && $resultId2 == $pair[1]) ||
-				($resultId1 == $pair[1] && $resultId2 == $pair[0])) {
+			if (
+				($resultId1 == $pair[0] && $resultId2 == $pair[1]) ||
+				($resultId1 == $pair[1] && $resultId2 == $pair[0])
+			) {
 				return true;
 			}
 		}

@@ -213,6 +213,8 @@ if (!empty($this->shipment)) {
                     $responseStatus = "Not Responded";
                 } elseif ($shipment['response_status'] == "responded") {
                     $responseStatus = "Responded";
+                } elseif ($shipment['response_status'] == "late") {
+                    $responseStatus = "Late Response";
                 } else {
                     $responseStatus = "Not Tested";
                 }
@@ -231,7 +233,8 @@ if (!empty($this->shipment)) {
                         <?php echo (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated'; ?>
                     </td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-                    <td style="text-align:left;vertical-align:middle;"><?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?></td>
+                    <td style="text-align:left;vertical-align:middle;">
+                        <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?></td>
                     <td style="text-align:left;vertical-align:middle;"><?php echo $individualReports; ?></td>
                     <td style="display:none;"><?php echo $shipment['map_id']; ?></td>
                 </tr>
@@ -376,10 +379,10 @@ if (!empty($this->shipment)) {
                 url: '/common/get-corrective-actions/mid/' + mapId,
                 data: { format: 'html' },
                 async: false,
-                success: function(html) {
+                success: function (html) {
                     sOut = '<div style="padding-left:50px;">' + html + '</div>';
                 },
-                error: function() {
+                error: function () {
                     sOut = '<div class="text-muted">Failed to load corrective actions</div>';
                 }
             });
