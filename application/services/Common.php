@@ -9,6 +9,12 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 
 class Application_Service_Common
 {
+    private const EXPORTABLE_CONFIG_SCHEMES = [
+        'tb' => 'tb',
+        'vl' => 'vl',
+        'covid19' => 'covid19',
+    ];
+
     const MAIL_FAILURE_REASON_MAX = 1000;
 
     protected $db;
@@ -1876,8 +1882,11 @@ class Application_Service_Common
                 'timestamp' => time(),
                 'data' => $responseData
             ];
+            // Export files are written to disk and later downloaded directly, so the filename
+            // must come from a fixed allowlist instead of raw POST data.
+            $schemeKey = $this->resolveExportSchemeKey($data['scheme'] ?? null);
             /* File name creation */
-            $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . '-' . time() . '-' . $data['scheme'] . '.json';
+            $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . '-' . time() . '-' . $schemeKey . '.json';
             $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
             $fp = fopen($filePath, 'w');
             fwrite($fp, json_encode($output));
@@ -1886,6 +1895,12 @@ class Application_Service_Common
             file_put_contents($filePath . ".gz", $gzdata);
             return $filePath . ".gz";
         }
+    }
+
+    private function resolveExportSchemeKey($scheme): string
+    {
+        $scheme = is_string($scheme) ? strtolower(trim($scheme)) : '';
+        return self::EXPORTABLE_CONFIG_SCHEMES[$scheme] ?? 'config';
     }
 
     public function unserializeForm($str)
