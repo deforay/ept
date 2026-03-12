@@ -24,32 +24,15 @@ class RecencyController extends Zend_Controller_Action
 			$data = $request->getPost();
 			$data['uploadedFilePath'] = "";
 
-			if ((!empty($_FILES["uploadedFile"])) && ($_FILES['uploadedFile']['error'] == 0)) {
+			if (!empty($_FILES["uploadedFile"])) {
 				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
 				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
-				$filename = basename($_FILES['uploadedFile']['name']);
-				$ext = substr($filename, strrpos($filename, '.') + 1);
-				if (($_FILES["uploadedFile"]["size"] < 5000000)) {
-					$dirpath = "recency" . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
-					$uploadFolder = realpath(UPLOAD_PATH);
-					$uploadDir = $uploadFolder . DIRECTORY_SEPARATOR . $dirpath;
-					if (!is_dir($uploadDir)) {
-						mkdir($uploadDir, 0777, true);
-					}
-
-					// Let us clear the folder before uploading the file
-					$files = glob($uploadDir . '/*{,.}*', GLOB_BRACE); // get all file names
-					foreach ($files as $file) { // iterate files
-						if (is_file($file))
-							unlink($file); // delete file
-					}
-
-					//Determine the path to which we want to save this file
-					$data['uploadedFilePath'] = $dirpath . DIRECTORY_SEPARATOR . $filename;
-					$newname = $uploadDir . DIRECTORY_SEPARATOR . $filename;
-
-					move_uploaded_file($_FILES['uploadedFile']['tmp_name'], $newname);
-				}
+				$data['uploadedFilePath'] = Application_Service_Common::storeParticipantResponseAttachment(
+					$_FILES['uploadedFile'],
+					'recency',
+					$schemeCode,
+					$participantId
+				);
 			}
 
 			$shipmentService->updateRecencyResults($data);

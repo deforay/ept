@@ -1571,6 +1571,60 @@ class Application_Service_Common
     }
 
     /**
+     * Stores participant response attachments with a server-generated name so public downloads
+     * never depend on attacker-controlled filenames or unvalidated extensions.
+     *
+     * @param array $file The raw file array from $_FILES
+     * @param string $baseFolder The scheme-specific upload folder under UPLOAD_PATH
+     * @param string $schemeCode The sanitized scheme code
+     * @param string $participantId The sanitized participant identifier
+     * @param int $maxFileSize Maximum allowed file size in bytes
+     * @return string Empty string on validation failure, otherwise the relative upload path
+     */
+    public static function storeParticipantResponseAttachment(
+        array $file,
+        string $baseFolder,
+        string $schemeCode,
+        string $participantId,
+        int $maxFileSize = 5000000
+    ): string {
+        if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return '';
+        }
+
+        if (($file['size'] ?? 0) > $maxFileSize) {
+            return '';
+        }
+
+        $allowedExtensions = ['pdf', 'csv', 'txt', 'xls', 'xlsx', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'];
+        $validationResult = self::isFileAllowedToUpload($file, $allowedExtensions);
+        if ($validationResult !== true) {
+            return '';
+        }
+
+        $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+        $relativeDirectory = $baseFolder . DIRECTORY_SEPARATOR . $schemeCode . DIRECTORY_SEPARATOR . $participantId;
+        $targetDirectory = self::buildSafePath(UPLOAD_PATH, [$baseFolder, $schemeCode, $participantId]);
+        if ($targetDirectory === false) {
+            return '';
+        }
+
+        foreach (glob($targetDirectory . DIRECTORY_SEPARATOR . '*{,.}*', GLOB_BRACE) ?: [] as $existingFile) {
+            if (is_file($existingFile)) {
+                unlink($existingFile);
+            }
+        }
+
+        $storedFilename = Pt_Commons_MiscUtility::generateRandomString(16) . '.' . $extension;
+        $targetPath = $targetDirectory . DIRECTORY_SEPARATOR . $storedFilename;
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            return '';
+        }
+
+        return $relativeDirectory . DIRECTORY_SEPARATOR . $storedFilename;
+    }
+
+    /**
      * Helper function to map allowed file extensions to MIME types.
      *
      * @param array $allowedExtensions Array of allowed file extensions

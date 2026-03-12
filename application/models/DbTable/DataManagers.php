@@ -389,17 +389,29 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     }
     public function updateForceProfileCheckByEmail($email, $result = "")
     {
-        $row = $this->fetchRow(array("new_email = '" . $email . "' AND new_email IS NOT NULL"));
+        $decodedEmail = base64_decode($email);
+        $row = $this->fetchRow(
+            $this->select()
+                ->where('new_email = ?', $decodedEmail)
+                ->where('new_email IS NOT NULL')
+        );
         if ((isset($result) && $result != "") || isset($row) && $row != "") {
-            return $this->update(array('force_profile_check' => 'no', 'primary_email' => $result['new_email'], 'new_email' => null), "new_email = '" . base64_decode($email) . "'");
+            return $this->update(
+                ['force_profile_check' => 'no', 'primary_email' => $result['new_email'], 'new_email' => null],
+                ['new_email = ?' => $decodedEmail]
+            );
         }
-        return $this->update(array('force_profile_check' => 'no'), "primary_email = '" . base64_decode($email) . "'");
+        return $this->update(
+            ['force_profile_check' => 'no'],
+            ['primary_email = ?' => $decodedEmail]
+        );
     }
 
     public function resetpasswordForEmail($email)
     {
 
-        $sql = $this->select()->from('data_manager')->where("primary_email = ?", $email);
+        $sql = $this->select()->from('data_manager')
+            ->where("primary_email = ?", $email);
         return $this->fetchRow($sql);
     }
 
@@ -418,7 +430,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $newpassword = Common::passwordHash($newpassword);
         $noOfRows = $this->update(
             ['password' => $newpassword, 'force_password_reset' => $forcePasswordReset ? 1 : 0],
-            "primary_email = '$email'"
+            ['primary_email = ?' => $email]
         );
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
@@ -439,7 +451,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         if ($passwordVerify) {
             $newpassword = Common::passwordHash($newpassword);
-            $noOfRows = $this->update(['password' => $newpassword, 'force_password_reset' => 0], "primary_email = '$email'");
+            $noOfRows = $this->update(
+                ['password' => $newpassword, 'force_password_reset' => 0],
+                ['primary_email = ?' => $email]
+            );
             if ($noOfRows != null && $noOfRows == 1) {
                 $authNameSpace->forcePasswordReset = 0;
                 return true;
@@ -484,7 +499,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function saveNewPassword($params)
     {
         $password = Common::passwordHash($params['password']);
-        $noOfRows = $this->update(['password' => $password], "primary_email = '{$params['registeredEmail']}'");
+        $noOfRows = $this->update(
+            ['password' => $password],
+            ['primary_email = ?' => $params['registeredEmail']]
+        );
         return $noOfRows === 1;
     }
 
@@ -546,7 +564,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ];
         }
 
-        $result = $this->fetchRow("new_email != primary_email AND new_email = '{$params['userId']}'");
+        $result = $this->fetchRow(
+            $this->select()
+                ->where('new_email != primary_email')
+                ->where('new_email = ?', $params['userId'])
+        );
 
         $passwordVerify = true;
         if (isset($result) && !empty($result)) {
@@ -563,7 +585,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return $payload;
         }
         /* Check the login credential */
-        $result = $this->fetchRow("primary_email='" . $params['userId'] . "'");
+        $result = $this->fetchDataManagerByEmail($params['userId']);
         $passwordVerify = true;
         if (isset($result) && !empty($result)) {
             $passwordVerify = password_verify((string) $params['key'], (string) $result['password']);
@@ -640,7 +662,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'message' => 'Something went wrong please try again later'
             ];
         } else {
-            $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
+            $row = $this->fetchRow(
+                $this->select()
+                    ->where('auth_token = ?', $params['authToken'])
+                    ->where('new_email IS NOT NULL')
+            );
             if (!$row) {
                 $payload = [
                     'status' => 'success',
@@ -666,7 +692,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         /* Check the login credential */
-        $result = $this->fetchRow("auth_token= '" . $params['authToken'] . "'");
+        $result = $this->fetchDataManagerByAuthToken($params['authToken']);
 
         $aResult = $this->fetchAuthToken($params);
         /* App version check */
@@ -800,7 +826,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
         }
 
-        $oldPassResult = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
+        $oldPassResult = $this->fetchDataManagerByAuthToken($params['authToken']);
         $passwordVerify = true;
         if (isset($oldPassResult) && !empty($oldPassResult)) {
             $passwordVerify = password_verify((string) $params['oldPassword'], (string) $oldPassResult['password']);
@@ -825,7 +851,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         /* App version check */
-        $aResult = $this->fetchRow("primary_email='" . $params['email'] . "'");
+        $aResult = $this->fetchDataManagerByEmail($params['email']);
         if (!$aResult) {
             return ['status' => 'fail', 'message' => 'Your email id is not registered. Please check again.'];
         }
@@ -837,7 +863,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $this->update(array('updated_on'=>new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
         return array('status' =>'success','message'=>'Password Updated Successfully'); */
         $email = $params['email'];
-        $row = $this->fetchRow("primary_email = '" . $email . "'");
+        $row = $this->fetchDataManagerByEmail($email);
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
         $eptDomain = rtrim($conf->domain, "/");
@@ -859,7 +885,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function fetchAuthTokenByToken($params)
     {
-        return $this->fetchRow("auth_token='" . $params['authToken'] . "'");
+        return $this->fetchDataManagerByAuthToken($params['authToken']);
     }
 
     public function fetchProfileCheckDetailsAPI($params)
@@ -882,7 +908,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $result = $this->fetchRow("auth_token = '" . $params['authToken'] . "'");
+        $result = $this->fetchDataManagerByAuthToken($params['authToken']);
         if (isset($result) && trim($result['dm_id'] != '')) {
 
             $sql = $this->getAdapter()->select()->from(array('dm' => 'data_manager'), array(''))
@@ -903,7 +929,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'profileInfo' => $aResult['profileInfo'],
                 'mappedParticipants' => $mappedParticipants
             ];
-            $this->update(array('force_profile_check' => 'no'), 'dm_id = ' . $result['dm_id']);
+            $this->update(array('force_profile_check' => 'no'), ['dm_id = ?' => (int) $result['dm_id']]);
         } else {
             $response['status'] = 'fail';
             $response['message'] = 'No participant found.';
@@ -1493,14 +1519,34 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function setLoginAtempBan($email)
     {
-        return $this->update(array('login_ban' => 'yes'), 'primary_email = "' . $email . '"');
+        return $this->update(
+            ['login_ban' => 'yes'],
+            ['primary_email = ?' => $email]
+        );
     }
 
     public function fethDataByCredentials($email, $password)
     {
+        // Authentication should only look up by identity; the password check happens via password_verify().
+        return $this->fetchDataManagerByEmail($email);
+    }
 
-        $sql = $this->select()->from('data_manager')->where("primary_email = '" . $email . "' OR password = '" . $password . "'");
-        return $this->fetchRow($sql);
+    private function fetchDataManagerByEmail($email)
+    {
+        return $this->fetchRow(
+            $this->select()
+                ->from('data_manager')
+                ->where('primary_email = ?', $email)
+        );
+    }
+
+    private function fetchDataManagerByAuthToken($authToken)
+    {
+        return $this->fetchRow(
+            $this->select()
+                ->from('data_manager')
+                ->where('auth_token = ?', $authToken)
+        );
     }
 
     public function fetchDataManaersByParticipantId($participantId)

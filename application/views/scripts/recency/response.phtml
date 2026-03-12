@@ -454,7 +454,7 @@ if ($this->reqFrom == "admin") {
 								}
 								?>
 								<div id="uploadFileArea" <?php echo (isset($hideUploadFileArea) && $hideUploadFileArea) ? "style='display:none;'" : ''; ?>>
-									<input type="file" name="uploadedFile" />
+										<input type="file" name="uploadedFile" accept=".pdf,.csv,.txt,.xls,.xlsx,.doc,.docx,.jpg,.jpeg,.png,.gif" />
 									<input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
 								</div>
 							</td>
