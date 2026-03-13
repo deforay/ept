@@ -32,11 +32,10 @@ if (!empty($resultArray['shipment'])) {
 
     $totalPages = count($resultArray['shipment']);
     $j = 1;
-    //$resultArray['dmResult'];
 
     foreach ($resultArray['shipment'] as $result) {
 
-        if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+        if (
             (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
         ) {
             continue;
@@ -45,10 +44,7 @@ if (!empty($resultArray['shipment'])) {
         if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
             mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
         }
-        //error_log($i);
-        // Extend the TCPDF class to create custom Header and Footer
 
-        // create new PDF document
         $reportFormat = $reportService->getReportConfigValue('report-format');
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -57,24 +53,12 @@ if (!empty($resultArray['shipment'])) {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
-        // set document information
-        //$pdf->SetCreator(PDF_CREATOR);
-        //$pdf->SetAuthor('ePT');
-        //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
-        //
-        //
 
-        // set default header data
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
-
-        // set header and footer fonts
         $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
         $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
-
-        // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-        // set margins
         $mt = 50;
         if (isset($templateTopMargin) && !empty($templateTopMargin)) {
             $mt = $templateTopMargin;
@@ -82,21 +66,9 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(0);
-
-        // set auto page breaks
         $pdf->SetAutoPageBreak(true, 15);
-
-        // set image scale factor
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-        // ---------------------------------------------------------
-        // set font
-        // $pdf->SetFont('freesans', '', 11);
-
-        // add a page
         $pdf->AddPage();
-
-        // ---------------------------------------------------------
 
         if (trim($result['shipment_date']) != "") {
             $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
@@ -105,106 +77,107 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $responseDate = "";
-        $shipmentTestDate = "";
-        $distributionDate = "";
-        $shipmentScore = 0;
+        $responseDate      = "";
+        $shipmentTestDate  = "";
+        $distributionDate  = "";
+        $shipmentScore     = 0;
         $documentationScore = 0;
-        $score = 0;
-        $testThreeHidden = false;
-        $testTwoHidden = false;
-        $screeningTest = false;
-        $noTest = 1;
-        $width = 14.28;
+        $score             = 0;
+        $testThreeHidden   = false;
+        $testTwoHidden     = false;
+        $screeningTest     = false;
+        $noTest            = 1;
 
-        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+        $allowRepeatTests  = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
         if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
             $allowedAlgorithms = explode(',', $allowedAlgorithms);
         }
-        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
-        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+        $dtsSchemeType       = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        $dtsOptionalTest3    = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
-        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
-
-        // $dtsResultsMap = array(
-        //     'Positive'      => 'P',
-        //     'Negative'      => 'N',
-        //     'Reactive'      => 'R',
-        //     'Nonreactive'   => 'NR',
-        //     'Invalid'       => 'I',
-        //     'Indeterminate' => 'Ind'
-        // );
+        $documentationScore  = Pt_Commons_SchemeConfig::get('dts.documentationScore');
 
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
+
         $testThreeOptionalDisplay = "";
         if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
             $testThreeHidden = true;
-            $width = 16.6;
         }
 
         $attributes = json_decode($result['attributes'], true);
-        /* for Shipment attributes functionality start */
+
+        /* Shipment attributes */
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $shipmentAttributesScreeningTestDisplay = "";
         if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
             $testThreeOptionalDisplay = "display:none;";
             $testTwoHidden = true;
-            $width = 20;
         }
 
         $dtsSchemeType = (isset($dtsSchemeType) && $dtsSchemeType != "") ? $dtsSchemeType : 'standard';
         if ($dtsSchemeType == 'updated-3-tests') {
             $allowedAlgorithms = ['dts-3-tests'];
-            $allowRepeatTests = $repeatTest1 = true;
-            $testThreeHidden = false;
-            $testTwoHidden = false;
+            $allowRepeatTests  = $repeatTest1 = true;
+            $testThreeHidden   = false;
+            $testTwoHidden     = false;
         } elseif ($dtsSchemeType == 'malawi') {
             $displaySampleConditionFields = true;
             $allowRepeatTests = $repeatTest1 = true;
-            $testThreeHidden = false;
-            $testTwoHidden = false;
+            $testThreeHidden  = false;
+            $testTwoHidden    = false;
         } elseif ($dtsSchemeType == 'myanmar') {
             $testThreeHidden = false;
-            $testTwoHidden = false;
+            $testTwoHidden   = false;
         } elseif ($dtsSchemeType == 'ghana') {
             $testThreeHidden = false;
-            $testTwoHidden = false;
+            $testTwoHidden   = false;
             if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
-                $syphilisActive = true;
-                $isThisRetestField = true;
+                $syphilisActive     = true;
+                $isThisRetestField  = true;
             }
         }
+
         $allowRepeatTests = isset($allowRepeatTests) ? $allowRepeatTests : 0;
-        if ($allowRepeatTests == "yes") {
-            $width = ($repeatTest1) ? 12.05 : 10;
-            if ($shipmentAttributesScreeningTestDisplay != "") {
-                $width = 12.05;
-            } elseif ($testThreeOptionalDisplay != "") {
-                $width = 16.6;
-            }
-        }
-        // die($width);
-        if (($testTwoHidden)) {
-            $noTest = 1;
+        $repeatTest1      = isset($repeatTest1) ? $repeatTest1 : false;
+
+        // --- Determine number of visible primary test columns ---
+        if ($testTwoHidden) {
+            $noTest = 1; // Only Test-1
         } elseif ($testThreeHidden) {
-            $noTest = 2;
+            $noTest = 2; // Test-1 + Test-2
         } else {
-            $noTest = 3;
+            $noTest = 3; // Test-1 + Test-2 + Test-3
         }
+
+        // --- Determine number of visible repeat test columns ---
+        // repeatTest1 = only repeat Test-1; otherwise repeat all primary tests
+        $noRepeatTests = 0;
+        if ($allowRepeatTests == 'yes') {
+            $noRepeatTests = $repeatTest1 ? 1 : $noTest;
+        }
+
+        // --- Fixed columns: Specimen Panel ID | Your Result | Expected Result | Evaluation = 4 ---
+        $fixedCols = 4; // Specimen Panel ID + Your Result + Expected Result + Evaluation
+
+        // Total visible data columns
+        $totalCols = 1 /* Specimen Panel ID */ + $noTest + $noRepeatTests + 3 /* Your Result + Expected Result + Evaluation */;
+
+        // Width per column (equal distribution, rounded to 2 dp)
+        $width = round(100 / $totalCols, 2);
 
         $shipmentAttributesSampleTypeDisplay = "";
         if (isset($shipmentAttributes["sampleType"]) && ($shipmentAttributes["sampleType"] == 'serum' || $shipmentAttributes["sampleType"] == 'plasma')) {
             $shipmentAttributesSampleTypeDisplay = "display:none;";
         }
-        /* for Shipment attributes functionality end */
 
         if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate']) != "") {
-            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
+            $splitDate    = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
+
         $attributes = '';
         if (isset($result['attributes'])) {
             $attributes = json_decode($result['attributes'], true);
@@ -215,33 +188,32 @@ if (!empty($resultArray['shipment'])) {
             $sampleRehydrationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']);
         }
 
-        $srDate = new DateTime($attributes['sample_rehydration_date']);
+        $srDate     = new DateTime($attributes['sample_rehydration_date']);
+        $testedOnDate = new DateTime(); // fallback
         if (isset($result['responseResult'][0]['shipment_test_date']) && !empty($result['responseResult'][0]['shipment_test_date'])) {
             $testedOnDate = new DateTime($result['responseResult'][0]['shipment_test_date']);
         }
         $interval = $srDate->diff($testedOnDate);
 
-        // Testing should be done within 24*($sampleRehydrateDays) hours of rehydration.
-        $rehydrateHours = $sampleRehydrateDays * 24;
+        $rehydrateHours    = $sampleRehydrateDays * 24;
         $sampleConditionFields = (isset($displaySampleConditionFields) && $displaySampleConditionFields != "") ? $displaySampleConditionFields : 'no';
 
         $shipmentReceiptDate = "";
         if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
             $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
         }
-
         if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
             $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
         }
         if (isset($result['distribution_date']) && trim($result['distribution_date']) != "") {
             $distributionDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
         }
-        // PT Co-ordinator header details start
+
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
-        $labInfo = '<span style="font-weight:bold;">HIV Serology Participant ' . $reportType . ' Report</span></br>';
-        $labInfo = '<span style="font-weight:bold;"> HIV Serology Participant ' . $reportType . ' Report for Survey No: ' . $result['distribution_code'] . ' </span></br>';
+        $labInfo  = '<span style="font-weight:bold;text-align:center;"> HIV Serology Participant Survey Report No: ' . $result['distribution_code'] . ' </span></br>';
+        $labInfo .= '<span style="font-weight:bold;text-align:center;">Individual' . $reportType . ' Report</span></br>';
         $labInfo .= '<hr>';
         $labInfo .= '<p style="text-align:right;font-size:11px;">';
         if (isset($result['pt_co_ordinator_name']) && !empty($result['pt_co_ordinator_name'])) {
@@ -258,232 +230,193 @@ if (!empty($resultArray['shipment'])) {
         }
         $labInfo .= '</p>';
         $labInfo .= '<hr><br>';
-        // PT Co-ordinator header details end
-        $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
-        $result['email'] = $result['email'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
-        $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Facility Identification Code</strong> : ' . $result['labName'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>District</strong> : ' . $result['district'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Survey Shipment date</strong> : ' . $result['shipment_date'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Date Received</strong> : ' . $shipmentReceiptDate . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Date Tested</strong> : ' . $shipmentTestDate . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Survey Closing Date</strong> : ' . $distributionDate . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Report Date</strong> : ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Name of Tester</strong> : ' . $result['first_name'] . " " . $result['last_name'] . '</td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Tester Id (in case of tester’s enrollment)</strong> : ' . $result['unique_identifier'] . '</td>';
-        $labInfo .= '</tr>';
 
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td><strong>Cell</strong> : ' . $result['mobile'];
-        $labInfo .= '	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td>';
-        $labInfo .= '</tr>';
+        $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
+        $result['email']  = $result['email']  ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
+
+        $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
+        $labInfo .= '<tr><td><strong>Facility ID</strong> : ' . $result['unique_identifier'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Name of the Facility</strong> : ' . $result['institute_name'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>District</strong> : ' . $result['district'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Survey Shipment date</strong> : ' . $result['shipment_date'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Date Received</strong> : ' . $shipmentReceiptDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Date Tested</strong> : ' . $shipmentTestDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Survey Closing Date</strong> : ' . $distributionDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Report Date</strong> : ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Name of Tester</strong> : ' . $result['first_name'] . " " . $result['last_name'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Tester Id (in case of tester\'s enrollment)</strong> : ' . $result['unique_identifier'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Cell</strong> : ' . $result['mobile'] . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td></tr>';
+
         if (isset($shipmentAttributesSampleTypeDisplay) && !empty($shipmentAttributesSampleTypeDisplay) && $shipmentAttributesSampleTypeDisplay != 'display:none;') {
             $labInfo .= '<tr>';
-            $labInfo .= '	<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
+            $labInfo .= '<td style="' . $shipmentAttributesSampleTypeDisplay . '"><strong>Rehydration Date</strong>';
             if (empty($sampleRehydrationDate) || ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1))) {
                 $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             }
             if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
                 $labInfo .= ' : ' . $sampleRehydrationDate;
             }
-            $labInfo .= '</tr>';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td>';
+            $labInfo .= '</td></tr>';
+            $labInfo .= '<tr><td>';
             if (isset($attributes['algorithm'])) {
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong> : Myanmar National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong> : Myanmar National Algorithm';
                 } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong> : Malawi National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong> : Malawi National Algorithm';
                 } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                    $labInfo .= '	<strong>Algorithm</strong> : Ghana National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong> : Ghana National Algorithm';
                 } else {
-                    $labInfo .= '	<strong>Algorithm</strong> : ' . ucwords($attributes['algorithm']);
+                    $labInfo .= '<strong>Algorithm</strong> : ' . ucwords($attributes['algorithm']);
                 }
             }
-            $labInfo .= ' </td>';
-            $labInfo .= '</tr>';
+            $labInfo .= '</td></tr>';
         }
+
         if ($sampleConditionFields == 'yes') {
             $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
-            $refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
-            $roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
-            $stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
+            $refridgerator        = (isset($attributes['refridgerator'])        && $attributes['refridgerator'] != "")        ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
+            $roomTemperature      = (isset($attributes['room_temperature'])     && $attributes['room_temperature'] != "")     ? $attributes['room_temperature'] : "";
+            $stopWatch            = (isset($attributes['stop_watch'])           && $attributes['stop_watch'] != "")           ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
 
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Condition of PT Samples</strong> : ' . $conditionOfPTSamples . '</td>';
-            $labInfo .= '</tr>';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Refridgerator</strong> : ' . $refridgerator . '</td>';
-            $labInfo .= '</tr>';
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Room Temperature</strong> : ' . $roomTemperature . '</td>';
-            $labInfo .= '</tr>';
-
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td><strong>Stop Watch</strong> : ' . $stopWatch . '</td>';
-            $labInfo .= '</tr>';
+            $labInfo .= '<tr><td><strong>Condition of PT Samples</strong> : ' . $conditionOfPTSamples . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Refridgerator</strong> : ' . $refridgerator . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Room Temperature</strong> : ' . $roomTemperature . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Stop Watch</strong> : ' . $stopWatch . '</td></tr>';
         }
+
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
-            $labInfo .= '<tr>';
-            $labInfo .= '<td><strong>Supervisor Name</strong> :' . $result['participant_supervisor'] . '</td>';
-            $labInfo .= '</tr>';
+            $labInfo .= '<tr><td><strong>Supervisor Name</strong> :' . $result['participant_supervisor'] . '</td></tr>';
         }
+
         if (isset($haveCustom) && $haveCustom == 'yes') {
-            $labInfo .= '<tr>';
-            $labInfo .= '	<td>';
-            if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField1)) {
-                $labInfo .= '	<strong>' . $customField1 . '</strong>  : ' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
-            }
-            $labInfo .= ' </td></tr>';
             $labInfo .= '<tr><td>';
-            if (isset($haveCustom) && $haveCustom == 'yes' && !empty($customField2)) {
+            if (!empty($customField1)) {
+                $labInfo .= '<strong>' . $customField1 . '</strong>  : ' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
+            }
+            $labInfo .= '</td></tr>';
+            $labInfo .= '<tr><td>';
+            if (!empty($customField2)) {
                 $labInfo .= '<strong>' . $customField2 . '</strong>  : ' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
             }
-            $labInfo .= ' </td>';
-            $labInfo .= '</tr>';
+            $labInfo .= '</td></tr>';
         }
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
 
         if (!empty($result['responseResult'])) {
-            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>
-            <table border="1" style="font-size:12px;">';
-            $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <td style="width:' . $width . '%;"></td>
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Test-1</th>';
+
+            // -----------------------------------------------------------------
+            // Build the results table header
+            // Column layout:
+            //   [Specimen Panel ID] [T1] [T2?] [T3?] [RT1?] [RT2?] [RT3?]
+            //   [Your Result] [Expected Result] [Evaluation]
+            // -----------------------------------------------------------------
+
+            $w = $width . '%'; // shorthand
+
+            $labRes  = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>';
+            $labRes .= '<table border="1" style="font-size:12px;">';
+
+            // ---- ROW 2: Column headers ----
+            $labRes .= '<tr style="background-color:#dbe4ee;">';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Specimen Panel ID</th>';
+            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-1</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Test-2</th>';
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-2</th>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Test-3</th>';
+                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-3</th>';
             }
-            if ($allowRepeatTests == 'yes') {
-                $repeatSpan = ($noTest + 3);
-                $repeatWidth = ($width * ($noTest + 2));
-                if ($repeatTest1) {
-                    $repeatWidth = ($width * ($noTest));
-                    $repeatSpan = ($noTest);
-                }
-                $labRes .= '<th colspan="' . $repeatSpan . '" style="border:none;width:' . $repeatWidth . '%;"></th>';
-            } else {
-                $labRes .= '<th colspan="2" style="border:none;width:' . ($width * 3) . '%;"></th>';
-            }
+            $labRes .= '<td style="background-color:#ffffff;" colspan="' . ($noRepeatTests + 3) . '"></td>';
             $labRes .= '</tr>';
-            $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>
-                                <td>' . $result['responseResult'][0]['testkit1'] . '</td>';
+
+            // ---- Metadata rows: Kit Name / Lot No. / Expiry Date ----
+            // These span across the table; trailing columns are merged into one empty cell.
+            // Trailing empty colspan = noRepeatTests + 3 (Your Result + Expected Result + Evaluation)
+            $trailingEmptyCols = $noRepeatTests + 3;
+
+            // Kit Name row
+            $labRes .= '<tr>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>';
+            $labRes .= '<td>' . $result['responseResult'][0]['testkit1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['testkit2'] . '</td>';
+                $labRes .= '<td>' . $result['responseResult'][0]['testkit2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['testkit3'] . '</td>';
+                $labRes .= '<td>' . $result['responseResult'][0]['testkit3'] . '</td>';
             }
-            if ($allowRepeatTests == 'yes') {
-                $labRes .= '<td colspan="' . ($noTest + 5) . '"></td>';
-            } else {
-                $labRes .= '<td colspan="5"></td>';
-            }
+            $labRes .= '<td colspan="' . $trailingEmptyCols . '"></td>';
             $labRes .= '</tr>';
-            $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>
-                                <td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
+
+            // Lot No. row
+            $labRes .= '<tr>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>';
+            $labRes .= '<td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
+                $labRes .= '<td>' . $result['responseResult'][0]['lot_no_2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
+                $labRes .= '<td>' . $result['responseResult'][0]['lot_no_3'] . '</td>';
             }
+            // $labRes .= '<td colspan="' . $trailingEmptyCols . '"></td>';
             if ($allowRepeatTests == 'yes') {
-                $labRes .= '<td colspan="' . ($noTest + 5) . '"></td>';
-            } else {
-                $labRes .= '<td colspan="5"></td>';
-            }
-            $labRes .= '</tr>';
-            $labRes .= '<tr>
-                                <td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>
-                                <td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
-            if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . '">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
-            }
-            if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
-            }
-            if ($allowRepeatTests == 'yes') {
-                $labRes .= '<td colspan="' . ($noTest + 5) . '"></td>';
-            } else {
-                $labRes .= '<td colspan="5"></td>';
+                // Columns before repeat block: Specimen Panel ID + primary tests
+                $colsBeforeRepeat = 1 + $noTest;
+                // Repeat block width
+                $repeatBlockWidth = $noRepeatTests * $width;
+                // Trailing fixed columns: Your Result + Expected Result + Evaluation
+                $trailingCols = 3;
+                // "Your Score" header spanning repeat columns
+                $labRes .= '<th colspan="' . $noRepeatTests . '" style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $repeatBlockWidth . '%;">Repeat Tests</th>';
+                // Empty trailing cells
+                $labRes .= '<th colspan="' . $trailingCols . '" style="text-align:center;font-weight:bold;background-color:#dbe4ee;width:' . ($trailingCols * $width) . '%;">Your Score</th>';
             }
             $labRes .= '</tr>';
 
-            if ($allowRepeatTests == 'yes') {
-                $labRes .= '<tr style="background-color:#dbe4ee;">
-                            <th colspan="' . ($noTest + 1) . '" style="width:' . ($width * ($noTest + 1)) . '%;"></th>
-                            <th colspan="' . $noTest . '" style="text-align:center;font-weight:bold;width:' . ($width * $noTest) . '%;"><b>Repeat Test</b></th>';
-                if (!$repeatTest1) {
-                    $labRes .= '<th colspan="5" style="width:' . $width . '%;"></th>';
-                }
-                $labRes .= '</tr>';
-            }
-            $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Specimen Panel ID </th>
-                                <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
+            // Expiry Date row
+            $labRes .= '<tr>';
+            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>';
+            $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
+                $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
+                $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
-                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</th>';
-                if ($shipmentAttributesScreeningTestDisplay == "" && !$repeatTest1) {
-                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $shipmentAttributesScreeningTestDisplay . 'width:' . $width . '%;">Result-2</th>';
+                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-1</th>';
+                if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
+                    $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-2</th>';
                 }
-                if ($testThreeOptionalDisplay == "" && !$repeatTest1) {
-                    $labRes .= '<th style="text-align:center;font-weight:bold;' . $testThreeOptionalDisplay . 'width:' . $width . '%;">Result-3</th>';
+                if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
+                    $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-3</th>';
                 }
+                // FIX: correct column order — "Your Result" (participant) then "Expected Result" (reference)
+                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Your Result</th>';
+                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Expected Result</th>';
+                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Evaluation</th>';
             }
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Expected Result</th>
-                        <th style="text-align:center;font-weight:bold;width:' . $width . '%;">Your Result</th>';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Evaluation</th>';
-
-            // $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $sWidth . '%;" colspan="2">Score</th>';
             $labRes .= '</tr>';
 
-            $nonMandatorySamples = [];
-            $controlSamples = [];
-            $correctSamples = [];
-            $totalProperSamples = 0;
-            $correctSamplesCount = 0;
-            $wrongSamples = [];
-            $otherSamples = [];
-            $allSamples = [];
+            // ---- Data rows ----
+            $nonMandatorySamples  = [];
+            $controlSamples       = [];
+            $correctSamples       = [];
+            $totalProperSamples   = 0;
+            $correctSamplesCount  = 0;
+            $wrongSamples         = [];
+            $otherSamples         = [];
+            $allSamples           = [];
             $mandatorySampleCount = 0;
-            $evaluationResult = "";
-            $successRate = 0;
+            $evaluationResult     = "";
+            $successRate          = 0;
+
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
                 if ($response['control'] == 1) {
                     $controlSamples[] = $response['sample_label'];
                 }
-
                 if ($response['mandatory'] == 0) {
                     $nonMandatorySamples[] = $response['sample_label'];
                 } else {
@@ -494,90 +427,88 @@ if (!empty($resultArray['shipment'])) {
                         $successRate++;
                     } elseif ($response['calculated_score'] == 'Fail') {
                         $evaluationResult = 'Unacceptable';
-                        $wrongSamples[] = $response['sample_label'];
+                        $wrongSamples[]   = $response['sample_label'];
                     } else {
                         $evaluationResult = 'Unacceptable';
-                        $otherSamples[] = $response['sample_label'];
+                        $otherSamples[]   = $response['sample_label'];
                     }
                 }
             }
-            $correctSamplesCount = count($correctSamples);
-            $totalProperSamples = $correctSamplesCount + count($wrongSamples);
-            $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? ($documentationScore) : 0;
-            $maximumResponseScore = 100 - $maxDocumentationPoints;
-            // $scorePerCorrectSample = round($maximumResponseScore / (count($allSamples) - count($nonMandatorySamples) - count($controlSamples)), 2);
-            // $scorePerCorrectSample = round($maximumResponseScore / (count($numberOfMandatorySamples)), 2);
-            $scorePerCorrectSample = round($maximumResponseScore / $mandatorySampleCount, 2);
-            $meanScore = [];
+
+            $correctSamplesCount      = count($correctSamples);
+            $totalProperSamples       = $correctSamplesCount + count($wrongSamples);
+            $maxDocumentationPoints   = (isset($documentationScore) && $documentationScore > 0) ? $documentationScore : 0;
+            $maximumResponseScore     = 100 - $maxDocumentationPoints;
+            $scorePerCorrectSample    = round($maximumResponseScore / $mandatorySampleCount, 2);
+            $meanScore                = [];
+
             foreach ($result['responseResult'] as $response) {
-
                 if ($response['calculated_score'] == 'Pass') {
-                    $img = WEB_ROOT . '/images/check.jpg';
-
                     $score = ($response['control'] == 0) ? $scorePerCorrectSample : "N.A.";
                 } elseif ($response['calculated_score'] == 'Fail') {
-                    $img = WEB_ROOT . '/images/cross.jpg';
                     $score = ($response['control'] == 0) ? 0 : "N.A.";
                 } else {
-                    $img = UPLOAD_PATH . '/../images/minus.jpg';
                     $score = "N.A.";
                 }
                 $meanScore[] = ($score != 'N.A.') ? $score : 0;
-                $labRes .= '<tr>
-							<td style="text-align:center;">' . $response['sample_label'] . '</td>
-							<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
+
+                $labRes .= '<tr>';
+                $labRes .= '<td style="text-align:center;">' . $response['sample_label'] . '</td>';
+                // Primary test results
+                $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
                 if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . ';text-align:center;">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_2']]] : "") . '</td>';
+                    $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_2']]] : "") . '</td>';
                 }
                 if ($testThreeOptionalDisplay == "") {
-                    $labRes .= '<td style="' . $testThreeOptionalDisplay . ';text-align:center;">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_3']]] : "") . '</td>';
+                    $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_3']]] : "") . '</td>';
                 }
+                // Repeat test results
                 if ($allowRepeatTests == 'yes') {
                     $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_1']) && $response['repeat_test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_1']]] : "") . '</td>';
-                    if ($shipmentAttributesScreeningTestDisplay == "" && !$repeatTest1) {
-                        $labRes .= '<td style="' . $shipmentAttributesScreeningTestDisplay . ';text-align:center;">' . (isset($response['repeat_test_result_2']) && $response['repeat_test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_2']]] : "") . '</td>';
+                    if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
+                        $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_2']) && $response['repeat_test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_2']]] : "") . '</td>';
                     }
-                    if ($testThreeOptionalDisplay == "" && !$repeatTest1) {
-                        $labRes .= '<td style="' . $testThreeOptionalDisplay . '">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
+                    if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
+                        $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }
-                $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>
-                            <td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
-                /* $labRes .= '<td style="text-align:center;"><img style="width:10px;" src="' . $img . '" /></td>
-                            <td style="text-align:center;">' . $score . '</td>'; */
+                // FIX: "Your Result" = participant's lab result (labResult); "Expected Result" = reference result
+                $labRes .= '<td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>';
                 $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
                 $labRes .= '</tr>';
             }
+
             $labRes .= '</table>';
             $labRes .= '<span style="font-size:10px;">(R = Reactive, NR = Non Reactive, P = Positive, N = Negative, I = Invalid, Ind = Indeterminate)</span><br/>';
 
+            // ---- RTRI panel (unchanged logic) ----
             if (
                 (isset($shipmentAttributes['enableRtri']) && $shipmentAttributes['enableRtri'] == 'yes')
                 &&
                 (isset($result['responseResult'][0]['dts_rtri_control_line']) && !empty($result['responseResult'][0]['dts_rtri_control_line']))
             ) {
-                /* RTRI Panel section */
                 $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel : <br/></span>
                 <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                                    <th style="text-align:center;font-weight:bold;">RTRI Tested?</th>
-                                    <th style="text-align:center;font-weight:bold;">Control/Sample</th>
-                                    <th style="text-align:center;font-weight:bold;">Control Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Verification Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Longterm Line</th>
-                                    <th style="text-align:center;font-weight:bold;">Expected Result</th>
-                                    <th style="text-align:center;font-weight:bold;">Final RTRI Interpretation</th>
-                            </tr>';
+                                <th style="text-align:center;font-weight:bold;">RTRI Tested?</th>
+                                <th style="text-align:center;font-weight:bold;">Control/Sample</th>
+                                <th style="text-align:center;font-weight:bold;">Control Line</th>
+                                <th style="text-align:center;font-weight:bold;">Verification Line</th>
+                                <th style="text-align:center;font-weight:bold;">Longterm Line</th>
+                                <th style="text-align:center;font-weight:bold;">Expected Result</th>
+                                <th style="text-align:center;font-weight:bold;">Final RTRI Interpretation</th>
+                        </tr>';
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
-                                    <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
-                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
-                                    <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
-                                </tr>';
+                                <td style="text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
+                                <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
+                                <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
+                                <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
+                                <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
+                                <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
+                                <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
+                            </tr>';
                 }
                 $labRes .= '</table>';
             }
@@ -586,197 +517,148 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
             if (!empty($nonMandatorySamples)) {
-
-                $nmsTable = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+                $nmsTable  = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
 
-            //Let us now calculate documentation score
-            $documentationScore = 0;
+            // ---- Documentation score ----
+            $documentationScore      = 0;
             $totalDocumentationItems = 0;
 
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
-                // for Dried Samples, we will have rehydration as one of the documentation scores
-                // for Dried Samples, we will have 2 documentation checks for rehydration - Rehydration Date and Date Diff between Rehydration and Testing
                 $totalDocumentationItems = 5;
             } else {
-                // for Non Dried Samples, we will NOT have rehydration documentation scores
-                // there are 2 conditions for rehydration so 5 - 2 = 3
                 $totalDocumentationItems = 3;
-                // Myanmar does not have Supervisor scoring so it has one less documentation item
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
                     $totalDocumentationItems -= 1;
                 }
             }
-
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                // For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
                 $totalDocumentationItems += 4;
             }
 
             $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
-
             $attributes = json_decode($result['attributes'], true);
 
-            $img = [];
             $imgPass = WEB_ROOT . '/images/check.jpg';
             $imgFail = WEB_ROOT . '/images/cross.jpg';
 
-            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>
-					<table border="1" style="font-size:12px;width:100%;">
-						<tr style="background-color:#dbe4ee;">
-							<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
+            $docRes  = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>';
+            $docRes .= '<table border="1" style="font-size:12px;width:100%;">';
+            $docRes .= '<tr style="background-color:#dbe4ee;">';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
             $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;" colspan="2">Score</td>';
             $docRes .= '</tr>';
 
-
+            // Receipt date
             if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
+                $img      = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img = $imgFail;
+                $img      = $imgFail;
             }
-
-            $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<tr>';
+            $docRes .= '<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
+            // Rehydration date (dried samples only)
             if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "" && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
+                $img      = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img = $imgFail;
+                $img      = $imgFail;
             }
-
-            $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
+            $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
+            // Test date
             if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date']) != "") {
                 $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
+                $img      = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img = $imgFail;
+                $img      = $imgFail;
             }
-
-            $docRes .= '<tr>
-							<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<tr>';
+            $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
-
+            // Rehydration timing
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
-                $img = $imgFail;
+                $img      = $imgFail;
             } else {
                 $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
+                $img      = $imgPass;
             }
-
-            $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">
-							<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
-            $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>
-							<td style="text-align:center;">' . $scoreDoc . '</td>';
+            $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
+            $docRes .= '<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
+            $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>';
+            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
-            // For Myanmar National Algorithm, they do not want to check for Supervisor Approval
+            // Supervisor approval (not Myanmar)
             if ($attributes['algorithm'] != 'myanmarNationalDtsAlgo') {
                 if (strtolower($result['responseResult'][0]['supervisor_approval']) == 'yes' && trim($result['responseResult'][0]['participant_supervisor']) != "") {
                     $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
+                    $img      = $imgPass;
                 } else {
                     $scoreDoc = 0;
-                    $img = $imgFail;
+                    $img      = $imgFail;
                 }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
+                $docRes .= '<tr>';
+                $docRes .= '<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
+                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
             }
 
+            // Malawi-specific documentation items
             if ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                if (!empty($attributes['condition_pt_samples'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
+                $malawiItems = [
+                    ['label' => 'Reporting the Condition of PT Samples',      'key' => 'condition_pt_samples'],
+                    ['label' => 'Reporting the availability of Refridgerator', 'key' => 'refridgerator'],
+                    ['label' => 'Reporting the Room Temperature',              'key' => 'room_temperature'],
+                    ['label' => 'Reporting the availability of Stop Watch',    'key' => 'stop_watch'],
+                ];
+                foreach ($malawiItems as $item) {
+                    if (!empty($attributes[$item['key']])) {
+                        $scoreDoc = $documentationScorePerItem;
+                        $img      = $imgPass;
+                    } else {
+                        $scoreDoc = 0;
+                        $img      = $imgFail;
+                    }
+                    $docRes .= '<tr>';
+                    $docRes .= '<td style="text-align:left;font-weight:bold;">' . $item['label'] . '</td>';
+                    $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
+                    $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
+                    $docRes .= '</tr>';
                 }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Condition of PT Samples</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                $docRes .= '</tr>';
-
-                if (!empty($attributes['refridgerator'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                $docRes .= '</tr>';
-
-                if (!empty($attributes['room_temperature'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the Room Temperature</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                $docRes .= '</tr>';
-
-
-                if (!empty($attributes['stop_watch'])) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">Reporting the availability of Stop Watch</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                $docRes .= '</tr>';
             }
-
 
             $docRes .= '</table>';
-
             $pdf->writeHTML($docRes, true, false, true, false, '');
 
+            // ---- Failure / corrective actions ----
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
-                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes  = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
                 $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
                 $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>';
-                    $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
+                    $failRes .= '<td> ' . (isset($warning['warning'])         ? $warning['warning']         : "") . ' </td>';
                     $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
                     $failRes .= '</tr>';
                 }
@@ -784,41 +666,39 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
         }
+
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
-        } elseif ($result['is_excluded'] != 'yes') {
+        } else {
             $accuracy = (($successRate / count($result['responseResult'])) * 100);
-            // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
-            $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
-            $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
-            $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
-            $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
+            $wishes   = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
+            $wishes  .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
+            $wishes  .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+            $wishes  .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }
 
         if (trim($result['shipment_comment']) != "" || trim($result['evaluationComments']) != "" || trim($result['optional_eval_comment']) != "") {
-            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment   = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
             $cmdStatus = false;
             if (trim($result['evaluationComments']) != "") {
                 $cmdStatus = true;
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
-                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
-                $comment .= '</tr>';
+                $comment  .= '<tr>';
+                $comment  .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+                $comment  .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
+                $comment  .= '</tr>';
             }
-
             if (trim($result['optional_eval_comment']) != "") {
                 $cmdStatus = true;
-                $comment .= '<tr>';
-                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
-                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
-                $comment .= '</tr>';
+                $comment  .= '<tr>';
+                $comment  .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+                $comment  .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment  .= '</tr>';
             }
-
             $comment .= '</table>';
             if ($cmdStatus) {
                 $pdf->writeHTML($comment, true, false, true, false, '');
@@ -836,7 +716,7 @@ if (!empty($resultArray['shipment'])) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html = $br . '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
+        $html  = $br . '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
         if (trim($result['shipment_comment']) != "") {
             $html .= '<span style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
         }
@@ -844,18 +724,17 @@ if (!empty($resultArray['shipment'])) {
         $html .= '<span style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</span>';
         $html .= '<br><span style="font-size:11px;text-align:center;font-weight:bold;"><u>' . $eodReportText . '</u>.</span><br>';
         $pdf->writeHTML($html, true, false, true, false, '');
+
         if (ob_get_contents()) {
             ob_end_clean();
         }
 
-        //Close and output PDF document
         if (isset($result['last_name']) && trim($result['last_name']) != "") {
             $result['last_name'] = "_" . $result['last_name'];
         }
 
         $nameParts = [];
         $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
-
         foreach ($keys as $key) {
             if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
                 $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
@@ -865,12 +744,9 @@ if (!empty($resultArray['shipment'])) {
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
-        $created = $pdf->Output($filePath, "F");
-
-        //$pdf->Output($fileName, 'I');
+        $created  = $pdf->Output($filePath, "F");
 
         $loadpdf = Zend_Pdf::load($filePath);
-
         foreach ($loadpdf->pages as $page) {
             $pdfExtract = $extractor->clonePage($page);
             $pdfExtract->setFont($font, 8)->drawText('Page ' . $j . ' / ' . $totalPages, 280, 50);
