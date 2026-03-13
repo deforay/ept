@@ -376,7 +376,7 @@ foreach ($this->allTestKits as $kit) {
                             </tr>
                         <?php } ?>
 
-                        <?php if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) { ?>
+                        <?php if (isset($this->shipment['qc_done']) && $this->shipment['qc_done'] == "yes" && isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') { ?>
                             <tr>
                                 <td><label><?= $this->translate->_("QC Done"); ?></label></td>
                                 <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?>
@@ -2026,9 +2026,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                                        class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                                            <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                                                        </td>');
+                                                                                                                                            class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                                                <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                                            </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {
