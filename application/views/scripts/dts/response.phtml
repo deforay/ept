@@ -847,10 +847,10 @@ foreach ($this->allTestKits as $kit) {
                                 <?php } ?>
                                 <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                             </tr>
-                            <?php if (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') { ?>
+                            <?php if (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') { ?>
 
                                 <tr align="CENTER" class="light autoWidthSubInput"
-                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') ? '' : 'display:none;'; ?>">
                                     <th><?= $this->translate->_("QC Done"); ?></th>
                                     <?php if ($syphilisActive) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
@@ -950,7 +950,7 @@ foreach ($this->allTestKits as $kit) {
                                     }
                                 } ?>
                                 <tr align="CENTER" class="light autoWidthSubInput"
-                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') ? '' : 'display:none;'; ?>">
                                     <th><?= $this->translate->_("QC Date"); ?></th>
                                     <?php if ($syphilisActive) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
