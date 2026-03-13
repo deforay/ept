@@ -1774,12 +1774,18 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Fix: Decode JSON strings if needed
+        // Fix: Decode JSON strings if needed (only overwrite if decode succeeds)
         if (isset($params['concat']) && is_string($params['concat'])) {
-            $params['concat'] = json_decode($params['concat'], true);
+            $decoded = json_decode($params['concat'], true);
+            if ($decoded !== null) {
+                $params['concat'] = $decoded;
+            }
         }
         if (isset($params['fieldNames']) && is_string($params['fieldNames'])) {
-            $params['fieldNames'] = json_decode($params['fieldNames'], true);
+            $decoded = json_decode($params['fieldNames'], true);
+            if ($decoded !== null) {
+                $params['fieldNames'] = $decoded;
+            }
         }
 
         // Handle concat fields properly

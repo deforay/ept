@@ -210,6 +210,11 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->participants = $clientsServices->getParticipantList($params);
+            if (isset($params['schemeId']) && !empty($params['schemeId'])) {
+                $this->view->mappedParticipant = $clientsServices->getEnrolledBySchemeCode($params['schemeId']);
+            } else {
+                $this->view->mappedParticipant = [];
+            }
         }
     }
 

@@ -2303,6 +2303,19 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $institute = (is_array($params['institute'])) ? implode(",", $params['institute']) : $params['institute'];
             $sql = $sql->where("institute_name IN (?)", $institute);
         }
+        if (isset($params['siteType']) && $params['siteType'] != "") {
+            $siteType = (is_array($params['siteType'])) ? implode(",", $params['siteType']) : $params['siteType'];
+            $sql = $sql->where("site_type IN (?)", $siteType);
+        }
+        if (isset($params['enrolledPrograms']) && $params['enrolledPrograms'] != "") {
+            $enrolledPrograms = (is_array($params['enrolledPrograms'])) ? implode(",", $params['enrolledPrograms']) : $params['enrolledPrograms'];
+            $sql = $sql->where("enrolled_programs IN (?)", $enrolledPrograms);
+        }
+        if (isset($params['schemeId']) && !empty($params['schemeId'])) {
+            $subSql = $db->select()->from(['e' => 'enrollments'], 'participant_id')
+                ->where("scheme_id = ?", $params['schemeId']);
+            $sql = $sql->where("participant_id NOT IN ?", $subSql);
+        }
         return $db->fetchAll($sql);
     }
 }
