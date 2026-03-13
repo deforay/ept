@@ -111,9 +111,10 @@ $count = 0;
     id="vlSampleTable">
     <thead>
         <tr align="center">
-            <th style="width:25%; text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
+            <th style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
             <th style="text-align: center; vertical-align: middle;">
-                <?= $this->translate->_("Sample Preparation Date"); ?></th>
+                <?= $this->translate->_("Sample Preparation Date"); ?>
+            </th>
             <th style="text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
             <th style="text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
             <th style="width:15%; text-align: center;"><?= $this->translate->_("Add/Remove Row"); ?></th>
@@ -161,9 +162,11 @@ $count = 0;
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1" <?php echo ($control == 1) ? "selected='selected'" : ""; ?>>
-                                <?= $this->translate->_("Yes"); ?></option>
+                                <?= $this->translate->_("Yes"); ?>
+                            </option>
                             <option value="0" <?php echo ($control === '0' || $control === 0) ? "selected='selected'" : ""; ?>>
-                                <?= $this->translate->_("No"); ?></option>
+                                <?= $this->translate->_("No"); ?>
+                            </option>
                         <?php else: ?>
                             <option value="1"><?= $this->translate->_("Yes"); ?></option>
                             <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
@@ -176,9 +179,11 @@ $count = 0;
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <option value="1" <?php echo ($mandatory == 1) ? "selected='selected'" : ""; ?>>
-                                <?= $this->translate->_("Yes"); ?></option>
+                                <?= $this->translate->_("Yes"); ?>
+                            </option>
                             <option value="0" <?php echo ($mandatory === '0' || $mandatory === 0) ? "selected='selected'" : ""; ?>>
-                                <?= $this->translate->_("No"); ?></option>
+                                <?= $this->translate->_("No"); ?>
+                            </option>
                         <?php else: ?>
                             <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
                             <option value="0"><?= $this->translate->_("No"); ?></option>
@@ -215,7 +220,8 @@ $count = 0;
                                             <thead>
                                                 <tr align="center">
                                                     <th style="width:50%; text-align: center;">
-                                                        <?= $this->translate->_("VL Assay"); ?></th>
+                                                        <?= $this->translate->_("VL Assay"); ?>
+                                                    </th>
                                                     <th style="width:20%; text-align: center;">
                                                         <?= $this->translate->_("Viral Load"); ?> (log<sub>10</sub> copies/ml)
                                                     </th>

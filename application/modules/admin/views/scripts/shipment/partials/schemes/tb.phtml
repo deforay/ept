@@ -87,9 +87,11 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     <div class="form-group">
         <label class="col-lg-3 control-label"><?= $this->translate->_("Collect Feedback"); ?></label>
         <div class="col-lg-5">
-            <select name="collectFeedBack" id="collectFeedBack" class='form-control input-sm' title="Please select feedback active or inactive">
+            <select name="collectFeedBack" id="collectFeedBack" class='form-control input-sm'
+                title="Please select feedback active or inactive">
                 <option value=""><?= $this->translate->_("-- Select --"); ?></option>
-                <option value="yes" <?php echo ($isEditMode && isset($this->shipmentData['shipment']['collect_feedback']) && $this->shipmentData['shipment']['collect_feedback'] == 'yes') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Yes"); ?></option>
+                <option value="yes" <?php echo ($isEditMode && isset($this->shipmentData['shipment']['collect_feedback']) && $this->shipmentData['shipment']['collect_feedback'] == 'yes') ? "selected='selected'" : ''; ?>>
+                    <?= $this->translate->_("Yes"); ?></option>
                 <option value="no" <?php echo ($isEditMode && isset($this->shipmentData['shipment']['collect_feedback']) && $this->shipmentData['shipment']['collect_feedback'] == 'no') ? "selected='selected'" : (!$isEditMode ? "selected='selected'" : ''); ?>><?= $this->translate->_("No"); ?></option>
             </select>
         </div>
@@ -99,36 +101,47 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
-            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            title="Please enter the report version" class="form-control input-sm"
+            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <label class="col-lg-3 control-label"
+        for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
-            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            title="Please select the report effective date" class="form-control input-sm datepicker"
+            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
     </div>
 </div>
 <div class="form-group">
     <label class="col-lg-3 control-label" for="tbTest"><?= $this->translate->_("Select Type of TB Test"); ?></label>
     <div class="col-lg-5">
-        <select type="text" id="tbTest" name="tbTest" class="form-control input-sm" title="Please select the type of tb test" onchange="loadRefTable(this.value);">
+        <select type="text" id="tbTest" name="tbTest" class="form-control input-sm"
+            title="Please select the type of tb test" onchange="loadRefTable(this.value);">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-            <option value="molecular" <?php echo ($currentTbTestType == 'molecular') ? "selected='selected'" : ''; ?>>Molecular</option>
-            <option value="microscopy" <?php echo ($currentTbTestType == 'microscopy') ? "selected='selected'" : ''; ?>>Microscopy</option>
+            <option value="molecular" <?php echo ($currentTbTestType == 'molecular') ? "selected='selected'" : ''; ?>>
+                Molecular</option>
+            <option value="microscopy" <?php echo ($currentTbTestType == 'microscopy') ? "selected='selected'" : ''; ?>>
+                Microscopy</option>
         </select>
     </div>
 </div>
 <!-- Microscopy Table -->
-<table style="width: <?php echo $isEditMode ? '1050px' : '100%'; ?>; margin: 0 auto;" border="1" class="hide table table-bordered table-striped reftable clearfix" id="microscopy">
+<table style="width: <?php echo $isEditMode ? '1050px' : '100%'; ?>; margin: 0 auto;" border="1"
+    class="hide table table-bordered table-striped reftable clearfix" id="microscopy">
     <thead>
         <tr>
-            <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Control/Sample"); ?></th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
+            <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Label"); ?>
+            </th>
+            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?>
+            </th>
+            <th style="text-align: center;vertical-align:middle;">
+                <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
             <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
             <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
-            <th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+            <th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -137,7 +150,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         if ($isEditMode && count($samples) > 0):
             foreach ($samples as $reference):
                 $sampleId = $reference['sample_id'];
-        ?>
+                ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[<?php echo htmlspecialchars($sampleId); ?>]"
@@ -149,8 +162,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         <input type="text" name="samplePreparationDate[<?php echo htmlspecialchars($sampleId); ?>]"
                             id="samplePreparationDate<?php echo htmlspecialchars($sampleId); ?>"
                             value="<?php echo htmlspecialchars($reference['sample_preparation_date'] ?? ''); ?>"
-                            readonly="readonly"
-                            class="isRequired microscopyfield form-control input-sm datepicker"
+                            readonly="readonly" class="isRequired microscopyfield form-control input-sm datepicker"
                             placeholder="Please enter the sample preparation date"
                             title="Please enter the sample preparation date" />
                     </td>
@@ -184,13 +196,15 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         </select>
                     </td>
                     <td>
-                        <a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                        <a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i
+                                class="icon-plus"></i></a>
                         <?php if ($mcounter > 1): ?>
-                            <a href="javascript:void(0);" onclick="removeRow(this, 'microscopy')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                            <a href="javascript:void(0);" onclick="removeRow(this, 'microscopy')" class="btn btn-xs btn-danger"
+                                title="Remove this row completely"><i class="icon-minus"></i></a>
                         <?php endif; ?>
                     </td>
                 </tr>
-            <?php
+                <?php
                 $mcounter++;
             endforeach;
         else:
@@ -198,31 +212,42 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
             <!-- Default empty row for ADD mode or when no samples exist -->
             <tr>
                 <th>
-                    <input type="text" name="sampleName[1]" value="" class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
+                    <input type="text" name="sampleName[1]" value=""
+                        class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name"
+                        title="Please enter the Sample Name" />
                 </th>
                 <td>
-                    <input type="text" name="samplePreparationDate[1]" readonly="readonly" class="isRequired microscopyfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />
+                    <input type="text" name="samplePreparationDate[1]" readonly="readonly"
+                        class="isRequired microscopyfield form-control input-sm datepicker"
+                        placeholder="Please enter the sample preparation date"
+                        title="Please enter the sample preparation date" />
                 </td>
                 <td>
-                    <select name="mtbDetected[1]" class="isRequired microscopyfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+                    <select name="mtbDetected[1]" class="isRequired microscopyfield form-control input-sm"
+                        title="Please enter the MTB Detected for this sample"
+                        placeholder="Please enter the MTB Detected for this sample">
                         <?php $this->dropdownSelection($possibleMicroscopeResults, null, true); ?>
                     </select>
                 </td>
                 <td>
-                    <select name="control[1]" class="isRequired microscopyfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+                    <select name="control[1]" class="isRequired microscopyfield controlOrNot form-control input-sm"
+                        title="Please choose whether this sample is a control">
                         <option value="1"><?= $this->translate->_("Yes"); ?></option>
                         <option value="0" selected='selected'><?= $this->translate->_("No"); ?></option>
                     </select>
                 </td>
                 <td>
-                    <select name="mandatory[1]" class="isRequired microscopyfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
+                    <select name="mandatory[1]" class="isRequired microscopyfield form-control input-sm"
+                        title="Please choose whether this sample/control is mandatory">
                         <option value="1" selected='selected'><?= $this->translate->_("Yes"); ?></option>
                         <option value="0"><?= $this->translate->_("No"); ?></option>
                     </select>
                 </td>
                 <td>
-                    <a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
-                    <a href="javascript:void(0);" onclick="removeRow(this, 'microscopy')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                    <a href="javascript:void(0);" onclick="addTbRow(this, 'microscopy');" class="btn btn-xs btn-info"><i
+                            class="icon-plus"></i></a>
+                    <a href="javascript:void(0);" onclick="removeRow(this, 'microscopy')" class="btn btn-xs btn-danger"
+                        title="Remove this row completely"><i class="icon-minus"></i></a>
                 </td>
             </tr>
         <?php endif; ?>
@@ -231,7 +256,8 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 
 <!-- Molecular Table -->
 <div style="overflow-x:scroll;" class="table-responsive">
-    <table border="1" class="hide table table-bordered table-striped reftable clearfix" id="molecular" style="border: 1px solid gray;">
+    <table border="1" class="hide table table-bordered table-striped reftable clearfix" id="molecular"
+        style="border: 1px solid gray;">
         <thead>
             <tr>
                 <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Details"); ?></th>
@@ -244,23 +270,27 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
             if ($isEditMode && count($samples) > 0):
                 foreach ($samples as $reference):
                     $sampleId = $reference['sample_id'];
-            ?>
+                    ?>
                     <tr>
                         <td>
                             <table>
                                 <tr>
                                     <th colspan="13">
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['sample_label'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['sample_label'] ?? ''); ?>"
                                             name="sampleName[<?php echo htmlspecialchars($sampleId); ?>]"
                                             class="isRequired molecularfield form-control input-sm"
-                                            placeholder="Please enter the Sample Name"
-                                            title="Please enter the Sample Name" />
+                                            placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
+                                    <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("MTB/Rif"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
+                                    </th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("Rif Resistance"); ?></th>
                                     <th style="text-align: center;vertical-align:middle;">Probe D</th>
                                     <th style="text-align: center;vertical-align:middle;">Probe C</th>
                                     <th style="text-align: center;vertical-align:middle;">Probe E</th>
@@ -268,8 +298,10 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     <th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
                                     <th style="text-align: center;vertical-align:middle;">Probe A</th>
                                     <th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
-                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                        <?= $this->translate->_("Sample Preparation Date"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("TB Isolate"); ?></th>
                                 </tr>
                                 <tr>
                                     <td>
@@ -288,10 +320,14 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             title="Please enter the Rif Resistance for this sample"
                                             placeholder="Please enter the Rif Resistance for this sample">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <option value="na" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'na') ? "selected='selected'" : ""; ?>>N/A</option>
-                                            <option value="detected" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'detected') ? "selected='selected'" : ""; ?>>Detected</option>
-                                            <option value="not-detected" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'not-detected') ? "selected='selected'" : ""; ?>>Not Detected</option>
-                                            <option value="indeterminate" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'indeterminate') ? "selected='selected'" : ""; ?>>Indeterminate</option>
+                                            <option value="na" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'na') ? "selected='selected'" : ""; ?>>N/A
+                                            </option>
+                                            <option value="detected" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'detected') ? "selected='selected'" : ""; ?>>
+                                                Detected</option>
+                                            <option value="not-detected" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'not-detected') ? "selected='selected'" : ""; ?>>
+                                                Not Detected</option>
+                                            <option value="indeterminate" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'indeterminate') ? "selected='selected'" : ""; ?>>
+                                                Indeterminate</option>
                                             <option value="testing-not-performed" <?php echo (isset($reference['rif_resistance']) && $reference['rif_resistance'] == 'testing-not-performed') ? "selected='selected'" : ""; ?>>Testing NOT Performed</option>
                                         </select>
                                     </td>
@@ -299,36 +335,37 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                         <input type="text" value="<?php echo htmlspecialchars($reference['probe_d'] ?? ''); ?>"
                                             id="probeD<?php echo ($counter + 1); ?>"
                                             name="probeD[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal probe1"
-                                            title="Please enter the Probe D" placeholder="D" />
+                                            class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D"
+                                            placeholder="D" />
                                     </td>
                                     <td>
                                         <input type="text" value="<?php echo htmlspecialchars($reference['probe_c'] ?? ''); ?>"
                                             id="probeC<?php echo ($counter + 1); ?>"
                                             name="probeC[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal probe1"
-                                            title="Please enter the Probe C" placeholder="C" />
+                                            class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C"
+                                            placeholder="C" />
                                     </td>
                                     <td>
                                         <input type="text" value="<?php echo htmlspecialchars($reference['probe_e'] ?? ''); ?>"
                                             id="probeE<?php echo ($counter + 1); ?>"
                                             name="probeE[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal probe1"
-                                            title="Please enter the Probe E" placeholder="E" />
+                                            class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E"
+                                            placeholder="E" />
                                     </td>
                                     <td>
                                         <input type="text" value="<?php echo htmlspecialchars($reference['probe_b'] ?? ''); ?>"
                                             id="probeB<?php echo ($counter + 1); ?>"
                                             name="probeB[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal probe1"
-                                            title="Please enter the Probe B" placeholder="B" />
+                                            class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B"
+                                            placeholder="B" />
                                     </td>
                                     <td>
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['spc_xpert'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['spc_xpert'] ?? ''); ?>"
                                             id="spcXpert<?php echo ($counter + 1); ?>"
                                             name="spcXpert[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal"
-                                            title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
+                                            class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert"
+                                            placeholder="SPC Xpert" />
                                     </td>
                                     <td>
                                         <input type="text" value="<?php echo htmlspecialchars($reference['probe_a'] ?? ''); ?>"
@@ -338,14 +375,16 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             title="Please enter the Probe A" placeholder="A" />
                                     </td>
                                     <td>
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['mtbrif_probe_a_mean_stability_ct'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['mtbrif_probe_a_mean_stability_ct'] ?? ''); ?>"
                                             name="probeAMean[<?php echo htmlspecialchars($sampleId); ?>]"
                                             id="probeAMean<?php echo ($counter + 1); ?>"
                                             class="form-control input-sm oneDecimal input-probeAMean<?php echo ($counter + 1); ?>"
                                             title="Please enter the Probe A Mean" placeholder="A Mean" />
                                     </td>
                                     <td style="border-left: solid 1px gray;">
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['sample_preparation_date'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['sample_preparation_date'] ?? ''); ?>"
                                             id="sample1PreparationDate<?php echo ($counter + 1); ?>"
                                             name="samplePreparationDate[<?php echo htmlspecialchars($sampleId); ?>]"
                                             readonly="readonly"
@@ -354,7 +393,8 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             title="Please enter the sample preparation date" />
                                     </td>
                                     <td>
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['tb_isolate'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['tb_isolate'] ?? ''); ?>"
                                             id="tbIsolate<?php echo ($counter + 1); ?>"
                                             name="tbIsolate[<?php echo htmlspecialchars($sampleId); ?>]"
                                             class="form-control input-sm" placeholder="Isolate"
@@ -362,9 +402,13 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
+                                    <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("MTB Ultra"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
+                                    </th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("Rif Resistance"); ?></th>
                                     <th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
                                     <th style="text-align: center;vertical-align:middle;">rpoB1</th>
                                     <th style="text-align: center;vertical-align:middle;">rpoB2</th>
@@ -372,8 +416,10 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     <th style="text-align: center;vertical-align:middle;">rpoB4</th>
                                     <th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
                                     <th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
-                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                        <?= $this->translate->_("Is it a Control?"); ?></th>
+                                    <th style="text-align: center;vertical-align:middle;">
+                                        <?= $this->translate->_("Mandatory?"); ?></th>
                                 </tr>
                                 <tr>
                                     <td>
@@ -392,7 +438,8 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             title="Please enter the Rif Resistance for this sample"
                                             placeholder="Please enter the Rif Resistance for this sample">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <option value="na" <?php echo (isset($reference['rif_resistance_ultra']) && $reference['rif_resistance_ultra'] == 'na') ? "selected='selected'" : ""; ?>>N/A</option>
+                                            <option value="na" <?php echo (isset($reference['rif_resistance_ultra']) && $reference['rif_resistance_ultra'] == 'na') ? "selected='selected'" : ""; ?>>N/A
+                                            </option>
                                             <option value="detected" <?php echo (isset($reference['rif_resistance_ultra']) && $reference['rif_resistance_ultra'] == 'detected') ? "selected='selected'" : ""; ?>>Detected</option>
                                             <option value="not-detected" <?php echo (isset($reference['rif_resistance_ultra']) && $reference['rif_resistance_ultra'] == 'not-detected') ? "selected='selected'" : ""; ?>>Not Detected</option>
                                             <option value="indeterminate" <?php echo (isset($reference['rif_resistance_ultra']) && $reference['rif_resistance_ultra'] == 'indeterminate') ? "selected='selected'" : ""; ?>>Indeterminate</option>
@@ -400,49 +447,47 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" value="<?php echo htmlspecialchars($reference['is1081_is6110'] ?? ''); ?>"
+                                        <input type="number"
+                                            value="<?php echo htmlspecialchars($reference['is1081_is6110'] ?? ''); ?>"
                                             step="0.01" id="ISI<?php echo ($counter + 1); ?>"
-                                            name="ISI[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm"
-                                            title="Please enter the IS1081-IS6110" />
+                                            name="ISI[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="IS1081-IS6110"
+                                            class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
                                     </td>
                                     <td>
                                         <input type="number" value="<?php echo htmlspecialchars($reference['rpo_b1'] ?? ''); ?>"
                                             step="0.01" id="rpoB1<?php echo ($counter + 1); ?>"
-                                            name="rpoB1[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            placeholder="rpoB1" class="form-control oneDecimal input-sm"
-                                            title="Please enter the B1" />
+                                            name="rpoB1[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="rpoB1"
+                                            class="form-control oneDecimal input-sm" title="Please enter the B1" />
                                     </td>
                                     <td>
                                         <input type="number" value="<?php echo htmlspecialchars($reference['rpo_b2'] ?? ''); ?>"
                                             step="0.01" id="rpoB2<?php echo ($counter + 1); ?>"
-                                            name="rpoB2[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            placeholder="rpoB2" class="form-control oneDecimal input-sm"
-                                            title="Please enter the B2" />
+                                            name="rpoB2[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="rpoB2"
+                                            class="form-control oneDecimal input-sm" title="Please enter the B2" />
                                     </td>
                                     <td>
                                         <input type="number" value="<?php echo htmlspecialchars($reference['rpo_b3'] ?? ''); ?>"
                                             step="0.01" id="rpoB3<?php echo ($counter + 1); ?>"
-                                            name="rpoB3[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            placeholder="rpoB3" class="form-control oneDecimal input-sm"
-                                            title="Please enter the B3" />
+                                            name="rpoB3[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="rpoB3"
+                                            class="form-control oneDecimal input-sm" title="Please enter the B3" />
                                     </td>
                                     <td>
                                         <input type="number" value="<?php echo htmlspecialchars($reference['rpo_b4'] ?? ''); ?>"
                                             step="0.01" id="rpoB4<?php echo ($counter + 1); ?>"
-                                            name="rpoB4[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            placeholder="rpoB4" class="form-control oneDecimal input-sm"
-                                            title="Please enter the B4" />
+                                            name="rpoB4[<?php echo htmlspecialchars($sampleId); ?>]" placeholder="rpoB4"
+                                            class="form-control oneDecimal input-sm" title="Please enter the B4" />
                                     </td>
                                     <td>
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['spc_xpert_ultra'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['spc_xpert_ultra'] ?? ''); ?>"
                                             id="spcXpertUltra<?php echo ($counter + 1); ?>"
                                             name="spcXpertUltra[<?php echo htmlspecialchars($sampleId); ?>]"
-                                            class="form-control input-sm oneDecimal"
-                                            title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+                                            class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra"
+                                            placeholder="SPC Xpert Ultra" />
                                     </td>
                                     <td>
-                                        <input type="text" value="<?php echo htmlspecialchars($reference['mtbultra_lowest_rpo_b_probe_mean_stability_ct'] ?? ''); ?>"
+                                        <input type="text"
+                                            value="<?php echo htmlspecialchars($reference['mtbultra_lowest_rpo_b_probe_mean_stability_ct'] ?? ''); ?>"
                                             name="LowerstrpoBMean[<?php echo htmlspecialchars($sampleId); ?>]"
                                             id="LowerstrpoBMean<?php echo ($counter + 1); ?>"
                                             class="form-control input-sm oneDecimal input-LowerstrpoBMean<?php echo ($counter + 1); ?>"
@@ -454,8 +499,10 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             class="isRequired molecularfield controlOrNot form-control input-sm"
                                             title="Please choose whether this sample is a control">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <option value="1" <?php echo (isset($reference['control']) && $reference['control'] == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                                            <option value="0" <?php echo (isset($reference['control']) && $reference['control'] == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                                            <option value="1" <?php echo (isset($reference['control']) && $reference['control'] == 1) ? "selected='selected'" : ""; ?>>
+                                                <?= $this->translate->_("Yes"); ?></option>
+                                            <option value="0" <?php echo (isset($reference['control']) && $reference['control'] == 0) ? "selected='selected'" : ""; ?>>
+                                                <?= $this->translate->_("No"); ?></option>
                                         </select>
                                     </td>
                                     <td>
@@ -464,21 +511,25 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                             class="isRequired molecularfield form-control input-sm"
                                             title="Please choose whether this sample/control is mandatory">
                                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                            <option value="1" <?php echo (isset($reference['mandatory']) && $reference['mandatory'] == 1) ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                                            <option value="0" <?php echo (isset($reference['mandatory']) && $reference['mandatory'] == 0) ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                                            <option value="1" <?php echo (isset($reference['mandatory']) && $reference['mandatory'] == 1) ? "selected='selected'" : ""; ?>>
+                                                <?= $this->translate->_("Yes"); ?></option>
+                                            <option value="0" <?php echo (isset($reference['mandatory']) && $reference['mandatory'] == 0) ? "selected='selected'" : ""; ?>>
+                                                <?= $this->translate->_("No"); ?></option>
                                         </select>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                         <td style="vertical-align: middle; text-align:center;">
-                            <a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
+                            <a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i
+                                    class="icon-plus"></i></a>
                             <?php if ($counter > 1): ?>
-                                <a href="javascript:void(0);" onclick="removeRow(this, 'molecular')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                                <a href="javascript:void(0);" onclick="removeRow(this, 'molecular')" class="btn btn-xs btn-danger"
+                                    title="Remove this row completely"><i class="icon-minus"></i></a>
                             <?php endif; ?>
                         </td>
                     </tr>
-                <?php
+                    <?php
                     $counter++;
                 endforeach;
             else:
@@ -488,12 +539,19 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                     <td>
                         <table>
                             <tr>
-                                <th colspan="13"><input type="text" id="sampleName1" name="sampleName[1]" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>
+                                <th colspan="13"><input type="text" id="sampleName1" name="sampleName[1]" value=""
+                                        class="isRequired molecularfield form-control input-sm"
+                                        placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
+                                </th>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
+                                <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("MTB/Rif"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
+                                </th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("Rif Resistance"); ?></th>
                                 <th style="text-align: center;vertical-align:middle;">Probe D</th>
                                 <th style="text-align: center;vertical-align:middle;">Probe C</th>
                                 <th style="text-align: center;vertical-align:middle;">Probe E</th>
@@ -501,17 +559,25 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                 <th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
                                 <th style="text-align: center;vertical-align:middle;">Probe A</th>
                                 <th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
-                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                    <?= $this->translate->_("Sample Preparation Date"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("TB Isolate"); ?></th>
                             </tr>
                             <tr>
                                 <td>
-                                    <select name="mtbDetected[1]" id="mtbDetected1" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+                                    <select name="mtbDetected[1]" id="mtbDetected1"
+                                        class="isRequired molecularfieldChange molecularfield form-control input-sm"
+                                        title="Please enter the MTB Detected for this sample"
+                                        placeholder="Please enter the MTB Detected for this sample">
                                         <?php $this->dropdownSelection($possibleResults, null, true); ?>
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="rifResistance[1]" id="rifResistance1" class="isRequired molecularfieldChange molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+                                    <select name="rifResistance[1]" id="rifResistance1"
+                                        class="isRequired molecularfieldChange molecularfield form-control input-sm"
+                                        title="Please enter the Rif Resistance for this sample"
+                                        placeholder="Please enter the Rif Resistance for this sample">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="na">N/A</option>
                                         <option value="detected">Detected</option>
@@ -521,33 +587,56 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="text" name="probeD[1]" id="probeD1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D" placeholder="D" />
+                                    <input type="text" name="probeD[1]" id="probeD1"
+                                        class="form-control input-sm oneDecimal probe1" title="Please enter the Probe D"
+                                        placeholder="D" />
                                 </td>
                                 <td>
-                                    <input type="text" name="probeC[1]" id="probeC1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C" placeholder="C" />
+                                    <input type="text" name="probeC[1]" id="probeC1"
+                                        class="form-control input-sm oneDecimal probe1" title="Please enter the Probe C"
+                                        placeholder="C" />
                                 </td>
                                 <td>
-                                    <input type="text" name="probeE[1]" id="probeE1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E" placeholder="E" />
+                                    <input type="text" name="probeE[1]" id="probeE1"
+                                        class="form-control input-sm oneDecimal probe1" title="Please enter the Probe E"
+                                        placeholder="E" />
                                 </td>
                                 <td>
-                                    <input type="text" name="probeB[1]" id="probeB1" class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B" placeholder="B" />
+                                    <input type="text" name="probeB[1]" id="probeB1"
+                                        class="form-control input-sm oneDecimal probe1" title="Please enter the Probe B"
+                                        placeholder="B" />
                                 </td>
                                 <td>
-                                    <input type="text" name="spcXpert[1]" id="spcXpert1" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert" placeholder="SPC Xpert" />
+                                    <input type="text" name="spcXpert[1]" id="spcXpert1"
+                                        class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert"
+                                        placeholder="SPC Xpert" />
                                 </td>
                                 <td>
-                                    <input type="text" name="probeA[1]" id="probeA1" class="form-control input-sm oneDecimal input-probeA1" title="Please enter the Probe A" placeholder="A" />
+                                    <input type="text" name="probeA[1]" id="probeA1"
+                                        class="form-control input-sm oneDecimal input-probeA1"
+                                        title="Please enter the Probe A" placeholder="A" />
                                 </td>
                                 <td>
-                                    <input type="text" name="probeAMean[1]" id="probeAMean1" class="form-control input-sm oneDecimal input-probeAMean1" title="Please enter the Probe A Mean" placeholder="A Mean" />
+                                    <input type="text" name="probeAMean[1]" id="probeAMean1"
+                                        class="form-control input-sm oneDecimal input-probeAMean1"
+                                        title="Please enter the Probe A Mean" placeholder="A Mean" />
                                 </td>
-                                <td style=" border-left: solid 1px gray; "><input type="text" name="samplePreparationDate[1]" id="samplePreparationDate1" readonly="readonly" class="isRequired molecularfield form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" /></td>
-                                <td><input type="text" name="tbIsolate[1]" id="tbIsolate1" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>
+                                <td style=" border-left: solid 1px gray; "><input type="text"
+                                        name="samplePreparationDate[1]" id="samplePreparationDate1" readonly="readonly"
+                                        class="isRequired molecularfield form-control input-sm datepicker"
+                                        placeholder="Please enter the sample preparation date"
+                                        title="Please enter the sample preparation date" /></td>
+                                <td><input type="text" name="tbIsolate[1]" id="tbIsolate1" class="form-control input-sm"
+                                        placeholder="Isolate" title="Please enter the TB Isolate" /></td>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>
+                                <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("MTB Ultra"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
+                                </th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("Rif Resistance"); ?></th>
                                 <th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
                                 <th style="text-align: center;vertical-align:middle;">rpoB1</th>
                                 <th style="text-align: center;vertical-align:middle;">rpoB2</th>
@@ -555,17 +644,25 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                 <th style="text-align: center;vertical-align:middle;">rpoB4</th>
                                 <th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
                                 <th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
-                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                    <?= $this->translate->_("Is it a Control?"); ?></th>
+                                <th style="text-align: center;vertical-align:middle;">
+                                    <?= $this->translate->_("Mandatory?"); ?></th>
                             </tr>
                             <tr>
                                 <td>
-                                    <select name="mtbDetectedUltra[1]" id="mtbDetectedUltra1" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the MTB Detected for this sample" placeholder="Please enter the MTB Detected for this sample">
+                                    <select name="mtbDetectedUltra[1]" id="mtbDetectedUltra1"
+                                        class="isRequired molecularfieldUpdate molecularfield form-control input-sm"
+                                        title="Please enter the MTB Detected for this sample"
+                                        placeholder="Please enter the MTB Detected for this sample">
                                         <?php $this->dropdownSelection($possibleResults, null, true); ?>
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="rifResistanceUltra[1]" id="rifResistanceUltra1" class="isRequired molecularfieldUpdate molecularfield form-control input-sm" title="Please enter the Rif Resistance for this sample" placeholder="Please enter the Rif Resistance for this sample">
+                                    <select name="rifResistanceUltra[1]" id="rifResistanceUltra1"
+                                        class="isRequired molecularfieldUpdate molecularfield form-control input-sm"
+                                        title="Please enter the Rif Resistance for this sample"
+                                        placeholder="Please enter the Rif Resistance for this sample">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="na">N/A</option>
                                         <option value="detected">Detected</option>
@@ -575,35 +672,48 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="ISI[1]" id="ISI1" placeholder="IS1081-IS6110" class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
+                                    <input type="number" step="0.01" name="ISI[1]" id="ISI1" placeholder="IS1081-IS6110"
+                                        class="form-control oneDecimal input-sm" title="Please enter the IS1081-IS6110" />
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="rpoB1[1]" id="rpoB11" placeholder="rpoB1" class="form-control oneDecimal input-sm" title="Please enter the B1" />
+                                    <input type="number" step="0.01" name="rpoB1[1]" id="rpoB11" placeholder="rpoB1"
+                                        class="form-control oneDecimal input-sm" title="Please enter the B1" />
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="rpoB2[1]" id="rpoB21" placeholder="rpoB2" class="form-control oneDecimal input-sm" title="Please enter the B2" />
+                                    <input type="number" step="0.01" name="rpoB2[1]" id="rpoB21" placeholder="rpoB2"
+                                        class="form-control oneDecimal input-sm" title="Please enter the B2" />
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="rpoB3[1]" id="rpoB31" placeholder="rpoB3" class="form-control oneDecimal input-sm" title="Please enter the B3" />
+                                    <input type="number" step="0.01" name="rpoB3[1]" id="rpoB31" placeholder="rpoB3"
+                                        class="form-control oneDecimal input-sm" title="Please enter the B3" />
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="rpoB4[1]" id="rpoB41" placeholder="rpoB4" class="form-control oneDecimal input-sm" title="Please enter the B4" />
+                                    <input type="number" step="0.01" name="rpoB4[1]" id="rpoB41" placeholder="rpoB4"
+                                        class="form-control oneDecimal input-sm" title="Please enter the B4" />
                                 </td>
                                 <td>
-                                    <input type="text" name="spcXpertUltra[1]" id="spcXpertUltra1" class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra" placeholder="SPC Xpert Ultra" />
+                                    <input type="text" name="spcXpertUltra[1]" id="spcXpertUltra1"
+                                        class="form-control input-sm oneDecimal" title="Please enter the SPC Xpert Ultra"
+                                        placeholder="SPC Xpert Ultra" />
                                 </td>
                                 <td>
-                                    <input type="text" name="LowerstrpoBMean[1]" id="LowerstrpoBMean1" class="form-control input-sm oneDecimal input-LowerstrpoBMean1" title="Please enter the Lowerst rpoB Mean" placeholder="Lowerst rpoB Mean" />
+                                    <input type="text" name="LowerstrpoBMean[1]" id="LowerstrpoBMean1"
+                                        class="form-control input-sm oneDecimal input-LowerstrpoBMean1"
+                                        title="Please enter the Lowerst rpoB Mean" placeholder="Lowerst rpoB Mean" />
                                 </td>
                                 <td style=" border-left: solid 1px gray; ">
-                                    <select name="control[1]" id="control1" class="isRequired molecularfield controlOrNot form-control input-sm" title="Please choose whether this sample is a control">
+                                    <select name="control[1]" id="control1"
+                                        class="isRequired molecularfield controlOrNot form-control input-sm"
+                                        title="Please choose whether this sample is a control">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="1"><?= $this->translate->_("Yes"); ?></option>
                                         <option value="0"><?= $this->translate->_("No"); ?></option>
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="mandatory[1]" id="mandatory1" class="isRequired molecularfield form-control input-sm" title="Please choose whether this sample/control is mandatory">
+                                    <select name="mandatory[1]" id="mandatory1"
+                                        class="isRequired molecularfield form-control input-sm"
+                                        title="Please choose whether this sample/control is mandatory">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="1"><?= $this->translate->_("Yes"); ?></option>
                                         <option value="0"><?= $this->translate->_("No"); ?></option>
@@ -613,8 +723,10 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         </table>
                     </td>
                     <td style=" vertical-align: middle; text-align:center; ">
-                        <a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i class="icon-plus"></i></a>
-                        <a href="javascript:void(0);" onclick="removeRow(this, 'molecular')" class="btn btn-xs btn-danger" title="Remove this row completely"><i class="icon-minus"></i></a>
+                        <a href="javascript:void(0);" onclick="addTbRow(this, 'molecular');" class="btn btn-xs btn-info"><i
+                                class="icon-plus"></i></a>
+                        <a href="javascript:void(0);" onclick="removeRow(this, 'molecular')" class="btn btn-xs btn-danger"
+                            title="Remove this row completely"><i class="icon-minus"></i></a>
                     </td>
                 </tr>
             <?php endif; ?>
@@ -626,7 +738,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 <!-- TB-specific JavaScript -->
 <script type="text/javascript">
     <?php if ($isEditMode): ?>
-        $(function() {
+        $(function () {
             let _tbTestType = '<?php echo htmlspecialchars($currentTbTestType); ?>';
             if (_tbTestType != '') {
                 loadRefTable(_tbTestType);
@@ -850,7 +962,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
-        $('.molecularfieldChange').change(function() {
+        $('.molecularfieldChange').change(function () {
             // Dynamically get row number
             const _name = $(this).attr('name');
             const _id = this.id;
@@ -864,12 +976,12 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
 
-        $('.molecularfieldChange').change(function() {
+        $('.molecularfieldChange').change(function () {
             // Dynamically get row number
             const _name = $(this).attr('name');
             const _id = this.id;
@@ -884,7 +996,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     });
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }

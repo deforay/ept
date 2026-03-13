@@ -132,7 +132,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     id="covid19SampleTable">
     <thead>
         <tr align="center">
-            <th style="width:25%; text-align: center;"><?= $this->translate->_("Sample"); ?></th>
+            <th style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
             <th style="text-align: center; vertical-align: middle;">
                 <?= $this->translate->_("Sample Preparation Date"); ?>
             </th>
@@ -351,10 +351,10 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
             </select> \
         </td> \
         <?php if ($isEditMode): ?> \
-                <td> \
-                    <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" \
-                        placeholder="Score" title="Please enter the score for this control/sample" /> \
-                </td> \
+                    <td> \
+                        <input type="text" name="score[]" class="isRequired score isNumeric form-control input-sm" \
+                            placeholder="Score" title="Please enter the score for this control/sample" /> \
+                    </td> \
         <?php endif; ?> \
         <td> \
             <a href="javascript:void(0);" class="btn btn-xs btn-primary" \
