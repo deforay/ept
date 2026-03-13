@@ -159,13 +159,21 @@ class Pt_Reports_FpdiReport extends Fpdi
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $completeFooterHtml = '<table>';
         $completeFooterHtml .= '<tr>';
-        if ($this->layout != 'zimbabwe') {
+        if ($this->layout != 'zimbabwe' && $this->layout != 'malawi') {
             $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">Report generated on ' . $reportDate . $finalizeReport . '</div></td>';
         } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate) && isset($reportVersion) && !empty($reportVersion)) {
             $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Effective Date ' . $effectiveDate . '</div></td>';
             $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">' . $reportVersion . '</div></td>';
+        } else if ($this->layout == 'malawi' && isset($effectiveDate) && !empty($effectiveDate) && isset($reportVersion) && !empty($reportVersion)) {
+            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">' . $reportVersion . ' Serology Report Form V.1</div></td>';
+            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">' . $effectiveDate . '</div></td>';
+            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Survey Number (0124)</div></td>';
         }
-        $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div></td>';
+        if ($this->layout == 'malawi') {
+            $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages() . '</div></td>';
+        } else {
+            $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div></td>';
+        }
         $completeFooterHtml .= '</tr>';
         $completeFooterHtml .= '</table>';
 
@@ -181,7 +189,11 @@ class Pt_Reports_FpdiReport extends Fpdi
 
         // Output complete footer in single call
 
-        $this->SetY(-25);
+        if ($this->layout == 'malawi') {
+            $this->SetY(-10);
+        } else {
+            $this->SetY(-25);
+        }
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }
