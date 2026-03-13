@@ -376,7 +376,7 @@ foreach ($this->allTestKits as $kit) {
                             </tr>
                         <?php } ?>
 
-                        <?php if ($this->globalQcAccess == 'yes' && (isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes')) { ?>
+                        <?php if (isset($this->shipment['qc_done']) && $this->shipment['qc_done'] == "yes" && isset($authNameSpace->qc_access) && $authNameSpace->qc_access == 'yes') { ?>
                             <tr>
                                 <td><label><?= $this->translate->_("QC Done"); ?></label></td>
                                 <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?>
@@ -847,10 +847,10 @@ foreach ($this->allTestKits as $kit) {
                                 <?php } ?>
                                 <!-- <td class="2-span colwidth" style="width: <?php echo $width; ?>%;" colspan="2"></td> -->
                             </tr>
-                            <?php if (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') { ?>
+                            <?php if (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') { ?>
 
                                 <tr align="CENTER" class="light autoWidthSubInput"
-                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') ? '' : 'display:none;'; ?>">
                                     <th><?= $this->translate->_("QC Done"); ?></th>
                                     <?php if ($syphilisActive) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
@@ -950,7 +950,7 @@ foreach ($this->allTestKits as $kit) {
                                     }
                                 } ?>
                                 <tr align="CENTER" class="light autoWidthSubInput"
-                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] != 'yes') ? 'display:none;' : ''; ?>">
+                                    style="<?php echo (isset($shipmentAttributes['collect_qc_data']) && $shipmentAttributes['collect_qc_data'] == 'yes') ? '' : 'display:none;'; ?>">
                                     <th><?= $this->translate->_("QC Date"); ?></th>
                                     <?php if ($syphilisActive) { ?>
                                         <th style="width: <?php echo $width; ?>%;" class="colwidth"></th>
@@ -2026,9 +2026,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                                        class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                                            <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                                                        </td>');
+                                                                                                                                            class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                                                <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                                            </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {

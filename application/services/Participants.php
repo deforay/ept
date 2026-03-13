@@ -154,6 +154,22 @@ class Application_Service_Participants
 			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
 		}
+		if (isset($params['selectedNetworks']) && trim($params['selectedNetworks']) != '') {
+			$networkId = explode(',', $params['selectedNetworks']);
+			$sql = $sql->where("p.network_tier IN (?)", $networkId);
+		}
+		if (isset($params['selectedAffiliations']) && trim($params['selectedAffiliations']) != '') {
+			$affiliationId = explode(',', $params['selectedAffiliations']);
+			$sql = $sql->where("p.affiliation IN (?)", $affiliationId);
+		}
+		if (isset($params['selectedSiteTypes']) && trim($params['selectedSiteTypes']) != '') {
+			$siteTypeId = explode(',', $params['selectedSiteTypes']);
+			$sql = $sql->where("p.site_type IN (?)", $siteTypeId);
+		}
+		if (isset($params['selectedEnrolledPrograms']) && trim($params['selectedEnrolledPrograms']) != '') {
+			$enrolledProgramsId = explode(',', $params['selectedEnrolledPrograms']);
+			$sql = $sql->where("p.enrolled_programs IN (?)", $enrolledProgramsId);
+		}
 		return $db->fetchAll($sql);
 	}
 	public function getEnrolledBySchemeCode($scheme, $schemeName = "")
@@ -235,6 +251,22 @@ class Application_Service_Participants
 		if (isset($params['selectedCities']) && trim($params['selectedCities']) != '') {
 			$cityId = explode(',', $params['selectedCities']);
 			$sql = $sql->where("p.city IN (?)", $cityId);
+		}
+		if (isset($params['selectedNetworks']) && trim($params['selectedNetworks']) != '') {
+			$networkId = explode(',', $params['selectedNetworks']);
+			$sql = $sql->where("p.network_tier IN (?)", $networkId);
+		}
+		if (isset($params['selectedAffiliations']) && trim($params['selectedAffiliations']) != '') {
+			$affiliationId = explode(',', $params['selectedAffiliations']);
+			$sql = $sql->where("p.affiliation IN (?)", $affiliationId);
+		}
+		if (isset($params['selectedSiteTypes']) && trim($params['selectedSiteTypes']) != '') {
+			$siteTypeId = explode(',', $params['selectedSiteTypes']);
+			$sql = $sql->where("p.site_type IN (?)", $siteTypeId);
+		}
+		if (isset($params['selectedEnrolledPrograms']) && trim($params['selectedEnrolledPrograms']) != '') {
+			$enrolledProgramsId = explode(',', $params['selectedEnrolledPrograms']);
+			$sql = $sql->where("p.enrolled_programs IN (?)", $enrolledProgramsId);
 		}
 		return $db->fetchAll($sql);
 	}

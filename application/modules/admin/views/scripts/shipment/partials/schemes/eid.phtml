@@ -58,27 +58,33 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
-            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            title="Please enter the report version" class="form-control input-sm"
+            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
     </div>
 </div>
 <div class="form-group">
-    <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
+    <label class="col-lg-3 control-label"
+        for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
-            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            title="Please select the report effective date" class="form-control input-sm datepicker"
+            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
     </div>
 </div>
 <!-- EID Sample Table -->
-<table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix" id="vlSampleTable">
+<table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"
+    id="vlSampleTable">
     <thead>
         <tr align="center">
-            <th style="width:20%; text-align: center;"><?= $this->translate->_("Control/Sample"); ?></th>
-            <th style="text-align: center; vertical-align: middle;"><?= $this->translate->_("Sample Preparation Date"); ?></th>
+            <th style="width:20%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
+            <th style="text-align: center; vertical-align: middle;">
+                <?= $this->translate->_("Sample Preparation Date"); ?>
+            </th>
             <th style="width:22%; text-align: center;"><?= $this->translate->_("Results"); ?></th>
             <th style="width:10%; text-align: center;"><?= $this->translate->_("HIV CT/OD"); ?></th>
             <th style="width:10%; text-align: center;"><?= $this->translate->_("IC/QS Values"); ?></th>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Control?"); ?></th>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Mandatory?"); ?></th>
+            <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
+            <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
             <th style="width:13%; text-align: center;"><?= $this->translate->_("Add/Remove Row"); ?></th>
         </tr>
     </thead>
@@ -106,12 +112,12 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                 $control = '';
                 $mandatory = '';
             }
-        ?>
+            ?>
             <tr align="center">
                 <td style="text-align: center">
                     <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
-                        value="<?php echo htmlspecialchars($sampleLabel); ?>"
-                        title="Please enter sample name here" placeholder="Please enter sample name here" />
+                        value="<?php echo htmlspecialchars($sampleLabel); ?>" title="Please enter sample name here"
+                        placeholder="Please enter sample name here" />
                 </td>
                 <td>
                     <input type="text" name="samplePreparationDate[]" readonly="readonly"
@@ -124,30 +130,31 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                     <select name="possibleResults[]" class="isRequired form-control input-sm">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($possibleResults as $pr): ?>
-                            <option value="<?php echo htmlspecialchars($pr['id']); ?>"
-                                <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
+                            <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? 'selected="selected"' : ''; ?>>
                                 <?php echo htmlspecialchars($pr['response']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </td>
                 <td>
-                    <input type="text" name="hivCtOd[]" class="isRequired form-control input-sm"
-                        placeholder="HIV CT/OD" title="Please enter the HIV CT/OD values here"
-                        value="<?php echo htmlspecialchars($hivCtOd); ?>" />
+                    <input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="HIV CT/OD"
+                        title="Please enter the HIV CT/OD values here" value="<?php echo htmlspecialchars($hivCtOd); ?>" />
                 </td>
                 <td>
-                    <input type="text" name="icQs[]" class="isRequired form-control input-sm"
-                        placeholder="IC/QS" title="Please enter the IC/QS Values here"
-                        value="<?php echo htmlspecialchars($icQs); ?>" />
+                    <input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="IC/QS"
+                        title="Please enter the IC/QS Values here" value="<?php echo htmlspecialchars($icQs); ?>" />
                 </td>
                 <td>
                     <select name="control[]" class="isRequired controlOrNot form-control input-sm"
                         title="Please choose whether this sample is a control">
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                            <option value="1" <?php echo ($control == 1) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
-                            <option value="0" <?php echo ($control === '0' || $control === 0) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
+                            <option value="1" <?php echo ($control == 1) ? 'selected="selected"' : ''; ?>>
+                                <?= $this->translate->_("Yes"); ?>
+                            </option>
+                            <option value="0" <?php echo ($control === '0' || $control === 0) ? 'selected="selected"' : ''; ?>>
+                                <?= $this->translate->_("No"); ?>
+                            </option>
                         <?php else: ?>
                             <option value="1"><?= $this->translate->_("Yes"); ?></option>
                             <option value="0" selected="selected"><?= $this->translate->_("No"); ?></option>
@@ -159,8 +166,12 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                         title="Please choose whether this sample/control is mandatory">
                         <?php if ($isEditMode): ?>
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                            <option value="1" <?php echo ($mandatory == 1) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Yes"); ?></option>
-                            <option value="0" <?php echo ($mandatory === '0' || $mandatory === 0) ? 'selected="selected"' : ''; ?>><?= $this->translate->_("No"); ?></option>
+                            <option value="1" <?php echo ($mandatory == 1) ? 'selected="selected"' : ''; ?>>
+                                <?= $this->translate->_("Yes"); ?>
+                            </option>
+                            <option value="0" <?php echo ($mandatory === '0' || $mandatory === 0) ? 'selected="selected"' : ''; ?>>
+                                <?= $this->translate->_("No"); ?>
+                            </option>
                         <?php else: ?>
                             <option value="1" selected="selected"><?= $this->translate->_("Yes"); ?></option>
                             <option value="0"><?= $this->translate->_("No"); ?></option>
@@ -179,7 +190,7 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                     <?php endif; ?>
                 </td>
             </tr>
-        <?php
+            <?php
             $counter++;
         endforeach;
         ?>
@@ -201,12 +212,12 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
                     <?php echo $possibleResultsHtml; ?>
                 </td>
                 <td>
-                    <input type="text" name="hivCtOd[]" class="isRequired form-control input-sm"
-                        placeholder="HIV CT/OD" title="Please enter the HIV CT/OD values here" />
+                    <input type="text" name="hivCtOd[]" class="isRequired form-control input-sm" placeholder="HIV CT/OD"
+                        title="Please enter the HIV CT/OD values here" />
                 </td>
                 <td>
-                    <input type="text" name="icQs[]" class="isRequired form-control input-sm"
-                        placeholder="IC/QS" title="Please enter the IC/QS Values here" />
+                    <input type="text" name="icQs[]" class="isRequired form-control input-sm" placeholder="IC/QS"
+                        title="Please enter the IC/QS Values here" />
                 </td>
                 <td>
                     <select name="control[]" class="isRequired controlOrNot form-control input-sm"
@@ -290,12 +301,12 @@ $effectiveDate = isset($eidConfig['effectiveDate']) ? $eidConfig['effectiveDate'
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
