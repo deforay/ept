@@ -26,6 +26,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         parent::__construct($orientation, $unit, $format, $unicode, $encoding, $diskcache, $pdfa);
         $this->generalModel = new Pt_Commons_General();
     }
+
     public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "", $shipmentAttributes = "")
     {
         $this->resultStatus = $resultStatus;
@@ -66,8 +67,6 @@ class Pt_Reports_FpdiReport extends Fpdi
             }
             if ($this->layout != 'malawi') {
                 $this->SetFont('freesans', 'B', 10);
-                // $this->writeHTML("Proficiency Testing Program for " . $this->scheme, true, false, true, false, 'C');
-
             }
         }
         if ($this->layout != 'malawi' && $this->layout != 'zimbabwe') {
@@ -79,13 +78,11 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
 
         if (isset($this->watermark) && $this->watermark != "") {
-            $this->SetAlpha(0.2); // Set transparency
-
+            $this->SetAlpha(0.2);
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(211, 211, 211);
             $this->RotatedText(25, 190, $this->watermark, 45);
-            $this->SetAlpha(1); // Reset transparency
-
+            $this->SetAlpha(1);
         }
     }
 
@@ -113,8 +110,6 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function RotatedText($x, $y, $txt, $angle)
     {
-        //Text rotated around its origin
-
         $this->Rotate($angle, $x, $y);
         $this->Text($x, $y, $txt);
         $this->Rotate(0);
@@ -129,71 +124,71 @@ class Pt_Reports_FpdiReport extends Fpdi
         parent::_endpage();
     }
 
-    // Page footer
-
     public function Footer()
     {
-        // Build complete footer HTML in one go
+        $shipmentService = new Application_Service_Shipments();
+        $effectiveDate  = $this->shipmentAttributes['effectiveDate']  ?? $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'effectiveDate');
+        $reportVersion  = $this->shipmentAttributes['reportVersion']  ?? $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'reportVersion');
 
-        $completeFooterHtml = "";
+        $showTime    = $this->dateTime ?? date("Y-m-d H:i:s");
+        $reportDate  = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
+        $pageNumber  = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
 
-        // Add static footer content if provided
-        if (!empty($this->staticFooterHtml)) {
-            $completeFooterHtml .= $this->staticFooterHtml;
-        }
+        $finalizeReport = (isset($this->resultStatus) && trim($this->resultStatus) == "finalized")
+            ? " | {$this->reportType} REPORT | FINALIZED "
+            : " | {$this->reportType} REPORT ";
 
-        // Add dynamic content to the same HTML block
-        $finalizeReport = "";
-        if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
-            $finalizeReport = " | {$this->reportType} REPORT | FINALIZED ";
-        } else {
-            $finalizeReport = " | {$this->reportType} REPORT ";
-        }
-        $showTime = $this->dateTime ?? date("Y-m-d H:i:s");
-        // Append dynamic content to footer HTML
-        if (isset($this->shipmentAttributes['shipment_id']) && !empty($this->shipmentAttributes['shipment_id'])) {
-            $shipmentService = new Application_Service_Shipments();
-            $effectiveDate = $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'effectiveDate');
-            $reportVersion = $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'reportVersion');
-        }
-        $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
-        $completeFooterHtml = '<table>';
-        $completeFooterHtml .= '<tr>';
-        if ($this->layout != 'zimbabwe' && $this->layout != 'malawi') {
-            $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">Report generated on ' . $reportDate . $finalizeReport . '</div></td>';
-        } else if ($this->layout == 'zimbabwe' && isset($effectiveDate) && !empty($effectiveDate) && isset($reportVersion) && !empty($reportVersion)) {
-            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Effective Date ' . $effectiveDate . '</div></td>';
-            $completeFooterHtml .= '<td><br><div style="text-align:center; font-size:10px; margin-top:10px;">' . $reportVersion . '</div></td>';
-        } else if ($this->layout == 'malawi' && isset($effectiveDate) && !empty($effectiveDate) && isset($reportVersion) && !empty($reportVersion)) {
-            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">' . $reportVersion . ' Serology Report Form V.1</div></td>';
-            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">' . $effectiveDate . '</div></td>';
-            $completeFooterHtml .= '<td><br><div style="text-align:left; font-size:10px; margin-top:10px;">Survey Number (0124)</div></td>';
-        }
+        // ------------------------------------------------------------------
+        // Build a full-width 3-column table:
+        //   LEFT (40%)  |  CENTER (40%)  |  RIGHT (20%, always page number)
+        // All columns share the same vertical rhythm; page number is right-aligned.
+        // ------------------------------------------------------------------
+        $cellStyle  = 'font-size:9px; margin-top:6px; padding-top:4px;';
+        $leftCell   = '';
+        $centerCell = '';
+
         if ($this->layout == 'malawi') {
-            $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages() . '</div></td>';
+            // LEFT: version + form label  |  CENTER: effective date + survey  |  RIGHT: page
+            if (!empty($effectiveDate) && !empty($reportVersion)) {
+                $leftCell   = '<div style="' . $cellStyle . 'text-align:left;">'  . htmlspecialchars($reportVersion)          . ' Serology report form V.1</div>';
+                $centerCell = '<div style="' . $cellStyle . 'text-align:center;">' . htmlspecialchars($effectiveDate)         . ' Survey Number (0124)</div>';
+            }
+        } elseif ($this->layout == 'zimbabwe') {
+            // LEFT: effective date  |  CENTER: report version  |  RIGHT: page
+            if (!empty($effectiveDate) && !empty($reportVersion)) {
+                $leftCell   = '<div style="' . $cellStyle . 'text-align:left;">Effective Date ' . htmlspecialchars($effectiveDate) . '</div>';
+                $centerCell = '<div style="' . $cellStyle . 'text-align:center;">'               . htmlspecialchars($reportVersion) . '</div>';
+            }
         } else {
-            $completeFooterHtml .= '<td><br><div style="text-align:right; font-size:10px; margin-top:10px;">Page ' . $this->getAliasNumPage() . ' | ' . $this->getAliasNbPages() . '</div></td>';
+            // Default: LEFT empty  |  CENTER: generated-on line  |  RIGHT: page
+            $centerCell = '<div style="' . $cellStyle . 'text-align:center;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
         }
+
+        // Page-number cell — always right-aligned, always last
+        $rightCell = '<div style="' . $cellStyle . 'text-align:right;">' . $pageNumber . '</div>';
+
+        $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
+        $completeFooterHtml .= '<tr>';
+        $completeFooterHtml .= '<td style="width:40%; vertical-align:middle;">' . $leftCell   . '</td>';
+        $completeFooterHtml .= '<td style="width:40%; vertical-align:middle;">' . $centerCell . '</td>';
+        $completeFooterHtml .= '<td style="width:20%; vertical-align:middle;">' . $rightCell  . '</td>';
         $completeFooterHtml .= '</tr>';
         $completeFooterHtml .= '</table>';
 
-        // Handle special cases
-        if (isset($this->instance) && !empty($this->instance) && $this->instance == 'philippines') {
-            if (isset($this->approveTxt) && !empty($this->approveTxt)) {
-                $text = "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}";
-            } else {
-                $text = "This document has been reviewed and validated by EQA officers.";
-            }
+        // Philippines-specific disclaimer above the footer row
+        if (!empty($this->instance) && $this->instance == 'philippines') {
+            $text = (!empty($this->approveTxt))
+                ? "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}"
+                : "This document has been reviewed and validated by EQA officers.";
             $completeFooterHtml = '<div style="text-align:center; font-size:7px;">' . $text . '</div>' . $completeFooterHtml;
         }
 
-        // Output complete footer in single call
-
-        if ($this->layout == 'malawi') {
-            $this->SetY(-10);
-        } else {
-            $this->SetY(-25);
+        // Static footer content (prepended above everything else if provided)
+        if (!empty($this->staticFooterHtml)) {
+            $completeFooterHtml = $this->staticFooterHtml . $completeFooterHtml;
         }
+
+        $this->SetY($this->layout == 'malawi' ? -14 : -18);
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }

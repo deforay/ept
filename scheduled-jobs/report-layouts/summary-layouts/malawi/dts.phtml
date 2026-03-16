@@ -2,7 +2,8 @@
 
 // Removed monochromatic palette — using meaningful colors below
 if ($resultArray['shipment'] != "") {
-    $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+    $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
+    $shipmentAttributes['shipment_id'] = $resultArray['shipment']['shipment_id'];
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
         mkdir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'], 0777, true);
     }
@@ -90,10 +91,7 @@ if ($resultArray['shipment'] != "") {
         $abovePass = sprintf("above $pass");
         $barPoints[$abovePass] = 0;
         foreach ($resultArray['shipment']['summaryResult'] as $result) {
-            // $maxScore = 0;
-            // $belowScore = 0;
             $partCount = count($result) - 1;
-            //$partCount = $participantPerformance['total_responses'];
             for ($i = 0; $i < $partCount; $i++) {
                 if ($result[$i]['is_excluded'] == 'yes') {
                     continue;
@@ -107,21 +105,17 @@ if ($resultArray['shipment'] != "") {
                     $barPoints["70 - $pass"]++;
                 } elseif ($totalScore > $passPercentage) {
                     $barPoints[$abovePass]++;
-                } else {
                 }
-                // if (($totalScore) >= $passPercentage) {
-                //     $maxScore++;
-                // } else {
-                //     $belowScore++;
-                // }
                 $labCounter++;
             }
-
-            //$scoringPer = round(($maxScore / $partCount) * 100, 2);
         }
 
         // set font
         $pdf->SetFont('freesans', '', 12);
+
+        // FIX: Define $chartW here so it is always available for all chart renders below,
+        // regardless of whether the testKitByTestNumber block executes.
+        $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
 
         $psoringTxt = ($passPercentage == 100) ? ' = "100"' : '>= "' . $passPercentage . '"';
         $overview = '<table border="1" style="font-size:13px;"><tr>';
@@ -130,17 +124,14 @@ if ($resultArray['shipment'] != "") {
         $overview .= '<td style="background-color:#dbe4ee;text-align:center;"># of Participants Scoring < "' . $passPercentage . '" </td>';
         $overview .= '</tr>';
 
-
         $overview .= '<tr>';
         $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
         $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_passed'] . ' (' . round(($participantPerformance['number_passed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
         $overview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['number_failed'] . ' (' . round(($participantPerformance['number_failed'] / $participantPerformance['total_responses']) * 100, 2) . '%)</td>';
-
         $overview .= '</tr>';
 
         $overview .= '</table><br/>';
         $pdf->writeHTML($overview, true, false, true, false, '');
-
 
         $sampleCount = count($result['correctCount']);
 
@@ -164,7 +155,6 @@ if ($resultArray['shipment'] != "") {
         $nonMandatorySamples = [];
 
         foreach ($resultArray['shipment']['referenceResult'] as $refRes) {
-
             if ($refRes['mandatory'] == 0) {
                 $nonMandatorySamples[] = $refRes['sample_label'];
             }
@@ -186,7 +176,6 @@ if ($resultArray['shipment'] != "") {
 
         $sampleCode .= '<td style="text-align:center;font-weight:normal;">' . round(($sampAvg / $sampleCount), 2) . '<br>(' . round(($sampPerAvg / $sampleCount), 2) . '%)</td>';
         $sampleCode .= '</tr>';
-
 
         $sampleCode .= '</table></br>';
         $pdf->writeHTML($sampleCode, true, false, true, false, '');
@@ -211,7 +200,6 @@ if ($resultArray['shipment'] != "") {
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['total_responses'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['valid_responses'] . '</td>';
         $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . $participantPerformance['average_score'] . '</td>';
-        // $ppOverview .= '<td style="text-align:center;font-weight:normal;">' . ($participantPerformance['score'] / $participantPerformance['total_shipped']) . '</td>';
         $ppOverview .= '</tr>';
 
         $ppOverview .= '</table><br>';
@@ -231,24 +219,23 @@ if ($resultArray['shipment'] != "") {
                 $correctiveActionStuff .= '<tr>';
                 $correctiveActionStuff .= '<td style="text-align:left;">' . $correctiveness['corrective_action'] . '</td>';
                 $correctiveActionStuff .= '<td style="text-align:center;">' . $correctiveness['total_corrective'] . '</td>';
-
                 $correctiveActionStuff .= '</tr>';
             }
             $correctiveActionStuff .= '</table><br/>';
-
             //----------------Participant Corrective Action Overview  Ends----------------
 
             $pdf->writeHTML($correctiveActionStuff, true, false, true, false, '');
         }
+
         if ((isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber']))) {
             $pdf->AddPage();
-
 
             $testkit = '';
             $testKitResult = [];
             $testKitCheck = [];
             foreach ($resultArray['shipment']['testKitByTestNumber'] as $row) {
                 if (in_array($row['testkitid'], $testKitCheck)) {
+                    // Already seen — accumulate totals
                     if (isset($row['Test-1']) && !empty($row['Test-1'])) {
                         $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-1'];
                         $testKitResult[$row['testkitid']]['Test 1'] += (int) $row['Test-1'];
@@ -266,26 +253,32 @@ if ($resultArray['shipment'] != "") {
                         $testKitResult[$row['testkitid']]['Repeat Test'] += (int) $row['Test-1-Repeat'];
                     }
                 } else {
+                    // FIX: First time seeing this testkitid — initialize name, mark as seen,
+                    // and initialize total to 0 before accumulating, so subsequent Test-N
+                    // values are added rather than overwriting each other.
                     $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
                     $testKitCheck[] = $row['testkitid'];
+                    $testKitResult[$row['testkitid']]['total'] = 0; // initialize before accumulating
+
                     if (isset($row['Test-1']) && !empty($row['Test-1'])) {
-                        $testKitResult[$row['testkitid']]['total'] = (int) $row['Test-1'];
+                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-1'];
                         $testKitResult[$row['testkitid']]['Test 1'] = (int) $row['Test-1'];
                     }
                     if (isset($row['Test-2']) && !empty($row['Test-2'])) {
-                        $testKitResult[$row['testkitid']]['total'] = (int) $row['Test-2'];
+                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-2'];
                         $testKitResult[$row['testkitid']]['Test 2'] = (int) $row['Test-2'];
                     }
                     if (isset($row['Test-3']) && !empty($row['Test-3'])) {
-                        $testKitResult[$row['testkitid']]['total'] = (int) $row['Test-3'];
+                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-3'];
                         $testKitResult[$row['testkitid']]['Test 3'] = (int) $row['Test-3'];
                     }
                     if (isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])) {
-                        $testKitResult[$row['testkitid']]['total'] = (int) $row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-1-Repeat'];
                         $testKitResult[$row['testkitid']]['Repeat Test'] = (int) $row['Test-1-Repeat'];
                     }
                 }
             }
+
             if (isset($resultArray['shipment']['testKitByTestNumber']) && !empty($resultArray['shipment']['testKitByTestNumber'])) {
                 $w = 14;
                 if (isset($panelTestType) && !empty($panelTestType) && $panelTestType == 'screening') {
@@ -300,39 +293,22 @@ if ($resultArray['shipment'] != "") {
                 $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:30%;">Testkit Name</th>';
                 $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">Total Usage</th>';
                 foreach ($kitTnTests as $test) {
-                    $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">' . $test . '</th>';
+                    $testkit .= '<th style="background-color:#dbe4ee;text-align:center;width:' . $w . '%;">' . $test . '</th>';
                 }
                 $testkit .= '</tr>';
-                $kitName = [];
                 foreach ($testKitResult as $row) {
                     $testkit .= '<tr>';
                     $testkit .= '   <td style="width:30%;">' . $row['name'] . '</td>';
                     $testkit .= '   <td style="width:' . $w . '%;">' . $row['total'] . '</td>';
                     foreach ($kitTnTests as $test) {
-                        $testkit .= '   <td style="width:' . $w . '%;">' . $row[$test] . '</td>';
+                        $testkit .= '<td style="width:' . $w . '%;">' . ($row[$test] ?? 0) . '</td>';
                     }
                     $testkit .= '</tr>';
                 }
                 $testkit .= '</table>';
             }
-            /*  if(isset($resultArray['shipment']['testKit']) && !empty($resultArray['shipment']['testKit'])){
-                $testkit .= '<br><br><span style="font-size:13px;">Testkit Usage (Overall)</span><br>';
-                $testkit .= '<table border="1" style="font-weight:normal;font-size:13px;">';
-                $testkit .= '<tr style="font-weight:bold;">';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:50%;">Testkit Name</th>';
-                $testkit .= '   <th style="background-color:#dbe4ee;text-align:center;width:50%;">Number of times used</th>';
-                $testkit .= '</tr>';
-                foreach($resultArray['shipment']['testKit'] as $key=>$kit){
-                    $testkit .= '<tr>';
-                    $testkit .= '   <td style="width:50%;">'.$kit['testkitname'].'</td>';
-                    $testkit .= '   <td style="width:50%;">'.$kit['total'].'</td>';
-                    $testkit .= '</tr>';
-                }
-                $testkit .= '</table><br><br>';
 
-            } */
             $pdf->writeHTML($testkit, true, false, true, false, '');
-
 
             if (isset($resultArray['shipment']['testKitChart']) && !empty($resultArray['shipment']['testKitChart'])) {
                 $passedTestKits = $failedTestKits = $testkitname = [];
@@ -344,7 +320,8 @@ if ($resultArray['shipment'] != "") {
                 $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
                 $image_file = Pt_Reports_ChartService::render([
                     'type' => 'stackedBar',
-                    'width' => 700, 'height' => 600,
+                    'width' => 700,
+                    'height' => 600,
                     'filename' => 'testkit_bar_chart',
                     'title' => 'Testkit Evaluation Report',
                     'xAxis' => ['labels' => $testkitname, 'labelAngle' => 25],
@@ -355,16 +332,16 @@ if ($resultArray['shipment'] != "") {
                     ],
                     'legend' => ['position' => 'bottom'],
                 ], $outputDir);
-                $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
-                $y = $pdf->getY() + 5;
+                // FIX: $chartW is now always defined above, so this renders correctly
+                // even when entering the testKitByTestNumber block for the first time.
                 $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', '', false, 600);
                 if (file_exists($image_file)) {
                     unlink($image_file);
                 }
             }
         }
-        $pdf->AddPage();
 
+        $pdf->AddPage();
 
         // JPGraph Charts
         $dataX = [];
@@ -377,7 +354,8 @@ if ($resultArray['shipment'] != "") {
         $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
         $image_file = Pt_Reports_ChartService::render([
             'type' => 'bar',
-            'width' => 700, 'height' => 300,
+            'width' => 700,
+            'height' => 300,
             'filename' => 'bar_chart',
             'title' => 'Comparison of test performance between participating laboratories',
             'xAxis' => ['labels' => $dataY, 'title' => '% Score'],
@@ -386,17 +364,17 @@ if ($resultArray['shipment'] != "") {
                 ['data' => $dataX, 'colors' => ['#3B82F6']],
             ],
         ], $outputDir);
+        // FIX: $chartW guaranteed defined — renders correctly here regardless of
+        // whether the testKitByTestNumber block above was entered.
         $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', '', false, 600);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
-        //$pdf->Image($image_file, 10, 10, 25, '', '', '', 'T', false, 300, '', false, false, 0, false, false, false);
     } else {
         $pdf->writeHTML('<br><br><br><span style="font-weight:bold;text-align:center;">No screening participants there</span>', true, false, true, false, '');
     }
 
     $pdf->AddPage();
-
 
     if (isset($responseResult) && count($responseResult) > 0 && $responseResult != '') {
         $y = $pdf->getY() + 5;
@@ -417,7 +395,8 @@ if ($resultArray['shipment'] != "") {
             $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"];
             $performancePiechart = Pt_Reports_ChartService::render([
                 'type' => 'pie',
-                'width' => 700, 'height' => 400,
+                'width' => 700,
+                'height' => 400,
                 'filename' => 'performanceChart',
                 'title' => 'Shipment Participant Result Report (N=' . $total . ')',
                 'slices' => [
@@ -428,6 +407,7 @@ if ($resultArray['shipment'] != "") {
                 'legend' => ['position' => 'bottom'],
             ], $outputDir);
 
+            // FIX: $chartW guaranteed defined — pie chart width scales correctly.
             $pieW = $chartW * 0.6;
             $pdf->Image($performancePiechart, '', $y, $pieW, 0, '', '', '', false, 600, 'C');
             if (file_exists($performancePiechart)) {
@@ -435,6 +415,7 @@ if ($resultArray['shipment'] != "") {
             }
         }
     }
+
     $reportType = ($resultStatus == 'finalized') ? 'final' : '';
     $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
     $html .= '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
@@ -446,13 +427,13 @@ if ($resultArray['shipment'] != "") {
     $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
     $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';
     $pdf->writeHTML($html, true, false, true, false, '');
+
     //Close and output PDF document
     if (!empty($panelTestType) && $panelTestType != '') {
         $panelTestType = "-" . $panelTestType;
     }
     $fileName = $resultArray['shipment']['shipment_code'] . $panelTestType . "-summary.pdf";
     $filePath = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
-    //$pdf->Output('example_003.pdf', 'I');
     $pdf->Output($filePath, "F");
     if ($trainingInstance == "yes") {
         //Watermark section
