@@ -1034,3 +1034,49 @@ ensure_opcache() {
 
     print success "OPcache is ready for PHP ${ver} (Apache)."
 }
+
+# Ensure Node.js is installed (LTS version via nodesource)
+ensure_nodejs() {
+    if command -v node &>/dev/null; then
+        print success "Node.js $(node -v) is already installed."
+        return 0
+    fi
+
+    print info "Installing Node.js LTS..."
+
+    if command -v curl &>/dev/null; then
+        curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+        apt-get install -y nodejs
+    else
+        apt-get install -y nodejs npm
+    fi
+
+    if command -v node &>/dev/null; then
+        print success "Node.js $(node -v) installed."
+        log_action "Node.js $(node -v) installed."
+    else
+        print warning "Node.js installation failed. Chart rendering will fall back to JPGraph."
+        log_action "Node.js installation failed."
+        return 1
+    fi
+}
+
+# Install npm packages for a given application path
+install_npm_packages() {
+    local app_path="${1:-.}"
+
+    if ! command -v node &>/dev/null; then
+        print warning "Node.js not available. Skipping npm install."
+        return 1
+    fi
+
+    if [ ! -f "${app_path}/package.json" ]; then
+        return 0
+    fi
+
+    print info "Installing npm packages in ${app_path}..."
+    cd "${app_path}"
+    sudo -u www-data npm install --production 2>/dev/null || npm install --production
+    print success "npm packages installed."
+    log_action "npm packages installed in ${app_path}."
+}

@@ -485,6 +485,14 @@ print success "Composer operations completed."
 log_action "Composer operations completed."
 
 #=============================================================================
+# PHASE 3B: NODE.JS SETUP (for Chart.js server-side rendering)
+#=============================================================================
+
+print header "Setting up Node.js"
+ensure_nodejs
+install_npm_packages "${ept_path}"
+
+#=============================================================================
 # PHASE 4: APACHE VIRTUAL HOST
 #=============================================================================
 

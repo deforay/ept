@@ -1,10 +1,6 @@
 <?php
 
-use mitoteam\jpgraph\MtJpGraph;
-
-MtJpGraph::load(['bar', 'line', 'pie'], true);
-
-$monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
+// Removed monochromatic palette — using meaningful colors below
 if ($resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($result['shipment_attributes'], true);
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -345,55 +341,23 @@ if ($resultArray['shipment'] != "") {
                     $failedTestKits[] = $kit['number_failed'];
                     $testkitname[] = $kit['testkitname'];
                 }
-                // Create the graph. These two calls are always required
-                $graph = new Graph(700, 600);
-                $graph->SetScale("textlin");
-                $graph->SetShadow();
-                $graph->img->SetMargin(40, 30, 70, 150);
-                // Enable anti-aliasing
-                $graph->img->SetAntiAliasing();
-
-                $graph->ygrid->SetFill(false);
-                $graph->xaxis->SetLabelAngle(25);
-                // $graph->yaxis->title->SetFont(FF_ARIAL, FS_BOLD);
-                // $graph->xaxis->title->SetFont(FF_ARIAL, FS_BOLD);
-
-                // Create the bar plots
-                $b1plot = new BarPlot($passedTestKits);
-                $b1plot->SetLegend('Satisfactory Score');
-                $b2plot = new BarPlot($failedTestKits);
-                $b2plot->SetLegend('Unsatisfactory Score');
-
-                $b1plot->SetShadow();
-                $b2plot->SetShadow();
-                // Create the grouped bar plot
-                $gbplot = new AccBarPlot(array($b1plot, $b2plot));
-
-                $gbplot->value->SetColor('black');
-                $gbplot->value->show();
-                //$gbplot->value->SetFont(FF_ARIAL, FS_BOLD);
-                $gbplot->value->SetAngle(45);
-                $gbplot->value->SetAlign('left', 'bottom');
-                $gbplot->value->SetFormat('%01.0f');
-                // ...and add it to the graPH
-                $graph->Add($gbplot);
-                $b1plot->SetFillColor($monochromaticColors[7]);
-                $b1plot->SetColor($monochromaticColors[7]);
-                $b2plot->SetFillColor($monochromaticColors[4]);
-                $b2plot->SetColor($monochromaticColors[4]);
-                $graph->xaxis->SetTickLabels($testkitname);
-                $graph->legend->SetShadow('gray@0.4', 5);
-                $graph->legend->SetPos(0.5, 0.98, 'center', 'bottom');
-                $graph->title->Set("Testkit Evaluation Report");
-                //$graph->title->SetFont(FF_ARIAL, FS_BOLD);
-
-                // Display the graph
-                $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'testkit_bar_chart.png';
-                $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-                $graph->img->SetQuality(100); // Set the highest quality
-                $graph->Stroke($image_file);
+                $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+                $image_file = Pt_Reports_ChartService::render([
+                    'type' => 'stackedBar',
+                    'width' => 700, 'height' => 600,
+                    'filename' => 'testkit_bar_chart',
+                    'title' => 'Testkit Evaluation Report',
+                    'xAxis' => ['labels' => $testkitname, 'labelAngle' => 25],
+                    'yAxis' => [],
+                    'datasets' => [
+                        ['data' => $passedTestKits, 'label' => 'Satisfactory Score', 'colors' => ['#22C55E']],
+                        ['data' => $failedTestKits, 'label' => 'Unsatisfactory Score', 'colors' => ['#DC3545']],
+                    ],
+                    'legend' => ['position' => 'bottom'],
+                ], $outputDir);
+                $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
                 $y = $pdf->getY() + 5;
-                $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+                $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', '', false, 600);
                 if (file_exists($image_file)) {
                     unlink($image_file);
                 }
@@ -410,54 +374,19 @@ if ($resultArray['shipment'] != "") {
             $dataY[] = $key . ' (' . $val . ')';
         }
 
-        // Create the graph. These two calls are always required
-        $graph = new Graph(700, 300, 'auto');
-        $graph->SetScale("textlin");
-
-        // Enable anti-aliasing
-        $graph->img->SetAntiAliasing();
-
-        $theme_class = new UniversalTheme;
-        $graph->SetTheme($theme_class);
-
-        // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-        $graph->SetBox(false);
-
-        $graph->ygrid->SetFill(false);
-        $graph->xaxis->SetTickLabels($dataY);
-        $graph->yaxis->HideLine(false);
-        $graph->yaxis->HideTicks(false, false);
-
-        // Create the bar plots
-        $b1plot = new BarPlot($dataX);
-        // Create the grouped bar plot
-        $gbplot = new GroupBarPlot(array($b1plot));
-        // ...and add it to the graPH
-        // $b1plot->SetLegend("Number of participants");
-        $graph->Add($gbplot);
-
-        // $graph->legend->SetShadow('gray@0.4',5);
-        // $graph->legend->SetPos(0.5,0.98,'center','bottom');
-        $b1plot->SetColor("white");
-        // $b1plot->SetFillColor("#cc1111");
-        $b1plot->SetFillColor(array($monochromaticColors[2], $monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5]));
-
-        // Setup the titles
-        $graph->title->Set("Comparison of test performance between participating laboratories");
-        $graph->xaxis->title->Set('% Score');
-        $graph->yaxis->title->Set('Number of Participants', 'center');
-
-        $graph->yaxis->SetTitleMargin(30);
-        $graph->xaxis->SetTitleMargin(32);
-        // Turn the tick mark out from the plot area
-        $graph->xaxis->SetTickSide(SIDE_DOWN);
-        $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-        $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-        $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-        $graph->img->SetQuality(100); // Set the highest quality
-        $graph->Stroke($image_file);
-        $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
+        $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+        $image_file = Pt_Reports_ChartService::render([
+            'type' => 'bar',
+            'width' => 700, 'height' => 300,
+            'filename' => 'bar_chart',
+            'title' => 'Comparison of test performance between participating laboratories',
+            'xAxis' => ['labels' => $dataY, 'title' => '% Score'],
+            'yAxis' => ['title' => 'Number of Participants'],
+            'datasets' => [
+                ['data' => $dataX, 'colors' => ['#3B82F6']],
+            ],
+        ], $outputDir);
+        $pdf->Image($image_file, PDF_MARGIN_LEFT, $pdf->getY(), $chartW, 0, '', '', '', false, 600);
         if (file_exists($image_file)) {
             unlink($image_file);
         }
@@ -484,32 +413,23 @@ if ($resultArray['shipment'] != "") {
         $notResponded = number_format((($responseResult["not_responded"] / $total) * 100), 2);
         $excluded = number_format((($responseResult["excluded"] / $total) * 100), 2);
         $data = array($passed, $failed, $notResponded, $excluded);
-        // Create the Pie Graph.
-        $graph = new PieGraph(700, 400);
-        $graph->SetShadow();
-
-        // Set A title for the plot
-        $graph->title->Set("Shipment Participant Result Report (N=" . $total . ")");
-        // Enable anti-aliasing
-        $graph->img->SetAntiAliasing();
-        $p1 = new PiePlot($data);
-        $p1->value->SetColor('black');
-        $p1->SetLegends(array("Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"));
-        $graph->legend->SetPos(0.5, 0.97, 'center', 'bottom');
-        $graph->legend->SetColumns(3);
-
-
-        $graph->Add($p1);
-
-        // $p1->SetSliceColors(array('forestgreen', 'red', 'gray', 'orange', 'yellow'));
-        $p1->SetSliceColors(array($monochromaticColors[3], $monochromaticColors[4], $monochromaticColors[5], $monochromaticColors[6], $monochromaticColors[7]));
         if ($pass > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
-            $performancePiechart = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"] . DIRECTORY_SEPARATOR . 'performanceChart.png';
-            $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-            $graph->img->SetQuality(100); // Set the highest quality
-            $graph->Stroke($performancePiechart);
+            $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $responseResult["shipment_code"];
+            $performancePiechart = Pt_Reports_ChartService::render([
+                'type' => 'pie',
+                'width' => 700, 'height' => 400,
+                'filename' => 'performanceChart',
+                'title' => 'Shipment Participant Result Report (N=' . $total . ')',
+                'slices' => [
+                    'data' => $data,
+                    'labels' => ["Passed (N=" . $passedN . ")", "Failed (N=" . $failedN . ")", "Not Responded (N=" . $notRespondedN . ")", "Excluded (N=" . $excludedN . ")"],
+                    'colors' => ['#22C55E', '#DC3545', '#F59E0B', '#94A3B8'],
+                ],
+                'legend' => ['position' => 'bottom'],
+            ], $outputDir);
 
-            $pdf->Image($performancePiechart, 5, $y, '', '', '', '', '', false, 600);
+            $pieW = $chartW * 0.6;
+            $pdf->Image($performancePiechart, '', $y, $pieW, 0, '', '', '', false, 600, 'C');
             if (file_exists($performancePiechart)) {
                 unlink($performancePiechart);
             }

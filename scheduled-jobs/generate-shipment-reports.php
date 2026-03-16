@@ -84,6 +84,8 @@ if (function_exists('pcntl_signal')) {
         };
         ReportGenerator::warn("Received $signalName, cleaning up...", $isCli);
 
+        Pt_Reports_ChartService::shutdown();
+
         // Release lock via destructor
         if (isset($GLOBALS['_reportGenerator'])) {
             $GLOBALS['_reportGenerator'] = null;
@@ -1668,6 +1670,7 @@ try {
     // PDFs in parallel. Each subprocess handles a chunk of participants.
     //
     if ($cliOpts->isSubProcess) {
+        Pt_Reports_ChartService::initialize();
         $reportGenerator->runAsSubProcess();
         exit(0);
     }
@@ -1678,8 +1681,13 @@ try {
     // Fetches shipments from queue (or single shipment via --shipment flag)
     // and runs the 4-step report generation process for each.
     //
+    // Initialize chart service (uses Node.js/skia-canvas if available, else JPGraph)
+    Pt_Reports_ChartService::initialize();
+    ReportGenerator::log('Chart renderer: ' . Pt_Reports_ChartService::getActiveRenderer(), $cliOpts->isCli);
+
     $shipments = $reportGenerator->getShipmentsToProcess();
     if (empty($shipments)) {
+        Pt_Reports_ChartService::shutdown();
         exit(0);
     }
 
@@ -1700,6 +1708,7 @@ try {
     ReportGenerator::error("{$e->getFile()}:{$e->getLine()} : {$e->getMessage()}", $isCli);
     ReportGenerator::log("<fg=gray>{$e->getTraceAsString()}</>", $isCli);
 } finally {
+    Pt_Reports_ChartService::shutdown();
     // Always release lock, even on exception
     if (isset($reportGenerator)) {
         unset($reportGenerator);

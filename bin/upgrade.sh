@@ -524,6 +524,9 @@ fi
 
 print success "All system checks passed. Continuing with the update..."
 
+# Ensure Node.js is installed (for Chart.js server-side rendering)
+ensure_nodejs
+
 # Update Ubuntu Packages
 if [ "$skip_ubuntu_updates" = false ]; then
     print header "Updating Ubuntu packages"
@@ -815,6 +818,9 @@ upgrade_instance() {
 
     sudo -u www-data composer dump-autoload -o --no-interaction
     print success "Composer operations completed."
+
+    # Install npm packages (for Chart.js server-side rendering)
+    install_npm_packages "${ept_path}"
 
     # Database connectivity and migrations
     print info "Checking database connectivity..."
