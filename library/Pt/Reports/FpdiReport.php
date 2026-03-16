@@ -29,23 +29,23 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "", $shipmentAttributes = "")
     {
-        $this->resultStatus = $resultStatus;
-        $this->dateTime = $dateTime;
-        $this->config = $config;
-        $this->watermark = $watermark ?? '';
-        $this->reportType = $reportType;
-        $this->layout = $layout;
-        $this->scheme = $scheme;
-        $this->schemeType = $schemeType;
-        $this->approveTxt = $approveTxt;
-        $this->staticFooterHtml = $staticFooterHtml;
+        $this->resultStatus       = $resultStatus;
+        $this->dateTime           = $dateTime;
+        $this->config             = $config;
+        $this->watermark          = $watermark ?? '';
+        $this->reportType         = $reportType;
+        $this->layout             = $layout;
+        $this->scheme             = $scheme;
+        $this->schemeType         = $schemeType;
+        $this->approveTxt         = $approveTxt;
+        $this->staticFooterHtml   = $staticFooterHtml;
         $this->shipmentAttributes = $shipmentAttributes;
 
-        $reportService = new Application_Service_Reports();
-        $commonService = new Application_Service_Common();
-        $reportFormat = $reportService->getReportConfigValue('report-format');
+        $reportService     = new Application_Service_Reports();
+        $commonService     = new Application_Service_Common();
+        $reportFormat      = $reportService->getReportConfigValue('report-format');
         $templateTopMargin = $reportService->getReportConfigValue('template-top-margin');
-        $this->instance = $commonService->getConfig('instance');
+        $this->instance    = $commonService->getConfig('instance');
         $this->templateTopMargin = $templateTopMargin;
         if (!empty($reportFormat) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat)) {
             $this->template = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $reportFormat;
@@ -88,20 +88,14 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function Rotate($angle, $x = -1, $y = -1)
     {
-        if ($x == -1) {
-            $x = $this->x;
-        }
-        if ($y == -1) {
-            $y = $this->y;
-        }
-        if ($this->angle != 0) {
-            $this->_out('Q');
-        }
+        if ($x == -1) $x = $this->x;
+        if ($y == -1) $y = $this->y;
+        if ($this->angle != 0) $this->_out('Q');
         $this->angle = $angle;
         if ($angle != 0) {
             $angle *= M_PI / 180;
-            $c = cos($angle);
-            $s = sin($angle);
+            $c  = cos($angle);
+            $s  = sin($angle);
             $cx = $x * $this->k;
             $cy = ($this->h - $y) * $this->k;
             $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
@@ -127,55 +121,77 @@ class Pt_Reports_FpdiReport extends Fpdi
     public function Footer()
     {
         $shipmentService = new Application_Service_Shipments();
-        $effectiveDate  = $this->shipmentAttributes['effectiveDate']  ?? $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'effectiveDate');
-        $reportVersion  = $this->shipmentAttributes['reportVersion']  ?? $shipmentService->getShipmentAttributes($this->shipmentAttributes['shipment_id'], 'reportVersion');
 
-        $showTime    = $this->dateTime ?? date("Y-m-d H:i:s");
-        $reportDate  = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
-        $pageNumber  = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
+        // Guard: shipmentAttributes may be an empty string (default) instead of an array.
+        // Only attempt array access when it is actually an array.
+        $attrs         = is_array($this->shipmentAttributes) ? $this->shipmentAttributes : [];
+        $shipmentId    = $attrs['shipment_id'] ?? null;
+        $effectiveDate = $attrs['effectiveDate']
+            ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'effectiveDate') : null);
+        $reportVersion = $attrs['reportVersion']
+            ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'reportVersion') : null);
+
+        $showTime   = $this->dateTime ?? date("Y-m-d H:i:s");
+        $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
+        $pageNumber = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
 
         $finalizeReport = (isset($this->resultStatus) && trim($this->resultStatus) == "finalized")
             ? " | {$this->reportType} REPORT | FINALIZED "
             : " | {$this->reportType} REPORT ";
 
-        // ------------------------------------------------------------------
-        // Build a full-width 3-column table:
-        //   LEFT (40%)  |  CENTER (40%)  |  RIGHT (20%, always page number)
-        // All columns share the same vertical rhythm; page number is right-aligned.
-        // ------------------------------------------------------------------
-        $cellStyle  = 'font-size:9px; margin-top:6px; padding-top:4px;';
-        $leftCell   = '';
-        $centerCell = '';
+        // Base cell style — single line height, no wrapping issues
+        $td = 'font-size:9px; vertical-align:middle; padding:1px 3px;';
 
+        $completeFooterHtml = '';
+
+        // -------------------------------------------------------------------
+        // MALAWI
+        // Single bordered row with 5 equal columns (20% each):
+        //   reportVersion | Serology report form V.1 | effectiveDate | Survey number 0124 | Page X of Y
+        // -------------------------------------------------------------------
         if ($this->layout == 'malawi') {
-            // LEFT: version + form label  |  CENTER: effective date + survey  |  RIGHT: page
-            if (!empty($effectiveDate) && !empty($reportVersion)) {
-                $leftCell   = '<div style="' . $cellStyle . 'text-align:left;">'  . htmlspecialchars($reportVersion)          . ' Serology report form V.1</div>';
-                $centerCell = '<div style="' . $cellStyle . 'text-align:center;">' . htmlspecialchars($effectiveDate)         . ' Survey Number (0124)</div>';
-            }
+
+            $border = 'border:1px solid #000;';
+            $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse; ' . $border . '">';
+            $completeFooterHtml .= '<tr>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:left;   border-right:0px solid #fff;">' . htmlspecialchars($reportVersion  ?? '') . '</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Serology report form V.1</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">' . htmlspecialchars($effectiveDate ?? '') . '</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Survey number 0124</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
+            $completeFooterHtml .= '</tr>';
+            $completeFooterHtml .= '</table>';
+
+            // -------------------------------------------------------------------
+            // ZIMBABWE
+            // 3 columns: Effective Date (left) | Report Version (center) | Page (right)
+            // -------------------------------------------------------------------
         } elseif ($this->layout == 'zimbabwe') {
-            // LEFT: effective date  |  CENTER: report version  |  RIGHT: page
-            if (!empty($effectiveDate) && !empty($reportVersion)) {
-                $leftCell   = '<div style="' . $cellStyle . 'text-align:left;">Effective Date ' . htmlspecialchars($effectiveDate) . '</div>';
-                $centerCell = '<div style="' . $cellStyle . 'text-align:center;">'               . htmlspecialchars($reportVersion) . '</div>';
-            }
+
+            $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
+            $completeFooterHtml .= '<tr>';
+            $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:left;">Effective Date ' . htmlspecialchars($effectiveDate ?? '') . '</td>';
+            $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:center;">' . htmlspecialchars($reportVersion ?? '') . '</td>';
+            $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
+            $completeFooterHtml .= '</tr>';
+            $completeFooterHtml .= '</table>';
+
+            // -------------------------------------------------------------------
+            // DEFAULT
+            // 3 columns: (empty) | Report generated on ... (center) | Page (right)
+            // -------------------------------------------------------------------
         } else {
-            // Default: LEFT empty  |  CENTER: generated-on line  |  RIGHT: page
-            $centerCell = '<div style="' . $cellStyle . 'text-align:center;">Report generated on ' . $reportDate . $finalizeReport . '</div>';
+
+            $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
+            $completeFooterHtml .= '<tr>';
+            $completeFooterHtml .= '<td style="width:40%; ' . $td . ' text-align:left;"></td>';
+            $completeFooterHtml .= '<td style="width:40%; ' . $td . ' text-align:center;">Report generated on ' . $reportDate . $finalizeReport . '</td>';
+            $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
+            $completeFooterHtml .= '</tr>';
+            $completeFooterHtml .= '</table>';
         }
 
-        // Page-number cell — always right-aligned, always last
-        $rightCell = '<div style="' . $cellStyle . 'text-align:right;">' . $pageNumber . '</div>';
-
-        $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
-        $completeFooterHtml .= '<tr>';
-        $completeFooterHtml .= '<td style="width:40%; vertical-align:middle;">' . $leftCell   . '</td>';
-        $completeFooterHtml .= '<td style="width:40%; vertical-align:middle;">' . $centerCell . '</td>';
-        $completeFooterHtml .= '<td style="width:20%; vertical-align:middle;">' . $rightCell  . '</td>';
-        $completeFooterHtml .= '</tr>';
-        $completeFooterHtml .= '</table>';
-
-        // Philippines-specific disclaimer above the footer row
+        // Philippines: disclaimer line above the footer row
         if (!empty($this->instance) && $this->instance == 'philippines') {
             $text = (!empty($this->approveTxt))
                 ? "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}"
@@ -183,12 +199,13 @@ class Pt_Reports_FpdiReport extends Fpdi
             $completeFooterHtml = '<div style="text-align:center; font-size:7px;">' . $text . '</div>' . $completeFooterHtml;
         }
 
-        // Static footer content (prepended above everything else if provided)
+        // Optional static footer content prepended above everything
         if (!empty($this->staticFooterHtml)) {
             $completeFooterHtml = $this->staticFooterHtml . $completeFooterHtml;
         }
 
-        $this->SetY($this->layout == 'malawi' ? -14 : -18);
+        // Malawi is a single line so needs less room at the bottom
+        $this->SetY($this->layout == 'malawi' ? -12 : -18);
         $this->SetFont('freesans', '', 7, '', true);
         $this->writeHTML($completeFooterHtml, true, false, false, false, '');
     }

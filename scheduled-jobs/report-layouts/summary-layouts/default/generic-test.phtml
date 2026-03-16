@@ -283,7 +283,7 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $pdf->writeHTML($note, true, false, true, false, '');
     }
     /* JPGraph start */
-    $allParticipantChartLabels = $assayName;
+    $allParticipantChartLabels = $assayName ?? null;
 
     $noOfPaResponse = [];
     $participantScore = [];
