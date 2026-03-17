@@ -127,8 +127,10 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
 
     $b1plot->SetFillColor('#4F81BD');
     $b1plot->SetColor("white");
+    $b1plot->SetLegend('Passed');
+    $b2plot->SetLegend('Failed');
     $graph->legend->SetShadow('gray@0.4', 5);
-    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
+    $graph->legend->SetPos(0.5, 0.95, 'center', 'bottom');
     $graph->title->Set("Participants performance for the last 5 surveys");
     $graph->subtitle->Set('.');
     $graph->yaxis->title->Set('Number of Participants');
