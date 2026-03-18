@@ -265,7 +265,6 @@ try {
     $newPassword = null;
     if ($generatePassword) {
         $newPassword = generateSecurePassword(12);
-        $io->text("Generated password: <comment>$newPassword</comment>");
     } elseif ($passwordArg !== null) {
         $newPassword = trim((string) $passwordArg);
         if (strlen($newPassword) < 6) {

@@ -359,7 +359,7 @@ try {
 
         $resetScript = __DIR__ . '/reset-password.php';
         $escapedEmail = escapeshellarg($newEmail);
-        $cmd = sprintf('php %s --input %s --generate --force-reset', escapeshellarg($resetScript), $escapedEmail);
+        $cmd = sprintf('php %s --input %s --generate --force-reset --no-interaction', escapeshellarg($resetScript), $escapedEmail);
 
         passthru($cmd, $exitCode);
 
