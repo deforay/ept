@@ -272,6 +272,14 @@ try {
             exit(1);
         }
     } else {
+        // Ask if user wants to auto-generate
+        if ($io->confirm('Auto-generate a secure password?', true)) {
+            $generatePassword = true;
+            $newPassword = generateSecurePassword(12);
+        }
+    }
+
+    if (!$generatePassword && $passwordArg === null && $newPassword === null) {
         $attempts = 0;
         do {
             $attempts++;
