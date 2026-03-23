@@ -617,7 +617,7 @@ class ReportGenerator
         $resultStatus = $this->opts->reportType ?? 'generateReport';
 
         // Fetch shipment details
-        $shipmentRow = $this->fetchShipmentForWorker($shipmentId);
+        $shipmentRow = $this->fetchShipmentForWorker($shipmentId, $resultStatus);
         if (empty($shipmentRow)) {
             self::log("Shipment $shipmentId not found for worker", $this->opts->isCli);
             exit(1);
@@ -1162,7 +1162,7 @@ class ReportGenerator
     /**
      * Fetch shipment details for worker mode.
      */
-    private function fetchShipmentForWorker(int $shipmentId): ?array
+    private function fetchShipmentForWorker(int $shipmentId, string $reportType = 'generateReport'): ?array
     {
         return $this->db->fetchRow(
             $this->db->select()
@@ -1177,7 +1177,7 @@ class ReportGenerator
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
-                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id', ['date_finalised'])
+                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id AND ' . $this->db->quoteInto('qrg.report_type = ?', $reportType), ['date_finalised'])
                 ->where("s.shipment_id = ?", $shipmentId)
         );
     }
@@ -1225,7 +1225,7 @@ class ReportGenerator
                     ]
                 )
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['scheme_name', 'is_user_configured'])
-                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id', ['date_finalised'])
+                ->joinLeft(['qrg' => 'queue_report_generation'], 's.shipment_id=qrg.shipment_id AND ' . $this->db->quoteInto('qrg.report_type = ?', $manualReportType), ['date_finalised'])
                 ->where("s.shipment_id = ?", $this->opts->shipmentId);
 
             $evalRow = $this->db->fetchRow($shipmentRow);
