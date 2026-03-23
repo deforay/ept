@@ -4218,8 +4218,6 @@ class Application_Service_Shipments
         $sQuery = $db->select()->from(array('s' => 'shipment'), ['shipment_attributes'])
             ->where('s.shipment_id = ?', $sid);
         $result = $db->fetchRow($sQuery);
-        dump($result);
-        die;
         $shipmentAttributes = [];
         if (!empty($result['shipment_attributes'])) {
             $shipmentAttributes = json_decode($result['shipment_attributes'], true) ?? [];

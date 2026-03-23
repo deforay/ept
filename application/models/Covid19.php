@@ -49,13 +49,8 @@ class Application_Model_Covid19
             $correctiveActionList = [];
             $algoResult = "";
             $lastDateResult = "";
-            $controlTesTypeFail = "";
 
             $attributes = json_decode($shipment['attributes'], true);
-            $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
-
-
-
 
             //Response was submitted after the last response date.
             $lastDate = Pt_Commons_DateUtility::endOfDay($shipment['lastdate_response']);
