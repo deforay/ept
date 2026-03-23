@@ -580,20 +580,6 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
         $authorised = $resultArray['shipment']['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $datetxt = Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'] ?? date('Y-m-d'));
     }
-    /*  $pdf->writeHTML('<table style="width:100%;font-size:12px;">
-                            <tr>
-                                <td colspan="2">All PT material is produced in line with the standard ISO17043:2023</td>
-                            </tr>
-                            <tr>
-                                <td style="width:45%">Report issued by: ' . $authorised . '</td>
-                                <td style="width:55%">Date: ' . $datetxt . '</td>
-                            </tr>
-                        </table>', true, false, true, false, '');
-
-    $address = Pt_Commons_SchemeConfig::get('tb.contactInfo');
-    if (isset($address) && !empty(trim($address)) && !empty(trim(strip_tags($address)))) {
-        $pdf->writeHTML('<table style="width:100%" border="1"><tr><td style="width:100%;">' . $address . '</td></tr></table>', true, false, true, false, '');
-    }*/
 
     $reportType = ($resultStatus == 'finalized') ? 'final' : '';
     $html = '<span style="border-spacing: 25px;border-collapse: separate;line-height:5em;"></span>';
