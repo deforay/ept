@@ -459,7 +459,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage();
         $overallScore = ((int) $passPercentage == 100) ? $passPercentage : "&gt; $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
-        $scorePerSample = $result['shipment_score'] / count($result['responseResult']);
+        $scorePerSample = 100 / count($result['responseResult']);
         $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                         <ul>
                             <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>

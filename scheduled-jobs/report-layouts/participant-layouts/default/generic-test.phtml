@@ -403,10 +403,11 @@ if (!empty($resultArray['shipment'])) {
 
         // Add new page and performance criteria
         $pdf->AddPage();
+        $scorePerSample = 100 / count($result['responseResult']);
         $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
             <ul>
                 <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
-                <li>A testing score of 15 is awarded for any result reported correctly</li>
+                <li>A testing score of ' . $scorePerSample . ' is awarded for any result reported correctly</li>
                 <li>A documentation score of 0 is awarded for any result that is incorrect;y reported</li>
                 <li>A documentation score of 2 is awarded for any result reported correctly.</li>
                 <li>A grading of Satisfactory is assigned when the participant overall score is >= 95%</li>

@@ -124,7 +124,11 @@ class Pt_Reports_FpdiReport extends Fpdi
 
         // Guard: shipmentAttributes may be an empty string (default) instead of an array.
         // Only attempt array access when it is actually an array.
-        $attrs         = is_array($this->shipmentAttributes) ? $this->shipmentAttributes : [];
+        $attrs = is_array($this->shipmentAttributes)
+            ? $this->shipmentAttributes
+            : (is_string($this->shipmentAttributes) && !empty($this->shipmentAttributes)
+                ? (json_decode($this->shipmentAttributes, true) ?? [])
+                : []);
         $shipmentId    = $attrs['shipment_id'] ?? null;
         $effectiveDate = $attrs['effectiveDate']
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'effectiveDate') : null);
