@@ -548,7 +548,7 @@
 	}
 
 	function resultCodeChange(obj) {
-		/* var schemeCode = $('#schemeCode').val().toUpperCase();
+		var schemeCode = $('#schemeCode').val().toUpperCase();
 		var row = $(obj).closest('tr');
 		var resultType = row.find('.resultTypeInput').val();
 		var currentVal = $(obj).val().toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -565,11 +565,11 @@
 			$(obj).val(prefix + baseVal);
 		} else if (currentVal && !currentVal.startsWith(schemeCode + '-')) {
 			$(obj).val(schemeCode + '-' + currentVal);
-		} */
+		}
 	}
 
 	function resultTypeChange(rrow, srow) {
-		/* var resultType = $('#resultType' + rrow + srow).val();
+		var resultType = $('#resultType' + rrow + srow).val();
 		if (resultType == 'test-result') {
 			$('#displayContext' + rrow + srow).val('participant');
 		}
@@ -579,7 +579,7 @@
 		var resultCodeInput = row.find('.resultCodeInput');
 		if (resultCodeInput.val()) {
 			resultCodeChange(resultCodeInput[0]);
-		} */
+		}
 	}
 
 	$(function() {
