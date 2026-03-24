@@ -93,7 +93,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
             ->group('dm.dm_id')->setIntegrityCheck(false);
         $subResult = $this->fetchAll($subQuery);
         foreach ($subResult as $dm) {
-            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
+            $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
             $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
             if (isset($notParticipatedMailContent['mail_content']) && !empty($notParticipatedMailContent['mail_content'])) {
                 $content = $notParticipatedMailContent['mail_content'];
@@ -2136,7 +2136,7 @@ class Application_Model_DbTable_Shipments extends Zend_Db_Table_Abstract
                 $data[$key]['screeningTest'] = $dtsSchemeType;
                 $data[$key]['sampleType'] = $attributes["sampleType"] ?? null;
                 $data[$key]['receivedPtPanel'] = $row["received_pt_panel"] ?? null;
-                $dtsSpecialFields = ['condition_pt_samples', 'refridgerator', 'room_temperature', 'stop_watch'];
+                $dtsSpecialFields = ['condition_pt_samples', 'room_temperature', 'stop_watch'];
                 foreach ($dtsSpecialFields as $field) {
                     // To create CamelCase string for DTS special attributes fields
                     $index = $common->stringToCamelCase($field, '_');

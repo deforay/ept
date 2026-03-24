@@ -893,15 +893,6 @@ final class Application_Model_Dts
 				];
 				$correctiveActionList[] = 18;
 			}
-			if (!empty($attributes['refridgerator'])) {
-				$documentationScore += $documentationScorePerItem;
-			} else {
-				$failureReason[] = [
-					'warning' => "Refridgerator availability not reported",
-					'correctiveAction' => $correctiveActions[19]
-				];
-				$correctiveActionList[] = 18;
-			}
 			if (!empty($attributes['room_temperature'])) {
 				$documentationScore += $documentationScorePerItem;
 			} else {

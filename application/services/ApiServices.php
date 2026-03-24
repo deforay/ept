@@ -242,7 +242,6 @@ class Application_Service_ApiServices
                     $attributes["algorithm"] = $param['algorithm'];
                     if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
                         $attributes["condition_pt_samples"] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
-                        $attributes["refridgerator"] = (isset($param['refridgerator']) && !empty($param['refridgerator'])) ? $param['refridgerator'] : '';
                         $attributes["room_temperature"] = (isset($param['roomTemperature']) && !empty($param['roomTemperature'])) ? $param['roomTemperature'] : '';
                         $attributes["stop_watch"] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
                     }
