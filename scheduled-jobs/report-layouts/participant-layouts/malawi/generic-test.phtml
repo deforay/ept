@@ -39,7 +39,7 @@ if (!empty($resultArray['shipment'])) {
 
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $panelName, "", "", "", $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             $attributes = json_decode($result['attributes'], true);

@@ -134,7 +134,6 @@ class Pt_Reports_FpdiReport extends Fpdi
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'effectiveDate') : null);
         $reportVersion = $attrs['reportVersion']
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'reportVersion') : null);
-
         $showTime   = $this->dateTime ?? date("Y-m-d H:i:s");
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $pageNumber = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
