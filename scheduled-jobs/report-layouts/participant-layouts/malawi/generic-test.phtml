@@ -250,7 +250,7 @@ if (!empty($resultArray['shipment'])) {
                 if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') {
                     $labRes .= '<td style="text-align:center;">' . $response['additional_detail'] . '</td>';
                 }
-                $labRes .= '<td style="text-align:center;">' . $response['calculated_score'] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . round($response['calculated_score'], 2) . '</td>';
                 $evaluationScore = $passPercentage / $result['number_of_samples'];
                 $evaluationResult = ($response['calculated_score'] >= $evaluationScore) ? 'Acceptable' : 'Unacceptable';
                 // $labRes .= '<td style="text-align:center;">' . number_format(($response['calculated_score'] / (20 * count($result['responseResult']))) * 100, 2) . '%</td>';

@@ -154,7 +154,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         // -------------------------------------------------------------------
         if ($this->layout == 'malawi') {
 
-            $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
+            $completeFooterHtml  = '<hr><br><table style="width:100%; border-collapse:collapse;">';
             $completeFooterHtml .= '<tr>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:left;   border-right:0px solid #fff;">' . htmlspecialchars($reportVersion  ?? '') . '</td>';
             $completeFooterHtml .= '<td style="width:20%; ' . $td . ' text-align:center; border-right:0px solid #fff;">Serology report form V.1</td>';
