@@ -95,7 +95,8 @@ class Application_Service_Reports
 
 
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('*', 'evaluated_at', 'reports_generated_at', 'finalized_at'))
+        $feedbackCountExpr = new Zend_Db_Expr('(SELECT COUNT(*) FROM participant_feedback_answer pfa_sub WHERE pfa_sub.shipment_id = s.shipment_id)');
+        $sQuery = $dbAdapter->select()->from(array('s' => 'shipment'), array('*', 'evaluated_at', 'reports_generated_at', 'finalized_at', 'feedback_count' => $feedbackCountExpr))
             ->join(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_id', 'scheme_name', 'is_user_configured'))
             ->join(array('d' => 'distributions'), 'd.distribution_id=s.distribution_id', array('distribution_id', 'distribution_code', 'distribution_date'))
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'reported_percentage' => new Zend_Db_Expr("ROUND((SUM(response_status is not null AND response_status like 'responded')/count('participant_id'))*100,2)"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")))
@@ -229,7 +230,12 @@ class Application_Service_Reports
                     $notResponded = "<a href='javascript:void(0);' class='btn btn-danger btn-xs'><i class='icon icon-download'></i> " . $this->translator->_("No Response Sites") . "</a>";
                 }
 
-                $row[] = "$exportReport $notResponded";
+                $feedbackDownload = "";
+                if (!empty($aRow['feedback_count']) && $aRow['feedback_count'] > 0) {
+                    $feedbackDownload = "<a href='javascript:void(0);' class='btn btn-info btn-xs' style='margin-top:5px;' onclick='downloadFeedbackReport(" . $aRow['shipment_id'] . ")'><i class='icon-download'></i> " . $this->translator->_("Participant Feedback") . "</a>";
+                }
+
+                $row[] = "$exportReport $notResponded $feedbackDownload";
             } else {
                 $row[] = "";
             }

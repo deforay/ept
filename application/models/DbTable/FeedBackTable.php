@@ -57,7 +57,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'));
         if ($type == 'mapped') {
             $sql = $sql->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('*'));
-            $sql = $sql->join(['rpff' => 'r_participant_feedback_form_files_map'], 'rpfq.rpff_id=rpff.rpff_id',  ['*']);
+            $sql = $sql->join(['rpff' => 'r_participant_feedback_form_files_map'], 'rpfq.rpff_id=rpff.rpff_id', ['*']);
             $sql = $sql->where("rpfq.shipment_id =?", $id);
             return $db->fetchAll($sql);
         } else {
@@ -103,7 +103,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                     OR (rfq.question_show_to = 'passing-participants' AND spm.final_result = 1 AND rfq.question_show_to != 'failing-participants' AND rfq.question_show_to != 'all-participants')
                     OR (rfq.question_show_to = 'failing-participants' AND spm.final_result != 1 AND rfq.question_show_to != 'passing-participants' AND rfq.question_show_to != 'all-participants')
                 )")
-            ->group('rfq.question_id');
+            ->group('rfq.question_id')
+            ->order('rpfq.sort_order ASC');
         $result['feedback_form_question_results'] = $db->fetchAll($questionMapSql);
 
         // Fetch feedback form files mapping results
@@ -164,14 +165,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         if (isset($params['question']) && !empty($params['question'])) {
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $data = array(
-                'question_text'         => $params['question'],
-                'question_type'         => $params['questionType'],
-                'response_attributes'   => ($params['questionType'] == 'dropdown') ? json_encode($params['options'], true) : null,
-                'question_code'         => $params['questionCode'],
-                'question_status'       => $params['questionStatus'],
-                'question_show_to'       => $params['questionTo'],
-                'updated_datetime'      => new Zend_Db_Expr('now()'),
-                'modified_by'           => $authNameSpace->admin_id
+                'question_text' => $params['question'],
+                'question_type' => $params['questionType'],
+                'response_attributes' => ($params['questionType'] == 'dropdown') ? json_encode($params['options'], true) : null,
+                'question_code' => $params['questionCode'],
+                'question_status' => $params['questionStatus'],
+                'question_show_to' => $params['questionTo'],
+                'updated_datetime' => new Zend_Db_Expr('now()'),
+                'modified_by' => $authNameSpace->admin_id
             );
 
             if (isset($params['questionID']) && !empty($params['questionID']) && $params['formType'] != 'clone') {
@@ -219,7 +220,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             $db->update(
                 'r_participant_feedback_form',
                 $feedbackFormData,
-                'rpff_id = ' . (int)$feedbackFormId
+                'rpff_id = ' . (int) $feedbackFormId
             );
         } else {
             // Insert new record
@@ -236,7 +237,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
             // Delete existing file mappings for this shipment
             $db->delete(
                 'r_participant_feedback_form_files_map',
-                'shipment_id = ' . (int)$params['shipmentId']
+                'shipment_id = ' . (int) $params['shipmentId']
             );
 
             // Prepare upload directory
@@ -287,7 +288,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Delete existing question mappings for this shipment
         $db->delete(
             'r_participant_feedback_form_question_map',
-            'shipment_id = ' . (int)$params['shipmentId']
+            'shipment_id = ' . (int) $params['shipmentId']
         );
 
         // Insert new question mappings
