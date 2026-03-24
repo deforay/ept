@@ -40,8 +40,8 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('home', '');
 -- Amit 02-Mar-2026
 
 
--- DROP TABLE IF EXISTS `r_participant_feedback_form_question_map`;
--- DROP TABLE IF EXISTS `r_participant_feedback_form`;
+DROP TABLE IF EXISTS `r_participant_feedback_form_question_map`;
+DROP TABLE IF EXISTS `r_participant_feedback_form`;
 
 CREATE TABLE IF NOT EXISTS `r_participant_feedback_form` (
   `rpff_id` int NOT NULL AUTO_INCREMENT,
