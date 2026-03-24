@@ -342,6 +342,22 @@
 			});
 	}
 
+	function downloadFeedbackReport(shipmentId) {
+		$.blockUI();
+		$.post("/admin/feedback-responses/get-feedback-response-report", {
+			sid: shipmentId,
+			format: "html"
+		},
+			function (data) {
+				if (data != "") {
+					document.location.href = '/temporary/' + data;
+				} else {
+					alert('<?= $this->translate->_("No feedback responses found for this shipment"); ?>');
+				}
+				$.unblockUI();
+			});
+	}
+
 	function exportNotRespondedShipment(_shipmentCode, _shipmentDate) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'export-shipment-not-responded-participants')); ?>", {

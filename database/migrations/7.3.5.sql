@@ -40,16 +40,46 @@ INSERT INTO `global_config` (`name`, `value`) VALUES ('home', '');
 -- Amit 02-Mar-2026
 
 
+-- DROP TABLE IF EXISTS `r_participant_feedback_form_question_map`;
+-- DROP TABLE IF EXISTS `r_participant_feedback_form`;
+
 CREATE TABLE IF NOT EXISTS `r_participant_feedback_form` (
   `rpff_id` int NOT NULL AUTO_INCREMENT,
   `shipment_id` int NOT NULL,
-  `scheme_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `form_content` text COLLATE utf8mb4_general_ci,
+  `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `question_id` int NOT NULL,
+  `is_response_mandatory` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `sort_order` int DEFAULT NULL,
   PRIMARY KEY (`rpff_id`),
   KEY `shipment_id` (`shipment_id`),
-  CONSTRAINT `r_participant_feedback_form_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `question_id` (`question_id`),
+  KEY `scheme_type` (`scheme_type`),
+  CONSTRAINT `r_participant_feedback_form_ibfk_1`
+    FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`)
+    ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `r_participant_feedback_form_ibfk_2`
+    FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`)
+    ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+CREATE TABLE IF NOT EXISTS `r_participant_feedback_form_question_map` (
+  `fqm_id` int NOT NULL AUTO_INCREMENT,
+  `rpff_id` int NOT NULL,
+  `shipment_id` int NOT NULL,
+  `scheme_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `question_id` int NOT NULL,
+  `is_response_mandatory` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sort_order` int DEFAULT NULL,
+  PRIMARY KEY (`fqm_id`),
+  KEY `shipment_id` (`shipment_id`),
+  KEY `question_id` (`question_id`),
+  KEY `scheme_type` (`scheme_type`),
+  KEY `rpff_id` (`rpff_id`),
+  CONSTRAINT `r_participant_feedback_form_question_map_ibfk_1` FOREIGN KEY (`shipment_id`) REFERENCES `shipment` (`shipment_id`),
+  CONSTRAINT `r_participant_feedback_form_question_map_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `r_feedback_questions` (`question_id`),
+  CONSTRAINT `r_participant_feedback_form_question_map_ibfk_3` FOREIGN KEY (`rpff_id`) REFERENCES `r_participant_feedback_form` (`rpff_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 CREATE TABLE IF NOT EXISTS `participant_feedback_answer` (
@@ -154,4 +184,5 @@ WHERE `is_pt_test_not_performed` = 'yes'
   AND `vl_not_tested_reason` = 0;
 
   
+ALTER TABLE `r_participant_feedback_form` ADD `form_content` TEXT NULL DEFAULT NULL AFTER `scheme_type`;
 ALTER TABLE `r_participant_feedback_form` ADD `form_show_to` VARCHAR(50) NULL DEFAULT NULL AFTER `form_content`;
