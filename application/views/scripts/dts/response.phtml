@@ -301,20 +301,6 @@ foreach ($this->allTestKits as $kit) {
                                         <option value="not-sure" <?php echo ($this->shipment['attributes']['condition_pt_samples'] == 'not-sure') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Sure"); ?></option>
                                     </select>
                                 </td>
-
-                                <td><label for="refridgerator"
-                                        class="label-control"><?= $this->translate->_("Refridgerator"); ?></label></td>
-                                <td>
-                                    <select class="form-control" name="refridgerator" id="refridgerator"
-                                        title="Please select if a fridge is available">
-                                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                        <option value="available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Available"); ?></option>
-                                        <option value="not-available" <?php echo ($this->shipment['attributes']['refridgerator'] == 'not-available') ? "selected='selected'" : ""; ?>><?= $this->translate->_("Not Available"); ?>
-                                        </option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr class="light malawiNationalDtsAlgo">
                                 <td><label for="roomTemperature"
                                         class="label-control"><?= $this->translate->_("Room Temperature"); ?></label></td>
                                 <td style=" display: flex; ">
@@ -323,7 +309,8 @@ foreach ($this->allTestKits as $kit) {
                                         name="roomTemperature" id="roomTemperature" placeholder="Room Temperature"
                                         title="Please enter the room temperature">&nbsp;&nbsp;&nbsp;<span>&deg;C</span>
                                 </td>
-
+                            </tr>
+                            <tr class="light malawiNationalDtsAlgo">
                                 <td><label for="stopWatch"
                                         class="label-control"><?= $this->translate->_("Stop Watch"); ?></label></td>
                                 <td>
@@ -1386,9 +1373,9 @@ foreach ($this->allTestKits as $kit) {
                                     title="Please select if Supervisor Approval was conducted or not">
                                     <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                                     <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
-                                        echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
+                                                            echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
                                     <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
-                                        echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
+                                                            echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
                                 </select></td>
                             <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
@@ -1516,7 +1503,7 @@ foreach ($this->allTestKits as $kit) {
                                                     value="<?php echo $warning['correctiveAction'] ?? null; ?>" checked><label
                                                     for="manualCorrective<?php echo $i; ?>"> </label></td>
                                         </tr>
-                                        <?php $i++;
+                                    <?php $i++;
                                     } ?>
                                 </table>
                             </td>
@@ -1645,13 +1632,13 @@ foreach ($this->allTestKits as $kit) {
         window.history.back();
     }
 
-    $(function () {
+    $(function() {
         $("#avilableTestKit").select2({
             placeholder: $(this).attr('title'),
             minimumInputLength: 0,
             width: '100%',
             allowClear: true,
-            id: function (bond) {
+            id: function(bond) {
                 return bond._id;
             },
             ajax: {
@@ -1659,13 +1646,13 @@ foreach ($this->allTestKits as $kit) {
                 url: "<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'testkit-list'), 'default', true); ?>",
                 dataType: 'json',
                 delay: 250,
-                data: function (params) {
+                data: function(params) {
                     return {
                         q: params.term, // search term
                         page: params.page
                     };
                 },
-                processResults: function (data, params) {
+                processResults: function(data, params) {
                     params.page = params.page || 1;
                     return {
                         results: data.result,
@@ -1676,7 +1663,7 @@ foreach ($this->allTestKits as $kit) {
                 },
                 //cache: true
             },
-            escapeMarkup: function (markup) {
+            escapeMarkup: function(markup) {
                 return markup;
             }
         });
@@ -1692,7 +1679,7 @@ foreach ($this->allTestKits as $kit) {
         <?php } ?>
 
         // $('#isPtTestNotPerformed').trigger("change");
-        $('#receivedPtPanel').on("change", function () {
+        $('#receivedPtPanel').on("change", function() {
             if ($(this).val() == 'yes') {
                 $('#receiptDate').addClass('isRequired');
             } else {
@@ -1716,14 +1703,14 @@ foreach ($this->allTestKits as $kit) {
             dateFormat: <?php echo json_encode($dtFormat ?? ''); ?>
         });
         <?php if (!$this->isEditable && !$adminAccess) {
-            ?>
+        ?>
             $("#dtsResponseForm").find("input:enabled, select:enabled, textarea:enabled").attr("disabled", "disabled");
             $(".icon-remove-sign").remove();
-            <?php
+        <?php
         }
         ?>
 
-        $('#supervisorApproval').change(function () {
+        $('#supervisorApproval').change(function() {
 
             if ($('#supervisorApproval').val() == 'yes') {
                 $('#labSupervisor').show();
@@ -1783,7 +1770,7 @@ foreach ($this->allTestKits as $kit) {
             $("#retest_test_kit_other_name_update_3").val('');
         }
 
-        $('.testkit-change').change(function () {
+        $('.testkit-change').change(function() {
             var id = $(this).attr("id");
             // $("#repeat_" + id).val(this.value);
             /* Screening and Confirmatory changes */
@@ -1797,10 +1784,10 @@ foreach ($this->allTestKits as $kit) {
         var kitNoList = ["test_kit_name_1", "test_kit_name_2", "test_kit_name_3", "repeat_test_kit_name_1", "repeat_test_kit_name_2", "repeat_test_kit_name_3"];
         var kitIdList = ["One", "Two", "Three", "OneRepeat", "TwoRepeat", "ThreeRepeat"];
         var kitKeyList = ["1", "2", "3", "R1", "R2", "R3"];
-        $.each(kitNoList, function (index, idx) {
+        $.each(kitNoList, function(index, idx) {
             testKitInfo($('#' + idx), kitIdList[index], kitKeyList[index]);
         });
-        $('#isExcluded').change(function () {
+        $('#isExcluded').change(function() {
             if (this.value == 'yes') {
                 if (confirm('Please note that this action cannot be undone and will remove the participant and their response (if any) from the system')) {
                     showdefModal('removeParticipant', 500, 250);
@@ -1820,14 +1807,14 @@ foreach ($this->allTestKits as $kit) {
     function removeParticipantConfirmation() {
         if ($('#removeParticipantPassword').val() != '') {
             $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'exclude-participant')); ?>", {
-                participantId: $('#participantId').val(),
-                shipmentId: $('#shipmentId').val(),
-                smid: $('#smid').val(),
-                password: $('#removeParticipantPassword').val(),
-                testType: 'dts',
-                format: "html"
-            },
-                function (data) {
+                    participantId: $('#participantId').val(),
+                    shipmentId: $('#shipmentId').val(),
+                    smid: $('#smid').val(),
+                    password: $('#removeParticipantPassword').val(),
+                    testType: 'dts',
+                    format: "html"
+                },
+                function(data) {
                     if (!data) {
                         alert('Entered Password was wrong please try again later');
                         return false;
@@ -1895,7 +1882,7 @@ foreach ($this->allTestKits as $kit) {
     }
 
     //PT not performed case
-    $('#isPtTestNotPerformed').change(function () {
+    $('#isPtTestNotPerformed').change(function() {
         if ($(this).is(':checked')) {
             $('.vlResultSection').hide();
             $('.vlResultValues').val('');
@@ -2047,7 +2034,7 @@ foreach ($this->allTestKits as $kit) {
         var len = $('.autoWidth th').length;
         if (len > 0) {
             colwidth = 100 / len;
-            $('.autoWidth th').each(function (index, e) {
+            $('.autoWidth th').each(function(index, e) {
                 $(e).css('width', colwidth + '%');
             });
             $('.autoWidthSub th').css('width', colwidth + '%');

@@ -272,7 +272,7 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '</td></tr>';
         }
 
-        if ($sampleConditionFields == 'yes') {
+        /* if ($sampleConditionFields == 'yes') {
             $conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
             $refridgerator        = (isset($attributes['refridgerator'])        && $attributes['refridgerator'] != "")        ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
             $roomTemperature      = (isset($attributes['room_temperature'])     && $attributes['room_temperature'] != "")     ? $attributes['room_temperature'] : "";
@@ -282,7 +282,7 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '<tr><td><strong>Refridgerator</strong> : ' . $refridgerator . '</td></tr>';
             $labInfo .= '<tr><td><strong>Room Temperature</strong> : ' . $roomTemperature . '</td></tr>';
             $labInfo .= '<tr><td><strong>Stop Watch</strong> : ' . $stopWatch . '</td></tr>';
-        }
+        } */
 
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
             $labInfo .= '<tr><td><strong>Supervisor Name</strong> :' . $result['participant_supervisor'] . '</td></tr>';
