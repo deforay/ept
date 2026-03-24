@@ -299,6 +299,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetLeftMargin(15);
         $pdf->writeHTML($wishes, true, false, true, false, '');
         $performance1 = $performance2 = $performance3 = false;
+        $pdf->AddPage('P', 'A4');
         include('summary-statistics.phtml');
 
         //if(trim($result['distribution_date'])!=""){
@@ -325,6 +326,7 @@ if (!empty($resultArray['shipment'])) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
+        $pdf->AddPage('P', 'A4');
         $br = '';
         if ($performance1 || $performance2 || $performance3) {
             $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
