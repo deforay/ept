@@ -1294,7 +1294,7 @@ final class Application_Model_Dts
 				$this->translator->_('Testing Date'),
 				$this->translator->_('Reported On'),
 				$this->translator->_('Condition Of PT Samples'),
-				$this->translator->_('Refridgerator'),
+				//$this->translator->_('Refridgerator'),
 				$this->translator->_('Room Temperature'),
 				$this->translator->_('Stop Watch'),
 				$this->translator->_('Test #1 Kit Name'),
@@ -1687,12 +1687,12 @@ final class Application_Model_Dts
 				if (isset($config['displaySampleConditionFields']) && $config['displaySampleConditionFields'] == 'yes') {
 
 					$conditionOfPTSamples = (isset($attributes['condition_pt_samples']) && $attributes['condition_pt_samples'] != "") ? ucwords(str_replace('-', ' ', $attributes['condition_pt_samples'])) : "";
-					$refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
+					//$refridgerator = (isset($attributes['refridgerator']) && $attributes['refridgerator'] != "") ? ucwords(str_replace('-', ' ', $attributes['refridgerator'])) : "";
 					$roomTemperature = (isset($attributes['room_temperature']) && $attributes['room_temperature'] != "") ? $attributes['room_temperature'] : "";
 					$stopWatch = (isset($attributes['stop_watch']) && $attributes['stop_watch'] != "") ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
 
 					$resultReportRow[] = $conditionOfPTSamples;
-					$resultReportRow[] = $refridgerator;
+					//$resultReportRow[] = $refridgerator;
 					$resultReportRow[] = $roomTemperature;
 					$resultReportRow[] = $stopWatch;
 				}
