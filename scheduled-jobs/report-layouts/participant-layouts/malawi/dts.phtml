@@ -671,11 +671,12 @@ if (!empty($resultArray['shipment'])) {
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         } else {
+            $evaluationResult = ($result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
             $accuracy = (($successRate / count($result['responseResult'])) * 100);
-            $wishes   = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
-            $wishes  .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
-            $wishes  .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
-            $wishes  .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
+            $wishes = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
+            $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
+            $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+            $wishes .= '<strong>Performance Comment:</strong> ' . $evaluationResult . '</p>';
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($wishes, true, false, true, false, '');
         }

@@ -285,13 +285,14 @@ if (!empty($resultArray['shipment'])) {
             $wishes = '<p>Your response was not considered for evaluation</p>';
         } else {
             $totalScore = $result['shipment_score'] + $result['documentation_score'];
+            $evaluationResult = ($result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
             if ($totalScore >= $passPercentage) {
                 $accuracy = (($successRate / count($result['responseResult'])) * 100);
                 // $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
-                $wishes = '<p style="font-size:11px;"><strong>Total score</strong> ' . round($totalScore) . ' <strong>out of 100</strong><br>';
-                $wishes .= '<strong>Accuracy:</strong> ' . $accuracy . '%.<br>';
-                $wishes .= '<strong>Mean score for all Reporting Providers:</strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
-                $wishes .= 'Method of Data evaluation is Non parametric(Qualitative)</p>';
+                $wishes = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
+                $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
+                $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes .= '<strong>Performance Comment:</strong> ' . $evaluationResult . '</p>';
             } else {
                 $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
             }
