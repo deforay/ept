@@ -212,8 +212,7 @@ if (!empty($resultArray['shipment'])) {
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
-        $labInfo  = '<span style="font-weight:bold;text-align:center;"> HIV Serology Participant Survey Report No: ' . $result['distribution_code'] . ' </span></br>';
-        $labInfo .= '<span style="font-weight:bold;text-align:center;">Individual' . $reportType . ' Report</span></br>';
+        $labInfo  = '<span style="font-weight:bold;text-align:center;"> HIV Serology Participant Survey Report No: ' . $result['distribution_code'] . ' Individual' . $reportType . ' Report</span><br>';
         $labInfo .= '<hr>';
         $labInfo .= '<p style="text-align:right;font-size:11px;">';
         if (isset($result['pt_co_ordinator_name']) && !empty($result['pt_co_ordinator_name'])) {
