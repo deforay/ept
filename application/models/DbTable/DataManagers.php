@@ -1141,6 +1141,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             for ($i = 2; $i <= $count; ++$i) {
                 $lastInsertedId = 0;
+                $sheetData[$i] = array_map('trim', $sheetData[$i]);
 
                 if (
                     empty($sheetData[$i]['B']) &&

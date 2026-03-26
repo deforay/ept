@@ -1589,9 +1589,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         try {
             for ($i = 2; $i <= $count; ++$i) {
-                $row = $sheetData[$i];
-
-
+                $row = array_map('trim', $sheetData[$i]);
 
                 // Skip empty rows
                 if (empty($row['A']) && empty($row['C']) && empty($row['D'])) {
@@ -1760,6 +1758,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                         // Success - add to response
                         $response['data'][] = [
+                            's_no' => $sheetData[$i]['A'] ?? '',
                             'participant_id' => $sheetData[$i]['B'],
                             'individual' => $sheetData[$i]['C'] ?? 'no',
                             'participant_lab_name' => $sheetData[$i]['D'],
@@ -1820,16 +1819,25 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     private function addError(&$response, $row, $errorMessage)
     {
-        $errorData = [
+        $dbData = [
             'participant_id' => $row['B'] ?? 'Unknown',
             'error' => $errorMessage,
             'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime()
         ];
 
-        $response['error-data'][] = $errorData;
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->insert('participants_not_uploaded', $errorData);
+        $db->insert('participants_not_uploaded', $dbData);
+
+        $response['error-data'][] = $dbData + [
+            's_no' => $row['A'] ?? '',
+            'participant_lab_name' => $row['D'] ?? '',
+            'participant_last_name' => $row['E'] ?? '',
+            'institute_name' => $row['F'] ?? '',
+            'mobile_number' => $row['Q'] ?? '',
+            'district' => $row['J'] ?? '',
+            'country' => $row['M'] ?? '',
+            'participant_email' => $row['R'] ?? '',
+        ];
     }
     // Helper methods for optimization
     private function buildCountryCache()
