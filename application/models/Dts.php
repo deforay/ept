@@ -2424,7 +2424,7 @@ final class Application_Model_Dts
 
 	private function normalizeAlgoResult(?string $result): string
 	{
-		return (in_array(trim($result), [null, '', 'X', 'x'], true)) ? '-' : $result;
+		return (in_array(trim(strtolower($result)), [null, '', 'x', 'n/a'], true)) ? '-' : $result;
 	}
 
 	/** Updated-3-tests / confirmatory path */
@@ -2705,6 +2705,8 @@ final class Application_Model_Dts
 		array $correctiveActions,
 		array &$out
 	) {
+		$result1 = $this->normalizeAlgoResult($result1);
+		$result2 = $this->normalizeAlgoResult($result2);
 		if ($result1 === 'NR' && $reportedResultCode === 'N') {
 			if ($result2 === '-' && $repeatResult1 === '-' && $repeatResult2 === '-') {
 				$out['algoResult'] = 'Pass';
