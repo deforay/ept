@@ -1609,29 +1609,29 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 // Validation checks
                 if (empty($originalEmail)) {
-                    $this->addError($response, $row, "Email is empty for participant {$row['B']}.");
+                    $this->addError($response, $row, $i, "Email is empty for participant {$row['B']}.");
                     continue;
                 }
 
                 // Check duplicates
                 if (isset($duplicateChecks['fileParticipants'][$row['B']])) {
-                    $this->addError($response, $row, "Unique ID {$row['B']} is duplicated in the upload file.");
+                    $this->addError($response, $row, $i, "Unique ID {$row['B']} is duplicated in the upload file.");
                     continue;
                 }
                 $participantExists = $duplicateChecks['participants'][$row['B']] ?? null;
                 if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates' && $participantExists) {
-                    $this->addError($response, $row, "Unique ID {$row['B']} already exists.");
+                    $this->addError($response, $row, $i, "Unique ID {$row['B']} already exists.");
                     continue;
                 }
 
                 // Check data manager email duplicates
                 if (isset($duplicateChecks['fileDataManagers'][$originalEmail])) {
-                    $this->addError($response, $row, "Data Manager email $originalEmail is duplicated in the upload file.");
+                    $this->addError($response, $row, $i, "Data Manager email $originalEmail is duplicated in the upload file.");
                     continue;
                 }
                 $dataManagerExists = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
                 if (isset($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && $dataManagerExists) {
-                    $this->addError($response, $row, "Data Manager email $originalEmail already exists. Skipping for participant {$row['B']}.");
+                    $this->addError($response, $row, $i, "Data Manager email $originalEmail already exists. Skipping for participant {$row['B']}.");
                     continue;
                 }
 
@@ -1644,7 +1644,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $countryId = $this->getCountryIdFromCache($row['M'] ?? '', $countryCache);
 
                 if ($countryId == null || $countryId == 0) {
-                    $this->addError($response, $row, "Invalid country: {$row['M']}");
+                    $this->addError($response, $row, $i, "Invalid country: {$row['M']}");
                     continue;
                 }
 
@@ -1758,7 +1758,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                         // Success - add to response
                         $response['data'][] = [
-                            's_no' => $sheetData[$i]['A'] ?? '',
+                            's_no' => $sheetData[$i]['A'] ?: ($i - 1),
                             'participant_id' => $sheetData[$i]['B'],
                             'individual' => $sheetData[$i]['C'] ?? 'no',
                             'participant_lab_name' => $sheetData[$i]['D'],
@@ -1779,7 +1779,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime()
                         ];
                     } else {
-                        $this->addError($response, $row, 'Could not add Participant Login');
+                        $this->addError($response, $row, $i, 'Could not add Participant Login');
                     }
 
                     // Track seen records to catch duplicates within the same upload
@@ -1795,7 +1795,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $duplicateChecks['dataManagers'][$dataManagerData2['primary_email']] = ['dm_id' => $dmId2];
                     }
                 } else {
-                    $this->addError($response, $row, 'Could not add Participant');
+                    $this->addError($response, $row, $i, 'Could not add Participant');
                 }
             }
 
@@ -1817,7 +1817,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return $response;
     }
 
-    private function addError(&$response, $row, $errorMessage)
+    private function addError(&$response, $row, $rowIndex, $errorMessage)
     {
         $dbData = [
             'participant_id' => $row['B'] ?? 'Unknown',
@@ -1829,7 +1829,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db->insert('participants_not_uploaded', $dbData);
 
         $response['error-data'][] = $dbData + [
-            's_no' => $row['A'] ?? '',
+            's_no' => $row['A'] ?: ($rowIndex - 1),
             'participant_lab_name' => $row['D'] ?? '',
             'participant_last_name' => $row['E'] ?? '',
             'institute_name' => $row['F'] ?? '',
