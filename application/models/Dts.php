@@ -1294,7 +1294,6 @@ final class Application_Model_Dts
 				$this->translator->_('Testing Date'),
 				$this->translator->_('Reported On'),
 				$this->translator->_('Condition Of PT Samples'),
-				//$this->translator->_('Refridgerator'),
 				$this->translator->_('Room Temperature'),
 				$this->translator->_('Stop Watch'),
 				$this->translator->_('Test #1 Kit Name'),

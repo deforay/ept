@@ -288,7 +288,6 @@ if (!empty($resultArray['shipment'])) {
 
             $labInfo .= '<tr>';
             $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Condition of PT Samples') . '</strong><br>' . $conditionOfPTSamples . '</td>';
-            $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Refridgerator') . '</strong><br>' . $refridgerator . '</td>';
             $labInfo .= '	<td><strong>' . Pt_Commons_TranslateUtility::safeTranslate('Room Temperature') . '</strong><br>' . $roomTemperature . '</td>';
             $labInfo .= '</tr>';
 
@@ -733,13 +732,6 @@ if (!empty($resultArray['shipment'])) {
                     $scoreDoc = 0;
                     $img = $imgFail;
                 }
-
-                $docRes .= '<tr>
-                <td style="text-align:left;font-weight:bold;">' . Pt_Commons_TranslateUtility::safeTranslate('Reporting the availability of Refridgerator') . '</td>';
-                $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-                <td style="text-align:center;">' . $scoreDoc . '</td>';
-                $docRes .= '</tr>';
-
                 if (!empty($attributes['room_temperature'])) {
                     $scoreDoc = $documentationScorePerItem;
                     $img = $imgPass;

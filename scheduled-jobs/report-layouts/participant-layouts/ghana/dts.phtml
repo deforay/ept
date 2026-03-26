@@ -642,15 +642,6 @@ if (!empty($resultArray['shipment'])) {
 							    <td style="text-align:center;">' . $scoreDoc . '</td>
                             </tr>';
 
-                $scoreDoc = 0;
-                $img = $imgFail;
-
-                $docRes .= '<tr>
-                                <td style="text-align:left;font-weight:bold;">Reporting the availability of Refridgerator</td>
-                                <td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>
-							    <td style="text-align:center;">' . $scoreDoc . '</td>
-                            </tr>';
-
                 if (!empty($attributes['room_temperature'])) {
                     $scoreDoc = $documentationScorePerItem;
                     $img = $imgPass;
