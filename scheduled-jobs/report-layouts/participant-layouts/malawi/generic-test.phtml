@@ -332,7 +332,9 @@ if (!empty($resultArray['shipment'])) {
         if ($performance1 || $performance2 || $performance3) {
             $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
         }
-        $html = '<p style="font-size:11px;">Thank you for participating in proficiency testing program for ' . $panelName . '.</p>';
+        $html  = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+        $html  .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
+        // $html = '<p style="font-size:11px;">Thank you for participating in proficiency testing program for ' . $panelName . '.</p>';
         if (!empty($reportComment)) {
             $html .= '<br>' . $reportComment;
         }

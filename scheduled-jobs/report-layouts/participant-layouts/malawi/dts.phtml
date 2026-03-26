@@ -709,7 +709,9 @@ if (!empty($resultArray['shipment'])) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html  = $br . '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
+        $html  = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+        $html  .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
+        // $html  .= '<span style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></span><br>';
         if (trim($result['shipment_comment']) != "") {
             $html .= '<span style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
         }
