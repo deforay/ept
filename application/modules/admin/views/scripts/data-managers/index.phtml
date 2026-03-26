@@ -32,15 +32,25 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
 </h4>
 
 
+<div class="row" style="margin-bottom:15px;">
+    <div class="col-md-3">
+        <label><?= $this->translate->_("Status"); ?></label>
+        <select id="statusFilter" class="form-control">
+            <option value="active"><?= $this->translate->_("Active"); ?></option>
+            <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+            <option value=""><?= $this->translate->_("All"); ?></option>
+        </select>
+    </div>
+</div>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
     id="usersTable">
     <thead>
         <tr>
+            <th><?= $this->translate->_("First Name"); ?></th>
+            <th><?= $this->translate->_("Last Name"); ?></th>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
                 <th><?= $this->translate->_("Institute"); ?></th>
             <?php } ?>
-            <th><?= $this->translate->_("First Name"); ?></th>
-            <th><?= $this->translate->_("Last Name"); ?></th>
             <th><?= $this->translate->_("Cell/Mobile"); ?></th>
             <th><?= $this->translate->_("Primary Email"); ?></th>
             <th><?= $this->translate->_("Status"); ?></th>
@@ -79,13 +89,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "sPaginationType": "bootstrap",
             "bRetrieve": true,
             "aoColumns": [
+                {
+                    "sClass": ""
+                },
                 <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?> {
                         "sClass": ""
                     },
                 <?php } ?> {
-                    "sClass": ""
-                },
-                {
                     "sClass": "center"
                 },
                 {
@@ -125,6 +135,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "name": "ptcc",
                     "value": <?php echo $ptcc; ?>
                 });
+                aoData.push({
+                    "name": "statusFilter",
+                    "value": $("#statusFilter").val()
+                });
             },
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
@@ -135,6 +149,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                     "success": fnCallback
                 });
             }
+        });
+
+        $("#statusFilter").change(function () {
+            oTable.fnDraw();
         });
 
     });

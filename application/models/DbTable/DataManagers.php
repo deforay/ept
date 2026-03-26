@@ -69,7 +69,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $aColumns = array('u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district');
         } else {
-            $aColumns = array('u.institute', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status');
+            $aColumns = array('u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status');
         }
 
 
@@ -146,8 +146,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id) && empty($adminNameSpace->admin_id)) {
             $sQuery = $sQuery
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->where("u.dm_id IN (SELECT dm_id FROM participant_manager_map WHERE participant_id IN (SELECT participant_id FROM participant_manager_map WHERE dm_id = ?))", $authNameSpace->dm_id);
         }
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
             $sQuery = $sQuery->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
@@ -155,6 +154,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
             ));
             $sQuery = $sQuery->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'));
+        }
+
+        if (isset($parameters['statusFilter']) && $parameters['statusFilter'] != "") {
+            $sQuery = $sQuery->where("u.status = ?", $parameters['statusFilter']);
         }
 
         if (isset($sWhere) && $sWhere != "") {
@@ -191,12 +194,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}else{
             //$participantDetails='';
             //}
+            $row[] = $aRow['first_name'];
+            $row[] = $aRow['last_name'];
             if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {
                 $row[] = $aRow['institute'];
             }
-            // $row[] = $participantDetails.' '.$aRow['institute'];
-            $row[] = $aRow['first_name'];
-            $row[] = $aRow['last_name'];
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
@@ -207,7 +209,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $row[] = ucwords($aRow['district']);
             }
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
-                $edit = '<a href="/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+                $edit = '';
             } elseif (isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc') {
                 $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             } else {
