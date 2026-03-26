@@ -169,7 +169,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	/* TomSelect selected items (tags) */
-	.ts-wrapper.multi .ts-control > div {
+	.ts-wrapper.multi .ts-control>div {
 		background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
 		color: #fff;
 		border: none;
@@ -179,14 +179,14 @@ $faqResults = json_decode($this->faqs);
 		font-size: 13px;
 	}
 
-	.ts-wrapper.multi .ts-control > div .remove {
+	.ts-wrapper.multi .ts-control>div .remove {
 		color: rgba(255, 255, 255, 0.7);
 		border-left: 1px solid rgba(255, 255, 255, 0.3);
 		margin-left: 6px;
 		padding-left: 6px;
 	}
 
-	.ts-wrapper.multi .ts-control > div .remove:hover {
+	.ts-wrapper.multi .ts-control>div .remove:hover {
 		color: #fff;
 		background: transparent;
 	}
@@ -216,7 +216,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	/* Ensure TomSelect properly hides the original select - using multiple selectors for specificity */
-	.ts-wrapper ~ select#schemeId,
+	.ts-wrapper~select#schemeId,
 	select#schemeId.tomselected,
 	select.ts-hidden-accessible {
 		position: absolute !important;
@@ -349,12 +349,12 @@ $faqResults = json_decode($this->faqs);
 	#iconPickerModal .modal-content {
 		background: #fff;
 		border-radius: 6px;
-		box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
 		position: relative;
 		z-index: 1062;
 	}
 
-	#iconPickerModal + .modal-backdrop,
+	#iconPickerModal+.modal-backdrop,
 	.modal-backdrop {
 		z-index: 1050 !important;
 	}
@@ -484,7 +484,8 @@ $faqResults = json_decode($this->faqs);
 						<select class="form-control" id="jumpToSection">
 							<option value="">-- <?= $this->translate->_("Select Section"); ?> --</option>
 							<option value="generalConfig"><?= $this->translate->_("General Settings"); ?></option>
-							<option value="participantConfig"><?= $this->translate->_("Participant Settings"); ?></option>
+							<option value="participantConfig"><?= $this->translate->_("Participant Settings"); ?>
+							</option>
 							<option value="emailConfig"><?= $this->translate->_("Email Settings"); ?></option>
 							<?php /* <option value="homeConfig"><?= $this->translate->_("Home Page Settings"); ?></option> */ ?>
 						</select>
@@ -503,8 +504,8 @@ $faqResults = json_decode($this->faqs);
 			</div>
 
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#generalConfig"
-				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("General Settings"); ?> <b class="caret pull-right"
-					style="text-align:right;"></b></button>
+				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("General Settings"); ?> <b
+					class="caret pull-right" style="text-align:right;"></b></button>
 			<div class="collapse-content" id="generalConfig">
 				<div class="row">
 					<div class="col-md-6">
@@ -512,7 +513,8 @@ $faqResults = json_decode($this->faqs);
 						<input type="text" value="<?php echo $this->domain ?? null; ?>" id="domain"
 							name="emailConfig[domain]" class="form-control" style="background: #fff"
 							title="<?= $this->translate->_('Domain for this ePT instance'); ?>" />
-						<small class="text-muted"><?= $this->translate->_("Auto-filled from URL. Edit if using a proxy or CDN."); ?></small>
+						<small
+							class="text-muted"><?= $this->translate->_("Auto-filled from URL. Edit if using a proxy or CDN."); ?></small>
 					</div>
 					<div class="col-md-6">
 						<label for="locale" class="control-label"><?= $this->translate->_("Language"); ?></label>
@@ -520,9 +522,14 @@ $faqResults = json_decode($this->faqs);
 							title="<?= $this->translate->_('Select the language for this instance'); ?>">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="en_US" <?php echo ($this->locale == "en_US") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("English"); ?></option>
+								<?= $this->translate->_("English"); ?>
+							</option>
 							<option value="fr_FR" <?php echo ($this->locale == "fr_FR") ? "selected='selected'" : ""; ?>>
-								<?= $this->translate->_("French"); ?></option>
+								<?= $this->translate->_("French"); ?>
+							</option>
+							<option value="vi_VN" <?php echo ($this->locale == "vi_VN") ? "selected='selected'" : ""; ?>>
+								<?= $this->translate->_("Vietnamese"); ?>
+							</option>
 						</select>
 					</div>
 				</div>
@@ -532,7 +539,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="aggregate_insights_url"
 							class="control-label"><?= $this->translate->_("Aggregate Insights URL"); ?></label>
 						<input type="text" class="form-control" id="aggregate_insights_url"
-							name="aggregate_insights_url" placeholder="<?= $this->translate->_('Enter aggregate insights URL'); ?>"
+							name="aggregate_insights_url"
+							placeholder="<?= $this->translate->_('Enter aggregate insights URL'); ?>"
 							title="<?= $this->translate->_('Enter the URL for aggregate insights dashboard'); ?>"
 							value="<?php echo $this->aggregate_insights_url; ?>" />
 					</div>
@@ -540,7 +548,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="admin_email"
 							class="control-label"><?= $this->translate->_("Administrator Email"); ?></label>
 						<input type="text" class="form-control" id="admin_email" name="admin_email"
-							placeholder="<?= $this->translate->_('Enter administrator email (optional)'); ?>" title="<?= $this->translate->_('Enter the administrator email address'); ?>"
+							placeholder="<?= $this->translate->_('Enter administrator email (optional)'); ?>"
+							title="<?= $this->translate->_('Enter the administrator email address'); ?>"
 							value="<?= $this->admin_email; ?>" />
 					</div>
 				</div>
@@ -549,14 +558,16 @@ $faqResults = json_decode($this->faqs);
 						<label for="pt_program_name"
 							class="control-label"><?= $this->translate->_("PT Program Name"); ?></label>
 						<input type="text" class="form-control" id="pt_program_name" name="pt_program_name"
-							placeholder="<?= $this->translate->_('Enter PT program name'); ?>" title="<?= $this->translate->_('Enter the full name of your PT program'); ?>"
+							placeholder="<?= $this->translate->_('Enter PT program name'); ?>"
+							title="<?= $this->translate->_('Enter the full name of your PT program'); ?>"
 							value="<?php echo $this->pt_program_name; ?>" />
 					</div>
 					<div class="col-md-6">
 						<label for="pt_program_short_name"
 							class="control-label"><?= $this->translate->_("PT Program Short Name"); ?></label>
 						<input type="text" class="form-control" id="pt_program_short_name" name="pt_program_short_name"
-							placeholder="<?= $this->translate->_('Enter PT program short name'); ?>" title="<?= $this->translate->_('Enter an abbreviated name for your PT program'); ?>"
+							placeholder="<?= $this->translate->_('Enter PT program short name'); ?>"
+							title="<?= $this->translate->_('Enter an abbreviated name for your PT program'); ?>"
 							value="<?php echo $this->pt_program_short_name; ?>" />
 					</div>
 				</div>
@@ -571,14 +582,17 @@ $faqResults = json_decode($this->faqs);
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label for="schemeId" class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span class="mandatory">*</span></label>
+						<label for="schemeId" class="control-label"><?= $this->translate->_("Active Schemes"); ?> <span
+								class="mandatory">*</span></label>
 						<select id="schemeId" name="schemeId[]" multiple>
 							<?php foreach ($this->allSchemes as $schemes) { ?>
 								<option value="<?php echo $schemes["scheme_id"] ?>" <?php echo ($schemes['status'] == "active") ? "selected" : ""; ?>>
-									<?php echo ucwords($schemes["scheme_name"]); ?></option>
+									<?php echo ucwords($schemes["scheme_name"]); ?>
+								</option>
 							<?php } ?>
 						</select>
-						<small class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
+						<small
+							class="text-muted"><?= $this->translate->_("Select at least one scheme to enable"); ?></small>
 					</div>
 				</div>
 				<div class="row">
@@ -586,7 +600,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="training_instance_text"
 							class="control-label"><?= $this->translate->_("Report Watermark"); ?></label>
 						<input type="text" class="form-control" id="training_instance_text"
-							name="training_instance_text" placeholder="<?= $this->translate->_('Watermark text for training reports'); ?>"
+							name="training_instance_text"
+							placeholder="<?= $this->translate->_('Watermark text for training reports'); ?>"
 							title="<?= $this->translate->_('Enter the watermark text to display on training reports'); ?>"
 							value="<?php echo $this->training_instance_text; ?>" />
 					</div>
@@ -602,7 +617,8 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="response_after_evaluate" data-title="no"
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate" value="<?php echo $this->response_after_evaluate ?? "no"; ?>">
+							<input type="hidden" name="response_after_evaluate" id="response_after_evaluate"
+								value="<?php echo $this->response_after_evaluate ?? "no"; ?>">
 						</div>
 					</div>
 				</div>
@@ -619,7 +635,8 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="generic_test_config" data-title="no"
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="generic_test_config" id="generic_test_config" value="<?php echo $this->generic_test_config ?? "no"; ?>">
+							<input type="hidden" name="generic_test_config" id="generic_test_config"
+								value="<?php echo $this->generic_test_config ?? "no"; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -635,21 +652,26 @@ $faqResults = json_decode($this->faqs);
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
 							<input type="hidden" name="evaluate_before_generating_reports"
-								id="evaluate_before_generating_reports" value="<?php echo $this->evaluate_before_generating_reports ?? "no"; ?>">
+								id="evaluate_before_generating_reports"
+								value="<?php echo $this->evaluate_before_generating_reports ?? "no"; ?>">
 						</div>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<label for="enable_capa" class="control-label"><?= $this->translate->_("Enable CAPA"); ?></label>
+						<label for="enable_capa"
+							class="control-label"><?= $this->translate->_("Enable CAPA"); ?></label>
 						<div class="input-group">
 							<div class="btn-group radioBtn">
 								<a class="btn btn-primary btn-sm <?php echo (isset($this->enable_capa) && $this->enable_capa == "yes") ? " active " : "notActive"; ?>"
-									data-toggle="enable_capa" data-title="yes" onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+									data-toggle="enable_capa" data-title="yes"
+									onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
 								<a class="btn btn-primary btn-sm <?php echo (!isset($this->enable_capa) || $this->enable_capa == "no") ? " active " : "notActive"; ?>"
-									data-toggle="enable_capa" data-title="no" onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+									data-toggle="enable_capa" data-title="no"
+									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="enable_capa" id="enable_capa" value="<?php echo $this->enable_capa ?? "no"; ?>">
+							<input type="hidden" name="enable_capa" id="enable_capa"
+								value="<?php echo $this->enable_capa ?? "no"; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -664,7 +686,9 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="enable_admin_email_notification" data-title="no"
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="enable_admin_email_notification" id="enable_admin_email_notification" value="<?php echo $this->enable_admin_email_notification ?? "no"; ?>">
+							<input type="hidden" name="enable_admin_email_notification"
+								id="enable_admin_email_notification"
+								value="<?php echo $this->enable_admin_email_notification ?? "no"; ?>">
 						</div>
 					</div>
 				</div>
@@ -689,7 +713,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="additional_institute_details"
 							class="control-label"><?= $this->translate->_("Additional Institute Details"); ?></label>
 						<textarea class="form-control" id="additional_institute_details"
-							name="additional_institute_details" placeholder="<?= $this->translate->_('Enter additional institute details'); ?>"
+							name="additional_institute_details"
+							placeholder="<?= $this->translate->_('Enter additional institute details'); ?>"
 							title="<?= $this->translate->_('Enter any additional details about your institute'); ?>"><?php echo $this->additional_institute_details; ?></textarea>
 					</div>
 					<div class="col-md-6">
@@ -700,8 +725,10 @@ $faqResults = json_decode($this->faqs);
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="green" <?php echo (isset($this->theme_color) && $this->theme_color == 'green') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Green"); ?></option>
 							<option value="blue" <?php echo (isset($this->theme_color) && $this->theme_color == 'blue') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Blue"); ?></option>
-							<option value="yellow" <?php echo (isset($this->theme_color) && $this->theme_color == 'yellow') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Yellow"); ?></option>
-							<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Purple"); ?></option>
+							<option value="yellow" <?php echo (isset($this->theme_color) && $this->theme_color == 'yellow') ? 'selected="selected"' : ""; ?>>
+								<?= $this->translate->_("Yellow"); ?></option>
+							<option value="purple" <?php echo (isset($this->theme_color) && $this->theme_color == 'purple') ? 'selected="selected"' : ""; ?>>
+								<?= $this->translate->_("Purple"); ?></option>
 							<option value="red" <?php echo (isset($this->theme_color) && $this->theme_color == 'red') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Red"); ?></option>
 							<option value="black" <?php echo (isset($this->theme_color) && $this->theme_color == 'black') ? 'selected="selected"' : ""; ?>><?= $this->translate->_("Black"); ?></option>
 						</select>
@@ -710,7 +737,8 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="instance" class="control-label"><?= $this->translate->_("Instance"); ?></label>
-						<select class="form-control" id="instance" name="instance" title="<?= $this->translate->_('Select the deployment instance'); ?>">
+						<select class="form-control" id="instance" name="instance"
+							title="<?= $this->translate->_('Select the deployment instance'); ?>">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="drc" <?php echo (isset($this->instance) && $this->instance == 'drc') ? 'selected="selected"' : ""; ?>>DRC</option>
 							<option value="philippines" <?php echo (isset($this->instance) && $this->instance == 'philippines') ? 'selected="selected"' : ""; ?>>Philippines</option>
@@ -726,7 +754,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="jobCompletionAlertStatus"
 							class="control-label"><?= $this->translate->_("Job Completion Alerts"); ?></label>
 						<select class="form-control" id="jobCompletionAlertStatus" name="job_completion_alert_status"
-							title="<?= $this->translate->_('Enable email alerts when jobs complete'); ?>" onchange="showMailBox(this.value);">
+							title="<?= $this->translate->_('Enable email alerts when jobs complete'); ?>"
+							onchange="showMailBox(this.value);">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo ($this->job_completion_alert_status == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="no" <?php echo ($this->job_completion_alert_status == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
@@ -738,7 +767,8 @@ $faqResults = json_decode($this->faqs);
 						<label for="auto_generate_pt_survey_code"
 							class="control-label"><?= $this->translate->_("Auto-generate PT Survey Code"); ?></label>
 						<select class="form-control" id="auto_generate_pt_survey_code"
-							name="auto_generate_pt_survey_code" title="<?= $this->translate->_('Automatically generate PT survey codes'); ?>">
+							name="auto_generate_pt_survey_code"
+							title="<?= $this->translate->_('Automatically generate PT survey codes'); ?>">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="yes" <?php echo ($this->auto_generate_pt_survey_code == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
 							<option value="no" <?php echo ($this->auto_generate_pt_survey_code == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
@@ -748,8 +778,9 @@ $faqResults = json_decode($this->faqs);
 						<label for="footer_text"
 							class="control-label"><?= $this->translate->_("Footer Text"); ?></label>
 						<input type="text" class="form-control" id="footer_text"
-							value="<?php echo $this->footer_text ?? null; ?>" placeholder="<?= $this->translate->_('Enter footer text'); ?>"
-							name="footer_text" title="<?= $this->translate->_('Enter the text to display in the page footer'); ?>" />
+							value="<?php echo $this->footer_text ?? null; ?>"
+							placeholder="<?= $this->translate->_('Enter footer text'); ?>" name="footer_text"
+							title="<?= $this->translate->_('Enter the text to display in the page footer'); ?>" />
 					</div>
 				</div>
 				<div class="row">
@@ -760,7 +791,8 @@ $faqResults = json_decode($this->faqs);
 						<textarea class="form-control" id="jobCompletionAlertMails" name="job_completion_alert_mails"
 							placeholder="<?= $this->translate->_('Enter email addresses'); ?>"
 							title="<?= $this->translate->_('Enter email addresses to receive job completion alerts'); ?>"><?php echo $this->job_completion_alert_mails; ?></textarea>
-						<small class="text-muted" style="color: #e83838ad;"><?= $this->translate->_("Enter comma-separated email addresses for multiple recipients"); ?></small>
+						<small class="text-muted"
+							style="color: #e83838ad;"><?= $this->translate->_("Enter comma-separated email addresses for multiple recipients"); ?></small>
 					</div>
 					<div class="col-md-6">
 						<label for="date_format"
@@ -773,15 +805,16 @@ $faqResults = json_decode($this->faqs);
 						<label for="certificates"
 							class="control-label"><?= $this->translate->_("Certificate Email"); ?></label>
 						<input type="text" value="<?php echo $this->certificates ?? ''; ?>" class="form-control"
-							id="certificates" name="certificates" placeholder="<?= $this->translate->_('Enter certificate notification email'); ?>"
+							id="certificates" name="certificates"
+							placeholder="<?= $this->translate->_('Enter certificate notification email'); ?>"
 							title="<?= $this->translate->_('Enter the email address for certificate notifications'); ?>">
 					</div>
 				</div>
 			</div><br>
 
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#participantConfig"
-				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Participant Settings"); ?> <b class="caret pull-right"
-					style="text-align:right;"></b></button>
+				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Participant Settings"); ?>
+				<b class="caret pull-right" style="text-align:right;"></b></button>
 			<div class="collapse-content" id="participantConfig">
 				<div class="row">
 					<div class="col-md-6">
@@ -831,7 +864,8 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="participant_feedback" data-title="no"
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="participant_feedback" id="participant_feedback" value="<?php echo $this->participant_feedback ?? "no"; ?>">
+							<input type="hidden" name="participant_feedback" id="participant_feedback"
+								value="<?php echo $this->participant_feedback ?? "no"; ?>">
 						</div>
 					</div>
 				</div>
@@ -848,7 +882,8 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="direct_participant_login" data-title="no"
 									onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="direct_participant_login" id="direct_participant_login" value="<?php echo $this->direct_participant_login ?? "no"; ?>">
+							<input type="hidden" name="direct_participant_login" id="direct_participant_login"
+								value="<?php echo $this->direct_participant_login ?? "no"; ?>">
 						</div>
 					</div>
 					<div class="col-md-6">
@@ -863,7 +898,8 @@ $faqResults = json_decode($this->faqs);
 									data-toggle="enable_login_attempt_ban" data-title="no"
 									onclick="toggleRadios(this);participantLoginBan();"><?= $this->translate->_("NO"); ?></a>
 							</div>
-							<input type="hidden" name="enable_login_attempt_ban" id="enable_login_attempt_ban" value="<?php echo $this->enable_login_attempt_ban ?? "no"; ?>">
+							<input type="hidden" name="enable_login_attempt_ban" id="enable_login_attempt_ban"
+								value="<?php echo $this->enable_login_attempt_ban ?? "no"; ?>">
 						</div>
 					</div>
 				</div>
@@ -900,11 +936,12 @@ $faqResults = json_decode($this->faqs);
 			</div><br>
 
 			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#emailConfig"
-				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Email Settings"); ?> <b class="caret pull-right"
-					style="text-align:right;"></b></button>
+				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Email Settings"); ?> <b
+					class="caret pull-right" style="text-align:right;"></b></button>
 			<div class="collapse-content" id="emailConfig">
 				<div class="alert alert-info" style="margin: 10px 0;">
-					<i class="icon-info-sign"></i> <?= $this->translate->_("Email configuration is optional. You can configure it later when you have the email server details."); ?>
+					<i class="icon-info-sign"></i>
+					<?= $this->translate->_("Email configuration is optional. You can configure it later when you have the email server details."); ?>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
@@ -953,7 +990,8 @@ $faqResults = json_decode($this->faqs);
 				<div class="row">
 					<div class="col-md-6">
 						<label for="ssl" class="control-label"><?= $this->translate->_("Encryption"); ?></label>
-						<select class="form-control" id="ssl" name="emailConfig[ssl]" title="<?= $this->translate->_('Select the encryption type'); ?>">
+						<select class="form-control" id="ssl" name="emailConfig[ssl]"
+							title="<?= $this->translate->_('Select the encryption type'); ?>">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="tls" <?php echo (isset($emailConfig->ssl) && $emailConfig->ssl == 'tls') ? 'selected="selected"' : ""; ?>>TLS</option>
 							<option value="ssl" <?php echo (isset($emailConfig->ssl) && $emailConfig->ssl == 'ssl') ? 'selected="selected"' : ""; ?>>SSL</option>
@@ -964,8 +1002,8 @@ $faqResults = json_decode($this->faqs);
 					<div class="col-md-6">
 						<label for="email" class="control-label"><?= $this->translate->_("Username"); ?></label>
 						<input type="text" value="<?php echo $emailConfig->username ?? null; ?>" id="email"
-							name="emailConfig[username]" class="form-control isEmail"
-							style="background: #fff" placeholder="<?= $this->translate->_('Enter email address for authentication'); ?>"
+							name="emailConfig[username]" class="form-control isEmail" style="background: #fff"
+							placeholder="<?= $this->translate->_('Enter email address for authentication'); ?>"
 							title="<?= $this->translate->_('Enter the email address used for SMTP authentication'); ?>" />
 					</div>
 				</div>
@@ -977,8 +1015,10 @@ $faqResults = json_decode($this->faqs);
 							placeholder="<?= $this->translate->_('Enter SMTP password'); ?>" />
 					</div>
 					<div class="col-md-6">
-						<label for="auth" class="control-label"><?= $this->translate->_("Authentication Type"); ?></label>
-						<select class="form-control" id="auth" name="emailConfig[auth]" title="<?= $this->translate->_('Select the authentication method'); ?>">
+						<label for="auth"
+							class="control-label"><?= $this->translate->_("Authentication Type"); ?></label>
+						<select class="form-control" id="auth" name="emailConfig[auth]"
+							title="<?= $this->translate->_('Select the authentication method'); ?>">
 							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 							<option value="login" <?php echo (isset($emailConfig->auth) && $emailConfig->auth == 'login') ? 'selected="selected"' : ""; ?>>Login</option>
 							<option value="plain" <?php echo (isset($emailConfig->auth) && $emailConfig->auth == 'plain') ? 'selected="selected"' : ""; ?>>Plain</option>
@@ -989,264 +1029,264 @@ $faqResults = json_decode($this->faqs);
 			</div><br>
 
 			<?php /* Home Page Settings section - commented out, managed at /admin/home-section-links instead
-			<button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
-				aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Home Page Settings"); ?> <b class="caret pull-right"
-					style="text-align:right;"></b></button>
-			<div class="collapse-content" id="homeConfig">
-				<div class="alert alert-info" style="margin: 10px 0;">
-					<i class="icon-info-sign"></i> <?= $this->translate->_("Home page customization is optional. Default values will be used if left empty."); ?>
-				</div>
+	   <button type="button" class="collapsible active" data-toggle="collapse" data-target="#homeConfig"
+		   aria-expanded="true" aria-controls="collapseExample"><?= $this->translate->_("Home Page Settings"); ?> <b class="caret pull-right"
+			   style="text-align:right;"></b></button>
+	   <div class="collapse-content" id="homeConfig">
+		   <div class="alert alert-info" style="margin: 10px 0;">
+			   <i class="icon-info-sign"></i> <?= $this->translate->_("Home page customization is optional. Default values will be used if left empty."); ?>
+		   </div>
 
-				<!-- Basic Settings -->
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
-						<input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('Enter the home page title'); ?>"
-							title="<?= $this->translate->_('Enter the title displayed on the home page'); ?>" />
-					</div>
-					<div class="col-md-6">
-						<label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
-						<input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
-							title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
-						<input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
-							title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
-					</div>
-					<div class="col-md-6">
-						<label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
-						<input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('e.g., Learn More'); ?>"
-							title="<?= $this->translate->_('Enter the text for the additional link'); ?>" />
-					</div>
-				</div>
+		   <!-- Basic Settings -->
+		   <div class="row">
+			   <div class="col-md-6">
+				   <label for="homeTitle" class="control-label"><?= $this->translate->_("Page Title"); ?></label>
+				   <input type="text" value="<?php echo $home->title ?? null; ?>" id="homeTitle" name="home[title]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('Enter the home page title'); ?>"
+					   title="<?= $this->translate->_('Enter the title displayed on the home page'); ?>" />
+			   </div>
+			   <div class="col-md-6">
+				   <label for="homeVideoUrl" class="control-label"><?= $this->translate->_("Video URL"); ?></label>
+				   <input type="text" value="<?php echo $home->videoUrl ?? null; ?>" id="homeVideoUrl" name="home[videoUrl]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('e.g., https://youtube.com/watch?v=...'); ?>"
+					   title="<?= $this->translate->_('Enter a YouTube or video URL'); ?>" />
+			   </div>
+		   </div>
+		   <div class="row">
+			   <div class="col-md-6">
+				   <label for="homeAdditionalLink" class="control-label"><?= $this->translate->_("Additional Link URL"); ?></label>
+				   <input type="text" value="<?php echo $home->additionalLink ?? null; ?>" id="homeAdditionalLink" name="home[additionalLink]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('e.g., https://example.com/more-info'); ?>"
+					   title="<?= $this->translate->_('Enter an additional link URL'); ?>" />
+			   </div>
+			   <div class="col-md-6">
+				   <label for="homeAdditionalLinkText" class="control-label"><?= $this->translate->_("Additional Link Text"); ?></label>
+				   <input type="text" value="<?php echo $home->additionalLinkText ?? null; ?>" id="homeAdditionalLinkText" name="home[additionalLinkText]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('e.g., Learn More'); ?>"
+					   title="<?= $this->translate->_('Enter the text for the additional link'); ?>" />
+			   </div>
+		   </div>
 
-				<!-- Feature Cards Section -->
-				<h5>
-					<i class="icon-th-large"></i> <?= $this->translate->_("Feature Cards"); ?>
-				</h5>
-				<p class="text-muted"><?= $this->translate->_("Configure up to 3 feature cards displayed on the home page. Each card has an icon, heading, and description."); ?></p>
+		   <!-- Feature Cards Section -->
+		   <h5>
+			   <i class="icon-th-large"></i> <?= $this->translate->_("Feature Cards"); ?>
+		   </h5>
+		   <p class="text-muted"><?= $this->translate->_("Configure up to 3 feature cards displayed on the home page. Each card has an icon, heading, and description."); ?></p>
 
-				<!-- Feature Card 1 -->
-				<div class="row feature-card-row">
-					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 1"); ?></label>
-					</div>
-					<div class="col-md-3">
-						<label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
-								class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
-								title="<?= $this->translate->_('Enter the icon class name'); ?>"
-								onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
-								<i class="icon-th"></i>
-							</button>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-						<input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-					</div>
-					<div class="col-md-5">
-						<label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Description"); ?></label>
-						<textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control" rows="2"
-							placeholder="<?= $this->translate->_('Enter description text'); ?>"
-							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
-					</div>
-				</div>
+		   <!-- Feature Card 1 -->
+		   <div class="row feature-card-row">
+			   <div class="col-md-12">
+				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 1"); ?></label>
+			   </div>
+			   <div class="col-md-3">
+				   <label for="homeIcon1" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+				   <div class="icon-input-wrapper">
+					   <span class="icon-preview" id="iconPreview1"><i class="<?php echo $home->icon1 ?? ''; ?>"></i></span>
+					   <input type="text" value="<?php echo $home->icon1 ?? null; ?>" id="homeIcon1" name="home[icon1]"
+						   class="form-control icon-input"
+						   placeholder="<?= $this->translate->_('e.g., icon-beaker'); ?>"
+						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+						   onchange="updateIconPreview('homeIcon1', 'iconPreview1')" />
+					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon1', 'iconPreview1')" title="<?= $this->translate->_('Browse icons'); ?>">
+						   <i class="icon-th"></i>
+					   </button>
+				   </div>
+			   </div>
+			   <div class="col-md-4">
+				   <label for="homeHeading1" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+				   <input type="text" value="<?php echo $home->heading1 ?? null; ?>" id="homeHeading1" name="home[heading1]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+			   </div>
+			   <div class="col-md-5">
+				   <label for="homeSubHeading1" class="control-label"><?= $this->translate->_("Description"); ?></label>
+				   <textarea id="homeSubHeading1" name="home[subHeading1]" class="form-control" rows="2"
+					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading1 ?? null; ?></textarea>
+			   </div>
+		   </div>
 
-				<!-- Feature Card 2 -->
-				<div class="row feature-card-row">
-					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 2"); ?></label>
-					</div>
-					<div class="col-md-3">
-						<label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
-								class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
-								title="<?= $this->translate->_('Enter the icon class name'); ?>"
-								onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
-								<i class="icon-th"></i>
-							</button>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-						<input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-					</div>
-					<div class="col-md-5">
-						<label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Description"); ?></label>
-						<textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control" rows="2"
-							placeholder="<?= $this->translate->_('Enter description text'); ?>"
-							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
-					</div>
-				</div>
+		   <!-- Feature Card 2 -->
+		   <div class="row feature-card-row">
+			   <div class="col-md-12">
+				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 2"); ?></label>
+			   </div>
+			   <div class="col-md-3">
+				   <label for="homeIcon2" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+				   <div class="icon-input-wrapper">
+					   <span class="icon-preview" id="iconPreview2"><i class="<?php echo $home->icon2 ?? ''; ?>"></i></span>
+					   <input type="text" value="<?php echo $home->icon2 ?? null; ?>" id="homeIcon2" name="home[icon2]"
+						   class="form-control icon-input"
+						   placeholder="<?= $this->translate->_('e.g., icon-group'); ?>"
+						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+						   onchange="updateIconPreview('homeIcon2', 'iconPreview2')" />
+					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon2', 'iconPreview2')" title="<?= $this->translate->_('Browse icons'); ?>">
+						   <i class="icon-th"></i>
+					   </button>
+				   </div>
+			   </div>
+			   <div class="col-md-4">
+				   <label for="homeHeading2" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+				   <input type="text" value="<?php echo $home->heading2 ?? null; ?>" id="homeHeading2" name="home[heading2]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+			   </div>
+			   <div class="col-md-5">
+				   <label for="homeSubHeading2" class="control-label"><?= $this->translate->_("Description"); ?></label>
+				   <textarea id="homeSubHeading2" name="home[subHeading2]" class="form-control" rows="2"
+					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading2 ?? null; ?></textarea>
+			   </div>
+		   </div>
 
-				<!-- Feature Card 3 -->
-				<div class="row feature-card-row">
-					<div class="col-md-12">
-						<label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 3"); ?></label>
-					</div>
-					<div class="col-md-3">
-						<label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
-						<div class="icon-input-wrapper">
-							<span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
-							<input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
-								class="form-control icon-input"
-								placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
-								title="<?= $this->translate->_('Enter the icon class name'); ?>"
-								onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
-							<button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
-								<i class="icon-th"></i>
-							</button>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
-						<input type="text" value="<?php echo $home->heading3 ?? null; ?>" id="homeHeading3" name="home[heading3]"
-							class="form-control"
-							placeholder="<?= $this->translate->_('Enter heading text'); ?>"
-							title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
-					</div>
-					<div class="col-md-5">
-						<label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Description"); ?></label>
-						<textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control" rows="2"
-							placeholder="<?= $this->translate->_('Enter description text'); ?>"
-							title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
-					</div>
-				</div>
+		   <!-- Feature Card 3 -->
+		   <div class="row feature-card-row">
+			   <div class="col-md-12">
+				   <label class="control-label" style="font-weight: 600; color: #4a6fa5;"><?= $this->translate->_("Feature Card 3"); ?></label>
+			   </div>
+			   <div class="col-md-3">
+				   <label for="homeIcon3" class="control-label"><?= $this->translate->_("Icon"); ?></label>
+				   <div class="icon-input-wrapper">
+					   <span class="icon-preview" id="iconPreview3"><i class="<?php echo $home->icon3 ?? ''; ?>"></i></span>
+					   <input type="text" value="<?php echo $home->icon3 ?? null; ?>" id="homeIcon3" name="home[icon3]"
+						   class="form-control icon-input"
+						   placeholder="<?= $this->translate->_('e.g., icon-bar-chart'); ?>"
+						   title="<?= $this->translate->_('Enter the icon class name'); ?>"
+						   onchange="updateIconPreview('homeIcon3', 'iconPreview3')" />
+					   <button type="button" class="icon-picker-btn" onclick="openIconPicker('homeIcon3', 'iconPreview3')" title="<?= $this->translate->_('Browse icons'); ?>">
+						   <i class="icon-th"></i>
+					   </button>
+				   </div>
+			   </div>
+			   <div class="col-md-4">
+				   <label for="homeHeading3" class="control-label"><?= $this->translate->_("Heading"); ?></label>
+				   <input type="text" value="<?php echo $home->heading3 ?? null; ?>" id="homeHeading3" name="home[heading3]"
+					   class="form-control"
+					   placeholder="<?= $this->translate->_('Enter heading text'); ?>"
+					   title="<?= $this->translate->_('Enter the heading for this feature card'); ?>" />
+			   </div>
+			   <div class="col-md-5">
+				   <label for="homeSubHeading3" class="control-label"><?= $this->translate->_("Description"); ?></label>
+				   <textarea id="homeSubHeading3" name="home[subHeading3]" class="form-control" rows="2"
+					   placeholder="<?= $this->translate->_('Enter description text'); ?>"
+					   title="<?= $this->translate->_('Enter the description for this feature card'); ?>"><?php echo $home->subHeading3 ?? null; ?></textarea>
+			   </div>
+		   </div>
 
-				<!-- Home Page Logos -->
-				<h5>
-					<i class="icon-picture"></i> <?= $this->translate->_("Home Page Logos"); ?>
-				</h5>
-				<div class="row">
-					<div class="col-md-6">
-						<label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
-						<div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
-							<?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-									class="home_left_logo_pic" style="width: 150px;">
-								<a href="javascript:void(0);"
-									onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
-									class="mandatory home_left_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif" style="display: none;">
-							<?php } else { ?>
-								<input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif">
-							<?php } ?>
-						</div>
-						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
-					</div>
-					<div class="col-md-6">
-						<label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
-						<div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
-							<?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
-								<img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
-									class="home_right_logo_pic" style="width: 150px;">
-								<a href="javascript:void(0);"
-									onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
-									class="mandatory home_right_logo_pic">x</a>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									style="display: none;" accept="image/png, image/jpeg, image/gif">
-							<?php } else { ?>
-								<input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
-									title="<?= $this->translate->_('Select logo image'); ?>"
-									accept="image/png, image/jpeg, image/gif">
-							<?php } ?>
-						</div>
-						<small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
-					</div>
-				</div>
+		   <!-- Home Page Logos -->
+		   <h5>
+			   <i class="icon-picture"></i> <?= $this->translate->_("Home Page Logos"); ?>
+		   </h5>
+		   <div class="row">
+			   <div class="col-md-6">
+				   <label for="home_left_logo" class="control-label"><?= $this->translate->_("Logo 1 (Left)"); ?></label>
+				   <div class="fileinput fileinput-new home_left_logo" data-provides="fileinput">
+					   <?php if (isset($this->home_left_logo) && trim($this->home_left_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_left_logo)) { ?>
+						   <img src="/uploads/logos/<?php echo $this->home_left_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+							   class="home_left_logo_pic" style="width: 150px;">
+						   <a href="javascript:void(0);"
+							   onclick="deleteImg('home_left_logo', 'home_left_logo_pic', 'delete_home_left_logo', '<?= $this->home_left_logo; ?>');"
+							   class="mandatory home_left_logo_pic">x</a>
+						   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+							   title="<?= $this->translate->_('Select logo image'); ?>"
+							   accept="image/png, image/jpeg, image/gif" style="display: none;">
+					   <?php } else { ?>
+						   <input class="readPage" type="file" id="home_left_logo" name="home_left_logo"
+							   title="<?= $this->translate->_('Select logo image'); ?>"
+							   accept="image/png, image/jpeg, image/gif">
+					   <?php } ?>
+				   </div>
+				   <small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
+			   </div>
+			   <div class="col-md-6">
+				   <label for="home_right_logo" class="control-label"><?= $this->translate->_("Logo 2 (Right)"); ?></label>
+				   <div class="fileinput fileinput-new home_right_logo" data-provides="fileinput">
+					   <?php if (isset($this->home_right_logo) && trim($this->home_right_logo) != '' && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $this->home_right_logo)) { ?>
+						   <img src="/uploads/logos/<?php echo $this->home_right_logo; ?>" alt="<?= $this->translate->_('Logo image'); ?>"
+							   class="home_right_logo_pic" style="width: 150px;">
+						   <a href="javascript:void(0);"
+							   onclick="deleteImg('home_right_logo', 'home_right_logo_pic', 'delete_home_right_logo', '<?php echo $this->home_right_logo; ?>');"
+							   class="mandatory home_right_logo_pic">x</a>
+						   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+							   title="<?= $this->translate->_('Select logo image'); ?>"
+							   style="display: none;" accept="image/png, image/jpeg, image/gif">
+					   <?php } else { ?>
+						   <input class="readPage" type="file" id="home_right_logo" name="home_right_logo"
+							   title="<?= $this->translate->_('Select logo image'); ?>"
+							   accept="image/png, image/jpeg, image/gif">
+					   <?php } ?>
+				   </div>
+				   <small class="text-muted"><?= $this->translate->_("Recommended size: 80x80 pixels"); ?></small>
+			   </div>
+		   </div>
 
-				<!-- FAQ Section -->
-				<h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-					<i class="icon-question-sign"></i> <?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?>
-				</h5>
-				<p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
-				<div class="row">
-					<table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
-						id="faqTable">
-						<thead>
-							<tr>
-								<th style="text-align: center;vertical-align:middle;">
-									<?= $this->translate->_("Question"); ?></th>
-								<th style="text-align: center;vertical-align:middle;">
-									<?= $this->translate->_("Answer"); ?></th>
-								<th style="width:5%;text-align: center;vertical-align:middle;">
-									<?= $this->translate->_("Actions"); ?></th>
-							</tr>
-						</thead>
-						<tbody id="faqTableBody">
-							<?php if (isset($faqResults) && !empty($faqResults)) {
-								foreach ((array) $faqResults as $faq => $answer) { ?>
-									<tr>
-										<td>
-											<textarea name="faqQuestions[]" class="form-control input-sm"
-												placeholder="<?= $this->translate->_('Enter the question'); ?>"
-												title="<?= $this->translate->_('Enter the FAQ question'); ?>"><?php echo $faq; ?></textarea>
-										</td>
-										<td>
-											<textarea name="faqAnswers[]" class="form-control input-sm"
-												placeholder="<?= $this->translate->_('Enter the answer'); ?>"
-												title="<?= $this->translate->_('Enter the FAQ answer'); ?>"><?php echo $answer; ?></textarea>
-										</td>
-										<td>
-											<a href="javascript:void(0);" onclick="addTbRow(this);"
-												class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
-												href="javascript:void(0);" onclick="removeRow(this)"
-												class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
-										</td>
-									</tr>
-								<?php }
-							} else { ?>
-								<tr>
-									<td>
-										<textarea name="faqQuestions[]" class="form-control input-sm"
-											placeholder="<?= $this->translate->_('Enter the question'); ?>" title="<?= $this->translate->_('Enter the FAQ question'); ?>"></textarea>
-									</td>
-									<td>
-										<textarea name="faqAnswers[]" class="form-control input-sm"
-											placeholder="<?= $this->translate->_('Enter the answer'); ?>" title="<?= $this->translate->_('Enter the FAQ answer'); ?>"></textarea>
-									</td>
-									<td>
-										<a href="javascript:void(0);" onclick="addTbRow(this);"
-											class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
-									</td>
-								</tr>
-							<?php } ?>
-						</tbody>
-					</table>
-				</div>
-			</div><br>
-			*/ ?>
+		   <!-- FAQ Section -->
+		   <h5 style="margin-top: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+			   <i class="icon-question-sign"></i> <?= $this->translate->_("Frequently Asked Questions (FAQ)"); ?>
+		   </h5>
+		   <p class="text-muted"><?= $this->translate->_("Add questions and answers to display on the home page FAQ section."); ?></p>
+		   <div class="row">
+			   <table style="width: 100%;" border="1" class="table table-bordered table-striped reftable clearfix"
+				   id="faqTable">
+				   <thead>
+					   <tr>
+						   <th style="text-align: center;vertical-align:middle;">
+							   <?= $this->translate->_("Question"); ?></th>
+						   <th style="text-align: center;vertical-align:middle;">
+							   <?= $this->translate->_("Answer"); ?></th>
+						   <th style="width:5%;text-align: center;vertical-align:middle;">
+							   <?= $this->translate->_("Actions"); ?></th>
+					   </tr>
+				   </thead>
+				   <tbody id="faqTableBody">
+					   <?php if (isset($faqResults) && !empty($faqResults)) {
+						   foreach ((array) $faqResults as $faq => $answer) { ?>
+							   <tr>
+								   <td>
+									   <textarea name="faqQuestions[]" class="form-control input-sm"
+										   placeholder="<?= $this->translate->_('Enter the question'); ?>"
+										   title="<?= $this->translate->_('Enter the FAQ question'); ?>"><?php echo $faq; ?></textarea>
+								   </td>
+								   <td>
+									   <textarea name="faqAnswers[]" class="form-control input-sm"
+										   placeholder="<?= $this->translate->_('Enter the answer'); ?>"
+										   title="<?= $this->translate->_('Enter the FAQ answer'); ?>"><?php echo $answer; ?></textarea>
+								   </td>
+								   <td>
+									   <a href="javascript:void(0);" onclick="addTbRow(this);"
+										   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>&nbsp;&nbsp;<a
+										   href="javascript:void(0);" onclick="removeRow(this)"
+										   class="btn btn-xs btn-danger" title="<?= $this->translate->_('Remove row'); ?>"><i class="icon-minus"></i></a>
+								   </td>
+							   </tr>
+						   <?php }
+					   } else { ?>
+						   <tr>
+							   <td>
+								   <textarea name="faqQuestions[]" class="form-control input-sm"
+									   placeholder="<?= $this->translate->_('Enter the question'); ?>" title="<?= $this->translate->_('Enter the FAQ question'); ?>"></textarea>
+							   </td>
+							   <td>
+								   <textarea name="faqAnswers[]" class="form-control input-sm"
+									   placeholder="<?= $this->translate->_('Enter the answer'); ?>" title="<?= $this->translate->_('Enter the FAQ answer'); ?>"></textarea>
+							   </td>
+							   <td>
+								   <a href="javascript:void(0);" onclick="addTbRow(this);"
+									   class="btn btn-xs btn-info" title="<?= $this->translate->_('Add row'); ?>"><i class="icon-plus"></i></a>
+							   </td>
+						   </tr>
+					   <?php } ?>
+				   </tbody>
+			   </table>
+		   </div>
+	   </div><br>
+	   */ ?>
 		</fieldset>
 
 		<div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
@@ -1275,9 +1315,12 @@ $faqResults = json_decode($this->faqs);
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i> <?= $this->translate->_("Select Icon"); ?></h4>
-				<input type="text" class="form-control" id="iconSearchInput" placeholder="<?= $this->translate->_('Search icons...'); ?>">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="iconPickerModalLabel"><i class="icon-th"></i>
+					<?= $this->translate->_("Select Icon"); ?></h4>
+				<input type="text" class="form-control" id="iconSearchInput"
+					placeholder="<?= $this->translate->_('Search icons...'); ?>">
 			</div>
 			<div class="modal-body">
 				<div class="icon-grid" id="iconGrid">
@@ -1349,9 +1392,9 @@ $faqResults = json_decode($this->faqs);
 		}
 	}
 
-	$(document).ready(function() {
+	$(document).ready(function () {
 		// Collapsible functionality
-		$('.collapsible').on('click', function() {
+		$('.collapsible').on('click', function () {
 			$(this).toggleClass('active');
 			var content = $(this).next('.collapse-content');
 			if (content.is(':visible')) {
@@ -1362,19 +1405,19 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Expand All functionality
-		$('#expandAll').on('click', function() {
+		$('#expandAll').on('click', function () {
 			$('.collapse-content').slideDown();
 			$('.collapsible').addClass('active');
 		});
 
 		// Collapse All functionality
-		$('#collapseAll').on('click', function() {
+		$('#collapseAll').on('click', function () {
 			$('.collapse-content').slideUp();
 			$('.collapsible').removeClass('active');
 		});
 
 		// Jump to section functionality
-		$('#jumpToSection').on('change', function() {
+		$('#jumpToSection').on('change', function () {
 			var sectionId = $(this).val();
 			if (sectionId) {
 				// Open the selected section
@@ -1389,7 +1432,7 @@ $faqResults = json_decode($this->faqs);
 		});
 
 		// Search functionality
-		$('#searchSettings').on('keyup', function() {
+		$('#searchSettings').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 
 			if (searchTerm === '') {
@@ -1401,11 +1444,11 @@ $faqResults = json_decode($this->faqs);
 			}
 
 			// Search through all form fields
-			$('.collapse-content').each(function() {
+			$('.collapse-content').each(function () {
 				var section = $(this);
 				var hasMatch = false;
 
-				section.find('label, input, textarea, select').each(function() {
+				section.find('label, input, textarea, select').each(function () {
 					var text = $(this).text().toLowerCase() || $(this).attr('placeholder')?.toLowerCase() || '';
 
 					if (text.includes(searchTerm)) {
@@ -1435,7 +1478,7 @@ $faqResults = json_decode($this->faqs);
 			allowEmptyOption: false
 		});
 
-		$('#training_instance').on('change', function() {
+		$('#training_instance').on('change', function () {
 			if ($(this).val() == 'no') {
 				$('#training_instance_text').val('');
 				$('.trainingText').hide();
@@ -1507,7 +1550,7 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	function removeRow(obj) {
-		$(obj.parentNode.parentNode).fadeOut("normal", function() {
+		$(obj.parentNode.parentNode).fadeOut("normal", function () {
 			$(this).remove();
 		});
 	}
@@ -1584,7 +1627,7 @@ $faqResults = json_decode($this->faqs);
 		var gridHtml = '';
 		var currentValue = $('#' + inputId).val();
 
-		availableIcons.forEach(function(icon) {
+		availableIcons.forEach(function (icon) {
 			var selectedClass = (icon === currentValue) ? ' selected' : '';
 			gridHtml += '<div class="icon-item' + selectedClass + '" onclick="selectIcon(\'' + icon + '\')" data-icon="' + icon + '">';
 			gridHtml += '<i class="' + icon + '"></i>';
@@ -1598,7 +1641,7 @@ $faqResults = json_decode($this->faqs);
 
 		// Show modal using Bootstrap
 		$('#iconPickerModal').modal('show');
-		setTimeout(function() { $('#iconSearchInput').focus(); }, 300);
+		setTimeout(function () { $('#iconSearchInput').focus(); }, 300);
 	}
 
 	function selectIcon(iconClass) {
@@ -1622,12 +1665,12 @@ $faqResults = json_decode($this->faqs);
 	}
 
 	// Icon search functionality
-	$(document).ready(function() {
-		$('#iconSearchInput').on('keyup', function() {
+	$(document).ready(function () {
+		$('#iconSearchInput').on('keyup', function () {
 			var searchTerm = $(this).val().toLowerCase();
 			var visibleCount = 0;
 
-			$('.icon-item').each(function() {
+			$('.icon-item').each(function () {
 				var iconName = $(this).data('icon').toLowerCase();
 				if (iconName.includes(searchTerm)) {
 					$(this).show();
