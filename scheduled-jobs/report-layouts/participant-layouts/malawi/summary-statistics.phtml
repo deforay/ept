@@ -3,7 +3,7 @@
 if (isset($result['statistics']) && !empty($result['statistics'])) {
     $dtsPasspercentage = Pt_Commons_SchemeConfig::get('dts.passPercentage');
     $score = $dtsPasspercentage ?? '80';
-    $ppOverview = '<span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
+    $ppOverview = '<br><br><span style="font-size:12px;font-weight:bold;">Summary Statistics for this survey</span><br/>';
     $ppOverview .= '<table border="1" style="font-size:12px;">';
     $ppOverview .= '<tr style="background-color:#dbe4ee;">';
     $ppOverview .= '    <td style="background-color:#dbe4ee;text-align:center;"># of Providers that responded</td>';
