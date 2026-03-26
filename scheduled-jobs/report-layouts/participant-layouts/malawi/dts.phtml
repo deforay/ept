@@ -98,7 +98,6 @@ if (!empty($resultArray['shipment'])) {
         $dtsOptionalTest3    = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
         $documentationScore  = Pt_Commons_SchemeConfig::get('dts.documentationScore');
-
         $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
         $testThreeOptionalDisplay = "";
@@ -520,9 +519,7 @@ if (!empty($resultArray['shipment'])) {
             }
 
             // ---- Documentation score ----
-            $documentationScore      = 0;
             $totalDocumentationItems = 0;
-
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
                 $totalDocumentationItems = 5;
             } else {
@@ -537,7 +534,6 @@ if (!empty($resultArray['shipment'])) {
 
             $documentationScorePerItem = round(($documentationScore / $totalDocumentationItems), 2);
             $attributes = json_decode($result['attributes'], true);
-
             $imgPass = WEB_ROOT . '/images/check.jpg';
             $imgFail = WEB_ROOT . '/images/cross.jpg';
 
