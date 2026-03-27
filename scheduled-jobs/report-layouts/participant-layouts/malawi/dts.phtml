@@ -233,17 +233,19 @@ if (!empty($resultArray['shipment'])) {
         $result['email']  = $result['email']  ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
 
         $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
-        $labInfo .= '<tr><td><strong>Facility ID</strong> : ' . $result['unique_identifier'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Name of the Facility</strong> : ' . $result['institute_name'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>District</strong> : ' . $result['district'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Survey Shipment date</strong> : ' . $result['shipment_date'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Date Received</strong> : ' . $shipmentReceiptDate . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Date Tested</strong> : ' . $shipmentTestDate . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Survey Closing Date</strong> : ' . $distributionDate . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Report Date</strong> : ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Name of Tester</strong> : ' . $result['first_name'] . " " . $result['last_name'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Tester Id (in case of tester\'s enrollment)</strong> : ' . $result['unique_identifier'] . '</td></tr>';
-        $labInfo .= '<tr><td><strong>Cell</strong> : ' . $result['mobile'] . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Facility ID</strong>: ' . $result['unique_identifier'] . '</td></tr>';
+        if (isset($result['institute_name']) && !empty($result['institute_name'])) {
+            $labInfo .= '<tr><td><strong>Name of the Facility</strong>: ' . $result['institute_name'] . '</td></tr>';
+        }
+        $labInfo .= '<tr><td><strong>District</strong>: ' . $result['district'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Survey Shipment date</strong>: ' . $result['shipment_date'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Date Received</strong>: ' . $shipmentReceiptDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Date Tested</strong>: ' . $shipmentTestDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Survey Closing Date</strong>: ' . $distributionDate . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Report Date</strong>: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Name of Tester</strong>: ' . $result['first_name'] . " " . $result['last_name'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Tester Id (in case of tester\'s enrollment)</strong>: ' . $result['unique_identifier'] . '</td></tr>';
+        $labInfo .= '<tr><td><strong>Cell</strong>: ' . $result['mobile'] . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong>: ' . $result['email'] . '</td></tr>';
 
         if (isset($shipmentAttributesSampleTypeDisplay) && !empty($shipmentAttributesSampleTypeDisplay) && $shipmentAttributesSampleTypeDisplay != 'display:none;') {
             $labInfo .= '<tr>';
@@ -252,19 +254,19 @@ if (!empty($resultArray['shipment'])) {
                 $labInfo .= '<img style="width:10px;" src="' . $flag . '"/>';
             }
             if (isset($sampleRehydrationDate) && $sampleRehydrationDate != "") {
-                $labInfo .= ' : ' . $sampleRehydrationDate;
+                $labInfo .= ': ' . $sampleRehydrationDate;
             }
             $labInfo .= '</td></tr>';
             $labInfo .= '<tr><td>';
             if (isset($attributes['algorithm'])) {
                 if ($attributes['algorithm'] == 'myanmarNationalDtsAlgo') {
-                    $labInfo .= '<strong>Algorithm</strong> : Myanmar National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong>: Myanmar National Algorithm';
                 } elseif ($attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-                    $labInfo .= '<strong>Algorithm</strong> : Malawi National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong>: Malawi National Algorithm';
                 } elseif ($attributes['algorithm'] == 'ghanaNationalDtsAlgo') {
-                    $labInfo .= '<strong>Algorithm</strong> : Ghana National Algorithm';
+                    $labInfo .= '<strong>Algorithm</strong>: Ghana National Algorithm';
                 } else {
-                    $labInfo .= '<strong>Algorithm</strong> : ' . ucwords($attributes['algorithm']);
+                    $labInfo .= '<strong>Algorithm</strong>: ' . ucwords($attributes['algorithm']);
                 }
             }
             $labInfo .= '</td></tr>';
@@ -275,24 +277,24 @@ if (!empty($resultArray['shipment'])) {
             $roomTemperature      = (isset($attributes['room_temperature'])     && $attributes['room_temperature'] != "")     ? $attributes['room_temperature'] : "";
             $stopWatch            = (isset($attributes['stop_watch'])           && $attributes['stop_watch'] != "")           ? ucwords(str_replace('-', ' ', $attributes['stop_watch'])) : "";
 
-            $labInfo .= '<tr><td><strong>Condition of PT Samples</strong> : ' . $conditionOfPTSamples . '</td></tr>';
-            $labInfo .= '<tr><td><strong>Room Temperature</strong> : ' . $roomTemperature . '</td></tr>';
-            $labInfo .= '<tr><td><strong>Stop Watch</strong> : ' . $stopWatch . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Condition of PT Samples</strong>: ' . $conditionOfPTSamples . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Room Temperature</strong>: ' . $roomTemperature . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Stop Watch</strong>: ' . $stopWatch . '</td></tr>';
         }
 
         if (isset($result['participant_supervisor']) && $result['participant_supervisor'] != "") {
-            $labInfo .= '<tr><td><strong>Supervisor Name</strong> :' . $result['participant_supervisor'] . '</td></tr>';
+            $labInfo .= '<tr><td><strong>Supervisor Name</strong>: ' . $result['participant_supervisor'] . '</td></tr>';
         }
 
         if (isset($haveCustom) && $haveCustom == 'yes') {
             $labInfo .= '<tr><td>';
             if (!empty($customField1)) {
-                $labInfo .= '<strong>' . $customField1 . '</strong>  : ' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
+                $labInfo .= '<strong>' . $customField1 . '</strong>: ' . (!empty($result['custom_field_1']) ? $result['custom_field_1'] : '');
             }
             $labInfo .= '</td></tr>';
             $labInfo .= '<tr><td>';
             if (!empty($customField2)) {
-                $labInfo .= '<strong>' . $customField2 . '</strong>  : ' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
+                $labInfo .= '<strong>' . $customField2 . '</strong> : ' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
             }
             $labInfo .= '</td></tr>';
         }
@@ -311,20 +313,29 @@ if (!empty($resultArray['shipment'])) {
 
             $w = $width . '%'; // shorthand
 
-            $labRes  = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results : <br/></span>';
+            $labRes  = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results: <br/></span>';
             $labRes .= '<table border="1" style="font-size:12px;">';
 
             // ---- ROW 2: Column headers ----
             $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Specimen Panel ID</th>';
-            $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-1</th>';
+            $labRes .= '<th style="font-size:10px;text-align:center;font-weight:bold;width:' . $w . ';">Specimen Panel ID</th>';
+            $labRes .= '<th style="font-size:10px;text-align:center;font-weight:bold;width:' . $w . ';">Test-1</th>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-2</th>';
+                $labRes .= '<th style="font-size:10px;text-align:center;font-weight:bold;width:' . $w . ';">Test-2</th>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<th style="text-align:center;font-weight:bold;width:' . $w . ';">Test-3</th>';
+                $labRes .= '<th style="font-size:10px;text-align:center;font-weight:bold;width:' . $w . ';">Test-3</th>';
             }
-            $labRes .= '<td style="background-color:#ffffff;" colspan="' . ($noRepeatTests + 3) . '"></td>';
+            if ($allowRepeatTests == 'yes') {
+                $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-1</th>';
+                if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
+                    $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-2</th>';
+                }
+                if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
+                    $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-3</th>';
+                }
+            }
+            $labRes .= '<td style="background-color:#ffffff;" colspan="3"></td>';
             $labRes .= '</tr>';
 
             // ---- Metadata rows: Kit Name / Lot No. / Expiry Date ----
@@ -334,65 +345,72 @@ if (!empty($resultArray['shipment'])) {
 
             // Kit Name row
             $labRes .= '<tr>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>';
-            $labRes .= '<td>' . $result['responseResult'][0]['testkit1'] . '</td>';
+            $labRes .= '<td style="font-size:10px;text-align:center;font-weight:bold;background-color:#dbe4ee;">Kit Name</td>';
+            $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['testkit1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td>' . $result['responseResult'][0]['testkit2'] . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['testkit2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td>' . $result['responseResult'][0]['testkit3'] . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['testkit3'] . '</td>';
+            }
+            if ($allowRepeatTests == 'yes') {
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_test_kit_name_1'] . '</td>';
+                if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
+                    $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_test_kit_name_2'] . '</td>';
+                }
+                if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
+                    $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_test_kit_name_3'] . '</td>';
+                }
             }
             $labRes .= '<td colspan="' . $trailingEmptyCols . '"></td>';
             $labRes .= '</tr>';
 
             // Lot No. row
             $labRes .= '<tr>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>';
-            $labRes .= '<td>' . $result['responseResult'][0]['lot_no_1'] . '</td>';
+            $labRes .= '<td style="font-size:10px;text-align:center;font-weight:bold;background-color:#dbe4ee;">Lot No.</td>';
+            $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['lot_no_1'] . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td>' . $result['responseResult'][0]['lot_no_2'] . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['lot_no_2'] . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td>' . $result['responseResult'][0]['lot_no_3'] . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['lot_no_3'] . '</td>';
             }
             // $labRes .= '<td colspan="' . $trailingEmptyCols . '"></td>';
             if ($allowRepeatTests == 'yes') {
-                // Columns before repeat block: Specimen Panel ID + primary tests
-                $colsBeforeRepeat = 1 + $noTest;
-                // Repeat block width
-                $repeatBlockWidth = $noRepeatTests * $width;
-                // Trailing fixed columns: Your Result + Expected Result + Evaluation
-                $trailingCols = 3;
-                // "Your Score" header spanning repeat columns
-                $labRes .= '<th colspan="' . $noRepeatTests . '" style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $repeatBlockWidth . '%;">Repeat Tests</th>';
-                // Empty trailing cells
-                $labRes .= '<th colspan="' . $trailingCols . '" style="text-align:center;font-weight:bold;background-color:#dbe4ee;width:' . ($trailingCols * $width) . '%;">Your Score</th>';
+                $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_lot_no_1'] . '</td>';
+                if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
+                    $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_lot_no_2'] . '</td>';
+                }
+                if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
+                    $labRes .= '<td style="font-size:10px;">' . $result['responseResult'][0]['repeat_lot_no_3'] . '</td>';
+                }
             }
+            $labRes .= '<th colspan="' . $trailingCols . '" style="font-size:10px;text-align:center;font-weight:bold;background-color:#dbe4ee;width:' . ($trailingCols * $width) . '%;">Your Score</th>';
             $labRes .= '</tr>';
 
             // Expiry Date row
             $labRes .= '<tr>';
-            $labRes .= '<td style="text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>';
-            $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
+            $labRes .= '<td style="font-size:10px;text-align:center;font-weight:bold;background-color:#dbe4ee;">Expiry Date</td>';
+            $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_1']) . '</td>';
             if ($shipmentAttributesScreeningTestDisplay == "") {
-                $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_2']) . '</td>';
             }
             if ($testThreeOptionalDisplay == "") {
-                $labRes .= '<td>' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
+                $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['exp_date_3']) . '</td>';
             }
             if ($allowRepeatTests == 'yes') {
-                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-1</th>';
+                $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['repeat_exp_date_1']) . '</td>';
                 if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
-                    $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-2</th>';
+                    $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['repeat_exp_date_2']) . '</td>';
                 }
                 if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
-                    $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Repeat Test-3</th>';
+                    $labRes .= '<td style="font-size:10px;">' . Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['repeat_exp_date_3']) . '</td>';
                 }
-                // FIX: correct column order — "Your Result" (participant) then "Expected Result" (reference)
-                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Your Result</th>';
-                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Expected Result</th>';
-                $labRes .= '<th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Evaluation</th>';
             }
+            // FIX: correct column order — "Your Result" (participant) then "Expected Result" (reference)
+            $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Your Result</th>';
+            $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Expected Result</th>';
+            $labRes .= '<th style="font-size:10px;background-color:#dbe4ee;text-align:center;font-weight:bold;width:' . $w . ';">Evaluation</th>';
             $labRes .= '</tr>';
 
             // ---- Data rows ----
@@ -449,29 +467,29 @@ if (!empty($resultArray['shipment'])) {
                 $meanScore[] = ($score != 'N.A.') ? $score : 0;
 
                 $labRes .= '<tr>';
-                $labRes .= '<td style="text-align:center;">' . $response['sample_label'] . '</td>';
+                $labRes .= '<td style="font-size:10px;text-align:center;">' . $response['sample_label'] . '</td>';
                 // Primary test results
-                $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
+                $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['test_result_1']) && $response['test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_1']]] : "") . '</td>';
                 if ($shipmentAttributesScreeningTestDisplay == "") {
-                    $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_2']]] : "") . '</td>';
+                    $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['test_result_2']) && $response['test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_2']]] : "") . '</td>';
                 }
                 if ($testThreeOptionalDisplay == "") {
-                    $labRes .= '<td style="text-align:center;">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_3']]] : "") . '</td>';
+                    $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['test_result_3']) && $response['test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['test_result_3']]] : "") . '</td>';
                 }
                 // Repeat test results
                 if ($allowRepeatTests == 'yes') {
-                    $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_1']) && $response['repeat_test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_1']]] : "") . '</td>';
+                    $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['repeat_test_result_1']) && $response['repeat_test_result_1'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_1']]] : "") . '</td>';
                     if (!$repeatTest1 && $shipmentAttributesScreeningTestDisplay == "") {
-                        $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_2']) && $response['repeat_test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_2']]] : "") . '</td>';
+                        $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['repeat_test_result_2']) && $response['repeat_test_result_2'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_2']]] : "") . '</td>';
                     }
                     if (!$repeatTest1 && $testThreeOptionalDisplay == "") {
-                        $labRes .= '<td style="text-align:center;">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
+                        $labRes .= '<td style="font-size:10px;text-align:center;">' . (isset($response['repeat_test_result_3']) && $response['repeat_test_result_3'] != "" ? $dtsResultsMap[$dtsResults[$response['repeat_test_result_3']]] : "") . '</td>';
                     }
                 }
                 // FIX: "Your Result" = participant's lab result (labResult); "Expected Result" = reference result
-                $labRes .= '<td style="text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $response['referenceResult'] . '</td>';
-                $labRes .= '<td style="text-align:center;">' . $evaluationResult . '</td>';
+                $labRes .= '<td style="font-size:10px;text-align:center;">' . $dtsResultsMap[$response['labResult']] . '</td>';
+                $labRes .= '<td style="font-size:10px;text-align:center;">' . $response['referenceResult'] . '</td>';
+                $labRes .= '<td style="font-size:10px;text-align:center;">' . $evaluationResult . '</td>';
                 $labRes .= '</tr>';
             }
 
@@ -484,26 +502,26 @@ if (!empty($resultArray['shipment'])) {
                 &&
                 (isset($result['responseResult'][0]['dts_rtri_control_line']) && !empty($result['responseResult'][0]['dts_rtri_control_line']))
             ) {
-                $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel : <br/></span>
+                $labRes .= '<br><span style="font-weight: bold;font-size:12px;">RTRI Results Panel: <br/></span>
                 <table border="1" style="font-size:12px;">';
                 $labRes .= '<tr style="background-color:#dbe4ee;">
-                                <th style="text-align:center;font-weight:bold;">RTRI Tested?</th>
-                                <th style="text-align:center;font-weight:bold;">Control/Sample</th>
-                                <th style="text-align:center;font-weight:bold;">Control Line</th>
-                                <th style="text-align:center;font-weight:bold;">Verification Line</th>
-                                <th style="text-align:center;font-weight:bold;">Longterm Line</th>
-                                <th style="text-align:center;font-weight:bold;">Expected Result</th>
-                                <th style="text-align:center;font-weight:bold;">Final RTRI Interpretation</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">RTRI Tested?</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Control/Sample</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Control Line</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Verification Line</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Longterm Line</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Expected Result</th>
+                                <th style="font-size:10px;text-align:center;font-weight:bold;">Final RTRI Interpretation</th>
                         </tr>';
                 foreach ($result['responseResult'] as $response) {
                     $labRes .= '<tr>
-                                <td style="text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
-                                <td style="text-align:center;">' . ucwords($response['sample_label']) . '</td>
-                                <td style="text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
-                                <td style="text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
-                                <td style="text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
-                                <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
-                                <td style="text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
+                                <td style="font-size:10px;text-align:center;">' . ucwords($response['dts_rtri_is_editable']) . '</td>
+                                <td style="font-size:10px;text-align:center;">' . ucwords($response['sample_label']) . '</td>
+                                <td style="font-size:10px;text-align:center;">' . ucwords($response['dts_rtri_control_line']) . '</td>
+                                <td style="font-size:10px;text-align:center;">' . ucwords($response['dts_rtri_diagnosis_line']) . '</td>
+                                <td style="font-size:10px;text-align:center;">' . ucwords($response['dts_rtri_longterm_line']) . '</td>
+                                <td style="font-size:10px;text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reference_result']] . '</td>
+                                <td style="font-size:10px;text-align:center;">' . $rtriResultsMap[$response['dts_rtri_reported_result']] . '</td>
                             </tr>';
                 }
                 $labRes .= '</table>';
@@ -513,7 +531,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
             if (!empty($nonMandatorySamples)) {
-                $nmsTable  = "The following samples have been excluded from this evaluation : " . implode(", ", $nonMandatorySamples);
+                $nmsTable  = "The following samples have been excluded from this evaluation: " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
@@ -537,7 +555,7 @@ if (!empty($resultArray['shipment'])) {
             $imgPass = WEB_ROOT . '/images/check.jpg';
             $imgFail = WEB_ROOT . '/images/cross.jpg';
 
-            $docRes  = '<span style="font-weight:bold;font-size:12px;">Your documentation score :</span> <br/>';
+            $docRes  = '<span style="font-weight:bold;font-size:12px;">Your documentation score:</span> <br/>';
             $docRes .= '<table border="1" style="font-size:12px;width:100%;">';
             $docRes .= '<tr style="background-color:#dbe4ee;">';
             $docRes .= '<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
@@ -644,13 +662,13 @@ if (!empty($resultArray['shipment'])) {
 
             // ---- Failure / corrective actions ----
             if (isset($result['responseResult'][0]['failure_reason']) && $result['responseResult'][0]['failure_reason'] != "" && $result['responseResult'][0]['failure_reason'] != "[]" && $result['responseResult'][0]['failure_reason'] != null) {
-                $failRes  = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes  = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response:</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
                 $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
                 $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
                 foreach ($warnings as $warning) {
                     $failRes .= '<tr>';
-                    $failRes .= '<td> ' . (isset($warning['warning'])         ? $warning['warning']         : "") . ' </td>';
+                    $failRes .= '<td> ' . (isset($warning['warning']) ? $warning['warning'] : "") . ' </td>';
                     $failRes .= '<td> ' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . ' </td>';
                     $failRes .= '</tr>';
                 }
