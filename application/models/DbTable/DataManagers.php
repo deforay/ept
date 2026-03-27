@@ -1,9 +1,12 @@
 <?php
 
-use Pt_Commons_MiscUtility as MiscUtility;
 use Application_Service_Common as Common;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Pt_Commons_MiscUtility as MiscUtility;
 
 class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 {
@@ -67,9 +70,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-            $aColumns = array('u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district');
+            $aColumns = ['u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district'];
         } else {
-            $aColumns = array('u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status');
+            $aColumns = ['u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status'];
         }
 
 
@@ -134,7 +137,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
 
         $sQuery = $this->getAdapter()->select()
-            ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
+            ->from(['u' => $this->_name], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')])
             ->group('u.dm_id');
 
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
@@ -149,11 +152,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 ->where("u.dm_id IN (SELECT dm_id FROM participant_manager_map WHERE participant_id IN (SELECT participant_id FROM participant_manager_map WHERE dm_id = ?))", $authNameSpace->dm_id);
         }
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-            $sQuery = $sQuery->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+            $sQuery = $sQuery->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=u.dm_id', [
                 'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
                 'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
-            ));
-            $sQuery = $sQuery->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'));
+            ]);
+            $sQuery = $sQuery->joinLeft(['c' => 'countries'], 'c.id=pcm.country_id', ['c.iso_name']);
         }
 
         if (isset($parameters['statusFilter']) && $parameters['statusFilter'] != "") {
@@ -181,12 +184,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+            "aaData" => []
+        ];
         foreach ($rResult as $aRow) {
             $row = [];
             //if(isset($aRow['participant_id'])&& $aRow['participant_id']!=''){
@@ -361,7 +364,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         if (isset($params['district'][0]) && sizeof($params['district']) > 0) {
                             $districtList = $common->getParticipantsDistrictList($state, 'list');
                             foreach ($params['district'] as $district) {
-                                $_districtData = array('ptcc_id' => $dmId, 'country_id' => $country);
+                                $_districtData = ['ptcc_id' => $dmId, 'country_id' => $country];
                                 $_districtData['state'] = $state;
                                 if (isset($districtList) && count($districtList) > 0 && in_array($district, $districtList)) {
                                     $_districtData['district'] = $district;
@@ -370,22 +373,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                             }
                         } else {
                             if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state));
+                                $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state]);
                             }
                         }
                     } else {
                         if (isset($provinceList) && count($provinceList) > 0 && in_array($state, $provinceList)) {
-                            $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state));
+                            $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country, 'state' => $state]);
                         } else {
                             if ($countryDuplicate) {
-                                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country));
+                                $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country]);
                                 $countryDuplicate = false;
                             }
                         }
                     }
                 }
             } else {
-                $db->insert('ptcc_countries_map', array('ptcc_id' => $dmId, 'country_id' => $country));
+                $db->insert('ptcc_countries_map', ['ptcc_id' => $dmId, 'country_id' => $country]);
             }
         }
     }
@@ -469,7 +472,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function updateLastLogin($dmId)
     {
 
-        $noOfRows = $this->update(array('last_login' => new Zend_Db_Expr('now()')), "dm_id = " . $dmId);
+        $noOfRows = $this->update(['last_login' => new Zend_Db_Expr('now()')], "dm_id = " . $dmId);
         if ($noOfRows != null && $noOfRows == 1) {
             return true;
         } else {
@@ -485,7 +488,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         //$searchParams = explode(" ", $searchParams);
         //foreach($searchParams as $s){
         if (isset($searchParams) && !empty($searchParams))
-            $sql = $sql->where("primary_email LIKE '%" . $searchParams . "%' OR first_name LIKE '%" . $searchParams . "%' OR last_name LIKE '%" . $searchParams . "%' OR institute LIKE '%" . $searchParams . "%'");
+            $sql = $sql->where("primary_email LIKE '%$searchParams%' OR first_name LIKE '%$searchParams%' OR last_name LIKE '%$searchParams%' OR institute LIKE '%$searchParams%'");
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($searchParams['from']) && $searchParams['from'] == 'participant' && $authNameSpace->ptcc == 1) {
             $sql = $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', ['pmm.dm_id'])
@@ -532,12 +535,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (!empty($list) && $list != null) {
 
             if (date('Ymd', strtotime($list['last_date_for_email_reset'])) >= date('Ymd')) {
-                $psql = $db->select()->from(array('dm' => 'data_manager'), array('dm_id'))
-                    ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-                    ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name', 'p.institute_name', 'p.state', 'country'))
-                    ->join(array('c' => 'countries'), 'c.id=p.country', array('*'))
+                $psql = $db->select()->from(['dm' => 'data_manager'], ['dm_id'])
+                    ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
+                    ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.lab_name', 'p.institute_name', 'p.state', 'country'])
+                    ->join(['c' => 'countries'], 'c.id=p.country', ['*'])
                     ->where("dm.dm_id=" . $list['dm_id']);
-                return array('id' => $list['dm_id'], 'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql));
+                return ['id' => $list['dm_id'], 'email' => $list['primary_email'], 'participants' => $db->fetchAll($psql)];
             } else {
                 return false;
             }
@@ -547,7 +550,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function changeForceProfileCheckByEmail($params)
     {
-        return $this->update(array('force_profile_check' => 'no', 'new_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))), "dm_id =" . base64_decode($params['dmId']));
+        return $this->update(['force_profile_check' => 'no', 'new_email' => $params['registeredEmail'], 'last_date_for_email_reset' => date('Y-m-d', strtotime('+30 days'))], "dm_id =" . base64_decode($params['dmId']));
     }
 
     public function loginDatamanagerByAPI($params)
@@ -690,7 +693,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+            return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
         }
 
         /* Check the login credential */
@@ -703,7 +706,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } */
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+            return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
         }
 
         $covid19Config = Pt_Commons_SchemeConfig::get('covid19');
@@ -737,10 +740,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } else {
             $row = $this->fetchRow('auth_token="' . $params['authToken'] . '" AND new_email IS NOT NULL');
             if (!$row) {
-                return array('status' => 'success', 'data' => $resultData);
+                return ['status' => 'success', 'data' => $resultData];
             } else {
                 $resultData['resendMail'] = '/api/participant/resend?id=' . base64_encode($row['new_email'] . '##' . $row['primary_email']);
-                return array('status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData);
+                return ['status' => 'success', 'message' => 'Please verify your primary email change to “' . $row['new_email'] . '”', 'data' => $resultData];
             }
         }
     }
@@ -755,16 +758,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         } */
         /* Check the token  */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sQuery = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+        $sQuery = $db->select()->from(['dm' => 'data_manager'], ['dm.dm_id', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'])
+            ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
+            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'])
             ->where("dm.auth_token=?", $params['authToken']);
         $aResult = $db->fetchRow($sQuery);
         if (!isset($aResult['dm_id'])) {
             return false;
         }
         /* Return the response data */
-        return array(
+        return [
             'dm_id' => $aResult['dm_id'],
             'view_only_access' => $aResult['view_only_access'],
             'qc_access' => $aResult['qc_access'],
@@ -779,16 +782,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             'force_profile_check' => (isset($aResult['force_profile_check']) && $aResult['force_profile_check'] != '') ? $aResult['force_profile_check'] : null,
             'app_version' => (isset($params['value']) && $params['value'] != '') ? $params['value'] : null,
             'profileInfo' => $this->checkTokenExpired($params['authToken'])
-        );
+        ];
     }
 
     public function checkTokenExpired($authToken)
     {
         /* Check If token got expired and need to update the new one */
         $db = Zend_Db_Table_Abstract::getAdapter();
-        $sql = $db->select()->from(array('dm' => 'data_manager'), array('dm.dm_id', 'status', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'))
+        $sql = $db->select()->from(['dm' => 'data_manager'], ['dm.dm_id', 'status', 'api_token_generated_datetime', 'view_only_access', 'qc_access', 'enable_adding_test_response_date', 'enable_choosing_mode_of_receipt', 'force_password_reset', 'force_profile_check', 'new_email'])
+            ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
+            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['p.unique_identifier', 'p.first_name', 'p.last_name', 'p.state'])
             ->where("dm.auth_token=?", $authToken);
         $result = $db->fetchRow($sql);
         $response['token-updated'] = false;
@@ -802,7 +805,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
 
             $response['newAuthToken'] = Common::generateRandomString(6);
-            $id = $this->update(array('auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')), "dm_id = " . $result['dm_id']);
+            $id = $this->update(['auth_token' => $response['newAuthToken'], 'api_token_generated_datetime' => new Zend_Db_Expr('now()')], "dm_id = " . $result['dm_id']);
             if ($id > 0) {
                 $response['token-updated'] = true;
             } else {
@@ -838,12 +841,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
         /* Update the new password to the server */
         $newpassword = Common::passwordHash($params['password']);
-        $update = $this->update(array('password' => $newpassword), array('dm_id = ?' => (int) $aResult['dm_id']));
+        $update = $this->update(['password' => $newpassword], ['dm_id = ?' => (int) $aResult['dm_id']]);
         if ($update < 1) {
-            return array('status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']);
+            return ['status' => 'fail', 'message' => 'You have entered old password', 'profileInfo' => $aResult['profileInfo']];
         }
-        $this->update(array('updated_on' => new Zend_Db_Expr('now()')), array('dm_id = ?' => $aResult['dm_id']));
-        return array('status' => 'success', 'message' => 'Password Updated Successfully', 'profileInfo' => $aResult['profileInfo']);
+        $this->update(['updated_on' => new Zend_Db_Expr('now()')], ['dm_id = ?' => $aResult['dm_id']]);
+        return ['status' => 'success', 'message' => 'Password Updated Successfully', 'profileInfo' => $aResult['profileInfo']];
     }
 
     public function setForgetPasswordDatamanagerAPI($params)
@@ -897,7 +900,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return ['status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again'];
         }
 
         /* Validate new auth token and app-version */
@@ -906,16 +909,16 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return ['status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again'];
         }
 
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $result = $this->fetchDataManagerByAuthToken($params['authToken']);
         if (isset($result) && trim($result['dm_id'] != '')) {
 
-            $sql = $this->getAdapter()->select()->from(array('dm' => 'data_manager'), array(''))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('*'))
+            $sql = $this->getAdapter()->select()->from(['dm' => 'data_manager'], [''])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
+                ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['*'])
                 ->where("dm.auth_token=?", $params['authToken']);
             $mappedParticipants = $this->getAdapter()->fetchAll($sql);
 
@@ -931,7 +934,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 'profileInfo' => $aResult['profileInfo'],
                 'mappedParticipants' => $mappedParticipants
             ];
-            $this->update(array('force_profile_check' => 'no'), ['dm_id = ?' => (int) $result['dm_id']]);
+            $this->update(['force_profile_check' => 'no'], ['dm_id = ?' => (int) $result['dm_id']]);
         } else {
             $response['status'] = 'fail';
             $response['message'] = 'No participant found.';
@@ -947,7 +950,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return ['status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again'];
         }
 
         /* Validate new auth token and app-version */
@@ -956,20 +959,20 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return array('status' => 'version-failed', 'message' => 'App version is not updated. Kindly go to the play store and update the app');
         } */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again');
+            return ['status' => 'auth-fail', 'message' => 'Something went wrong. Please log in again'];
         }
         /* started save profile details */
 
         /* check old data */
         $selectOld = $this->select()->where('auth_token = ?', $params['authToken']);
         $fetchOldMail = $this->fetchRow($selectOld);
-        $updateData = array(
+        $updateData = [
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
             'secondary_email' => $params['secondaryEmail'],
             'mobile' => $params['mobile'],
             'phone' => $params['phone']
-        );
+        ];
         /* check primary email already exist or not */
         $select = $this->select()
             ->where('auth_token = ?', $params['authToken'])
@@ -1011,7 +1014,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function setStatusByEmail($status, $email)
     {
-        return $this->update(array('status' => $status), 'primary_email = "' . $email . '"');
+        return $this->update(['status' => $status], "primary_email = '$email'");
     }
 
     public function addQuickDm($params, $participantId)
@@ -1332,42 +1335,42 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
             $output = [];
             $sheet = $excel->getActiveSheet();
-            $styleArray = array(
-                'font' => array(
+            $styleArray = [
+                'font' => [
                     'bold' => true,
-                ),
-                'alignment' => array(
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                ),
-                'borders' => array(
-                    'outline' => array(
-                        'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                    ),
-                )
-            );
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+                'borders' => [
+                    'outline' => [
+                        'style' => Border::BORDER_THIN,
+                    ],
+                ]
+            ];
 
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $ptccQuery = $this->getAdapter()->select()
-                ->from(array('u' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')))
-                ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+                ->from(['u' => $this->_name], [new Zend_Db_Expr('SQL_CALC_FOUND_ROWS *')])
+                ->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=u.dm_id', [
                     'state' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.state SEPARATOR ', ')"),
                     'district' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pcm.district SEPARATOR ', ')")
-                ))->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=u.dm_id', array())
+                ])->joinLeft(['c' => 'countries'], 'c.id=pcm.country_id', ['c.iso_name'])
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.dm_id=u.dm_id', [])
                 ->where("data_manager_type = 'ptcc'")
                 ->group('u.dm_id');
             if ($params['type'] == 'mapped') {
-                $ptccQuery = $ptccQuery->joinLeft(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('unique_identifier', 'labName' => 'lab_name', 'pmobile' => 'mobile', 'email'));
+                $ptccQuery = $ptccQuery->joinLeft(['p' => 'participant'], 'pmm.participant_id=p.participant_id', ['unique_identifier', 'labName' => 'lab_name', 'pmobile' => 'mobile', 'email']);
                 $ptccQuery = $ptccQuery->group('p.participant_id');
             }
             $totalResult = $db->fetchAll($ptccQuery);
 
             foreach ($headings as $field => $value) {
-                $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1)
+                $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)
                     ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-                $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1, null, null)->getFont()->setBold(true);
                 $colNo++;
             }
             if (isset($totalResult) && !empty($totalResult)) {
@@ -1400,11 +1403,11 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     if (!isset($value)) {
                         $value = "";
                     }
-                    $sheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
+                    $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2)
                         ->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
                     if ($colNo == (sizeof($headings) - 1)) {
                         $sheet->getColumnDimensionByColumn($colNo)->setWidth(100);
-                        $sheet->getStyle(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
+                        $sheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . $rowNo + 2, null, null)->getAlignment()->setWrapText(true);
                     }
                     $colNo++;
                 }
@@ -1450,12 +1453,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                     }
                 } else {
 
-                    $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
+                    $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId]);
                     foreach ($params['participantsList'] as $p) {
-                        $data[] = array(
+                        $data[] = [
                             'participant_id' => $p,
                             'dm_id' => $dmId
-                        );
+                        ];
                     }
                 }
                 $common->insertMultiple('participant_manager_map', $data, true);
@@ -1464,7 +1467,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $params['province'] = isset($params['province']) ? $common->removeEmpty((array) $params['province']) : [];
                 $params['country'] = isset($params['country']) ? $common->removeEmpty((array) $params['country']) : [];
                 $locationWiseSwitch = false; //This variable for check if the any one of the location wise participant mapping
-                $sql = $db->select()->from(array('p' => 'participant'), array('participant_id')); // Initiate the participants list table
+                $sql = $db->select()->from(['p' => 'participant'], ['participant_id']); // Initiate the participants list table
 
                 if (!empty($params['district'])) {
                     $locationWiseSwitch = true;
@@ -1493,7 +1496,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                         ->where("dm_id = ?", $dmId);
                     if ($db->fetchRow($ptccQuery)) {
                         if (!empty($params['participantsList'])) {
-                            $db->delete('participant_manager_map', array('participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId));
+                            $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId]);
                         }
                         // if (isset($params['province'][0]) && !empty($params['province'][0])) {
                         //     $db->delete('ptcc_countries_map', "ptcc_id = " . $dmId);
@@ -1556,7 +1559,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     {
         $query = $this->getAdapter()->select()
             ->from(['pmm' => 'participant_manager_map'], [])
-            ->joinLeft(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email'])
+            ->joinLeft(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email'])
             ->where("pmm.participant_id = ?", $participantId);
         return $this->getAdapter()->fetchAll($query);
     }
