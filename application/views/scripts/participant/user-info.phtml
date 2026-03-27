@@ -122,14 +122,25 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
     duplicated = false;
 
     function validateNow() {
-
         var blockedDomain = '<?php echo $blockedDomains; ?>';
-        if (blockedDomain != '')
-            var domains = blockedDomain.split(',');
-        if ($('#semail').val() != '')
-            var maildomain = $('#semail').val().split('@');
-        if (domains != '' && maildomain != '') {
-            if (jQuery.inArray(maildomain[1], domains) != -1) {
+        var secondaryEmail = $.trim($('#semail').val());
+        var domains = [];
+        var maildomain = [];
+
+        if (blockedDomain !== '') {
+            domains = $.map(blockedDomain.split(','), function (domain) {
+                return $.trim(domain).toLowerCase();
+            });
+        }
+
+        if (secondaryEmail !== '') {
+            maildomain = secondaryEmail.toLowerCase().split('@');
+        }
+
+        // Only run the blocked-domain check once the email contains a domain part.
+        // Otherwise the form validator should handle the malformed email input.
+        if (domains.length > 0 && maildomain.length > 1 && maildomain[1] !== '') {
+            if (jQuery.inArray(maildomain[1], domains) !== -1) {
                 alert("<?= $this->translate->_("Please enter the valid mail address, We send the mail confirm information to this address."); ?>");
                 return false;
             }
