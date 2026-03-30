@@ -1930,12 +1930,22 @@ foreach ($this->allTestKits as $kit) {
             if (checkTestType) {
                 if (confirm("<?= $this->translate->_("Changing the test type may lead to loss of previously entered data and cannot be undone. Are you sure you want to proceed?"); ?>")) {
                     if (value == 'screening') {
-                        $('.testTypePanel').removeClass('hide');
-                        $('.testTwo, .testThree').hide();
-                        $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
-                        $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
-                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
-                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                        <?php if ($dtsSchemeType == 'vietnam') { ?>
+                            console.log('came');
+                            $('.testTypePanel').removeClass('hide');
+                            var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
+                            var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+
+                            // if($("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                            $('.testTwo,.testThree').show();
+                        <?php } else { ?>
+                            $('.testTypePanel').removeClass('hide');
+                            $('.testTwo, .testThree').hide();
+                            $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
+                            $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
+                            $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
+                            $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                        <?php } ?>
                     } else if (value == 'confirmatory') {
                         $('.testTypePanel').removeClass('hide');
                         var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
@@ -1958,12 +1968,21 @@ foreach ($this->allTestKits as $kit) {
                 }
 
                 if (value == 'screening') {
-                    $('.testTypePanel').removeClass('hide');
-                    $('.testTwo, .testThree').hide();
-                    $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
-                    $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
-                    $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
-                    $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                    <?php if ($dtsSchemeType == 'vietnam') { ?>
+                        $('.testTypePanel').removeClass('hide');
+                        var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
+                        var test2Hidden = "<?php echo $testTwoHidden ? 'yes' : 'no'; ?>";
+
+                        // if($("#algorithm").val() != 'myanmarNationalDtsAlgo'){
+                        $('.testTwo,.testThree').show();
+                    <?php } else { ?>
+                        $('.testTypePanel').removeClass('hide');
+                        $('.testTwo, .testThree').hide();
+                        $('.testTwoSpan, .testTwoRepeatSpan, .testThreeSpan, .testThreeRepeatSpan').removeAttr('colspan');
+                        $('.testKitTwoHead, .testKitTwoInput, .testKitThreeHead, .testKitThreeInput, .testKitTwoRepeatHead, .testKitTwoRepeatInput, .testKitThreeRepeatHead, .testKitThreeRepeatInput').remove();
+                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').val('');
+                        $('.testkit-input-2, testkit-input-3, testkit-input-2Repeat, testkit-input-3Repeat').change();
+                    <?php } ?>
                 } else if (value == 'confirmatory') {
                     $('.testTypePanel').removeClass('hide');
                     var test3Hidden = "<?php echo $testThreeHidden ? 'yes' : 'no'; ?>";
