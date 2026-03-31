@@ -72,7 +72,7 @@ $eiaData = $isEditMode ? ($this->shipmentData['eia'] ?? []) : [];
 $wbData = $isEditMode ? ($this->shipmentData['wb'] ?? []) : [];
 $rhivData = $isEditMode ? ($this->shipmentData['rhiv'] ?? []) : [];
 $geeniusData = $isEditMode ? ($this->shipmentData['geenius'] ?? []) : [];
-
+//echo "<pre>"; print_r($wbData); die;
 // Build sample ID arrays for checking existing data
 $allEia = array_column($eiaData, 'sample_id');
 $allWb = array_column($wbData, 'sample_id');
@@ -147,7 +147,7 @@ $wbChoicesJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $wbChoi
 $dtsKitOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $dtsKitOptions);
 $testResultsOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $testResultsOptions);
 $finalResultsOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $finalResultsOptions);
-
+//echo "<pre>"; print_r($wbChoicesJs); die;
 // Determine visibility states
 $showSyphilis = $isEditMode
     ? (isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes')
@@ -741,7 +741,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                                 <td><select name="wb[' + sampleId + '][31][]" style="width:70px; font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
                                 <td><select name="wb[' + sampleId + '][24][]" style="width:70px; font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
                                 <td><select name="wb[' + sampleId + '][17][]" style="width:70px; font-weight:bold;" class="form-control"><option value=""></option><option value="1">+</option><option value="0">-</option></select></td>\
-                                <td><select class="form-control" name="wb[' + sampleId + '][result][]"><?php echo $finalResultsOptionsJs; ?></select></td>\
+                                <td><select class="form-control" name="wb[' + sampleId + '][result][]" style="width:70px;" ><?php echo $finalResultsOptionsJs; ?></select></td>\
                                 <td>\
                                     <a href="javascript:void(0);" onclick="addNewWbRow(this, ' + sampleId + ')" class="btn btn-primary btn-xs"><i class="icon-plus"></i></a>\
                                 </td>\

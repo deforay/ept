@@ -2504,7 +2504,8 @@ class Application_Service_Shipments
                                     'lot' => $params['eia'][$i + 1]['lot'][$e],
                                     'exp_date' => $expDate,
                                     'od' => $params['eia'][$i + 1]['od'][$e],
-                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e]
+                                    'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
+                                    'result' => $params['eia'][$i + 1]['result'][$e],
                                 )
                             );
                         }

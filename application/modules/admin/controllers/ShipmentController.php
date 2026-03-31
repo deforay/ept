@@ -188,6 +188,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         if ($request->isPost()) {
             $shipmentService = new Application_Service_Shipments();
             $params = $request->getPost();
+           // echo "<pre>"; print_r($params); die;
             $shipmentService->updateShipment($params);
             $this->redirect("/admin/shipment");
         } else {
@@ -200,6 +201,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
+              //  echo "<pre>"; print_r($response); die;
                 $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
                 $this->view->config = Pt_Commons_SchemeConfig::get($response['shipment']['scheme_type']);
                 if ($response['shipment']['scheme_type'] == 'dts') {

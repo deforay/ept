@@ -141,12 +141,12 @@
                                 if ($wb['sample_id'] == $sampleId):
                         ?>
                         <tr>
-                            <td><select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][wb][]" style="width:125px;"><?php $this->dropdownSelection($this->wb, $wb['wb'], true); ?></select></td>
+                            <td><select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][wb][]" style="width:115px;"><?php $this->dropdownSelection($this->wb, $wb['wb'], true); ?></select></td>
                             <td><input type="text" name="wb[<?php echo htmlspecialchars($sampleId); ?>][lot][]" class="form-control" style="width:100px;" value="<?php echo htmlspecialchars($wb['lot']); ?>" /></td>
-                            <td><input type="text" name="wb[<?php echo htmlspecialchars($sampleId); ?>][expiry][]" class="form-control datepicker" readonly="readonly" style="width:125px;" value="<?php echo htmlspecialchars($this->dateFormat($wb['exp_date'])); ?>" /></td>
+                            <td><input type="text" name="wb[<?php echo htmlspecialchars($sampleId); ?>][expiry][]" class="form-control datepicker" readonly="readonly" style="width:115px;" value="<?php echo htmlspecialchars($this->dateFormat($wb['exp_date'])); ?>" /></td>
                             <?php foreach (['160', '120', '66', '55', '51', '41', '31', '24', '17'] as $band): ?>
                             <td>
-                                <select name="wb[<?php echo htmlspecialchars($sampleId); ?>][<?php echo $band; ?>][]" style="width:70px; font-weight:bold;" class="form-control">
+                                <select name="wb[<?php echo htmlspecialchars($sampleId); ?>][<?php echo $band; ?>][]" style="width:60px; font-weight:bold;" class="form-control">
                                     <option value=""></option>
                                     <option value="1" <?php echo (isset($wb[$band]) && $wb[$band] == 1) ? "selected='selected'" : ""; ?>>+</option>
                                     <option value="0" <?php echo (isset($wb[$band]) && $wb[$band] === '0') ? "selected='selected'" : ""; ?>>-</option>
@@ -154,7 +154,7 @@
                             </td>
                             <?php endforeach; ?>
                             <td>
-                                <select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][result][]">
+                                <select class="form-control" name="wb[<?php echo htmlspecialchars($sampleId); ?>][result][]" style="width:100px;"> 
                                     <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                     <?php foreach ($dtsPossibleResults as $pr):
                                         if ($pr['scheme_sub_group'] == 'DTS_TEST'): ?>
