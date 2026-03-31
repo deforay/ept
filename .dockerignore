@@ -1,0 +1,14 @@
+vendor/
+node_modules/
+.git/
+site/
+logs/
+backups/
+downloads/
+public/temporary/
+public/uploads/
+application/configs/application.ini
+application/configs/config.ini
+application/configs/.env
+*.log
+.DS_Store
