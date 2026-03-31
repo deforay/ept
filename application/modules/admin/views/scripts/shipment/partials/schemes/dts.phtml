@@ -158,6 +158,10 @@ $showRtri = $isEditMode
 $showTestPanelType = $isEditMode
     ? (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no')
     : true;
+$showSampleDiluted = ($dtsSchemeType == 'vietnam')
+    && $isEditMode
+    && isset($shipmentAttribute['sampleType'])
+    && $shipmentAttribute['sampleType'] == 'plasma';
 ?>
 
 <style type="text/css">
@@ -386,6 +390,10 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
             </th>
             <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
             <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
+            <th class="sample-diluted-input"
+                style="width:10%; text-align: center; <?php echo $showSampleDiluted ? '' : 'display:none'; ?>;">
+                <?= $this->translate->_("Is Sample Diluted?"); ?>
+            </th>
             <th style="width:20%; text-align: center;"><?= $this->translate->_("Option"); ?></th>
         </tr>
     </thead>
@@ -403,7 +411,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                 $rtriResult = $reference['dts_rtri_reference_result'] ?? '';
                 $control = $reference['control'] ?? 0;
                 $mandatory = $reference['mandatory'] ?? 1;
-                ?>
+        ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -427,7 +435,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -439,7 +447,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -451,7 +459,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -477,6 +485,18 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                             </option>
                         </select>
                     </td>
+                    <td class="sample-diluted-input" style="<?php echo $showSampleDiluted ? '' : 'display:none'; ?>;">
+                        <select name="isSampleDiluted[]" class="form-control input-sm"
+                            title="Please choose whether this sample is diluted">
+                            <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                            <option value="yes" <?php echo (isset($reference['is_sample_diluted']) && $reference['is_sample_diluted'] == 'yes') ? "selected='selected'" : ""; ?>>
+                                <?= $this->translate->_("Yes"); ?>
+                            </option>
+                            <option value="no" <?php echo (isset($reference['is_sample_diluted']) && $reference['is_sample_diluted'] == 'no') ? "selected='selected'" : ""; ?>>
+                                <?= $this->translate->_("No"); ?>
+                            </option>
+                        </select>
+                    </td>
                     <td>
                         <a href="javascript:void(0);" class="btn btn-xs btn-primary"
                             onclick="showdefModal('sampleEia<?php echo htmlspecialchars($sampleId); ?>', 900, 600); loadCal();">
@@ -494,7 +514,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                         <?php include dirname(__FILE__) . '/_dts-sample-modal.phtml'; ?>
                     </td>
                 </tr>
-                <?php
+            <?php
                 $counter++;
             endforeach;
         else:
@@ -540,6 +560,14 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                         <option value="0"><?= $this->translate->_("No"); ?></option>
                     </select>
                 </td>
+                <td class="sample-diluted-input" style="display:none;">
+                    <select name="isSampleDiluted[]" class="form-control input-sm"
+                        title="Please choose whether this sample is diluted">
+                        <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
+                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                    </select>
+                </td>
                 <td>
                     <a href="javascript:void(0);" class="btn btn-xs btn-primary"
                         onclick="showdefModal('sampleEia1', 900, 600); loadCal();">
@@ -568,8 +596,25 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 <!-- ============================================================================ -->
 <script type="text/javascript">
     var sampleCounter = <?php echo $isEditMode && count($samples) > 0 ? count($samples) : 1; ?>;
+    $isSampleDilutedVisible = '<?php echo ($dtsSchemeType == 'vietnam') ? true : false; ?>';
 
-    $(document).ready(function () {
+    $(document).ready(function() {
+        // Sample Diluted toggle (Vietnam scheme + plasma only)
+        $("#dtsSampleType").change(function() {
+            if ($(this).val() == "plasma" && $isSampleDilutedVisible) {
+                $(".sample-diluted-input").show();
+            } else {
+                $(".sample-diluted-input").hide();
+                $("select[name='isSampleDiluted[]']").val('');
+            }
+        });
+        // On page load in edit mode, reflect saved state
+        <?php if ($isEditMode): ?>
+            if ($("#dtsSampleType").val() == "plasma" && $isSampleDilutedVisible) {
+                $(".sample-diluted-input").show();
+            }
+        <?php endif; ?>
+
         <?php if ($isEditMode && count($samples) > 0): ?>
             // EDIT mode: Initialize modals for existing samples (blocks are already in HTML)
         <?php else: ?>
@@ -583,7 +628,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
         });
 
         // Syphilis toggle
-        $("#enableSyphilis").change(function () {
+        $("#enableSyphilis").change(function() {
             if ($(this).val() == "yes") {
                 $(".syphilis-input").show();
                 $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
@@ -594,16 +639,24 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
         });
 
         // RTRI toggle
-        $("#enableRtri").change(function () {
+        $("#enableRtri").change(function() {
             if ($(this).val() == "yes") {
                 $(".rtri-input").show();
             } else {
                 $(".rtri-input").hide();
             }
         });
+        <?php if ($isSampleDilutedVisible): ?>
+            if ($("#dtsSampleType").val() == "plasma") {
+                $(".sample-diluted-input").show();
+            } else {
+                $(".sample-diluted-input").hide();
+            }
+        <?php endif; ?>
     });
 
     function addDtsRow(obj) {
+        dilutedVisible = ($isSampleDilutedVisible && ($("#dtsSampleType").val() == "plasma")) ? '' : 'display:none;';
         sampleCounter++;
         $(obj.parentNode.parentNode).after('<tr align="center"> \
         <td style="text-align: center"> \
@@ -627,6 +680,13 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                 <option value="0"><?= $this->translate->_("No"); ?></option> \
             </select> \
         </td> \
+        <td class="sample-diluted-input" style="' + dilutedVisible + '">\
+            <select name="isSampleDiluted[]" class="form-control input-sm" title="Please choose whether this sample is diluted">\
+                <option value=""><?= $this->translate->_("Select"); ?></option>\
+                <option value="yes"><?= $this->translate->_("Yes"); ?></option>\
+                <option value="no"><?= $this->translate->_("No"); ?></option>\
+            </select>\
+        </td>\
         <td> \
             <a href="javascript:void(0);" class="btn btn-xs btn-primary" onclick="showdefModal(\'sampleEia' + sampleCounter + '\', 900, 600); loadCal();"><i class="icon-beaker"></i> <?= $this->translate->_("Ref. Results"); ?></a> \
             <a href="javascript:void(0);" onclick="addDtsRow(this);" class="btn btn-xs btn-info"><i class="icon-plus"></i> <?= $this->translate->_("Sample/Control"); ?></a> \
@@ -659,7 +719,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -892,25 +952,25 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
     }
 
     function removeEiaRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeWbRow(obj, sampleId) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeHivRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeGeeniusRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -930,10 +990,10 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
         if (modalDiv && mbdDiv) {
             modalDiv.innerHTML = mbdDiv.innerHTML;
 
-            $("#mbd input:text").each(function (i, obj) {
+            $("#mbd input:text").each(function(i, obj) {
                 $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
             });
-            $("#mbd select").each(function (i, obj) {
+            $("#mbd select").each(function(i, obj) {
                 $("#" + divId + " select:eq(" + i + ")").val($(this).val());
             });
         }
