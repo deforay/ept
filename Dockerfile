@@ -19,9 +19,12 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 RUN a2enmod rewrite headers expires
 
 # Node.js (LTS) for chart rendering
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
+ENV NODE_VERSION=22.15.0
+RUN ARCH=$(dpkg --print-architecture) \
+    && if [ "$ARCH" = "amd64" ]; then NODEARCH=x64; elif [ "$ARCH" = "arm64" ]; then NODEARCH=arm64; fi \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODEARCH}.tar.xz" \
+       | tar -xJ -C /usr/local --strip-components=1 \
+    && node --version && npm --version
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
