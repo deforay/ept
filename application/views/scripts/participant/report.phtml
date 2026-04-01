@@ -42,10 +42,10 @@
                             <option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
                             <?php
                             foreach ($this->schemes as $scheme) {
-                                ?>
+                            ?>
                                 <option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?>
                                 </option>
-                                <?php
+                            <?php
                             }
                             ?>
                         </select>
@@ -89,31 +89,31 @@
     var startDate = "";
     var endDate = "";
     var oTable = null;
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
+                locale: {
+                    cancelLabel: 'Clear',
+                    format: 'DD-MMM-YYYY',
+                    separator: ' to ',
+                },
+                autoApply: true,
+                showDropdowns: true,
+                alwaysShowCalendars: true,
+                autoUpdateInput: true,
+                startDate: moment().subtract(179, 'days'),
+                endDate: moment(),
+                maxDate: moment(),
+                ranges: {
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                    'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+                    'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+                    'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+                    'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+                    'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+                }
             },
-            autoApply: true,
-            showDropdowns: true,
-            alwaysShowCalendars: true,
-            autoUpdateInput: true,
-            startDate: moment().subtract(179, 'days'),
-            endDate: moment(),
-            maxDate: moment(),
-            ranges: {
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-                'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-                'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-                'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-                'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-                'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-            }
-        },
-            function (start, end) {
+            function(start, end) {
                 startDate = start.format('DD-MMM-YYYY');
                 endDate = end.format('DD-MMM-YYYY');
             });
@@ -129,30 +129,30 @@
             "bRetrieve": false,
             "bDestroy": true,
             "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-                "bSortable": false
-            }
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center"
+                },
+                {
+                    "sClass": "center",
+                    "bSortable": false
+                }
             ],
             "aaSorting": [
                 [5, "desc"]
@@ -160,7 +160,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'report', 'format' => 'html')); ?>",
-            "fnServerParams": function (aoData) {
+            "fnServerParams": function(aoData) {
                 aoData.push({
                     "name": "scheme",
                     "value": $("#scheme").val()
@@ -174,7 +174,7 @@
                     "value": endDate
                 });
             },
-            "fnServerData": function (sSource, aoData, fnCallback) {
+            "fnServerData": function(sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',
                     "type": "POST",
@@ -198,11 +198,11 @@
         if (id != "") {
             // $.blockUI();
             $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'update-report-download-datetime'), 'default', true); ?>", {
-                id: id,
-                type: type,
-                format: "html"
-            },
-                function (data) {
+                    id: id,
+                    type: type,
+                    format: "html"
+                },
+                function(data) {
                     $.unblockUI();
                 }
             );

@@ -1345,9 +1345,18 @@ class Application_Service_Evaluation
 			->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('first_name', 'last_name', 'lab_name', 'unique_identifier', 'country', 'state', 'district'))
 			->join(array('c' => 'countries'), 'p.country=c.id', array('country_name' => 'iso_name'))
 			->joinLeft(array('res' => 'r_results'), 'res.result_id=sp.final_result')
+			->joinLeft(
+				['p1' => 'participant'],
+				"p1.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_by')))",
+				['individualParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p1.first_name,''), ' ', COALESCE(p1.last_name,''))")]
+			)
+			->joinLeft(
+				['p2' => 'participant'],
+				"p2.participant_id = JSON_UNQUOTE(COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_by'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_by')))",
+				['summaryParticipantName' => new Zend_Db_Expr("CONCAT(COALESCE(p2.first_name,''), ' ', COALESCE(p2.last_name,''))")]
+			)
 			->where("s.shipment_id = ?", $shipmentId);
-		$shipmentResult = $db->fetchAll($sql);
-		return $shipmentResult;
+		return $db->fetchAll($sql);
 	}
 
 	public function getReportStatus($shipmentId, $type = '', $evaluate = false)

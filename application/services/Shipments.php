@@ -2873,14 +2873,22 @@ class Application_Service_Shipments
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['s' => 'shipment'], ['shipment_id', 'shipment_code', 'status', 'number_of_samples', 'evaluated_at', 'reports_generated_at', 'finalized_at'])
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
-            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['report_generated', 'participant_count' => new Zend_Db_Expr('count("participant_id")'), 'reported_count' => new Zend_Db_Expr("SUM(response_status is not null AND response_status like 'responded')"), 'number_passed' => new Zend_Db_Expr("SUM(final_result = 1)")])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
+                'report_generated',
+                'participant_count'        => new Zend_Db_Expr('COUNT(sp.participant_id)'),
+                'reported_count'           => new Zend_Db_Expr("SUM(sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded')"),
+                'number_passed'            => new Zend_Db_Expr("SUM(sp.final_result = 1)"),
+                'downloaded_count'         => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT(sp.report_download_metadata, '$.report_downloaded')) = 'yes')"),
+                'participant_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_on')) IS NOT NULL)"),
+                'summary_report_count'     => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_on')) IS NOT NULL)")
+            ])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
             ->where("s.distribution_id = ?", $distributionId)
             ->group('s.shipment_id');
+
         if (isset($shipmentId) && !empty($shipmentId) && $shipmentId > 0)
             $sql = $sql->where("s.shipment_id = ?", $shipmentId);
-
         return $db->fetchAll($sql);
     }
 
