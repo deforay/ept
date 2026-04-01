@@ -1322,40 +1322,6 @@ class Application_Service_Common
         }
     }
 
-    // Convert a JSON string to a string that can be used with JSON_SET()
-    public static function jsonToSetString(?string $json, string $column, $newData = []): ?string
-    {
-        return Pt_Commons_JsonUtility::jsonToSetString($json, $column, $newData);
-    }
-
-    // Convert data to JSON string
-    public static function toJSON($data, int $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE): ?string
-    {
-        // Check if the data is already a valid JSON string
-        if (is_string($data) && self::isJSON($data)) {
-            return $data;
-        }
-
-        // Convert the data to JSON
-        $json = json_encode($data, $flags);
-        if ($json === false) {
-            throw new Exception('error', 'Data could not be encoded as JSON: ' . json_last_error_msg());
-            //return null;
-        }
-        return $json;
-    }
-
-    public static function isJSON($string, bool $logError = false): bool
-    {
-        return Pt_Commons_JsonUtility::isJSON($string, $logError);
-    }
-
-    // Convert a value to a JSON-compatible string representation
-    public static function jsonValueToString($value): string
-    {
-        return Pt_Commons_JsonUtility::jsonValueToString($value);
-    }
-
     public static function passwordHash($password)
     {
         if (empty($password)) {
@@ -1629,7 +1595,7 @@ class Application_Service_Common
             if (isset($mimeTypesMap[$extension])) {
                 $mimeType = $mimeTypesMap[$extension];
                 if (is_array($mimeType)) {
-                    $mimeTypes = array_merge($mimeTypes, $mimeType);  // Merge if multiple MIME types
+                    $mimeTypes = [...$mimeTypes, ...$mimeType];  // Merge if multiple MIME types
                 } else {
                     $mimeTypes[] = $mimeType;  // Single MIME type
                 }
