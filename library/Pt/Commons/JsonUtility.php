@@ -216,7 +216,7 @@ final class Pt_Commons_JsonUtility
                     $jsonData = $decoded;
                 }
             } else {
-                Pt_Commons_LoggerUtility::logWarning( 'Dropping invalid existing JSON while building JSON_SET', [
+                Pt_Commons_LoggerUtility::logWarning('Dropping invalid existing JSON while building JSON_SET', [
                     'payload_preview' => self::previewString($json, 200),
                 ]);
             }
@@ -228,7 +228,7 @@ final class Pt_Commons_JsonUtility
             if (self::isJSON($newData)) {
                 $newData = json_decode($newData, true);
             } else {
-                Pt_Commons_LoggerUtility::logWarning( 'Wrapping invalid JSON payload into raw wrapper', [
+                Pt_Commons_LoggerUtility::logWarning('Wrapping invalid JSON payload into raw wrapper', [
                     'payload_preview' => self::previewString($newData, 200),
                 ]);
                 $newData = ['raw' => $newData];
@@ -257,7 +257,7 @@ final class Pt_Commons_JsonUtility
         foreach ($data as $key => $value) {
             $encoded = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
             if ($encoded === false) {
-                Pt_Commons_LoggerUtility::logWarning( 'JSON encoding failed, saving to raw_data fallback', [
+                Pt_Commons_LoggerUtility::logWarning('JSON encoding failed, saving to raw_data fallback', [
                     'key' => $key,
                     'value_type' => gettype($value),
                 ]);
@@ -266,7 +266,7 @@ final class Pt_Commons_JsonUtility
             }
 
             if (!self::isJSON($encoded)) {
-                Pt_Commons_LoggerUtility::logWarning( 'Invalid JSON after encoding, saving to raw_data fallback', [
+                Pt_Commons_LoggerUtility::logWarning('Invalid JSON after encoding, saving to raw_data fallback', [
                     'key' => $key,
                     'encoded_preview' => self::previewString($encoded, 200),
                 ]);
