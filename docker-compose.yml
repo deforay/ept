@@ -1,6 +1,8 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      network: host
     ports:
       - "${APP_PORT:-80}:80"
     environment:
