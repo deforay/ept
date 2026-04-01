@@ -32,7 +32,7 @@ server {
     add_header X-Frame-Options SAMEORIGIN always;
 
     location / {
-        proxy_pass http://app:80;
+        proxy_pass http://ept:80;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
