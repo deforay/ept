@@ -75,7 +75,13 @@ cd ept
 docker compose up --build -d
 ```
 
-Access ePT at [http://localhost/admin](http://localhost/admin) once the containers are running.
+Once the containers are running, create the initial admin account:
+
+```bash
+docker compose exec ept php bin/seed-admin.php
+```
+
+Then access ePT at [http://localhost/admin](http://localhost/admin).
 
 To run on a custom port (e.g. 3456):
 
@@ -87,11 +93,17 @@ Then access ePT at `http://localhost:3456/admin`.
 
 ### Configuration
 
-Environment variables are set in `docker-compose.yml`:
+Copy the example environment file and adjust as needed:
+
+```bash
+cp .env.example .env
+```
+
+Available environment variables:
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `DB_HOST` | `db` | MySQL hostname (use the service name) |
+| `DB_HOST` | `ept-db` | MySQL hostname (use the service name) |
 | `DB_USER` | `root` | MySQL user |
 | `DB_PASSWORD` | `ept_secret` | MySQL password |
 | `DB_NAME` | `ept` | Database name |
@@ -106,8 +118,8 @@ Environment variables are set in `docker-compose.yml`:
 
 The Docker setup runs everything in two containers:
 
-- **app** — PHP 8.2, Apache, Node.js (for chart rendering), Composer dependencies, and a cron job for the task scheduler
-- **db** — MySQL 8.0, seeded from `sql/init.sql`
+- **ept** — PHP 8.2, Apache, Node.js (for chart rendering), Composer dependencies, and a cron job for the task scheduler
+- **ept-db** — MySQL 8.0, seeded from `sql/init.sql`
 
 On first startup, the entrypoint script automatically:
 
@@ -134,7 +146,7 @@ The following data is stored in Docker volumes and survives container restarts:
 docker compose up --build -d
 
 # View logs
-docker compose logs -f app
+docker compose logs -f ept
 
 # Stop containers
 docker compose down
@@ -143,13 +155,16 @@ docker compose down
 docker compose down -v
 
 # Run migrations manually
-docker compose exec app composer post-update
+docker compose exec ept composer post-update
+
+# Seed initial admin account (first-time setup)
+docker compose exec ept php bin/seed-admin.php
 
 # Access MySQL shell
-docker compose exec db mysql -u root -p ept
+docker compose exec ept-db mysql -u root -p ept
 
 # Access app shell
-docker compose exec app bash
+docker compose exec ept bash
 ```
 
 ### Updating (Docker)
@@ -157,14 +172,8 @@ docker compose exec app bash
 To update ePT to the latest version:
 
 ```bash
-# Pull the latest code
-git pull
-
-# Rebuild and restart containers
-docker compose up --build -d
+git pull && docker compose up --build -d && docker compose exec ept composer post-update
 ```
-
-The entrypoint script will automatically run database migrations on startup, so no manual migration step is needed.
 
 ### Importing an Existing Database
 
