@@ -1,0 +1,14 @@
+{
+  "name": "ept-charts",
+  "version": "1.0.0",
+  "description": "Server-side chart rendering for ePT reports",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node chart-render.js < chart-render-test.json > /tmp/test-chart.png && echo 'Chart rendered to /tmp/test-chart.png'"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "skia-canvas": "^1.0.2"
+  }
+}

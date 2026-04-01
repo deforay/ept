@@ -1325,30 +1325,7 @@ class Application_Service_Common
     // Convert a JSON string to a string that can be used with JSON_SET()
     public static function jsonToSetString(?string $json, string $column, $newData = []): ?string
     {
-        // Decode JSON string to array
-        $jsonData = $json && self::isJSON($json) ? json_decode($json, true) : [];
-
-        // Decode newData if it's a string
-        if (is_string($newData)) {
-            $newData = json_decode($newData, true);
-        }
-
-        // Combine original data and new data
-        $data = array_merge($jsonData, $newData);
-
-        // Return null if there's nothing to set
-        if (empty($data)) {
-            return null;
-        }
-
-        // Build the set string
-        $setString = '';
-        foreach ($data as $key => $value) {
-            $setString .= ', "$.' . $key . '", ' . self::jsonValueToString($value);
-        }
-
-        // Construct and return the JSON_SET query
-        return 'JSON_SET(COALESCE(' . $column . ', "{}")' . $setString . ')';
+        return Pt_Commons_JsonUtility::jsonToSetString($json, $column, $newData);
     }
 
     // Convert data to JSON string
@@ -1376,17 +1353,7 @@ class Application_Service_Common
     // Convert a value to a JSON-compatible string representation
     public static function jsonValueToString($value): string
     {
-        if (is_null($value)) {
-            return 'null';
-        } elseif (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        } elseif (is_numeric($value)) {
-            return (string) $value;
-        } elseif (is_array($value)) {
-            return "'" . addslashes(json_encode($value)) . "'";
-        } else {
-            return "'" . addslashes((string) $value) . "'";
-        }
+        return Pt_Commons_JsonUtility::jsonValueToString($value);
     }
 
     public static function passwordHash($password)
