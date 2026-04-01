@@ -9,12 +9,6 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 
 class Application_Service_Common
 {
-    private const EXPORTABLE_CONFIG_SCHEMES = [
-        'tb' => 'tb',
-        'vl' => 'vl',
-        'covid19' => 'covid19',
-    ];
-
     const MAIL_FAILURE_REASON_MAX = 1000;
 
     protected $db;
@@ -1888,25 +1882,29 @@ class Application_Service_Common
                 'timestamp' => time(),
                 'data' => $responseData
             ];
-            // Export files are written to disk and later downloaded directly, so the filename
-            // must come from a fixed allowlist instead of raw POST data.
-            $schemeKey = $this->resolveExportSchemeKey($data['scheme'] ?? null);
-            /* File name creation */
-            $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . '-' . time() . '-' . $schemeKey . '.json';
-            $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
-            $fp = fopen($filePath, 'w');
-            fwrite($fp, json_encode($output));
-            fclose($fp);
-            $gzdata = gzencode(file_get_contents($filePath));
-            file_put_contents($filePath . ".gz", $gzdata);
-            return $filePath . ".gz";
-        }
-    }
+            $tempDirectory = realpath(TEMP_UPLOAD_PATH);
+            if ($tempDirectory === false) {
+                throw new RuntimeException('Temporary upload path is not available for config export.');
+            }
 
-    private function resolveExportSchemeKey($scheme): string
-    {
-        $scheme = is_string($scheme) ? strtolower(trim($scheme)) : '';
-        return self::EXPORTABLE_CONFIG_SCHEMES[$scheme] ?? 'config';
+            // The export is downloaded using the returned path only, so the OS can safely generate
+            // the filename for us instead of deriving any part of it from request data.
+            $tempFilePath = tempnam($tempDirectory, 'config-export-');
+            if ($tempFilePath === false) {
+                throw new RuntimeException('Unable to create a temporary file for config export.');
+            }
+
+            $archivePath = $tempFilePath . '.gz';
+            if (!rename($tempFilePath, $archivePath)) {
+                @unlink($tempFilePath);
+                throw new RuntimeException('Unable to prepare the config export archive.');
+            }
+
+            $jsonPayload = json_encode($output);
+            $gzdata = gzencode($jsonPayload === false ? '{}' : $jsonPayload);
+            file_put_contents($archivePath, $gzdata);
+            return $archivePath;
+        }
     }
 
     public function unserializeForm($str)
