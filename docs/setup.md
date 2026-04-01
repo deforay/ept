@@ -87,7 +87,13 @@ Then access ePT at `http://localhost:3456/admin`.
 
 ### Configuration
 
-Environment variables are set in `docker-compose.yml`:
+Copy the example environment file and adjust as needed:
+
+```bash
+cp .env.example .env
+```
+
+Available environment variables:
 
 | Variable | Default | Description |
 | --- | --- | --- |
