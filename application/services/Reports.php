@@ -4983,7 +4983,7 @@ class Application_Service_Reports
         }
 
         // Get current datetime
-        $currentDateTime = date('Y-m-d H:i:s');
+        $currentDateTime = Pt_Commons_DateUtility::getCurrentDateTime();
 
         // Update based on report type
         if ($type == "individual") {
