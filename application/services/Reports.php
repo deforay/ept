@@ -4945,85 +4945,101 @@ class Application_Service_Reports
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $participantId = null;
-        // Build WHERE clause based on type
+        $currentDateTime = date('Y-m-d H:i:s');
+
         if ($type == 'summary') {
-            // Fetch mapped participants ID's
-            $sql = $dbAdapter->select()->from(array('dm' => 'data_manager'), array(''))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participant_id'))
-                ->where("dm.dm_id = ?", $authNameSpace->dm_id);
+            // Fetch mapped participant IDs for this data manager
+            $sql = $dbAdapter->select()
+                ->from(array('dm' => 'data_manager'), array(''))
+                ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id = dm.dm_id')
+                ->join(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participant_id'))
+                ->where('dm.dm_id = ?', $authNameSpace->dm_id);
+
             $mappedParticipants = $dbAdapter->fetchAll($sql);
             $participantIds = array_column($mappedParticipants, 'participant_id');
-            $participantIdsString = implode(',', $participantIds);
 
-            $where = " participant_id IN($participantIdsString) AND shipment_id = $id";
-            $currentUserId = $id;
-        } else {
-            $where = "map_id = $id";
-            $participantId = $dbAdapter->fetchOne($dbAdapter->select()
-                ->from('shipment_participant_map', ['participant_id'])
-                ->where($where));
-            $currentUserId = $participantId;
-        }
-        // Fetch existing report_download_metadata
-        $select = $dbAdapter->select()
-            ->from('shipment_participant_map', ['report_download_metadata'])
-            ->where($where);
-
-        $existingData = $dbAdapter->fetchOne($select);
-
-        // Parse existing JSON data
-        $reportData = [];
-        if (!empty($existingData)) {
-            $reportData = json_decode($existingData, true);
-            if (!is_array($reportData)) {
-                $reportData = [];
+            if (empty($participantIds)) {
+                return 0;
             }
-        }
 
-        // Get current datetime
-        $currentDateTime = date('Y-m-d H:i:s');
-        error_log($participantId);
+            // Fetch all matching rows with their existing metadata
+            $rows = $dbAdapter->fetchAll(
+                $dbAdapter->select()
+                    ->from('shipment_participant_map', array('map_id', 'participant_id', 'report_download_metadata'))
+                    ->where('participant_id IN (?)', $participantIds)
+                    ->where('shipment_id = ?', $id)
+            );
 
-        // Update based on report type
-        if ($type == "individual") {
-            // Check if first time download
-            if (
-                !isset($reportData['first_individual_report_on']) ||
-                empty($reportData['first_individual_report_on'])
-            ) {
-                // First time download - set both first and last
+            $updatedCount = 0;
+            foreach ($rows as $row) {
+                // Parse existing metadata per row (preserves each row's own data)
+                $reportData = array();
+                if (!empty($row['report_download_metadata'])) {
+                    $decoded = json_decode($row['report_download_metadata'], true);
+                    $reportData = is_array($decoded) ? $decoded : array();
+                }
+
+                $currentUserId = $row['participant_id'];
+
+                // Set first download timestamp only once
+                if (empty($reportData['first_summary_report_on'])) {
+                    $reportData['first_summary_report_on'] = $currentDateTime;
+                    $reportData['first_summary_report_by'] = $currentUserId;
+                }
+
+                // Always update latest download timestamp
+                $reportData['latest_summary_report_on'] = $currentDateTime;
+                $reportData['latest_summary_report_by'] = $currentUserId;
+                $reportData['report_downloaded'] = 'yes';
+
+                $updatedCount += $dbAdapter->update(
+                    'shipment_participant_map',
+                    array('report_download_metadata' => json_encode($reportData)),
+                    $dbAdapter->quoteInto('map_id = ?', $row['map_id'])  // Safe: update row by primary key
+                );
+            }
+
+            return $updatedCount;
+        } else {
+            // Individual report: single row identified by map_id
+            $where = $dbAdapter->quoteInto('map_id = ?', $id);
+
+            $row = $dbAdapter->fetchRow(
+                $dbAdapter->select()
+                    ->from('shipment_participant_map', array('participant_id', 'report_download_metadata'))
+                    ->where('map_id = ?', $id)
+            );
+
+            if (!$row) {
+                return 0;
+            }
+
+            // Parse existing metadata (preserves all other keys untouched)
+            $reportData = array();
+            if (!empty($row['report_download_metadata'])) {
+                $decoded = json_decode($row['report_download_metadata'], true);
+                $reportData = is_array($decoded) ? $decoded : array();
+            }
+
+            $currentUserId = $row['participant_id'];
+
+            // Set first download timestamp only once
+            if (empty($reportData['first_individual_report_on'])) {
                 $reportData['first_individual_report_on'] = $currentDateTime;
                 $reportData['first_individual_report_by'] = $currentUserId;
             }
-            // Always update last time (for first and subsequent downloads)
+
+            // Always update latest download timestamp
             $reportData['latest_individual_report_on'] = $currentDateTime;
             $reportData['latest_individual_report_by'] = $currentUserId;
-        }
-        if ($type == 'summary') {
-            // Check if first time download
-            if (
-                !isset($reportData['first_summary_report_on']) ||
-                empty($reportData['first_summary_report_on'])
-            ) {
-                // First time download - set both first and last
-                $reportData['first_summary_report_on'] = $currentDateTime;
-                $reportData['first_summary_report_by'] = $currentUserId;
-            }
-            // Always update last time (for first and subsequent downloads)
-            $reportData['latest_summary_report_on'] = $currentDateTime;
-            $reportData['latest_summary_report_by'] = $currentUserId;
-        }
-        /* To track whether the report gets downloaded or not during login redirection. */
-        $reportData['report_downloaded'] = 'yes';
+            $reportData['report_downloaded'] = 'yes';
 
-        // Prepare data for update
-        $data = [
-            'report_download_metadata' => json_encode($reportData)
-        ];
-
-        return $dbAdapter->update('shipment_participant_map', $data, $where);
+            return $dbAdapter->update(
+                'shipment_participant_map',
+                array('report_download_metadata' => json_encode($reportData)),
+                $where
+            );
+        }
     }
 
     function getParticipantShipmentPerformanceReport($parameters)
