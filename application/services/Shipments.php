@@ -1838,7 +1838,10 @@ class Application_Service_Shipments
                                 if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
                                     $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                                 }
-
+                                $testDate = '';
+                                if (trim($params['eia'][$i + 1]['test'][$e]) != "") {
+                                    $testDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['test'][$e]);
+                                }
                                 $dbAdapter->insert(
                                     'reference_dts_eia',
                                     array(
@@ -1846,6 +1849,7 @@ class Application_Service_Shipments
                                         'sample_id' => ($i + 1),
                                         'eia' => $params['eia'][$i + 1]['eia'][$e],
                                         'lot' => $params['eia'][$i + 1]['lot'][$e],
+                                        'test_date' => $testDate,
                                         'exp_date' => $expDate,
                                         'od' => $params['eia'][$i + 1]['od'][$e],
                                         'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
@@ -1865,6 +1869,10 @@ class Application_Service_Shipments
                                 if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
                                     $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                                 }
+                                $testDate = '';
+                                if (trim($params['wb'][$i + 1]['test'][$e]) != "") {
+                                    $testDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['test'][$e]);
+                                }
                                 $dbAdapter->insert(
                                     'reference_dts_wb',
                                     array(
@@ -1872,6 +1880,7 @@ class Application_Service_Shipments
                                         'sample_id' => ($i + 1),
                                         'wb' => $params['wb'][$i + 1]['wb'][$e],
                                         'lot' => $params['wb'][$i + 1]['lot'][$e],
+                                        'test_date' => $testDate,
                                         'exp_date' => $expDate,
                                         '160' => $params['wb'][$i + 1]['160'][$e],
                                         '120' => $params['wb'][$i + 1]['120'][$e],
@@ -1898,6 +1907,10 @@ class Application_Service_Shipments
                                 if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
                                     $expDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
                                 }
+                                $testDate = '';
+                                if (trim($params['rhiv'][$i + 1]['test'][$e]) != "") {
+                                    $testDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['test'][$e]);
+                                }
 
                                 $dbAdapter->insert(
                                     'reference_dts_rapid_hiv',
@@ -1906,6 +1919,7 @@ class Application_Service_Shipments
                                         'sample_id' => ($i + 1),
                                         'testkit' => $params['rhiv'][$i + 1]['kit'][$e],
                                         'lot_no' => $params['rhiv'][$i + 1]['lot'][$e],
+                                        'test_date' => $testDate,
                                         'expiry_date' => $expDate,
                                         'result' => $params['rhiv'][$i + 1]['result'][$e]
                                     )
@@ -1924,12 +1938,16 @@ class Application_Service_Shipments
                                 if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
                                     $expDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
                                 }
-
+                                $testDate = '';
+                                if (trim($params['geenius'][$i + 1]['test'][$e]) != "") {
+                                    $testDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['test'][$e]);
+                                }
                                 $id = $dbAdapter->insert(
                                     'reference_dts_geenius',
                                     array(
                                         'shipment_id' => $lastId,
                                         'sample_id' => ($i + 1),
+                                        'test_date' => $testDate,
                                         'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
                                         'expiry_date' => $expDate,
                                         'result' => $params['geenius'][$i + 1]['result'][$e]
@@ -2495,6 +2513,10 @@ class Application_Service_Shipments
                             if (trim($params['eia'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['expiry'][$e]);
                             }
+                            $testDate = '';
+                            if (trim($params['eia'][$i + 1]['test'][$e]) != "") {
+                                $testDate = Pt_Commons_DateUtility::isoDateFormat($params['eia'][$i + 1]['test'][$e]);
+                            }
                             $dbAdapter->insert(
                                 'reference_dts_eia',
                                 array(
@@ -2503,6 +2525,7 @@ class Application_Service_Shipments
                                     'eia' => $params['eia'][$i + 1]['eia'][$e],
                                     'lot' => $params['eia'][$i + 1]['lot'][$e],
                                     'exp_date' => $expDate,
+                                    'test_date' => $testDate,
                                     'od' => $params['eia'][$i + 1]['od'][$e],
                                     'cutoff' => $params['eia'][$i + 1]['cutoff'][$e],
                                     'result' => $params['eia'][$i + 1]['result'][$e],
@@ -2521,12 +2544,17 @@ class Application_Service_Shipments
                             if (trim($params['wb'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['expiry'][$e]);
                             }
+                            $testDate = '';
+                            if (trim($params['wb'][$i + 1]['test'][$e]) != "") {
+                                $testDate = Pt_Commons_DateUtility::isoDateFormat($params['wb'][$i + 1]['test'][$e]);
+                            }
                             $dbAdapter->insert(
                                 'reference_dts_wb',
                                 array(
                                     'shipment_id' => $params['shipmentId'],
                                     'sample_id' => ($i + 1),
                                     'wb' => $params['wb'][$i + 1]['wb'][$e],
+                                    'test_date' => $testDate,
                                     'lot' => $params['wb'][$i + 1]['lot'][$e],
                                     'exp_date' => $expDate,
                                     '160' => $params['wb'][$i + 1]['160'][$e],
@@ -2554,13 +2582,17 @@ class Application_Service_Shipments
                             if (trim($params['rhiv'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['expiry'][$e]);
                             }
-
+                            $testDate = '';
+                            if (trim($params['rhiv'][$i + 1]['test'][$e]) != "") {
+                                $testDate = Pt_Commons_DateUtility::isoDateFormat($params['rhiv'][$i + 1]['test'][$e]);
+                            }
                             $dbAdapter->insert(
                                 'reference_dts_rapid_hiv',
                                 array(
                                     'shipment_id' => $params['shipmentId'],
                                     'sample_id' => ($i + 1),
                                     'testkit' => $params['rhiv'][$i + 1]['kit'][$e],
+                                    'test_date' => $testDate,
                                     'lot_no' => $params['rhiv'][$i + 1]['lot'][$e],
                                     'expiry_date' => $expDate,
                                     'result' => $params['rhiv'][$i + 1]['result'][$e]
@@ -2581,12 +2613,16 @@ class Application_Service_Shipments
                             if (trim($params['geenius'][$i + 1]['expiry'][$e]) != "") {
                                 $expDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['expiry'][$e]);
                             }
-
+                            $testDate = '';
+                            if (trim($params['geenius'][$i + 1]['test'][$e]) != "") {
+                                $testDate = Pt_Commons_DateUtility::isoDateFormat($params['geenius'][$i + 1]['test'][$e]);
+                            }
                             $id = $dbAdapter->insert(
                                 'reference_dts_geenius',
                                 array(
                                     'shipment_id' => $params['shipmentId'],
                                     'sample_id' => ($i + 1),
+                                    'test_date' => $testDate,
                                     'lot_no' => $params['geenius'][$i + 1]['lot'][$e],
                                     'expiry_date' => $expDate,
                                     'result' => $params['geenius'][$i + 1]['result'][$e]
