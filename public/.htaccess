@@ -1,6 +1,7 @@
 Options -Indexes
 
 RewriteEngine On
+RewriteCond %{HTTPS} off
 # The following rule tells Apache that if the requested filename
 # exists, simply serve it.
 RewriteCond %{REQUEST_FILENAME} -s [OR]

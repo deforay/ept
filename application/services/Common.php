@@ -9,12 +9,6 @@ use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
 
 class Application_Service_Common
 {
-    private const EXPORTABLE_CONFIG_SCHEMES = [
-        'tb' => 'tb',
-        'vl' => 'vl',
-        'covid19' => 'covid19',
-    ];
-
     const MAIL_FAILURE_REASON_MAX = 1000;
 
     protected $db;
@@ -1331,30 +1325,7 @@ class Application_Service_Common
     // Convert a JSON string to a string that can be used with JSON_SET()
     public static function jsonToSetString(?string $json, string $column, $newData = []): ?string
     {
-        // Decode JSON string to array
-        $jsonData = $json && self::isJSON($json) ? json_decode($json, true) : [];
-
-        // Decode newData if it's a string
-        if (is_string($newData)) {
-            $newData = json_decode($newData, true);
-        }
-
-        // Combine original data and new data
-        $data = array_merge($jsonData, $newData);
-
-        // Return null if there's nothing to set
-        if (empty($data)) {
-            return null;
-        }
-
-        // Build the set string
-        $setString = '';
-        foreach ($data as $key => $value) {
-            $setString .= ', "$.' . $key . '", ' . self::jsonValueToString($value);
-        }
-
-        // Construct and return the JSON_SET query
-        return 'JSON_SET(COALESCE(' . $column . ', "{}")' . $setString . ')';
+        return Pt_Commons_JsonUtility::jsonToSetString($json, $column, $newData);
     }
 
     // Convert data to JSON string
@@ -1382,17 +1353,7 @@ class Application_Service_Common
     // Convert a value to a JSON-compatible string representation
     public static function jsonValueToString($value): string
     {
-        if (is_null($value)) {
-            return 'null';
-        } elseif (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        } elseif (is_numeric($value)) {
-            return (string) $value;
-        } elseif (is_array($value)) {
-            return "'" . addslashes(json_encode($value)) . "'";
-        } else {
-            return "'" . addslashes((string) $value) . "'";
-        }
+        return Pt_Commons_JsonUtility::jsonValueToString($value);
     }
 
     public static function passwordHash($password)
@@ -1888,25 +1849,29 @@ class Application_Service_Common
                 'timestamp' => time(),
                 'data' => $responseData
             ];
-            // Export files are written to disk and later downloaded directly, so the filename
-            // must come from a fixed allowlist instead of raw POST data.
-            $schemeKey = $this->resolveExportSchemeKey($data['scheme'] ?? null);
-            /* File name creation */
-            $fileName = Pt_Commons_MiscUtility::generateRandomString(12) . '-' . time() . '-' . $schemeKey . '.json';
-            $filePath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . $fileName;
-            $fp = fopen($filePath, 'w');
-            fwrite($fp, json_encode($output));
-            fclose($fp);
-            $gzdata = gzencode(file_get_contents($filePath));
-            file_put_contents($filePath . ".gz", $gzdata);
-            return $filePath . ".gz";
-        }
-    }
+            $tempDirectory = realpath(TEMP_UPLOAD_PATH);
+            if ($tempDirectory === false) {
+                throw new RuntimeException('Temporary upload path is not available for config export.');
+            }
 
-    private function resolveExportSchemeKey($scheme): string
-    {
-        $scheme = is_string($scheme) ? strtolower(trim($scheme)) : '';
-        return self::EXPORTABLE_CONFIG_SCHEMES[$scheme] ?? 'config';
+            // The export is downloaded using the returned path only, so the OS can safely generate
+            // the filename for us instead of deriving any part of it from request data.
+            $tempFilePath = tempnam($tempDirectory, 'config-export-');
+            if ($tempFilePath === false) {
+                throw new RuntimeException('Unable to create a temporary file for config export.');
+            }
+
+            $archivePath = $tempFilePath . '.gz';
+            if (!rename($tempFilePath, $archivePath)) {
+                @unlink($tempFilePath);
+                throw new RuntimeException('Unable to prepare the config export archive.');
+            }
+
+            $jsonPayload = json_encode($output);
+            $gzdata = gzencode($jsonPayload === false ? '{}' : $jsonPayload);
+            file_put_contents($archivePath, $gzdata);
+            return $archivePath;
+        }
     }
 
     public function unserializeForm($str)

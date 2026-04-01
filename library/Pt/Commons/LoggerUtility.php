@@ -61,6 +61,11 @@ final class Pt_Commons_LoggerUtility
         self::log('error', $message, $context);
     }
 
+    public static function logWarning($message, array $context = []): void
+    {
+        self::log('warning', $message, $context);
+    }
+
     public static function logInfo($message, array $context = []): void
     {
         self::log('info', $message, $context);

@@ -59,6 +59,168 @@ To update all ePT instances: `sudo ept-update -A`
 
 ---
 
+## Installing with Docker
+
+Docker provides the simplest way to get ePT running with a single command. No need to manually install PHP, Apache, MySQL, or Node.js.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed on your system
+
+### Quick Start
+
+```bash
+git clone https://github.com/deforay/ept.git
+cd ept
+docker compose up --build -d
+```
+
+Access ePT at [http://localhost/admin](http://localhost/admin) once the containers are running.
+
+To run on a custom port (e.g. 3456):
+
+```bash
+APP_PORT=3456 docker compose up --build -d
+```
+
+Then access ePT at `http://localhost:3456/admin`.
+
+### Configuration
+
+Environment variables are set in `docker-compose.yml`:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DB_HOST` | `db` | MySQL hostname (use the service name) |
+| `DB_USER` | `root` | MySQL user |
+| `DB_PASSWORD` | `ept_secret` | MySQL password |
+| `DB_NAME` | `ept` | Database name |
+| `APP_PORT` | `80` | Host port to expose the application on |
+| `APP_DOMAIN` | `http://localhost/` | Application URL |
+| `APP_HOSTNAME` | `localhost` | Domain name (used by nginx for SSL) |
+
+!!! warning "Change the default password"
+    Update `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `docker-compose.yml` before deploying to production.
+
+### What's Included
+
+The Docker setup runs everything in two containers:
+
+- **app** — PHP 8.2, Apache, Node.js (for chart rendering), Composer dependencies, and a cron job for the task scheduler
+- **db** — MySQL 8.0, seeded from `sql/init.sql`
+
+On first startup, the entrypoint script automatically:
+
+1. Generates `application.ini`, `config.ini`, and `.env` from the dist templates
+2. Injects database credentials and domain from environment variables
+3. Waits for MySQL to be ready
+4. Runs database migrations
+5. Starts the cron scheduler
+
+### Persistent Data
+
+The following data is stored in Docker volumes and survives container restarts:
+
+- `mysql_data` — database files
+- `uploads` — uploaded files
+- `logs` — application logs
+- `backups` — database backups
+- `downloads` — generated downloads
+
+### Common Commands
+
+```bash
+# Start in background
+docker compose up --build -d
+
+# View logs
+docker compose logs -f app
+
+# Stop containers
+docker compose down
+
+# Stop and remove all data (including database)
+docker compose down -v
+
+# Run migrations manually
+docker compose exec app composer post-update
+
+# Access MySQL shell
+docker compose exec db mysql -u root -p ept
+
+# Access app shell
+docker compose exec app bash
+```
+
+### Updating (Docker)
+
+To update ePT to the latest version:
+
+```bash
+# Pull the latest code
+git pull
+
+# Rebuild and restart containers
+docker compose up --build -d
+```
+
+The entrypoint script will automatically run database migrations on startup, so no manual migration step is needed.
+
+### Importing an Existing Database
+
+To import an existing SQL file instead of the bundled `init.sql`:
+
+```bash
+# Stop containers and remove old data
+docker compose down -v
+
+# Replace the init file
+cp /path/to/your-database.sql sql/init.sql
+
+# Rebuild and start
+docker compose up --build -d
+```
+
+### SSL with Let's Encrypt (Docker)
+
+For production servers with a public IP and domain name, you can enable HTTPS with automatic Let's Encrypt certificates.
+
+**Prerequisites:**
+
+- A domain name (e.g. `ept.example.org`) pointed at your server's public IP
+- Ports 80 and 443 open on the firewall
+
+**First-time setup:**
+
+```bash
+# Initialize certificates (run once)
+sudo ./docker/init-letsencrypt.sh ept.example.org admin@example.org
+
+# Start with SSL enabled
+APP_HOSTNAME=ept.example.org APP_DOMAIN=https://ept.example.org/ docker compose --profile ssl up -d
+```
+
+**How it works:**
+
+The `--profile ssl` flag adds two extra containers:
+
+- **nginx** — Reverse proxy that terminates SSL on ports 80/443 and forwards to the app
+- **certbot** — Handles Let's Encrypt certificate issuance and renewal
+
+**Certificate renewal:**
+
+Certificates are valid for 90 days. To renew:
+
+```bash
+docker compose --profile ssl run --rm certbot renew
+docker compose --profile ssl exec nginx nginx -s reload
+```
+
+!!! note "Dev mode"
+    Without `--profile ssl`, the app runs on HTTP only (on `APP_PORT`, default 80) — no nginx or certbot containers are started. This is the recommended setup for local development.
+
+---
+
 ## Installing on Windows
 
 ### 0. Download

@@ -1,0 +1,44 @@
+server {
+    listen 80;
+    server_name ${APP_HOSTNAME};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        # When SSL is enabled, redirect all HTTP to HTTPS
+        # When SSL is disabled, proxy directly to the app
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name ${APP_HOSTNAME};
+
+    ssl_certificate /etc/nginx/ssl/live/${APP_HOSTNAME}/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/${APP_HOSTNAME}/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options SAMEORIGIN always;
+
+    location / {
+        proxy_pass http://app:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300;
+        proxy_send_timeout 300;
+        client_max_body_size 500M;
+    }
+}

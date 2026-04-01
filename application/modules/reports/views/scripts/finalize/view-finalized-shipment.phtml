@@ -1,6 +1,9 @@
 <?php
 if (!empty($this->shipment)) {
-    ?>
+    $participantReportCount = (int)($this->shipmentsUnderDistro[0]['participant_report_count'] ?? 0);
+    $summaryReportCount     = (int)($this->shipmentsUnderDistro[0]['summary_report_count'] ?? 0);
+    $total                  = (int)($this->shipmentsUnderDistro[0]['participant_count'] ?? 0);
+?>
     <div class="well" style="clear: both;">
         <a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right"
             style="margin-top:-10px;">Show/Hide Shipment List</a>
@@ -27,7 +30,7 @@ if (!empty($this->shipment)) {
                 if (count($this->shipmentsUnderDistro) > 0) {
                     foreach ($this->shipmentsUnderDistro as $shipment) {
                         $reported = (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) ? $shipment['reported_count'] : 0;
-                        ?>
+                ?>
                         <tr>
                             <td style="text-align: center;"><?php echo $shipment['shipment_code'] ?></td>
                             <td style="text-align: center;"><?php echo $shipment['scheme_name'] ?></td>
@@ -41,9 +44,8 @@ if (!empty($this->shipment)) {
                                 <?php echo (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0; ?>
                             </td>
                             <td style="text-align: center;"><?php echo ucfirst($shipment['status']) ?></td>
-
                         </tr>
-                        <?php
+                    <?php
                     }
                 } else {
                     ?>
@@ -52,7 +54,7 @@ if (!empty($this->shipment)) {
                             No shipments for this PT Survey yet
                         </td>
                     </tr>
-                    <?php
+                <?php
                 }
                 ?>
             </table>
@@ -89,7 +91,6 @@ if (!empty($this->shipment)) {
 
         </tr>
     </table>
-
     <br /><br />
     <div class="summaryDivTop row" align="center">
 
@@ -101,13 +102,46 @@ if (!empty($this->shipment)) {
         <?php }
         $zipFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $this->shipment[0]['shipment_code'] . ".zip");
         if (file_exists($zipFilePath)) {
-            ?>
+        ?>
             <br><a href="<?= '/d/' . base64_encode($zipFilePath); ?>" class='btn btn-success btn-sm col-md-3' target='_blank'
                 style=' float: none; margin-top: 20px; '><i class='icon-archive'></i> &nbsp Download All Reports</a><br>
         <?php } ?>
 
     </div>
-    <br /><br />
+    <br />
+    <div class="row">
+        <!-- Individual Reports -->
+        <?php $pendingIndividual = $total - $participantReportCount; ?>
+        <div style="margin: 8px 0;" class="col-md-6">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: 600;">Participant reports downloaded</span>
+                <span>
+                    <strong><?php echo $participantReportCount; ?></strong> / <?php echo $total; ?>
+                    &nbsp;&middot;&nbsp;
+                    <span style="color: #b8860b;"><?php echo $pendingIndividual; ?> pending</span>
+                </span>
+            </div>
+            <div style="background: #e0e0e0; border-radius: 4px; height: 6px;">
+                <div style="width: <?php echo $total > 0 ? round(($participantReportCount / $total) * 100) : 0; ?>%; background: #2ecc71; border-radius: 4px; height: 6px;"></div>
+            </div>
+        </div>
+        <!-- Summary Reports -->
+        <?php $pendingSummary = $total - $summaryReportCount; ?>
+        <div style="margin: 8px 0;" class="col-md-6">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: 600;">Summary reports downloaded</span>
+                <span>
+                    <strong><?php echo $summaryReportCount; ?></strong> / <?php echo $total; ?>
+                    &nbsp;&middot;&nbsp;
+                    <span style="color: #b8860b;"><?php echo $pendingSummary; ?> pending</span>
+                </span>
+            </div>
+            <div style="background: #e0e0e0; border-radius: 4px; height: 6px;">
+                <div style="width: <?php echo $total > 0 ? round(($summaryReportCount / $total) * 100) : 0; ?>%; background: #2ecc71; border-radius: 4px; height: 6px;"></div>
+            </div>
+        </div>
+    </div>
+    <br />
     <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
         id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
@@ -121,6 +155,8 @@ if (!empty($this->shipment)) {
                 <th>Result</th>
                 <th><?= $this->translate->_("Response Status"); ?></th>
                 <th><?= $this->translate->_("Responded On"); ?></th>
+                <th style="text-align: center;"><?= $this->translate->_("Participant Report"); ?></th>
+                <th style="text-align: center;"><?= $this->translate->_("Summary Report"); ?></th>
                 <th style="display:none;">Map ID</th>
             </tr>
         </thead>
@@ -172,9 +208,9 @@ if (!empty($this->shipment)) {
                     }
                 }
 
+                $reportDownloadedOn = json_decode($shipment['report_download_metadata'], true);
 
-
-                ?>
+            ?>
                 <tr>
                     <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i
                                 class="icon-plus"></i></a></td>
@@ -188,10 +224,41 @@ if (!empty($this->shipment)) {
                     <td style="text-align:left;vertical-align:middle;">
                         <?php echo $this->dateFormat($shipment['shipment_test_report_date']); ?>
                     </td>
+                    <td style="text-align: center;">
+                        <?php if (!empty($reportDownloadedOn['first_individual_report_on']) || !empty($reportDownloadedOn['latest_individual_report_on'])) { ?>
+                            <span class="badge rounded-pill" style="background-color:#d4edda; color:#155724; font-weight:500; padding:6px 12px;">
+                                <i class="icon-check"></i> Downloaded
+                            </span><br>
+                            <strong><?php echo htmlspecialchars($shipment['individualParticipantName'] ?? ''); ?></strong><br>
+                            <small class="text-body-secondary">
+                                <?php echo $reportDownloadedOn['first_individual_report_on'] ?? $reportDownloadedOn['latest_individual_report_on']; ?>
+                            </small>
+                        <?php } else { ?>
+                            <span class="badge rounded-pill" style="background-color:#fff3cd; color:#856404; font-weight:500; padding:6px 12px;">
+                                <i class="icon-remove"></i> Not downloaded
+                            </span>
+                        <?php } ?>
+                    </td>
+
+                    <td style="text-align: center;">
+                        <?php if (!empty($reportDownloadedOn['first_summary_report_on']) || !empty($reportDownloadedOn['latest_summary_report_on'])) { ?>
+                            <span class="badge rounded-pill" style="background-color:#d4edda; color:#155724; font-weight:500; padding:6px 12px;">
+                                <i class="icon-check"></i> Downloaded
+                            </span><br>
+                            <strong><?php echo htmlspecialchars($shipment['summaryParticipantName'] ?? ''); ?></strong><br>
+                            <small class="text-body-secondary">
+                                <?php echo $reportDownloadedOn['first_summary_report_on'] ?? $reportDownloadedOn['latest_summary_report_on']; ?>
+                            </small>
+                        <?php } else { ?>
+                            <span class="badge rounded-pill" style="background-color:#fff3cd; color:#856404; font-weight:500; padding:6px 12px;">
+                                <i class="icon-remove"></i> Not downloaded
+                            </span>
+                        <?php } ?>
+                    </td>
                     <td style="display:none;"><?php echo $shipment['map_id']; ?></td>
 
                 </tr>
-                <?php
+            <?php
             }
             $evSession = new Zend_Session_Namespace('evalShipmentList');
             $evSession->editUrlList = $editList;
@@ -208,14 +275,14 @@ if (!empty($this->shipment)) {
         <?php
         $currentDate = date('Y-m-d');
         if ($this->shipment[0]['distribution_date'] < $currentDate) {
-            ?>
+        ?>
             checkReportDate = true;
-            <?php
+        <?php
         }
         ?>
-        $(document).ready(function () {
+        $(document).ready(function() {
 
-            $('#shipmentEvaluation').on('click', ".clicker", function () {
+            $('#shipmentEvaluation').on('click', ".clicker", function() {
                 nTr = $(this).parents('tr')[0];
                 aData = oTable.fnGetData(nTr);
                 if (oTable.fnIsOpen(nTr)) {
@@ -254,37 +321,43 @@ if (!empty($this->shipment)) {
                 "sPaginationType": "bootstrap",
                 "bRetrieve": true,
                 "aoColumns": [{
-                    "bSortable": false,
-                    "aTargets": [0]
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": ""
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "sClass": "center"
-                },
-                {
-                    "bSearchable": false,
-                    "bVisible": false
-                }
+                        "bSortable": false,
+                        "aTargets": [0]
+                    },
+                    {
+                        "sClass": ""
+                    },
+                    {
+                        "sClass": ""
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "sClass": "center"
+                    },
+                    {
+                        "bSearchable": false,
+                        "bVisible": false
+                    }
                 ],
                 "aaSorting": [
                     [1, "asc"]
@@ -300,12 +373,14 @@ if (!empty($this->shipment)) {
             // Load corrective actions via AJAX
             $.ajax({
                 url: '/common/get-corrective-actions/mid/' + mapId,
-                data: { format: 'html' },
+                data: {
+                    format: 'html'
+                },
                 async: false,
-                success: function (html) {
+                success: function(html) {
                     sOut = '<div style="padding-left:50px;">' + html + '</div>';
                 },
-                error: function () {
+                error: function() {
                     sOut = '<div class="text-muted">Failed to load corrective actions</div>';
                 }
             });

@@ -49,8 +49,6 @@ scheduled-jobs/reminder.php
 errors.log
 cypress.config.js
 scheduled-jobs/*.docx
-package-lock.json
-package.json
 chart-render-test.json
 rector.php
 .env
