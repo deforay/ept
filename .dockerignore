@@ -12,3 +12,4 @@ application/configs/config.ini
 application/configs/.env
 *.log
 .DS_Store
+docker/certbot/

@@ -57,7 +57,7 @@ COPY . .
 RUN composer install --prefer-dist --no-dev --no-interaction --optimize-autoloader
 
 # Install Node dependencies for chart rendering
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Create required directories
 RUN mkdir -p application/cache logs downloads backups public/temporary public/uploads

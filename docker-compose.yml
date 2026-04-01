@@ -2,14 +2,14 @@ services:
   app:
     build: .
     ports:
-      - "80:80"
+      - "${APP_PORT:-80}:80"
     environment:
       - APPLICATION_ENV=production
       - DB_HOST=db
       - DB_USER=root
       - DB_PASSWORD=ept_secret
       - DB_NAME=ept
-      - APP_DOMAIN=http://localhost/
+      - APP_DOMAIN=${APP_DOMAIN:-http://localhost/}
     volumes:
       - uploads:/var/www/ept/public/uploads
       - logs:/var/www/ept/logs
@@ -41,6 +41,31 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./docker/certbot/conf:/etc/nginx/ssl:ro
+      - ./docker/certbot/www:/var/www/certbot:ro
+    environment:
+      - APP_HOSTNAME=${APP_HOSTNAME:-localhost}
+    depends_on:
+      - app
+    restart: unless-stopped
+    profiles:
+      - ssl
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    profiles:
+      - ssl
 
 volumes:
   mysql_data:
