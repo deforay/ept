@@ -23,7 +23,7 @@ ENV NODE_VERSION=22.15.0
 RUN ARCH=$(dpkg --print-architecture) \
     && if [ "$ARCH" = "amd64" ]; then NODEARCH=x64; elif [ "$ARCH" = "arm64" ]; then NODEARCH=arm64; fi \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODEARCH}.tar.xz" \
-       | tar -xJ -C /usr/local --strip-components=1 \
+    | tar -xJ -C /usr/local --strip-components=1 \
     && node --version && npm --version
 
 # Composer
@@ -34,14 +34,14 @@ RUN echo '<VirtualHost *:80>\n\
     ServerName localhost\n\
     DocumentRoot /var/www/ept/public\n\
     <Directory /var/www/ept/public>\n\
-        AddDefaultCharset UTF-8\n\
-        Options -Indexes -MultiViews +FollowSymLinks\n\
-        AllowOverride All\n\
-        Require all granted\n\
+    AddDefaultCharset UTF-8\n\
+    Options -Indexes -MultiViews +FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
     </Directory>\n\
     ErrorLog ${APACHE_LOG_DIR}/ept-error.log\n\
     CustomLog ${APACHE_LOG_DIR}/ept-access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # PHP production config
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"

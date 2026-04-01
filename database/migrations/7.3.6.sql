@@ -4,3 +4,11 @@ UPDATE `system_config` SET `value` = '7.3.6' WHERE `config` = 'app_version';
 
 -- Thana -30-Mar-2026
 ALTER TABLE `reference_result_dts` ADD `is_sample_diluted` VARCHAR(50) NULL DEFAULT NULL AFTER `mandatory`;
+
+
+-- Jeyabanu 31-Mar-2026
+ALTER TABLE `reference_dts_eia` ADD `test_date` DATE NULL DEFAULT NULL AFTER `eia`;
+ALTER TABLE `reference_dts_wb` ADD `test_date` DATE NULL DEFAULT NULL AFTER `wb`;
+ALTER TABLE `reference_dts_rapid_hiv` ADD `test_date` DATE NULL DEFAULT NULL AFTER `testkit`;
+ALTER TABLE `reference_dts_geenius` ADD `test_date` DATE NULL DEFAULT NULL AFTER `sample_id`;
+
