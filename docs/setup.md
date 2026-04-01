@@ -172,8 +172,10 @@ docker compose exec ept bash
 To update ePT to the latest version:
 
 ```bash
-git pull && docker compose up --build -d && docker compose exec ept composer post-update
+git pull && docker compose up --build -d
 ```
+
+The entrypoint script automatically runs `composer post-update` (migrations, collation fixes, etc.) on every container start.
 
 ### Importing an Existing Database
 
