@@ -13,6 +13,19 @@ if ($adminSession->privileges != "") {
 	$privileges = [];
 }
 $overrideStatus = "no";
+$shipmentAttributesRaw = $this->shipment[0]['shipment_attributes'] ?? '';
+$shipmentAttributesDecoded = [];
+$shipmentAttributesDisplay = '';
+
+// Show shipment attributes as formatted JSON for admin debugging without affecting the default page flow.
+if ($shipmentAttributesRaw !== '') {
+	$shipmentAttributesDecoded = json_decode($shipmentAttributesRaw, true);
+	if (json_last_error() === JSON_ERROR_NONE) {
+		$shipmentAttributesDisplay = json_encode($shipmentAttributesDecoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+	} else {
+		$shipmentAttributesDisplay = $shipmentAttributesRaw;
+	}
+}
 
 ?>
 <style>
@@ -294,6 +307,16 @@ $overrideStatus = "no";
 		$columns = '{"bSortable": false, "aTargets": [ 0 ] },{"sClass":""},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"bSearchable": false, "bVisible": false},{"sClass":"center","bSortable":false}';
 	}
 	?>
+	<?php if ($shipmentAttributesDisplay !== '') { ?>
+		<div style="margin-top:20px; text-align:right;">
+			<a href="javascript:void(0);" onclick="$('#shipmentAttributesDebug').slideToggle();" style="font-size:11px; color:#777; text-decoration:none;">
+				<?= $this->translate->_("shipment attributes"); ?>
+			</a>
+		</div>
+		<div id="shipmentAttributesDebug" style="display:none; margin-top:6px;">
+			<pre style="margin:0; padding:10px; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:11px; color:#666; background:#f8f8f8; border:1px dashed #ddd;"><?php echo $this->escape($shipmentAttributesDisplay); ?></pre>
+		</div>
+	<?php } ?>
 	<script type="text/javascript" charset="utf-8">
 		var oTable = null;
 		var nTr = null;

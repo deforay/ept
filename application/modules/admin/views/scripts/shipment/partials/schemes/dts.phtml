@@ -43,10 +43,6 @@ if (isset($dtsConfig->allowedAlgorithms)) {
         ? $dtsConfig->allowedAlgorithms
         : explode(",", $dtsConfig->allowedAlgorithms);
 }
-$dtsSchemeType = isset($dtsConfig['dtsSchemeType']) ? $dtsConfig['dtsSchemeType'] : 'standard';
-$reportVersion = isset($dtsConfig['reportVersion']) ? $dtsConfig['reportVersion'] : '';
-$effectiveDate = isset($dtsConfig['effectiveDate']) ? $dtsConfig['effectiveDate'] : '';
-$rtriEnabled = isset($dtsConfig['rtriEnabled']) ? $dtsConfig['rtriEnabled'] : 'no';
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
@@ -57,6 +53,12 @@ if ($isEditMode) {
         ? json_decode($this->shipmentData['shipment']['shipment_attributes'], true)
         : [];
 }
+
+// Shipment-level defaults come from config for ADD mode, but EDIT mode must reflect saved shipment attributes.
+$dtsSchemeType = $shipmentAttribute['dtsSchemeType'] ?? ($dtsConfig['dtsSchemeType'] ?? 'standard');
+$reportVersion = $shipmentAttribute['reportVersion'] ?? ($dtsConfig['reportVersion'] ?? '');
+$effectiveDate = $shipmentAttribute['effectiveDate'] ?? ($dtsConfig['effectiveDate'] ?? '');
+$rtriEnabled = $shipmentAttribute['enableRtri'] ?? ($dtsConfig['rtriEnabled'] ?? 'no');
 
 // Normalize possible results
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];

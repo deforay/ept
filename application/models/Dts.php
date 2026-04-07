@@ -147,6 +147,7 @@ final class Application_Model_Dts
 		$recommendedTestkits = $context['recommendedTestkits'];
 		$finalResultArray = $context['finalResultArray'];
 		$shipmentAttributes = $context['shipmentAttributes'];
+		$noOfTestsInPanel = (int)($shipmentAttributes['noOfTestsInPanel'] ?? 0);
 		$dtsSchemeType = $context['dtsSchemeType'];
 		$syphilisEnabled = $context['syphilisEnabled'];
 		$rtriEnabled = $context['rtriEnabled'];
@@ -432,6 +433,7 @@ final class Application_Model_Dts
 				// getting results from test_result_1 and test_result_2 : R, NR, I or -
 				$result1 = $this->getResultCodeFromId($result['test_result_1'] ?? '');
 				$result2 = $this->getResultCodeFromId($result['test_result_2'] ?? '');
+				$repeatResult1 = $this->getResultCodeFromId($result['repeat_test_result_1'] ?? '');
 
 
 				// getting results from test_result_1 and test_result_2 : R, NR, I or -
@@ -489,6 +491,7 @@ final class Application_Model_Dts
 					$result3,
 					$reportedResultCode,
 					$expectedResultCode ?? null,
+					$noOfTestsInPanel,
 					$repeatResult1,
 					$repeatResult2,
 					$isScreening,
@@ -2275,6 +2278,7 @@ final class Application_Model_Dts
 		?string $result3,
 		?string $reportedResultCode,
 		?string $expectedResultCode,
+		int $noOfTestsInPanel = 0,
 		string $repeatResult1 = '-',
 		string $repeatResult2 = '-',
 		bool $isScreening = false,
@@ -2377,11 +2381,12 @@ final class Application_Model_Dts
 				$result,
 				$result1,
 				$result2,
+				$result3,
 				$reportedResultCode,
-				$repeatResult1,
-				$repeatResult2,
+				$noOfTestsInPanel,
 				$correctiveActions,
-				$out
+				$out,
+				$repeatResult1
 			);
 			return $out;
 		}
@@ -2698,16 +2703,21 @@ final class Application_Model_Dts
 		array $result,
 		?string $result1,
 		?string $result2,
+		?string $result3,
 		?string $reportedResultCode,
-		string $repeatResult1,
-		string $repeatResult2,
+		int $noOfTestsInPanel,
 		array $correctiveActions,
-		array &$out
+		array &$out,
+		?string $repeatResult1 = '-'
 	) {
 		$result1 = $this->normalizeAlgoResult($result1);
 		$result2 = $this->normalizeAlgoResult($result2);
+		$result3 = $this->normalizeAlgoResult($result3);
+		$repeatResult1 = $this->normalizeAlgoResult($repeatResult1);
+		$isThreeTestPanel = ($noOfTestsInPanel === 3);
+
 		if ($result1 === 'NR' && $reportedResultCode === 'N') {
-			if ($result2 === '-' && $repeatResult1 === '-' && $repeatResult2 === '-') {
+			if ($result2 === '-' && $repeatResult1 === '-' && (!$isThreeTestPanel || $result3 === '-')) {
 				$out['algoResult'] = 'Pass';
 				return;
 			}
@@ -2715,24 +2725,17 @@ final class Application_Model_Dts
 		}
 
 		if ($result1 === 'R') {
-			if ($result2 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-' && $repeatResult2 === '-') {
+			// Malawi can run as a 2-test or 3-test panel; Bioline is required only for 3-test panels.
+			if ($result2 === 'R' && $reportedResultCode === 'P' && $repeatResult1 === '-' && (!$isThreeTestPanel || $result3 === 'R')) {
 				$out['algoResult'] = 'Pass';
 				return;
 			}
 			if ($result2 === 'NR') {
-				if ($repeatResult1 === 'NR' && $repeatResult2 === 'NR' && $reportedResultCode === 'N') {
+				if ((!$isThreeTestPanel || $result3 === '-') && $repeatResult1 === 'NR' && $reportedResultCode === 'N') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
-				if ($repeatResult1 === 'R' && $repeatResult2 === 'R' && $reportedResultCode === 'P') {
-					$out['algoResult'] = 'Pass';
-					return;
-				}
-				if ($repeatResult1 === 'R' && $repeatResult2 === 'NR' && $reportedResultCode === 'I') {
-					$out['algoResult'] = 'Pass';
-					return;
-				}
-				if ($repeatResult1 === 'NR' && $repeatResult2 === 'N' && $reportedResultCode === 'I') {
+				if ((!$isThreeTestPanel || $result3 === '-') && $repeatResult1 === 'R' && $reportedResultCode === 'I') {
 					$out['algoResult'] = 'Pass';
 					return;
 				}
@@ -2740,6 +2743,8 @@ final class Application_Model_Dts
 			}
 			return $this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
 		}
+
+		$this->warningForAlgo($out, $correctiveActions, $result['sample_label'] ?? '');
 	}
 
 	/** Ghana (HIV algo) */
