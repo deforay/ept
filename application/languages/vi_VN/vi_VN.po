@@ -532,7 +532,7 @@ msgstr "N/A"
 
 #: application/languages/db-translation-strings.php:250
 msgid "NEGATIVE"
-msgstr "TIÊU CỰC"
+msgstr "ÂM TÍNH"
 
 #: application/languages/db-translation-strings.php:252
 msgid "negative"
@@ -749,7 +749,7 @@ msgstr "PMTCT"
 
 #: application/languages/db-translation-strings.php:334
 msgid "POSITIVE"
-msgstr "TÍCH CỰC"
+msgstr "DƯƠNG TÍNH"
 
 #: application/languages/db-translation-strings.php:336
 msgid "positive"
