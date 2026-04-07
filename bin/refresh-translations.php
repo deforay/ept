@@ -7,16 +7,17 @@ if (php_sapi_name() !== 'cli') {
     exit(0);
 }
 
-$options = getopt('', ['locale::', 'table::', 'help']);
+$options = getopt('', ['locale::', 'table::', 'skip-ai', 'help']);
 
 if (isset($options['help'])) {
     echo <<<TXT
 Usage:
-  php bin/refresh-translations.php [--locale=fr_FR] [--table=r_possibleresult]
+  php bin/refresh-translations.php [--locale=fr_FR] [--table=r_possibleresult] [--skip-ai]
 
 Options:
   --locale   Refresh one or more locales. Repeat the flag to pass multiple locales.
   --table    Limit DB string regeneration to one or more r_* tables for debugging.
+  --skip-ai  Skip optional AI pre-translation even if AI credentials are configured.
   --help     Show this help text.
 
 TXT;
@@ -61,6 +62,7 @@ const EXTRA_SOURCE_FILES = [
 try {
     $requestedLocales = normalizeLocaleFilter($options['locale'] ?? []);
     $requestedTables = normalizeTableFilter($options['table'] ?? []);
+    $shouldRunAi = isAiPretranslationConfigured() && !isset($options['skip-ai']);
 
     assertGettextBinariesAvailable();
 
@@ -96,6 +98,12 @@ try {
         foreach ($locales as $locale => $poFile) {
             echo "Merging locale {$locale}" . PHP_EOL;
             mergeCatalog($poFile, $potFile);
+
+            if ($shouldRunAi) {
+                runAiPretranslation($locale);
+                continue;
+            }
+
             compileCatalog($poFile, localePoToMoPath($poFile));
         }
     } finally {
@@ -345,6 +353,20 @@ function mergeCatalog(string $poFile, string $potFile): void
         $potFile,
     ];
 
+    runCommand($command);
+}
+
+function isAiPretranslationConfigured(): bool
+{
+    return trim((string)getenv('EPT_AI_API_URL')) !== ''
+        && trim((string)getenv('EPT_AI_API_KEY')) !== ''
+        && trim((string)getenv('EPT_AI_MODEL')) !== '';
+}
+
+function runAiPretranslation(string $locale): void
+{
+    $command = ['php', ROOT_PATH . '/bin/ai-pretranslate.php', '--locale=' . $locale];
+    echo "AI pre-translating locale {$locale}" . PHP_EOL;
     runCommand($command);
 }
 

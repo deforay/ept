@@ -135,6 +135,9 @@ php bin/refresh-translations.php --locale=fr_FR
 
 # Refresh only one DB lookup table while debugging
 php bin/refresh-translations.php --table=r_possibleresult
+
+# Skip optional AI prefill even if AI credentials are configured
+php bin/refresh-translations.php --skip-ai
 ```
 
 What it does:
@@ -142,6 +145,7 @@ What it does:
 - regenerates DB-backed translation strings from configured `r_*` tables
 - updates `.po` files with new source strings
 - recompiles `.mo` files
+- optionally prefills empty translations if AI environment variables are configured
 
 Typical maintainer workflow:
 

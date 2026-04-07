@@ -292,6 +292,7 @@ Important behavior:
 - New strings are added to `.po` files for later review
 - Removed strings are handled by normal gettext merge behavior
 - The script prepares the files; Poedit is where in-country maintainers do the actual translation work
+- If AI credentials are configured, the refresh command can also prefill empty translations before compiling `.mo`
 
 ### Optional Flags
 
@@ -305,6 +306,12 @@ Refresh only one DB lookup table while debugging:
 
 ```bash
 php bin/refresh-translations.php --table=r_possibleresult
+```
+
+Skip AI even when AI credentials are configured:
+
+```bash
+php bin/refresh-translations.php --skip-ai
 ```
 
 ### Manual Editing Still Works
@@ -337,6 +344,25 @@ For in-country maintainers, the recommended process is:
 2. Open the locale `.po` file in Poedit
 3. Translate the newly added entries
 4. Save and test the application in that language
+
+### Optional AI Prefill
+
+If these environment variables are set on an instance:
+
+- `EPT_AI_API_URL`
+- `EPT_AI_API_KEY`
+- `EPT_AI_MODEL`
+
+then `php bin/refresh-translations.php` will automatically run an AI prefill step after merging `.po` files.
+
+How it works:
+
+- only empty singular `msgstr` entries are filled
+- existing human translations are never overwritten
+- the business context is loaded from this translation guide and sent with the request
+- `.mo` files are compiled after the AI update
+
+This keeps the manual Poedit workflow intact while reducing repetitive translation work for small deltas.
 
 They do not need to understand gettext internals, POT files, or command-line translation tools.
 
