@@ -3442,6 +3442,8 @@ class Application_Service_Evaluation
 			$btnClassName = "btn-success";
 			if (isset($aRow['final_result']) && $aRow['final_result'] == 2) {
 				$btnClassName = "btn-danger";
+			} elseif (isset($aRow['final_result']) && $aRow['final_result'] == 3) {
+				$btnClassName = "btn-default";
 			} elseif (!empty($aRow['failure_reason'])) {
 				$warnings = json_decode($aRow['failure_reason'], true);
 				if (!empty($warnings)) {
@@ -3462,10 +3464,13 @@ class Application_Service_Evaluation
 			if (isset($aRow['final_result']) && $aRow['final_result'] != "" && $aRow['final_result'] != 0) {
 				$resultText = $aRow['result_name'] ?? 'Not Evaluated';
 			}
+			if ($resultText === 'Not Evaluated') {
+				$btnClassName = "btn-default";
+			}
 
 			// Format the row data
 			$row[] = $aRow['map_id']; // Hidden column for expand functionality
-			$row[] = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '"><i class="icon-plus"></i></a>';
+			$row[] = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '"><i class="icon-plus"></i></a>';
 			$row[] = htmlspecialchars($aRow['first_name'] . ' ' . $aRow['last_name'] . ' (' . $aRow['unique_identifier'] . ')');
 			$row[] = htmlspecialchars($aRow['state'] ?? '');
 			$row[] = htmlspecialchars($aRow['district'] ?? '');

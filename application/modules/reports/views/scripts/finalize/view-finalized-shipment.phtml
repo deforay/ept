@@ -174,8 +174,15 @@ if (!empty($this->shipment)) {
                 // Store map_id for AJAX loading of corrective actions (loaded on-demand)
                 $warnings = json_decode($shipment['failure_reason'] ?? '', true);
 
+                $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated';
+
                 if (isset($shipment['display_result']) && $shipment['display_result'] == "Fail") {
                     $btnClassName = "btn-danger";
+                } elseif ((isset($shipment['final_result']) && $shipment['final_result'] == 3) || $finalResult === 'Excluded') {
+                    $btnClassName = "btn-default";
+                    $finalResult = 'Excluded';
+                } elseif ($finalResult === 'Not Evaluated') {
+                    $btnClassName = "btn-default";
                 } elseif (isset($warnings) && count($warnings) > 0) {
                     $btnClassName = "btn-warning";
                 }
@@ -191,10 +198,6 @@ if (!empty($this->shipment)) {
                 } else {
                     $responseStatus = "Not Tested";
                 }
-
-
-                $finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != "" && $shipment['final_result'] != 0) ? $shipment['result_name'] : 'Not Evaluated';
-
                 $individualReport = "";
                 if ($shipment['status'] == 'finalized') {
                     $invididualFilePath = (DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . "reports" . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . "-" . $shipment['map_id'] . ".pdf");
@@ -212,7 +215,7 @@ if (!empty($this->shipment)) {
 
             ?>
                 <tr>
-                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"><i
+                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>" data-btn-class="<?php echo $btnClassName; ?>"><i
                                 class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="vertical-align:middle;"><?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?></td>
@@ -291,13 +294,10 @@ if (!empty($this->shipment)) {
                     $(this).find('i').removeClass("icon-minus");
                     //$(this).removeClass('btn-danger');
 
-                    if (aData[6] == "Fail") {
-                        $(this).addClass('btn-danger');
-                    } else if (aData[7] == "") {
-                        $(this).addClass('btn-success');
-                    } else {
-                        $(this).addClass('btn-warning');
-                    }
+                    // Preserve the original state color so excluded / not evaluated rows stay neutral.
+                    $(this)
+                        .removeClass('btn-success btn-danger btn-warning btn-default')
+                        .addClass($(this).data('btn-class'));
 
                     oTable.fnClose(nTr);
                 } else {

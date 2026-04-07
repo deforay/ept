@@ -122,6 +122,15 @@ $renderTestPanelTypeSection = $isEditMode ? in_array('updated-3-tests', $possibl
 $renderSampleDilutedSection = $isEditMode ? in_array('vietnam', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'vietnam');
 $view = $this;
 
+/**
+ * The Vietnam workflow only needs dilution metadata for plasma samples.
+ * This shared rule keeps add/edit rendering and client-side refresh logic aligned.
+ */
+function isSampleDilutedColumnVisible(?string $schemeType, ?string $sampleType): bool
+{
+    return $schemeType === 'vietnam' && $sampleType === 'plasma';
+}
+
 
 // Normalize possible results
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];
@@ -214,6 +223,7 @@ $testResultsOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'")
 $finalResultsOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $finalResultsOptions);
 //echo "<pre>"; print_r($wbChoicesJs); die;
 // Determine visibility states
+
 $showSyphilis = $isEditMode
     ? (($effectiveSettings['enableSyphilis'] ?? null) == 'yes')
     : false;
@@ -223,9 +233,8 @@ $showRtri = $isEditMode
 $showTestPanelType = $isEditMode
     ? (($effectiveSettings['screeningTest'] ?? null) == 'no')
     : true;
-$showSampleDiluted = ($dtsSchemeType == 'vietnam')
-    && $isEditMode
-    && (($effectiveSettings['sampleType'] ?? null) == 'plasma');
+$showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType, $effectiveSettings['sampleType'] ?? null);
+
 ?>
 
 <style type="text/css">
@@ -263,9 +272,11 @@ $showSampleDiluted = ($dtsSchemeType == 'vietnam')
 </style>
 
 <?php
-if ($isEditMode) { ?>
-    <input type="hidden" name="dtsSchemeType" id="dtsSchemeType" value="<?php echo $this->escape($dtsSchemeType); ?>" />
-<?php }
+// The sample dilution toggle needs the effective scheme type in both add and edit flows.
+?>
+<input type="hidden" name="dtsSchemeType" id="dtsSchemeType" value="<?php echo $this->escape($dtsSchemeType); ?>" />
+
+<?php
 
 // ============================================================================
 // ============================================================================
@@ -402,7 +413,8 @@ if ($renderNoOfTestsSection) { ?>
 // TEST PANEL TYPE (updated-3-tests scheme type only)
 // ============================================================================
 if ($renderTestPanelTypeSection) { ?>
-    <div class="form-group dtsTestPanelType dts-setting-row" data-setting-key="dtsTestPanelType" data-scheme-section="updated-3-tests" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
+    <div class="form-group dtsTestPanelType dts-setting-row" data-setting-key="dtsTestPanelType"
+        data-scheme-section="updated-3-tests" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
         <label class="col-lg-3 control-label" for="dtsTestPanelType">
             <?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?>
         </label>
@@ -499,7 +511,7 @@ if ($renderTestPanelTypeSection) { ?>
                 $rtriResult = $reference['dts_rtri_reference_result'] ?? '';
                 $control = $reference['control'] ?? 0;
                 $mandatory = $reference['mandatory'] ?? 1;
-        ?>
+                ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -523,7 +535,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                            <?php endif;
+                                <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -535,7 +547,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                            <?php endif;
+                                <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -547,7 +559,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                            <?php endif;
+                                <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -580,7 +592,7 @@ if ($renderTestPanelTypeSection) { ?>
                             <option value="yes" <?php echo (isset($reference['is_sample_diluted']) && $reference['is_sample_diluted'] == 'yes') ? "selected='selected'" : ""; ?>>
                                 <?= $this->translate->_("Yes"); ?>
                             </option>
-                            <option value="no" <?php echo (isset($reference['is_sample_diluted']) && $reference['is_sample_diluted'] == 'no') ? "selected='selected'" : ""; ?>>
+                            <option value="no" <?php echo (!isset($reference['is_sample_diluted']) || $reference['is_sample_diluted'] == 'no') ? "selected='selected'" : ""; ?>>
                                 <?= $this->translate->_("No"); ?>
                             </option>
                         </select>
@@ -602,7 +614,7 @@ if ($renderTestPanelTypeSection) { ?>
                         <?php include dirname(__FILE__) . '/_dts-sample-modal.phtml'; ?>
                     </td>
                 </tr>
-            <?php
+                <?php
                 $counter++;
             endforeach;
         else:
@@ -653,7 +665,7 @@ if ($renderTestPanelTypeSection) { ?>
                         title="Please choose whether this sample is diluted">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="yes"><?= $this->translate->_("Yes"); ?></option>
-                        <option value="no"><?= $this->translate->_("No"); ?></option>
+                        <option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>
                     </select>
                 </td>
                 <td>
@@ -700,18 +712,29 @@ if ($renderTestPanelTypeSection) { ?>
                     $savedValue = $savedSettings[$settingKey] ?? '';
                     $configValue = $configSettings[$settingKey] ?? '';
                     $hasConfigValue = $configValue !== null && $configValue !== '';
+                    $settingTargetMap = [
+                        'sampleType' => 'dtsSampleType',
+                        'collect_qc_data' => 'collectQcData',
+                    ];
                     if ($savedValue === null && !$hasConfigValue) {
                         continue;
                     }
                     ?>
                     <tr>
                         <td><?php echo $this->escape($advancedSettingLabels[$settingKey] ?? $settingKey); ?></td>
-                        <td><?php echo $savedValue !== null && $savedValue !== '' ? $this->escape((string)$savedValue) : '<span style="color:#999;">' . $this->translate->_("Not set") . '</span>'; ?></td>
-                        <td><?php echo $hasConfigValue ? $this->escape((string)$configValue) : '<span style="color:#999;">' . $this->translate->_("Not available") . '</span>'; ?></td>
+                        <td><?php echo $savedValue !== null && $savedValue !== '' ? $this->escape((string) $savedValue) : '<span style="color:#999;">' . $this->translate->_("Not set") . '</span>'; ?>
+                        </td>
+                        <td><?php echo $hasConfigValue ? $this->escape((string) $configValue) : '<span style="color:#999;">' . $this->translate->_("Not available") . '</span>'; ?>
+                        </td>
                         <td>
-                            <select class="form-control input-sm dts-setting-source" data-setting-key="<?php echo $this->escape($settingKey); ?>" data-target-id="<?php echo $this->escape($settingKey); ?>" title="<?= $this->translate->_("Choose whether to retain the saved shipment value or use the current config value"); ?>">
+                            <select class="form-control input-sm dts-setting-source"
+                                data-setting-key="<?php echo $this->escape($settingKey); ?>"
+                                data-target-id="<?php echo $this->escape($settingTargetMap[$settingKey] ?? $settingKey); ?>"
+                                title="<?= $this->translate->_("Choose whether to retain the saved shipment value or use the current config value"); ?>">
                                 <option value="saved"><?= $this->translate->_("Retain Saved"); ?></option>
-                                <option value="config" <?= $hasConfigValue ? '' : 'disabled="disabled"' ?>><?= $this->translate->_("Use System Config"); ?></option>
+                                <option value="config" <?= $hasConfigValue ? '' : 'disabled="disabled"' ?>>
+                                    <?= $this->translate->_("Use System Config"); ?>
+                                </option>
                             </select>
                         </td>
                     </tr>
@@ -727,10 +750,11 @@ if ($renderTestPanelTypeSection) { ?>
 <script type="text/javascript">
     var sampleCounter = <?php echo $isEditMode && count($samples) > 0 ? count($samples) : 1; ?>;
     var isSampleDilutedVisible = <?php echo $renderSampleDilutedSection ? 'true' : 'false'; ?>;
+    var initialSampleDilutedVisible = <?php echo $showSampleDiluted ? 'true' : 'false'; ?>;
     var dtsSavedSettings = <?php echo json_encode($savedSettings); ?>;
     var dtsConfigSettings = <?php echo json_encode($configSettings); ?>;
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         function getEffectiveSetting(settingKey) {
             var selector = $('.dts-setting-source[data-setting-key="' + settingKey + '"]');
             var source = selector.length ? selector.val() : 'saved';
@@ -767,7 +791,7 @@ if ($renderTestPanelTypeSection) { ?>
             var enableSyphilis = $('#enableSyphilis').val();
             var enableRtri = $('#enableRtri').val();
 
-            $('[data-scheme-section]').each(function() {
+            $('[data-scheme-section]').each(function () {
                 var allowedSchemes = String($(this).data('scheme-section')).split(' ');
                 $(this).toggle($.inArray(schemeType, allowedSchemes) !== -1);
             });
@@ -783,31 +807,22 @@ if ($renderTestPanelTypeSection) { ?>
             }
         }
 
-        $('#toggleAdvancedDtsSettings').on('click', function() {
+        $('#toggleAdvancedDtsSettings').on('click', function () {
             $('#advancedDtsSettingsPanel').slideToggle();
             $('.advanced-config-source').slideToggle();
         });
 
-        $('.dts-setting-source').on('change', function() {
+        $('.dts-setting-source').on('change', function () {
             applyEffectiveSetting($(this).data('setting-key'));
             refreshDtsSettingVisibility();
         });
 
-        // Sample Diluted toggle (Vietnam scheme + plasma only)
-        $("#dtsSampleType").change(function() {
-            if ($(this).val() == "plasma" && isSampleDilutedVisible && $('#dtsSchemeType').val() == 'vietnam') {
-                $(".sample-diluted-input").show();
-            } else {
-                $(".sample-diluted-input").hide();
+        $("#dtsSampleType").change(function () {
+            refreshDtsSettingVisibility();
+            if (!$(".sample-diluted-input").is(':visible')) {
                 $("select[name='isSampleDiluted[]']").val('');
             }
         });
-        // On page load in edit mode, reflect saved state
-        <?php if ($isEditMode): ?>
-            if ($("#dtsSampleType").val() == "plasma" && isSampleDilutedVisible && $('#dtsSchemeType').val() == 'vietnam') {
-                $(".sample-diluted-input").show();
-            }
-        <?php endif; ?>
 
         <?php if ($isEditMode && count($samples) > 0): ?>
             // EDIT mode: Initialize modals for existing samples (blocks are already in HTML)
@@ -822,7 +837,7 @@ if ($renderTestPanelTypeSection) { ?>
         });
 
         // Syphilis toggle
-        $("#enableSyphilis").change(function() {
+        $("#enableSyphilis").change(function () {
             if ($(this).val() == "yes") {
                 $(".syphilis-input").show();
                 $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
@@ -833,20 +848,16 @@ if ($renderTestPanelTypeSection) { ?>
         });
 
         // RTRI toggle
-        $("#enableRtri").change(function() {
+        $("#enableRtri").change(function () {
             if ($(this).val() == "yes") {
                 $(".rtri-input").show();
             } else {
                 $(".rtri-input").hide();
             }
         });
-        <?php if ($renderSampleDilutedSection): ?>
-            if ($("#dtsSampleType").val() == "plasma") {
-                $(".sample-diluted-input").show();
-            } else {
-                $(".sample-diluted-input").hide();
-            }
-        <?php endif; ?>
+        if (initialSampleDilutedVisible) {
+            $(".sample-diluted-input").show();
+        }
 
         refreshDtsSettingVisibility();
     });
@@ -880,7 +891,7 @@ if ($renderTestPanelTypeSection) { ?>
             <select name="isSampleDiluted[]" class="form-control input-sm" title="Please choose whether this sample is diluted">\
                 <option value=""><?= $this->translate->_("Select"); ?></option>\
                 <option value="yes"><?= $this->translate->_("Yes"); ?></option>\
-                <option value="no"><?= $this->translate->_("No"); ?></option>\
+                <option value="no" selected="selected"><?= $this->translate->_("No"); ?></option>\
             </select>\
         </td>\
         <td> \
@@ -915,7 +926,7 @@ if ($renderTestPanelTypeSection) { ?>
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
@@ -1160,25 +1171,25 @@ if ($renderTestPanelTypeSection) { ?>
     }
 
     function removeEiaRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
 
     function removeWbRow(obj, sampleId) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
 
     function removeHivRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
 
     function removeGeeniusRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function() {
+        $(obj.parentNode.parentNode).fadeOut("normal", function () {
             $(this).remove();
         });
     }
@@ -1198,10 +1209,10 @@ if ($renderTestPanelTypeSection) { ?>
         if (modalDiv && mbdDiv) {
             modalDiv.innerHTML = mbdDiv.innerHTML;
 
-            $("#mbd input:text").each(function(i, obj) {
+            $("#mbd input:text").each(function (i, obj) {
                 $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
             });
-            $("#mbd select").each(function(i, obj) {
+            $("#mbd select").each(function (i, obj) {
                 $("#" + divId + " select:eq(" + i + ")").val($(this).val());
             });
         }
