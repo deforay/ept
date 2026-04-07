@@ -2360,8 +2360,8 @@ class Application_Service_Shipments
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(array('s' => 'shipment'))->where('shipment_id = ' . $params['shipmentId']));
-        // To get scheme config
-        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests';
+        // DTS edit mode can intentionally retain saved shipment settings or refresh specific ones from config.
+        $dtsSchemeType = $params['dtsSchemeType'] ?? (Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests');
         $scheme = $shipmentRow['scheme_type'];
 
         $size = count($params['sampleName']);

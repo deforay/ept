@@ -54,11 +54,74 @@ if ($isEditMode) {
         : [];
 }
 
-// Shipment-level defaults come from config for ADD mode, but EDIT mode must reflect saved shipment attributes.
-$dtsSchemeType = $shipmentAttribute['dtsSchemeType'] ?? ($dtsConfig['dtsSchemeType'] ?? 'standard');
-$reportVersion = $shipmentAttribute['reportVersion'] ?? ($dtsConfig['reportVersion'] ?? '');
-$effectiveDate = $shipmentAttribute['effectiveDate'] ?? ($dtsConfig['effectiveDate'] ?? '');
-$rtriEnabled = $shipmentAttribute['enableRtri'] ?? ($dtsConfig['rtriEnabled'] ?? 'no');
+// Edit mode defaults to saved shipment settings; advanced users can selectively load current config values on demand.
+$configSettings = [
+    'dtsSchemeType' => $dtsConfig['dtsSchemeType'] ?? 'standard',
+    'reportVersion' => $dtsConfig['reportVersion'] ?? '',
+    'effectiveDate' => $dtsConfig['effectiveDate'] ?? '',
+    'enableRtri' => $dtsConfig['rtriEnabled'] ?? null,
+    'enableSyphilis' => null,
+    'noOfTestsInPanel' => null,
+    'screeningTest' => null,
+    'dtsTestPanelType' => null,
+    'sampleType' => null,
+    'collect_qc_data' => null,
+];
+$savedSettings = [
+    'dtsSchemeType' => $shipmentAttribute['dtsSchemeType'] ?? null,
+    'reportVersion' => $shipmentAttribute['reportVersion'] ?? null,
+    'effectiveDate' => $shipmentAttribute['effectiveDate'] ?? null,
+    'enableRtri' => $shipmentAttribute['enableRtri'] ?? null,
+    'enableSyphilis' => $shipmentAttribute['enableSyphilis'] ?? null,
+    'noOfTestsInPanel' => $shipmentAttribute['noOfTestsInPanel'] ?? null,
+    'screeningTest' => $shipmentAttribute['screeningTest'] ?? null,
+    'dtsTestPanelType' => $shipmentAttribute['dtsTestPanelType'] ?? null,
+    'sampleType' => $shipmentAttribute['sampleType'] ?? null,
+    'collect_qc_data' => $shipmentAttribute['collect_qc_data'] ?? null,
+];
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $effectiveSettings[$key] = $savedValue ?? $configSettings[$key] ?? null;
+}
+$dtsSchemeType = $effectiveSettings['dtsSchemeType'] ?? 'standard';
+$reportVersion = $effectiveSettings['reportVersion'] ?? '';
+$effectiveDate = $effectiveSettings['effectiveDate'] ?? '';
+$rtriEnabled = $effectiveSettings['enableRtri'] ?? 'no';
+$advancedSettingLabels = [
+    'dtsSchemeType' => $this->translate->_("DTS Scheme Type"),
+    'sampleType' => $this->translate->_("Sample Type"),
+    'enableSyphilis' => $this->translate->_("Enable Syphilis"),
+    'enableRtri' => $this->translate->_("Enable RTRI"),
+    'noOfTestsInPanel' => $this->translate->_("No. of tests in this Test Panel"),
+    'screeningTest' => $this->translate->_("Screening Test Panel"),
+    'dtsTestPanelType' => $this->translate->_("Allow users to Choose Screening/Confirmatory"),
+    'collect_qc_data' => $this->translate->_("Collect QC Data"),
+    'reportVersion' => $this->translate->_("Report Version"),
+    'effectiveDate' => $this->translate->_("Report Effective Date"),
+];
+$advancedSettingsOrder = [
+    'dtsSchemeType',
+    'sampleType',
+    'enableSyphilis',
+    'enableRtri',
+    'noOfTestsInPanel',
+    'screeningTest',
+    'dtsTestPanelType',
+    'collect_qc_data',
+    'reportVersion',
+    'effectiveDate',
+];
+$possibleDtsSchemeTypes = array_values(array_unique(array_filter([
+    $savedSettings['dtsSchemeType'] ?? null,
+    $configSettings['dtsSchemeType'] ?? null,
+])));
+$renderRtriSection = $isEditMode ? in_array('updated-3-tests', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'updated-3-tests' && $rtriEnabled == 'yes');
+$renderSyphilisSection = $isEditMode ? in_array('ghana', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'ghana');
+$renderNoOfTestsSection = $isEditMode ? count(array_intersect($possibleDtsSchemeTypes, ['standard', 'malawi'])) > 0 : in_array($dtsSchemeType, ['standard', 'malawi'], true);
+$renderTestPanelTypeSection = $isEditMode ? in_array('updated-3-tests', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'updated-3-tests');
+$renderSampleDilutedSection = $isEditMode ? in_array('vietnam', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'vietnam');
+$view = $this;
+
 
 // Normalize possible results
 $dtsPossibleResults = $this->dtsPossibleResults ?? [];
@@ -152,18 +215,17 @@ $finalResultsOptionsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"
 //echo "<pre>"; print_r($wbChoicesJs); die;
 // Determine visibility states
 $showSyphilis = $isEditMode
-    ? (isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes')
+    ? (($effectiveSettings['enableSyphilis'] ?? null) == 'yes')
     : false;
 $showRtri = $isEditMode
-    ? (isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'yes')
+    ? (($effectiveSettings['enableRtri'] ?? null) == 'yes')
     : false;
 $showTestPanelType = $isEditMode
-    ? (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no')
+    ? (($effectiveSettings['screeningTest'] ?? null) == 'no')
     : true;
 $showSampleDiluted = ($dtsSchemeType == 'vietnam')
     && $isEditMode
-    && isset($shipmentAttribute['sampleType'])
-    && $shipmentAttribute['sampleType'] == 'plasma';
+    && (($effectiveSettings['sampleType'] ?? null) == 'plasma');
 ?>
 
 <style type="text/css">
@@ -179,9 +241,33 @@ $showSampleDiluted = ($dtsSchemeType == 'vietnam')
         overflow-y: scroll;
         max-height: 100%;
     }
+
+    .advanced-dts-toggle {
+        font-size: 12px;
+        color: #777;
+        text-decoration: none;
+    }
+
+    .advanced-dts-panel {
+        display: none;
+        margin: 8px 0 15px;
+        padding: 12px 15px;
+        border: 1px dashed #ddd;
+        background: #fafafa;
+    }
+
+    .advanced-dts-panel .table {
+        margin-bottom: 0;
+        font-size: 12px;
+    }
 </style>
 
 <?php
+if ($isEditMode) { ?>
+    <input type="hidden" name="dtsSchemeType" id="dtsSchemeType" value="<?php echo $this->escape($dtsSchemeType); ?>" />
+<?php }
+
+// ============================================================================
 // ============================================================================
 // PT CO-ORDINATOR FIELDS (Malawi report type only) - ADD MODE ONLY
 // ============================================================================
@@ -204,17 +290,17 @@ if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $th
 // ============================================================================
 // ENABLE RTRI (updated-3-tests scheme type only)
 // ============================================================================
-if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests' && isset($rtriEnabled) && !empty($rtriEnabled) && $rtriEnabled == 'yes') { ?>
-    <div class="form-group">
+if ($renderRtriSection) { ?>
+    <div class="form-group dts-setting-row" data-setting-key="enableRtri" data-scheme-section="updated-3-tests">
         <label class="col-lg-3 control-label"><?= $this->translate->_("Enable RTRI"); ?></label>
         <div class="col-lg-5">
             <select id="enableRtri" name="enableRtri" class="form-control input-sm"
                 title="Please select if is RTRI enabled">
                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                <option value="yes" <?php echo ($isEditMode && isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'yes') ? "selected='selected'" : ""; ?>>
+                <option value="yes" <?php echo (($effectiveSettings['enableRtri'] ?? null) == 'yes') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("Yes"); ?>
                 </option>
-                <option value="no" <?php echo ($isEditMode && isset($shipmentAttribute['enableRtri']) && $shipmentAttribute['enableRtri'] == 'no') ? "selected='selected'" : ""; ?>>
+                <option value="no" <?php echo (($effectiveSettings['enableRtri'] ?? null) == 'no') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("No"); ?>
                 </option>
             </select>
@@ -226,20 +312,20 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 // SAMPLE TYPE
 // ============================================================================
 ?>
-<div class="form-group">
+<div class="form-group dts-setting-row" data-setting-key="sampleType">
     <label class="col-lg-3 control-label" for="dtsSampleType"><?= $this->translate->_("Sample Type"); ?>
         <span class="mandatory">*</span></label>
     <div class="col-lg-5">
         <select id="dtsSampleType" name="dtsSampleType" class="isRequired form-control input-sm"
             title="Please select a Sample Type">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-            <option value="dried" <?php echo (!$isEditMode || (isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'dried')) ? "selected='selected'" : ""; ?>>
+            <option value="dried" <?php echo (($effectiveSettings['sampleType'] ?? 'dried') == 'dried') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Dried Tube Specimen"); ?>
             </option>
-            <option value="serum" <?php echo ($isEditMode && isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'serum') ? "selected='selected'" : ""; ?>>
+            <option value="serum" <?php echo (($effectiveSettings['sampleType'] ?? null) == 'serum') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Serum"); ?>
             </option>
-            <option value="plasma" <?php echo ($isEditMode && isset($shipmentAttribute['sampleType']) && $shipmentAttribute['sampleType'] == 'plasma') ? "selected='selected'" : ""; ?>>
+            <option value="plasma" <?php echo (($effectiveSettings['sampleType'] ?? null) == 'plasma') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Plasma"); ?>
             </option>
         </select>
@@ -250,8 +336,8 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 // ============================================================================
 // ENABLE SYPHILIS (Ghana scheme type only)
 // ============================================================================
-if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana") { ?>
-    <div class="form-group">
+if ($renderSyphilisSection) { ?>
+    <div class="form-group dts-setting-row" data-setting-key="enableSyphilis" data-scheme-section="ghana">
         <label class="col-lg-3 control-label" for="enableSyphilis">
             <?= $this->translate->_("Enable Syphilis Test for ANC Sites?"); ?> <span class="mandatory">*</span><br>
             <small><?= $this->translate->_("(This creates a Syphilis panel for all ANC sites)"); ?></small>
@@ -260,10 +346,10 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana"
             <select id="enableSyphilis" name="enableSyphilis" class="isRequired form-control input-sm"
                 title="Please select if this has a Syphilis Panel">
                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                <option value="yes" <?php echo ($isEditMode && isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'yes') ? "selected='selected'" : ""; ?>>
+                <option value="yes" <?php echo (($effectiveSettings['enableSyphilis'] ?? null) == 'yes') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("Yes"); ?>
                 </option>
-                <option value="no" <?php echo ($isEditMode && isset($shipmentAttribute['enableSyphilis']) && $shipmentAttribute['enableSyphilis'] == 'no') ? "selected='selected'" : ""; ?>>
+                <option value="no" <?php echo (($effectiveSettings['enableSyphilis'] ?? null) == 'no') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("No"); ?>
                 </option>
             </select>
@@ -274,16 +360,16 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == "ghana"
 // ============================================================================
 // NUMBER OF TESTS IN PANEL (standard or malawi scheme type only)
 // ============================================================================
-if (isset($dtsSchemeType) && !empty($dtsSchemeType) && ($dtsSchemeType == "standard" || $dtsSchemeType == "malawi")) { ?>
-    <div class="form-group">
+if ($renderNoOfTestsSection) { ?>
+    <div class="form-group dts-setting-row" data-setting-key="noOfTestsInPanel" data-scheme-section="standard malawi">
         <label class="col-lg-3 control-label"><?= $this->translate->_("No. of tests in this Test Panel"); ?>
             <span class="mandatory">*</span></label>
         <div class="col-lg-5">
             <select id="noOfTestsInPanel" name="noOfTestsInPanel" class="isRequired form-control input-sm"
                 title="Please select no. of tests in this panel">
                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                <option value="2" <?php echo ($isEditMode && isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '2') ? "selected='selected'" : ""; ?>>2</option>
-                <option value="3" <?php echo (!$isEditMode || (isset($shipmentAttribute['noOfTestsInPanel']) && $shipmentAttribute['noOfTestsInPanel'] == '3')) ? "selected='selected'" : ""; ?>>3</option>
+                <option value="2" <?php echo (($effectiveSettings['noOfTestsInPanel'] ?? null) == '2') ? "selected='selected'" : ""; ?>>2</option>
+                <option value="3" <?php echo (($effectiveSettings['noOfTestsInPanel'] ?? '3') == '3') ? "selected='selected'" : ""; ?>>3</option>
             </select>
         </div>
     </div>
@@ -292,7 +378,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && ($dtsSchemeType == "stand
 <!-- ============================================================================ -->
 <!-- SCREENING TEST PANEL -->
 <!-- ============================================================================ -->
-<div class="form-group">
+<div class="form-group dts-setting-row" data-setting-key="screeningTest">
     <label class="col-lg-3 control-label" for="screeningTest">
         <?= $this->translate->_("Is this ONLY Screening Test Panel?"); ?> <span class="mandatory">*</span><br>
         <small><?= $this->translate->_("(This creates a panel with only ONE test)"); ?></small>
@@ -301,10 +387,10 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && ($dtsSchemeType == "stand
         <select id="screeningTest" name="screeningTest" class="isRequired form-control input-sm"
             title="Please select if this is a Screening Test" onchange="screeningTestPanel(this.value)">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-            <option value="yes" <?php echo ($isEditMode && isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'yes') ? "selected='selected'" : ""; ?>>
+            <option value="yes" <?php echo (($effectiveSettings['screeningTest'] ?? null) == 'yes') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Yes"); ?>
             </option>
-            <option value="no" <?php echo (!$isEditMode || (isset($shipmentAttribute['screeningTest']) && $shipmentAttribute['screeningTest'] == 'no')) ? "selected='selected'" : ""; ?>>
+            <option value="no" <?php echo (($effectiveSettings['screeningTest'] ?? 'no') == 'no') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("No"); ?>
             </option>
         </select>
@@ -315,8 +401,8 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && ($dtsSchemeType == "stand
 // ============================================================================
 // TEST PANEL TYPE (updated-3-tests scheme type only)
 // ============================================================================
-if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'updated-3-tests') { ?>
-    <div class="form-group dtsTestPanelType" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
+if ($renderTestPanelTypeSection) { ?>
+    <div class="form-group dtsTestPanelType dts-setting-row" data-setting-key="dtsTestPanelType" data-scheme-section="updated-3-tests" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
         <label class="col-lg-3 control-label" for="dtsTestPanelType">
             <?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?>
         </label>
@@ -324,10 +410,10 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
             <select id="dtsTestPanelType" name="dtsTestPanelType" class="form-control input-sm"
                 title="Please Allow users to Choose Screening/Confirmatory">
                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                <option value="yes" <?php echo ($isEditMode && isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'yes') ? "selected='selected'" : ""; ?>>
+                <option value="yes" <?php echo (($effectiveSettings['dtsTestPanelType'] ?? null) == 'yes') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("Yes"); ?>
                 </option>
-                <option value="no" <?php echo (!$isEditMode || (isset($shipmentAttribute['dtsTestPanelType']) && $shipmentAttribute['dtsTestPanelType'] == 'no')) ? "selected='selected'" : ""; ?>>
+                <option value="no" <?php echo (($effectiveSettings['dtsTestPanelType'] ?? 'no') == 'no') ? "selected='selected'" : ""; ?>>
                     <?= $this->translate->_("No"); ?>
                 </option>
             </select>
@@ -338,36 +424,36 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 <!-- ============================================================================ -->
 <!-- COLLECT QC DATA -->
 <!-- ============================================================================ -->
-<div class="form-group">
+<div class="form-group dts-setting-row" data-setting-key="collect_qc_data">
     <label class="col-lg-3 control-label" for="collectQcData"><?= $this->translate->_("Collect QC Data"); ?></label>
     <div class="col-lg-5">
         <select id="collectQcData" name="collectQcData" class="form-control input-sm"
             title="Please select Collect QC Data">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-            <option value="yes" <?php echo ($isEditMode && isset($shipmentAttribute['collect_qc_data']) && $shipmentAttribute['collect_qc_data'] == 'yes') ? "selected='selected'" : ""; ?>>
+            <option value="yes" <?php echo (($effectiveSettings['collect_qc_data'] ?? null) == 'yes') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Yes"); ?>
             </option>
-            <option value="no" <?php echo (!$isEditMode || (isset($shipmentAttribute['collect_qc_data']) && $shipmentAttribute['collect_qc_data'] == 'no')) ? "selected='selected'" : ""; ?>>
+            <option value="no" <?php echo (($effectiveSettings['collect_qc_data'] ?? null) == 'no') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("No"); ?>
             </option>
         </select>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group dts-setting-row" data-setting-key="reportVersion">
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo $reportVersion; ?>" />
     </div>
 </div>
-<div class="form-group">
+<div class="form-group dts-setting-row" data-setting-key="effectiveDate">
     <label class="col-lg-3 control-label"
         for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
             title="Please select the report effective date" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo $effectiveDate; ?>" />
     </div>
 </div>
 <!-- ============================================================================ -->
@@ -593,17 +679,123 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
 <div id="eiaBlockHolder"></div>
 <div id="wbBlockHolder"></div>
 
+<?php if ($isEditMode) { ?>
+    <div style="margin-top:20px; text-align:right;">
+        <a href="javascript:void(0);" id="toggleAdvancedDtsSettings" class="advanced-dts-toggle">
+            <?= $this->translate->_("Advanced config sources"); ?>
+        </a>
+    </div>
+    <div id="advancedDtsSettingsPanel" class="advanced-dts-panel">
+        <table class="table table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th><?= $this->translate->_("Setting"); ?></th>
+                    <th><?= $this->translate->_("Saved"); ?></th>
+                    <th><?= $this->translate->_("System Config"); ?></th>
+                    <th><?= $this->translate->_("Source"); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($advancedSettingsOrder as $settingKey) {
+                    $savedValue = $savedSettings[$settingKey] ?? '';
+                    $configValue = $configSettings[$settingKey] ?? '';
+                    $hasConfigValue = $configValue !== null && $configValue !== '';
+                    if ($savedValue === null && !$hasConfigValue) {
+                        continue;
+                    }
+                    ?>
+                    <tr>
+                        <td><?php echo $this->escape($advancedSettingLabels[$settingKey] ?? $settingKey); ?></td>
+                        <td><?php echo $savedValue !== null && $savedValue !== '' ? $this->escape((string)$savedValue) : '<span style="color:#999;">' . $this->translate->_("Not set") . '</span>'; ?></td>
+                        <td><?php echo $hasConfigValue ? $this->escape((string)$configValue) : '<span style="color:#999;">' . $this->translate->_("Not available") . '</span>'; ?></td>
+                        <td>
+                            <select class="form-control input-sm dts-setting-source" data-setting-key="<?php echo $this->escape($settingKey); ?>" data-target-id="<?php echo $this->escape($settingKey); ?>" title="<?= $this->translate->_("Choose whether to retain the saved shipment value or use the current config value"); ?>">
+                                <option value="saved"><?= $this->translate->_("Retain Saved"); ?></option>
+                                <option value="config" <?= $hasConfigValue ? '' : 'disabled="disabled"' ?>><?= $this->translate->_("Use System Config"); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+<?php } ?>
+
 <!-- ============================================================================ -->
 <!-- JAVASCRIPT -->
 <!-- ============================================================================ -->
 <script type="text/javascript">
     var sampleCounter = <?php echo $isEditMode && count($samples) > 0 ? count($samples) : 1; ?>;
-    $isSampleDilutedVisible = '<?php echo ($dtsSchemeType == 'vietnam') ? true : false; ?>';
+    var isSampleDilutedVisible = <?php echo $renderSampleDilutedSection ? 'true' : 'false'; ?>;
+    var dtsSavedSettings = <?php echo json_encode($savedSettings); ?>;
+    var dtsConfigSettings = <?php echo json_encode($configSettings); ?>;
 
     $(document).ready(function() {
+        function getEffectiveSetting(settingKey) {
+            var selector = $('.dts-setting-source[data-setting-key="' + settingKey + '"]');
+            var source = selector.length ? selector.val() : 'saved';
+            var sourceValues = source === 'config' ? dtsConfigSettings : dtsSavedSettings;
+            var fallbackValues = source === 'config' ? dtsSavedSettings : dtsConfigSettings;
+            if (typeof sourceValues[settingKey] !== 'undefined' && sourceValues[settingKey] !== null) {
+                return sourceValues[settingKey];
+            }
+            if (typeof fallbackValues[settingKey] !== 'undefined' && fallbackValues[settingKey] !== null) {
+                return fallbackValues[settingKey];
+            }
+            return '';
+        }
+
+        function applyEffectiveSetting(settingKey) {
+            var effectiveValue = getEffectiveSetting(settingKey);
+            var targetId = $('.dts-setting-source[data-setting-key="' + settingKey + '"]').first().data('target-id');
+            if (!targetId) {
+                return;
+            }
+            $('#' + targetId).val(effectiveValue);
+            if (targetId === 'screeningTest') {
+                screeningTestPanel(effectiveValue);
+            }
+            if (targetId === 'dtsSampleType') {
+                $('#dtsSampleType').trigger('change');
+            }
+        }
+
+        function refreshDtsSettingVisibility() {
+            var schemeType = $('#dtsSchemeType').val();
+            var screeningTest = $('#screeningTest').val();
+            var sampleType = $('#dtsSampleType').val();
+            var enableSyphilis = $('#enableSyphilis').val();
+            var enableRtri = $('#enableRtri').val();
+
+            $('[data-scheme-section]').each(function() {
+                var allowedSchemes = String($(this).data('scheme-section')).split(' ');
+                $(this).toggle($.inArray(schemeType, allowedSchemes) !== -1);
+            });
+
+            $('.dtsTestPanelType').toggle(schemeType === 'updated-3-tests' && screeningTest === 'no');
+            $('.syphilis-input').toggle(schemeType === 'ghana' && enableSyphilis === 'yes');
+            $('.rtri-input').toggle(schemeType === 'updated-3-tests' && enableRtri === 'yes');
+
+            if (isSampleDilutedVisible) {
+                $('.sample-diluted-input').toggle(schemeType === 'vietnam' && sampleType === 'plasma');
+            } else {
+                $('.sample-diluted-input').hide();
+            }
+        }
+
+        $('#toggleAdvancedDtsSettings').on('click', function() {
+            $('#advancedDtsSettingsPanel').slideToggle();
+            $('.advanced-config-source').slideToggle();
+        });
+
+        $('.dts-setting-source').on('change', function() {
+            applyEffectiveSetting($(this).data('setting-key'));
+            refreshDtsSettingVisibility();
+        });
+
         // Sample Diluted toggle (Vietnam scheme + plasma only)
         $("#dtsSampleType").change(function() {
-            if ($(this).val() == "plasma" && $isSampleDilutedVisible) {
+            if ($(this).val() == "plasma" && isSampleDilutedVisible && $('#dtsSchemeType').val() == 'vietnam') {
                 $(".sample-diluted-input").show();
             } else {
                 $(".sample-diluted-input").hide();
@@ -612,7 +804,7 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
         });
         // On page load in edit mode, reflect saved state
         <?php if ($isEditMode): ?>
-            if ($("#dtsSampleType").val() == "plasma" && $isSampleDilutedVisible) {
+            if ($("#dtsSampleType").val() == "plasma" && isSampleDilutedVisible && $('#dtsSchemeType').val() == 'vietnam') {
                 $(".sample-diluted-input").show();
             }
         <?php endif; ?>
@@ -648,17 +840,19 @@ if (isset($dtsSchemeType) && !empty($dtsSchemeType) && $dtsSchemeType == 'update
                 $(".rtri-input").hide();
             }
         });
-        <?php if ($isSampleDilutedVisible): ?>
+        <?php if ($renderSampleDilutedSection): ?>
             if ($("#dtsSampleType").val() == "plasma") {
                 $(".sample-diluted-input").show();
             } else {
                 $(".sample-diluted-input").hide();
             }
         <?php endif; ?>
+
+        refreshDtsSettingVisibility();
     });
 
     function addDtsRow(obj) {
-        dilutedVisible = ($isSampleDilutedVisible && ($("#dtsSampleType").val() == "plasma")) ? '' : 'display:none;';
+        dilutedVisible = (isSampleDilutedVisible && ($("#dtsSampleType").val() == "plasma") && $("#dtsSchemeType").val() == "vietnam") ? '' : 'display:none;';
         sampleCounter++;
         $(obj.parentNode.parentNode).after('<tr align="center"> \
         <td style="text-align: center"> \
