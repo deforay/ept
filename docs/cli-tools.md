@@ -122,6 +122,33 @@ php bin/run-once.php
 
 This is called automatically during setup and upgrades. Typically you don't need to run it manually unless instructed.
 
+### Refresh Translation Files
+
+Refreshes gettext catalogs for the current ePT instance. This is the command maintainers should run before opening translations in Poedit.
+
+```bash
+# Refresh all locale files for the current instance
+php bin/refresh-translations.php
+
+# Refresh one locale only
+php bin/refresh-translations.php --locale=fr_FR
+
+# Refresh only one DB lookup table while debugging
+php bin/refresh-translations.php --table=r_possibleresult
+```
+
+What it does:
+
+- regenerates DB-backed translation strings from configured `r_*` tables
+- updates `.po` files with new source strings
+- recompiles `.mo` files
+
+Typical maintainer workflow:
+
+1. Run `php bin/refresh-translations.php`
+2. Open `application/languages/{locale}/{locale}.po` in Poedit
+3. Translate new entries and save
+
 ---
 
 ## Installation & Updates

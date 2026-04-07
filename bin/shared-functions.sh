@@ -42,7 +42,7 @@ print() {
 
 # Install required packages
 install_packages() {
-    local required_pkgs=(aria2 wget lsb-release bc pigz gpg fzf zstd)
+    local required_pkgs=(aria2 wget lsb-release bc pigz gpg fzf zstd gettext)
     # Map package names to their actual command names
     declare -A pkg_to_cmd=(
         ["aria2"]="aria2c"
@@ -53,6 +53,7 @@ install_packages() {
         ["gpg"]="gpg"
         ["fzf"]="fzf"
         ["zstd"]="zstd"
+        ["gettext"]="xgettext"
     )
     
     local missing_pkgs=()

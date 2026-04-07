@@ -14,7 +14,7 @@
         var shipmentDate = '<?php echo $this->dateFormat($this->shipmentDate) ?>';
         var shipmentCode = '<?php echo $this->shipmentCode ?>';
         var resultDueDate = '<?php echo !empty($this->resultDueDate) ? $this->dateFormat($this->resultDueDate) : ""; ?>';
-        var shipmentStatus = '<?php echo $this->translate->_($this->shipmentStatus ?? ""); ?>';
+        var shipmentStatus = '<?php echo !empty($this->shipmentStatus) ? $this->translate->_($this->shipmentStatus) : ""; ?>';
 
         // Check if there's data to display
         if (!response || response.length === 0) {

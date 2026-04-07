@@ -264,6 +264,98 @@ Note: Some languages have more than 2 plural forms (e.g., Russian, Arabic).
 
 ---
 
+## Translation Refresh Automation
+
+This project uses a simple per-instance workflow:
+
+1. Refresh the locale files from the current instance
+2. Open the target `.po` file in Poedit
+3. Translate the new or empty entries
+4. Save the file
+
+The refresh command is:
+
+```bash
+php bin/refresh-translations.php
+```
+
+What it does:
+
+1. Regenerates `application/languages/db-translation-strings.php` from the configured `r_*` tables
+2. Rebuilds the gettext source catalog from application code and DB-backed strings
+3. Merges new/changed `msgid` values into each locale `.po` file
+4. Compiles updated `.mo` files
+
+Important behavior:
+
+- Existing manual translations are preserved
+- New strings are added to `.po` files for later review
+- Removed strings are handled by normal gettext merge behavior
+- The script prepares the files; Poedit is where in-country maintainers do the actual translation work
+
+### Optional Flags
+
+Refresh one locale only:
+
+```bash
+php bin/refresh-translations.php --locale=fr_FR
+```
+
+Refresh only one DB lookup table while debugging:
+
+```bash
+php bin/refresh-translations.php --table=r_possibleresult
+```
+
+### Manual Editing Still Works
+
+For most deployments, maintainers only need these steps:
+
+```bash
+php bin/refresh-translations.php
+```
+
+Then:
+
+1. Open `application/languages/{locale}/{locale}.po` in Poedit
+2. Translate the new or untranslated entries
+3. Save the file in Poedit
+
+Poedit will update the `.po` file, and depending on the maintainer's setup it may also compile the `.mo`.
+
+If needed, you can rerun the refresh command after editing to make sure catalogs stay synchronized and `.mo` files are regenerated:
+
+```bash
+php bin/refresh-translations.php --locale=fr_FR
+```
+
+### Recommended Maintainer Workflow
+
+For in-country maintainers, the recommended process is:
+
+1. Run `php bin/refresh-translations.php`
+2. Open the locale `.po` file in Poedit
+3. Translate the newly added entries
+4. Save and test the application in that language
+
+They do not need to understand gettext internals, POT files, or command-line translation tools.
+
+### Cron Example
+
+Run once every night at 2:15 AM:
+
+```cron
+15 2 * * * cd /path/to/ept && php bin/refresh-translations.php >> logs/translation-refresh.log 2>&1
+```
+
+Make sure the environment has these GNU gettext tools available:
+
+- `xgettext`
+- `msgmerge`
+- `msgfmt`
+
+---
+
 ## Language-Specific Notes
 
 ### French (fr_FR)

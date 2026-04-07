@@ -553,7 +553,7 @@ apt-get -y autoremove
 
 if [ "$skip_ubuntu_updates" = false ]; then
     print info "Installing basic packages..."
-    apt-get install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server mosh
+    apt-get install -y build-essential software-properties-common gnupg apt-transport-https ca-certificates lsb-release wget vim zip unzip curl acl snapd rsync git gdebi net-tools sed mawk magic-wormhole openssh-server mosh gettext
 fi
 
 # SSH service enable/start
