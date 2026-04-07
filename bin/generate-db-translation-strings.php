@@ -57,7 +57,7 @@ $tablesToTranslate = [
     'r_site_type' => ['site_type'],
     'r_tb_assay' => ['name', 'short_name'],
     'r_test_type_covid19' => ['test_type_name', 'test_type_short_name'],
-    'r_testkitnames' => ['TestKit_Name', 'TestKit_Name_Short'],
+    //'r_testkitnames' => ['TestKit_Name', 'TestKit_Name_Short'],
     'r_vl_assay' => ['name', 'short_name'],
 ];
 
@@ -67,12 +67,12 @@ try {
         throw new RuntimeException('Default database adapter is not available. Check cli-bootstrap.php and DB configuration.');
     }
 
-    $databaseName = (string)$db->fetchOne('SELECT DATABASE()');
+    $databaseName = (string) $db->fetchOne('SELECT DATABASE()');
     if ($databaseName === '') {
         throw new RuntimeException('Could not determine the active database for this instance.');
     }
 
-    $outputFile = (string)($options['output'] ?? DEFAULT_OUTPUT_FILE);
+    $outputFile = (string) ($options['output'] ?? DEFAULT_OUTPUT_FILE);
     $requestedTables = normalizeTableFilter($options['table'] ?? []);
 
     $tableColumns = resolveTranslatableColumns($db, $databaseName, $tablesToTranslate, $requestedTables);
@@ -105,7 +105,7 @@ function normalizeTableFilter($tableOption): array
     }
 
     $tables = is_array($tableOption) ? $tableOption : [$tableOption];
-    $tables = array_map(static fn($table): string => trim((string)$table), $tables);
+    $tables = array_map(static fn($table): string => trim((string) $table), $tables);
     $tables = array_values(array_filter($tables, static fn(string $table): bool => $table !== ''));
 
     foreach ($tables as $table) {
@@ -163,7 +163,7 @@ function validateMappedColumns(Zend_Db_Adapter_Abstract $db, string $databaseNam
     $availableColumns = [];
 
     foreach ($rows as $row) {
-        $availableColumns[(string)$row['TABLE_NAME']][(string)$row['COLUMN_NAME']] = true;
+        $availableColumns[(string) $row['TABLE_NAME']][(string) $row['COLUMN_NAME']] = true;
     }
 
     foreach ($tableColumns as $tableName => $columns) {
@@ -205,7 +205,7 @@ function fetchTranslatableStrings(Zend_Db_Adapter_Abstract $db, array $tableColu
             $values = $db->fetchCol($sql);
 
             foreach ($values as $value) {
-                $normalizedValue = normalizeTranslationString((string)$value);
+                $normalizedValue = normalizeTranslationString((string) $value);
                 if ($normalizedValue === '') {
                     continue;
                 }
@@ -226,7 +226,7 @@ function normalizeTranslationString(string $value): string
 {
     $value = trim($value);
     $value = preg_replace('/\s+/u', ' ', $value);
-    return trim((string)$value);
+    return trim((string) $value);
 }
 
 /**
