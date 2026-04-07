@@ -33,6 +33,15 @@ const DEFAULT_OUTPUT_FILE = APPLICATION_PATH . '/languages/db-translation-string
 /**
  * Define the lookup tables/columns that should feed gettext.
  * Values can change at runtime, but this structure is expected to stay stable.
+ *
+ * Column entries support two forms:
+ * - 'column_name'
+ * - ['column' => 'column_name', 'variants' => ['default', 'upper', 'lower']]
+ *
+ * Supported variants:
+ * - default: original normalized DB value
+ * - lower: strtolower(value)
+ * - upper: strtoupper(value)
  */
 $tablesToTranslate = [
     'r_control' => ['control_name'],
@@ -49,7 +58,7 @@ $tablesToTranslate = [
     'r_modes_of_receipt' => ['mode_name'],
     'r_network_tiers' => ['network_name'],
     'r_participant_affiliates' => ['affiliate'],
-    'r_possibleresult' => ['response'],
+    'r_possibleresult' => [['column' => 'response', 'variants' => ['default', 'upper', 'lower']]],
     'r_recency_assay' => ['name'],
     'r_response_not_tested_reasons' => ['ntr_reason'],
     'r_response_vl_not_tested_reason' => ['vl_not_tested_reason'],
@@ -118,13 +127,13 @@ function normalizeTableFilter($tableOption): array
 }
 
 /**
- * @param array<string, string[]> $tablesToTranslate
+ * @param array<string, array<int, string|array{column:string, variants?:array<int, string>}>> $tablesToTranslate
  * @param string[] $requestedTables
- * @return array<string, string[]>
+ * @return array<string, array<int, array{column:string, variants:array<int, string>}>>
  */
 function resolveTranslatableColumns(Zend_Db_Adapter_Abstract $db, string $databaseName, array $tablesToTranslate, array $requestedTables): array
 {
-    $tableColumns = $tablesToTranslate;
+    $tableColumns = normalizeTableTranslationConfig($tablesToTranslate);
 
     if ($requestedTables !== []) {
         $tableColumns = array_intersect_key($tableColumns, array_flip($requestedTables));
@@ -146,8 +155,59 @@ function resolveTranslatableColumns(Zend_Db_Adapter_Abstract $db, string $databa
 }
 
 /**
- * @param array<string, string[]> $tableColumns
- * @return array<string, string[]>
+ * @param array<string, array<int, string|array{column:string, variants?:array<int, string>}>> $tableColumns
+ * @return array<string, array<int, array{column:string, variants:array<int, string>}>>
+ */
+function normalizeTableTranslationConfig(array $tableColumns): array
+{
+    $normalizedConfig = [];
+
+    foreach ($tableColumns as $tableName => $columns) {
+        foreach ($columns as $columnConfig) {
+            if (is_string($columnConfig)) {
+                $normalizedConfig[$tableName][] = [
+                    'column' => $columnConfig,
+                    'variants' => ['default'],
+                ];
+                continue;
+            }
+
+            $columnName = trim((string) ($columnConfig['column'] ?? ''));
+            if ($columnName === '') {
+                throw new InvalidArgumentException("Translation config for table '{$tableName}' is missing a column name.");
+            }
+
+            $variants = $columnConfig['variants'] ?? ['default'];
+            if (!is_array($variants) || $variants === []) {
+                $variants = ['default'];
+            }
+
+            $normalizedVariants = [];
+            foreach ($variants as $variant) {
+                $variant = strtolower(trim((string) $variant));
+                if (!in_array($variant, ['default', 'lower', 'upper'], true)) {
+                    throw new InvalidArgumentException("Unsupported variant '{$variant}' configured for {$tableName}.{$columnName}.");
+                }
+                $normalizedVariants[$variant] = $variant;
+            }
+
+            if ($normalizedVariants === []) {
+                $normalizedVariants['default'] = 'default';
+            }
+
+            $normalizedConfig[$tableName][] = [
+                'column' => $columnName,
+                'variants' => array_values($normalizedVariants),
+            ];
+        }
+    }
+
+    return $normalizedConfig;
+}
+
+/**
+ * @param array<string, array<int, array{column:string, variants:array<int, string>}>> $tableColumns
+ * @return array<string, array<int, array{column:string, variants:array<int, string>}>>
  */
 function validateMappedColumns(Zend_Db_Adapter_Abstract $db, string $databaseName, array $tableColumns): array
 {
@@ -176,7 +236,8 @@ function validateMappedColumns(Zend_Db_Adapter_Abstract $db, string $databaseNam
             continue;
         }
 
-        foreach ($columns as $columnName) {
+        foreach ($columns as $columnConfig) {
+            $columnName = $columnConfig['column'];
             if (!isset($availableColumns[$tableName][$columnName])) {
                 throw new RuntimeException("Configured translation column '{$tableName}.{$columnName}' was not found in database '{$databaseName}'.");
             }
@@ -187,7 +248,7 @@ function validateMappedColumns(Zend_Db_Adapter_Abstract $db, string $databaseNam
 }
 
 /**
- * @param array<string, string[]> $tableColumns
+ * @param array<string, array<int, array{column:string, variants:array<int, string>}>> $tableColumns
  * @return array<string, list<string>>
  */
 function fetchTranslatableStrings(Zend_Db_Adapter_Abstract $db, array $tableColumns): array
@@ -195,7 +256,8 @@ function fetchTranslatableStrings(Zend_Db_Adapter_Abstract $db, array $tableColu
     $stringSources = [];
 
     foreach ($tableColumns as $tableName => $columns) {
-        foreach ($columns as $columnName) {
+        foreach ($columns as $columnConfig) {
+            $columnName = $columnConfig['column'];
             $sql = sprintf(
                 'SELECT DISTINCT TRIM(%1$s) AS value FROM %2$s WHERE %1$s IS NOT NULL AND TRIM(%1$s) <> \'\' ORDER BY value',
                 $db->quoteIdentifier($columnName),
@@ -211,8 +273,10 @@ function fetchTranslatableStrings(Zend_Db_Adapter_Abstract $db, array $tableColu
                 }
 
                 $source = "{$tableName}.{$columnName}";
-                $stringSources[$normalizedValue] ??= [];
-                $stringSources[$normalizedValue][$source] = $source;
+                foreach (buildStringVariants($normalizedValue, $columnConfig['variants']) as $variantValue) {
+                    $stringSources[$variantValue] ??= [];
+                    $stringSources[$variantValue][$source] = $source;
+                }
             }
         }
     }
@@ -230,7 +294,33 @@ function normalizeTranslationString(string $value): string
 }
 
 /**
- * @param array<string, string[]> $tableColumns
+ * @param array<int, string> $variants
+ * @return array<int, string>
+ */
+function buildStringVariants(string $value, array $variants): array
+{
+    $variantValues = [];
+
+    foreach ($variants as $variant) {
+        $variantValue = match ($variant) {
+            'lower' => mb_strtolower($value, 'UTF-8'),
+            'upper' => mb_strtoupper($value, 'UTF-8'),
+            default => $value,
+        };
+
+        $variantValue = normalizeTranslationString($variantValue);
+        if ($variantValue === '') {
+            continue;
+        }
+
+        $variantValues[$variantValue] = $variantValue;
+    }
+
+    return array_values($variantValues);
+}
+
+/**
+ * @param array<string, array<int, array{column:string, variants:array<int, string>}>> $tableColumns
  * @param array<string, list<string>> $translatableStrings
  */
 function writeTranslationFile(string $outputFile, string $databaseName, array $tableColumns, array $translatableStrings): void
@@ -250,7 +340,16 @@ function writeTranslationFile(string $outputFile, string $databaseName, array $t
     ];
 
     foreach ($tableColumns as $tableName => $columns) {
-        $lines[] = sprintf('// %s: %s', $tableName, implode(', ', $columns));
+        $columnDescriptions = array_map(
+            static function (array $columnConfig): string {
+                $variants = $columnConfig['variants'] === ['default']
+                    ? ''
+                    : ' [' . implode(', ', $columnConfig['variants']) . ']';
+                return $columnConfig['column'] . $variants;
+            },
+            $columns
+        );
+        $lines[] = sprintf('// %s: %s', $tableName, implode(', ', $columnDescriptions));
     }
 
     if ($translatableStrings !== []) {
@@ -259,7 +358,7 @@ function writeTranslationFile(string $outputFile, string $databaseName, array $t
 
     foreach ($translatableStrings as $string => $sources) {
         $lines[] = '// ' . implode(', ', $sources);
-        $lines[] = '_translate(' . var_export($string, true) . ');';
+        $lines[] = '_(' . var_export($string, true) . ');';
     }
 
     $lines[] = '';

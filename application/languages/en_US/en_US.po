@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-04-07 21:39+0530\n"
+"POT-Creation-Date: 2026-04-07 21:56+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -112,10 +112,14 @@ msgid "DETECTED"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:74
-msgid "Did not meet the minimum score required"
+msgid "detected"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:76
+msgid "Did not meet the minimum score required"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:78
 #: application/models/Dts.php:1276 application/models/Dts.php:1294
 #: application/models/Dts.php:2007 application/models/Dts.php:2089
 #: application/modules/admin/views/scripts/data-managers/index.phtml:60
@@ -134,28 +138,28 @@ msgstr ""
 msgid "District"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:78
+#: application/languages/db-translation-strings.php:80
 msgid ""
 "DTS Testing should be done within specified hours of rehydration as per SOP."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:80
+#: application/languages/db-translation-strings.php:82
 msgid "EIA-01 BioRad Genetic Systems HIV 1/2 plus O"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:82
+#: application/languages/db-translation-strings.php:84
 msgid "EIA-02 bioMerieux Vironostika Uniform II plus O (3rd gen)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:84
+#: application/languages/db-translation-strings.php:86
 msgid "EIA-03 bioMerieux Vironostika HIV Ag/Ab (4th gen)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:86
+#: application/languages/db-translation-strings.php:88
 msgid "EIA-04 Murex HIV 1.2.0 (3rd gen)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:88
+#: application/languages/db-translation-strings.php:90
 #: application/models/Dts.php:2010
 #: application/modules/admin/views/scripts/login/index.phtml:132
 #: application/modules/admin/views/scripts/participants/index.phtml:76
@@ -171,320 +175,417 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:90
+#: application/languages/db-translation-strings.php:92
 msgid ""
 "Ensure expired test kit are not be used for testing. If test kits are not "
 "available, please contact your superior."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:92
+#: application/languages/db-translation-strings.php:94
 msgid ""
 "Ensure expired test type are not be used for testing. If test types are not "
 "available, please contact your superior."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:94
+#: application/languages/db-translation-strings.php:96
 msgid "Ensure expiry date information is submitted for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:96
+#: application/languages/db-translation-strings.php:98
 msgid "Ensure test kit lot number is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:98
+#: application/languages/db-translation-strings.php:100
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:100
+#: application/languages/db-translation-strings.php:102
 msgid "Ensure test type lot number is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:102
+#: application/languages/db-translation-strings.php:104
 msgid "Ensure test type name is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:104
+#: application/languages/db-translation-strings.php:106
 msgid "Ensure to provide sample rehydration date"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:106
+#: application/languages/db-translation-strings.php:108
 msgid "Ensure to provide supervisor approval along with his name."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:108
+#: application/languages/db-translation-strings.php:110
 msgid "Ensure to provide to provide panel receipt date."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:110
+#: application/languages/db-translation-strings.php:112
 msgid "Ensure to provide to provide panel testing date."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:112
+#: application/languages/db-translation-strings.php:114
 msgid "Equivocal"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:114
+#: application/languages/db-translation-strings.php:116
+msgid "EQUIVOCAL"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:118
+msgid "equivocal"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:120
 msgid "ERROR"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:116
+#: application/languages/db-translation-strings.php:122
+msgid "error"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:124
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:396
 msgid "Excluded"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:118
+#: application/languages/db-translation-strings.php:126
 msgid "Fail"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:120
+#: application/languages/db-translation-strings.php:128
 msgid "For sample (1/2/3?) National Covid-19 Testing lab was not followed."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:122
+#: application/languages/db-translation-strings.php:130
 msgid "For sample (1/2/3?) National HIV Testing algorithm was not followed."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:124
+#: application/languages/db-translation-strings.php:132
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test kit."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:126
+#: application/languages/db-translation-strings.php:134
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test type."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:128
+#: application/languages/db-translation-strings.php:136
 msgid "GENE XPERT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:130
+#: application/languages/db-translation-strings.php:138
 msgid "GeneXpert"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:132
+#: application/languages/db-translation-strings.php:140
 msgid "GeneXpert HIV-1"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:134
+#: application/languages/db-translation-strings.php:142
 msgid "HIGH"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:136
-msgid "High Positive Control"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:138
-msgid "HIV-1 Detected"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:140
-msgid "HIV-1 Not Detected"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:142
-msgid "HOLOGIC PANTHER Aptima HIV-1 Quant Dx Assay"
-msgstr ""
-
 #: application/languages/db-translation-strings.php:144
-msgid "Holologic"
+msgid "high"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:146
-msgid "Hospital"
+msgid "High Positive Control"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:148
-msgid "In-House Negative Control"
+msgid "HIV-1 Detected"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:150
-msgid "In-House Positive Control"
+msgid "HIV-1 DETECTED"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:152
-msgid "INCONCLUSIVE"
+msgid "hiv-1 detected"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:154
+msgid "HIV-1 Not Detected"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:156
+msgid "HIV-1 NOT DETECTED"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:158
+msgid "hiv-1 not detected"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:160
+msgid "HOLOGIC PANTHER Aptima HIV-1 Quant Dx Assay"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:162
+msgid "Holologic"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:164
+msgid "Hospital"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:166
+msgid "In-House Negative Control"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:168
+msgid "In-House Positive Control"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:170
+msgid "INCONCLUSIVE"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:172
+msgid "inconclusive"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:174
 #: application/views/scripts/tb/assay-formats.ajax.phtml:868
 msgid "INDETERMINATE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:156
-msgid "In House"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:158
-msgid "Instrument down"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:160
-msgid "Instrument Down"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:162
-msgid "Interminate"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:164
-msgid "INVALID"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:166
-msgid "Issue with Sample"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:168
-msgid "Kit Negative Control"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:170
-msgid "Kit Positive Control"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:172
-msgid "Laboratory"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:174
-msgid "Laboratory facility no longer perform testing"
-msgstr ""
-
 #: application/languages/db-translation-strings.php:176
-msgid "Laboratory facility under renovation"
+msgid "indeterminate"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:178
+msgid "In House"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:180
+msgid "Instrument down"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:182
+msgid "Instrument Down"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:184
+msgid "Interminate"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:186
+msgid "INTERMINATE"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:188
+msgid "interminate"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:190
+msgid "INVALID"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:192
+msgid "invalid"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:194
+msgid "Issue with Sample"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:196
+msgid "Kit Negative Control"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:198
+msgid "Kit Positive Control"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:200
+msgid "Laboratory"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:202
+msgid "Laboratory facility no longer perform testing"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:204
+msgid "Laboratory facility under renovation"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:206
 msgid ""
 "Late response, response not evaluated. Your response received after last "
 "date. Expected result for PT panel will be available for your reference."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:180
+#: application/languages/db-translation-strings.php:208
 msgid "Long Term"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:182
-msgid "LOW"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:184
-msgid "Low Positive Control"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:186
-msgid "Machine not working"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:188
-msgid "Mandatory Samples not reported"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:190
-msgid "MEDIUM"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:192
-msgid "Minimum score not reached"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:194
-msgid "Missing supervisor approval for reported result."
-msgstr ""
-
-#: application/languages/db-translation-strings.php:196
-msgid "Mobile VCT"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:198
-msgid "molbio-truenat-plus"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:200
-msgid "molbio-truenat-tb"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:202
-msgid "Molbio Truenat Plus"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:204
-msgid "Molbio Truenat TB"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:206
-msgid "N"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:208
-msgid "N/A"
-msgstr ""
-
 #: application/languages/db-translation-strings.php:210
-msgid "NEGATIVE"
+msgid "LONG TERM"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:212
-msgid "Negative Control"
+msgid "long term"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:214
-msgid "No lab personal for testing of PT panel"
+msgid "LOW"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:216
-msgid "No lab personnel/staff for testing of PT Panel"
+msgid "low"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:218
-msgid "NONREACTIVE"
+msgid "Low Positive Control"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:220
-msgid "No reagents for testing of PT panel"
+msgid "Machine not working"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:222
-msgid "NO RESULT"
+msgid "Mandatory Samples not reported"
 msgstr ""
 
 #: application/languages/db-translation-strings.php:224
+msgid "MEDIUM"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:226
+msgid "medium"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:228
+msgid "Minimum score not reached"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:230
+msgid "Missing supervisor approval for reported result."
+msgstr ""
+
+#: application/languages/db-translation-strings.php:232
+msgid "Mobile VCT"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:234
+msgid "molbio-truenat-plus"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:236
+msgid "molbio-truenat-tb"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:238
+msgid "Molbio Truenat Plus"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:240
+msgid "Molbio Truenat TB"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:242
+msgid "N"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:244
+msgid "n"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:246
+msgid "N/A"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:248
+msgid "n/a"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:250
+msgid "NEGATIVE"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:252
+msgid "negative"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:254
+msgid "Negative Control"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:256
+msgid "No lab personal for testing of PT panel"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:258
+msgid "No lab personnel/staff for testing of PT Panel"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:260
+msgid "NONREACTIVE"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:262
+msgid "nonreactive"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:264
+msgid "No reagents for testing of PT panel"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:266
+msgid "NO RESULT"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:268
+#, fuzzy
+msgid "no result"
+msgstr "Result"
+
+#: application/languages/db-translation-strings.php:270
 #: application/views/scripts/tb/assay-formats.ajax.phtml:867
 msgid "NOT DETECTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:226
+#: application/languages/db-translation-strings.php:272
+msgid "not detected"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:274
 msgid "Not Evaluated"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:228
+#: application/languages/db-translation-strings.php:276
 msgid "Not received PT panel shipment due to country custom clearance issue"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:230
+#: application/languages/db-translation-strings.php:278
 msgid ""
 "Not received PT panel shipment due to incorrect contact info on the shipment "
 "package"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:232
+#: application/languages/db-translation-strings.php:280
 msgid "NOT TESTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:234
+#: application/languages/db-translation-strings.php:282
+msgid "not tested"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:284
 msgid "Not trained in 3-test algorithm"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:236
+#: application/languages/db-translation-strings.php:286
 msgid "NucliSENS"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:238
+#: application/languages/db-translation-strings.php:288
 msgid "Online Response"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:240
+#: application/languages/db-translation-strings.php:290
 #: application/views/scripts/contact-us/index.phtml:55
 #: application/views/scripts/covid19/response.phtml:389
 #: application/views/scripts/covid19/response.phtml:410
@@ -500,37 +601,41 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:242
+#: application/languages/db-translation-strings.php:292
 msgid "other"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:244
+#: application/languages/db-translation-strings.php:294
 msgid "Other (please explain)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:246
+#: application/languages/db-translation-strings.php:296
 msgid "Other Assay"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:248
+#: application/languages/db-translation-strings.php:298
 msgid "Outpatient Clinic"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:250
+#: application/languages/db-translation-strings.php:300
 msgid "P"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:252
+#: application/languages/db-translation-strings.php:302
+msgid "p"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:304
 msgid "Panel receipt date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:254
+#: application/languages/db-translation-strings.php:306
 msgid ""
 "Participant did not meet the score criteria (Participant Score is 80 and "
 "Required Score is 95)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:256
+#: application/languages/db-translation-strings.php:308
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:140
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:182
 #: application/views/scripts/participant/participant-performance.phtml:130
@@ -538,75 +643,87 @@ msgstr ""
 msgid "Pass"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:258
+#: application/languages/db-translation-strings.php:310
 msgid "PEPFAR"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:260
+#: application/languages/db-translation-strings.php:312
 msgid "PEPFAR RTQI Program"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:262
+#: application/languages/db-translation-strings.php:314
 msgid "Please ensure condition of PT Samples is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:264
+#: application/languages/db-translation-strings.php:316
 msgid "Please ensure Refridgerator availability is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:266
+#: application/languages/db-translation-strings.php:318
 msgid "Please ensure Room Temperature is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:268
+#: application/languages/db-translation-strings.php:320
 msgid "Please ensure Stop Watch availability is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:270
+#: application/languages/db-translation-strings.php:322
 msgid "Please submit response before last date"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:272
+#: application/languages/db-translation-strings.php:324
 msgid ""
 "Please test Covid19 sample as per National Covid-19 Testing lab. Review and "
 "refer to SOP for testing."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:274
+#: application/languages/db-translation-strings.php:326
 msgid ""
 "Please test DTS sample as per National HIV Testing algorithm. Review and "
 "refer to SOP for testing."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:276
+#: application/languages/db-translation-strings.php:328
 msgid ""
 "Please use the approved test kits according to the SOP/National HIV Testing "
 "algorithm for confirmatory and tie-breaker."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:278
+#: application/languages/db-translation-strings.php:330
 msgid ""
 "Please use the approved test types according to the SOP/National Covid-19 "
 "Testing lab for confirmatory and tie-breaker."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:280
+#: application/languages/db-translation-strings.php:332
 msgid "PMTCT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:282
+#: application/languages/db-translation-strings.php:334
 msgid "POSITIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:284
+#: application/languages/db-translation-strings.php:336
+msgid "positive"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:338
 msgid "Postive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:286
+#: application/languages/db-translation-strings.php:340
+msgid "POSTIVE"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:342
+msgid "postive"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:344
 msgid "Primary care laboratory service tier"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:288
+#: application/languages/db-translation-strings.php:346
 #: application/models/Dts.php:1275 application/models/Dts.php:1293
 #: application/models/Dts.php:2006 application/models/Dts.php:2039
 #: application/models/Dts.php:2060 application/models/Dts.php:2088
@@ -622,49 +739,61 @@ msgstr ""
 msgid "Province"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:290
+#: application/languages/db-translation-strings.php:348
 msgid "PT Provider Negative Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:292
+#: application/languages/db-translation-strings.php:350
 msgid "PT Provider Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:294
+#: application/languages/db-translation-strings.php:352
 msgid "Public Health Reference Laboratories"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:296
+#: application/languages/db-translation-strings.php:354
 msgid "QIAamp Viral Mini Kit (DNA or RNA)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:298
+#: application/languages/db-translation-strings.php:356
 msgid "QI Aamp Viral Mini Kit (DNA or RNA)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:300
+#: application/languages/db-translation-strings.php:358
 msgid "Re-hydration date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:302
+#: application/languages/db-translation-strings.php:360
 msgid "REACTIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:304
+#: application/languages/db-translation-strings.php:362
+msgid "reactive"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:364
 #: application/layouts/scripts/admin.phtml:1117
 #: application/layouts/scripts/admin.phtml:1122
 msgid "Recent"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:306
+#: application/languages/db-translation-strings.php:366
+msgid "RECENT"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:368
+msgid "recent"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:370
 msgid "ref-molbio-tb-rif-dx"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:308
+#: application/languages/db-translation-strings.php:372
 msgid "Ref-Molbio TB-RIF Dx"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:310
+#: application/languages/db-translation-strings.php:374
 #: application/modules/admin/views/scripts/enrollments/add.phtml:33
 #: application/modules/admin/views/scripts/participants/add.phtml:104
 #: application/modules/admin/views/scripts/participants/edit.phtml:150
@@ -686,231 +815,243 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:312
+#: application/languages/db-translation-strings.php:376
 msgid "Result not evaluated Ð name of test kit not reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:314
+#: application/languages/db-translation-strings.php:378
 msgid "Result not evaluated Ð name of test type not reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:316
+#: application/languages/db-translation-strings.php:380
 msgid ""
 "Result not evaluated Ð test kit expiry date (first/second/third) is not "
 "reported with PT response."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:318
+#: application/languages/db-translation-strings.php:382
 msgid ""
 "Result not evaluated Ð Test Kit lot number (first/second/third) is not "
 "reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:320
+#: application/languages/db-translation-strings.php:384
 msgid ""
 "Result not evaluated Ð test type expiry date (first/second/third) is not "
 "reported with PT response."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:322
+#: application/languages/db-translation-strings.php:386
 msgid ""
 "Result not evaluated Ð Test Type lot number (first/second/third) is not "
 "reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:324
+#: application/languages/db-translation-strings.php:388
 msgid ""
 "Review all testing procedures prior to performing client testing and contact "
 "your supervisor for improvement."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:326
+#: application/languages/db-translation-strings.php:390
 msgid ""
 "Review all testing procedures prior to performing client testing as reported "
 "result does not match expected result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:328
+#: application/languages/db-translation-strings.php:392
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "Covid-19 Testing lab."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:330
+#: application/languages/db-translation-strings.php:394
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "HIV Testing algorithm."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:332
+#: application/languages/db-translation-strings.php:396
 msgid "Roche - Amplicor"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:334
+#: application/languages/db-translation-strings.php:398
 msgid "Roche - Amplicor HIV-1 Monitor Test"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:336
+#: application/languages/db-translation-strings.php:400
 msgid "Roche-Cobas-4800"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:338
+#: application/languages/db-translation-strings.php:402
 msgid "Roche-Cobas-6800"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:340
+#: application/languages/db-translation-strings.php:404
 msgid "Roche-Cobas-8800"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:342
+#: application/languages/db-translation-strings.php:406
 msgid "Roche-Cobas-Taqman"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:344
+#: application/languages/db-translation-strings.php:408
 msgid "Roche - COBAS Ampliprep/TaqMan"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:346
+#: application/languages/db-translation-strings.php:410
 msgid "Roche Cobas4800 HIV-1"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:348
+#: application/languages/db-translation-strings.php:412
 msgid "Roche Cobas6800 HIV-1"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:350
+#: application/languages/db-translation-strings.php:414
 msgid "Roche Cobas8800 HIV-1"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:352
+#: application/languages/db-translation-strings.php:416
 msgid "Sample (1/2/3) was not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:354
+#: application/languages/db-translation-strings.php:418
 msgid "Sample (1/2/3?) reported result does not match with expected result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:356
+#: application/languages/db-translation-strings.php:420
 msgid "Scan"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:358
+#: application/languages/db-translation-strings.php:422
 msgid "SCANTY"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:360
+#: application/languages/db-translation-strings.php:424
+msgid "scanty"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:426
 msgid "Secondary and tertiary laboratory service tiers"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:362
+#: application/languages/db-translation-strings.php:428
 msgid "SMS"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:364
+#: application/languages/db-translation-strings.php:430
 msgid "Some mandatory samples were not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:366
+#: application/languages/db-translation-strings.php:432
 msgid "TB Center"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:368
+#: application/languages/db-translation-strings.php:434
 msgid "Testing date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:370
+#: application/languages/db-translation-strings.php:436
 msgid "Testing is not performed within X to Y hours of rehydration."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:372
+#: application/languages/db-translation-strings.php:438
 msgid "Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:374
+#: application/languages/db-translation-strings.php:440
 msgid "Test kit XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:376
+#: application/languages/db-translation-strings.php:442
 msgid "Testkit XYZ repeated for all 3 test kits"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:378
+#: application/languages/db-translation-strings.php:444
 msgid "Test type repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:380
+#: application/languages/db-translation-strings.php:446
 msgid "Test type XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:382
+#: application/languages/db-translation-strings.php:448
 msgid "Testtype XYZ repeated for all 3 test types"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:384
+#: application/languages/db-translation-strings.php:450
 msgid "The PT panel shipment was lost/damage"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:386
+#: application/languages/db-translation-strings.php:452
 msgid "The PT panel testing failed during sample processing"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:388
+#: application/languages/db-translation-strings.php:454
 msgid "The results were invalid for the entire run"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:390
+#: application/languages/db-translation-strings.php:456
 msgid "There were not enough responses for the VL Assay chosen"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:392
+#: application/languages/db-translation-strings.php:458
 msgid "TRACE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:394
+#: application/languages/db-translation-strings.php:460
+msgid "trace"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:462
 msgid "Unsatisfactory score"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:396
+#: application/languages/db-translation-strings.php:464
 msgid "VCT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:398
+#: application/languages/db-translation-strings.php:466
 msgid "VERY LOW"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:400
+#: application/languages/db-translation-strings.php:468
+msgid "very low"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:470
 msgid "WB-01 BioRad GS HIV- 1 Western Blot"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:402
+#: application/languages/db-translation-strings.php:472
 msgid "WB-02 Cambridge Biotech HIV-1 Western Blot"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:404
+#: application/languages/db-translation-strings.php:474
 msgid "WB-03 BioRad LAV Blot I"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:406
+#: application/languages/db-translation-strings.php:476
 msgid "WB-04 Genelab Diagnostics HIV Blot kit"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:408
+#: application/languages/db-translation-strings.php:478
 msgid "xpert-mtb-rif"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:410
+#: application/languages/db-translation-strings.php:480
 msgid "xpert-mtb-rif-ultra"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:412
+#: application/languages/db-translation-strings.php:482
 msgid "Xpert MTB RIF"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:414
+#: application/languages/db-translation-strings.php:484
 msgid "Xpert MTB RIF Ultra"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:416
+#: application/languages/db-translation-strings.php:486
 msgid "You are required to test all samples in PT panel"
 msgstr ""
 
@@ -3318,6 +3459,7 @@ msgstr ""
 #: application/views/scripts/vl/response.phtml:748
 #: application/views/scripts/vl/response.phtml:840
 #: application/views/scripts/vl/response.phtml:885
+#: library/Pt/Helper/View/DropdownSelection.php:11
 msgid "Select"
 msgstr ""
 
