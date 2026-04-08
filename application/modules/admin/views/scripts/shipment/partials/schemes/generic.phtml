@@ -60,8 +60,27 @@ $possibleResultsHtml .= '</select>';
 
 // Escape for JavaScript string
 $possibleResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $possibleResultsHtml);
-$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
-$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
+$generalConfig = $this->config;
+
+$configSettings = [
+    'reportVersion'       => $generalConfig['reportVersion']       ?? null,
+    'effectiveDate'       => $generalConfig['effectiveDate']        ?? null,
+];
+
+$savedSettings = [
+    'reportVersion'       => $shipmentAttribute['reportVersion']      ?? null,
+    'effectiveDate'       => $shipmentAttribute['effectiveDate']       ?? null,
+];
+
+$stringFields = ['reportVersion', 'effectiveDate'];
+
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
+}
 ?>
 
 <?php if (!$isEditMode && isset($this->reportType) && !empty($this->reportType) && $this->reportType == 'malawi'): ?>
@@ -86,7 +105,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['reportVersion'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -95,7 +114,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
             title="Please select the report effective date" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <!-- Generic Sample Table -->
@@ -128,7 +147,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                 $referenceResult = isset($sample['reference_result']) ? $sample['reference_result'] : '';
                 $control = isset($sample['control']) ? $sample['control'] : '';
                 $mandatory = isset($sample['mandatory']) ? $sample['mandatory'] : '';
-                ?>
+        ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -151,7 +170,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                                     $resultCode = isset($pr['result_code']) ? $pr['result_code'] : '';
                                     $response = isset($pr['response']) ? $pr['response'] : '';
                                     $selected = ($resultCode == $referenceResult) ? 'selected="selected"' : '';
-                                    ?>
+                                ?>
                                     <option value="<?php echo htmlspecialchars($resultCode); ?>" <?php echo $selected; ?>>
                                         <?php echo htmlspecialchars($response); ?>
                                     </option>
@@ -189,7 +208,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php
+            <?php
                 $counter++;
             endforeach;
         else:
@@ -302,14 +321,14 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
         });
     }
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
     });
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }

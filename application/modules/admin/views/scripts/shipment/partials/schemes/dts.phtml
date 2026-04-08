@@ -80,8 +80,12 @@ $savedSettings = [
     'collect_qc_data' => $shipmentAttribute['collect_qc_data'] ?? null,
 ];
 $effectiveSettings = [];
+$stringFields = ['dtsSchemeType', 'reportVersion', 'effectiveDate', 'sampleType', 'screeningTest', 'dtsTestPanelType'];
 foreach ($savedSettings as $key => $savedValue) {
-    $effectiveSettings[$key] = $savedValue ?? $configSettings[$key] ?? null;
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
 }
 $dtsSchemeType = $effectiveSettings['dtsSchemeType'] ?? 'standard';
 $reportVersion = $effectiveSettings['reportVersion'] ?? '';
@@ -511,7 +515,7 @@ if ($renderTestPanelTypeSection) { ?>
                 $rtriResult = $reference['dts_rtri_reference_result'] ?? '';
                 $control = $reference['control'] ?? 0;
                 $mandatory = $reference['mandatory'] ?? 1;
-                ?>
+        ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -535,7 +539,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -547,7 +551,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($syphilisResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -559,7 +563,7 @@ if ($renderTestPanelTypeSection) { ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($rtriResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                <?php endif;
+                            <?php endif;
                             endforeach; ?>
                         </select>
                     </td>
@@ -614,7 +618,7 @@ if ($renderTestPanelTypeSection) { ?>
                         <?php include dirname(__FILE__) . '/_dts-sample-modal.phtml'; ?>
                     </td>
                 </tr>
-                <?php
+            <?php
                 $counter++;
             endforeach;
         else:
@@ -719,7 +723,7 @@ if ($renderTestPanelTypeSection) { ?>
                     if ($savedValue === null && !$hasConfigValue) {
                         continue;
                     }
-                    ?>
+                ?>
                     <tr>
                         <td><?php echo $this->escape($advancedSettingLabels[$settingKey] ?? $settingKey); ?></td>
                         <td><?php echo $savedValue !== null && $savedValue !== '' ? $this->escape((string) $savedValue) : '<span style="color:#999;">' . $this->translate->_("Not set") . '</span>'; ?>
@@ -754,7 +758,7 @@ if ($renderTestPanelTypeSection) { ?>
     var dtsSavedSettings = <?php echo json_encode($savedSettings); ?>;
     var dtsConfigSettings = <?php echo json_encode($configSettings); ?>;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         function getEffectiveSetting(settingKey) {
             var selector = $('.dts-setting-source[data-setting-key="' + settingKey + '"]');
             var source = selector.length ? selector.val() : 'saved';
@@ -791,7 +795,7 @@ if ($renderTestPanelTypeSection) { ?>
             var enableSyphilis = $('#enableSyphilis').val();
             var enableRtri = $('#enableRtri').val();
 
-            $('[data-scheme-section]').each(function () {
+            $('[data-scheme-section]').each(function() {
                 var allowedSchemes = String($(this).data('scheme-section')).split(' ');
                 $(this).toggle($.inArray(schemeType, allowedSchemes) !== -1);
             });
@@ -807,17 +811,17 @@ if ($renderTestPanelTypeSection) { ?>
             }
         }
 
-        $('#toggleAdvancedDtsSettings').on('click', function () {
+        $('#toggleAdvancedDtsSettings').on('click', function() {
             $('#advancedDtsSettingsPanel').slideToggle();
             $('.advanced-config-source').slideToggle();
         });
 
-        $('.dts-setting-source').on('change', function () {
+        $('.dts-setting-source').on('change', function() {
             applyEffectiveSetting($(this).data('setting-key'));
             refreshDtsSettingVisibility();
         });
 
-        $("#dtsSampleType").change(function () {
+        $("#dtsSampleType").change(function() {
             refreshDtsSettingVisibility();
             if (!$(".sample-diluted-input").is(':visible')) {
                 $("select[name='isSampleDiluted[]']").val('');
@@ -837,7 +841,7 @@ if ($renderTestPanelTypeSection) { ?>
         });
 
         // Syphilis toggle
-        $("#enableSyphilis").change(function () {
+        $("#enableSyphilis").change(function() {
             if ($(this).val() == "yes") {
                 $(".syphilis-input").show();
                 $("select[name='possibleSyphilisResults[]']").addClass("isRequired");
@@ -848,7 +852,7 @@ if ($renderTestPanelTypeSection) { ?>
         });
 
         // RTRI toggle
-        $("#enableRtri").change(function () {
+        $("#enableRtri").change(function() {
             if ($(this).val() == "yes") {
                 $(".rtri-input").show();
             } else {
@@ -926,7 +930,7 @@ if ($renderTestPanelTypeSection) { ?>
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -1171,25 +1175,25 @@ if ($renderTestPanelTypeSection) { ?>
     }
 
     function removeEiaRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeWbRow(obj, sampleId) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeHivRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
 
     function removeGeeniusRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -1209,10 +1213,10 @@ if ($renderTestPanelTypeSection) { ?>
         if (modalDiv && mbdDiv) {
             modalDiv.innerHTML = mbdDiv.innerHTML;
 
-            $("#mbd input:text").each(function (i, obj) {
+            $("#mbd input:text").each(function(i, obj) {
                 $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
             });
-            $("#mbd select").each(function (i, obj) {
+            $("#mbd select").each(function(i, obj) {
                 $("#" + divId + " select:eq(" + i + ")").val($(this).val());
             });
         }

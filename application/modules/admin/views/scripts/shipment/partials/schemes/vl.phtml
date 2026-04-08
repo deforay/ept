@@ -53,11 +53,31 @@ if ($isEditMode && isset($this->shipmentData['shipment']['shipment_attributes'])
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
-$vlConfig = $this->config;
-$reportVersion = isset($vlConfig['reportVersion']) ? $vlConfig['reportVersion'] : '';
-$effectiveDate = isset($vlConfig['effectiveDate']) ? $vlConfig['effectiveDate'] : '';
 // Counter for samples
 $count = 0;
+$vlConfig = $this->config;
+
+$configSettings = [
+    'reportVersion'       => $vlConfig['reportVersion']       ?? null,
+    'effectiveDate'       => $vlConfig['effectiveDate']        ?? null,
+    'methodOfEvaluation'  => $vlConfig['methodOfEvaluation']   ?? null,
+];
+
+$savedSettings = [
+    'reportVersion'       => $shipmentAttribute['reportVersion']      ?? null,
+    'effectiveDate'       => $shipmentAttribute['effectiveDate']       ?? null,
+    'methodOfEvaluation'  => $shipmentAttribute['methodOfEvaluation']  ?? null,
+];
+
+$stringFields = ['reportVersion', 'effectiveDate', 'methodOfEvaluation'];
+
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
+}
 ?>
 
 <style type="text/css">
@@ -81,10 +101,10 @@ $count = 0;
         <select id="methodOfEvaluation" name="methodOfEvaluation" class="isRequired form-control input-sm"
             title="Please select a Method of Evaluation" style="margin-bottom: 15px;">
             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-            <option value="iso17043" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>>
+            <option value="iso17043" <?php echo (isset($effectiveSettings['methodOfEvaluation']) && $effectiveSettings['methodOfEvaluation'] == 'iso17043') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("ISO/IEC 17043"); ?>
             </option>
-            <option value="standard" <?php echo (isset($shipmentAttribute['methodOfEvaluation']) && $shipmentAttribute['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>>
+            <option value="standard" <?php echo (isset($effectiveSettings['methodOfEvaluation']) && $effectiveSettings['methodOfEvaluation'] == 'standard') ? "selected='selected'" : ""; ?>>
                 <?= $this->translate->_("Legacy"); ?>
             </option>
         </select>
@@ -95,7 +115,7 @@ $count = 0;
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['reportVersion'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -104,7 +124,7 @@ $count = 0;
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
             title="Please select the report effective date" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <table style="width: 100%; margin: 0 auto;" border="1" class="table table-bordered table-striped clearfix"
@@ -142,7 +162,7 @@ $count = 0;
                 $control = '';
                 $mandatory = '';
             }
-            ?>
+        ?>
             <tr align="center">
                 <td style="text-align: center">
                     <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -234,7 +254,7 @@ $count = 0;
                                                     $k = 0;
                                                     foreach ($vlReferenceMethods as $vlref) {
                                                         if ($vlref['sample_id'] == $sampleId) {
-                                                            ?>
+                                                ?>
                                                             <tr>
                                                                 <td>
                                                                     <select class="form-control"
@@ -260,7 +280,7 @@ $count = 0;
                                                                     <?php endif; ?>
                                                                 </td>
                                                             </tr>
-                                                            <?php
+                                                    <?php
                                                             $k++;
                                                         }
                                                     }
@@ -300,7 +320,7 @@ $count = 0;
                     <?php endif; ?>
                 </td>
             </tr>
-            <?php
+        <?php
             $counter++;
         endforeach;
         ?>
@@ -355,7 +375,7 @@ $count = 0;
 <script type="text/javascript">
     var sampleCounter = <?php echo $count + 1; ?>;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         <?php if (!$isEditMode): ?>
             // ADD mode: create reference result blocks for pre-existing controls
             <?php for ($i = 1; $i <= $count + 1; $i++): ?>
@@ -394,7 +414,7 @@ $count = 0;
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -451,7 +471,7 @@ $count = 0;
     }
 
     function removeVlRefRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -468,10 +488,10 @@ $count = 0;
             }
 
             // Copy input values
-            $("#mbd input:text").each(function (i, obj) {
+            $("#mbd input:text").each(function(i, obj) {
                 $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
             });
-            $("#mbd select").each(function (i, obj) {
+            $("#mbd select").each(function(i, obj) {
                 $("#" + divId + " select:eq(" + i + ")").val($(this).val());
             });
         }

@@ -71,8 +71,26 @@ foreach ($testKitOptions as $typeId => $typeName) {
     $testKitHtml .= '<option value="' . htmlspecialchars($typeId) . '">' . htmlspecialchars($typeName) . '</option>';
 }
 
-$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
-$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
+$covid19Config = $this->config;
+$configSettings = [
+    'reportVersion' => $covid19Config['reportVersion'] ?? null,
+    'effectiveDate' => $covid19Config['effectiveDate'] ?? null,
+];
+
+$savedSettings = [
+    'reportVersion' => $shipmentAttribute['reportVersion'] ?? null,
+    'effectiveDate' => $shipmentAttribute['effectiveDate'] ?? null,
+];
+
+$stringFields = ['reportVersion', 'effectiveDate'];
+
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
+}
 ?>
 
 <style type="text/css">
@@ -115,7 +133,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -124,7 +142,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
             title="Please select the report effective date" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <!-- COVID-19 Sample Table -->
@@ -158,7 +176,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                 $control = $sample['control'] ?? '';
                 $mandatory = $sample['mandatory'] ?? '';
                 $score = $sample['sample_score'] ?? '';
-                ?>
+        ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[]" class="isRequired input-sm form-control"
@@ -179,11 +197,11 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                             <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                             <?php foreach ($possibleResultsSource as $pr):
                                 if ($pr['scheme_sub_group'] == 'COVID19_FINAL'):
-                                    ?>
+                            ?>
                                     <option value="<?php echo htmlspecialchars($pr['id']); ?>" <?php echo ($referenceResult == $pr['id']) ? "selected='selected'" : ""; ?>>
                                         <?php echo htmlspecialchars($pr['response']); ?>
                                     </option>
-                                    <?php
+                            <?php
                                 endif;
                             endforeach;
                             ?>
@@ -234,7 +252,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php
+            <?php
                 $counter++;
             endforeach;
         else:
@@ -300,7 +318,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
 <script type="text/javascript">
     var sampleCounter = <?php echo $isEditMode ? count($samples) : 1; ?>;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
@@ -310,9 +328,9 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
             <?php
             $i = 1;
             foreach ($samples as $sample):
-                ?>
+            ?>
                 addNewPlatformNameBlock('<?php echo $i; ?>');
-                <?php
+            <?php
                 $i++;
             endforeach;
             ?>
@@ -376,7 +394,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     }
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -440,7 +458,7 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
     }
 
     function removePlatformRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }
@@ -463,10 +481,10 @@ $effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiv
                 targetEl.appendChild(mbdEl.firstChild.cloneNode(true));
             }
 
-            $("#mbd input:text").each(function (i, obj) {
+            $("#mbd input:text").each(function(i, obj) {
                 $("#" + divId + " input:text:eq(" + i + ")").val($(this).val());
             });
-            $("#mbd select").each(function (i, obj) {
+            $("#mbd select").each(function(i, obj) {
                 $("#" + divId + " select:eq(" + i + ")").val($(this).val());
             });
         }

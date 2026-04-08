@@ -59,8 +59,27 @@ if (isset($this->assay) && !empty($this->assay)) {
 // Date format helper
 $vHelper = $this->getHelper('DateFormat');
 $dtFormat = $vHelper->getDateFormat();
-$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
-$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
+
+$tbConfig = $this->config;
+$configSettings = [
+    'reportVersion'       => $tbConfig['reportVersion']       ?? null,
+    'effectiveDate'       => $tbConfig['effectiveDate']        ?? null,
+];
+
+$savedSettings = [
+    'reportVersion'       => $shipmentAttribute['reportVersion']      ?? null,
+    'effectiveDate'       => $shipmentAttribute['effectiveDate']       ?? null,
+];
+
+$stringFields = ['reportVersion', 'effectiveDate'];
+
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
+}
 // Get current TB test type for edit mode
 $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 ?>
@@ -102,7 +121,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
             title="Please enter the report version" class="form-control input-sm"
-            value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['reportVersion'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -111,7 +130,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
             title="Please select the report effective date" class="form-control input-sm datepicker"
-            value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
@@ -150,7 +169,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         if ($isEditMode && count($samples) > 0):
             foreach ($samples as $reference):
                 $sampleId = $reference['sample_id'];
-                ?>
+        ?>
                 <tr align="center">
                     <td style="text-align: center">
                         <input type="text" name="sampleName[<?php echo htmlspecialchars($sampleId); ?>]"
@@ -204,7 +223,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php
+            <?php
                 $mcounter++;
             endforeach;
         else:
@@ -270,7 +289,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
             if ($isEditMode && count($samples) > 0):
                 foreach ($samples as $reference):
                     $sampleId = $reference['sample_id'];
-                    ?>
+            ?>
                     <tr>
                         <td>
                             <table>
@@ -529,7 +548,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                             <?php endif; ?>
                         </td>
                     </tr>
-                    <?php
+                <?php
                     $counter++;
                 endforeach;
             else:
@@ -738,7 +757,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
 <!-- TB-specific JavaScript -->
 <script type="text/javascript">
     <?php if ($isEditMode): ?>
-        $(function () {
+        $(function() {
             let _tbTestType = '<?php echo htmlspecialchars($currentTbTestType); ?>';
             if (_tbTestType != '') {
                 loadRefTable(_tbTestType);
@@ -962,7 +981,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
-        $('.molecularfieldChange').change(function () {
+        $('.molecularfieldChange').change(function() {
             // Dynamically get row number
             const _name = $(this).attr('name');
             const _id = this.id;
@@ -976,12 +995,12 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         });
     }
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $(".datepicker").datepicker({
             dateFormat: '<?php echo $dtFormat; ?>'
         });
 
-        $('.molecularfieldChange').change(function () {
+        $('.molecularfieldChange').change(function() {
             // Dynamically get row number
             const _name = $(this).attr('name');
             const _id = this.id;
@@ -996,7 +1015,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     });
 
     function removeRow(obj) {
-        $(obj.parentNode.parentNode).fadeOut("normal", function () {
+        $(obj.parentNode.parentNode).fadeOut("normal", function() {
             $(this).remove();
         });
     }

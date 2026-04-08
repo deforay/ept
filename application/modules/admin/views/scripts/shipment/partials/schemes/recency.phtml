@@ -82,21 +82,39 @@ foreach ($possibleResults as $pr) {
 }
 $testResultsJs = str_replace(array("\n", "\r", "'"), array('', '', "\\'"), $testResultsHtml);
 
-$reportVersion = isset($this->config['reportVersion']) ? $this->config['reportVersion'] : '';
-$effectiveDate = isset($this->config['effectiveDate']) ? $this->config['effectiveDate'] : '';
+$recencyConfig = $this->config;
+$configSettings = [
+    'reportVersion' => $recencyConfig['reportVersion'] ?? null,
+    'effectiveDate' => $recencyConfig['effectiveDate'] ?? null,
+];
+
+$savedSettings = [
+    'reportVersion' => $shipmentAttribute['reportVersion'] ?? null,
+    'effectiveDate' => $shipmentAttribute['effectiveDate'] ?? null,
+];
+
+$stringFields = ['reportVersion', 'effectiveDate'];
+
+$effectiveSettings = [];
+foreach ($savedSettings as $key => $savedValue) {
+    $configValue = $configSettings[$key] ?? null;
+    $effectiveSettings[$key] = in_array($key, $stringFields)
+        ? ($savedValue ?: $configValue ?: null)
+        : ($savedValue ?? $configValue ?? null);
+}
 ?>
 <div class="form-group">
     <label class="col-lg-3 control-label" for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="reportVersion" id="reportVersion" placeholder="Enter the report version"
-            title="Please enter the report version" class="form-control input-sm" value="<?php echo $shipmentAttribute['reportVersion'] ?? $reportVersion; ?>" />
+            title="Please enter the report version" class="form-control input-sm" value="<?php echo htmlspecialchars($effectiveSettings['reportVersion'] ?? ''); ?>" />
     </div>
 </div>
 <div class="form-group">
     <label class="col-lg-3 control-label" for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
     <div class="col-lg-5">
         <input type="text" name="effectiveDate" id="effectiveDate" placeholder="Select the report effective date"
-            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo $shipmentAttribute['effectiveDate'] ?? $effectiveDate; ?>" />
+            title="Please select the report effective date" class="form-control input-sm datepicker" value="<?php echo htmlspecialchars($effectiveSettings['effectiveDate'] ?? ''); ?>" />
     </div>
 </div>
 <!-- Recency Sample Table -->
