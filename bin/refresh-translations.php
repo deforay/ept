@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
@@ -25,6 +27,7 @@ TXT;
 }
 
 require_once __DIR__ . '/../cli-bootstrap.php';
+require_once __DIR__ . '/console-helpers.php';
 
 chdir(ROOT_PATH);
 
@@ -58,8 +61,12 @@ const EXTRA_SOURCE_FILES = [
     'public/js/main.js.php',
     'application/languages/db-translation-strings.php',
 ];
+const DEFAULT_SOURCE_LOCALE = 'en_US';
 
 try {
+    $io = createCliStyle();
+    $io->title('Refresh Translation Catalogs');
+
     $requestedLocales = normalizeLocaleFilter($options['locale'] ?? []);
     $requestedTables = normalizeTableFilter($options['table'] ?? []);
     $shouldRunAi = isAiPretranslationConfigured() && !isset($options['skip-ai']);
@@ -76,19 +83,26 @@ try {
         throw new RuntimeException('Could not determine the active database for this instance.');
     }
 
-    echo "Refreshing translations for database: {$databaseName}" . PHP_EOL;
+    $io->definitionList(
+        ['Database' => $databaseName],
+        ['Locales' => $requestedLocales === [] ? 'all discovered locales' : implode(', ', $requestedLocales)],
+        ['DB table filter' => $requestedTables === [] ? 'all configured tables' : implode(', ', $requestedTables)],
+        ['AI pretranslation' => describeAiMode($shouldRunAi, isset($options['skip-ai']))]
+    );
 
-    runDbStringGenerator($requestedTables);
+    runDbStringGenerator($io, $requestedTables);
 
     $sourceFiles = collectSourceFiles();
     if ($sourceFiles === []) {
         throw new RuntimeException('No translation source files were found.');
     }
 
+    $io->text(sprintf('Scanning <info>%d</info> source file(s) for gettext strings.', count($sourceFiles)));
+
     $potFile = createTemporaryPotFile();
 
     try {
-        generatePotFile($potFile, $sourceFiles);
+        generatePotFile($io, $potFile, $sourceFiles);
 
         $locales = discoverLocales($requestedLocales);
         if ($locales === []) {
@@ -96,14 +110,27 @@ try {
         }
 
         foreach ($locales as $locale => $poFile) {
-            echo "Merging locale {$locale}" . PHP_EOL;
+            $io->section("Locale {$locale}");
+            if (normalizePoFileBeforeMerge($poFile)) {
+                $io->note("Normalized malformed duplicate header entries before merge.");
+            }
+
+            $io->text('Merging catalog updates');
             mergeCatalog($poFile, $potFile);
 
             if ($shouldRunAi) {
-                runAiPretranslation($locale);
+                if ($locale === DEFAULT_SOURCE_LOCALE) {
+                    $io->note("Skipping AI pretranslation for source locale {$locale}.");
+                    $io->text('Compiling catalog');
+                    compileCatalog($poFile, localePoToMoPath($poFile));
+                    continue;
+                }
+
+                runAiPretranslation($io, $locale);
                 continue;
             }
 
+            $io->text('Compiling catalog');
             compileCatalog($poFile, localePoToMoPath($poFile));
         }
     } finally {
@@ -112,9 +139,10 @@ try {
         }
     }
 
-    echo 'Translation refresh completed successfully.' . PHP_EOL;
+    $io->success('Translation refresh completed successfully.');
 } catch (Throwable $e) {
-    fwrite(STDERR, 'Translation refresh failed: ' . $e->getMessage() . PHP_EOL);
+    $io ??= createCliStyle();
+    $io->error('Translation refresh failed: ' . $e->getMessage());
     exit(1);
 }
 
@@ -177,7 +205,7 @@ function assertGettextBinariesAvailable(): void
 /**
  * @param string[] $requestedTables
  */
-function runDbStringGenerator(array $requestedTables): void
+function runDbStringGenerator(SymfonyStyle $io, array $requestedTables): void
 {
     $command = ['php', ROOT_PATH . '/bin/generate-db-translation-strings.php'];
 
@@ -185,8 +213,7 @@ function runDbStringGenerator(array $requestedTables): void
         $command[] = '--table=' . $tableName;
     }
 
-    echo 'Regenerating DB-backed translation strings' . PHP_EOL;
-    runCommand($command);
+    runConsoleCommand($io, $command, 'Regenerating DB-backed translation strings');
 
     if (!is_file(GENERATED_DB_STRINGS_FILE)) {
         throw new RuntimeException('DB translation string file was not generated.');
@@ -260,7 +287,7 @@ function createTemporaryPotFile(): string
 /**
  * @param string[] $sourceFiles
  */
-function generatePotFile(string $potFile, array $sourceFiles): void
+function generatePotFile(SymfonyStyle $io, string $potFile, array $sourceFiles): void
 {
     $fileList = tempnam(sys_get_temp_dir(), 'ept-i18n-files-');
     if ($fileList === false) {
@@ -288,8 +315,7 @@ function generatePotFile(string $potFile, array $sourceFiles): void
             $command[] = '--keyword=' . $keyword;
         }
 
-        echo 'Generating source POT catalog' . PHP_EOL;
-        runCommand($command);
+        runConsoleCommand($io, $command, 'Generating source POT catalog');
     } finally {
         @unlink($fileList);
     }
@@ -363,11 +389,10 @@ function isAiPretranslationConfigured(): bool
         && trim((string)getenv('EPT_AI_MODEL')) !== '';
 }
 
-function runAiPretranslation(string $locale): void
+function runAiPretranslation(SymfonyStyle $io, string $locale): void
 {
     $command = ['php', ROOT_PATH . '/bin/ai-pretranslate.php', '--locale=' . $locale];
-    echo "AI pre-translating locale {$locale}" . PHP_EOL;
-    runCommand($command);
+    runConsoleCommand($io, $command, "AI pre-translating locale {$locale}");
 }
 
 function compileCatalog(string $poFile, string $moFile): void
@@ -379,8 +404,100 @@ function compileCatalog(string $poFile, string $moFile): void
         $poFile,
     ];
 
-    echo 'Compiling ' . basename($moFile) . PHP_EOL;
     runCommand($command);
+}
+
+function describeAiMode(bool $shouldRunAi, bool $wasSkippedByFlag): string
+{
+    if ($shouldRunAi) {
+        return 'enabled';
+    }
+
+    if ($wasSkippedByFlag) {
+        return 'disabled by --skip-ai';
+    }
+
+    return 'not configured';
+}
+
+function normalizePoFileBeforeMerge(string $poFile): bool
+{
+    $content = @file_get_contents($poFile);
+    if ($content === false) {
+        throw new RuntimeException("Failed to read PO file '{$poFile}'.");
+    }
+
+    $normalized = str_replace(["\r\n", "\r"], "\n", $content);
+    $trimmed = trim($normalized);
+    if ($trimmed === '') {
+        return false;
+    }
+
+    $blocks = preg_split("/\n{2,}/", $trimmed) ?: [];
+    $cleanedBlocks = [];
+    $hasSeenHeader = false;
+    $changed = false;
+
+    foreach ($blocks as $block) {
+        $trimmedBlock = trim($block);
+
+        if ($trimmedBlock === '') {
+            continue;
+        }
+
+        if (isMalformedDuplicateHeaderBlock($trimmedBlock, $hasSeenHeader)) {
+            $changed = true;
+            continue;
+        }
+
+        $cleanedBlock = removeMalformedHeaderTailFromObsoleteBlock($trimmedBlock, $hasSeenHeader);
+        if ($cleanedBlock !== $trimmedBlock) {
+            $trimmedBlock = $cleanedBlock;
+            $changed = true;
+        }
+
+        if (str_starts_with($trimmedBlock, 'msgid ""')) {
+            $hasSeenHeader = true;
+        }
+
+        $cleanedBlocks[] = $trimmedBlock;
+    }
+
+    if (!$changed) {
+        return false;
+    }
+
+    $rewrittenContent = implode(PHP_EOL . PHP_EOL, $cleanedBlocks) . PHP_EOL;
+    if (file_put_contents($poFile, $rewrittenContent) === false) {
+        throw new RuntimeException("Failed to rewrite PO file '{$poFile}'.");
+    }
+
+    return true;
+}
+
+function isMalformedDuplicateHeaderBlock(string $block, bool $hasSeenHeader): bool
+{
+    if (!$hasSeenHeader) {
+        return false;
+    }
+
+    $lines = array_values(array_filter(
+        array_map('trim', explode("\n", $block)),
+        static fn(string $line): bool => $line !== ''
+    ));
+
+    return $lines === ['msgid ""', 'msgstr ""'];
+}
+
+function removeMalformedHeaderTailFromObsoleteBlock(string $block, bool $hasSeenHeader): string
+{
+    if (!$hasSeenHeader || !str_contains($block, '#~')) {
+        return $block;
+    }
+
+    $cleanedBlock = preg_replace('/\nmsgid ""\nmsgstr ""\s*$/', '', $block);
+
+    return is_string($cleanedBlock) ? trim($cleanedBlock) : $block;
 }
 
 function localePoToMoPath(string $poFile): string

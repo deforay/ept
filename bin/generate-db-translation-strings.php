@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
@@ -24,6 +26,7 @@ TXT;
 }
 
 require_once __DIR__ . '/../cli-bootstrap.php';
+require_once __DIR__ . '/console-helpers.php';
 
 ini_set('memory_limit', '-1');
 set_time_limit(0);
@@ -46,31 +49,33 @@ const DEFAULT_OUTPUT_FILE = APPLICATION_PATH . '/languages/db-translation-string
 $tablesToTranslate = [
     'r_control' => ['control_name'],
     'r_covid19_corrective_actions' => ['corrective_action', 'description'],
-    'r_covid19_gene_types' => ['gene_name'],
-    'r_dbs_eia' => ['eia_name'],
-    'r_dbs_wb' => ['wb_name'],
     'r_dts_corrective_actions' => ['corrective_action', 'description'],
-    'r_eid_detection_assay' => ['name'],
-    'r_eid_extraction_assay' => ['name'],
-    'r_enrolled_programs' => ['enrolled_programs'],
     'r_evaluation_comments' => ['comment'],
     'r_feedback_questions' => ['question_text'],
     'r_modes_of_receipt' => ['mode_name'],
     'r_network_tiers' => ['network_name'],
     'r_participant_affiliates' => ['affiliate'],
-    'r_possibleresult' => [['column' => 'response', 'variants' => ['default', 'upper', 'lower']]],
-    'r_recency_assay' => ['name'],
+    'r_possibleresult' => [
+        [
+            'column' => 'response',
+            'variants' => ['default', 'upper', 'lower']
+        ]
+    ],
     'r_response_not_tested_reasons' => ['ntr_reason'],
     'r_response_vl_not_tested_reason' => ['vl_not_tested_reason'],
-    'r_results' => ['result_name'],
+    'r_results' => [
+        [
+            'column' => 'result_name',
+            'variants' => ['default', 'upper', 'lower']
+        ]
+    ],
     'r_site_type' => ['site_type'],
-    'r_tb_assay' => ['name', 'short_name'],
-    'r_test_type_covid19' => ['test_type_name', 'test_type_short_name'],
-    //'r_testkitnames' => ['TestKit_Name', 'TestKit_Name_Short'],
-    'r_vl_assay' => ['name', 'short_name'],
 ];
 
 try {
+    $io = createCliStyle();
+    $io->title('Generate DB Translation Strings');
+
     $db = Zend_Db_Table_Abstract::getDefaultAdapter();
     if (!$db instanceof Zend_Db_Adapter_Abstract) {
         throw new RuntimeException('Default database adapter is not available. Check cli-bootstrap.php and DB configuration.');
@@ -93,13 +98,17 @@ try {
     $columnCount = array_sum(array_map('count', $tableColumns));
     $stringCount = count($translatableStrings);
 
-    echo "Generated {$outputFile}" . PHP_EOL;
-    echo "Database: {$databaseName}" . PHP_EOL;
-    echo "Tables scanned: {$tableCount}" . PHP_EOL;
-    echo "Columns scanned: {$columnCount}" . PHP_EOL;
-    echo "Unique strings: {$stringCount}" . PHP_EOL;
+    $io->definitionList(
+        ['Output file' => $outputFile],
+        ['Database' => $databaseName],
+        ['Tables scanned' => (string) $tableCount],
+        ['Columns scanned' => (string) $columnCount],
+        ['Unique strings' => (string) $stringCount]
+    );
+    $io->success('DB-backed translation strings generated successfully.');
 } catch (Throwable $e) {
-    fwrite(STDERR, 'Error: ' . $e->getMessage() . PHP_EOL);
+    $io ??= createCliStyle();
+    $io->error('DB translation string generation failed: ' . $e->getMessage());
     exit(1);
 }
 
@@ -228,6 +237,7 @@ function validateMappedColumns(Zend_Db_Adapter_Abstract $db, string $databaseNam
 
     foreach ($tableColumns as $tableName => $columns) {
         if (!isset($availableColumns[$tableName])) {
+            // Missing tables are tolerated so the same script works across deployments with slightly different schemas.
             fwrite(
                 STDERR,
                 "Warning: Skipping translation table '{$tableName}' because it was not found in database '{$databaseName}'." . PHP_EOL

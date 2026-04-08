@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
@@ -37,6 +39,7 @@ set_include_path(implode(PATH_SEPARATOR, [
 ]));
 
 require_once ROOT_PATH . '/vendor/autoload.php';
+require_once __DIR__ . '/console-helpers.php';
 
 chdir(ROOT_PATH);
 
@@ -49,6 +52,9 @@ const DEFAULT_TIMEOUT_SECONDS = 60;
 const TRANSLATION_GUIDE_PATH = ROOT_PATH . '/docs/TranslationGuide.md';
 
 try {
+    $io = createCliStyle();
+    $io->title('AI Pre-translate Catalogs');
+
     assertBinaryAvailable('msgfmt');
 
     $requestedLocales = normalizeLocaleFilter($options['locale'] ?? []);
@@ -66,22 +72,30 @@ try {
         throw new RuntimeException('No locale PO files were found to pre-translate.');
     }
 
+    $io->definitionList(
+        ['Source locale' => $sourceLocale],
+        ['Target locales' => implode(', ', array_keys($locales))],
+        ['Batch size' => (string) DEFAULT_BATCH_SIZE]
+    );
+
     foreach ($locales as $locale => $poFile) {
         if ($locale === $sourceLocale) {
-            echo "Skipping source locale {$locale}" . PHP_EOL;
+            $io->note("Skipping source locale {$locale}.");
             continue;
         }
 
-        echo "AI pre-translating locale {$locale}" . PHP_EOL;
-        $updatedCount = aiPretranslatePoFile($poFile, $locale, $sourceLocale, $client, $context);
-        echo "Filled {$updatedCount} empty translations in {$locale}" . PHP_EOL;
+        $io->section("Locale {$locale}");
+        $updatedCount = aiPretranslatePoFile($io, $poFile, $locale, $sourceLocale, $client, $context);
+        $io->text("Filled <info>{$updatedCount}</info> empty translations in {$locale}.");
 
+        $io->text('Compiling catalog');
         compileCatalog($poFile, localePoToMoPath($poFile));
     }
 
-    echo 'AI pre-translation completed successfully.' . PHP_EOL;
+    $io->success('AI pre-translation completed successfully.');
 } catch (Throwable $e) {
-    fwrite(STDERR, 'AI pre-translation failed: ' . $e->getMessage() . PHP_EOL);
+    $io ??= createCliStyle();
+    $io->error('AI pre-translation failed: ' . $e->getMessage());
     exit(1);
 }
 
@@ -209,12 +223,14 @@ function extractMarkdownSection(string $markdown, string $heading): string
 }
 
 function aiPretranslatePoFile(
+    SymfonyStyle $io,
     string $poFile,
     string $locale,
     string $sourceLocale,
     AiTranslationClient $client,
     string $context
 ): int {
+    $poFileNeedsNormalization = poFileContainsMalformedDuplicateHeaders($poFile);
     $entries = parsePoFile($poFile);
     $targetLanguageName = localeToLanguageName($locale);
     $sourceLanguageName = localeToLanguageName($sourceLocale);
@@ -227,11 +243,32 @@ function aiPretranslatePoFile(
     }
 
     if ($pendingEntries === []) {
+        if ($poFileNeedsNormalization) {
+            // Normalize previously corrupted PO files even when no new AI translations are needed.
+            writePoFile($poFile, $entries);
+            $io->note("Normalized malformed duplicate header entries in {$locale}.");
+        }
+
+        $io->note("No empty translations found in {$locale}.");
         return 0;
     }
 
+    $io->text(sprintf(
+        'Found <info>%d</info> empty translations across <info>%d</info> batch(es).',
+        count($pendingEntries),
+        (int) ceil(count($pendingEntries) / DEFAULT_BATCH_SIZE)
+    ));
+
     $translations = [];
+    $batchNumber = 0;
     foreach (array_chunk($pendingEntries, DEFAULT_BATCH_SIZE, true) as $batch) {
+        $batchNumber++;
+        $io->text(sprintf(
+            'Sending batch <comment>%d</comment> with <comment>%d</comment> string(s) to AI.',
+            $batchNumber,
+            count($batch)
+        ));
+
         $batchTranslations = $client->translateBatch(
             array_values($batch),
             $sourceLanguageName,
@@ -250,6 +287,7 @@ function aiPretranslatePoFile(
     }
 
     if ($translations === []) {
+        $io->warning("AI returned no usable translations for {$locale}.");
         return 0;
     }
 
@@ -262,8 +300,22 @@ function aiPretranslatePoFile(
     return count($translations);
 }
 
+function poFileContainsMalformedDuplicateHeaders(string $poFile): bool
+{
+    $content = @file_get_contents($poFile);
+    if ($content === false) {
+        throw new RuntimeException("Failed to read PO file '{$poFile}'.");
+    }
+
+    preg_match_all('/^msgid ""$/m', $content, $matches);
+
+    return count($matches[0]) > 1;
+}
+
 /**
  * @return array<int, array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
  *   comments: string[],
  *   msgctxt: ?string,
  *   msgid: string,
@@ -291,11 +343,13 @@ function parsePoFile(string $poFile): array
         $entries[] = parsePoEntry($block);
     }
 
-    return $entries;
+    return removeDuplicateEmptyHeaderEntries($entries);
 }
 
 /**
  * @return array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
  *   comments: string[],
  *   msgctxt: ?string,
  *   msgid: string,
@@ -306,6 +360,8 @@ function parsePoFile(string $poFile): array
 function parsePoEntry(string $block): array
 {
     $entry = [
+        'raw_block' => null,
+        'is_obsolete_only' => false,
         'comments' => [],
         'msgctxt' => null,
         'msgid' => '',
@@ -316,6 +372,32 @@ function parsePoEntry(string $block): array
     $currentField = null;
     $currentIndex = '';
     $lines = explode("\n", $block);
+    $hasActiveFields = false;
+    $hasObsoleteLines = false;
+
+    foreach ($lines as $line) {
+        $trimmedLine = ltrim($line);
+        if ($trimmedLine === '') {
+            continue;
+        }
+
+        if (str_starts_with($trimmedLine, '#~')) {
+            $hasObsoleteLines = true;
+            continue;
+        }
+
+        if (preg_match('/^(msgctxt|msgid|msgid_plural|msgstr(?:\[(\d+)\])?)\s+(".*")$/', $trimmedLine) === 1) {
+            $hasActiveFields = true;
+        }
+    }
+
+    // Keep obsolete-only blocks untouched. Reconstructing them as normal entries creates
+    // duplicate empty msgid definitions that break msgfmt validation.
+    if ($hasObsoleteLines && !$hasActiveFields) {
+        $entry['raw_block'] = $block;
+        $entry['is_obsolete_only'] = true;
+        return $entry;
+    }
 
     foreach ($lines as $line) {
         if ($line === '') {
@@ -371,6 +453,8 @@ function parsePoEntry(string $block): array
 
 /**
  * @param array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
  *   comments: string[],
  *   msgctxt: ?string,
  *   msgid: string,
@@ -380,6 +464,10 @@ function parsePoEntry(string $block): array
  */
 function shouldAiPretranslateEntry(array $entry): bool
 {
+    if (($entry['is_obsolete_only'] ?? false) === true) {
+        return false;
+    }
+
     if ($entry['msgid'] === '') {
         return false;
     }
@@ -397,6 +485,8 @@ function shouldAiPretranslateEntry(array $entry): bool
 
 /**
  * @param array<int, array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
  *   comments: string[],
  *   msgctxt: ?string,
  *   msgid: string,
@@ -407,8 +497,18 @@ function shouldAiPretranslateEntry(array $entry): bool
 function writePoFile(string $poFile, array $entries): void
 {
     $blocks = [];
+    $hasWrittenHeader = false;
 
     foreach ($entries as $entry) {
+        if (($entry['is_obsolete_only'] ?? false) === true) {
+            $blocks[] = rtrim((string) ($entry['raw_block'] ?? ''));
+            continue;
+        }
+
+        if (isDuplicateEmptyHeaderEntry($entry, $hasWrittenHeader)) {
+            continue;
+        }
+
         $lines = $entry['comments'];
 
         if ($entry['msgctxt'] !== null) {
@@ -428,12 +528,89 @@ function writePoFile(string $poFile, array $entries): void
         }
 
         $blocks[] = implode(PHP_EOL, $lines);
+
+        if ($entry['msgid'] === '') {
+            $hasWrittenHeader = true;
+        }
     }
 
     $content = implode(PHP_EOL . PHP_EOL, $blocks) . PHP_EOL;
     if (file_put_contents($poFile, $content) === false) {
         throw new RuntimeException("Failed to write PO file '{$poFile}'.");
     }
+}
+
+/**
+ * Remove malformed empty-header duplicates created by earlier buggy AI pretranslation runs.
+ *
+ * @param array<int, array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
+ *   comments: string[],
+ *   msgctxt: ?string,
+ *   msgid: string,
+ *   msgid_plural: ?string,
+ *   msgstr: array<string, string>
+ * }> $entries
+ * @return array<int, array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
+ *   comments: string[],
+ *   msgctxt: ?string,
+ *   msgid: string,
+ *   msgid_plural: ?string,
+ *   msgstr: array<string, string>
+ * }>
+ */
+function removeDuplicateEmptyHeaderEntries(array $entries): array
+{
+    $cleanedEntries = [];
+    $hasSeenHeader = false;
+
+    foreach ($entries as $entry) {
+        if (isDuplicateEmptyHeaderEntry($entry, $hasSeenHeader)) {
+            continue;
+        }
+
+        $cleanedEntries[] = $entry;
+
+        if (($entry['is_obsolete_only'] ?? false) !== true && $entry['msgid'] === '') {
+            $hasSeenHeader = true;
+        }
+    }
+
+    return $cleanedEntries;
+}
+
+/**
+ * The only valid empty msgid entry is the PO header. Any later empty msgid/msgstr pair
+ * with no context/comments is a malformed duplicate generated by our earlier parser bug.
+ *
+ * @param array{
+ *   raw_block:?string,
+ *   is_obsolete_only:bool,
+ *   comments: string[],
+ *   msgctxt: ?string,
+ *   msgid: string,
+ *   msgid_plural: ?string,
+ *   msgstr: array<string, string>
+ * } $entry
+ */
+function isDuplicateEmptyHeaderEntry(array $entry, bool $hasSeenHeader): bool
+{
+    if (($entry['is_obsolete_only'] ?? false) === true) {
+        return false;
+    }
+
+    if (!$hasSeenHeader || $entry['msgid'] !== '') {
+        return false;
+    }
+
+    if ($entry['msgctxt'] !== null || $entry['msgid_plural'] !== null || $entry['comments'] !== []) {
+        return false;
+    }
+
+    return trim((string) ($entry['msgstr'][''] ?? '')) === '';
 }
 
 function decodePoString(string $quotedString): string
@@ -478,7 +655,6 @@ function compileCatalog(string $poFile, string $moFile): void
         $poFile,
     ];
 
-    echo 'Compiling ' . basename($moFile) . PHP_EOL;
     runCommand($command);
 }
 
