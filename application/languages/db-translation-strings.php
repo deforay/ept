@@ -6,27 +6,17 @@
 
 // r_control: control_name
 // r_covid19_corrective_actions: corrective_action, description
-// r_covid19_gene_types: gene_name
-// r_dbs_eia: eia_name
-// r_dbs_wb: wb_name
 // r_dts_corrective_actions: corrective_action, description
-// r_eid_detection_assay: name
-// r_eid_extraction_assay: name
-// r_enrolled_programs: enrolled_programs
 // r_evaluation_comments: comment
 // r_feedback_questions: question_text
 // r_modes_of_receipt: mode_name
 // r_network_tiers: network_name
 // r_participant_affiliates: affiliate
 // r_possibleresult: response [default, upper, lower]
-// r_recency_assay: name
 // r_response_not_tested_reasons: ntr_reason
 // r_response_vl_not_tested_reason: vl_not_tested_reason
-// r_results: result_name
+// r_results: result_name [default, upper, lower]
 // r_site_type: site_type
-// r_tb_assay: name, short_name
-// r_test_type_covid19: test_type_name, test_type_short_name
-// r_vl_assay: name, short_name
 
 // r_possibleresult.response
 _('1+');
@@ -34,32 +24,8 @@ _('1+');
 _('2+');
 // r_possibleresult.response
 _('3+');
-// r_vl_assay.short_name
-_('Abbott-Alinity');
-// r_vl_assay.short_name
-_('Abbott-m2000');
-// r_vl_assay.name
-_('Abbott Alinity m RealTime HIV-1');
-// r_vl_assay.name
-_('Abbott m2000 RealTime HIV-1');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('Abbott RealTime HIV-1 Qualitative Assay');
-// r_vl_assay.short_name
-_('Amplicor');
 // r_site_type.site_type
 _('Antenatal Clinic (PMTCT)');
-// r_vl_assay.short_name
-_('Biocentric');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('Biocentric - Generic');
-// r_vl_assay.name
-_('Biocentric - Generic HIV Charge Virale');
-// r_vl_assay.name
-_('Biomerieux - NucliSENS');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('Chelex');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('COBAS Ampliprep/Taqman HIV-1 Qual Test');
 // r_evaluation_comments.comment
 _('Controls were not reported');
 // r_modes_of_receipt.mode_name
@@ -78,14 +44,6 @@ _('Did not meet the minimum score required');
 _('District');
 // r_dts_corrective_actions.corrective_action
 _('DTS Testing should be done within specified hours of rehydration as per SOP.');
-// r_dbs_eia.eia_name
-_('EIA-01 BioRad Genetic Systems HIV 1/2 plus O');
-// r_dbs_eia.eia_name
-_('EIA-02 bioMerieux Vironostika Uniform II plus O (3rd gen)');
-// r_dbs_eia.eia_name
-_('EIA-03 bioMerieux Vironostika HIV Ag/Ab (4th gen)');
-// r_dbs_eia.eia_name
-_('EIA-04 Murex HIV 1.2.0 (3rd gen)');
 // r_modes_of_receipt.mode_name
 _('Email');
 // r_dts_corrective_actions.corrective_action
@@ -123,7 +81,15 @@ _('error');
 // r_results.result_name
 _('Excluded');
 // r_results.result_name
+_('EXCLUDED');
+// r_results.result_name
+_('excluded');
+// r_results.result_name
 _('Fail');
+// r_results.result_name
+_('FAIL');
+// r_results.result_name
+_('fail');
 // r_covid19_corrective_actions.description
 _('For sample (1/2/3?) National Covid-19 Testing lab was not followed.');
 // r_dts_corrective_actions.description
@@ -132,12 +98,6 @@ _('For sample (1/2/3?) National HIV Testing algorithm was not followed.');
 _('For Test (1/2/3) testing is not performed with country approved test kit.');
 // r_covid19_corrective_actions.description
 _('For Test (1/2/3) testing is not performed with country approved test type.');
-// r_eid_extraction_assay.name
-_('GENE XPERT');
-// r_vl_assay.short_name
-_('GeneXpert');
-// r_vl_assay.name
-_('GeneXpert HIV-1');
 // r_possibleresult.response
 _('HIGH');
 // r_possibleresult.response
@@ -156,10 +116,6 @@ _('HIV-1 Not Detected');
 _('HIV-1 NOT DETECTED');
 // r_possibleresult.response
 _('hiv-1 not detected');
-// r_vl_assay.name
-_('HOLOGIC PANTHER Aptima HIV-1 Quant Dx Assay');
-// r_vl_assay.short_name
-_('Holologic');
 // r_participant_affiliates.affiliate, r_site_type.site_type
 _('Hospital');
 // r_control.control_name
@@ -174,8 +130,6 @@ _('inconclusive');
 _('INDETERMINATE');
 // r_possibleresult.response
 _('indeterminate');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('In House');
 // r_response_not_tested_reasons.ntr_reason
 _('Instrument down');
 // r_response_vl_not_tested_reason.vl_not_tested_reason
@@ -230,14 +184,6 @@ _('Minimum score not reached');
 _('Missing supervisor approval for reported result.');
 // r_participant_affiliates.affiliate, r_site_type.site_type
 _('Mobile VCT');
-// r_tb_assay.short_name
-_('molbio-truenat-plus');
-// r_tb_assay.short_name
-_('molbio-truenat-tb');
-// r_tb_assay.name
-_('Molbio Truenat Plus');
-// r_tb_assay.name
-_('Molbio Truenat TB');
 // r_possibleresult.response
 _('N');
 // r_possibleresult.response
@@ -272,6 +218,10 @@ _('NOT DETECTED');
 _('not detected');
 // r_results.result_name
 _('Not Evaluated');
+// r_results.result_name
+_('NOT EVALUATED');
+// r_results.result_name
+_('not evaluated');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Not received PT panel shipment due to country custom clearance issue');
 // r_response_not_tested_reasons.ntr_reason, r_response_vl_not_tested_reason.vl_not_tested_reason
@@ -282,18 +232,12 @@ _('NOT TESTED');
 _('not tested');
 // r_response_not_tested_reasons.ntr_reason
 _('Not trained in 3-test algorithm');
-// r_vl_assay.short_name
-_('NucliSENS');
 // r_modes_of_receipt.mode_name
 _('Online Response');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name, r_site_type.site_type, r_vl_assay.name, r_vl_assay.short_name
+// r_site_type.site_type
 _('Other');
-// r_tb_assay.short_name
-_('other');
 // r_response_vl_not_tested_reason.vl_not_tested_reason
 _('Other (please explain)');
-// r_tb_assay.name
-_('Other Assay');
 // r_site_type.site_type
 _('Outpatient Clinic');
 // r_possibleresult.response
@@ -306,10 +250,10 @@ _('Panel receipt date missing in PT report form.');
 _('Participant did not meet the score criteria (Participant Score is 80 and Required Score is 95)');
 // r_results.result_name
 _('Pass');
-// r_enrolled_programs.enrolled_programs
-_('PEPFAR');
-// r_enrolled_programs.enrolled_programs
-_('PEPFAR RTQI Program');
+// r_results.result_name
+_('PASS');
+// r_results.result_name
+_('pass');
 // r_dts_corrective_actions.corrective_action, r_dts_corrective_actions.description
 _('Please ensure condition of PT Samples is reported');
 // r_dts_corrective_actions.corrective_action, r_dts_corrective_actions.description
@@ -350,10 +294,6 @@ _('PT Provider Negative Control');
 _('PT Provider Positive Control');
 // r_network_tiers.network_name
 _('Public Health Reference Laboratories');
-// r_eid_detection_assay.name
-_('QIAamp Viral Mini Kit (DNA or RNA)');
-// r_eid_extraction_assay.name
-_('QI Aamp Viral Mini Kit (DNA or RNA)');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
 _('Re-hydration date missing in PT report form.');
 // r_possibleresult.response
@@ -366,10 +306,6 @@ _('Recent');
 _('RECENT');
 // r_possibleresult.response
 _('recent');
-// r_tb_assay.short_name
-_('ref-molbio-tb-rif-dx');
-// r_tb_assay.name
-_('Ref-Molbio TB-RIF Dx');
 // r_site_type.site_type
 _('Region');
 // r_dts_corrective_actions.description
@@ -392,26 +328,6 @@ _('Review all testing procedures prior to performing client testing as reported 
 _('Review and refer to SOP for testing. Sample should be tested per National Covid-19 Testing lab.');
 // r_dts_corrective_actions.corrective_action
 _('Review and refer to SOP for testing. Sample should be tested per National HIV Testing algorithm.');
-// r_vl_assay.name
-_('Roche - Amplicor');
-// r_eid_detection_assay.name, r_eid_extraction_assay.name
-_('Roche - Amplicor HIV-1 Monitor Test');
-// r_vl_assay.short_name
-_('Roche-Cobas-4800');
-// r_vl_assay.short_name
-_('Roche-Cobas-6800');
-// r_vl_assay.short_name
-_('Roche-Cobas-8800');
-// r_vl_assay.short_name
-_('Roche-Cobas-Taqman');
-// r_vl_assay.name
-_('Roche - COBAS Ampliprep/TaqMan');
-// r_vl_assay.name
-_('Roche Cobas4800 HIV-1');
-// r_vl_assay.name
-_('Roche Cobas6800 HIV-1');
-// r_vl_assay.name
-_('Roche Cobas8800 HIV-1');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
 _('Sample (1/2/3) was not reported');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
@@ -466,21 +382,5 @@ _('VCT');
 _('VERY LOW');
 // r_possibleresult.response
 _('very low');
-// r_dbs_wb.wb_name
-_('WB-01 BioRad GS HIV- 1 Western Blot');
-// r_dbs_wb.wb_name
-_('WB-02 Cambridge Biotech HIV-1 Western Blot');
-// r_dbs_wb.wb_name
-_('WB-03 BioRad LAV Blot I');
-// r_dbs_wb.wb_name
-_('WB-04 Genelab Diagnostics HIV Blot kit');
-// r_tb_assay.short_name
-_('xpert-mtb-rif');
-// r_tb_assay.short_name
-_('xpert-mtb-rif-ultra');
-// r_tb_assay.name
-_('Xpert MTB RIF');
-// r_tb_assay.name
-_('Xpert MTB RIF Ultra');
 // r_covid19_corrective_actions.corrective_action, r_dts_corrective_actions.corrective_action
 _('You are required to test all samples in PT panel');

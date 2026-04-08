@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: e-PT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-04-07 21:56+0530\n"
+"POT-Creation-Date: 2026-04-08 15:54+0530\n"
 "PO-Revision-Date: 2022-06-07 20:34+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -22,104 +22,56 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: vendor\n"
 "X-Poedit-SearchPathExcluded-2: library\n"
 
-#: application/languages/db-translation-strings.php:32
+#: application/languages/db-translation-strings.php:22
 msgid "1+"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:34
+#: application/languages/db-translation-strings.php:24
 msgid "2+"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:36
+#: application/languages/db-translation-strings.php:26
 msgid "3+"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:38
-msgid "Abbott-Alinity"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:40
-msgid "Abbott-m2000"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:42
-msgid "Abbott Alinity m RealTime HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:44
-msgid "Abbott m2000 RealTime HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:46
-msgid "Abbott RealTime HIV-1 Qualitative Assay"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:48
-msgid "Amplicor"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:50
+#: application/languages/db-translation-strings.php:28
 msgid "Antenatal Clinic (PMTCT)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:52
-msgid "Biocentric"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:54
-msgid "Biocentric - Generic"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:56
-msgid "Biocentric - Generic HIV Charge Virale"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:58
-msgid "Biomerieux - NucliSENS"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:60
-msgid "Chelex"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:62
-msgid "COBAS Ampliprep/Taqman HIV-1 Qual Test"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:64
+#: application/languages/db-translation-strings.php:30
 msgid "Controls were not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:66
+#: application/languages/db-translation-strings.php:32
 msgid "Courier"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:68
+#: application/languages/db-translation-strings.php:34
 msgid ""
 "Covid19 Testing should be done within specified hours of rehydration as per "
 "SOP."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:70
+#: application/languages/db-translation-strings.php:36
 #: application/models/Dts.php:2003
 #: application/views/scripts/participant/password.phtml:108
 msgid "Department"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:72
+#: application/languages/db-translation-strings.php:38
 #: application/views/scripts/tb/assay-formats.ajax.phtml:866
 msgid "DETECTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:74
+#: application/languages/db-translation-strings.php:40
 msgid "detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:76
+#: application/languages/db-translation-strings.php:42
 msgid "Did not meet the minimum score required"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:78
+#: application/languages/db-translation-strings.php:44
 #: application/models/Dts.php:1276 application/models/Dts.php:1294
 #: application/models/Dts.php:2007 application/models/Dts.php:2089
 #: application/modules/admin/views/scripts/data-managers/index.phtml:60
@@ -138,28 +90,12 @@ msgstr ""
 msgid "District"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:80
+#: application/languages/db-translation-strings.php:46
 msgid ""
 "DTS Testing should be done within specified hours of rehydration as per SOP."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:82
-msgid "EIA-01 BioRad Genetic Systems HIV 1/2 plus O"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:84
-msgid "EIA-02 bioMerieux Vironostika Uniform II plus O (3rd gen)"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:86
-msgid "EIA-03 bioMerieux Vironostika HIV Ag/Ab (4th gen)"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:88
-msgid "EIA-04 Murex HIV 1.2.0 (3rd gen)"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:90
+#: application/languages/db-translation-strings.php:48
 #: application/models/Dts.php:2010
 #: application/modules/admin/views/scripts/login/index.phtml:132
 #: application/modules/admin/views/scripts/participants/index.phtml:76
@@ -175,467 +111,439 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:92
+#: application/languages/db-translation-strings.php:50
 msgid ""
 "Ensure expired test kit are not be used for testing. If test kits are not "
 "available, please contact your superior."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:94
+#: application/languages/db-translation-strings.php:52
 msgid ""
 "Ensure expired test type are not be used for testing. If test types are not "
 "available, please contact your superior."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:96
+#: application/languages/db-translation-strings.php:54
 msgid "Ensure expiry date information is submitted for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:98
+#: application/languages/db-translation-strings.php:56
 msgid "Ensure test kit lot number is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:100
+#: application/languages/db-translation-strings.php:58
 msgid "Ensure test kit name is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:102
+#: application/languages/db-translation-strings.php:60
 msgid "Ensure test type lot number is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:104
+#: application/languages/db-translation-strings.php:62
 msgid "Ensure test type name is reported for all performed tests."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:106
+#: application/languages/db-translation-strings.php:64
 msgid "Ensure to provide sample rehydration date"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:108
+#: application/languages/db-translation-strings.php:66
 msgid "Ensure to provide supervisor approval along with his name."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:110
+#: application/languages/db-translation-strings.php:68
 msgid "Ensure to provide to provide panel receipt date."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:112
+#: application/languages/db-translation-strings.php:70
 msgid "Ensure to provide to provide panel testing date."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:114
+#: application/languages/db-translation-strings.php:72
 msgid "Equivocal"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:116
+#: application/languages/db-translation-strings.php:74
 msgid "EQUIVOCAL"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:118
+#: application/languages/db-translation-strings.php:76
 msgid "equivocal"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:120
+#: application/languages/db-translation-strings.php:78
 msgid "ERROR"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:122
+#: application/languages/db-translation-strings.php:80
 msgid "error"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:124
+#: application/languages/db-translation-strings.php:82
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:396
 msgid "Excluded"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:126
+#: application/languages/db-translation-strings.php:84
+msgid "EXCLUDED"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:86
+msgid "excluded"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:88
 msgid "Fail"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:128
+#: application/languages/db-translation-strings.php:90
+msgid "FAIL"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:92
+msgid "fail"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:94
 msgid "For sample (1/2/3?) National Covid-19 Testing lab was not followed."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:130
+#: application/languages/db-translation-strings.php:96
 msgid "For sample (1/2/3?) National HIV Testing algorithm was not followed."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:132
+#: application/languages/db-translation-strings.php:98
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test kit."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:134
+#: application/languages/db-translation-strings.php:100
 msgid ""
 "For Test (1/2/3) testing is not performed with country approved test type."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:136
-msgid "GENE XPERT"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:138
-msgid "GeneXpert"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:140
-msgid "GeneXpert HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:142
+#: application/languages/db-translation-strings.php:102
 msgid "HIGH"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:144
+#: application/languages/db-translation-strings.php:104
 msgid "high"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:146
+#: application/languages/db-translation-strings.php:106
 msgid "High Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:148
+#: application/languages/db-translation-strings.php:108
 msgid "HIV-1 Detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:150
+#: application/languages/db-translation-strings.php:110
 msgid "HIV-1 DETECTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:152
+#: application/languages/db-translation-strings.php:112
 msgid "hiv-1 detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:154
+#: application/languages/db-translation-strings.php:114
 msgid "HIV-1 Not Detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:156
+#: application/languages/db-translation-strings.php:116
 msgid "HIV-1 NOT DETECTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:158
+#: application/languages/db-translation-strings.php:118
 msgid "hiv-1 not detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:160
-msgid "HOLOGIC PANTHER Aptima HIV-1 Quant Dx Assay"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:162
-msgid "Holologic"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:164
+#: application/languages/db-translation-strings.php:120
 msgid "Hospital"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:166
+#: application/languages/db-translation-strings.php:122
 msgid "In-House Negative Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:168
+#: application/languages/db-translation-strings.php:124
 msgid "In-House Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:170
+#: application/languages/db-translation-strings.php:126
 msgid "INCONCLUSIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:172
+#: application/languages/db-translation-strings.php:128
 msgid "inconclusive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:174
+#: application/languages/db-translation-strings.php:130
 #: application/views/scripts/tb/assay-formats.ajax.phtml:868
 msgid "INDETERMINATE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:176
+#: application/languages/db-translation-strings.php:132
 msgid "indeterminate"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:178
-msgid "In House"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:180
+#: application/languages/db-translation-strings.php:134
 msgid "Instrument down"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:182
+#: application/languages/db-translation-strings.php:136
 msgid "Instrument Down"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:184
+#: application/languages/db-translation-strings.php:138
 msgid "Interminate"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:186
+#: application/languages/db-translation-strings.php:140
 msgid "INTERMINATE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:188
+#: application/languages/db-translation-strings.php:142
 msgid "interminate"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:190
+#: application/languages/db-translation-strings.php:144
 msgid "INVALID"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:192
+#: application/languages/db-translation-strings.php:146
 msgid "invalid"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:194
+#: application/languages/db-translation-strings.php:148
 msgid "Issue with Sample"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:196
+#: application/languages/db-translation-strings.php:150
 msgid "Kit Negative Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:198
+#: application/languages/db-translation-strings.php:152
 msgid "Kit Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:200
+#: application/languages/db-translation-strings.php:154
 msgid "Laboratory"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:202
+#: application/languages/db-translation-strings.php:156
 msgid "Laboratory facility no longer perform testing"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:204
+#: application/languages/db-translation-strings.php:158
 msgid "Laboratory facility under renovation"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:206
+#: application/languages/db-translation-strings.php:160
 msgid ""
 "Late response, response not evaluated. Your response received after last "
 "date. Expected result for PT panel will be available for your reference."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:208
+#: application/languages/db-translation-strings.php:162
 msgid "Long Term"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:210
+#: application/languages/db-translation-strings.php:164
 msgid "LONG TERM"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:212
+#: application/languages/db-translation-strings.php:166
 msgid "long term"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:214
+#: application/languages/db-translation-strings.php:168
 msgid "LOW"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:216
+#: application/languages/db-translation-strings.php:170
 msgid "low"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:218
+#: application/languages/db-translation-strings.php:172
 msgid "Low Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:220
+#: application/languages/db-translation-strings.php:174
 msgid "Machine not working"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:222
+#: application/languages/db-translation-strings.php:176
 msgid "Mandatory Samples not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:224
+#: application/languages/db-translation-strings.php:178
 msgid "MEDIUM"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:226
+#: application/languages/db-translation-strings.php:180
 msgid "medium"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:228
+#: application/languages/db-translation-strings.php:182
 msgid "Minimum score not reached"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:230
+#: application/languages/db-translation-strings.php:184
 msgid "Missing supervisor approval for reported result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:232
+#: application/languages/db-translation-strings.php:186
 msgid "Mobile VCT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:234
-msgid "molbio-truenat-plus"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:236
-msgid "molbio-truenat-tb"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:238
-msgid "Molbio Truenat Plus"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:240
-msgid "Molbio Truenat TB"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:242
+#: application/languages/db-translation-strings.php:188
 msgid "N"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:244
+#: application/languages/db-translation-strings.php:190
 msgid "n"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:246
+#: application/languages/db-translation-strings.php:192
 msgid "N/A"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:248
+#: application/languages/db-translation-strings.php:194
 msgid "n/a"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:250
+#: application/languages/db-translation-strings.php:196
 msgid "NEGATIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:252
+#: application/languages/db-translation-strings.php:198
 msgid "negative"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:254
+#: application/languages/db-translation-strings.php:200
 msgid "Negative Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:256
+#: application/languages/db-translation-strings.php:202
 msgid "No lab personal for testing of PT panel"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:258
+#: application/languages/db-translation-strings.php:204
 msgid "No lab personnel/staff for testing of PT Panel"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:260
+#: application/languages/db-translation-strings.php:206
 msgid "NONREACTIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:262
+#: application/languages/db-translation-strings.php:208
 msgid "nonreactive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:264
+#: application/languages/db-translation-strings.php:210
 msgid "No reagents for testing of PT panel"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:266
+#: application/languages/db-translation-strings.php:212
 msgid "NO RESULT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:268
+#: application/languages/db-translation-strings.php:214
 #, fuzzy
 msgid "no result"
 msgstr "Result"
 
-#: application/languages/db-translation-strings.php:270
+#: application/languages/db-translation-strings.php:216
 #: application/views/scripts/tb/assay-formats.ajax.phtml:867
 msgid "NOT DETECTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:272
+#: application/languages/db-translation-strings.php:218
 msgid "not detected"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:274
+#: application/languages/db-translation-strings.php:220
 msgid "Not Evaluated"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:276
+#: application/languages/db-translation-strings.php:222
+msgid "NOT EVALUATED"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:224
+msgid "not evaluated"
+msgstr ""
+
+#: application/languages/db-translation-strings.php:226
 msgid "Not received PT panel shipment due to country custom clearance issue"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:278
+#: application/languages/db-translation-strings.php:228
 msgid ""
 "Not received PT panel shipment due to incorrect contact info on the shipment "
 "package"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:280
+#: application/languages/db-translation-strings.php:230
 msgid "NOT TESTED"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:282
+#: application/languages/db-translation-strings.php:232
 msgid "not tested"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:284
+#: application/languages/db-translation-strings.php:234
 msgid "Not trained in 3-test algorithm"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:286
-msgid "NucliSENS"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:288
+#: application/languages/db-translation-strings.php:236
 msgid "Online Response"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:290
+#: application/languages/db-translation-strings.php:238
 #: application/views/scripts/contact-us/index.phtml:55
 #: application/views/scripts/covid19/response.phtml:389
 #: application/views/scripts/covid19/response.phtml:410
 #: application/views/scripts/covid19/response.phtml:432
-#: application/views/scripts/custom-test/response.phtml:168
-#: application/views/scripts/dts/response.phtml:541
-#: application/views/scripts/dts/response.phtml:566
-#: application/views/scripts/dts/response.phtml:592
-#: application/views/scripts/dts/response.phtml:618
-#: application/views/scripts/dts/response.phtml:644
-#: application/views/scripts/dts/response.phtml:671
+#: application/views/scripts/custom-test/response.phtml:223
+#: application/views/scripts/dts/response.phtml:543
+#: application/views/scripts/dts/response.phtml:568
+#: application/views/scripts/dts/response.phtml:594
+#: application/views/scripts/dts/response.phtml:620
+#: application/views/scripts/dts/response.phtml:646
+#: application/views/scripts/dts/response.phtml:673
 #: application/views/scripts/participant/participant-message.phtml:26
 msgid "Other"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:292
-msgid "other"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:294
+#: application/languages/db-translation-strings.php:240
 msgid "Other (please explain)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:296
-msgid "Other Assay"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:298
+#: application/languages/db-translation-strings.php:242
 msgid "Outpatient Clinic"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:300
+#: application/languages/db-translation-strings.php:244
 msgid "P"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:302
+#: application/languages/db-translation-strings.php:246
 msgid "p"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:304
+#: application/languages/db-translation-strings.php:248
 msgid "Panel receipt date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:306
+#: application/languages/db-translation-strings.php:250
 msgid ""
 "Participant did not meet the score criteria (Participant Score is 80 and "
 "Required Score is 95)"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:308
+#: application/languages/db-translation-strings.php:252
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:140
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:182
 #: application/views/scripts/participant/participant-performance.phtml:130
@@ -643,87 +551,87 @@ msgstr ""
 msgid "Pass"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:310
-msgid "PEPFAR"
+#: application/languages/db-translation-strings.php:254
+msgid "PASS"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:312
-msgid "PEPFAR RTQI Program"
+#: application/languages/db-translation-strings.php:256
+msgid "pass"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:314
+#: application/languages/db-translation-strings.php:258
 msgid "Please ensure condition of PT Samples is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:316
+#: application/languages/db-translation-strings.php:260
 msgid "Please ensure Refridgerator availability is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:318
+#: application/languages/db-translation-strings.php:262
 msgid "Please ensure Room Temperature is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:320
+#: application/languages/db-translation-strings.php:264
 msgid "Please ensure Stop Watch availability is reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:322
+#: application/languages/db-translation-strings.php:266
 msgid "Please submit response before last date"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:324
+#: application/languages/db-translation-strings.php:268
 msgid ""
 "Please test Covid19 sample as per National Covid-19 Testing lab. Review and "
 "refer to SOP for testing."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:326
+#: application/languages/db-translation-strings.php:270
 msgid ""
 "Please test DTS sample as per National HIV Testing algorithm. Review and "
 "refer to SOP for testing."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:328
+#: application/languages/db-translation-strings.php:272
 msgid ""
 "Please use the approved test kits according to the SOP/National HIV Testing "
 "algorithm for confirmatory and tie-breaker."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:330
+#: application/languages/db-translation-strings.php:274
 msgid ""
 "Please use the approved test types according to the SOP/National Covid-19 "
 "Testing lab for confirmatory and tie-breaker."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:332
+#: application/languages/db-translation-strings.php:276
 msgid "PMTCT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:334
+#: application/languages/db-translation-strings.php:278
 msgid "POSITIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:336
+#: application/languages/db-translation-strings.php:280
 msgid "positive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:338
+#: application/languages/db-translation-strings.php:282
 msgid "Postive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:340
+#: application/languages/db-translation-strings.php:284
 msgid "POSTIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:342
+#: application/languages/db-translation-strings.php:286
 msgid "postive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:344
+#: application/languages/db-translation-strings.php:288
 msgid "Primary care laboratory service tier"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:346
+#: application/languages/db-translation-strings.php:290
 #: application/models/Dts.php:1275 application/models/Dts.php:1293
 #: application/models/Dts.php:2006 application/models/Dts.php:2039
 #: application/models/Dts.php:2060 application/models/Dts.php:2088
@@ -739,61 +647,45 @@ msgstr ""
 msgid "Province"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:348
+#: application/languages/db-translation-strings.php:292
 msgid "PT Provider Negative Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:350
+#: application/languages/db-translation-strings.php:294
 msgid "PT Provider Positive Control"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:352
+#: application/languages/db-translation-strings.php:296
 msgid "Public Health Reference Laboratories"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:354
-msgid "QIAamp Viral Mini Kit (DNA or RNA)"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:356
-msgid "QI Aamp Viral Mini Kit (DNA or RNA)"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:358
+#: application/languages/db-translation-strings.php:298
 msgid "Re-hydration date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:360
+#: application/languages/db-translation-strings.php:300
 msgid "REACTIVE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:362
+#: application/languages/db-translation-strings.php:302
 msgid "reactive"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:364
+#: application/languages/db-translation-strings.php:304
 #: application/layouts/scripts/admin.phtml:1117
 #: application/layouts/scripts/admin.phtml:1122
 msgid "Recent"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:366
+#: application/languages/db-translation-strings.php:306
 msgid "RECENT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:368
+#: application/languages/db-translation-strings.php:308
 msgid "recent"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:370
-msgid "ref-molbio-tb-rif-dx"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:372
-msgid "Ref-Molbio TB-RIF Dx"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:374
+#: application/languages/db-translation-strings.php:310
 #: application/modules/admin/views/scripts/enrollments/add.phtml:33
 #: application/modules/admin/views/scripts/participants/add.phtml:104
 #: application/modules/admin/views/scripts/participants/edit.phtml:150
@@ -815,243 +707,171 @@ msgstr ""
 msgid "Region"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:376
+#: application/languages/db-translation-strings.php:312
 msgid "Result not evaluated Ð name of test kit not reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:378
+#: application/languages/db-translation-strings.php:314
 msgid "Result not evaluated Ð name of test type not reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:380
+#: application/languages/db-translation-strings.php:316
 msgid ""
 "Result not evaluated Ð test kit expiry date (first/second/third) is not "
 "reported with PT response."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:382
+#: application/languages/db-translation-strings.php:318
 msgid ""
 "Result not evaluated Ð Test Kit lot number (first/second/third) is not "
 "reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:384
+#: application/languages/db-translation-strings.php:320
 msgid ""
 "Result not evaluated Ð test type expiry date (first/second/third) is not "
 "reported with PT response."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:386
+#: application/languages/db-translation-strings.php:322
 msgid ""
 "Result not evaluated Ð Test Type lot number (first/second/third) is not "
 "reported."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:388
+#: application/languages/db-translation-strings.php:324
 msgid ""
 "Review all testing procedures prior to performing client testing and contact "
 "your supervisor for improvement."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:390
+#: application/languages/db-translation-strings.php:326
 msgid ""
 "Review all testing procedures prior to performing client testing as reported "
 "result does not match expected result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:392
+#: application/languages/db-translation-strings.php:328
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "Covid-19 Testing lab."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:394
+#: application/languages/db-translation-strings.php:330
 msgid ""
 "Review and refer to SOP for testing. Sample should be tested per National "
 "HIV Testing algorithm."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:396
-msgid "Roche - Amplicor"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:398
-msgid "Roche - Amplicor HIV-1 Monitor Test"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:400
-msgid "Roche-Cobas-4800"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:402
-msgid "Roche-Cobas-6800"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:404
-msgid "Roche-Cobas-8800"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:406
-msgid "Roche-Cobas-Taqman"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:408
-msgid "Roche - COBAS Ampliprep/TaqMan"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:410
-msgid "Roche Cobas4800 HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:412
-msgid "Roche Cobas6800 HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:414
-msgid "Roche Cobas8800 HIV-1"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:416
+#: application/languages/db-translation-strings.php:332
 msgid "Sample (1/2/3) was not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:418
+#: application/languages/db-translation-strings.php:334
 msgid "Sample (1/2/3?) reported result does not match with expected result."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:420
+#: application/languages/db-translation-strings.php:336
 msgid "Scan"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:422
+#: application/languages/db-translation-strings.php:338
 msgid "SCANTY"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:424
+#: application/languages/db-translation-strings.php:340
 msgid "scanty"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:426
+#: application/languages/db-translation-strings.php:342
 msgid "Secondary and tertiary laboratory service tiers"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:428
+#: application/languages/db-translation-strings.php:344
 msgid "SMS"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:430
+#: application/languages/db-translation-strings.php:346
 msgid "Some mandatory samples were not reported"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:432
+#: application/languages/db-translation-strings.php:348
 msgid "TB Center"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:434
+#: application/languages/db-translation-strings.php:350
 msgid "Testing date missing in PT report form."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:436
+#: application/languages/db-translation-strings.php:352
 msgid "Testing is not performed within X to Y hours of rehydration."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:438
+#: application/languages/db-translation-strings.php:354
 msgid "Test kit repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:440
+#: application/languages/db-translation-strings.php:356
 msgid "Test kit XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:442
+#: application/languages/db-translation-strings.php:358
 msgid "Testkit XYZ repeated for all 3 test kits"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:444
+#: application/languages/db-translation-strings.php:360
 msgid "Test type repeated for confirmatory or tiebreaker test (T1/T2/T3)."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:446
+#: application/languages/db-translation-strings.php:362
 msgid "Test type XYZ expired M days before the test date DD-MON-YYY."
 msgstr ""
 
-#: application/languages/db-translation-strings.php:448
+#: application/languages/db-translation-strings.php:364
 msgid "Testtype XYZ repeated for all 3 test types"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:450
+#: application/languages/db-translation-strings.php:366
 msgid "The PT panel shipment was lost/damage"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:452
+#: application/languages/db-translation-strings.php:368
 msgid "The PT panel testing failed during sample processing"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:454
+#: application/languages/db-translation-strings.php:370
 msgid "The results were invalid for the entire run"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:456
+#: application/languages/db-translation-strings.php:372
 msgid "There were not enough responses for the VL Assay chosen"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:458
+#: application/languages/db-translation-strings.php:374
 msgid "TRACE"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:460
+#: application/languages/db-translation-strings.php:376
 msgid "trace"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:462
+#: application/languages/db-translation-strings.php:378
 msgid "Unsatisfactory score"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:464
+#: application/languages/db-translation-strings.php:380
 msgid "VCT"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:466
+#: application/languages/db-translation-strings.php:382
 msgid "VERY LOW"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:468
+#: application/languages/db-translation-strings.php:384
 msgid "very low"
 msgstr ""
 
-#: application/languages/db-translation-strings.php:470
-msgid "WB-01 BioRad GS HIV- 1 Western Blot"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:472
-msgid "WB-02 Cambridge Biotech HIV-1 Western Blot"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:474
-msgid "WB-03 BioRad LAV Blot I"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:476
-msgid "WB-04 Genelab Diagnostics HIV Blot kit"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:478
-msgid "xpert-mtb-rif"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:480
-msgid "xpert-mtb-rif-ultra"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:482
-msgid "Xpert MTB RIF"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:484
-msgid "Xpert MTB RIF Ultra"
-msgstr ""
-
-#: application/languages/db-translation-strings.php:486
+#: application/languages/db-translation-strings.php:386
 msgid "You are required to test all samples in PT panel"
 msgstr ""
 
@@ -1578,12 +1398,12 @@ msgstr ""
 #: application/modules/admin/views/scripts/vl-assay/add.phtml:19
 #: application/modules/admin/views/scripts/vl-assay/edit.phtml:20
 #: application/views/scripts/covid19/response.phtml:915
-#: application/views/scripts/custom-test/response.phtml:431
+#: application/views/scripts/custom-test/response.phtml:600
 #: application/views/scripts/data-managers/add.phtml:115
 #: application/views/scripts/data-managers/edit.phtml:122
 #: application/views/scripts/data-managers/reset-password.phtml:36
 #: application/views/scripts/dbs/response.phtml:620
-#: application/views/scripts/dts/response.phtml:1575
+#: application/views/scripts/dts/response.phtml:1582
 #: application/views/scripts/eid/response.phtml:725
 #: application/views/scripts/participant/add-participant.phtml:232
 #: application/views/scripts/participant/add.phtml:186
@@ -2125,11 +1945,11 @@ msgstr ""
 #: application/modules/admin/views/scripts/testkit/add.phtml:131
 #: application/modules/admin/views/scripts/testkit/edit.phtml:168
 #: application/views/scripts/covid19/response.phtml:764
-#: application/views/scripts/custom-test/response.phtml:138
-#: application/views/scripts/custom-test/response.phtml:220
-#: application/views/scripts/custom-test/response.phtml:248
-#: application/views/scripts/custom-test/response.phtml:290
-#: application/views/scripts/custom-test/response.phtml:314
+#: application/views/scripts/custom-test/response.phtml:159
+#: application/views/scripts/custom-test/response.phtml:304
+#: application/views/scripts/custom-test/response.phtml:349
+#: application/views/scripts/custom-test/response.phtml:411
+#: application/views/scripts/custom-test/response.phtml:446
 #: application/views/scripts/dbs/response.phtml:470
 #: application/views/scripts/eid/response.phtml:577
 #: application/views/scripts/recency/response.phtml:484
@@ -2162,7 +1982,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/view-enrollments.phtml:62
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:25
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:147
-#: application/views/scripts/custom-test/response.phtml:97
+#: application/views/scripts/custom-test/response.phtml:109
 #: application/views/scripts/data-managers/add.phtml:90
 #: application/views/scripts/data-managers/edit.phtml:96
 #: application/views/scripts/index/index.phtml:367
@@ -2214,7 +2034,7 @@ msgid "Supervisor signature"
 msgstr ""
 
 #: application/models/Dts.php:2062
-#: application/views/scripts/custom-test/response.phtml:150
+#: application/views/scripts/custom-test/response.phtml:184
 #: application/views/scripts/dts/response.phtml:180
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:241
 msgid "Panel Receipt Date"
@@ -2247,10 +2067,10 @@ msgstr ""
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:220
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:150
 #: application/views/scripts/covid19/response.phtml:812
-#: application/views/scripts/custom-test/response.phtml:349
+#: application/views/scripts/custom-test/response.phtml:495
 #: application/views/scripts/dbs/response.phtml:518
-#: application/views/scripts/dts/response.phtml:1453
-#: application/views/scripts/dts/response.phtml:1471
+#: application/views/scripts/dts/response.phtml:1456
+#: application/views/scripts/dts/response.phtml:1474
 #: application/views/scripts/eid/response.phtml:624
 #: application/views/scripts/recency/response.phtml:533
 #: application/views/scripts/tb/response.phtml:474
@@ -3378,10 +3198,10 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:696
 #: application/views/scripts/covid19/response.phtml:749
 #: application/views/scripts/covid19/response.phtml:791
-#: application/views/scripts/custom-test/response.phtml:128
-#: application/views/scripts/custom-test/response.phtml:239
-#: application/views/scripts/custom-test/response.phtml:305
-#: application/views/scripts/custom-test/response.phtml:336
+#: application/views/scripts/custom-test/response.phtml:146
+#: application/views/scripts/custom-test/response.phtml:335
+#: application/views/scripts/custom-test/response.phtml:430
+#: application/views/scripts/custom-test/response.phtml:474
 #: application/views/scripts/data-managers/edit.phtml:110
 #: application/views/scripts/dbs/response.phtml:135
 #: application/views/scripts/dbs/response.phtml:454
@@ -3390,21 +3210,21 @@ msgstr ""
 #: application/views/scripts/dts/response.phtml:298
 #: application/views/scripts/dts/response.phtml:319
 #: application/views/scripts/dts/response.phtml:348
-#: application/views/scripts/dts/response.phtml:417
-#: application/views/scripts/dts/response.phtml:848
-#: application/views/scripts/dts/response.phtml:860
-#: application/views/scripts/dts/response.phtml:872
-#: application/views/scripts/dts/response.phtml:886
-#: application/views/scripts/dts/response.phtml:895
-#: application/views/scripts/dts/response.phtml:904
-#: application/views/scripts/dts/response.phtml:1185
-#: application/views/scripts/dts/response.phtml:1205
-#: application/views/scripts/dts/response.phtml:1216
-#: application/views/scripts/dts/response.phtml:1299
-#: application/views/scripts/dts/response.phtml:1309
-#: application/views/scripts/dts/response.phtml:1322
-#: application/views/scripts/dts/response.phtml:1374
-#: application/views/scripts/dts/response.phtml:1434
+#: application/views/scripts/dts/response.phtml:419
+#: application/views/scripts/dts/response.phtml:850
+#: application/views/scripts/dts/response.phtml:862
+#: application/views/scripts/dts/response.phtml:874
+#: application/views/scripts/dts/response.phtml:888
+#: application/views/scripts/dts/response.phtml:897
+#: application/views/scripts/dts/response.phtml:906
+#: application/views/scripts/dts/response.phtml:1187
+#: application/views/scripts/dts/response.phtml:1207
+#: application/views/scripts/dts/response.phtml:1218
+#: application/views/scripts/dts/response.phtml:1302
+#: application/views/scripts/dts/response.phtml:1312
+#: application/views/scripts/dts/response.phtml:1325
+#: application/views/scripts/dts/response.phtml:1377
+#: application/views/scripts/dts/response.phtml:1437
 #: application/views/scripts/eid/response.phtml:250
 #: application/views/scripts/eid/response.phtml:331
 #: application/views/scripts/eid/response.phtml:485
@@ -3764,8 +3584,8 @@ msgstr ""
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:243
 #: application/views/scripts/covid19/response.phtml:935
 #: application/views/scripts/dbs/response.phtml:637
-#: application/views/scripts/dts/response.phtml:1584
-#: application/views/scripts/dts/response.phtml:1586
+#: application/views/scripts/dts/response.phtml:1591
+#: application/views/scripts/dts/response.phtml:1593
 #: application/views/scripts/participant/add.phtml:191
 #: application/views/scripts/participant/certificate.phtml:6
 #: application/views/scripts/participant/testeredit.phtml:215
@@ -3890,10 +3710,10 @@ msgstr ""
 #: application/modules/admin/views/scripts/testkit/edit.phtml:160
 #: application/views/scripts/covid19/response.phtml:795
 #: application/views/scripts/covid19/response.phtml:894
-#: application/views/scripts/custom-test/response.phtml:306
-#: application/views/scripts/custom-test/response.phtml:338
-#: application/views/scripts/custom-test/response.phtml:404
-#: application/views/scripts/custom-test/response.phtml:413
+#: application/views/scripts/custom-test/response.phtml:432
+#: application/views/scripts/custom-test/response.phtml:478
+#: application/views/scripts/custom-test/response.phtml:564
+#: application/views/scripts/custom-test/response.phtml:580
 #: application/views/scripts/data-managers/add.phtml:52
 #: application/views/scripts/data-managers/add.phtml:59
 #: application/views/scripts/data-managers/add.phtml:66
@@ -3905,16 +3725,17 @@ msgstr ""
 #: application/views/scripts/dbs/response.phtml:175
 #: application/views/scripts/dbs/response.phtml:501
 #: application/views/scripts/dbs/response.phtml:600
-#: application/views/scripts/dts/response.phtml:850
-#: application/views/scripts/dts/response.phtml:862
-#: application/views/scripts/dts/response.phtml:874
-#: application/views/scripts/dts/response.phtml:887
-#: application/views/scripts/dts/response.phtml:896
-#: application/views/scripts/dts/response.phtml:905
-#: application/views/scripts/dts/response.phtml:1187
-#: application/views/scripts/dts/response.phtml:1206
-#: application/views/scripts/dts/response.phtml:1439
-#: application/views/scripts/dts/response.phtml:1554
+#: application/views/scripts/dts/response.phtml:852
+#: application/views/scripts/dts/response.phtml:864
+#: application/views/scripts/dts/response.phtml:876
+#: application/views/scripts/dts/response.phtml:889
+#: application/views/scripts/dts/response.phtml:898
+#: application/views/scripts/dts/response.phtml:907
+#: application/views/scripts/dts/response.phtml:1189
+#: application/views/scripts/dts/response.phtml:1208
+#: application/views/scripts/dts/response.phtml:1442
+#: application/views/scripts/dts/response.phtml:1544
+#: application/views/scripts/dts/response.phtml:1561
 #: application/views/scripts/eid/response.phtml:363
 #: application/views/scripts/eid/response.phtml:502
 #: application/views/scripts/eid/response.phtml:608
@@ -4042,10 +3863,10 @@ msgstr ""
 #: application/modules/admin/views/scripts/testkit/edit.phtml:162
 #: application/views/scripts/covid19/response.phtml:793
 #: application/views/scripts/covid19/response.phtml:892
-#: application/views/scripts/custom-test/response.phtml:307
-#: application/views/scripts/custom-test/response.phtml:337
-#: application/views/scripts/custom-test/response.phtml:404
-#: application/views/scripts/custom-test/response.phtml:412
+#: application/views/scripts/custom-test/response.phtml:434
+#: application/views/scripts/custom-test/response.phtml:476
+#: application/views/scripts/custom-test/response.phtml:566
+#: application/views/scripts/custom-test/response.phtml:578
 #: application/views/scripts/data-managers/add.phtml:53
 #: application/views/scripts/data-managers/add.phtml:60
 #: application/views/scripts/data-managers/add.phtml:67
@@ -4057,16 +3878,17 @@ msgstr ""
 #: application/views/scripts/dbs/response.phtml:178
 #: application/views/scripts/dbs/response.phtml:499
 #: application/views/scripts/dbs/response.phtml:598
-#: application/views/scripts/dts/response.phtml:853
-#: application/views/scripts/dts/response.phtml:865
-#: application/views/scripts/dts/response.phtml:877
-#: application/views/scripts/dts/response.phtml:888
-#: application/views/scripts/dts/response.phtml:897
-#: application/views/scripts/dts/response.phtml:906
-#: application/views/scripts/dts/response.phtml:1190
-#: application/views/scripts/dts/response.phtml:1207
-#: application/views/scripts/dts/response.phtml:1436
-#: application/views/scripts/dts/response.phtml:1551
+#: application/views/scripts/dts/response.phtml:855
+#: application/views/scripts/dts/response.phtml:867
+#: application/views/scripts/dts/response.phtml:879
+#: application/views/scripts/dts/response.phtml:890
+#: application/views/scripts/dts/response.phtml:899
+#: application/views/scripts/dts/response.phtml:908
+#: application/views/scripts/dts/response.phtml:1192
+#: application/views/scripts/dts/response.phtml:1209
+#: application/views/scripts/dts/response.phtml:1439
+#: application/views/scripts/dts/response.phtml:1546
+#: application/views/scripts/dts/response.phtml:1558
 #: application/views/scripts/eid/response.phtml:366
 #: application/views/scripts/eid/response.phtml:503
 #: application/views/scripts/eid/response.phtml:606
@@ -4115,7 +3937,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/custom-test/add.phtml:37
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:39
-#: application/views/scripts/custom-test/response.phtml:76
+#: application/views/scripts/custom-test/response.phtml:88
 msgid "Custom Test Name"
 msgstr ""
 
@@ -4198,7 +4020,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:147
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:274
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:537
-#: application/views/scripts/custom-test/response.phtml:214
+#: application/views/scripts/custom-test/response.phtml:297
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:575
 msgid "Expected Result"
 msgstr ""
@@ -5031,7 +4853,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/shipments/index.phtml:151
 #: application/services/Reports.php:1933 application/services/Reports.php:2164
 #: application/views/scripts/capa/index.phtml:65
-#: application/views/scripts/custom-test/response.phtml:75
+#: application/views/scripts/custom-test/response.phtml:87
 #: application/views/scripts/participant/all-schemes.phtml:47
 #: application/views/scripts/participant/corrective.phtml:59
 #: application/views/scripts/participant/current-schemes.phtml:21
@@ -5187,7 +5009,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/global-config/index.phtml:896
 #: application/views/scripts/covid19/response.phtml:751
 #: application/views/scripts/dbs/response.phtml:456
-#: application/views/scripts/dts/response.phtml:1376
+#: application/views/scripts/dts/response.phtml:1379
 #: application/views/scripts/eid/response.phtml:563
 #: application/views/scripts/recency/response.phtml:470
 msgid "YES"
@@ -5209,7 +5031,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/global-config/index.phtml:899
 #: application/views/scripts/covid19/response.phtml:753
 #: application/views/scripts/dbs/response.phtml:458
-#: application/views/scripts/dts/response.phtml:1378
+#: application/views/scripts/dts/response.phtml:1381
 #: application/views/scripts/eid/response.phtml:565
 #: application/views/scripts/recency/response.phtml:472
 msgid "NO"
@@ -5741,7 +5563,7 @@ msgstr ""
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:73
 #: application/views/scripts/auth/verify-email.phtml:90
 #: application/views/scripts/capa/index.phtml:61
-#: application/views/scripts/custom-test/response.phtml:96
+#: application/views/scripts/custom-test/response.phtml:108
 #: application/views/scripts/participant/add-participant.phtml:16
 #: application/views/scripts/participant/all-schemes.phtml:48
 #: application/views/scripts/participant/current-schemes.phtml:58
@@ -5769,6 +5591,7 @@ msgstr "All Schemes"
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:164
 #: application/modules/reports/views/scripts/corrective-preventive-actions/capa.phtml:100
 #: application/views/scripts/capa/capa.phtml:105
+#: application/views/scripts/dts/response.phtml:1571
 #: application/views/scripts/participant/add.phtml:184
 #: application/views/scripts/participant/all-schemes.phtml:82
 #: application/views/scripts/participant/dashboard.phtml:616
@@ -5974,7 +5797,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:233
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:311
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:151
-#: application/views/scripts/custom-test/response.phtml:201
+#: application/views/scripts/custom-test/response.phtml:283
 #: application/views/scripts/participant/report.phtml:69
 msgid "Result"
 msgstr "Result"
@@ -8722,8 +8545,8 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1034
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:229
-#: application/views/scripts/custom-test/response.phtml:160
-#: application/views/scripts/dts/response.phtml:520
+#: application/views/scripts/custom-test/response.phtml:212
+#: application/views/scripts/dts/response.phtml:522
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:378
 msgid "Kit Name"
 msgstr ""
@@ -8765,8 +8588,8 @@ msgid "Mandatory?"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:106
-#: application/views/scripts/custom-test/response.phtml:199
-#: application/views/scripts/dts/response.phtml:1258
+#: application/views/scripts/custom-test/response.phtml:281
+#: application/views/scripts/dts/response.phtml:1261
 #: application/views/scripts/eid/response.phtml:421
 #: application/views/scripts/recency/response.phtml:326
 #: application/views/scripts/shipment-form/download.phtml:370
@@ -8776,7 +8599,7 @@ msgid "Control/Sample"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:109
-#: application/views/scripts/dts/response.phtml:1261
+#: application/views/scripts/dts/response.phtml:1264
 #: application/views/scripts/recency/response.phtml:328
 #: application/views/scripts/shipment-form/download.phtml:371
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:572
@@ -8784,7 +8607,7 @@ msgid "Control Line"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:110
-#: application/views/scripts/dts/response.phtml:1264
+#: application/views/scripts/dts/response.phtml:1267
 #: application/views/scripts/recency/response.phtml:330
 #: application/views/scripts/shipment-form/download.phtml:372
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:573
@@ -8792,7 +8615,7 @@ msgid "Verification Line"
 msgstr ""
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:111
-#: application/views/scripts/dts/response.phtml:1267
+#: application/views/scripts/dts/response.phtml:1270
 #: application/views/scripts/recency/response.phtml:332
 #: application/views/scripts/shipment-form/download.phtml:373
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:574
@@ -8812,9 +8635,9 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:416
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:423
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:430
-#: application/views/scripts/dts/response.phtml:1300
-#: application/views/scripts/dts/response.phtml:1311
-#: application/views/scripts/dts/response.phtml:1324
+#: application/views/scripts/dts/response.phtml:1303
+#: application/views/scripts/dts/response.phtml:1314
+#: application/views/scripts/dts/response.phtml:1327
 #: application/views/scripts/recency/response.phtml:363
 #: application/views/scripts/recency/response.phtml:372
 #: application/views/scripts/recency/response.phtml:381
@@ -8830,9 +8653,9 @@ msgstr ""
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:417
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:424
 #: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:431
-#: application/views/scripts/dts/response.phtml:1301
-#: application/views/scripts/dts/response.phtml:1313
-#: application/views/scripts/dts/response.phtml:1326
+#: application/views/scripts/dts/response.phtml:1304
+#: application/views/scripts/dts/response.phtml:1316
+#: application/views/scripts/dts/response.phtml:1329
 #: application/views/scripts/recency/response.phtml:364
 #: application/views/scripts/recency/response.phtml:373
 #: application/views/scripts/recency/response.phtml:382
@@ -9967,7 +9790,7 @@ msgstr ""
 #: application/services/Reports.php:2166
 #: application/views/scripts/covid19/response.phtml:626
 #: application/views/scripts/dbs/response.phtml:328
-#: application/views/scripts/dts/response.phtml:1060
+#: application/views/scripts/dts/response.phtml:1062
 #: application/views/scripts/recency/response.phtml:337
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:461
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:146
@@ -10243,7 +10066,7 @@ msgid "Reported Result"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:113
-#: application/views/scripts/custom-test/response.phtml:62
+#: application/views/scripts/custom-test/response.phtml:69
 #: application/views/scripts/dts/response.phtml:126
 #: application/views/scripts/eid/response.phtml:71
 #: application/views/scripts/recency/response.phtml:64
@@ -10254,7 +10077,7 @@ msgid ""
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:118
-#: application/views/scripts/custom-test/response.phtml:64
+#: application/views/scripts/custom-test/response.phtml:72
 #: application/views/scripts/dts/response.phtml:129
 #: application/views/scripts/eid/response.phtml:76
 #: application/views/scripts/recency/response.phtml:69
@@ -10263,7 +10086,7 @@ msgid "Your response is late."
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:123
-#: application/views/scripts/custom-test/response.phtml:66
+#: application/views/scripts/custom-test/response.phtml:75
 #: application/views/scripts/dts/response.phtml:132
 #: application/views/scripts/eid/response.phtml:81
 #: application/views/scripts/recency/response.phtml:74
@@ -10274,7 +10097,7 @@ msgid ""
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:130
-#: application/views/scripts/custom-test/response.phtml:69
+#: application/views/scripts/custom-test/response.phtml:80
 #: application/views/scripts/dts/response.phtml:137
 #: application/views/scripts/eid/response.phtml:88
 #: application/views/scripts/recency/response.phtml:81
@@ -10317,10 +10140,10 @@ msgstr ""
 #: application/views/scripts/covid19/response.phtml:599
 #: application/views/scripts/covid19/response.phtml:607
 #: application/views/scripts/covid19/response.phtml:615
-#: application/views/scripts/custom-test/response.phtml:151
-#: application/views/scripts/custom-test/response.phtml:158
-#: application/views/scripts/custom-test/response.phtml:182
-#: application/views/scripts/custom-test/response.phtml:190
+#: application/views/scripts/custom-test/response.phtml:192
+#: application/views/scripts/custom-test/response.phtml:209
+#: application/views/scripts/custom-test/response.phtml:255
+#: application/views/scripts/custom-test/response.phtml:271
 #: application/views/scripts/dbs/response.phtml:98
 #: application/views/scripts/dbs/response.phtml:111
 #: application/views/scripts/dbs/response.phtml:126
@@ -10330,19 +10153,19 @@ msgstr ""
 #: application/views/scripts/dts/response.phtml:205
 #: application/views/scripts/dts/response.phtml:228
 #: application/views/scripts/dts/response.phtml:340
-#: application/views/scripts/dts/response.phtml:395
-#: application/views/scripts/dts/response.phtml:784
-#: application/views/scripts/dts/response.phtml:794
-#: application/views/scripts/dts/response.phtml:804
-#: application/views/scripts/dts/response.phtml:815
-#: application/views/scripts/dts/response.phtml:824
-#: application/views/scripts/dts/response.phtml:833
-#: application/views/scripts/dts/response.phtml:952
-#: application/views/scripts/dts/response.phtml:961
-#: application/views/scripts/dts/response.phtml:970
-#: application/views/scripts/dts/response.phtml:980
-#: application/views/scripts/dts/response.phtml:989
-#: application/views/scripts/dts/response.phtml:998
+#: application/views/scripts/dts/response.phtml:397
+#: application/views/scripts/dts/response.phtml:786
+#: application/views/scripts/dts/response.phtml:796
+#: application/views/scripts/dts/response.phtml:806
+#: application/views/scripts/dts/response.phtml:817
+#: application/views/scripts/dts/response.phtml:826
+#: application/views/scripts/dts/response.phtml:835
+#: application/views/scripts/dts/response.phtml:954
+#: application/views/scripts/dts/response.phtml:963
+#: application/views/scripts/dts/response.phtml:972
+#: application/views/scripts/dts/response.phtml:982
+#: application/views/scripts/dts/response.phtml:991
+#: application/views/scripts/dts/response.phtml:1000
 #: application/views/scripts/eid/response.phtml:320
 #: application/views/scripts/recency/response.phtml:134
 #: application/views/scripts/recency/response.phtml:147
@@ -10372,8 +10195,8 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:259
 #: application/views/scripts/dbs/response.phtml:172
-#: application/views/scripts/dts/response.phtml:368
-#: application/views/scripts/dts/response.phtml:841
+#: application/views/scripts/dts/response.phtml:370
+#: application/views/scripts/dts/response.phtml:843
 #: application/views/scripts/eid/response.phtml:359
 #: application/views/scripts/recency/response.phtml:262
 msgid "QC Done"
@@ -10402,8 +10225,8 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:297
 #: application/views/scripts/dbs/response.phtml:191
-#: application/views/scripts/dts/response.phtml:385
-#: application/views/scripts/dts/response.phtml:941
+#: application/views/scripts/dts/response.phtml:387
+#: application/views/scripts/dts/response.phtml:943
 #: application/views/scripts/eid/response.phtml:380
 #: application/views/scripts/recency/response.phtml:283
 #: application/views/scripts/vl/response.phtml:493
@@ -10412,7 +10235,7 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:310
 #: application/views/scripts/dbs/response.phtml:204
-#: application/views/scripts/dts/response.phtml:398
+#: application/views/scripts/dts/response.phtml:400
 #: application/views/scripts/eid/response.phtml:392
 #: application/views/scripts/recency/response.phtml:296
 #: application/views/scripts/vl/response.phtml:505
@@ -10424,7 +10247,7 @@ msgid "Number of tests"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:340
-#: application/views/scripts/dts/response.phtml:461
+#: application/views/scripts/dts/response.phtml:463
 #: application/views/scripts/eid/response.phtml:406
 #: application/views/scripts/recency/response.phtml:310
 #: application/views/scripts/vl/response.phtml:518
@@ -10432,19 +10255,19 @@ msgid "PT panel not tested"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:367
-#: application/views/scripts/dts/response.phtml:488
+#: application/views/scripts/dts/response.phtml:490
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:364
 msgid "Test-1"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:368
-#: application/views/scripts/dts/response.phtml:491
+#: application/views/scripts/dts/response.phtml:493
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:366
 msgid "Test-2"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:369
-#: application/views/scripts/dts/response.phtml:494
+#: application/views/scripts/dts/response.phtml:496
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:369
 msgid "Test-3"
 msgstr ""
@@ -10467,14 +10290,14 @@ msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:564
 #: application/views/scripts/dbs/response.phtml:264
-#: application/views/scripts/dts/response.phtml:712
+#: application/views/scripts/dts/response.phtml:714
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:393
 msgid "Lot No."
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:591
 #: application/views/scripts/dbs/response.phtml:286
-#: application/views/scripts/dts/response.phtml:772
+#: application/views/scripts/dts/response.phtml:774
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:408
 msgid "Expiry Date"
 msgstr ""
@@ -10484,21 +10307,21 @@ msgid "Sample Number"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:620
-#: application/views/scripts/dts/response.phtml:1034
+#: application/views/scripts/dts/response.phtml:1036
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:433
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:453
 msgid "Result-1"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:621
-#: application/views/scripts/dts/response.phtml:1037
+#: application/views/scripts/dts/response.phtml:1039
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:439
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:455
 msgid "Result-2"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:622
-#: application/views/scripts/dts/response.phtml:1040
+#: application/views/scripts/dts/response.phtml:1042
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:446
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:458
 msgid "Result-3"
@@ -10513,8 +10336,8 @@ msgid "Add Gene Types"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:691
-#: application/views/scripts/custom-test/response.phtml:126
-#: application/views/scripts/dts/response.phtml:1211
+#: application/views/scripts/custom-test/response.phtml:141
+#: application/views/scripts/dts/response.phtml:1213
 #: application/views/scripts/eid/response.phtml:481
 #: application/views/scripts/recency/response.phtml:403
 #: application/views/scripts/tb/response.phtml:154
@@ -10530,7 +10353,7 @@ msgid "Your comments"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:717
-#: application/views/scripts/dts/response.phtml:1238
+#: application/views/scripts/dts/response.phtml:1241
 #: application/views/scripts/eid/response.phtml:518
 #: application/views/scripts/recency/response.phtml:429
 #: application/views/scripts/vl/response.phtml:765
@@ -10538,9 +10361,9 @@ msgid "Do you need any support from the PT Provider?"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:744
-#: application/views/scripts/custom-test/response.phtml:302
+#: application/views/scripts/custom-test/response.phtml:425
 #: application/views/scripts/dbs/response.phtml:450
-#: application/views/scripts/dts/response.phtml:1370
+#: application/views/scripts/dts/response.phtml:1373
 #: application/views/scripts/eid/response.phtml:556
 #: application/views/scripts/recency/response.phtml:463
 #: application/views/scripts/tb/response.phtml:402
@@ -10550,9 +10373,9 @@ msgid "Supervisor Review"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:755
-#: application/views/scripts/custom-test/response.phtml:310
+#: application/views/scripts/custom-test/response.phtml:438
 #: application/views/scripts/dbs/response.phtml:460
-#: application/views/scripts/dts/response.phtml:1380
+#: application/views/scripts/dts/response.phtml:1383
 #: application/views/scripts/eid/response.phtml:568
 #: application/views/scripts/recency/response.phtml:475
 #: application/views/scripts/tb/response.phtml:415
@@ -10562,9 +10385,9 @@ msgid "Supervisor Name"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:785
-#: application/views/scripts/custom-test/response.phtml:333
+#: application/views/scripts/custom-test/response.phtml:468
 #: application/views/scripts/dbs/response.phtml:491
-#: application/views/scripts/dts/response.phtml:1430
+#: application/views/scripts/dts/response.phtml:1433
 #: application/views/scripts/eid/response.phtml:600
 #: application/views/scripts/partials/evaluate-form.phtml:16
 #: application/views/scripts/recency/response.phtml:509
@@ -10574,10 +10397,10 @@ msgid "Manually Override Results"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:801
-#: application/views/scripts/custom-test/response.phtml:343
+#: application/views/scripts/custom-test/response.phtml:484
 #: application/views/scripts/dbs/response.phtml:507
-#: application/views/scripts/dts/response.phtml:1445
-#: application/views/scripts/dts/response.phtml:1461
+#: application/views/scripts/dts/response.phtml:1448
+#: application/views/scripts/dts/response.phtml:1464
 #: application/views/scripts/eid/response.phtml:614
 #: application/views/scripts/partials/evaluate-form.phtml:34
 #: application/views/scripts/recency/response.phtml:523
@@ -10587,9 +10410,9 @@ msgid "Shipment Score"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:861
-#: application/views/scripts/custom-test/response.phtml:388
+#: application/views/scripts/custom-test/response.phtml:544
 #: application/views/scripts/dbs/response.phtml:567
-#: application/views/scripts/dts/response.phtml:1520
+#: application/views/scripts/dts/response.phtml:1523
 #: application/views/scripts/eid/response.phtml:672
 #: application/views/scripts/partials/evaluate-form.phtml:43
 #: application/views/scripts/recency/response.phtml:581
@@ -10599,9 +10422,9 @@ msgid "Evaluation Comment"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:870
-#: application/views/scripts/custom-test/response.phtml:397
+#: application/views/scripts/custom-test/response.phtml:553
 #: application/views/scripts/dbs/response.phtml:576
-#: application/views/scripts/dts/response.phtml:1529
+#: application/views/scripts/dts/response.phtml:1532
 #: application/views/scripts/eid/response.phtml:681
 #: application/views/scripts/partials/evaluate-form.phtml:52
 #: application/views/scripts/recency/response.phtml:590
@@ -10611,9 +10434,9 @@ msgid "Optional Extra Comments"
 msgstr ""
 
 #: application/views/scripts/covid19/response.phtml:886
-#: application/views/scripts/custom-test/response.phtml:409
+#: application/views/scripts/custom-test/response.phtml:572
 #: application/views/scripts/dbs/response.phtml:592
-#: application/views/scripts/dts/response.phtml:1545
+#: application/views/scripts/dts/response.phtml:1552
 #: application/views/scripts/eid/response.phtml:697
 #: application/views/scripts/partials/evaluate-form.phtml:5
 #: application/views/scripts/recency/response.phtml:606
@@ -10622,137 +10445,141 @@ msgstr ""
 msgid "Do you want to exclude this response from evaluation?"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:77
+#: application/views/scripts/custom-test/response.phtml:89
 #: application/views/scripts/tb/response.phtml:102
 msgid "PT Shipment Date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:78
+#: application/views/scripts/custom-test/response.phtml:90
 #: application/views/scripts/tb/response.phtml:103
 #, fuzzy
 msgid "Result Submission Deadline"
 msgstr "PT Result Submission"
 
-#: application/views/scripts/custom-test/response.phtml:95
+#: application/views/scripts/custom-test/response.phtml:107
 #: application/views/scripts/tb/response.phtml:120
 #, fuzzy
 msgid "Participant Site Name"
 msgstr "Participant Login"
 
-#: application/views/scripts/custom-test/response.phtml:116
+#: application/views/scripts/custom-test/response.phtml:129
 #: application/views/scripts/tb/response.phtml:142
 msgid "Were you able to test the Panel?"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:118
+#: application/views/scripts/custom-test/response.phtml:132
 #: application/views/scripts/tb/response.phtml:145
 msgid "Able to Test Panel"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:119
+#: application/views/scripts/custom-test/response.phtml:133
 #: application/views/scripts/tb/response.phtml:146
 msgid "Unable to Test Panel"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:127
+#: application/views/scripts/custom-test/response.phtml:144
 msgid "Please select a reason"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:138
-#: application/views/scripts/custom-test/response.phtml:248
-#: application/views/scripts/custom-test/response.phtml:290
+#: application/views/scripts/custom-test/response.phtml:161
+#: application/views/scripts/custom-test/response.phtml:351
+#: application/views/scripts/custom-test/response.phtml:413
 msgid "Please enter comments"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:144
+#: application/views/scripts/custom-test/response.phtml:170
 #, fuzzy
 msgid "Analyst Name"
 msgstr "Contact Us"
 
-#: application/views/scripts/custom-test/response.phtml:146
+#: application/views/scripts/custom-test/response.phtml:176
 msgid "Enter analyst name"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:146
+#: application/views/scripts/custom-test/response.phtml:177
 msgid "Please enter analyst name"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:148
+#: application/views/scripts/custom-test/response.phtml:180
 msgid "Date Panel Received"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:151
-#: application/views/scripts/custom-test/response.phtml:158
-#: application/views/scripts/custom-test/response.phtml:182
 #: application/views/scripts/custom-test/response.phtml:190
+#: application/views/scripts/custom-test/response.phtml:191
+#: application/views/scripts/custom-test/response.phtml:207
+#: application/views/scripts/custom-test/response.phtml:208
+#: application/views/scripts/custom-test/response.phtml:253
+#: application/views/scripts/custom-test/response.phtml:254
+#: application/views/scripts/custom-test/response.phtml:269
+#: application/views/scripts/custom-test/response.phtml:270
 msgid "Clear Date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:155
+#: application/views/scripts/custom-test/response.phtml:196
 msgid "Date Tested"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:157
+#: application/views/scripts/custom-test/response.phtml:201
 msgid "Enter the panel test date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:157
+#: application/views/scripts/custom-test/response.phtml:204
 msgid "Please enter the test date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:162
+#: application/views/scripts/custom-test/response.phtml:216
 msgid "Please select a test kit"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:163
-#: application/views/scripts/dts/response.phtml:529
-#: application/views/scripts/dts/response.phtml:554
-#: application/views/scripts/dts/response.phtml:580
-#: application/views/scripts/dts/response.phtml:606
-#: application/views/scripts/dts/response.phtml:632
-#: application/views/scripts/dts/response.phtml:659
+#: application/views/scripts/custom-test/response.phtml:218
+#: application/views/scripts/dts/response.phtml:531
+#: application/views/scripts/dts/response.phtml:556
+#: application/views/scripts/dts/response.phtml:582
+#: application/views/scripts/dts/response.phtml:608
+#: application/views/scripts/dts/response.phtml:634
+#: application/views/scripts/dts/response.phtml:661
 msgid "Select Kit"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:171
+#: application/views/scripts/custom-test/response.phtml:228
 msgid "Enter kit name"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:175
+#: application/views/scripts/custom-test/response.phtml:233
 msgid "Kit Lot Number"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:177
+#: application/views/scripts/custom-test/response.phtml:239
 msgid "Enter kit lot number"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:177
+#: application/views/scripts/custom-test/response.phtml:240
 msgid "Please enter kit lot number"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:179
-#: application/views/scripts/custom-test/response.phtml:181
+#: application/views/scripts/custom-test/response.phtml:243
+#: application/views/scripts/custom-test/response.phtml:247
 msgid "Kit Expiry Date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:181
+#: application/views/scripts/custom-test/response.phtml:248
 msgid "Please select the kit expiry date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:187
+#: application/views/scripts/custom-test/response.phtml:260
 msgid "Date Submitted"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:189
+#: application/views/scripts/custom-test/response.phtml:266
 msgid "Please enter the response submission date"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:202
+#: application/views/scripts/custom-test/response.phtml:284
 #: application/views/scripts/vl/response.phtml:563
 msgid "Invalid/Error"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:203
+#: application/views/scripts/custom-test/response.phtml:285
 #: application/views/scripts/tb/assay-formats.ajax.phtml:73
 #: application/views/scripts/tb/assay-formats.ajax.phtml:185
 #: application/views/scripts/tb/assay-formats.ajax.phtml:443
@@ -10763,140 +10590,142 @@ msgstr ""
 msgid "Error Code"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:205
-#: application/views/scripts/custom-test/response.phtml:258
+#: application/views/scripts/custom-test/response.phtml:287
+#: application/views/scripts/custom-test/response.phtml:366
 #, fuzzy
 msgid "Test 1 Result"
 msgstr "View PT Result"
 
-#: application/views/scripts/custom-test/response.phtml:207
-#: application/views/scripts/custom-test/response.phtml:264
+#: application/views/scripts/custom-test/response.phtml:290
+#: application/views/scripts/custom-test/response.phtml:374
 #, fuzzy
 msgid "Test 2 Result"
 msgstr "View PT Result"
 
-#: application/views/scripts/custom-test/response.phtml:210
-#: application/views/scripts/custom-test/response.phtml:271
+#: application/views/scripts/custom-test/response.phtml:293
+#: application/views/scripts/custom-test/response.phtml:383
 #, fuzzy
 msgid "Test 3 Result"
 msgstr "View PT Result"
 
-#: application/views/scripts/custom-test/response.phtml:217
+#: application/views/scripts/custom-test/response.phtml:300
 msgid "Additional Detail"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:235
+#: application/views/scripts/custom-test/response.phtml:327
 msgid "Enter the result"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:235
+#: application/views/scripts/custom-test/response.phtml:328
 msgid "Please enter the result for"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:238
+#: application/views/scripts/custom-test/response.phtml:332
 msgid "Please select invalid or error"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:240
+#: application/views/scripts/custom-test/response.phtml:336
 #: application/views/scripts/tb/assay-formats.ajax.phtml:468
 #: application/views/scripts/tb/assay-formats.ajax.phtml:673
 #: application/views/scripts/vl/response.phtml:649
 msgid "Invalid"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:241
+#: application/views/scripts/custom-test/response.phtml:338
 #: application/views/scripts/vl/response.phtml:651
 msgid "Error"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:245
+#: application/views/scripts/custom-test/response.phtml:343
 msgid "Error code"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:245
+#: application/views/scripts/custom-test/response.phtml:344
 msgid "Please enter the error code"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:258
+#: application/views/scripts/custom-test/response.phtml:365
 msgid "Please select Test 1 result"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:264
+#: application/views/scripts/custom-test/response.phtml:373
 msgid "Please select Test 2 result"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:271
+#: application/views/scripts/custom-test/response.phtml:382
 msgid "Please select Test 3 result"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:277
+#: application/views/scripts/custom-test/response.phtml:391
 msgid "Please select the final result"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:277
+#: application/views/scripts/custom-test/response.phtml:392
 msgid "Please choose final result for this sample"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:286
+#: application/views/scripts/custom-test/response.phtml:403
 msgid "Enter"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:286
+#: application/views/scripts/custom-test/response.phtml:403
+#: application/views/scripts/custom-test/response.phtml:406
 msgid "additional details"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:286
+#: application/views/scripts/custom-test/response.phtml:406
 msgid "Please enter"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:335
+#: application/views/scripts/custom-test/response.phtml:472
 msgid "Please select whether to manually override"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:345
+#: application/views/scripts/custom-test/response.phtml:489
 msgid "Enter the shipment score"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:345
+#: application/views/scripts/custom-test/response.phtml:490
 msgid "Please enter the shipment score"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:351
+#: application/views/scripts/custom-test/response.phtml:500
 msgid "Enter the documentation score"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:351
+#: application/views/scripts/custom-test/response.phtml:501
 msgid "Please enter the documentation score"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:359
+#: application/views/scripts/custom-test/response.phtml:509
 #: application/views/scripts/tb/response.phtml:488
 msgid "Notes"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:363
+#: application/views/scripts/custom-test/response.phtml:513
 #: application/views/scripts/tb/response.phtml:492
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:772
 msgid "Failure Reasons (or) Warnings"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:364
+#: application/views/scripts/custom-test/response.phtml:514
 #: application/views/scripts/tb/response.phtml:493
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:772
 #, fuzzy
 msgid "Corrective Actions (if any)"
 msgstr "Corrective Actions"
 
-#: application/views/scripts/custom-test/response.phtml:403
+#: application/views/scripts/custom-test/response.phtml:560
+#: application/views/scripts/dts/response.phtml:1540
 #: application/views/scripts/tb/response.phtml:542
 msgid "Is the above a follow up comment for corrective action?"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:404
+#: application/views/scripts/custom-test/response.phtml:563
 msgid "Please select whether this is a follow up comment"
 msgstr ""
 
-#: application/views/scripts/custom-test/response.phtml:411
+#: application/views/scripts/custom-test/response.phtml:576
 msgid "Please select whether to exclude this response from evaluation"
 msgstr ""
 
@@ -10974,93 +10803,111 @@ msgstr ""
 msgid "Available"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:412
-#: application/views/scripts/dts/response.phtml:1030
+#: application/views/scripts/dts/response.phtml:414
+#: application/views/scripts/dts/response.phtml:1032
 msgid "Type of Test"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:418
+#: application/views/scripts/dts/response.phtml:420
 msgid "Screening"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:419
+#: application/views/scripts/dts/response.phtml:421
 msgid "Confirmatory"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:477
+#: application/views/scripts/dts/response.phtml:479
 #, fuzzy
 msgid "Repeat Results"
 msgstr "View PT Result"
 
-#: application/views/scripts/dts/response.phtml:498
+#: application/views/scripts/dts/response.phtml:500
 msgid "Repeat Test-1"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:504
+#: application/views/scripts/dts/response.phtml:506
 msgid "Repeat Test-2"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:510
+#: application/views/scripts/dts/response.phtml:512
 msgid "Repeat Test-3"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1019
+#: application/views/scripts/dts/response.phtml:1021
 msgid "Repeat Tests"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1026
+#: application/views/scripts/dts/response.phtml:1028
 msgid "PT Panel Identifier"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1044
+#: application/views/scripts/dts/response.phtml:1046
 msgid "Repeat Result-1"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1048
+#: application/views/scripts/dts/response.phtml:1050
 msgid "Repeat Result-2"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1052
+#: application/views/scripts/dts/response.phtml:1054
 msgid "Repeat Result-3"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1065
+#: application/views/scripts/dts/response.phtml:1067
 msgid "Is this a Retest?"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1090
+#: application/views/scripts/dts/response.phtml:1092
 msgid "HIV"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1092
+#: application/views/scripts/dts/response.phtml:1094
 msgid "SYPHILIS"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1200
+#: application/views/scripts/dts/response.phtml:1202
 #: application/views/scripts/eid/response.phtml:497
 #: application/views/scripts/vl/response.phtml:744
 msgid "Received the PT Panel?"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1255
+#: application/views/scripts/dts/response.phtml:1232
+#, fuzzy
+msgid "PT Participant/Tester comments"
+msgstr "Participant Login"
+
+#: application/views/scripts/dts/response.phtml:1258
 msgid "RTRI Tested?"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1270
+#: application/views/scripts/dts/response.phtml:1273
 #: application/views/scripts/shipment-form/download.phtml:374
 msgid "Final RTRI Interpretation"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1389
+#: application/views/scripts/dts/response.phtml:1392
 #, fuzzy
 msgid "Participant/Tester Comments"
 msgstr "Participant Login"
 
-#: application/views/scripts/dts/response.phtml:1398
+#: application/views/scripts/dts/response.phtml:1401
 msgid "Available Test Kits"
 msgstr ""
 
-#: application/views/scripts/dts/response.phtml:1931
+#: application/views/scripts/dts/response.phtml:1543
+msgid "Please choose whether this is a follow up comment or not"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1556
+msgid "Please choose whether this response is excluded from evaluation or not"
+msgstr ""
+
+#: application/views/scripts/dts/response.phtml:1573
+#, fuzzy
+msgid "Confirm Response"
+msgstr "All Schemes"
+
+#: application/views/scripts/dts/response.phtml:1947
 msgid ""
 "Changing the test type may lead to loss of previously entered data and "
 "cannot be undone. Are you sure you want to proceed?"
