@@ -5,7 +5,7 @@ if (!is_array($allowedAlgorithms))
     $allowedAlgorithms = explode(',', $allowedAlgorithms);
 $disableOtherTestkit = (isset($dts['disableOtherTestkit']) && !empty($dts['disableOtherTestkit'])) ? $dts['disableOtherTestkit'] : 'no';
 $genderHelper = $this->getHelper('DateFormat');
-$dtFormat =  $genderHelper->getDateFormat();
+$dtFormat = $genderHelper->getDateFormat();
 ?>
 
 <style>
@@ -231,27 +231,29 @@ $dtFormat =  $genderHelper->getDateFormat();
                                 <?= $this->translate->_("Minimum Passing Score"); ?> <span class="mandatory">*</span>
                             </label>
                             <div class="input-group">
-                                <input type="number" id="dtsPassPercentage" name="dts[passPercentage]" min="0" max="100" step="0.01"
-                                    class="isRequired isNumeric form-control" placeholder="95"
+                                <input type="number" id="dtsPassPercentage" name="dts[passPercentage]" min="0" max="100"
+                                    step="0.01" class="isRequired isNumeric form-control" placeholder="95"
                                     title="<?= $this->translate->_('Enter the minimum score required to pass (0-100)'); ?>"
                                     value="<?php echo $dts['passPercentage'] ?? null; ?>" />
                                 <span class="input-group-addon">%</span>
                             </div>
-                            <small class="text-muted"><?= $this->translate->_("Participants must achieve this score to pass (0-100)."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Participants must achieve this score to pass (0-100)."); ?></small>
                         </div>
                         <div class="col-md-6">
                             <label for="dtsPanelScore">
                                 <?= $this->translate->_("Panel/Shipment Score"); ?> <span class="mandatory">*</span>
                             </label>
                             <div class="input-group">
-                                <input type="number" id="dtsPanelScore" name="dts[panelScore]" min="0" max="100" step="0.01"
-                                    class="isRequired isNumeric form-control" placeholder="0"
+                                <input type="number" id="dtsPanelScore" name="dts[panelScore]" min="0" max="100"
+                                    step="0.01" class="isRequired isNumeric form-control" placeholder="0"
                                     title="<?= $this->translate->_("Enter the Panel Score breakup (Panel + Documentation = 100)"); ?>"
                                     value="<?php echo $dts['panelScore'] ?? null; ?>"
                                     oninput="updateDocumentationScore();">
                                 <span class="input-group-addon">pts</span>
                             </div>
-                            <small class="text-muted"><?= $this->translate->_("Panel + Documentation must equal 100."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Panel + Documentation must equal 100."); ?></small>
                         </div>
                     </div>
 
@@ -261,27 +263,29 @@ $dtFormat =  $genderHelper->getDateFormat();
                                 <?= $this->translate->_("Documentation Score"); ?> <span class="mandatory">*</span>
                             </label>
                             <div class="input-group">
-                                <input type="number" id="dtsDocumentationScore" name="dts[documentationScore]" min="0" max="100" step="0.01"
-                                    class="isRequired isNumeric form-control" placeholder="0"
+                                <input type="number" id="dtsDocumentationScore" name="dts[documentationScore]" min="0"
+                                    max="100" step="0.01" class="isRequired isNumeric form-control" placeholder="0"
                                     title="<?= $this->translate->_("Enter the Documentation Score breakup (Panel + Documentation = 100)"); ?>"
                                     value="<?php echo $dts['documentationScore'] ?? null; ?>"
                                     oninput="updatePanelScore();">
                                 <span class="input-group-addon">pts</span>
                             </div>
-                            <small class="text-muted"><?= $this->translate->_("Panel + Documentation must equal 100."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Panel + Documentation must equal 100."); ?></small>
                         </div>
                         <div class="col-md-6">
                             <label for="dtsAlgorithmScore">
                                 <?= $this->translate->_("Algorithm Score"); ?> <span class="mandatory">*</span>
                             </label>
                             <div class="input-group">
-                                <input type="number" id="dtsAlgorithmScore" name="dts[dtsAlgorithmScore]" min="0" step="0.01"
-                                    class="isRequired isNumeric form-control" placeholder="0"
+                                <input type="number" id="dtsAlgorithmScore" name="dts[dtsAlgorithmScore]" min="0"
+                                    step="0.01" class="isRequired isNumeric form-control" placeholder="0"
                                     title="<?= $this->translate->_("Enter points awarded for correct algorithm usage (must be 0 or positive)"); ?>"
                                     value="<?php echo $dts['dtsAlgorithmScore'] ?? null; ?>">
                                 <span class="input-group-addon">%</span>
                             </div>
-                            <small class="text-muted"><?= $this->translate->_("Must be 0 or a positive number."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Must be 0 or a positive number."); ?></small>
                         </div>
                     </div>
                 </div>
@@ -293,9 +297,11 @@ $dtFormat =  $genderHelper->getDateFormat();
                     <div class="row">
                         <div class="col-md-6">
                             <label for="sampleRehydrateDays">
-                                <?= $this->translate->_("Days for Sample Rehydration"); ?> <span class="mandatory">*</span>
+                                <?= $this->translate->_("Days for Sample Rehydration"); ?> <span
+                                    class="mandatory">*</span>
                             </label>
-                            <select class="form-control isRequired" id="sampleRehydrateDays" name="dts[sampleRehydrateDays]"
+                            <select class="form-control isRequired" id="sampleRehydrateDays"
+                                name="dts[sampleRehydrateDays]"
                                 title="<?= $this->translate->_("Select number of days for sample rehydration"); ?>">
                                 <option value="0" <?php echo (isset($dts['sampleRehydrateDays']) && $dts['sampleRehydrateDays'] == "0") ? " selected='selected' " : ""; ?>>
                                     0 - <?= $this->translate->_("Allow Same Day Testing"); ?>
@@ -307,7 +313,8 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     2 - <?= $this->translate->_("Testing after 2 days only"); ?>
                                 </option>
                             </select>
-                            <small class="text-muted"><?= $this->translate->_("Time required before testing rehydrated samples."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Time required before testing rehydrated samples."); ?></small>
                         </div>
                         <div class="col-md-6">
                             <label for="collectAdditionalTestkits">
@@ -318,11 +325,13 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     data-toggle="collectAdditionalTestkits" data-title="yes"
                                     onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['collectAdditionalTestkits']) && $dts['collectAdditionalTestkits'] == "no") ? " active " : "notActive"; ?>"
-                                    data-toggle="collectAdditionalTestkits" data-title="no" onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+                                    data-toggle="collectAdditionalTestkits" data-title="no"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
                             <input type="hidden" name="dts[collectAdditionalTestkits]" id="collectAdditionalTestkits"
                                 value="<?php echo $dts['collectAdditionalTestkits'] ?? "no"; ?>">
-                            <small class="text-muted"><?= $this->translate->_("Allow participants to report additional test kits used."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Allow participants to report additional test kits used."); ?></small>
                         </div>
                     </div>
 
@@ -333,32 +342,43 @@ $dtFormat =  $genderHelper->getDateFormat();
                             </label>
                             <div class="btn-group radioBtn">
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['rtriEnabled']) && $dts['rtriEnabled'] == "yes") ? " active " : "notActive"; ?>"
-                                    data-toggle="rtriEnabled" data-title="yes" onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+                                    data-toggle="rtriEnabled" data-title="yes"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['rtriEnabled']) && $dts['rtriEnabled'] == "no") ? " active " : "notActive"; ?>"
-                                    data-toggle="rtriEnabled" data-title="no" onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+                                    data-toggle="rtriEnabled" data-title="no"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
                             <input type="hidden" name="dts[rtriEnabled]" id="rtriEnabled"
                                 value="<?php echo $dts['rtriEnabled'] ?? "no"; ?>">
                         </div>
                         <div class="col-md-6">
                             <label for="reportVersion"><?= $this->translate->_("Report Version"); ?></label>
-                            <input type="text" id="reportVersion" name="dts[reportVersion]" class="form-control" placeholder="Enter the report version" title="<?= $this->translate->_('Please enter the report version'); ?>" value="<?php echo $dts['reportVersion'] ?? null; ?>" />
-                            <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
+                            <input type="text" id="reportVersion" name="dts[reportVersion]" class="form-control"
+                                placeholder="Enter the report version"
+                                title="<?= $this->translate->_('Please enter the report version'); ?>"
+                                value="<?php echo $dts['reportVersion'] ?? null; ?>" />
+                            <small
+                                class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
                             <label for="effectiveDate"><?= $this->translate->_("Report Effective Date"); ?></label>
-                            <input type="text" id="effectiveDate" name="dts[effectiveDate]" class="form-control datepicker" placeholder="Select the report effective date" title="<?= $this->translate->_('Please select the report effective date'); ?>" value="<?php echo $dts['effectiveDate'] ?? null; ?>" />
-                            <small class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
+                            <input type="text" id="effectiveDate" name="dts[effectiveDate]"
+                                class="form-control datepicker" placeholder="Select the report effective date"
+                                title="<?= $this->translate->_('Please select the report effective date'); ?>"
+                                value="<?php echo $dts['effectiveDate'] ?? null; ?>" />
+                            <small
+                                class="text-muted"><?= $this->translate->_("Please enter the report version that shows in the report PDF footer."); ?></small>
                         </div>
                         <div class="col-md-6">
                             <label for="dtsSchemeType">
                                 <?= $this->translate->_("DTS Scheme Type"); ?> <span class="mandatory">*</span>
                             </label>
                             <select class="form-control" id="dtsSchemeType" name="dts[dtsSchemeType]"
-                                title="<?= $this->translate->_("Select DTS Scheme Type"); ?>" onchange="changeAlg(this);">
+                                title="<?= $this->translate->_("Select DTS Scheme Type"); ?>"
+                                onchange="changeAlg(this);">
                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                 <optgroup label="<?= $this->translate->_("Standard Types"); ?>">
                                     <option value="standard" <?php echo (isset($dts['dtsSchemeType']) && $dts['dtsSchemeType'] == "standard") ? " selected='selected' " : ""; ?>>
@@ -392,7 +412,8 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     </option>
                                 </optgroup>
                             </select>
-                            <small class="text-muted"><?= $this->translate->_("Select the testing scheme type for your region."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Select the testing scheme type for your region."); ?></small>
                         </div>
                     </div>
 
@@ -428,30 +449,41 @@ $dtFormat =  $genderHelper->getDateFormat();
                                 <option value="drcDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("drcDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>
                                     <?= $this->translate->_("DRC National Algorithm"); ?>
                                 </option>
+                                <option value="vietnamDtsAlgo" <?php echo (!empty($allowedAlgorithms) && in_array("vietnamDtsAlgo", $allowedAlgorithms)) ? " selected='selected' " : ""; ?>>
+                                    <?= $this->translate->_("Vietnam National Algorithm"); ?>
+                                </option>
                             </select>
-                            <small class="text-muted"><?= $this->translate->_("Select which algorithms participants can use."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Select which algorithms participants can use."); ?></small>
                         </div>
                         <div class="col-md-6">
                             <label for="disableOtherTestkit">
-                                <?= $this->translate->_("Disable Other Test Kit Option"); ?> <span class="mandatory">*</span>
+                                <?= $this->translate->_("Disable Other Test Kit Option"); ?> <span
+                                    class="mandatory">*</span>
                             </label>
                             <div class="btn-group radioBtn">
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['disableOtherTestkit']) && $dts['disableOtherTestkit'] == "yes") ? " active " : "notActive"; ?>"
-                                    data-toggle="disableOtherTestkit" data-title="yes" onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+                                    data-toggle="disableOtherTestkit" data-title="yes"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['disableOtherTestkit']) && $dts['disableOtherTestkit'] == "no") ? " active " : "notActive"; ?>"
-                                    data-toggle="disableOtherTestkit" data-title="no" onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+                                    data-toggle="disableOtherTestkit" data-title="no"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
                             <input type="hidden" name="dts[disableOtherTestkit]" id="disableOtherTestkit"
                                 value="<?php echo $dts['disableOtherTestkit'] ?? "no"; ?>">
-                            <small class="text-muted"><?= $this->translate->_("Prevent participants from selecting 'Other' test kit."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Prevent participants from selecting 'Other' test kit."); ?></small>
                         </div>
                     </div>
 
                     <!-- Malawi-specific options -->
-                    <div class="row malawi-allowed" style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'flex' : 'none'; ?>;">
-                        <div class="col-md-6 malawi-allowed" style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'block' : 'none'; ?>;">
+                    <div class="row malawi-allowed"
+                        style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'flex' : 'none'; ?>;">
+                        <div class="col-md-6 malawi-allowed"
+                            style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'block' : 'none'; ?>;">
                             <label for="displaySampleConditionFields">
-                                <?= $this->translate->_("Display Sample Condition Fields"); ?> <span class="mandatory">*</span>
+                                <?= $this->translate->_("Display Sample Condition Fields"); ?> <span
+                                    class="mandatory">*</span>
                             </label>
                             <div class="btn-group radioBtn">
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['displaySampleConditionFields']) && $dts['displaySampleConditionFields'] == "yes") ? " active " : "notActive"; ?>"
@@ -461,39 +493,52 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     data-toggle="displaySampleConditionFields" data-title="no"
                                     onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
-                            <input type="hidden" name="dts[displaySampleConditionFields]" id="displaySampleConditionFields"
+                            <input type="hidden" name="dts[displaySampleConditionFields]"
+                                id="displaySampleConditionFields"
                                 value="<?php echo (isset($dts['displaySampleConditionFields']) && $dts['displaySampleConditionFields'] == "no") ? " yes " : "no"; ?>">
-                            <small class="text-muted"><?= $this->translate->_("Show sample condition fields on participant result form."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Show sample condition fields on participant result form."); ?></small>
                         </div>
-                        <div class="col-md-6 malawi-allowed" style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'block' : 'none'; ?>;">
+                        <div class="col-md-6 malawi-allowed"
+                            style="display: <?php echo (isset($dts['dtsSchemeType']) && !empty($dts['dtsSchemeType']) && in_array($dts['dtsSchemeType'], ['updated-3-tests', 'malawi'])) ? 'block' : 'none'; ?>;">
                             <label for="allowRepeatTests">
-                                <?= $this->translate->_("Display Repeat Test Fields"); ?> <span class="mandatory">*</span>
+                                <?= $this->translate->_("Display Repeat Test Fields"); ?> <span
+                                    class="mandatory">*</span>
                             </label>
                             <div class="btn-group radioBtn">
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['allowRepeatTests']) && $dts['allowRepeatTests'] == "yes") ? " active " : "notActive"; ?>"
-                                    data-toggle="allowRepeatTest" data-title="yes" onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
+                                    data-toggle="allowRepeatTest" data-title="yes"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("YES"); ?></a>
                                 <a class="btn btn-primary btn-sm <?php echo (isset($dts['allowRepeatTests']) && $dts['allowRepeatTests'] == "no") ? " active " : "notActive"; ?>"
-                                    data-toggle="allowRepeatTest" data-title="no" onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
+                                    data-toggle="allowRepeatTest" data-title="no"
+                                    onclick="toggleRadios(this);"><?= $this->translate->_("NO"); ?></a>
                             </div>
                             <input type="hidden" name="dts[allowRepeatTests]" id="allowRepeatTests"
                                 value="<?php echo (isset($dts['allowRepeatTests']) && $dts['allowRepeatTests'] == "no") ? " yes " : "no"; ?>">
-                            <small class="text-muted"><?= $this->translate->_("Allow participants to report repeat test results."); ?></small>
+                            <small
+                                class="text-muted"><?= $this->translate->_("Allow participants to report repeat test results."); ?></small>
                         </div>
                     </div>
                 </div>
 
                 <!-- National HIV Rapid Test Algorithm Section -->
                 <div class="config-section">
-                    <h5><i class="icon-list-alt"></i> <?= $this->translate->_("National HIV Rapid Test Algorithm"); ?></h5>
+                    <h5><i class="icon-list-alt"></i> <?= $this->translate->_("National HIV Rapid Test Algorithm"); ?>
+                    </h5>
 
                     <div class="alert-note">
                         <strong><i class="icon-info-sign"></i> <?= $this->translate->_("Note"); ?>:</strong>
                         <ul>
-                            <li><?= $this->translate->_("Configure this section only if you want participants to use specific test kits for specific test numbers."); ?></li>
-                            <li><?= $this->translate->_("Responses without the enforced test kits will not pass for the respective samples."); ?></li>
-                            <li><?= $this->translate->_("Leave the following options blank if you don't want to enforce test kit checks."); ?></li>
-                            <li><strong><a href="/admin/testkit/standard-kit" style="text-decoration:underline; color: #b45309;">
-                                        <i class="icon-external-link"></i> <?= $this->translate->_("Please map test kits for each test before configuring below"); ?></a></strong>
+                            <li><?= $this->translate->_("Configure this section only if you want participants to use specific test kits for specific test numbers."); ?>
+                            </li>
+                            <li><?= $this->translate->_("Responses without the enforced test kits will not pass for the respective samples."); ?>
+                            </li>
+                            <li><?= $this->translate->_("Leave the following options blank if you don't want to enforce test kit checks."); ?>
+                            </li>
+                            <li><strong><a href="/admin/testkit/standard-kit"
+                                        style="text-decoration:underline; color: #b45309;">
+                                        <i class="icon-external-link"></i>
+                                        <?= $this->translate->_("Please map test kits for each test before configuring below"); ?></a></strong>
                             </li>
                         </ul>
                     </div>
@@ -517,7 +562,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -539,7 +584,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -561,7 +606,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -571,7 +616,8 @@ $dtFormat =  $genderHelper->getDateFormat();
 
                     <!-- DTS + Syphilis Combined Panel -->
                     <div class="testkit-section" id="dtsSyphilisDiv" style="display: none;">
-                        <h6><i class="icon-plus-sign"></i> <?= $this->translate->_("DTS + Syphilis Combined Panel"); ?></h6>
+                        <h6><i class="icon-plus-sign"></i> <?= $this->translate->_("DTS + Syphilis Combined Panel"); ?>
+                        </h6>
 
                         <div class="testkit-row">
                             <div class="row">
@@ -589,7 +635,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -612,7 +658,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -635,7 +681,7 @@ $dtFormat =  $genderHelper->getDateFormat();
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsSyphilisRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsSyphilisRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -655,14 +701,15 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     </label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select name="dtsRtriTestkit1[]" id="dtsRtriTestkit1" class="multipleSelect form-control"
-                                        multiple="multiple" title="<?= $this->translate->_("Select Test Kit 1"); ?>">
+                                    <select name="dtsRtriTestkit1[]" id="dtsRtriTestkit1"
+                                        class="multipleSelect form-control" multiple="multiple"
+                                        title="<?= $this->translate->_("Select Test Kit 1"); ?>">
                                         <?php foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_1'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[1]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[1])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -677,14 +724,15 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     </label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select name="dtsRtriTestkit2[]" id="dtsRtriTestkit2" class="multipleSelect form-control"
-                                        multiple="multiple" title="<?= $this->translate->_("Select Test Kit 2"); ?>">
+                                    <select name="dtsRtriTestkit2[]" id="dtsRtriTestkit2"
+                                        class="multipleSelect form-control" multiple="multiple"
+                                        title="<?= $this->translate->_("Select Test Kit 2"); ?>">
                                         <?php foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_2'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[2]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[2])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -699,14 +747,15 @@ $dtFormat =  $genderHelper->getDateFormat();
                                     </label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select name="dtsRtriTestkit3[]" id="dtsRtriTestkit3" class="multipleSelect form-control"
-                                        multiple="multiple" title="<?= $this->translate->_("Select Test Kit 3"); ?>">
+                                    <select name="dtsRtriTestkit3[]" id="dtsRtriTestkit3"
+                                        class="multipleSelect form-control" multiple="multiple"
+                                        title="<?= $this->translate->_("Select Test Kit 3"); ?>">
                                         <?php foreach ($this->allTestKits as $key => $testkit) {
                                             if ($testkit['testkit_3'] == '1') { ?>
                                                 <option value="<?php echo $testkit['TESTKITNAMEID'] ?>" <?php echo (isset($this->dtsRtriRecommendedTestkits[3]) && in_array($testkit['TESTKITNAMEID'], $this->dtsRtriRecommendedTestkits[3])) ? 'selected' : ''; ?>>
                                                     <?php echo $testkit['TESTKITNAME'] ?>
                                                 </option>
-                                        <?php }
+                                            <?php }
                                         } ?>
                                     </select>
                                 </div>
@@ -805,7 +854,7 @@ $dtFormat =  $genderHelper->getDateFormat();
         }
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('.multipleSelect').multiselect({
             includeSelectAllOption: false
         });
@@ -814,7 +863,7 @@ $dtFormat =  $genderHelper->getDateFormat();
         $('#allowedAlgorithms').trigger('change');
     });
 
-    $('#allowedAlgorithms').on("change", function() {
+    $('#allowedAlgorithms').on("change", function () {
         var _val = $(this).val();
         if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('malawi');
@@ -833,7 +882,7 @@ $dtFormat =  $genderHelper->getDateFormat();
         $('#dtsSchemeType').trigger('change');
     });
 
-    $('#dtsSchemeType').on("change", function() {
+    $('#dtsSchemeType').on("change", function () {
         $('#allowedAlgorithms').addClass('isRequired');
         $('#allowedAlgorithmsDiv').show();
         $('#dtsSyphilisDiv').hide();
