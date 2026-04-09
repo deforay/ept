@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-04-08 16:02+0530\n"
-"PO-Revision-Date: 2026-04-08 16:03+0530\n"
+"POT-Creation-Date: 2026-04-09 20:35+0530\n"
+"PO-Revision-Date: 2026-04-09 20:36+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
 "Language: fr\n"
@@ -1192,6 +1192,7 @@ msgid "Manage Enrollment"
 msgstr "Gérer l'inscription"
 
 #: application/modules/admin/controllers/SpotlightController.php:72
+#: application/services/Shipments.php:4206
 msgid "Evaluate"
 msgstr "Évaluer"
 
@@ -1376,6 +1377,22 @@ msgstr "Générer des formulaires TB..."
 msgid "Generate TB Forms"
 msgstr "Générer des formulaires TB"
 
+#: application/services/Shipments.php:4196
+msgid "Finalized"
+msgstr "Finalisé"
+
+#: application/services/Shipments.php:4198
+msgid "Reports Generated"
+msgstr "Rapports générés"
+
+#: application/services/Shipments.php:4200
+msgid "Evaluated"
+msgstr "Evalué"
+
+#: application/services/Shipments.php:4206
+msgid "Re-Evaluate"
+msgstr "Réévaluer"
+
 #: public/js/main.js.php:40
 msgid "records per page"
 msgstr "enregistrements par page"
@@ -1443,13 +1460,13 @@ msgstr ""
 #: application/layouts/scripts/admin.phtml:761
 #: application/layouts/scripts/home.phtml:117
 #: application/layouts/scripts/layout.phtml:257
-#: application/modules/admin/views/scripts/index/index.phtml:48
+#: application/modules/admin/views/scripts/index/index.phtml:51
 #: application/views/scripts/participant/dashboard.phtml:197
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
 #: application/layouts/scripts/admin.phtml:69
-#: application/layouts/scripts/admin.phtml:1125
+#: application/layouts/scripts/admin.phtml:1159
 msgid "Navigation"
 msgstr "Navigation"
 
@@ -1493,7 +1510,7 @@ msgstr "Responsables PT"
 #: application/layouts/scripts/admin.phtml:381
 #: application/layouts/scripts/admin.phtml:389
 #: application/layouts/scripts/admin.phtml:765
-#: application/layouts/scripts/admin.phtml:1126
+#: application/layouts/scripts/admin.phtml:1160
 msgid "Configure"
 msgstr "Configurer"
 
@@ -1522,8 +1539,8 @@ msgstr "Sérologie du VIH"
 #: application/layouts/scripts/admin.phtml:128
 #: application/layouts/scripts/admin.phtml:818
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:48
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:223
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:414
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:243
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:434
 msgid "VL Assay"
 msgstr "Essai VL"
 
@@ -1660,8 +1677,8 @@ msgstr "Ajouter un participant"
 #: application/layouts/scripts/admin.phtml:331
 #: application/layouts/scripts/admin.phtml:339
 #: application/layouts/scripts/admin.phtml:458
-#: application/layouts/scripts/admin.phtml:1119
-#: application/layouts/scripts/admin.phtml:1124
+#: application/layouts/scripts/admin.phtml:1153
+#: application/layouts/scripts/admin.phtml:1158
 msgid "Quick Actions"
 msgstr "Actions rapides"
 
@@ -1709,14 +1726,14 @@ msgstr "Enquête sur les PT"
 #: application/layouts/scripts/admin.phtml:401
 #: application/layouts/scripts/admin.phtml:409
 #: application/layouts/scripts/admin.phtml:913
-#: application/layouts/scripts/admin.phtml:1127
+#: application/layouts/scripts/admin.phtml:1161
 #: application/layouts/scripts/layout.phtml:312
 msgid "Manage"
 msgstr "Gérer"
 
 #: application/layouts/scripts/admin.phtml:408
 #: application/layouts/scripts/admin.phtml:921
-#: application/layouts/scripts/admin.phtml:1115
+#: application/layouts/scripts/admin.phtml:1149
 #: application/modules/admin/views/scripts/audit-log/index.phtml:30
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/shipment/index.phtml:6
@@ -1733,7 +1750,7 @@ msgstr "Évaluer les réponses"
 #: application/layouts/scripts/admin.phtml:437
 #: application/layouts/scripts/admin.phtml:445
 #: application/layouts/scripts/admin.phtml:929
-#: application/layouts/scripts/admin.phtml:1128
+#: application/layouts/scripts/admin.phtml:1162
 msgid "Analyze"
 msgstr "Analyse"
 
@@ -1772,7 +1789,7 @@ msgstr "Rapport sur les expéditions"
 #: application/layouts/scripts/admin.phtml:588
 #: application/layouts/scripts/admin.phtml:597
 #: application/layouts/scripts/admin.phtml:951
-#: application/layouts/scripts/admin.phtml:1129
+#: application/layouts/scripts/admin.phtml:1163
 msgid "Reports"
 msgstr "Rapports"
 
@@ -1959,17 +1976,21 @@ msgstr "admin ePT"
 msgid "Pending PT Participants"
 msgstr "Participants au PT en attente"
 
-#: application/layouts/scripts/admin.phtml:1043
-#: application/layouts/scripts/layout.phtml:364
-msgid "Logout"
+#: application/layouts/scripts/admin.phtml:1067
+#: application/modules/admin/views/scripts/profile/index.phtml:153
+msgid "My Profile"
+msgstr "Mon profil"
+
+#: application/layouts/scripts/admin.phtml:1074
+msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: application/layouts/scripts/admin.phtml:1057
+#: application/layouts/scripts/admin.phtml:1091
 #: application/layouts/scripts/layout.phtml:393
 msgid "some problem"
 msgstr "un problème"
 
-#: application/layouts/scripts/admin.phtml:1068
+#: application/layouts/scripts/admin.phtml:1102
 #: application/layouts/scripts/home.phtml:173
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -1980,32 +2001,32 @@ msgstr ""
 "contre le sida (PEPFAR) par l'intermédiaire des Centres américains de "
 "contrôle et de prévention des maladies (CDC)."
 
-#: application/layouts/scripts/admin.phtml:1114
+#: application/layouts/scripts/admin.phtml:1148
 msgid "No results found"
 msgstr "Aucun résultat trouvé"
 
-#: application/layouts/scripts/admin.phtml:1116
+#: application/layouts/scripts/admin.phtml:1150
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
-#: application/layouts/scripts/admin.phtml:1118
-#: application/layouts/scripts/admin.phtml:1123
+#: application/layouts/scripts/admin.phtml:1152
+#: application/layouts/scripts/admin.phtml:1157
 msgid "Recent Shipments"
 msgstr "Expéditions récentes"
 
-#: application/layouts/scripts/admin.phtml:1386
+#: application/layouts/scripts/admin.phtml:1435
 msgid "Search menus, actions..."
 msgstr "Rechercher dans les menus, les actions..."
 
-#: application/layouts/scripts/admin.phtml:1393
+#: application/layouts/scripts/admin.phtml:1442
 msgid "Navigate"
 msgstr "Naviguer"
 
-#: application/layouts/scripts/admin.phtml:1394
+#: application/layouts/scripts/admin.phtml:1443
 msgid "Open"
 msgstr "Ouvert"
 
-#: application/layouts/scripts/admin.phtml:1395
+#: application/layouts/scripts/admin.phtml:1444
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:537
 msgid "Close"
 msgstr "Fermer"
@@ -2112,6 +2133,7 @@ msgstr "Modifier l'adresse électronique principale"
 
 #: application/layouts/scripts/layout.phtml:339
 #: application/layouts/scripts/menu.phtml:38
+#: application/modules/admin/views/scripts/profile/index.phtml:289
 #: application/views/scripts/participant/password.phtml:77
 #: application/views/scripts/participant/password.phtml:243
 msgid "Change Password"
@@ -2124,6 +2146,10 @@ msgstr "Message du participant"
 #: application/layouts/scripts/layout.phtml:349
 msgid "Downloads"
 msgstr "Téléchargements"
+
+#: application/layouts/scripts/layout.phtml:364
+msgid "Logout"
+msgstr "Déconnexion"
 
 #: application/layouts/scripts/layout.phtml:405
 #: application/modules/admin/views/scripts/login/index.phtml:162
@@ -2204,7 +2230,7 @@ msgstr "Message"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:141
 #: application/modules/admin/views/scripts/data-managers/index.phtml:37
 #: application/modules/admin/views/scripts/data-managers/index.phtml:56
-#: application/modules/admin/views/scripts/distributions/index.phtml:32
+#: application/modules/admin/views/scripts/distributions/index.phtml:33
 #: application/modules/admin/views/scripts/distributions/view-shipment.phtml:14
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:58
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:83
@@ -2267,7 +2293,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:33
 #: application/modules/admin/views/scripts/custom-test/index.phtml:26
 #: application/modules/admin/views/scripts/data-managers/index.phtml:67
-#: application/modules/admin/views/scripts/distributions/index.phtml:38
+#: application/modules/admin/views/scripts/distributions/index.phtml:39
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:63
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:88
 #: application/modules/admin/views/scripts/enrollments/index.phtml:51
@@ -2415,7 +2441,7 @@ msgstr "État"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:542
 #: application/modules/admin/views/scripts/custom-test/index.phtml:21
 #: application/modules/admin/views/scripts/data-managers/index.phtml:62
-#: application/modules/admin/views/scripts/distributions/index.phtml:33
+#: application/modules/admin/views/scripts/distributions/index.phtml:34
 #: application/modules/admin/views/scripts/enrollments/index.phtml:46
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:70
 #: application/modules/admin/views/scripts/evaluate/index.phtml:16
@@ -3176,14 +3202,14 @@ msgstr "Pourcentage minimum de réussite"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:88
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:344
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:34
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:114
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:99
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:455
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:132
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:103
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:459
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:58
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:85
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:89
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:101
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:94
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:104
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:107
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:120
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:114
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:23
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:224
 msgid "Report Version"
@@ -3194,14 +3220,14 @@ msgstr "Version du rapport"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:94
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:352
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:38
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:123
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:100
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:464
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:141
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:104
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:468
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:67
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:94
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:96
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:110
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:103
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:113
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:114
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:129
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:123
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:27
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:229
 msgid "Report Effective Date"
@@ -3315,6 +3341,7 @@ msgstr "Type de test recommandé 3"
 #: application/modules/admin/views/scripts/home-config/index.phtml:715
 #: application/modules/admin/views/scripts/participant-messages/view.phtml:43
 #: application/modules/admin/views/scripts/participants/participant-upload-statistics.phtml:81
+#: application/modules/admin/views/scripts/profile/index.phtml:339
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:45
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:41
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:243
@@ -3364,12 +3391,12 @@ msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 #: application/modules/admin/views/scripts/participants/edit.phtml:216
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:37
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:40
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:197
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:209
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:260
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:267
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:342
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:349
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:215
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:227
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:278
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:285
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:360
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:367
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:197
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:205
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:558
@@ -3380,20 +3407,20 @@ msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:673
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:696
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:702
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:312
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:361
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:402
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:426
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:446
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:573
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:581
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:593
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:652
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:659
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:667
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:880
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:886
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:893
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:316
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:365
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:406
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:430
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:450
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:577
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:585
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:597
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:656
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:663
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:671
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:884
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:890
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:897
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:153
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:159
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:170
@@ -3402,39 +3429,39 @@ msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:234
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:279
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:286
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:167
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:176
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:219
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:222
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:232
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:235
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:281
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:288
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:182
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:190
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:255
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:263
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:437
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:444
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:94
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:184
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:194
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:235
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:242
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:503
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:515
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:709
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:718
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:944
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:951
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:165
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:171
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:182
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:188
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:325
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:333
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:379
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:383
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:186
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:195
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:238
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:241
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:251
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:254
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:300
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:307
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:200
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:208
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:273
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:281
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:455
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:462
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:113
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:203
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:213
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:254
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:261
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:522
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:534
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:728
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:737
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:963
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:970
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:185
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:191
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:202
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:208
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:345
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:353
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:399
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:403
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:179
 #: application/modules/admin/views/scripts/test-platform/add.phtml:89
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:97
@@ -3517,12 +3544,12 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/participants/edit.phtml:217
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/add.phtml:38
 #: application/modules/admin/views/scripts/sample-not-tested-reasons/edit.phtml:41
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:200
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:212
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:261
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:268
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:343
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:350
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:218
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:230
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:279
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:286
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:361
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:368
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:198
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:206
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:559
@@ -3533,20 +3560,20 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:674
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:697
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:703
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:315
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:364
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:405
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:429
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:449
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:570
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:584
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:596
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:653
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:660
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:668
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:881
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:887
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:894
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:319
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:368
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:409
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:433
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:453
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:574
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:588
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:600
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:657
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:664
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:672
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:885
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:891
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:898
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:156
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:160
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:173
@@ -3555,39 +3582,39 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:235
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:280
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:287
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:168
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:177
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:220
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:223
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:233
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:236
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:282
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:289
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:183
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:191
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:256
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:264
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:438
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:445
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:95
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:185
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:195
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:236
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:243
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:505
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:517
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:710
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:719
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:945
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:952
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:168
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:172
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:185
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:189
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:326
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:334
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:379
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:383
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:187
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:196
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:239
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:242
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:252
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:255
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:301
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:308
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:201
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:209
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:274
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:282
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:456
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:463
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:114
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:204
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:214
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:255
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:262
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:524
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:536
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:729
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:738
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:964
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:971
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:188
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:192
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:205
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:209
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:346
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:354
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:399
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:403
 #: application/modules/admin/views/scripts/shipment/ship-it.phtml:180
 #: application/modules/admin/views/scripts/test-platform/add.phtml:90
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:99
@@ -4370,6 +4397,7 @@ msgstr "Ajouter un nouveau CCPT"
 #: application/modules/admin/views/scripts/participants/add.phtml:388
 #: application/modules/admin/views/scripts/participants/edit.phtml:44
 #: application/modules/admin/views/scripts/participants/edit.phtml:496
+#: application/modules/admin/views/scripts/profile/index.phtml:186
 #: application/modules/admin/views/scripts/system-admins/add.phtml:6
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:12
 #: application/modules/admin/views/scripts/system-admins/index.phtml:14
@@ -4388,6 +4416,7 @@ msgstr "Prénom"
 #: application/modules/admin/views/scripts/data-managers/index.phtml:50
 #: application/modules/admin/views/scripts/participants/add.phtml:41
 #: application/modules/admin/views/scripts/participants/edit.phtml:51
+#: application/modules/admin/views/scripts/profile/index.phtml:198
 #: application/modules/admin/views/scripts/system-admins/add.phtml:11
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:18
 #: application/modules/admin/views/scripts/system-admins/index.phtml:15
@@ -4414,6 +4443,7 @@ msgid "Cell/Mobile"
 msgstr "Cellulaire/mobile"
 
 #: application/modules/admin/views/scripts/data-managers/index.phtml:55
+#: application/modules/admin/views/scripts/profile/index.phtml:214
 #: application/modules/admin/views/scripts/system-admins/add.phtml:17
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:24
 #: application/views/scripts/data-managers/index.phtml:29
@@ -4430,6 +4460,7 @@ msgid "Reset Password"
 msgstr "Réinitialiser le mot de passe"
 
 #: application/modules/admin/views/scripts/data-managers/reset-password.phtml:14
+#: application/modules/admin/views/scripts/profile/index.phtml:308
 #: application/views/scripts/data-managers/reset-password.phtml:16
 #: application/views/scripts/participant/password.phtml:220
 msgid "New Password"
@@ -4464,13 +4495,13 @@ msgstr ""
 "MOINS un chiffre, un alphabet et éventuellement des caractères spéciaux."
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:11
-#: application/modules/admin/views/scripts/distributions/index.phtml:19
+#: application/modules/admin/views/scripts/distributions/index.phtml:20
 msgid "Add New PT Survey"
 msgstr "Ajouter une nouvelle enquête PT"
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:15
 #: application/modules/admin/views/scripts/distributions/edit.phtml:20
-#: application/modules/admin/views/scripts/distributions/index.phtml:29
+#: application/modules/admin/views/scripts/distributions/index.phtml:30
 #: application/modules/admin/views/scripts/email-participants/index.phtml:98
 #: application/modules/admin/views/scripts/evaluate/index.phtml:12
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:68
@@ -4502,7 +4533,7 @@ msgstr ""
 
 #: application/modules/admin/views/scripts/distributions/add.phtml:24
 #: application/modules/admin/views/scripts/distributions/edit.phtml:11
-#: application/modules/admin/views/scripts/distributions/index.phtml:30
+#: application/modules/admin/views/scripts/distributions/index.phtml:31
 #: application/modules/admin/views/scripts/email-participants/index.phtml:97
 #: application/modules/admin/views/scripts/evaluate/index.phtml:13
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:157
@@ -4534,20 +4565,32 @@ msgstr "Ajouter et poursuivre l'envoi"
 msgid "Edit PT Survey"
 msgstr "Modifier l'enquête PT"
 
+#: application/modules/admin/views/scripts/distributions/index.phtml:5
+msgid "Ready to ship"
+msgstr "Prêt à être expédié"
+
+#: application/modules/admin/views/scripts/distributions/index.phtml:6
+msgid "Already Shipped Events"
+msgstr "Événements déjà organisés"
+
+#: application/modules/admin/views/scripts/distributions/index.phtml:7
+msgid "Not yet fully configured PT Events"
+msgstr "Événements PT pas encore entièrement configurés"
+
 #: application/modules/admin/views/scripts/distributions/index.phtml:14
 #: application/modules/admin/views/scripts/participant-messages/index.phtml:2
 msgid "List of"
 msgstr "Liste des"
 
-#: application/modules/admin/views/scripts/distributions/index.phtml:27
+#: application/modules/admin/views/scripts/distributions/index.phtml:28
 msgid "See Shipments"
 msgstr "Voir Expéditions"
 
-#: application/modules/admin/views/scripts/distributions/index.phtml:28
+#: application/modules/admin/views/scripts/distributions/index.phtml:29
 msgid "PT Shipment/Panel Type"
 msgstr "PT Shipment/Panel Type"
 
-#: application/modules/admin/views/scripts/distributions/index.phtml:31
+#: application/modules/admin/views/scripts/distributions/index.phtml:32
 #: application/modules/admin/views/scripts/evaluate/index.phtml:14
 #: application/modules/reports/views/scripts/distribution/index.phtml:14
 #: application/modules/reports/views/scripts/finalize/index.phtml:13
@@ -4555,11 +4598,11 @@ msgstr "PT Shipment/Panel Type"
 msgid "Shipment Code(s)"
 msgstr "Code(s) de l'envoi"
 
-#: application/modules/admin/views/scripts/distributions/index.phtml:111
+#: application/modules/admin/views/scripts/distributions/index.phtml:112
 msgid "Are you sure you want to ship this PT Survey?"
 msgstr "Êtes-vous sûr de vouloir expédier ce PT Survey ?"
 
-#: application/modules/admin/views/scripts/distributions/index.phtml:111
+#: application/modules/admin/views/scripts/distributions/index.phtml:112
 msgid "You cannot undo this!"
 msgstr "Il n'est pas possible de revenir en arrière !"
 
@@ -4707,8 +4750,8 @@ msgstr ""
 "utilisés."
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:332
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:94
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:306
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:98
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:310
 msgid "Enable RTRI"
 msgstr "Activer RTRI"
 
@@ -4717,7 +4760,7 @@ msgid "Please enter the report version"
 msgstr "Veuillez saisir la version du rapport."
 
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:358
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:91
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:95
 msgid "DTS Scheme Type"
 msgstr "Type de régime DTS"
 
@@ -5292,12 +5335,6 @@ msgstr ""
 msgid "Processing.."
 msgstr "En traitement.."
 
-#: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:44
-#: application/modules/reports/views/scripts/distribution/finalize.phtml:53
-#: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:66
-msgid "Finalized"
-msgstr "Finalisé"
-
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:52
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:15
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:10
@@ -5403,11 +5440,6 @@ msgstr "File d'attente"
 msgid "Processing"
 msgstr "En cours"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:79
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:145
-msgid "Re-Evaluate"
-msgstr "Réévaluer"
-
 #: application/modules/admin/views/scripts/evaluate/shipment.phtml:114
 msgid "Mail"
 msgstr "Email"
@@ -5449,16 +5481,16 @@ msgstr "Score de réponse"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:136
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:233
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:311
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:399
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:417
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:254
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:409
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:753
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:952
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:996
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1038
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1070
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:306
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:488
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:956
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1000
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1042
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1074
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:324
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:506
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:151
 #: application/views/scripts/custom-test/response.phtml:283
 #: application/views/scripts/participant/report.phtml:69
@@ -5745,6 +5777,7 @@ msgstr ""
 "proxy ou un CDN."
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:520
+#: application/modules/admin/views/scripts/profile/index.phtml:247
 #: application/views/scripts/participant/user-info.phtml:80
 msgid "Language"
 msgstr "Langue"
@@ -5754,6 +5787,7 @@ msgid "Select the language for this instance"
 msgstr "Sélectionnez la langue pour cette instance"
 
 #: application/modules/admin/views/scripts/global-config/index.phtml:525
+#: application/modules/admin/views/scripts/profile/index.phtml:252
 #: application/views/scripts/participant/user-info.phtml:86
 msgid "English"
 msgstr "Anglais"
@@ -6633,11 +6667,11 @@ msgid "To configure section headings and icons, go to"
 msgstr ""
 "Pour configurer les en-têtes de section et les icônes, rendez-vous dans"
 
-#: application/modules/admin/views/scripts/index/index.phtml:56
+#: application/modules/admin/views/scripts/index/index.phtml:61
 msgid "participant"
 msgstr "place"
 
-#: application/modules/admin/views/scripts/index/index.phtml:56
+#: application/modules/admin/views/scripts/index/index.phtml:62
 msgid ""
 "registered but not yet approved to use ePT. Please click here to approve."
 msgstr ""
@@ -6645,40 +6679,41 @@ msgstr ""
 "l'approuver."
 
 #: application/modules/admin/views/scripts/index/index.phtml:153
-msgid "New PT Surveys"
-msgstr "Nouvelles enquêtes sur les PT"
-
-#: application/modules/admin/views/scripts/index/index.phtml:172
-#: application/modules/admin/views/scripts/index/index.phtml:199
+#: application/modules/admin/views/scripts/index/index.phtml:182
+#: application/modules/admin/views/scripts/index/index.phtml:210
 msgid "On"
 msgstr "Activé"
 
-#: application/modules/admin/views/scripts/index/index.phtml:180
+#: application/modules/admin/views/scripts/index/index.phtml:163
+msgid "New PT Surveys"
+msgstr "Nouvelles enquêtes sur les PT"
+
+#: application/modules/admin/views/scripts/index/index.phtml:191
 msgid "Ready to Ship PT Surveys"
 msgstr "Enquêtes PT prêtes à être expédiées"
 
-#: application/modules/admin/views/scripts/index/index.phtml:207
+#: application/modules/admin/views/scripts/index/index.phtml:219
 msgid "Shipped Events (This month)"
 msgstr "Événements expédiés (ce mois-ci)"
 
-#: application/modules/admin/views/scripts/index/index.phtml:222
+#: application/modules/admin/views/scripts/index/index.phtml:235
 #: application/modules/admin/views/scripts/index/load-charts.ajax.phtml:20
 msgid "Active Participants enrolled per PT Scheme"
 msgstr "Participants actifs inscrits par système de PT"
 
-#: application/modules/admin/views/scripts/index/index.phtml:232
+#: application/modules/admin/views/scripts/index/index.phtml:249
 msgid "View all Enrollments"
 msgstr "Voir toutes les inscriptions"
 
-#: application/modules/admin/views/scripts/index/index.phtml:240
+#: application/modules/admin/views/scripts/index/index.phtml:259
 msgid "Number of PT Survey Participants"
 msgstr "Nombre de participants à l'enquête PT"
 
-#: application/modules/admin/views/scripts/index/index.phtml:264
+#: application/modules/admin/views/scripts/index/index.phtml:286
 msgid "View all Shipments"
 msgstr "Voir tous les envois"
 
-#: application/modules/admin/views/scripts/index/index.phtml:274
+#: application/modules/admin/views/scripts/index/index.phtml:298
 msgid "List of all PT Surveys"
 msgstr "Liste de toutes les enquêtes PT"
 
@@ -7260,6 +7295,7 @@ msgstr "Afficher uniquement les participants en attente"
 #: application/modules/admin/views/scripts/participants/index.phtml:74
 #: application/modules/admin/views/scripts/participants/pending.phtml:19
 #: application/modules/admin/views/scripts/participants/view-participants.phtml:10
+#: application/modules/admin/views/scripts/profile/index.phtml:232
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:65
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:98
 #: application/modules/admin/views/scripts/shipment/manage-enroll.phtml:138
@@ -7436,6 +7472,192 @@ msgstr "Liste de tous les partenaires"
 #: application/modules/admin/views/scripts/partners/index.phtml:16
 msgid "Added Date"
 msgstr "Date d'ajout"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:181
+msgid "Personal Information"
+msgstr "Informations personnelles"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:190
+msgid "e.g. John"
+msgstr "ex. John"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:191
+msgid "Please enter your first name"
+msgstr "Veuillez saisir votre prénom"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:194
+msgid "Enter your given name."
+msgstr "Entrez votre prénom."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:202
+msgid "e.g. Doe"
+msgstr "p.ex. Micehl"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:203
+msgid "Please enter your last name"
+msgstr "Entrez votre nom"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:206
+msgid "Enter your family name."
+msgstr "Entrez votre nom de famille."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:217
+msgid "e.g. primary@mail.com"
+msgstr "par exemple : primary@mail.com"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:218
+msgid "Please enter a valid primary email"
+msgstr "Veuillez saisir une adresse e-mail principale valide"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:220
+msgid "Used for account login and mail notifications."
+msgstr "Utilisé pour la connexion au compte et les notifications par e-mail."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:223
+#: application/modules/admin/views/scripts/system-admins/add.phtml:41
+#: application/modules/admin/views/scripts/system-admins/edit.phtml:48
+msgid "Secondary Email"
+msgstr "Email secondaire"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:226
+msgid "e.g. backup@mail.com"
+msgstr "par exemple : backup@mail.com"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:227
+msgid "Please enter a valid secondary email"
+msgstr "Veuillez saisir une adresse e-mail secondaire valide"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:229
+msgid "Used for account recovery notifications."
+msgstr "Utilisé pour les notifications de récupération de compte."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:235
+msgid "e.g. +1 202 555 0101"
+msgstr "par exemple : +1 202 555 0101"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:236
+msgid "Please enter your phone number"
+msgstr "S'il vous plaît entrer votre numéro de téléphone"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:238
+msgid "Include country code."
+msgstr "Indiquez le code pays."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:249
+msgid "Select your preferred language"
+msgstr "Выберите предпочитаемый язык"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:250
+msgid "-- Select Language --"
+msgstr "--Sélectionnez une langue--"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:255
+msgid "French (Français)"
+msgstr "Français"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:258
+msgid "Portuguese (Português)"
+msgstr "Portugais (Português)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:261
+msgid "Spanish (Español)"
+msgstr "Espagnol (Español)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:264
+msgid "Swahili (Kiswahili)"
+msgstr "swahili (kiswahili)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:267
+msgid "Arabic (العربية)"
+msgstr "Arabe (العربية)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:270
+msgid "Chinese (中文)"
+msgstr "Chinois (中文)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:273
+msgid "Vietnamese (Tiếng Việt)"
+msgstr "Vietnamien (Tiếng Việt)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:276
+msgid "Laos (ລາວ)"
+msgstr "Laos (ລາວ)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:279
+msgid "Myanmar (မြန်မာဘာသာ)"
+msgstr "Myanmar (langue birmane)"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:282
+msgid "Your preferred display language."
+msgstr "La langue d'affichage de votre choix."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:294
+msgid "Current Password"
+msgstr "Mot de passe actuel"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:298
+msgid "Enter your current password"
+msgstr "Veuillez saisir votre mot de passe actuel"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:299
+msgid "Required to confirm any password change"
+msgstr "Confirmation obligatoire de tout changement de mot de passe"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:300
+msgid "Required to confirm any password change."
+msgstr "Nécessaire pour confirmer tout changement de mot de passe."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:311
+msgid "Min 8 chars, 1 number, 1 symbol"
+msgstr "Au moins 8 caractères, 1 chiffre, 1 symbole"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:312
+msgid "Leave blank to keep current password"
+msgstr "Ne rien indiquer pour conserver le mot de passe actuel"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:314
+msgid "Leave blank to keep your current password."
+msgstr "Laissez ce champ vide pour conserver votre mot de passe actuel."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:317
+#: application/views/scripts/participant/password.phtml:230
+msgid "Confirm New Password"
+msgstr "Confirmer le nouveau mot de passe"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:320
+msgid "Re-enter new password"
+msgstr "Réentrez le nouveau mot de passe"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:321
+msgid "Must match the new password"
+msgstr "Doit correspondre au nouveau mot de passe"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:324
+#: application/modules/admin/views/scripts/profile/index.phtml:364
+msgid "Must match the new password."
+msgstr "Doit correspondre au nouveau mot de passe."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:335
+msgid "Update Profile"
+msgstr "Mettre à jour le profil"
+
+#: application/modules/admin/views/scripts/profile/index.phtml:369
+msgid "Passwords match."
+msgstr "Les mots de passe correspondent."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:372
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:382
+msgid "Please enter your current password to change it."
+msgstr "Veuillez saisir votre mot de passe actuel pour le modifier."
+
+#: application/modules/admin/views/scripts/profile/index.phtml:388
+msgid "New password and confirm password must match."
+msgstr ""
+"Le nouveau mot de passe et le mot de passe de confirmation doivent "
+"correspondre."
 
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:5
 msgid "Rapid HIV Recency Testing Settings"
@@ -7681,19 +7903,19 @@ msgstr "Nom du coordinateur PT"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:114
 #: application/modules/admin/views/scripts/shipment/partials/common/form-header.phtml:139
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:95
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:113
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:121
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:287
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:70
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:291
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:89
 msgid "PT Co-ordinator Email"
 msgstr "Courriel du coordinateur PT"
 
 #: application/modules/admin/views/scripts/shipment/edit.phtml:123
 #: application/modules/admin/views/scripts/shipment/partials/common/form-header.phtml:151
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:104
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:122
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:128
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:294
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:77
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:298
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:96
 msgid "PT Co-ordinator Phone Number"
 msgstr "Numéro de téléphone du coordinateur PT"
 
@@ -7855,8 +8077,8 @@ msgstr "Ajouter un nouvel envoi"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:748
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:782
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:790
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:938
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:946
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:942
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:950
 msgid "EIA"
 msgstr "EIA"
 
@@ -7864,10 +8086,10 @@ msgstr "EIA"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:124
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:230
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:308
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:947
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:984
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1035
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1067
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:951
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:988
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1039
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1071
 #: application/views/scripts/tb/assay-formats.ajax.phtml:71
 #: application/views/scripts/tb/assay-formats.ajax.phtml:183
 #: application/views/scripts/tb/assay-formats.ajax.phtml:441
@@ -7881,9 +8103,9 @@ msgstr "Date de l’examen"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:125
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:231
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:309
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:948
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:985
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1036
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:952
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:989
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1040
 msgid "Lot Number"
 msgstr "Numéro Lot"
 
@@ -7891,17 +8113,17 @@ msgstr "Numéro Lot"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:126
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:232
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:310
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:398
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:416
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:251
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:750
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:792
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:924
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:949
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:986
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1037
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1069
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:305
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:487
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:953
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:990
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1041
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1073
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:323
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:505
 msgid "Expiry"
 msgstr "Expiration"
 
@@ -7909,7 +8131,7 @@ msgstr "Expiration"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:253
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:752
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:794
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:951
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:955
 #: application/views/scripts/dbs/response.phtml:312
 #: application/views/scripts/dbs/response.phtml:314
 #: application/views/scripts/dbs/response.phtml:316
@@ -7920,7 +8142,7 @@ msgstr "Coupure"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:137
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:234
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:312
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:400
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:418
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:146
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:255
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:410
@@ -7928,12 +8150,12 @@ msgstr "Coupure"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:795
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:880
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:934
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:953
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:997
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1039
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1071
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:307
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:489
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:957
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1001
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1043
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1075
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:325
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:507
 msgid "Options"
 msgstr "Options"
 
@@ -7948,18 +8170,18 @@ msgstr "Options"
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:860
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:914
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:922
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:975
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:983
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:979
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:987
 msgid "WB"
 msgstr "WB"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:221
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1026
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1030
 msgid "RAPID HIV TESTING"
 msgstr "DÉPISTAGE RAPIDE DU VIH"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:229
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1034
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1038
 #: application/views/scripts/custom-test/response.phtml:212
 #: application/views/scripts/dts/response.phtml:522
 #: scheduled-jobs/report-layouts/participant-layouts/default/dts.phtml:378
@@ -7967,42 +8189,42 @@ msgid "Kit Name"
 msgstr "Nom du kit"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:300
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1059
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1063
 msgid "GEENIUS HIV 1/2 SUPPLEMENTAL ASSAY"
 msgstr "TEST COMPLÉMENTAIRE GEENIUS VIH 1/2"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/_dts-sample-modal.phtml:374
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:419
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:437
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:528
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:907
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:961
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1090
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:385
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:508
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:296
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:433
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1094
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:403
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:526
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:316
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:453
 msgid "OK"
 msgstr "OK"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:137
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:155
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:141
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:480
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:484
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:81
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:108
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:107
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:137
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:302
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:563
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:847
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:116
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:127
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:125
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:156
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:321
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:582
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:866
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:136
 msgid "Sample Preparation Date"
 msgstr "Date de préparation de l'échantillon"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:139
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:157
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:142
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:482
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:110
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:108
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:486
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:129
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:126
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:82
 #: application/views/scripts/capa/index.phtml:69
 #: application/views/scripts/custom-test/response.phtml:16
@@ -8010,28 +8232,28 @@ msgstr "Date de préparation de l'échantillon"
 msgid "Final Result"
 msgstr "Résultat final"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:140
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:158
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:143
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:491
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:495
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:86
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:113
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:141
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:420
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:648
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:901
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:118
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:132
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:160
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:439
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:667
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:920
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:138
 msgid "Is it a Control?"
 msgstr "S'agit-il d'un contrôle ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:141
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:159
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:144
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:492
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:496
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:87
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:119
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:139
 msgid "Is it Mandatory?"
 msgstr "Est-ce obligatoire ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:143
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:161
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:145
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:83
 #: application/views/scripts/participant/tb-results.phtml:57
@@ -8040,166 +8262,166 @@ msgstr "Est-ce obligatoire ?"
 msgid "Score"
 msgstr "Score"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:145
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:497
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:163
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:501
 msgid "Option"
 msgstr "Option"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:224
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:280
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:362
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:603
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:674
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:898
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:197
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:270
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:451
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:196
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:340
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:387
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:242
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:298
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:380
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:607
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:678
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:902
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:215
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:288
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:469
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:216
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:360
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:407
 msgid "Ref. Results"
 msgstr "Réf. Résultats"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:227
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:283
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:365
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:245
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:301
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:383
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:224
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:602
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:681
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:710
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:606
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:677
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:899
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:610
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:681
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:903
 msgid "Sample/Control"
 msgstr "Échantillon/Contrôle"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:388
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:406
 msgid "COVID-19 TYPE OF TESTING"
 msgstr "COVID-19 TYPE DE TEST"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:396
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:414
 msgid "Platform Name"
 msgstr "Název platformy"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:397
+#: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:415
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:250
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:749
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:791
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:923
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1068
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:304
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:486
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:1072
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:322
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:504
 msgid "Lot"
 msgstr "Lot"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:751
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:793
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:950
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:954
 msgid "OD"
 msgstr "OD"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:92
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:327
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:96
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:331
 msgid "Sample Type"
 msgstr "Type d'échantillon"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:93
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:97
 msgid "Enable Syphilis"
 msgstr "Activer la syphilis"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:95
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:376
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:99
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:380
 msgid "No. of tests in this Test Panel"
 msgstr "Nombre de tests dans ce panel de tests"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:96
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:100
 msgid "Screening Test Panel"
 msgstr "Panel de tests de dépistage"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:97
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:419
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:101
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:423
 msgid "Allow users to Choose Screening/Confirmatory"
 msgstr ""
 "Permettre aux utilisateurs de choisir entre le dépistage et la confirmation"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:98
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:440
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:102
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:444
 msgid "Collect QC Data"
 msgstr "Collecte des données de contrôle de qualité"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:334
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:338
 msgid "Dried Tube Specimen"
 msgstr "Échantillon de tube séché"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:337
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:341
 msgid "Serum"
 msgstr "Sérum"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:340
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:344
 msgid "Plasma"
 msgstr "Plasma"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:353
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:357
 msgid "Enable Syphilis Test for ANC Sites?"
 msgstr ""
 "Autoriser les tests de dépistage de la syphilis dans les centres de soins "
 "prénatals ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:354
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:358
 msgid "(This creates a Syphilis panel for all ANC sites)"
 msgstr ""
 "(Cela permet de créer un panel de syphilis pour tous les sites de soins "
 "prénatals)"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:394
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:398
 msgid "Is this ONLY Screening Test Panel?"
 msgstr "S'agit-il UNIQUEMENT d'un panel de tests de dépistage ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:395
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:399
 msgid "(This creates a panel with only ONE test)"
 msgstr "(Cela permet de créer un panel avec un seul test)"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:485
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:489
 msgid "Syphilis Final Result"
 msgstr "Syphilis Résultat final"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:489
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:493
 msgid "RTRI Final Result"
 msgstr "Résultat final de la RTRI"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:495
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:499
 msgid "Is Sample Diluted?"
 msgstr "L'échantillon est-il dilué ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:697
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:701
 msgid "Advanced config sources"
 msgstr "Sources de configuration avancées"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:704
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:708
 msgid "Setting"
 msgstr "Paramètre"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:705
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:709
 msgid "Saved"
 msgstr "Enregistré"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:706
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:710
 msgid "System Config"
 msgstr "Configuration du système"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:707
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:711
 msgid "Source"
 msgstr "Source"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:725
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:729
 msgid "Not set"
 msgstr "Non défini"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:727
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:731
 msgid "Not available"
 msgstr "Non disponible"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:733
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:737
 msgid ""
 "Choose whether to retain the saved shipment value or use the current config "
 "value"
@@ -8207,11 +8429,11 @@ msgstr ""
 "Choisissez si vous souhaitez conserver la valeur d'expédition enregistrée ou "
 "utiliser la valeur de configuration actuelle"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:734
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:738
 msgid "Retain Saved"
 msgstr "Conserver les données enregistrées"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:736
+#: application/modules/admin/views/scripts/shipment/partials/schemes/dts.phtml:740
 msgid "Use System Config"
 msgstr "Utiliser la configuration du système"
 
@@ -8228,24 +8450,24 @@ msgid "IC/QS Values"
 msgstr "Valeurs IC/QS"
 
 #: application/modules/admin/views/scripts/shipment/partials/schemes/eid.phtml:88
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:117
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:114
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:143
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:264
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:120
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:136
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:132
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:162
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:283
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:140
 msgid "Add/Remove Row"
 msgstr "Ajouter/supprimer une ligne"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:114
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:113
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:142
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:422
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:650
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:902
+#: application/modules/admin/views/scripts/shipment/partials/schemes/generic.phtml:133
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:131
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:161
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:441
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:669
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:921
 msgid "Mandatory?"
 msgstr "Obligatoire?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:106
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:124
 #: application/views/scripts/custom-test/response.phtml:281
 #: application/views/scripts/dts/response.phtml:1261
 #: application/views/scripts/eid/response.phtml:421
@@ -8256,7 +8478,7 @@ msgstr "Obligatoire?"
 msgid "Control/Sample"
 msgstr "Contrôle/échantillon"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:109
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:127
 #: application/views/scripts/dts/response.phtml:1264
 #: application/views/scripts/recency/response.phtml:328
 #: application/views/scripts/shipment-form/download.phtml:371
@@ -8264,7 +8486,7 @@ msgstr "Contrôle/échantillon"
 msgid "Control Line"
 msgstr "Ligne de contrôle"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:110
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:128
 #: application/views/scripts/dts/response.phtml:1267
 #: application/views/scripts/recency/response.phtml:330
 #: application/views/scripts/shipment-form/download.phtml:372
@@ -8272,7 +8494,7 @@ msgstr "Ligne de contrôle"
 msgid "Verification Line"
 msgstr "Ligne de vérification"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:111
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:129
 #: application/views/scripts/dts/response.phtml:1270
 #: application/views/scripts/recency/response.phtml:332
 #: application/views/scripts/shipment-form/download.phtml:373
@@ -8280,19 +8502,19 @@ msgstr "Ligne de vérification"
 msgid "Longterm Line"
 msgstr "Ligne à long terme"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:112
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:130
 msgid "Control?"
 msgstr "Le contrôle ?"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:160
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:167
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:174
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:233
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:240
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:247
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:416
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:423
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:430
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:178
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:185
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:192
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:251
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:258
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:265
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:434
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:441
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:448
 #: application/views/scripts/dts/response.phtml:1303
 #: application/views/scripts/dts/response.phtml:1314
 #: application/views/scripts/dts/response.phtml:1327
@@ -8302,15 +8524,15 @@ msgstr "Le contrôle ?"
 msgid "Present"
 msgstr "Présent"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:161
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:168
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:175
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:234
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:241
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:248
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:417
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:424
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:431
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:179
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:186
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:193
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:252
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:259
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:266
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:435
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:442
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:449
 #: application/views/scripts/dts/response.phtml:1304
 #: application/views/scripts/dts/response.phtml:1316
 #: application/views/scripts/dts/response.phtml:1329
@@ -8320,109 +8542,109 @@ msgstr "Présent"
 msgid "Absent"
 msgstr "Absent"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:295
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:477
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:313
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:495
 msgid "Assay"
 msgstr "Essai"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:303
-#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:485
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:321
+#: application/modules/admin/views/scripts/shipment/partials/schemes/recency.phtml:503
 msgid "Recency Assay"
 msgstr "Essai de récence"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:69
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:88
 msgid "Score Per Sample"
 msgstr "Score par échantillon"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:78
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:97
 msgid "Form Version"
 msgstr "Version du formulaire"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:88
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:107
 msgid "Collect Feedback"
 msgstr "Recueillir des informations"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:92
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:111
 #: application/views/scripts/tb/assay-formats.ajax.phtml:252
 msgid "-- Select --"
 msgstr "-- Sélectionner --"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:118
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:137
 msgid "Select Type of TB Test"
 msgstr "Sélectionner le type de test de dépistage de la tuberculose"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:140
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:290
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:408
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:551
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:636
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:838
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:892
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:159
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:309
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:427
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:570
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:655
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:857
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:911
 msgid "MTB Detected"
 msgstr "Détecté"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:140
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:290
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:408
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:551
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:636
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:838
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:892
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:159
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:309
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:427
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:570
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:655
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:857
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:911
 msgid "(Level)"
 msgstr "(Niveau)"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:263
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:282
 msgid "Sample Details"
 msgstr "Détails de l'échantillon"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:288
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:549
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:837
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:307
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:568
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:856
 msgid "MTB/Rif"
 msgstr "MTB/Rif"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:293
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:411
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:554
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:639
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:839
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:893
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:312
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:430
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:573
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:658
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:858
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:912
 #: application/views/scripts/tb/assay-formats.ajax.phtml:767
 msgid "Rif Resistance"
 msgstr "Résistance du Rif"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:304
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:565
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:848
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:323
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:584
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:867
 msgid "TB Isolate"
 msgstr "Isolat de la tuberculose"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:406
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:634
-#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:891
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:425
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:653
+#: application/modules/admin/views/scripts/shipment/partials/schemes/tb.phtml:910
 msgid "MTB Ultra"
 msgstr "MTB Ultra"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:78
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:98
 msgid "Method of Evaluation"
 msgstr "Méthode d'évaluation"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:85
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:105
 msgid "ISO/IEC 17043"
 msgstr "ISO/IEC 17043"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:88
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:108
 msgid "Legacy"
 msgstr "Héritage"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:213
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:406
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:233
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:426
 #: application/views/scripts/eid/response.phtml:429
 msgid "Reference Results"
 msgstr "Résultats de référence"
 
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:226
-#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:415
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:246
+#: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:435
 #: application/views/scripts/vl/response.phtml:557
 msgid "Viral Load"
 msgstr "CHARGE VIRALE"
@@ -8524,11 +8746,6 @@ msgstr "Ajouter un nouveau PT Manager"
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:43
 msgid "Cell/Mobile Number"
 msgstr "Numéro de téléphone portable"
-
-#: application/modules/admin/views/scripts/system-admins/add.phtml:41
-#: application/modules/admin/views/scripts/system-admins/edit.phtml:48
-msgid "Secondary Email"
-msgstr "Email secondaire"
 
 #: application/modules/admin/views/scripts/system-admins/add.phtml:43
 #: application/modules/admin/views/scripts/system-admins/edit.phtml:51
@@ -11084,10 +11301,6 @@ msgstr "Profil confirmé ! Vous pouvez maintenant modifier votre mot de passe."
 msgid "Old Password"
 msgstr "Ancien mot de passe"
 
-#: application/views/scripts/participant/password.phtml:230
-msgid "Confirm New Password"
-msgstr "Confirmer le nouveau mot de passe"
-
 #: application/views/scripts/participant/password.phtml:275
 msgid "Cannot reuse or reset to previous password. Please try something else."
 msgstr ""
@@ -12890,10 +13103,6 @@ msgstr "Fin du rapport final"
 
 #~ msgid "Sub Heading 3"
 #~ msgstr "Sous-titre 3"
-
-#, fuzzy
-#~ msgid "System Generated"
-#~ msgstr "Système généré"
 
 #~ msgid "TB form started generating"
 #~ msgstr "Le formulaire TB a commencé à générer"

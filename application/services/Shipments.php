@@ -1793,7 +1793,8 @@ class Application_Service_Shipments
                         )
                     );
                     if (isset($params['vlRef'][$i + 1]['assay'])) {
-                        $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                        $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                        ;
                         for ($e = 0; $e < $assaySize; $e++) {
                             if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                                 $dbAdapter->insert(
@@ -2419,7 +2420,8 @@ class Application_Service_Shipments
                 );
 
                 if (isset($params['vlRef'][$i + 1]['assay'])) {
-                    $assaySize = count($params['vlRef'][$i + 1]['assay']);;
+                    $assaySize = count($params['vlRef'][$i + 1]['assay']);
+                    ;
                     for ($e = 0; $e < $assaySize; $e++) {
                         if (trim($params['vlRef'][$i + 1]['assay'][$e]) != "" && trim($params['vlRef'][$i + 1]['value'][$e]) != "") {
                             $dbAdapter->insert(
@@ -2911,12 +2913,12 @@ class Application_Service_Shipments
             ->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
             ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', [
                 'report_generated',
-                'participant_count'        => new Zend_Db_Expr('COUNT(sp.participant_id)'),
-                'reported_count'           => new Zend_Db_Expr("SUM(sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded')"),
-                'number_passed'            => new Zend_Db_Expr("SUM(sp.final_result = 1)"),
-                'downloaded_count'         => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT(sp.report_download_metadata, '$.report_downloaded')) = 'yes')"),
+                'participant_count' => new Zend_Db_Expr('COUNT(sp.participant_id)'),
+                'reported_count' => new Zend_Db_Expr("SUM(sp.response_status IS NOT NULL AND sp.response_status LIKE 'responded')"),
+                'number_passed' => new Zend_Db_Expr("SUM(sp.final_result = 1)"),
+                'downloaded_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT(sp.report_download_metadata, '$.report_downloaded')) = 'yes')"),
                 'participant_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_individual_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_individual_report_on')) IS NOT NULL)"),
-                'summary_report_count'     => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_on')) IS NOT NULL)")
+                'summary_report_count' => new Zend_Db_Expr("SUM(sp.report_download_metadata IS NOT NULL AND COALESCE(JSON_EXTRACT(sp.report_download_metadata, '$.first_summary_report_on'), JSON_EXTRACT(sp.report_download_metadata, '$.latest_summary_report_on')) IS NOT NULL)")
             ])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
             ->joinLeft(['rr' => 'r_results'], 'sp.final_result=rr.result_id')
@@ -3064,7 +3066,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $newShipmentMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3102,7 +3104,7 @@ class Application_Service_Shipments
         foreach ($participantEmails as $participantDetails) {
             if ($participantDetails['email'] != '') {
                 $surveyDate = Pt_Commons_DateUtility::humanReadableDateFormat($participantDetails['distribution_date']);
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
+                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##', );
                 $replace = array($participantDetails['participantName'], $participantDetails['shipment_code'], $participantDetails['SCHEME'], $participantDetails['distribution_code'], $surveyDate);
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
@@ -3770,9 +3772,11 @@ class Application_Service_Shipments
             }
             $row[] = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
             if (isset($parameters['originatedFrom']) && !empty($parameters['originatedFrom']) && $parameters['originatedFrom'] == 'admin') {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/reports/corrective-preventive-actions/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             } else {
-                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';;
+                $row[] = '<br>&nbsp;<a class="btn btn-primary btn-xs" href="/capa/capa/id/' . base64_encode($aRow['participant_id']) . '"><span><i class="icon-plus"></i> Action</span></a>';
+                ;
             }
             $output['aaData'][] = $row;
         }
@@ -4176,6 +4180,8 @@ class Application_Service_Shipments
     {
         // Determine milestone states from timestamps
         $isEvaluated = !empty($shipment['evaluated_at']);
+        $translator = Zend_Registry::get('translate');
+
         $hasReportsGenerated = !empty($shipment['reports_generated_at']);
         $isFinalized = !empty($shipment['finalized_at']);
 
@@ -4187,17 +4193,17 @@ class Application_Service_Shipments
 
         // Derive display status from milestone timestamps
         if (!$isEphemeral && $isFinalized) {
-            $displayStatus = 'Finalized';
+            $displayStatus = $translator->_('Finalized');
         } elseif (!$isEphemeral && $hasReportsGenerated) {
-            $displayStatus = 'Reports Generated';
+            $displayStatus = $translator->_('Reports Generated');
         } elseif (!$isEphemeral && $isEvaluated) {
-            $displayStatus = 'Evaluated';
+            $displayStatus = $translator->_('Evaluated');
         } else {
             $displayStatus = ucfirst($shipmentStatus);
         }
 
         // Button text based on evaluated_at timestamp
-        $evaluateButtonText = $isEvaluated ? 'Re-Evaluate' : 'Evaluate';
+        $evaluateButtonText = $isEvaluated ? $translator->_('Re-Evaluate') : $translator->_('Evaluate');
 
         // Determine button enable/disable states based on milestones:
         // - evaluated_at blank: only Evaluate enabled
