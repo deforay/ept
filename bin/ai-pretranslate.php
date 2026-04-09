@@ -31,6 +31,9 @@ TXT;
 }
 
 require_once __DIR__ . '/../constants.php';
+require_once __DIR__ . '/../env-loader.php';
+
+loadRootEnvFile(ROOT_PATH . DIRECTORY_SEPARATOR . '.env');
 
 set_include_path(implode(PATH_SEPARATOR, [
     realpath(ROOT_PATH . '/vendor'),
