@@ -122,7 +122,12 @@ $possibleDtsSchemeTypes = array_values(array_unique(array_filter([
 $renderRtriSection = $isEditMode ? in_array('updated-3-tests', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'updated-3-tests' && $rtriEnabled == 'yes');
 $renderSyphilisSection = $isEditMode ? in_array('ghana', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'ghana');
 $renderNoOfTestsSection = $isEditMode ? count(array_intersect($possibleDtsSchemeTypes, ['standard', 'malawi'])) > 0 : in_array($dtsSchemeType, ['standard', 'malawi'], true);
-$renderTestPanelTypeSection = $isEditMode ? in_array('updated-3-tests', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'updated-3-tests');
+// Vietnam uses the same participant panel-type choice as updated-3-tests,
+// so the admin setting must be available in both workflows.
+$testPanelTypeSchemes = ['updated-3-tests', 'vietnam'];
+$renderTestPanelTypeSection = $isEditMode
+    ? count(array_intersect($possibleDtsSchemeTypes, $testPanelTypeSchemes)) > 0
+    : in_array($dtsSchemeType, $testPanelTypeSchemes, true);
 $renderSampleDilutedSection = $isEditMode ? in_array('vietnam', $possibleDtsSchemeTypes, true) : ($dtsSchemeType == 'vietnam');
 $view = $this;
 
@@ -414,11 +419,11 @@ if ($renderNoOfTestsSection) { ?>
 
 <?php
 // ============================================================================
-// TEST PANEL TYPE (updated-3-tests scheme type only)
+// TEST PANEL TYPE (updated-3-tests and vietnam scheme types)
 // ============================================================================
 if ($renderTestPanelTypeSection) { ?>
     <div class="form-group dtsTestPanelType dts-setting-row" data-setting-key="dtsTestPanelType"
-        data-scheme-section="updated-3-tests" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
+        data-scheme-section="updated-3-tests vietnam" style="<?php echo $showTestPanelType ? '' : 'display:none;'; ?>">
         <label class="col-lg-3 control-label" for="dtsTestPanelType">
             <?= $this->translate->_("Allow users to Choose Screening/Confirmatory"); ?>
         </label>
@@ -800,7 +805,7 @@ if ($renderTestPanelTypeSection) { ?>
                 $(this).toggle($.inArray(schemeType, allowedSchemes) !== -1);
             });
 
-            $('.dtsTestPanelType').toggle(schemeType === 'updated-3-tests' && screeningTest === 'no');
+            $('.dtsTestPanelType').toggle($.inArray(schemeType, ['updated-3-tests', 'vietnam']) !== -1 && screeningTest === 'no');
             $('.syphilis-input').toggle(schemeType === 'ghana' && enableSyphilis === 'yes');
             $('.rtri-input').toggle(schemeType === 'updated-3-tests' && enableRtri === 'yes');
 
