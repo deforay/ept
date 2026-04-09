@@ -70,6 +70,7 @@ $tablesToTranslate = [
         ]
     ],
     'r_site_type' => ['site_type'],
+    'scheme_list' => ['scheme_name'],
 ];
 
 try {

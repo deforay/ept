@@ -6,7 +6,7 @@ $actionName = Zend_Controller_Front::getInstance()->getRequest()->getActionName(
 $notifyData = $this->getNotification();
 $configData = $this->getGlobalConfig();
 $genderHelper = $this->getHelper('DateFormat');
-$dtFormat =  $genderHelper->getDateFormat();
+$dtFormat = $genderHelper->getDateFormat();
 $trainingText = $this->translate->_("This is a training instance. Please use this only for training purposes. Do not use this for actual PT Surveys.");
 
 $notifyCount = (count($notifyData) > 0) ? count($notifyData) : 0;
@@ -1041,34 +1041,47 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 					<li id="Logout" style="position:relative;">
 						<button class="profile-btn" id="profileBtn" onclick="toggleProfileDropdown(event)"
 							style="display:flex;align-items:center;gap:7px;height:50px;padding:0 14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;white-space:nowrap;">
-							<div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.25);color:#fff;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,0.5);flex-shrink:0;">
+							<div
+								style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.25);color:#fff;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,0.5);flex-shrink:0;">
 								<?php
 								$nameParts = explode(' ', trim($adminSession->first_name ?? 'Admin User'));
-								$initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
+								$initials = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
 								echo $initials ?: 'AD';
 								?>
 							</div>
 							<span><?php echo htmlspecialchars($adminSession->first_name ?? 'Admin'); ?></span>
-							<svg id="profileChevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="transition:transform 0.2s;opacity:0.8;">
+							<svg id="profileChevron" width="12" height="12" viewBox="0 0 16 16" fill="none"
+								stroke="currentColor" stroke-width="1.8" style="transition:transform 0.2s;opacity:0.8;">
 								<path d="M4 6l4 4 4-4" />
 							</svg>
 						</button>
 
-						<div id="profileDropdown" style="display:none;position:absolute;right:0;top:50px;width:220px;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.13);z-index:9999;overflow:hidden;">
+						<div id="profileDropdown"
+							style="display:none;position:absolute;right:0;top:50px;width:220px;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.13);z-index:9999;overflow:hidden;">
 							<div style="padding:13px 16px;border-bottom:1px solid #eee;background:#fafafa;">
-								<div style="font-size:14px;font-weight:bold;color:#333;"><?php echo htmlspecialchars($adminSession->adminName ?? 'Admin User'); ?></div>
-								<div style="font-size:12px;color:#999;margin-top:2px;"><?php echo htmlspecialchars($adminSession->adminEmail ?? ''); ?></div>
+								<div style="font-size:14px;font-weight:bold;color:#333;">
+									<?php echo htmlspecialchars($adminSession->adminName ?? 'Admin User'); ?>
+								</div>
+								<div style="font-size:12px;color:#999;margin-top:2px;">
+									<?php echo htmlspecialchars($adminSession->adminEmail ?? ''); ?>
+								</div>
 							</div>
-							<a href="/admin/profile" style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:#444;text-decoration:none;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">
-								<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+							<a href="/admin/profile"
+								style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:#444;text-decoration:none;"
+								onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''">
+								<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+									stroke-width="1.5">
 									<circle cx="8" cy="5.5" r="2.5" />
 									<path d="M2.5 13.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" />
 								</svg>
 								<?= $this->translate->_("My Profile"); ?>
 							</a>
 							<hr style="border:none;border-top:1px solid #eee;margin:0;">
-							<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'login', 'action' => 'log-out']); ?>" style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:#c0392b;text-decoration:none;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''">
-								<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+							<a href="<?php echo $this->url(['module' => 'admin', 'controller' => 'login', 'action' => 'log-out']); ?>"
+								style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:#c0392b;text-decoration:none;"
+								onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''">
+								<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+									stroke-width="1.5">
 									<path d="M6 2H2.5A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14H6M11 11l3-3-3-3M14 8H6" />
 								</svg>
 								<?= $this->translate->_("Sign Out"); ?>
@@ -1153,15 +1166,15 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			quickActions: <?php echo json_encode($this->translate->_('Quick Actions')); ?>
 		};
 		window.spotlightCategoryOrder = <?php echo json_encode([
-											$this->translate->_('Recent'),
-											$this->translate->_('Recent Shipments'),
-											$this->translate->_('Quick Actions'),
-											$this->translate->_('Navigation'),
-											$this->translate->_('Configure'),
-											$this->translate->_('Manage'),
-											$this->translate->_('Analyze'),
-											$this->translate->_('Reports')
-										]); ?>;
+			$this->translate->_('Recent'),
+			$this->translate->_('Recent Shipments'),
+			$this->translate->_('Quick Actions'),
+			$this->translate->_('Navigation'),
+			$this->translate->_('Configure'),
+			$this->translate->_('Manage'),
+			$this->translate->_('Analyze'),
+			$this->translate->_('Reports')
+		]); ?>;
 	</script>
 
 	<script type="text/javascript">
@@ -1173,14 +1186,14 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			dd.style.display = isOpen ? 'none' : 'block';
 			ch.style.transform = isOpen ? '' : 'rotate(180deg)';
 		}
-		document.addEventListener('click', function() {
+		document.addEventListener('click', function () {
 			var dd = document.getElementById('profileDropdown');
 			if (dd) {
 				dd.style.display = 'none';
 				document.getElementById('profileChevron').style.transform = '';
 			}
 		});
-		$(function() {
+		$(function () {
 			str = $(location).attr('pathname');
 			splitsUrl = str.split("/", 6);
 			if (splitsUrl[2] == 'participants' && splitsUrl[3] == "participant-manager-map") {
@@ -1295,8 +1308,8 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				$('#HIVRecencyRTRISettings').addClass('active');
 			}
 
-			$('.autoSelectIfOnlyOneOption').each(function() {
-				var nonEmptyOptions = $(this).find('option').filter(function() {
+			$('.autoSelectIfOnlyOneOption').each(function () {
+				var nonEmptyOptions = $(this).find('option').filter(function () {
 					return this.value.trim() !== "";
 				});
 
@@ -1305,7 +1318,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 				}
 			});
 
-			$(".checkNum").keydown(function(e) {
+			$(".checkNum").keydown(function (e) {
 				// Allow: backspace, delete, tab, escape, enter and .
 				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 					// Allow: Ctrl+A
@@ -1324,7 +1337,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			<?php $alertMsg = new Zend_Session_Namespace('alertSpace');
 			if (isset($alertMsg->message) && $alertMsg->message != "") { ?>
 				alert(<?php echo json_encode($alertMsg->message); ?>);
-			<?php $alertMsg->message = "";
+				<?php $alertMsg->message = "";
 				unset($alertMsg->message);
 			} ?>
 
@@ -1371,9 +1384,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function notifyRead(id) {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: id
-				},
-				function(data) {})
+				nid: id
+			},
+				function (data) { })
 		}
 
 		function allowOnlyAlphaNumericAndHyphen(inputId) {
@@ -1384,9 +1397,9 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 		function markasRead() {
 			$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'notify-status'), 'default', true); ?>", {
-					nid: 'all'
-				},
-				function(data) {
+				nid: 'all'
+			},
+				function (data) {
 					if (data > 0) {
 						$('.readc').removeAttr('style');
 						$('.count-notify').html('');
@@ -1410,12 +1423,12 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		function exportConfig(formId, schemeId) {
 			let formData = $('#' + formId).serialize();
 			$.blockUI();
-			$.post("<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'export-config')); ?>", {
-					formPost: formData,
-					scheme: schemeId,
-					file: schemeId
-				},
-				function(data) {
+			$.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'export-config']); ?>", {
+				formPost: formData,
+				scheme: schemeId,
+				file: schemeId
+			},
+				function (data) {
 					if (data) {
 						window.open('/d/' + data, '_blank');
 					}
@@ -1440,8 +1453,10 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			</div>
 			<div class="spotlight-footer">
 				<span><kbd>&uarr;</kbd><kbd>&darr;</kbd> <?= $this->translate->_('Navigate'); ?></span>
-				<span><kbd>Enter</kbd> <?= $this->translate->_('Open'); ?></span>
-				<span><kbd>Esc</kbd> <?= $this->translate->_('Close'); ?></span>
+				<span><kbd><?= $this->translate->_('Enter'); ?></kbd> <?= $this->translate->_('Open'); ?></span>
+				<span><kbd>
+						<?= $this->translate->_('Esc'); ?>
+					</kbd> <?= $this->translate->_('Close'); ?></span>
 			</div>
 		</div>
 	</div>

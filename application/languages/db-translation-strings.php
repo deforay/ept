@@ -17,6 +17,7 @@
 // r_response_vl_not_tested_reason: vl_not_tested_reason
 // r_results: result_name [default, upper, lower]
 // r_site_type: site_type
+// scheme_list: scheme_name
 
 // r_possibleresult.response
 _('1+');
@@ -32,6 +33,8 @@ _('Controls were not reported');
 _('Courier');
 // r_covid19_corrective_actions.corrective_action
 _('Covid19 Testing should be done within specified hours of rehydration as per SOP.');
+// scheme_list.scheme_name
+_('Cryptococcal antigen (CrAg)');
 // r_site_type.site_type
 _('Department');
 // r_possibleresult.response
@@ -42,8 +45,16 @@ _('detected');
 _('Did not meet the minimum score required');
 // r_site_type.site_type
 _('District');
+// scheme_list.scheme_name
+_('Dried Blood Spot - HIV Serology');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - HIV Serology');
+// scheme_list.scheme_name
+_('Dried Tube Specimen - Tuberculosis');
 // r_dts_corrective_actions.corrective_action
 _('DTS Testing should be done within specified hours of rehydration as per SOP.');
+// scheme_list.scheme_name
+_('Early Infant Diagnosis');
 // r_modes_of_receipt.mode_name
 _('Email');
 // r_dts_corrective_actions.corrective_action
@@ -98,6 +109,10 @@ _('For sample (1/2/3?) National HIV Testing algorithm was not followed.');
 _('For Test (1/2/3) testing is not performed with country approved test kit.');
 // r_covid19_corrective_actions.description
 _('For Test (1/2/3) testing is not performed with country approved test type.');
+// scheme_list.scheme_name
+_('Generic Test');
+// scheme_list.scheme_name
+_('HBV Test');
 // r_possibleresult.response
 _('HIGH');
 // r_possibleresult.response
@@ -116,6 +131,8 @@ _('HIV-1 Not Detected');
 _('HIV-1 NOT DETECTED');
 // r_possibleresult.response
 _('hiv-1 not detected');
+// scheme_list.scheme_name
+_('HIV Viral Load');
 // r_participant_affiliates.affiliate, r_site_type.site_type
 _('Hospital');
 // r_control.control_name
@@ -294,6 +311,8 @@ _('PT Provider Negative Control');
 _('PT Provider Positive Control');
 // r_network_tiers.network_name
 _('Public Health Reference Laboratories');
+// scheme_list.scheme_name
+_('Rapid Test for Recent Infection (RTRI)');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
 _('Re-hydration date missing in PT report form.');
 // r_possibleresult.response
@@ -332,6 +351,8 @@ _('Review and refer to SOP for testing. Sample should be tested per National HIV
 _('Sample (1/2/3) was not reported');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
 _('Sample (1/2/3?) reported result does not match with expected result.');
+// scheme_list.scheme_name
+_('SARS-Cov-2');
 // r_modes_of_receipt.mode_name
 _('Scan');
 // r_possibleresult.response
@@ -344,6 +365,8 @@ _('Secondary and tertiary laboratory service tiers');
 _('SMS');
 // r_evaluation_comments.comment
 _('Some mandatory samples were not reported');
+// scheme_list.scheme_name
+_('Syphilis Test');
 // r_site_type.site_type
 _('TB Center');
 // r_covid19_corrective_actions.description, r_dts_corrective_actions.description
