@@ -1,0 +1,407 @@
+<?php
+$result = $this->result ?? [];
+$nameParts = explode(' ', trim($result['first_name'] ?? ''));
+$initials  = strtoupper(
+    substr($nameParts[0] ?? '', 0, 1) .
+        (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : '')
+) ?: 'AD';
+?>
+
+<style>
+    .profile-container {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .profile-container legend {
+        background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+        color: #fff;
+        font-weight: 500;
+        font-size: 16px;
+        padding: 14px 20px;
+        margin: 0;
+        border: none;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .profile-container legend i {
+        margin-right: 8px;
+    }
+
+    .form-content {
+        padding: 25px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .config-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .config-section:hover {
+        border-color: #4a6fa5;
+        box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+    }
+
+    .config-section h5 {
+        color: #4a6fa5;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #4a6fa5;
+    }
+
+    .config-section h5 i {
+        margin-right: 8px;
+    }
+
+    .profile-avatar-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding-bottom: 18px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-avatar-circle {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #4a6fa5;
+        color: #fff;
+        font-size: 20px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-avatar-meta .admin-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a2e;
+    }
+
+    .profile-avatar-meta .admin-sub {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 3px;
+    }
+
+    .config-section label {
+        color: #374151;
+        font-weight: 500;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .config-section .form-control:focus {
+        border-color: #4a6fa5;
+        box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+    }
+
+    .text-muted {
+        color: #6b7280;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .radioBtn .notActive {
+        color: #4a6fa5;
+        background: #fff;
+        border-color: #4a6fa5;
+    }
+
+    .radioBtn .active {
+        background: #4a6fa5;
+        border-color: #3a5a8a;
+        color: #fff;
+    }
+
+    .section-divider {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 18px 0;
+    }
+
+    .pw-match-ok {
+        color: #2e7d32 !important;
+    }
+
+    .pw-match-fail {
+        color: #e53e3e !important;
+    }
+</style>
+
+<div class="profile-container">
+    <form name="adminProfileForm" id="adminProfileForm" method="post"
+        action="<?php echo $this->url(['module' => 'admin', 'controller' => 'profile', 'action' => 'index'], 'default', true); ?>"
+        class="form-horizontal" role="form">
+
+        <fieldset>
+            <legend>
+                <i class="icon-user"></i> <?= $this->translate->_("My Profile"); ?>
+            </legend>
+
+            <div class="form-content">
+
+                <!-- Avatar summary row -->
+                <div class="config-section">
+                    <div class="profile-avatar-row">
+                        <div class="profile-avatar-circle" id="avatarCircle">
+                            <?= htmlspecialchars($initials); ?>
+                        </div>
+                        <div class="profile-avatar-meta">
+                            <div class="admin-name" id="avatarName">
+                                <?= htmlspecialchars(trim(($result['first_name'] ?? '') . ' ' . ($result['last_name'] ?? ''))); ?>
+                            </div>
+                            <div class="admin-sub">
+                                Mail: <?= htmlspecialchars($result['primary_email'] ?? ''); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden admin_id -->
+                <input type="hidden" name="adminId" id="admin_id"
+                    value="<?= htmlspecialchars($result['admin_id'] ?? ''); ?>">
+
+                <!-- Personal Information -->
+                <div class="config-section">
+                    <h5><i class="icon-user"></i> <?= $this->translate->_("Personal Information"); ?></h5>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="firstName">
+                                <?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span>
+                            </label>
+                            <input type="text" id="firstName" name="firstName"
+                                class="form-control isRequired"
+                                placeholder="<?= $this->translate->_("e.g. John"); ?>"
+                                title="<?= $this->translate->_("Please enter your first name"); ?>"
+                                value="<?= htmlspecialchars($result['first_name'] ?? ''); ?>"
+                                oninput="updateAvatarPreview()">
+                            <small class="text-muted"><?= $this->translate->_("Enter your given name."); ?></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastName">
+                                <?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span>
+                            </label>
+                            <input type="text" id="lastName" name="lastName"
+                                class="form-control isRequired"
+                                placeholder="<?= $this->translate->_("e.g. Doe"); ?>"
+                                title="<?= $this->translate->_("Please enter your last name"); ?>"
+                                value="<?= htmlspecialchars($result['last_name'] ?? ''); ?>"
+                                oninput="updateAvatarPreview()">
+                            <small class="text-muted"><?= $this->translate->_("Enter your family name."); ?></small>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="primaryEmail"><?= $this->translate->_("Primary Email"); ?></label>
+                            <input type="email" id="primaryEmail" name="primaryEmail"
+                                class="form-control isEmail"
+                                placeholder="<?= $this->translate->_("e.g. primary@mail.com"); ?>"
+                                title="<?= $this->translate->_("Please enter a valid primary email"); ?>"
+                                value="<?= htmlspecialchars($result['primary_email'] ?? ''); ?>">
+                            <small class="text-muted"><?= $this->translate->_("Used for account login and mail notifications."); ?></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="secondaryEmail"><?= $this->translate->_("Secondary Email"); ?></label>
+                            <input type="email" id="secondaryEmail" name="secondaryEmail"
+                                class="form-control isEmail"
+                                placeholder="<?= $this->translate->_("e.g. backup@mail.com"); ?>"
+                                title="<?= $this->translate->_("Please enter a valid secondary email"); ?>"
+                                value="<?= htmlspecialchars($result['secondary_email'] ?? ''); ?>">
+                            <small class="text-muted"><?= $this->translate->_("Used for account recovery notifications."); ?></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone"><?= $this->translate->_("Phone"); ?></label>
+                            <input type="text" id="phone" name="phone"
+                                class="form-control"
+                                placeholder="<?= $this->translate->_("e.g. +1 202 555 0101"); ?>"
+                                title="<?= $this->translate->_("Please enter your phone number"); ?>"
+                                value="<?= htmlspecialchars($result['phone'] ?? ''); ?>">
+                            <small class="text-muted"><?= $this->translate->_("Include country code."); ?></small>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <div class="row">
+                        <!-- Language Selector -->
+                        <div class="col-md-6">
+                            <label for="admin_language"><?= $this->translate->_("Language"); ?></label>
+                            <select id="admin_language" name="language" class="form-control"
+                                title="<?= $this->translate->_("Select your preferred language"); ?>">
+                                <option value=""><?= $this->translate->_("-- Select Language --"); ?></option>
+                                <option value="en" <?= (($result['language'] ?? '') == 'en') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("English"); ?>
+                                </option>
+                                <option value="fr" <?= (($result['language'] ?? '') == 'fr') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("French (Français)"); ?>
+                                </option>
+                                <option value="pt" <?= (($result['language'] ?? '') == 'pt') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Portuguese (Português)"); ?>
+                                </option>
+                                <option value="es" <?= (($result['language'] ?? '') == 'es') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Spanish (Español)"); ?>
+                                </option>
+                                <option value="sw" <?= (($result['language'] ?? '') == 'sw') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Swahili (Kiswahili)"); ?>
+                                </option>
+                                <option value="ar" <?= (($result['language'] ?? '') == 'ar') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Arabic (العربية)"); ?>
+                                </option>
+                                <option value="zh" <?= (($result['language'] ?? '') == 'zh') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Chinese (中文)"); ?>
+                                </option>
+                                <option value="vi" <?= (($result['language'] ?? '') == 'vi') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Vietnamese (Tiếng Việt)"); ?>
+                                </option>
+                                <option value="my" <?= (($result['language'] ?? '') == 'my') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Myanmar (မြန်မာဘာသာ)"); ?>
+                                </option>
+                            </select>
+                            <small class="text-muted"><?= $this->translate->_("Your preferred display language."); ?></small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="config-section">
+                    <h5><i class="icon-lock"></i> <?= $this->translate->_("Change Password"); ?></h5>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="oldPassword">
+                                <?= $this->translate->_("Current Password"); ?> <span class="mandatory">*</span>
+                            </label>
+                            <input type="password" id="oldPassword" name="oldPassword"
+                                class="form-control"
+                                placeholder="<?= $this->translate->_("Enter your current password"); ?>"
+                                title="<?= $this->translate->_("Required to confirm any password change"); ?>">
+                            <small class="text-muted"><?= $this->translate->_("Required to confirm any password change."); ?></small>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="new_password"><?= $this->translate->_("New Password"); ?></label>
+                            <input type="password" id="new_password" name="password"
+                                class="form-control"
+                                placeholder="<?= $this->translate->_("Min 8 chars, 1 number, 1 symbol"); ?>"
+                                title="<?= $this->translate->_("Leave blank to keep current password"); ?>"
+                                oninput="checkPasswordMatch()">
+                            <small class="text-muted"><?= $this->translate->_("Leave blank to keep your current password."); ?></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="confirm_password"><?= $this->translate->_("Confirm New Password"); ?></label>
+                            <input type="password" id="confirm_password" name="password"
+                                class="form-control"
+                                placeholder="<?= $this->translate->_("Re-enter new password"); ?>"
+                                title="<?= $this->translate->_("Must match the new password"); ?>"
+                                oninput="checkPasswordMatch()">
+                            <small class="text-muted" id="pwMatchHint">
+                                <?= $this->translate->_("Must match the new password."); ?>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-primary"
+                            onclick="validateProfileForm(); return false;">
+                            <i class="icon-ok"></i> <?= $this->translate->_("Update Profile"); ?>
+                        </button>
+                        <a href="<?= $this->url(['module' => 'admin', 'controller' => 'index'], 'default', true); ?>"
+                            class="btn btn-danger">
+                            <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+    function updateAvatarPreview() {
+        var f = ($('#first_name').val() || '').trim();
+        var l = ($('#last_name').val() || '').trim();
+        var initials = (f ? f[0].toUpperCase() : '') + (l ? l[0].toUpperCase() : '');
+        $('#avatarCircle').text(initials || 'AD');
+        $('#avatarName').text(((f + ' ' + l).trim()) || 'Admin User');
+    }
+
+    function checkPasswordMatch() {
+        var np = $('#new_password').val();
+        var cp = $('#confirm_password').val();
+        var hint = $('#pwMatchHint');
+        if (cp.length === 0) {
+            hint.removeClass('pw-match-ok pw-match-fail')
+                .text('<?= $this->translate->_("Must match the new password."); ?>');
+            return;
+        }
+        if (np === cp) {
+            hint.removeClass('pw-match-fail').addClass('pw-match-ok')
+                .text('<?= $this->translate->_("Passwords match."); ?>');
+        } else {
+            hint.removeClass('pw-match-ok').addClass('pw-match-fail')
+                .text('<?= $this->translate->_("Passwords do not match."); ?>');
+        }
+    }
+
+    function validateProfileForm() {
+        var np = $('#new_password').val();
+        var cp = $('#confirm_password').val();
+
+        if (np !== '' || cp !== '') {
+            if ($('#old_password').val() === '') {
+                alert('<?= $this->translate->_("Please enter your current password to change it."); ?>');
+                $('#old_password').focus();
+                return false;
+            }
+            if (!validatePassword('#new_password')) return false;
+            if (np !== cp) {
+                alert('<?= $this->translate->_("New password and confirm password must match."); ?>');
+                $('#confirm_password').focus();
+                return false;
+            }
+        }
+
+        var flag = deforayValidator.init({
+            formId: 'adminProfileForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('adminProfileForm').submit();
+        }
+    }
+
+    function toggleRadios(obj) {
+        var sel = $(obj).data('title');
+        var tog = $(obj).data('toggle');
+        $('#' + tog).prop('value', sel);
+        $('a[data-toggle="' + tog + '"]').removeClass('active').addClass('notActive');
+        $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive').addClass('active');
+    }
+</script>

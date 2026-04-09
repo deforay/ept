@@ -188,6 +188,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'secondary_email' => $params['secondaryEmail'],
             'phone' => $params['phone'],
             'status' => $params['status'],
+            'language' => $params['language'],
             'scheme' => implode(",", $params['schemeId'] ?? []),
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'updated_by' => $authNameSpace->admin_id,

@@ -12,3 +12,6 @@ ALTER TABLE `reference_dts_wb` ADD `test_date` DATE NULL DEFAULT NULL AFTER `wb`
 ALTER TABLE `reference_dts_rapid_hiv` ADD `test_date` DATE NULL DEFAULT NULL AFTER `testkit`;
 ALTER TABLE `reference_dts_geenius` ADD `test_date` DATE NULL DEFAULT NULL AFTER `sample_id`;
 
+-- Thana 09-Apr-2026
+ALTER TABLE `system_admin` ADD `language` VARCHAR(256) NULL DEFAULT 'en_US' AFTER `scheme`;
+
