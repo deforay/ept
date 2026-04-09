@@ -865,6 +865,7 @@ $dtFormat = $genderHelper->getDateFormat();
 
     $('#allowedAlgorithms').on("change", function () {
         var _val = $(this).val();
+
         if (_val.indexOf("malawiNationalDtsAlgo") > -1) {
             $('#dtsSchemeType').val('malawi');
         } else if (_val.indexOf("ghanaNationalDtsAlgo") > -1) {
@@ -877,6 +878,8 @@ $dtFormat = $genderHelper->getDateFormat();
             $('#dtsSchemeType').val('standard');
         } else if (_val.indexOf("parallel") > -1) {
             $('#dtsSchemeType').val('standard');
+        } else if (_val.indexOf("vietnamDtsAlgo") > -1) {
+            $('#dtsSchemeType').val('vietnam');
         }
         $('#allowedAlgorithms').multiselect('refresh');
         $('#dtsSchemeType').trigger('change');
@@ -902,6 +905,10 @@ $dtFormat = $genderHelper->getDateFormat();
             $('.malawi-allowed').show();
             $('#allowedAlgorithms').multiselect('deselectAll', false);
             $('#allowedAlgorithms').multiselect('select', ['malawiNationalDtsAlgo']);
+        } else if ($(this).val() == 'vietnam') {
+            $('.malawi-allowed').show();
+            $('#allowedAlgorithms').multiselect('deselectAll', false);
+            $('#allowedAlgorithms').multiselect('select', ['vietnamDtsAlgo']);
         } else if ($(this).val() == 'updated-3-tests' || $(this).val() == 'vietnam') {
             $('#dtsSyphilisDiv').hide();
             $('#dtsRtriDiv').show();

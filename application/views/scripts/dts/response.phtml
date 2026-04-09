@@ -278,8 +278,8 @@ foreach ($this->allTestKits as $kit) {
                                             <?= $this->translate->_("3 Test DTS Algorithm"); ?>
                                         </option>
                                     <?php }
-                                    if (!empty($allowedAlgorithms) && in_array('vietnam', $allowedAlgorithms)) { ?>
-                                        <option value="vietnam" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'vietnam') ? "selected='selected'" : ''; ?>>
+                                    if (!empty($allowedAlgorithms) && in_array('vietnamDtsAlgo', $allowedAlgorithms)) { ?>
+                                        <option value="vietnamDtsAlgo" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'vietnamDtsAlgo') ? "selected='selected'" : ''; ?>>
                                             <?= $this->translate->_("Vietnam National Algorithm"); ?>
                                         </option>
                                     <?php }
@@ -2054,9 +2054,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                                                                                                class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                                                                                                    <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                                                                                                                </td>');
+                                                                                                                                                                                                    class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                                                                                                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                                                                                                    </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {
