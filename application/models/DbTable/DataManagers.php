@@ -66,6 +66,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function getAllUsers($parameters)
     {
 
+        $translator = Zend_Registry::get('translate');
+
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
@@ -205,7 +207,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $row[] = $aRow['mobile'];
             $row[] = $aRow['primary_email'];
             //$row[] = '<a href="javascript:void(0);" onclick="layoutModal(\'/admin/participants/view-participants/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $aRow['participantCount'] . '</a>';
-            $row[] = ucwords($aRow['status']);
+            $row[] = $translator->_(ucwords($aRow['status']));
             if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
                 $row[] = ucwords($aRow['iso_name']);
                 $row[] = ucwords($aRow['state']);
@@ -214,14 +216,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '';
             } elseif (isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc') {
-                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $translator->_("Edit") . '</a>';
             } else {
-                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
+                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $translator->_("Edit") . '</a>';
             }
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
-                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $translator->_("Reset Password") . '</a>';
             } else {
-                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >Reset Password</a>';
+                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $translator->_("Reset Password") . '</a>';
             }
             $row[] = $edit . $passwordReset;
 

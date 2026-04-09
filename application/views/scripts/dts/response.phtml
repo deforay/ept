@@ -278,6 +278,11 @@ foreach ($this->allTestKits as $kit) {
                                             <?= $this->translate->_("3 Test DTS Algorithm"); ?>
                                         </option>
                                     <?php }
+                                    if (!empty($allowedAlgorithms) && in_array('vietnam', $allowedAlgorithms)) { ?>
+                                        <option value="vietnam" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'vietnam') ? "selected='selected'" : ''; ?>>
+                                            <?= $this->translate->_("Vietnam National Algorithm"); ?>
+                                        </option>
+                                    <?php }
                                     if (!empty($allowedAlgorithms) && in_array('screening', $allowedAlgorithms)) { ?>
                                         <option value="screening" <?php echo (isset($this->shipment['attributes']["algorithm"]) && $this->shipment['attributes']["algorithm"] == 'screening') ? "selected='selected'" : ''; ?>><?= $this->translate->_("Screening Test"); ?></option>
                                     <?php } ?>
@@ -383,7 +388,8 @@ foreach ($this->allTestKits as $kit) {
                                 $display = "";
                                 $isRquired = "isRequired";
                             } ?>
-                            <tr id="qcSection" class="ptTestPerformed" style="<?php echo $hideQcWhenNotPerformed . $display; ?>">
+                            <tr id="qcSection" class="ptTestPerformed"
+                                style="<?php echo $hideQcWhenNotPerformed . $display; ?>">
                                 <td><label><?= $this->translate->_("QC Date"); ?></label></td>
                                 <td>
                                     <input type="text" id="qcDate" name="qcDate" size="11" maxlength="11"
@@ -2048,9 +2054,9 @@ foreach ($this->allTestKits as $kit) {
                 valInfo = (valInfo == undefined) ? '' : valInfo;
 
                 $('.test' + row + 'Input' + sampleId).after('<td \
-                                                                                                                                                                                    class="testKit' + row + 'Input kitAddionalInput">\
-                                                                                                                                                                                        <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
-                                                                                                                                                                                    </td>');
+                                                                                                                                                                                                class="testKit' + row + 'Input kitAddionalInput">\
+                                                                                                                                                                                                    <input type="text" name="additionalInfoKit[' + sampleId + '][test' + no + ']" id="additionalInfoKit' + no + sampleId + '" value="' + valInfo + '" class="form-control ' + mandatoryClass + '" placeholder="Enter the ' + label + '">\
+                                                                                                                                                                                                </td>');
             <?php } ?>
             $('.test' + row + 'Span').attr('colspan', 2);
         } else {

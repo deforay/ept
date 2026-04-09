@@ -18,6 +18,7 @@ class Application_Service_Evaluation
 
 	public function getAllDistributions($parameters)
 	{
+		$translator = Zend_Registry::get('translate');
 
 		$aColumns = ["DATE_FORMAT(distribution_date,'%d-%b-%Y')", 'distribution_code', 's.shipment_code', 'd.status'];
 		$orderColumns = ['distribution_date', 'distribution_code', 's.shipment_code', 'd.status'];
@@ -139,7 +140,7 @@ class Application_Service_Evaluation
 			$row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['distribution_date']);
 			$row[] = $aRow['distribution_code'];
 			$row[] = $aRow['shipments'];
-			$row[] = ucwords($aRow['status']);
+			$row[] = $translator->_(ucwords($aRow['status']));
 			$row[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="getShipments(\'' . ($aRow['distribution_id']) . '\', \'' . $aRow['is_user_configured'] . '\')"><span><i class="icon-search"></i> View</span></a>';
 
 			$output['aaData'][] = $row;
@@ -2867,7 +2868,9 @@ class Application_Service_Evaluation
 		return $scheduledDb->scheduleEvaluation($shipmentId);
 	}
 
-	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset) {}
+	public function getEvaluateReportsInPdf($shipmentId, $sLimit, $sOffset)
+	{
+	}
 
 	/**
 	 * Get job progress for a specific shipment (for AJAX polling)
@@ -3474,8 +3477,8 @@ class Application_Service_Evaluation
 			$row[] = htmlspecialchars($aRow['first_name'] . ' ' . $aRow['last_name'] . ' (' . $aRow['unique_identifier'] . ')');
 			$row[] = htmlspecialchars($aRow['state'] ?? '');
 			$row[] = htmlspecialchars($aRow['district'] ?? '');
-			$row[] = number_format((float)($aRow['shipment_score'] ?? 0), 2);
-			$row[] = number_format((float)($aRow['documentation_score'] ?? 0), 2);
+			$row[] = number_format((float) ($aRow['shipment_score'] ?? 0), 2);
+			$row[] = number_format((float) ($aRow['documentation_score'] ?? 0), 2);
 			$row[] = $resultText;
 			$row[] = $responseStatus;
 			$row[] = !empty($aRow['shipment_test_report_date']) && $aRow['shipment_test_report_date'] != '0000-00-00 00:00:00'

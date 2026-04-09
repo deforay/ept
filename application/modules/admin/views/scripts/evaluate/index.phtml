@@ -1,7 +1,8 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
     <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-        <?= $this->translate->_("Evaluate PT Survey"); ?></div>
+        <?= $this->translate->_("Evaluate PT Survey"); ?>
+    </div>
 
 </h4>
 
@@ -68,7 +69,7 @@
             "bProcessing": true,
             //"bSortClasses": false,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'index', 'format' => 'html']); ?>",
             "fnServerData": function (sSource, aoData, fnCallback) {
                 $.ajax({
                     "dataType": 'json',

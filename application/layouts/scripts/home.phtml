@@ -76,8 +76,10 @@ $eptLogo = implode('', $logos);
 
     <style>
         #topbar {
-            background: <?php echo $topBarColor;
-                        ?>;
+            background:
+                <?php echo $topBarColor;
+                ?>
+            ;
         }
     </style>
 </head>
@@ -105,7 +107,9 @@ $eptLogo = implode('', $logos);
                     <?php if (isset($faqs) && !empty($faqs)) { ?>
                         <li><a class="nav-link scrollto" href="/#faq"><?= $this->translate->_("FAQ"); ?></a></li>
                     <?php } ?>
-                    <li><a class="nav-link scrollto" href="/index#contact">Contact</a></li>
+                    <li><a class="nav-link scrollto" href="/index#contact">
+                            <?= $this->translate->_("Contact"); ?>
+                        </a></li>
                     <?php if (empty($authNameSpace->dm_id)) { ?>
                         <li>
                             <a class="btn-get-started"
@@ -137,7 +141,7 @@ $eptLogo = implode('', $logos);
                 <?php
                 $partners = $this->getPartners();
                 if (!empty($partners)) {
-                ?>
+                    ?>
                     <div class="col-lg-6 col-md-6">
                         <div class="partners">
                             <div class="row">
@@ -146,7 +150,7 @@ $eptLogo = implode('', $logos);
 
 
                                     if (isset($partner['logo_image']) && !empty($partner['logo_image']) && file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'partners' . DIRECTORY_SEPARATOR . 'logos' . DIRECTORY_SEPARATOR . $partner['logo_image'])) {
-                                ?>
+                                        ?>
                                         <div class="d-flex col-lg-2 col-md-2 align-items-center">
                                             <a href="<?= $partner['link']; ?>" target="_blank" class=" align-middle"
                                                 style="display:inline-block;">
@@ -155,7 +159,7 @@ $eptLogo = implode('', $logos);
                                                     style="width:100%;" />
                                             </a>
                                         </div>
-                                <?php
+                                        <?php
                                     }
                                 }
                                 ?>
@@ -163,7 +167,7 @@ $eptLogo = implode('', $logos);
                         </div>
                     </div>
 
-                <?php
+                    <?php
                 }
                 $footerText = '';
                 if (isset($configData['footer_text']) && !empty($configData['footer_text'])) {
