@@ -42,6 +42,7 @@ class Admin_LoginController extends Zend_Controller_Action
 				$authNameSpace->first_name = $result['first_name'];
 				$authNameSpace->last_name = $result['last_name'];
 				$authNameSpace->phone = $result['phone'];
+				$authNameSpace->language = $result['language'];
 				$authNameSpace->secondary_email = $result['secondary_email'];
 				$authNameSpace->forcePasswordReset = $result['force_password_reset'];
 				$authNameSpace->privileges = $result['privileges'];

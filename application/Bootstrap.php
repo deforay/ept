@@ -18,10 +18,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             Application_Service_SecurityService::generateCSRF();
         }
 
-
-
         /** @var Zend_Controller_Router_Rewrite $router */
-
         $router = Zend_Controller_Front::getInstance()->getRouter();
 
         $router->addRoute("captchaRoute", new Zend_Controller_Router_Route('captcha/:r', array('controller' => 'captcha', 'action' => 'index', 'r' => '')));
@@ -35,44 +32,47 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             mkdir($directoryPath, 0777, true);
         }
 
-        // Set up metadata cache (skip session-based caching in CLI mode)
-        $frontendOptions = [
-            'lifetime' => 7200000000,
-            'automatic_serialization' => true
-        ];
-        $backendOptions = [
-            'cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR
-        ];
-        $frontend = "Core";
-        $backend = "File";
+        $frontendOptions = ['lifetime' => 7200000000, 'automatic_serialization' => true];
+        $backendOptions  = ['cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR];
 
         if (php_sapi_name() !== 'cli') {
             $session = new Zend_Session_Namespace('cacheSpace');
             if (isset($session->defaultCache)) {
                 Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));
             } else {
-                $cache = Zend_Cache::factory($frontend, $backend, $frontendOptions, $backendOptions);
+                $cache = Zend_Cache::factory("Core", "File", $frontendOptions, $backendOptions);
                 $session->defaultCache = serialize($cache);
                 Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
             }
         } else {
-            // In CLI mode, just create the cache directly without session storage
-            $cache = Zend_Cache::factory($frontend, $backend, $frontendOptions, $backendOptions);
+            $cache = Zend_Cache::factory("Core", "File", $frontendOptions, $backendOptions);
             Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
         }
     }
 
     protected function _initTranslate()
     {
-        $locale = "en_US"; // default locale
+        $locale = "en_US"; // default fallback
 
         if (php_sapi_name() !== 'cli') {
-            $authNameSpace = new Zend_Session_Namespace('datamanagers');
+            // Priority 1: Admin module — check administrators session
+            if ($this->_isAdminRequest()) {
+                $adminNameSpace = new Zend_Session_Namespace('administrators');
+                if (!empty(trim($adminNameSpace->language ?? ''))) {
+                    $locale = trim($adminNameSpace->language);
+                }
+            }
 
-            if (isset($authNameSpace->language) && !empty(trim($authNameSpace->language))) {
-                $locale = trim($authNameSpace->language);
-            } else {
-                // Get locale from database (global_config table with built-in fallback to config.ini)
+            // Priority 2: Datamanagers session
+            if ($locale === 'en_US') {
+                $authNameSpace = new Zend_Session_Namespace('datamanagers');
+                if (!empty(trim($authNameSpace->language ?? ''))) {
+                    $locale = trim($authNameSpace->language);
+                }
+            }
+
+            // Priority 3: Database config
+            if ($locale === 'en_US') {
                 $this->bootstrap('db');
                 $dbLocale = Application_Service_Common::getConfig('locale');
                 if (!empty($dbLocale)) {
@@ -80,7 +80,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
                 }
             }
         } else {
-            // In CLI mode, get locale from database directly
+            // CLI: get locale from database directly
             $this->bootstrap('db');
             $dbLocale = Application_Service_Common::getConfig('locale');
             if (!empty($dbLocale)) {
@@ -91,7 +91,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $translate = new Zend_Translate([
             'adapter' => 'gettext',
             'content' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$locale/$locale.mo",
-            'locale' => $locale
+            'locale'  => $locale
         ]);
 
         Zend_Registry::set('Zend_Locale', $locale);
@@ -100,5 +100,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $this->bootstrap('view');
         $view = $this->getResource('view');
         $view->translate = $translate;
+    }
+
+    protected function _isAdminRequest()
+    {
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+        return (bool) preg_match('#^/admin(/|$)#i', $path);
     }
 }

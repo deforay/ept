@@ -248,33 +248,36 @@ $initials  = strtoupper(
                             <select id="admin_language" name="language" class="form-control"
                                 title="<?= $this->translate->_("Select your preferred language"); ?>">
                                 <option value=""><?= $this->translate->_("-- Select Language --"); ?></option>
-                                <option value="en" <?= (($result['language'] ?? '') == 'en') ? 'selected' : ''; ?>>
+                                <option value="en_US" <?= (($result['language'] ?? '') == 'en_US') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("English"); ?>
                                 </option>
-                                <option value="fr" <?= (($result['language'] ?? '') == 'fr') ? 'selected' : ''; ?>>
+                                <option value="fr_FR" <?= (($result['language'] ?? '') == 'fr_FR') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("French (Français)"); ?>
                                 </option>
-                                <option value="pt" <?= (($result['language'] ?? '') == 'pt') ? 'selected' : ''; ?>>
+                                <!--  <option value="pt_PT" <?= (($result['language'] ?? '') == 'pt_PT') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Portuguese (Português)"); ?>
                                 </option>
-                                <option value="es" <?= (($result['language'] ?? '') == 'es') ? 'selected' : ''; ?>>
+                                <option value="es_ES" <?= (($result['language'] ?? '') == 'es_ES') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Spanish (Español)"); ?>
                                 </option>
-                                <option value="sw" <?= (($result['language'] ?? '') == 'sw') ? 'selected' : ''; ?>>
+                                <option value="sw_SW" <?= (($result['language'] ?? '') == 'sw_SW') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Swahili (Kiswahili)"); ?>
                                 </option>
-                                <option value="ar" <?= (($result['language'] ?? '') == 'ar') ? 'selected' : ''; ?>>
+                                <option value="ar_AR" <?= (($result['language'] ?? '') == 'ar_AR') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Arabic (العربية)"); ?>
                                 </option>
-                                <option value="zh" <?= (($result['language'] ?? '') == 'zh') ? 'selected' : ''; ?>>
+                                <option value="zh_CN" <?= (($result['language'] ?? '') == 'zh_CN') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Chinese (中文)"); ?>
-                                </option>
-                                <option value="vi" <?= (($result['language'] ?? '') == 'vi') ? 'selected' : ''; ?>>
+                                </option> -->
+                                <option value="vi_VN" <?= (($result['language'] ?? '') == 'vi_VN') ? 'selected' : ''; ?>>
                                     <?= $this->translate->_("Vietnamese (Tiếng Việt)"); ?>
                                 </option>
-                                <option value="my" <?= (($result['language'] ?? '') == 'my') ? 'selected' : ''; ?>>
-                                    <?= $this->translate->_("Myanmar (မြန်မာဘာသာ)"); ?>
+                                <option value="lo_LA" <?= (($result['language'] ?? '') == 'lo_LA') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Laos (ລາວ)"); ?>
                                 </option>
+                                <!--  <option value="my_MM" <?= (($result['language'] ?? '') == 'my_MM') ? 'selected' : ''; ?>>
+                                    <?= $this->translate->_("Myanmar (မြန်မာဘာသာ)"); ?>
+                                </option> -->
                             </select>
                             <small class="text-muted"><?= $this->translate->_("Your preferred display language."); ?></small>
                         </div>

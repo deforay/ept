@@ -189,8 +189,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'phone' => $params['phone'],
             'status' => $params['status'],
             'language' => $params['language'],
-            'scheme' => implode(",", $params['schemeId'] ?? []),
-            'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
@@ -198,6 +196,15 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             $password = Application_Service_Common::passwordHash($params['password']);
             $data['password'] = $password ?? null;
             $data['force_password_reset'] = 1;
+        }
+        if (isset($params['schemeId']) && $params['schemeId'] != "") {
+            $data['scheme'] = implode(',', $params['schemeId'] ?? []);
+        }
+        if (isset($params['privileges']) && $params['privileges'] != "") {
+            $data['privileges'] = implode(',', $params['privileges'] ?? []);
+        }
+        if (isset($params['language']) && $params['language'] != "") {
+            $authNameSpace->language = $params['language'];
         }
         $adminId = $this->update($data, "admin_id=" . $params['adminId']);
 

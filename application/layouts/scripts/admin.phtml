@@ -1043,12 +1043,12 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 							style="display:flex;align-items:center;gap:7px;height:50px;padding:0 14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.9);font-size:14px;white-space:nowrap;">
 							<div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.25);color:#fff;font-size:12px;font-weight:bold;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,0.5);flex-shrink:0;">
 								<?php
-								$nameParts = explode(' ', trim($adminSession->adminName ?? 'Admin User'));
+								$nameParts = explode(' ', trim($adminSession->first_name ?? 'Admin User'));
 								$initials  = strtoupper(substr($nameParts[0], 0, 1) . (isset($nameParts[1]) ? substr($nameParts[1], 0, 1) : ''));
 								echo $initials ?: 'AD';
 								?>
 							</div>
-							<span><?php echo htmlspecialchars($adminSession->adminName ?? 'Admin'); ?></span>
+							<span><?php echo htmlspecialchars($adminSession->first_name ?? 'Admin'); ?></span>
 							<svg id="profileChevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="transition:transform 0.2s;opacity:0.8;">
 								<path d="M4 6l4 4 4-4" />
 							</svg>
