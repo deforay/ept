@@ -87,7 +87,7 @@ foreach ($savedSettings as $key => $savedValue) {
         ? ($savedValue ?: $configValue ?: null)
         : ($savedValue ?? $configValue ?? null);
 }
-$dtsSchemeType = $effectiveSettings['dtsSchemeType'] ?? 'standard';
+$dtsSchemeType = $dtsConfig['dtsSchemeType'] ?? $effectiveSettings['dtsSchemeType'];
 $reportVersion = $effectiveSettings['reportVersion'] ?? '';
 $effectiveDate = $effectiveSettings['effectiveDate'] ?? '';
 $rtriEnabled = $effectiveSettings['enableRtri'] ?? 'no';
@@ -243,7 +243,6 @@ $showTestPanelType = $isEditMode
     ? (($effectiveSettings['screeningTest'] ?? null) == 'no')
     : true;
 $showSampleDiluted = isSampleDilutedColumnVisible($dtsSchemeType, $effectiveSettings['sampleType'] ?? null);
-
 ?>
 
 <style type="text/css">
