@@ -15,3 +15,5 @@ ALTER TABLE `reference_dts_geenius` ADD `test_date` DATE NULL DEFAULT NULL AFTER
 -- Thana 09-Apr-2026
 ALTER TABLE `system_admin` ADD `language` VARCHAR(256) NULL DEFAULT 'en_US' AFTER `scheme`;
 
+-- Thana 10-Apr-2026
+ALTER TABLE `scheme_testkit_map` ADD `shipment_id` INT NULL DEFAULT NULL AFTER `testkit_3`;

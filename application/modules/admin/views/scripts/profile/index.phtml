@@ -166,7 +166,7 @@ $initials  = strtoupper(
                                 <?= htmlspecialchars(trim(($result['first_name'] ?? '') . ' ' . ($result['last_name'] ?? ''))); ?>
                             </div>
                             <div class="admin-sub">
-                                Mail: <?= htmlspecialchars($result['primary_email'] ?? ''); ?>
+                                <?= $this->translate->_("Mail"); ?>: <?= htmlspecialchars($result['primary_email'] ?? ''); ?>
                             </div>
                         </div>
                     </div>

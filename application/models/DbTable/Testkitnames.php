@@ -425,4 +425,17 @@ class Application_Model_DbTable_Testkitnames extends Zend_Db_Table_Abstract
         }
         return $response;
     }
+
+    public function testKitsMapping($params)
+    {
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        foreach ($params['testKitAssigned'] as $row) {
+            $result = $db->update('scheme_testkit_map', [$params['testPosition'] => 1, 'shipment_id' => base64_decode($params['shipmentId'])], 'testkit_id = "' . $row . '"');
+        }
+        if ($result)
+            $alertMsg->message = 'Testkits updated successfully.';
+
+        return $result;
+    }
 }

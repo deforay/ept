@@ -68,7 +68,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-          //  echo "<pre>"; print_r($params); die;
+            //  echo "<pre>"; print_r($params); die;
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
             if (isset($params['selectedDistribution']) && $params['selectedDistribution'] != "" && $params['selectedDistribution'] != null) {
@@ -202,7 +202,7 @@ class Admin_ShipmentController extends Zend_Controller_Action
                 $this->view->reportType = $reportService->getReportConfigValue('report-layout');
                 $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'admin');
                 $this->view->shipmentData = $response = $shipmentService->getShipmentForEdit($sid);
-              //  echo "<pre>"; print_r($response); die;
+                //  echo "<pre>"; print_r($response); die;
                 $this->view->schemeDetails = $schemeService->getSchemeById($response['shipment']['scheme_type']);
                 $this->view->config = Pt_Commons_SchemeConfig::get($response['shipment']['scheme_type']);
                 if ($response['shipment']['scheme_type'] == 'dts') {
@@ -483,5 +483,21 @@ class Admin_ShipmentController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $this->view->status = $shipmentService->runTbFormCron($sid);
         }
+    }
+
+    public function shipmentTestKitsAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $commonService = new Application_Service_Common();
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        if ($request->isPost()) {
+            $params = $this->getAllParams();
+            $result = $kitDb->testKitsMapping($params);
+            if ($result)
+                $this->redirect("/admin/shipment");
+        }
+        $this->view->shipmentId = $this->_getParam('sid');
+        $this->view->testKits = $kitDb->getAllTestKitList('dts', 0);
     }
 }
