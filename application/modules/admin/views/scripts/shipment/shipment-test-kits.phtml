@@ -1,0 +1,512 @@
+<?php
+
+/**
+ * Test Kit Multiselect — uses jquery.multi-select.js + jquery.quicksearch.js
+ * Drop inside your existing <div class="form-content"> block.
+ * Requires: $this->testKits
+ */
+?>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+
+<style>
+    .ms-summary-card {
+        flex: 1;
+        min-width: 160px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 14px;
+        transition: border-color .2s, box-shadow .2s;
+        display: flex;
+        flex-direction: column;
+        max-height: 350px;
+        /* card never grows beyond this */
+    }
+
+    .ms-summary-card:hover {
+        border-color: #4a6fa5;
+        box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+    }
+
+    /* Title stays pinned at the top, never scrolls */
+    .ms-summary-title {
+        font-weight: 600;
+        color: #4a6fa5;
+        margin-bottom: 10px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #4a6fa5;
+        flex-shrink: 0;
+        /* prevent title from shrinking */
+    }
+
+    /* Scrollable rows container — sits below the title */
+    .ms-summary-rows {
+        overflow-y: auto;
+        flex: 1;
+        /* fills remaining card height */
+        min-height: 0;
+        /* required for flex + overflow to work */
+        padding-right: 4px;
+        /* space for scrollbar */
+    }
+
+    /* Custom scrollbar — subtle, matches the theme */
+    .ms-summary-rows::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .ms-summary-rows::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .ms-summary-rows::-webkit-scrollbar-thumb {
+        background: #c7d7ef;
+        border-radius: 10px;
+    }
+
+    .ms-summary-rows::-webkit-scrollbar-thumb:hover {
+        background: #4a6fa5;
+    }
+
+    .ms-summary-row {
+        font-size: 12px;
+        color: #374151;
+        padding: 4px 0;
+        border-bottom: 0.5px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ms-summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .ms-empty-note {
+        color: #9ca3af;
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    .ms-badge-dts {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    /* keep the multi-select widget full-width inside the card */
+    #testKitMultiSelect {
+        display: none;
+    }
+
+    .ms-container {
+        width: 100% !important;
+    }
+
+    .ms-container .ms-selectable,
+    .ms-container .ms-selection {
+        width: 46% !important;
+    }
+
+    .testkit-container {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .testkit-container legend {
+        background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+        color: #fff;
+        font-weight: 500;
+        font-size: 16px;
+        padding: 14px 20px;
+        margin: 0;
+        border: none;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .testkit-container legend i {
+        margin-right: 8px;
+    }
+
+    .form-content {
+        padding: 25px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .config-section {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .config-section:hover {
+        border-color: #4a6fa5;
+        box-shadow: 0 2px 8px rgba(74, 111, 165, 0.1);
+    }
+
+    .config-section h5 {
+        color: #4a6fa5;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #4a6fa5;
+    }
+
+    .config-section h5 i {
+        margin-right: 8px;
+    }
+</style>
+
+<!-- ── Test Position Selector ─────────────────────────────────── -->
+<div class="testkit-container">
+    <form name="testKitsForm" id="testKitsForm" method="post" action="<?php echo $this->url(['module' => 'admin', 'controller' => 'shipment', 'action' => 'shipment-test-kits'], 'default', true); ?>" class="form-horizontal" role="form">
+        <legend><i class="icon-cog"></i> <?= $this->translate->_("Select Test kits and Position"); ?></legend>
+        <div class="form-content">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="testPosition">
+                        <?= $this->translate->_("Test Position"); ?> <span class="mandatory">*</span>
+                    </label>
+                    <select id="testPosition" name="testPosition" class="form-control" onchange="onPositionChange()">
+                        <option value=""><?= $this->translate->_("-- Select Test Position --"); ?></option>
+                        <option value="testkit_1"><?= $this->translate->_("Test 1"); ?></option>
+                        <option value="testkit_2"><?= $this->translate->_("Test 2"); ?></option>
+                        <option value="testkit_3"><?= $this->translate->_("Test 3"); ?></option>
+                    </select>
+                    <small class="text-muted"><?= $this->translate->_("Choose which test position to configure test kits for."); ?></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Multiselect Panel (hidden until position chosen) ───────── -->
+        <div class="form-content" id="msSection" style="display:none">
+            <h5>
+                <i class="icon-list"></i>
+                <?= $this->translate->_("Assign Test Kits"); ?> &mdash;
+                <span id="msPosLabel" style="font-weight:400;color:#6b7280;font-size:13px"></span>
+            </h5>
+
+            <div class="text-info" style="text-align:center;padding:6px 0 12px;">
+                <?= $this->translate->_("Click on a Test Kit name to move it between the two sections."); ?>
+                <br><br>
+                <div style="width:400px;margin:0 auto;clear:both;">
+                    <a href="#" id="msSelectAll" style="float:left" class="btn btn-info btn-xs">
+                        <?= $this->translate->_("Select All"); ?> &nbsp;<i class="icon-chevron-right"></i>
+                    </a>
+                    <a href="#" id="msDeselectAll" style="float:right" class="btn btn-danger btn-xs">
+                        <i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?>
+                    </a>
+                </div>
+            </div>
+            <br>
+
+            <!-- The underlying <select> that jquery.multi-select.js transforms -->
+            <select id="testKitMultiSelect" name="testKitAssigned[]" multiple="multiple"
+                title="<?= $this->translate->_("Please select test kits to assign"); ?>">
+            </select>
+
+            <small class="text-muted" style="margin-top:10px;display:block">
+                <span class="ms-badge-dts">DTS</span> = <?= $this->translate->_("DTS scheme type."); ?>
+            </small>
+        </div>
+
+        <!-- ── Summary Panel ──────────────────────────────────────────── -->
+        <div class="config-section" id="msSummarySection" style="display:none">
+            <h5><i class="icon-ok-circle"></i> <?= $this->translate->_("Current Assignments (all positions)"); ?></h5>
+            <div class="ms-summary-grid" id="msSummaryGrid" style=" display: flex; "></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row" style="margin-top:10px;">
+            <div class="col-md-12 text-center">
+                <button type="button" class="btn btn-primary"
+                    onclick="validateNow(); return false;">
+                    <i class="icon-ok"></i> <?= $this->translate->_("Submit"); ?>
+                </button>
+                <a href="<?= $this->url(['module' => 'admin', 'controller' => 'shipment'], 'default', true); ?>"
+                    class="btn btn-danger">
+                    <i class="icon-arrow-left"></i> <?= $this->translate->_("Back"); ?>
+                </a>
+            </div>
+        </div>
+        <!-- ── Hidden inputs submitted with parent form ───────────────── -->
+        <input type="hidden" name="testkit_1_ids" id="msHidden1">
+        <input type="hidden" name="testkit_2_ids" id="msHidden2">
+        <input type="hidden" name="testkit_3_ids" id="msHidden3">
+        <input type="hidden" name="shipmentId" id="shipmentId" value="<?php echo $this->shipmentId ?? null; ?>">
+    </form>
+</div>
+
+
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
+
+<script type="text/javascript">
+    (function() {
+
+        /* ── Data from PHP ─────────────────────────────────────────── */
+        var testKits = <?php echo json_encode(array_values($this->testKits), JSON_UNESCAPED_UNICODE); ?>;
+
+        /* ── Translated strings ────────────────────────────────────── */
+        var i18n = {
+            test1: '<?= addslashes($this->translate->_("Test 1")); ?>',
+            test2: '<?= addslashes($this->translate->_("Test 2")); ?>',
+            test3: '<?= addslashes($this->translate->_("Test 3")); ?>',
+            position: '<?= addslashes($this->translate->_("Position")); ?>',
+            noKits: '<?= addslashes($this->translate->_("No kits assigned")); ?>',
+            unselHdr: '<?= addslashes($this->translate->_("Available Test Kits")); ?>',
+            selHdr: '<?= addslashes($this->translate->_("Assigned Test Kits")); ?>',
+            searchPh: '<?= addslashes($this->translate->_("Type kit name to filter...")); ?>'
+        };
+
+        /* ── State ─────────────────────────────────────────────────── */
+        var assignments = {
+            testkit_1: [],
+            testkit_2: [],
+            testkit_3: []
+        };
+
+        // Pre-populate from existing testkit_1/2/3 flags
+        testKits.forEach(function(k) {
+            if (k.testkit_1 === '1') assignments.testkit_1.push(k.TESTKITNAMEID);
+            if (k.testkit_2 === '1') assignments.testkit_2.push(k.TESTKITNAMEID);
+            if (k.testkit_3 === '1') assignments.testkit_3.push(k.TESTKITNAMEID);
+        });
+
+        var currentPos = null;
+        var msInstance = false; // track if multiSelect has been init'd
+
+        /* ── Helpers ───────────────────────────────────────────────── */
+        function getKit(id) {
+            return testKits.find(function(k) {
+                return k.TESTKITNAMEID === id;
+            });
+        }
+
+        function displayName(k) {
+            return k.scheme_type === 'dts' ? k.TESTKITNAME + ' [DTS]' : k.TESTKITNAME;
+        }
+
+        function posLabel(pos) {
+            return {
+                testkit_1: i18n.test1,
+                testkit_2: i18n.test2,
+                testkit_3: i18n.test3
+            } [pos] || pos;
+        }
+
+        /* ── Rebuild <option> list for current position ────────────── */
+        function rebuildOptions() {
+            var assigned = assignments[currentPos] || [];
+            var $sel = $('#testKitMultiSelect');
+            $sel.empty();
+            testKits.forEach(function(k) {
+                var isSelected = assigned.indexOf(k.TESTKITNAMEID) !== -1;
+                $sel.append(
+                    $('<option>', {
+                        value: k.TESTKITNAMEID,
+                        text: displayName(k),
+                        selected: isSelected
+                    })
+                );
+            });
+        }
+
+        /* ── Init / re-init jquery.multi-select ────────────────────── */
+        function initMultiSelect() {
+            var $sel = $('#testKitMultiSelect');
+
+            // Destroy previous instance if any
+            if (msInstance) {
+                $sel.multiSelect('destroy');
+                msInstance = false;
+            }
+
+            $sel.multiSelect({
+                selectableFooter: "<div class='custom-header'>" + i18n.unselHdr + " (<span id='msUnselCount'></span>)</div>",
+                selectionFooter: "<div class='custom-header'>" + i18n.selHdr + " (<span id='msSelCount'></span>)</div>",
+                selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='" + i18n.searchPh + "'>",
+                selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='" + i18n.searchPh + "'>",
+                afterInit: function(ms) {
+                    var that = this;
+                    var $selectableSearch = that.$selectableUl.prev();
+                    var $selectionSearch = that.$selectionUl.prev();
+                    var selectableStr = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)';
+                    var selectionStr = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
+
+                    that.qs1 = $selectableSearch.quicksearch(selectableStr).on('keydown', function(e) {
+                        if (e.which === 40) {
+                            that.$selectableUl.focus();
+                            return false;
+                        }
+                    });
+                    that.qs2 = $selectionSearch.quicksearch(selectionStr).on('keydown', function(e) {
+                        if (e.which === 40) {
+                            that.$selectionUl.focus();
+                            return false;
+                        }
+                    });
+                    updateCountBadges();
+                },
+                afterSelect: function() {
+                    this.qs1.cache();
+                    this.qs2.cache();
+                    syncAssignments();
+                    updateCountBadges();
+                    updateSummary();
+                },
+                afterDeselect: function() {
+                    this.qs1.cache();
+                    this.qs2.cache();
+                    syncAssignments();
+                    updateCountBadges();
+                    updateSummary();
+                }
+            });
+
+            msInstance = true;
+
+            // Wire Select All / Deselect All buttons
+            $('#msSelectAll').off('click').on('click', function() {
+                $sel.multiSelect('select_all');
+                return false;
+            });
+            $('#msDeselectAll').off('click').on('click', function() {
+                $sel.multiSelect('deselect_all');
+                return false;
+            });
+
+            updateCountBadges();
+        }
+
+        /* ── Keep assignments[] in sync with what multiSelect shows ── */
+        function syncAssignments() {
+            if (!currentPos) return;
+            assignments[currentPos] = $('#testKitMultiSelect').val() || [];
+        }
+
+        /* ── Update count badges in the multiSelect footers ───────── */
+        function updateCountBadges() {
+            var total = testKits.length;
+            var assigned = ($('#testKitMultiSelect').val() || []).length;
+            $('#msUnselCount').text(total - assigned);
+            $('#msSelCount').text(assigned);
+        }
+
+        /* ── Position dropdown change ──────────────────────────────── */
+        window.onPositionChange = function() {
+            var pos = document.getElementById('testPosition').value;
+            if (!pos) {
+                document.getElementById('msSection').style.display = 'none';
+                return;
+            }
+
+            // Save current selection before switching position
+            if (currentPos) syncAssignments();
+
+            currentPos = pos;
+            document.getElementById('msPosLabel').textContent = i18n.position + ': ' + posLabel(pos);
+            document.getElementById('msSection').style.display = 'block';
+
+            rebuildOptions();
+            initMultiSelect();
+            updateSummary();
+        };
+
+        /* ── Summary panel ─────────────────────────────────────────── */
+        function updateSummary() {
+            var sec = document.getElementById('msSummarySection');
+            var grid = document.getElementById('msSummaryGrid');
+            var any = Object.keys(assignments).some(function(p) {
+                return assignments[p].length > 0;
+            });
+            sec.style.display = any ? 'block' : 'none';
+            grid.innerHTML = '';
+
+            ['testkit_1', 'testkit_2', 'testkit_3'].forEach(function(pos) {
+                var ids = assignments[pos];
+                var card = document.createElement('div');
+                card.className = 'ms-summary-card';
+
+                // Title — pinned, never scrolls
+                var title = document.createElement('div');
+                title.className = 'ms-summary-title';
+                title.textContent = posLabel(pos) + ' (' + ids.length + ')';
+                card.appendChild(title);
+
+                // Scrollable rows container
+                var rowsContainer = document.createElement('div');
+                rowsContainer.className = 'ms-summary-rows';
+
+                if (!ids.length) {
+                    var empty = document.createElement('div');
+                    empty.className = 'ms-empty-note';
+                    empty.textContent = i18n.noKits;
+                    rowsContainer.appendChild(empty);
+                } else {
+                    ids.forEach(function(id) {
+                        var k = getKit(id);
+                        if (!k) return;
+                        var row = document.createElement('div');
+                        row.className = 'ms-summary-row';
+                        row.textContent = k.TESTKITNAME;
+                        if (k.scheme_type === 'dts') {
+                            var b = document.createElement('span');
+                            b.className = 'ms-badge-dts';
+                            b.textContent = 'DTS';
+                            row.appendChild(b);
+                        }
+                        rowsContainer.appendChild(row);
+                    });
+                }
+
+                card.appendChild(rowsContainer);
+                grid.appendChild(card);
+            });
+        }
+
+        /* ── Populate hidden inputs before form submit ─────────────── 
+           Call msPopulateHiddenInputs() inside validateProfileForm()
+           just before document.getElementById('testKitsForm').submit()
+        ──────────────────────────────────────────────────────────────── */
+        window.msPopulateHiddenInputs = function() {
+            // Sync latest state first
+            syncAssignments();
+            document.getElementById('msHidden1').value = assignments.testkit_1.join(',');
+            document.getElementById('msHidden2').value = assignments.testkit_2.join(',');
+            document.getElementById('msHidden3').value = assignments.testkit_3.join(',');
+        };
+
+        /* ── Init: show summary for pre-existing data on page load ─── */
+        updateSummary();
+
+    }());
+
+    function validateNow() {
+        var flag = deforayValidator.init({
+            formId: 'testKitsForm'
+        });
+        if (flag) {
+            $.blockUI();
+            document.getElementById('testKitsForm').submit();
+        }
+    }
+</script>
