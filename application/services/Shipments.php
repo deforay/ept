@@ -4269,7 +4269,7 @@ class Application_Service_Shipments
     public static function getShipmentAttributes($sid, $value = "")
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(array('s' => 'shipment'), ['shipment_attributes'])
+        $sQuery = $db->select()->from(array('s' => 'shipment'), ['shipment_attributes', 'scheme_type'])
             ->where('s.shipment_id = ?', $sid);
         $result = $db->fetchRow($sQuery);
         $shipmentAttributes = [];
