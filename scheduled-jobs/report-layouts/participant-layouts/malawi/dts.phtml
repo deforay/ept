@@ -287,8 +287,8 @@ if (!empty($resultArray['shipment'])) {
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
-        $labInfo  = '<span style="font-weight:bold;text-align:center;"> SEROLOGY PROFICIENCY TESTING SCHEMES</span><br>';
-        /*  $labInfo .= '<hr>';
+        /*  $labInfo  = '<span style="font-weight:bold;text-align:center;"> SEROLOGY PROFICIENCY TESTING SCHEMES</span><br>';
+        $labInfo .= '<hr>';
         $labInfo .= '<p style="text-align:right;font-size:11px;">';
         if (!empty($result['pt_co_ordinator_name'])) {
             $labInfo .= '<b>PT Scheme Manager: </b> ' . $result['pt_co_ordinator_name'] . '<br>';
@@ -312,24 +312,39 @@ if (!empty($resultArray['shipment'])) {
         $instituteAddress = Pt_Commons_General::getConfig('institute_address');
         $instituteAdditionalDetails = Pt_Commons_General::getConfig('additional_institute_details');
 
-        $labInfo .= '<table cellpadding="3" style="font-size:11px;">';
-        $labInfo .= '<tr>
-        <td><span style="text-align:left;">
-            <br> ' . $instituteName . '
-            <br> ' . $instituteAddress . '
-            <br> ' . $instituteAdditionalDetails . '
-        </span></td>
-        <td><span style="text-align:center;"><strong><br><br><br>Individual ' . $reportType . ' Report<br><h4>HIV</h4></strong></span></td>
-        <td><span style="text-align:left;">
-        <br><strong>Participant Code:</strong>  ' . $result['unique_identifier'] . '
-            <br><strong>Survey Number:</strong>  ' . $result['distribution_code'] . '
-            <br><strong>Shipment Date:</strong>  ' . $result['shipment_date'] . '
-            <br><strong>Closing Date:</strong>  ' . $distributionDate . '
-            <br><strong>Report Issue Date:</strong>  ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '
-            <br><strong>Scheme Manager:</strong> George Seda
-            <br><strong>Authroized By:</strong> Edwin Chtandale
-        </span></td>
-        </tr>';
+        $labInfo  = '<h4 style="text-align:center;">SEROLOGY PROFICIENCY TESTING SCHEMES</h4>';
+
+        $labInfo .= '<table cellpadding="4" style="font-size:11px; width:100%;">';
+        $labInfo .= '<tr>';
+
+        // Left column - Institute info (left-aligned, ~35% width)
+        $labInfo .= '<td style="width:35%; vertical-align:top; text-align:left;">'
+            . $instituteName . '<br>'
+            . $instituteAddress . '<br>'
+            . $instituteAdditionalDetails
+            . '</td>';
+
+        // Center column - Report type and HIV (center-aligned, ~30% width)
+        $labInfo .= '<td style="width:30%; vertical-align:middle; text-align:center;">'
+            . '<strong>Individual ' . $reportType . ' Report</strong><br><br>'
+            . '<strong><big>HIV</big></strong>'
+            . '</td>';
+
+        // Right column - Participant details (left-aligned, ~35% width)
+        $labInfo .= '<td style="width:35%; vertical-align:top; text-align:left;">'
+            . '<strong>Participant Code:</strong> ' . $result['unique_identifier'] . '<br>'
+            . '<strong>Survey Number:</strong> ' . $result['distribution_code'] . '<br>'
+            . '<strong>Shipment Date:</strong> ' . $result['shipment_date'] . '<br>'
+            . '<strong>Closing Date:</strong> ' . $distributionDate . '<br>'
+            . '<strong>Report Issue Date:</strong> ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '<br>'
+            . '<strong>Scheme Manager:</strong> George Seda<br>'
+            . '<strong>Authorized By:</strong> Edwin Chtandale'
+            . '</td>';
+
+        $labInfo .= '</tr>';
+        $labInfo .= '</table>';
+
+        $pdf->writeHTML($labInfo, true, false, true, false, '');
         /* if (!empty($result['institute_name'])) {
             $labInfo .= '<tr><td><strong>Name of the Facility</strong>: ' . $result['institute_name'] . '</td></tr>';
         }
@@ -403,9 +418,9 @@ if (!empty($resultArray['shipment'])) {
                 $labInfo .= '<strong>' . $customField2 . '</strong> : ' . (!empty($result['custom_field_2']) ? $result['custom_field_2'] : '');
             }
             $labInfo .= '</td></tr>';
-        } */
+        }
         $labInfo .= '</table>';
-        $pdf->writeHTML($labInfo, true, false, true, false, '');
+        $pdf->writeHTML($labInfo, true, false, true, false, ''); */
 
 
         if (!empty($result['responseResult'])) {
