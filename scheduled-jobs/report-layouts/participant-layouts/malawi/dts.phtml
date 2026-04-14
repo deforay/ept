@@ -324,6 +324,7 @@ if (!empty($resultArray['shipment'])) {
             . $instituteAdditionalDetails
             . '</td>';
 
+        $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
         // Center column - Report type and HIV (center-aligned, ~30% width)
         $labInfo .= '<td style="width:30%; vertical-align:middle; text-align:center;">'
             . '<strong>Individual ' . $reportType . ' Report</strong><br><br>'
@@ -336,10 +337,14 @@ if (!empty($resultArray['shipment'])) {
             . '<strong>Survey Number:</strong> ' . $result['distribution_code'] . '<br>'
             . '<strong>Shipment Date:</strong> ' . $result['shipment_date'] . '<br>'
             . '<strong>Closing Date:</strong> ' . $distributionDate . '<br>'
-            . '<strong>Report Issue Date:</strong> ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '<br>'
-            . '<strong>Scheme Manager:</strong> George Seda<br>'
-            . '<strong>Authorized By:</strong> Edwin Chtandale'
-            . '</td>';
+            . '<strong>Report Issue Date:</strong> ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '<br>';
+        if (!empty($result['pt_co_ordinator_name'])) {
+            $labInfo .= '<strong>Scheme Manager:</strong> ' . $result['pt_co_ordinator_name'] . '<br>';
+        }
+        if (!empty($approveTxt)) {
+            $labInfo .= '<strong>Authorized By:</strong> ' . $approveTxt;
+        }
+        $labInfo .= '</td>';
 
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
