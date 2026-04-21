@@ -108,6 +108,38 @@ function inbound_foreign_keys(Zend_Db_Adapter_Abstract $db, string $table): arra
     return (array)$db->fetchAll($sql, [current_db($db), $table]);
 }
 
+/** Does a foreign key with this name exist on the given table? */
+function foreign_key_exists(Zend_Db_Adapter_Abstract $db, string $table, string $name): bool
+{
+    $sql = "SELECT 1 FROM information_schema.TABLE_CONSTRAINTS
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?
+              AND CONSTRAINT_TYPE = 'FOREIGN KEY' LIMIT 1";
+    return (bool)$db->fetchOne($sql, [current_db($db), $table, $name]);
+}
+
+/** Does an existing FK match the intended columns/reference? (case-insensitive) */
+function foreign_key_matches(
+    Zend_Db_Adapter_Abstract $db,
+    string $table,
+    string $name,
+    array $cols,
+    string $refTable,
+    array $refCols
+): bool {
+    $sql = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+            FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?
+            ORDER BY ORDINAL_POSITION";
+    $rows = $db->fetchAll($sql, [current_db($db), $table, $name]);
+    if (count($rows) !== count($cols)) return false;
+    foreach ($rows as $i => $r) {
+        if (strtolower($r['COLUMN_NAME']) !== strtolower($cols[$i])) return false;
+        if (strtolower((string)$r['REFERENCED_TABLE_NAME']) !== strtolower($refTable)) return false;
+        if (strtolower((string)$r['REFERENCED_COLUMN_NAME']) !== strtolower($refCols[$i])) return false;
+    }
+    return true;
+}
+
 /** Parse a column list like "`a`(10) ASC, `b`" into ['a','b'] (normalized). */
 function parse_cols_list(string $list): array
 {
@@ -320,6 +352,41 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
         return _apply_add_primary_key($db, $m[1], $m[3], $q);
     }
 
+    // ALTER TABLE t ADD CONSTRAINT `name` FOREIGN KEY (cols) REFERENCES `ref` (refCols) ...
+    // Idempotent: if a FK with the same name already exists and matches the intended
+    // reference, skip. If the name exists but points elsewhere, drop and re-add so the
+    // migration cannot silently leave a stale FK in place (root cause of the Malawi
+    // participant_feedback_answer_ibfk_3 issue).
+    if (preg_match(
+        '/^alter\s+table\s+`?([a-z0-9_]+)`?\s+add\s+constraint\s+`?([a-z0-9_]+)`?\s+foreign\s+key\s*\(([^)]+)\)\s+references\s+`?([a-z0-9_]+)`?\s*\(([^)]+)\)/is',
+        $q,
+        $m
+    )) {
+        $table    = $m[1];
+        $fkName   = $m[2];
+        $cols     = parse_cols_list($m[3]);
+        $refTable = $m[4];
+        $refCols  = parse_cols_list($m[5]);
+
+        if (foreign_key_exists($db, $table, $fkName)) {
+            if (foreign_key_matches($db, $table, $fkName, $cols, $refTable, $refCols)) {
+                return MIG_SKIPPED;
+            }
+            run_sql($db, "ALTER TABLE `{$table}` DROP FOREIGN KEY `{$fkName}`");
+        }
+        run_sql($db, $q);
+        return MIG_EXECUTED;
+    }
+
+    // ALTER TABLE t DROP FOREIGN KEY `name`
+    if (preg_match('/^alter\s+table\s+`?([a-z0-9_]+)`?\s+drop\s+foreign\s+key\s+`?([a-z0-9_]+)`?/i', $q, $m)) {
+        if (foreign_key_exists($db, $m[1], $m[2])) {
+            run_sql($db, $q);
+            return MIG_EXECUTED;
+        }
+        return MIG_SKIPPED;
+    }
+
     return MIG_NOT_HANDLED;
 }
 
@@ -394,6 +461,7 @@ foreach ($versions as $version) {
 
         echo "Migrating to version $version..." . PHP_EOL;
         $totalMigrations++;
+        $versionErrors = 0;
 
         $sql_contents = file_get_contents($file);
         // Normalize SQL comments: "-- comment" requires a space after "--" per the
@@ -473,6 +541,7 @@ foreach ($versions as $version) {
                         $skippedQueries++;
                     } else {
                         $totalErrors++;
+                        $versionErrors++;
                         if (!$quietMode) {
                             echo "Error executing query:\n{$query}\n{$msg}\n";
                             if ($canLog) {
@@ -515,17 +584,31 @@ foreach ($versions as $version) {
                 exit("Migration aborted by user.\n");
             }
 
-            // Persist the version only if the run wasn't aborted and not a dry-run
+            // Persist the version only if the run wasn't aborted, not a dry-run, AND
+            // no non-benign errors occurred. Previously, errors under -y (or a user
+            // answering "y" to continue) were logged but app_version was still bumped,
+            // leaving the DB in a state that claimed to be migrated while silently
+            // missing DDL (e.g. the Malawi participant_feedback_answer FK rewrite).
+            $shouldBumpVersion = $versionErrors === 0;
             if (!$DRY_RUN) {
-                try {
-                    $db->update('system_config', ['value' => $version], $db->quoteInto('config = ?', 'app_version'));
-                } catch (Exception $e) {
-                    if (!$quietMode) {
-                        echo "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL;
+                if ($shouldBumpVersion) {
+                    try {
+                        $db->update('system_config', ['value' => $version], $db->quoteInto('config = ?', 'app_version'));
+                    } catch (Exception $e) {
+                        if (!$quietMode) {
+                            echo "Warning: failed to persist app_version to {$version}: " . $e->getMessage() . PHP_EOL;
+                        }
                     }
+                } elseif (!$quietMode) {
+                    echo "\n*** app_version NOT bumped to {$version}: {$versionErrors} non-benign error(s) occurred. ***\n";
+                    echo "    Fix the underlying issue(s) above and re-run migrate.php.\n";
                 }
             } else {
-                echo "[DRY-RUN] Would update system_config.app_version => {$version}\n";
+                if ($shouldBumpVersion) {
+                    echo "[DRY-RUN] Would update system_config.app_version => {$version}\n";
+                } else {
+                    echo "[DRY-RUN] Would NOT bump app_version to {$version} ({$versionErrors} error(s)).\n";
+                }
             }
 
             if (!$DRY_RUN) {
@@ -538,6 +621,15 @@ foreach ($versions as $version) {
             }
         }
         unset($sql_contents, $parser, $builtStatements);
+
+        // Halt the migration chain on unresolved errors: downstream migrations often
+        // assume prior versions applied cleanly, so continuing risks cascading damage.
+        if ($versionErrors > 0) {
+            if (!$quietMode) {
+                echo "Halting further migrations after {$version} due to unresolved errors.\n";
+            }
+            break;
+        }
     }
 
     gc_collect_cycles();
