@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "amitdugar/db-tools": "^2.0",
+        "amitdugar/db-tools": "^2.1",
         "crunzphp/crunz": "^3.9",
         "gregwar/captcha": "^1.3",
         "hackzilla/password-generator": "^1.7",
