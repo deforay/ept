@@ -147,7 +147,7 @@ if (!empty($resultArray['shipment'])) {
         $approveTxt = $result['pt_co_ordinator_name'] ?? $evalRow['saname'];
         $reportType = ($resultStatus == 'finalized') ? 'Finalized' : '';
 
-        $labInfo = '<span style="font-weight:bold;"> ' . $evalRow['scheme_name'] . ' Participant ' . $reportType . ' Report for Survey No: ' . $result['distribution_code'] . ' </span></br>';
+        /* $labInfo = '<span style="font-weight:bold;"> ' . $evalRow['scheme_name'] . ' Participant ' . $reportType . ' Report for Survey No: ' . $result['distribution_code'] . ' </span></br>';
         $labInfo .= '<hr>';
         $labInfo .= '<p style="text-align:right;font-size:11px;">';
         if (isset($result['pt_co_ordinator_name']) && !empty($result['pt_co_ordinator_name'])) {
@@ -163,11 +163,11 @@ if (!empty($resultArray['shipment'])) {
             $labInfo .= '<b>Report Authorized by: </b>' . $approveTxt;
         }
         $labInfo .= '</p>';
-        $labInfo .= '<hr><br>';
+        $labInfo .= '<hr><br>'; */
         // PT Co-ordinator header details end
         $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
         $result['email'] = $result['email'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
-        $labInfo .= '<table cellpadding="3" style="width:830px;font-size:11px;">';
+        /* $labInfo .= '<table cellpadding="3" style="width:830px;font-size:11px;">';
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Facility Identification Code</strong> : ' . $result['labName'] . '</td>';
         $labInfo .= '</tr>';
@@ -217,6 +217,47 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '<tr>';
         $labInfo .= '	<td><strong>Cell</strong> : ' . $result['mobile'];
         $labInfo .= '	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Email</strong> : ' . $result['email'] . '</td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '</table>'; */
+
+        $instituteName = Pt_Commons_General::getConfig('institute_name');
+        $instituteAddress = Pt_Commons_General::getConfig('institute_address');
+        $instituteAdditionalDetails = Pt_Commons_General::getConfig('additional_institute_details');
+
+        $labInfo  = '<h4 style="text-align:center;">' . strtoupper($result['scheme_name']) . ' TESTING SCHEMES</h4>';
+
+        $labInfo .= '<table cellpadding="4" style="font-size:11px; width:100%;">';
+        $labInfo .= '<tr>';
+
+        // Left column - Institute info (left-aligned, ~35% width)
+        $labInfo .= '<td style="width:35%; vertical-align:top; text-align:left;">'
+            . $instituteName . '<br>'
+            . $instituteAddress . '<br>'
+            . $instituteAdditionalDetails
+            . '</td>';
+
+        $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
+        // Center column - Report type and HIV (center-aligned, ~30% width)
+        $labInfo .= '<td style="width:30%; vertical-align:middle; text-align:center;">'
+            . '<strong>Individual Final Report</strong><br><br>'
+            . '<strong><big>' . $result['scheme_name'] . '</big></strong>'
+            . '</td>';
+
+        // Right column - Participant details (left-aligned, ~35% width)
+        $labInfo .= '<td style="width:35%; vertical-align:top; text-align:left;">'
+            . '<strong>Participant Code:</strong> ' . $result['unique_identifier'] . '<br>'
+            . '<strong>Survey Number:</strong> ' . $result['distribution_code'] . '<br>'
+            . '<strong>Shipment Date:</strong> ' . $result['shipment_date'] . '<br>'
+            . '<strong>Closing Date:</strong> ' . $distributionDate . '<br>'
+            . '<strong>Report Issue Date:</strong> ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '<br>';
+        if (!empty($result['pt_co_ordinator_name'])) {
+            $labInfo .= '<strong>Scheme Manager:</strong> ' . $result['pt_co_ordinator_name'] . '<br>';
+        }
+        if (!empty($approveTxt)) {
+            $labInfo .= '<strong>Authorized By:</strong> ' . $approveTxt;
+        }
+        $labInfo .= '</td>';
+
         $labInfo .= '</tr>';
         $labInfo .= '</table>';
 
@@ -300,7 +341,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->SetLeftMargin(15);
         $pdf->writeHTML($wishes, true, false, true, false, '');
         $performance1 = $performance2 = $performance3 = false;
-        $pdf->AddPage('P', 'A4');
+        // $pdf->AddPage('P', 'A4');
         include('summary-statistics.phtml');
 
         //if(trim($result['distribution_date'])!=""){
@@ -327,7 +368,7 @@ if (!empty($resultArray['shipment'])) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        $pdf->AddPage('P', 'A4');
+        // $pdf->AddPage('P', 'A4');
         $br = '';
         if ($performance1 || $performance2 || $performance3) {
             $br = '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>';
