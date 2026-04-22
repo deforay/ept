@@ -11,6 +11,17 @@ class AuthController extends Zend_Controller_Action
 		$this->_helper->layout()->setLayout('home');
 	}
 
+	// Returns true iff the session holds a passed captcha, then clears it so
+	// the same solve can't be replayed across multiple POSTs.
+	private function consumeCaptcha(): bool
+	{
+		$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
+		$passed = isset($captchaSession->captchaStatus) && $captchaSession->captchaStatus === 'success';
+		$captchaSession->captchaStatus = 'fail';
+		$captchaSession->code = null;
+		return $passed;
+	}
+
 	public function indexAction()
 	{
 		$this->redirect($this->loginUri);
@@ -49,6 +60,13 @@ class AuthController extends Zend_Controller_Action
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
+			if (!$this->consumeCaptcha()) {
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Please enter the correct text from the image.";
+				$sessionAlert->status = "failure";
+				$this->redirect($this->loginUri);
+				return;
+			}
 			$params = $request->getPost();
 			$userService->confirmPrimaryMail($params);
 			$this->redirect('/');
@@ -359,6 +377,13 @@ class AuthController extends Zend_Controller_Action
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
+			if (!$this->consumeCaptcha()) {
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Please enter the correct text from the image.";
+				$sessionAlert->status = "failure";
+				$this->redirect('/auth/reset-password');
+				return;
+			}
 			$email = $request->getPost('registeredEmail');
 			$userService = new Application_Service_DataManagers();
 			$userService->resetPassword($email);
@@ -372,6 +397,13 @@ class AuthController extends Zend_Controller_Action
 		$request = $this->getRequest();
 		$userService = new Application_Service_DataManagers();
 		if ($request->isPost()) {
+			if (!$this->consumeCaptcha()) {
+				$sessionAlert = new Zend_Session_Namespace('alertSpace');
+				$sessionAlert->message = "Please enter the correct text from the image.";
+				$sessionAlert->status = "failure";
+				$this->redirect($request->getRequestUri());
+				return;
+			}
 			$params = $request->getPost();
 			$this->redirect($userService->newPassword($params));
 		} else {
