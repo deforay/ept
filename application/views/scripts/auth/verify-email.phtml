@@ -34,6 +34,8 @@
         <br>
 
         <form id="resetEmail" name="resetEmail" method="post" action="/auth/verify-email">
+            <input type="text" name="website_url" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <input type="hidden" name="form_token" value="<?php echo $this->escape($this->formToken ?? ''); ?>">
 
             <div class="" style="margin: auto;display:block;padding:10px;">
 

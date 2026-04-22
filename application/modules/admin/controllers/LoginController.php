@@ -16,6 +16,13 @@ class Admin_LoginController extends Zend_Controller_Action
 		$request = $this->getRequest();
 		if ($request->isPost()) {
 			$params = $request->getPost();
+			if (
+				!empty($params['website_url']) ||
+				!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'adminLoginTokens')
+			) {
+				$this->redirect('/admin');
+				return;
+			}
 			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
@@ -88,6 +95,7 @@ class Admin_LoginController extends Zend_Controller_Action
 		} else {
 			$commonServices = new Application_Service_Common();
 			$this->view->instituteName = $commonServices->getConfig('institute_name');
+			$this->view->formToken = Application_Service_Common::generateFormToken();
 			// We are destroying the session here in case this person has
 			// logged in as a User as well..
 			// We don't want that

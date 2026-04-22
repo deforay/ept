@@ -49,6 +49,14 @@ class AuthController extends Zend_Controller_Action
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
+			$params = $request->getPost();
+			if (
+				!empty($params['website_url']) ||
+				!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'authVerifyEmailTokens')
+			) {
+				$this->redirect($this->loginUri);
+				return;
+			}
 			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Please enter the correct text from the image.";
@@ -56,7 +64,6 @@ class AuthController extends Zend_Controller_Action
 				$this->redirect($this->loginUri);
 				return;
 			}
-			$params = $request->getPost();
 			$userService->confirmPrimaryMail($params);
 			$this->redirect('/');
 		}
@@ -65,6 +72,7 @@ class AuthController extends Zend_Controller_Action
 			$result = $userService->checkForceProfileEmail($link);
 			if ($result) {
 				$this->view->result = $result;
+				$this->view->formToken = Application_Service_Common::generateFormToken();
 			} else {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = $this->emailVerifyErrMsg;
@@ -87,6 +95,7 @@ class AuthController extends Zend_Controller_Action
 			$this->view->loginBan = $globalConfigDb->getValue('enable_login_attempt_ban');
 			$this->view->maxAttemptTempBan = $globalConfigDb->getValue('max_attempts_for_temp_ban');
 			$this->view->maxAttemptPermBan = $globalConfigDb->getValue('max_attempts_for_perm_ban');
+			$this->view->formToken = Application_Service_Common::generateFormToken();
 			return;
 		}
 
@@ -98,6 +107,18 @@ class AuthController extends Zend_Controller_Action
 		$sessionAlert = new Zend_Session_Namespace('alertSpace');
 
 		try {
+			$params = $request->getPost();
+
+			// Honeypot + single-use CSRF token. Silently redirect on failure so
+			// bots can't tell the difference from a captcha miss.
+			if (
+				!empty($params['website_url']) ||
+				!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'authLoginTokens')
+			) {
+				$this->redirect($this->loginUri);
+				return;
+			}
+
 			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert->message = "Please enter the correct text from the image.";
 				$sessionAlert->status = "failure";
@@ -106,7 +127,6 @@ class AuthController extends Zend_Controller_Action
 			}
 
 			// Sanitize input
-			$params = $request->getPost();
 			$username = trim($params['username'] ?? '');
 			$password = trim($params['password'] ?? '');
 
@@ -359,6 +379,14 @@ class AuthController extends Zend_Controller_Action
 		/** @var Zend_Controller_Request_Http $request */
 		$request = $this->getRequest();
 		if ($request->isPost()) {
+			$params = $request->getPost();
+			if (
+				!empty($params['website_url']) ||
+				!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'authResetPwdTokens')
+			) {
+				$this->redirect('/auth/reset-password');
+				return;
+			}
 			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Please enter the correct text from the image.";
@@ -366,11 +394,11 @@ class AuthController extends Zend_Controller_Action
 				$this->redirect('/auth/reset-password');
 				return;
 			}
-			$email = $request->getPost('registeredEmail');
 			$userService = new Application_Service_DataManagers();
-			$userService->resetPassword($email);
+			$userService->resetPassword($params['registeredEmail'] ?? null);
 			$this->redirect($this->loginUri);
 		}
+		$this->view->formToken = Application_Service_Common::generateFormToken();
 	}
 
 	public function newPasswordAction()
@@ -379,6 +407,14 @@ class AuthController extends Zend_Controller_Action
 		$request = $this->getRequest();
 		$userService = new Application_Service_DataManagers();
 		if ($request->isPost()) {
+			$params = $request->getPost();
+			if (
+				!empty($params['website_url']) ||
+				!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'authNewPwdTokens')
+			) {
+				$this->redirect($request->getRequestUri());
+				return;
+			}
 			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Please enter the correct text from the image.";
@@ -386,7 +422,6 @@ class AuthController extends Zend_Controller_Action
 				$this->redirect($request->getRequestUri());
 				return;
 			}
-			$params = $request->getPost();
 			$this->redirect($userService->newPassword($params));
 		} else {
 			if ($this->hasParam('email')) {
@@ -399,6 +434,7 @@ class AuthController extends Zend_Controller_Action
 				}
 				$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 				$this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
+				$this->view->formToken = Application_Service_Common::generateFormToken();
 			}
 		}
 	}

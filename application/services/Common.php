@@ -196,6 +196,44 @@ class Application_Service_Common
         return $passed;
     }
 
+    // Build a timestamp.HMAC token for a form render. Verified by consumeFormToken().
+    public static function generateFormToken(): string
+    {
+        $timestamp = time();
+        $hash = hash_hmac('sha256', (string)$timestamp, self::getFormSecret());
+        return $timestamp . '.' . $hash;
+    }
+
+    // Verify an incoming form token and burn it (single-use per session-namespaced bucket).
+    // $namespace keeps buckets separate so a token from form A can't be replayed on form B.
+    // $minAgeSeconds: set >0 to reject sub-second bot submissions (use on public spam-prone
+    // forms). Leave at 0 for auth forms where password managers can submit very quickly.
+    public static function consumeFormToken(?string $token, string $namespace, int $minAgeSeconds = 0): bool
+    {
+        if (empty($token) || !is_string($token) || !str_contains($token, '.')) {
+            return false;
+        }
+        [$timestamp, $hash] = explode('.', $token, 2);
+        $expected = hash_hmac('sha256', $timestamp, self::getFormSecret());
+        if (!hash_equals($expected, $hash)) {
+            return false;
+        }
+        $elapsed = time() - (int)$timestamp;
+        if ($elapsed < $minAgeSeconds || $elapsed > 3600) {
+            return false;
+        }
+        $ns = new Zend_Session_Namespace($namespace);
+        $used = is_array($ns->used ?? null) ? $ns->used : [];
+        // Drop expired entries so this bucket can't grow unbounded.
+        $used = array_filter($used, static fn($ts) => $ts > time() - 3600);
+        if (isset($used[$hash])) {
+            return false;
+        }
+        $used[$hash] = time();
+        $ns->used = $used;
+        return true;
+    }
+
     public static function getFormSecret(): string
     {
         $envFile = APPLICATION_PATH . '/configs/.env';

@@ -116,6 +116,8 @@ $eptLogo = implode('', $logos);
 
 <div class="container">
 	<form class="form-signin" name="loginForm" id="loginForm" method="post" action="<?php echo $this->url(["module" => "admin", "controller" => "login", "action" => "index"], null, true) ?>">
+		<input type="text" name="website_url" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+		<input type="hidden" name="form_token" value="<?php echo $this->escape($this->formToken ?? ''); ?>">
 
 		<div style="text-align:center;">
 			<h3 class="form-signin-heading"><span><?php echo $this->instituteName; ?></span><br><br><?= $this->translate->_("PT Administrator"); ?></h3>

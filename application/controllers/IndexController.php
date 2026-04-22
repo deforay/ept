@@ -33,36 +33,12 @@ class IndexController extends Zend_Controller_Action
                 return;
             }
 
-            // Anti-spam: HMAC timestamp check
-            $formToken = $params['form_token'] ?? '';
-            if (!str_contains($formToken, '.')) {
+            // Anti-spam: single-use HMAC form token. 5s minimum age rejects the
+            // sub-second bot posts that never render the page.
+            if (!Application_Service_Common::consumeFormToken($params['form_token'] ?? null, 'contactFormTokens', 5)) {
                 $this->view->message = 1;
                 return;
             }
-            [$timestamp, $hash] = explode('.', $formToken, 2);
-            $secret = Application_Service_Common::getFormSecret();
-            $expected = hash_hmac('sha256', $timestamp, $secret);
-            if (!hash_equals($expected, $hash)) {
-                $this->view->message = 1;
-                return;
-            }
-            $elapsed = time() - (int)$timestamp;
-            if ($elapsed < 5 || $elapsed > 3600) {
-                $this->view->message = 1;
-                return;
-            }
-
-            // Anti-replay: each form_token is single-use per session.
-            $tokenNamespace = new Zend_Session_Namespace('contactFormTokens');
-            $usedTokens = $tokenNamespace->used ?? [];
-            // Drop tokens older than the 1h HMAC window so the list can't grow unbounded.
-            $usedTokens = array_filter($usedTokens, static fn($ts) => $ts > time() - 3600);
-            if (isset($usedTokens[$hash])) {
-                $this->view->message = 1;
-                return;
-            }
-            $usedTokens[$hash] = time();
-            $tokenNamespace->used = $usedTokens;
 
             // Server-side captcha check. The browser pre-checks via /captcha/check-captcha,
             // but a direct POST would skip that entirely, so enforce it here too.
@@ -97,11 +73,7 @@ class IndexController extends Zend_Controller_Action
                 $this->view->htmlHomePage = "";
             }
 
-            // Generate HMAC token for contact form anti-spam
-            $secret = Application_Service_Common::getFormSecret();
-            $timestamp = time();
-            $hash = hash_hmac('sha256', (string)$timestamp, $secret);
-            $this->view->formToken = $timestamp . '.' . $hash;
+            $this->view->formToken = Application_Service_Common::generateFormToken();
         }
     }
 }
