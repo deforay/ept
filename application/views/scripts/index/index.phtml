@@ -410,10 +410,14 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
     <script type="text/javascript">
         $(function() {
             if (typeof TomSelect !== 'undefined') {
-                new TomSelect('#country', {
+                var countryTs = new TomSelect('#country', {
                     allowEmptyOption: true,
                     placeholder: '<?= $this->translate->_("Select Country"); ?> *'
                 });
+                // TomSelect copies the original select's classes onto its wrapper div.
+                // deforayValidator walks every form descendant, so the wrapper's copied
+                // `isRequired` class causes a false failure (a div has no `.value`).
+                countryTs.wrapper.classList.remove('isRequired');
             }
         });
 
