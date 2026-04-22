@@ -145,7 +145,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $request = $this->getRequest();
 
         $participantService = new Application_Service_Participants();
-        $dataManagerService = new Application_Service_DataManagers();
         $commonService = new Application_Service_Common();
         if ($request->isPost()) {
 
@@ -153,8 +152,6 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             $participantService->addParticipantManagerMap($params);
             $this->redirect("/admin/participants/participant-manager-map");
         }
-        $this->view->participants = $participantService->getAllActiveParticipants();
-        $this->view->dataManagers = $dataManagerService->getDataManagerList();
         $this->view->countries = $participantService->getParticipantCountriesList();
         $this->view->province = $commonService->getParticipantsProvinceList();
         $this->view->district = $commonService->getParticipantsDistrictList();

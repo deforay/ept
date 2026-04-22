@@ -1,13 +1,17 @@
 <?php
-$result = '';
+$mapIds = [];
 foreach ($this->mappedParticipant as $mappedParticipant) {
-    $mapIds[] = $mappedParticipant['participant_id'];
+    $mapIds[$mappedParticipant['participant_id']] = true;
 }
-foreach ($this->participants as $key => $participant) {
-    $selected = "";
-    if (isset($mapIds) && !empty($mapIds) && in_array($participant['participant_id'], $mapIds)) {
-        $selected = "selected='selected'";
-    }
-    $result .= '<option value="' . $participant['participant_id'] . '"' . $selected . '>' . $participant['first_name'] . " " . $participant['last_name'] . '(' . $participant['unique_identifier'] . ')' . '</option>';
+$out = [];
+foreach ($this->participants as $participant) {
+    $name = trim($participant['first_name'] . ' ' . $participant['last_name']);
+    $label = ($name !== '' ? $name . ' ' : '') . '(' . $participant['unique_identifier'] . ')';
+    $out[] = [
+        'id'       => $participant['participant_id'],
+        'label'    => $label,
+        'selected' => isset($mapIds[$participant['participant_id']]),
+    ];
 }
-echo $result;
+header('Content-Type: application/json');
+echo json_encode($out);

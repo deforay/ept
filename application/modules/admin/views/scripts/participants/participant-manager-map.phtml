@@ -1,6 +1,16 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<style>
+    .virt-dual-list { display: flex; gap: 20px; align-items: stretch; margin: 0 auto; max-width: 1100px; }
+    .virt-dual-list .virt-pane { flex: 1; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
+    .virt-dual-list .virt-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
+    .virt-dual-list .virt-pane-header input { width: 100%; }
+    .virt-dual-list .virt-pane-scroll { position: relative; height: 400px; overflow-y: auto; background: #fff; }
+    .virt-dual-list .virt-pane-inner { position: relative; width: 100%; }
+    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .virt-dual-list .virt-row:hover { background: #337ab7; color: #fff; }
+    .virt-dual-list .virt-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .virt-dual-list .virt-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; }
+</style>
 <div class="well">
     <fieldset>
         <legend><?= $this->translate->_("Map Participants to Data Managers (Participant Login)"); ?>
@@ -11,22 +21,7 @@
             <div class="row singleMap">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Data Manager (Participant Login)"); ?> <span class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login" onchange="getParticipants(this.value)">
-                        <option value=""></option>
-                        <?php foreach ($this->dataManagers as $dataManagers) {
-                            $dmName = [];
-                            if (!empty(trim($dataManagers['first_name'] . " " . $dataManagers['last_name']))) {
-                                $dmName[] = trim($dataManagers['first_name'] . " " . $dataManagers['last_name']);
-                            }
-                            if (!empty(trim($dataManagers['institute']))) {
-                                $dmName[] = trim($dataManagers['institute']);
-                            }
-                            if (!empty(trim($dataManagers['primary_email']))) {
-                                $dmName[] = trim($dataManagers['primary_email']);
-                            } ?>
-                            <option value="<?php echo $dataManagers['dm_id']; ?>"><?php echo implode(", ", $dmName); ?></option>
-                        <?php } ?>
-                    </select>
+                    <select class="select2" style="width:60%;" name="alldatamangers" id="alldatamangers" placeholder="Please choose a PT Login" title="Please choose a PT Login"></select>
                     <a href="javascript:void(0);" style=" line-height: 1.2; " onclick="advFilter()" class="btn btn-sm btn-primary filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
                 </div>
             </div>
@@ -121,8 +116,19 @@
             </div>
         </div>
         <br />
-        <select class="isRequired" id="participants" name="participants[]" multiple="multiple" title="Please select the participants to map">
-        </select>
+        <div class="virt-dual-list">
+            <div class="virt-pane" data-side="left">
+                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="Type PT Login Name To Filter"></div>
+                <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
+                <div class="virt-pane-footer">Unselected PT Logins (<span class="virt-count">0</span>)</div>
+            </div>
+            <div class="virt-arrows">&#8646;</div>
+            <div class="virt-pane" data-side="right">
+                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="Type PT Login Name To Filter"></div>
+                <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
+                <div class="virt-pane-footer">Selected PT Logins (<span class="virt-count">0</span>)</div>
+            </div>
+        </div>
         <br />
         <input type="hidden" id='datamanagerId' name='datamanagerId' />
         <input type="hidden" name="selectedForMapping" id="selectedForMapping" value="" />
@@ -142,10 +148,138 @@
     </div>
 </form>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
+    var GET_PARTICIPANT_URL = "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>";
+    var GET_DM_NAMES_URL = "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager-names')); ?>";
+
+    var DualList = (function() {
+        var ROW_HEIGHT = 30;
+        var OVERSCAN = 6;
+        var state = { left: [], right: [] };
+        var panes = {};
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function(c) {
+                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+            });
+        }
+
+        function initPane(sideKey, paneEl) {
+            var $pane = $(paneEl);
+            var pane = {
+                sideKey: sideKey,
+                $scroll: $pane.find('.virt-pane-scroll'),
+                $inner: $pane.find('.virt-pane-inner'),
+                $search: $pane.find('.virt-pane-header input'),
+                $count: $pane.find('.virt-count'),
+                filter: '',
+                filtered: []
+            };
+            pane.$scroll.on('scroll', function() { render(pane); });
+            pane.$search.on('input', function() {
+                pane.filter = pane.$search.val().toLowerCase();
+                recomputeFiltered(pane);
+                pane.$scroll.scrollTop(0);
+                render(pane);
+            });
+            pane.$inner.on('click', '.virt-row', function() {
+                moveItem(pane.sideKey, $(this).attr('data-id'));
+            });
+            panes[sideKey] = pane;
+        }
+
+        function recomputeFiltered(pane) {
+            var src = state[pane.sideKey];
+            if (!pane.filter) {
+                pane.filtered = src;
+            } else {
+                var f = pane.filter;
+                pane.filtered = [];
+                for (var i = 0; i < src.length; i++) {
+                    if (src[i]._lc.indexOf(f) !== -1) pane.filtered.push(src[i]);
+                }
+            }
+            pane.$count.text(pane.filtered.length);
+            pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+        }
+
+        function render(pane) {
+            var scrollTop = pane.$scroll.scrollTop();
+            var h = pane.$scroll.height();
+            var first = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+            var last = Math.min(pane.filtered.length, Math.ceil((scrollTop + h) / ROW_HEIGHT) + OVERSCAN);
+            var parts = [];
+            for (var i = first; i < last; i++) {
+                var it = pane.filtered[i];
+                parts.push(
+                    '<div class="virt-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' +
+                    escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>'
+                );
+            }
+            pane.$inner.html(parts.join(''));
+        }
+
+        function moveItem(fromSide, id) {
+            var toSide = fromSide === 'left' ? 'right' : 'left';
+            var arr = state[fromSide];
+            for (var i = 0; i < arr.length; i++) {
+                if (String(arr[i].id) === String(id)) {
+                    var item = arr.splice(i, 1)[0];
+                    state[toSide].push(item);
+                    break;
+                }
+            }
+            refresh();
+        }
+
+        function refresh() {
+            recomputeFiltered(panes.left);
+            recomputeFiltered(panes.right);
+            render(panes.left);
+            render(panes.right);
+        }
+
+        function load(items) {
+            state.left = [];
+            state.right = [];
+            for (var i = 0; i < items.length; i++) {
+                var it = items[i];
+                it._lc = String(it.label).toLowerCase();
+                if (it.selected) state.right.push(it);
+                else state.left.push(it);
+            }
+            if (panes.left) { panes.left.$search.val(''); panes.left.filter = ''; panes.left.$scroll.scrollTop(0); }
+            if (panes.right) { panes.right.$search.val(''); panes.right.filter = ''; panes.right.$scroll.scrollTop(0); }
+            refresh();
+        }
+
+        function selectAll() {
+            state.right = state.right.concat(state.left);
+            state.left = [];
+            refresh();
+        }
+
+        function deselectAll() {
+            state.left = state.left.concat(state.right);
+            state.right = [];
+            refresh();
+        }
+
+        function getSelectedIds() {
+            var ids = [];
+            for (var i = 0; i < state.right.length; i++) ids.push(state.right[i].id);
+            return ids;
+        }
+
+        return {
+            init: initPane,
+            load: load,
+            selectAll: selectAll,
+            deselectAll: deselectAll,
+            getSelectedIds: getSelectedIds
+        };
+    })();
+
     function advFilter() {
         $('.advFilter').toggle();
         if ($('.filter-btn').text() == 'Show advanced filters') {
@@ -157,28 +291,18 @@
 
     function getStats(cid) {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", {
-                cid: cid,
-                format: "html"
-            },
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", { cid: cid, format: "html" },
             function(data) {
-                if (data != "" && data != undefined) {
-                    $('#province').html(data);
-                }
+                if (data != "" && data != undefined) { $('#province').html(data); }
                 $.unblockUI();
             });
     }
 
     function getDistricts(pid) {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", {
-                pid: pid,
-                format: "html"
-            },
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", { pid: pid, format: "html" },
             function(data) {
-                if (data != "" && data != undefined) {
-                    $('#district').html(data);
-                }
+                if (data != "" && data != undefined) { $('#district').html(data); }
                 $.unblockUI();
             });
     }
@@ -191,9 +315,7 @@
                 format: "html"
             },
             function(data) {
-                if (data != "" && data != undefined) {
-                    $('#institute').html(data);
-                }
+                if (data != "" && data != undefined) { $('#institute').html(data); }
                 $.unblockUI();
             });
     }
@@ -208,188 +330,49 @@
                 return false;
             }
         }
-        if ($('#alldatamangers').val() == "") {
+        if ($('#alldatamangers').val() == "" || $('#alldatamangers').val() == null) {
             alert("Please select PT Login to map the participants");
             return false;
         }
 
-        flag = deforayValidator.init({
-            formId: 'submitParticipantMap'
-        });
+        var flag = deforayValidator.init({ formId: 'submitParticipantMap' });
         if (flag) {
             $.blockUI();
-            let selectedParticipants = JSON.stringify($("#participants").val());
-            $("#selectedForMapping").val(selectedParticipants);
-            $("#participants").val(""); // THIS IS IMPORTANT. TO REDUCE NUMBER OF PHP VARIABLES
+            $("#selectedForMapping").val(JSON.stringify(DualList.getSelectedIds()));
             document.getElementById('submitParticipantMap').submit();
         }
     }
 
-    $(document).ready(function() {
-        $("#country").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select Country"); ?>"
-        });
-        $("#province").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select Province"); ?>"
-        });
-        $("#district").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select District"); ?>"
-        });
-        $("#networkTier").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select Network Tier"); ?>"
-        });
-        $("#affiliation").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select Affiliation"); ?>"
-        });
-        $("#institute").select2({
-            allowClear: true,
-            placeholder: "<?= $this->translate->_("Select Institute"); ?>"
-        });
-        $("#alldatamangers").select2({
-            placeholder: "<?= $this->translate->_("Select PT Login"); ?>"
-        });
-    });
-
-    function getDataManager() {
-        if ($('#alldatamangers').val() == "") return false;
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-datamanager')); ?>", {
-                datamanagerId: $('#datamanagerId').val(),
-                country: $('#country').val(),
-                province: $('#province').val(),
-                district: $('#district').val(),
-                network: $('#networkTier').val(),
-                affiliation: $('#affiliation').val(),
-                institute: $('#institute').val(),
-                format: "html"
-            },
-            function(data) {
-                $('.singleMap').removeClass('hide');
-                $('#bulkForm').hide();
-                $('#participants').html(data);
-                $('#participants').multiSelect("destroy").multiSelect({
-                    selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
-                    selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
-                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                    afterInit: function(ms) {
-                        var that = this,
-                            $selectableSearch = that.$selectableUl.prev(),
-                            $selectionSearch = that.$selectionUl.prev(),
-                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                        that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                            .on('keydown', function(e) {
-                                if (e.which === 40) {
-                                    that.$selectableUl.focus();
-                                    return false;
-                                }
-                            });
-
-                        that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                            .on('keydown', function(e) {
-                                if (e.which == 40) {
-                                    that.$selectionUl.focus();
-                                    return false;
-                                }
-                            });
-                    },
-                    afterSelect: function() {
-                        this.qs1.cache();
-                        this.qs2.cache();
-                    },
-                    afterDeselect: function() {
-                        this.qs1.cache();
-                        this.qs2.cache();
-                    }
-                });
-
-
-                $('#select-all-participant').click(function() {
-                    $('#participants').multiSelect('select_all');
-                    return false;
-                });
-                $('#deselect-all-participant').click(function() {
-                    $('#participants').multiSelect('deselect_all');
-                    return false;
-                });
-
-            });
-    }
-
-    function getParticipants(datamanagerId) {
+    function loadParticipants() {
+        var dmId = $('#alldatamangers').val();
+        if (!dmId) return;
+        $('#datamanagerId').val(dmId);
         $.blockUI();
-        $('#datamanagerId').val(datamanagerId);
-        $('#allparticipant').select2("val", "");
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>", {
-                datamanagerId: datamanagerId,
+        $.ajax({
+            url: GET_PARTICIPANT_URL,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                datamanagerId: dmId,
                 country: $('#country').val(),
                 province: $('#province').val(),
                 district: $('#district').val(),
                 network: $('#networkTier').val(),
                 affiliation: $('#affiliation').val(),
                 institute: $('#institute').val(),
-                format: "html"
-            },
-            function(data) {
-                $('.singleMap').removeClass('hide');
-                $('#bulkForm').hide();
-                $('#participants').html(data);
-                $('#participants').multiSelect("destroy").multiSelect({
-                    selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
-                    selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
-                    selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                    selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-                    afterInit: function(ms) {
-                        var that = this,
-                            $selectableSearch = that.$selectableUl.prev(),
-                            $selectionSearch = that.$selectionUl.prev(),
-                            selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                            selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                        that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                            .on('keydown', function(e) {
-                                if (e.which === 40) {
-                                    that.$selectableUl.focus();
-                                    return false;
-                                }
-                            });
-
-                        that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                            .on('keydown', function(e) {
-                                if (e.which == 40) {
-                                    that.$selectionUl.focus();
-                                    return false;
-                                }
-                            });
-                    },
-                    afterSelect: function() {
-                        this.qs1.cache();
-                        this.qs2.cache();
-                    },
-                    afterDeselect: function() {
-                        this.qs1.cache();
-                        this.qs2.cache();
-                    }
-                });
-                $.unblockUI();
-
-
-                $('#select-all-participant').click(function() {
-                    $('#participants').multiSelect('select_all');
-                    return false;
-                });
-                $('#deselect-all-participant').click(function() {
-                    $('#participants').multiSelect('deselect_all');
-                    return false;
-                });
-            });
+                format: 'html'
+            }
+        }).done(function(items) {
+            $('.singleMap').removeClass('hide');
+            $('#bulkForm').hide();
+            DualList.load(items || []);
+        }).always(function() {
+            $.unblockUI();
+        });
     }
+
+    function getParticipants(datamanagerId) { loadParticipants(); }
+    function getDataManager() { loadParticipants(); }
 
     function bulkShowHide() {
         $('#bulkForm').toggle();
@@ -400,15 +383,52 @@
 
     function generateParticipantMapExport() {
         $.blockUI();
-        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-map')); ?>", {
-                format: "html"
-            },
+        $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'export-participants-map')); ?>", { format: "html" },
             function(data) {
                 if (data != "") {
-                    //alert(data);$.unblockUI();return;
                     document.location.href = '/temporary/' + data;
                 }
                 $.unblockUI();
             });
     }
+
+    $(document).ready(function() {
+        $("#country").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Country"); ?>" });
+        $("#province").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Province"); ?>" });
+        $("#district").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select District"); ?>" });
+        $("#networkTier").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Network Tier"); ?>" });
+        $("#affiliation").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Affiliation"); ?>" });
+        $("#institute").select2({ allowClear: true, placeholder: "<?= $this->translate->_("Select Institute"); ?>" });
+
+        $("#alldatamangers").select2({
+            placeholder: "<?= $this->translate->_("Select PT Login"); ?>",
+            allowClear: true,
+            minimumInputLength: 1,
+            ajax: {
+                url: GET_DM_NAMES_URL,
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    var term = (params && params.term) ? params.term : '';
+                    return { search: term };
+                },
+                results: function(data) { return { results: (data && data.result) ? data.result : [] }; },
+                processResults: function(data) { return { results: (data && data.result) ? data.result : [] }; },
+                cache: true
+            }
+        }).on('change', function() { loadParticipants(); });
+
+        $('.virt-pane').each(function() {
+            DualList.init($(this).attr('data-side'), this);
+        });
+
+        $('#select-all-participant').on('click', function(e) {
+            e.preventDefault();
+            DualList.selectAll();
+        });
+        $('#deselect-all-participant').on('click', function(e) {
+            e.preventDefault();
+            DualList.deselectAll();
+        });
+    });
 </script>

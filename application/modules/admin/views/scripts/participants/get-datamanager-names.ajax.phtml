@@ -2,6 +2,9 @@
 $echoResult = [];
 if(count($this->paticipantManagers)>0){
     foreach ($this->paticipantManagers as $dm) {
+        if (!isset($dm['data_manager_type']) || $dm['data_manager_type'] !== 'manager') {
+            continue;
+        }
         $dmName = [];
         if(!empty(trim($dm['first_name'] . " " . $dm['last_name']))){
             $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
