@@ -185,6 +185,17 @@ class Application_Service_Common
         return $gc->getValue($name);
     }
 
+    // Returns true iff the session holds a passed captcha, then clears it so
+    // the same solve can't be replayed across multiple POSTs.
+    public static function consumeCaptcha(): bool
+    {
+        $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
+        $passed = isset($captchaSession->captchaStatus) && $captchaSession->captchaStatus === 'success';
+        $captchaSession->captchaStatus = 'fail';
+        $captchaSession->code = null;
+        return $passed;
+    }
+
     public static function getFormSecret(): string
     {
         $envFile = APPLICATION_PATH . '/configs/.env';

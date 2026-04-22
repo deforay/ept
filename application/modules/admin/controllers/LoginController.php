@@ -16,13 +16,7 @@ class Admin_LoginController extends Zend_Controller_Action
 		$request = $this->getRequest();
 		if ($request->isPost()) {
 			$params = $request->getPost();
-			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
-			$captchaPassed = isset($captchaSession->captchaStatus) && $captchaSession->captchaStatus === 'success';
-			// Single-use: consume immediately so one solved captcha can't be replayed
-			// across multiple login attempts (password spraying).
-			$captchaSession->captchaStatus = 'fail';
-			$captchaSession->code = null;
-			if (!$captchaPassed) {
+			if (!Application_Service_Common::consumeCaptcha()) {
 				$sessionAlert = new Zend_Session_Namespace('alertSpace');
 				$sessionAlert->message = "Sorry. Unable to log you in. Please check the text from image";
 				$sessionAlert->status = "failure";

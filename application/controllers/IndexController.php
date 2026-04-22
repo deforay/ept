@@ -66,12 +66,7 @@ class IndexController extends Zend_Controller_Action
 
             // Server-side captcha check. The browser pre-checks via /captcha/check-captcha,
             // but a direct POST would skip that entirely, so enforce it here too.
-            $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
-            $captchaPassed = ($captchaSession->captchaStatus ?? null) === 'success';
-            // Single-use: invalidate immediately so a passed captcha can't be reused.
-            $captchaSession->captchaStatus = 'fail';
-            $captchaSession->code = null;
-            if (!$captchaPassed) {
+            if (!Application_Service_Common::consumeCaptcha()) {
                 $this->view->message = 1;
                 return;
             }
