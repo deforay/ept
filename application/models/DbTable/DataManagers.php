@@ -164,6 +164,15 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         if (isset($parameters['statusFilter']) && $parameters['statusFilter'] != "") {
             $sQuery = $sQuery->where("u.status = ?", $parameters['statusFilter']);
         }
+        if (isset($parameters['mappingFilter']) && $parameters['mappingFilter'] !== '') {
+            if ($parameters['mappingFilter'] === 'unmapped') {
+                // Inactive + unmapped DMs aren't interesting — only flag active ones
+                $sQuery = $sQuery->where("u.status = 'active'")
+                    ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm2 WHERE pmm2.dm_id = u.dm_id)');
+            } elseif ($parameters['mappingFilter'] === 'mapped') {
+                $sQuery = $sQuery->where('EXISTS (SELECT 1 FROM participant_manager_map pmm2 WHERE pmm2.dm_id = u.dm_id)');
+            }
+        }
 
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
@@ -182,6 +191,20 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Data set length after filtering */
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
+
+        /* Lightweight count of mapped participants per DM on this page — the full list
+           is loaded on demand via AJAX when the user expands a row. */
+        $participantCountByDm = [];
+        $pageDmIds = array_column($rResult, 'dm_id');
+        if (!empty($pageDmIds)) {
+            $countSelect = $this->getAdapter()->select()
+                ->from('participant_manager_map', array('dm_id', 'cnt' => new Zend_Db_Expr('COUNT(*)')))
+                ->where('dm_id IN (?)', $pageDmIds)
+                ->group('dm_id');
+            foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
+                $participantCountByDm[$cntRow['dm_id']] = (int)$cntRow['cnt'];
+            }
+        }
 
         /*
          * Output
@@ -213,6 +236,18 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $row[] = ucwords($aRow['state']);
                 $row[] = ucwords($aRow['district']);
             }
+            /* Mapped Participants column — compact toggle; the list loads on demand */
+            $pCount = isset($participantCountByDm[$aRow['dm_id']]) ? $participantCountByDm[$aRow['dm_id']] : 0;
+            if ($pCount === 0) {
+                // Only flag the row as "unmapped" if the DM is active —
+                // inactive + unmapped isn't actionable, so don't highlight it.
+                $unmappedClass = (strtolower($aRow['status'] ?? '') === 'active') ? ' unmapped-tag' : '';
+                $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
+            } else {
+                $pLabel = sprintf($translator->_('View (%d)'), $pCount);
+                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int)$aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
+            }
+
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '';
             } elseif (isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc') {

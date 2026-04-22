@@ -166,6 +166,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['pstatus']) && !empty($parameters['pstatus'])) {
             $sQuery = $sQuery->where('p.status LIKE ?', $parameters['pstatus']);
         }
+        if (isset($parameters['mappingFilter']) && $parameters['mappingFilter'] !== '') {
+            if ($parameters['mappingFilter'] === 'unmapped') {
+                // Inactive + unmapped participants aren't interesting — only flag active ones
+                $sQuery = $sQuery->where("p.status = 'active'")
+                    ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm2 WHERE pmm2.participant_id = p.participant_id)');
+            } elseif ($parameters['mappingFilter'] === 'mapped') {
+                $sQuery = $sQuery->where('EXISTS (SELECT 1 FROM participant_manager_map pmm2 WHERE pmm2.participant_id = p.participant_id)');
+            }
+        }
         if (isset($sWhere) && $sWhere != "") {
             $sQuery = $sQuery->where($sWhere);
         }
@@ -188,6 +197,20 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         $iTotal = $iFilteredTotal = $this->getAdapter()->fetchOne('SELECT FOUND_ROWS()');
 
+        /* Lightweight count of mapped DMs per participant on this page — the full list
+           is loaded on demand via AJAX when the user expands a row. */
+        $dmCountByParticipant = [];
+        $pageParticipantIds = array_column($rResult, 'participant_id');
+        if (!empty($pageParticipantIds)) {
+            $countSelect = $this->getAdapter()->select()
+                ->from('participant_manager_map', array('participant_id', 'cnt' => new Zend_Db_Expr('COUNT(*)')))
+                ->where('participant_id IN (?)', $pageParticipantIds)
+                ->group('participant_id');
+            foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
+                $dmCountByParticipant[$cntRow['participant_id']] = (int)$cntRow['cnt'];
+            }
+        }
+
         /*
          * Output
          */
@@ -209,6 +232,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (!$pstatus && in_array('delete-participants', $privileges)) {
             $deleteStatus = true;
         }
+        $translator = Zend_Registry::get('translate');
         foreach ($rResult as $aRow) {
             $edit = "";
             $delete = "";
@@ -221,6 +245,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['affiliation'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
+
+            /* Data Managers column — compact button only. The actual DM list (which can
+               be large — up to ~100 per participant) is loaded on demand via AJAX and
+               expanded as a DataTables child row. */
+            $dmCount = isset($dmCountByParticipant[$aRow['participant_id']]) ? $dmCountByParticipant[$aRow['participant_id']] : 0;
+            if ($dmCount === 0) {
+                // Only flag the row as "unmapped" if the participant is active —
+                // inactive + unmapped isn't actionable, so don't highlight it.
+                $unmappedClass = (strtolower($aRow['status'] ?? '') === 'active') ? ' unmapped-tag' : '';
+                $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
+            } else {
+                $label = sprintf($translator->_('View (%d)'), $dmCount);
+                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-dm-row" data-participant-id="' . (int)$aRow['participant_id'] . '"><i class="icon-user"></i> ' . $label . '</a>';
+            }
+
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
                 $edit = '<a href="/participant/edit-participant/id/' . $aRow['participant_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
             } else {

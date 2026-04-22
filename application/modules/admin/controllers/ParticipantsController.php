@@ -26,6 +26,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             ->addActionContext('get-participant-list', 'html')
             ->addActionContext('delete-participant', 'html')
             ->addActionContext('export-participants-map', 'html')
+            ->addActionContext('mapped-data-managers', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -38,6 +39,30 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $clientsServices->getAllParticipants($params);
+            return;
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $this->view->pendingCount = (int)$db->fetchOne(
+            $db->select()->from('participant', new Zend_Db_Expr('COUNT(*)'))->where("status = ?", 'pending')
+        );
+    }
+
+    /* Returns the list of data managers mapped to a participant, rendered as a fragment
+       to be inserted into a DataTables child row on /admin/participants. */
+    public function mappedDataManagersAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $participantId = (int)$this->_getParam('id');
+        $this->view->participantId = $participantId;
+        $this->view->mappedDms = [];
+        if ($participantId > 0) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $select = $db->select()
+                ->from(array('pmm' => 'participant_manager_map'), array())
+                ->join(array('dm' => 'data_manager'), 'dm.dm_id = pmm.dm_id', array('dm_id', 'first_name', 'last_name', 'primary_email', 'data_manager_type', 'status', 'institute'))
+                ->where('pmm.participant_id = ?', $participantId)
+                ->order(array('dm.first_name', 'dm.last_name'));
+            $this->view->mappedDms = $db->fetchAll($select);
         }
     }
 

@@ -1,0 +1,58 @@
+<?php
+$mappedParticipants = $this->mappedParticipants ?? [];
+$pCount = count($mappedParticipants);
+?>
+<div class="participant-child-row" style="padding:10px 15px;background:#fafbfc;border-left:4px solid #337ab7;">
+    <?php if ($pCount === 0) { ?>
+        <em class="text-muted"><?= $this->translate->_('No participants are currently mapped to this data manager.'); ?></em>
+    <?php } else { ?>
+        <div style="margin-bottom:6px;">
+            <strong><?= sprintf($this->translate->_('%d Participant(s) mapped'), $pCount); ?></strong>
+            <?php if ($pCount > 5) { ?>
+                <input type="text" class="form-control input-sm participant-filter-input" placeholder="<?= $this->translate->_('Filter by ID, name, institute or email…'); ?>" style="max-width:320px;display:inline-block;margin-left:10px;" />
+            <?php } ?>
+        </div>
+        <div class="participant-list-wrap" style="max-height:260px;overflow-y:auto;border:1px solid #e5e5e5;border-radius:3px;background:#fff;">
+            <table class="table table-condensed" style="margin:0;">
+                <thead>
+                    <tr>
+                        <th><?= $this->translate->_('Participant ID'); ?></th>
+                        <th><?= $this->translate->_('Institute'); ?></th>
+                        <th><?= $this->translate->_('Contact'); ?></th>
+                        <th><?= $this->translate->_('Country'); ?></th>
+                        <th><?= $this->translate->_('Status'); ?></th>
+                        <th style="text-align:right;"><?= $this->translate->_('Action'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($mappedParticipants as $p) {
+                        $contactName = trim(($p['first_name'] ?? '') . ' ' . ($p['last_name'] ?? ''));
+                        $editUrl = '/admin/participants/edit/id/' . (int)$p['participant_id'];
+                        $searchBlob = strtolower(
+                            ($p['unique_identifier'] ?? '') . ' '
+                            . $contactName . ' '
+                            . ($p['institute_name'] ?? '') . ' '
+                            . ($p['email'] ?? '')
+                        );
+                    ?>
+                        <tr class="participant-row" data-p-search="<?= htmlspecialchars($searchBlob, ENT_QUOTES, 'UTF-8'); ?>">
+                            <td><?= htmlspecialchars($p['unique_identifier'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($p['institute_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <?= htmlspecialchars($contactName, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php if (!empty($p['email'])) { ?>
+                                    <br><small class="text-muted"><?= htmlspecialchars($p['email'], ENT_QUOTES, 'UTF-8'); ?></small>
+                                <?php } ?>
+                            </td>
+                            <td><?= htmlspecialchars($p['iso_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars(ucwords($p['status'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                <a href="<?= $editUrl; ?>" class="btn btn-warning btn-xs"><i class="icon-pencil"></i> <?= $this->translate->_('Edit'); ?></a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } ?>
+</div>

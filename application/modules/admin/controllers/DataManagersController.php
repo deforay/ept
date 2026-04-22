@@ -24,6 +24,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             ->addActionContext('save-password', 'html')
             ->addActionContext('check-dm-duplicate', 'html')
             ->addActionContext('export-ptcc', 'html')
+            ->addActionContext('mapped-participants', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -39,6 +40,26 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
         if ($this->hasParam('ptcc')) {
             $this->view->ptcc = $this->_getParam('ptcc');
+        }
+    }
+
+    /* Returns the list of participants mapped to a data manager, rendered as a fragment
+       to be inserted into a DataTables child row on /admin/data-managers. */
+    public function mappedParticipantsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $dmId = (int)$this->_getParam('id');
+        $this->view->dmId = $dmId;
+        $this->view->mappedParticipants = [];
+        if ($dmId > 0) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $select = $db->select()
+                ->from(array('pmm' => 'participant_manager_map'), array())
+                ->join(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participant_id', 'unique_identifier', 'first_name', 'last_name', 'institute_name', 'email', 'status'))
+                ->joinLeft(array('c' => 'countries'), 'c.id = p.country', array('iso_name'))
+                ->where('pmm.dm_id = ?', $dmId)
+                ->order(array('p.institute_name', 'p.unique_identifier'));
+            $this->view->mappedParticipants = $db->fetchAll($select);
         }
     }
 
