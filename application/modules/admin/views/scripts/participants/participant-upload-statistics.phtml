@@ -1,94 +1,234 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.css"); ?>">
-<fieldset>
-    <legend><?= $this->translate->_("Participant Upload Statistics"); ?></legend>
+<style>
+    .bi-result-wrap { max-width: 1200px; margin: 0 auto; }
+    .bi-result-wrap .bi-header { padding: 0 4px 8px; }
+    .bi-result-wrap .bi-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
+    .bi-result-wrap .bi-header .bi-sub { color: #888; font-size: 13px; }
+    .bi-result-wrap .bi-header .bi-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
+    .bi-result-wrap .bi-header .bi-back:hover { text-decoration: underline; }
 
-    <a class="btn btn-primary" href="/admin/participants/bulk-import"><?= $this->translate->_("Upload Another File"); ?></a>
+    .bi-steps { display: flex; align-items: center; gap: 10px; margin: 8px 4px 18px; font-size: 13px; color: #9aa3ad; }
+    .bi-steps .bi-step { display: flex; align-items: center; gap: 6px; }
+    .bi-steps .bi-step .bi-num { width: 22px; height: 22px; border-radius: 50%; background: #e6e9ee; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+    .bi-steps .bi-step.active { color: #333; }
+    .bi-steps .bi-step.active .bi-num { background: #555; color: #fff; }
+    .bi-steps .bi-step.done { color: #6b7380; }
+    .bi-steps .bi-step.done .bi-num { background: #cfd6e0; color: #fff; }
+    .bi-steps .bi-sep { color: #c4cbd4; }
 
-    <?php 
-    $this->response['data'] = $this->response['data'] ?? [];
-    $this->response['error-data'] = $this->response['error-data'] ?? [];
-    ?>
+    .bi-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
 
-    <div class="form-group col-lg-12">
-        <h3><?= $this->translate->_("Total Records"); ?> : <?= count($this->response['data']) + count($this->response['error-data']) ?> | <?= $this->translate->_("Participants saved"); ?> : <?= count($this->response['data']) ?> | <?= $this->translate->_("Participants not saved"); ?> : <?= count($this->response['error-data']) ?></h3>
-        <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
-            <h3 class="text-success"><?= $this->translate->_("The following participants were saved successfully."); ?></h3>
-            <table class="table table-bordered table-striped dataTable table-hover table-responsive" id="successTable">
+    .bi-done-head { display: flex; align-items: center; gap: 18px; padding: 4px 4px 16px; border-bottom: 1px solid #f0f2f5; margin-bottom: 18px; }
+    .bi-done-head .bi-check { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; background: #dff0d8; color: #3c763d; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; }
+    .bi-done-head .bi-done-text { flex: 1 1 auto; }
+    .bi-done-head h3 { margin: 0 0 2px; font-weight: 600; font-size: 18px; color: #333; }
+    .bi-done-head .bi-done-sub { color: #8a93a0; font-size: 13px; }
+    .bi-done-head .bi-pills { flex: 0 0 auto; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .bi-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid transparent; }
+    .bi-pill.ok { background: #dff0d8; color: #3c763d; border-color: #d6e9c6; }
+    .bi-pill.dup { background: #fcf8e3; color: #8a6d3b; border-color: #faebcc; }
+    .bi-pill.err { background: #f2dede; color: #a94442; border-color: #ebccd1; }
+
+    .bi-done-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+    table#resultsTable.dataTable { width: 100% !important; }
+    table#resultsTable thead td { background: #f7f9fb; font-weight: 600; color: #596270; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    table#resultsTable .bi-status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    table#resultsTable .bi-status.ok { background: #dff0d8; color: #3c763d; }
+    table#resultsTable .bi-status.dup { background: #fcf8e3; color: #8a6d3b; }
+    table#resultsTable .bi-status.err { background: #f2dede; color: #a94442; }
+    table#resultsTable td.reason { color: #a94442; font-size: 12px; }
+</style>
+
+<?php
+$this->response['data'] = $this->response['data'] ?? [];
+$this->response['error-data'] = $this->response['error-data'] ?? [];
+$savedCount = count($this->response['data']);
+$errorCount = count($this->response['error-data']);
+
+$duplicateCount = 0;
+$otherErrorCount = 0;
+$mergedRows = [];
+
+foreach ($this->response['data'] as $row) {
+    $mergedRows[] = [
+        'status' => 'ok',
+        's_no' => $row['s_no'] ?? '',
+        'participant_id' => $row['participant_id'] ?? '',
+        'name' => trim(($row['participant_lab_name'] ?? '') . ' ' . ($row['participant_last_name'] ?? '')),
+        'email' => $row['participant_email'] ?? '',
+        'mobile' => $row['mobile_number'] ?? '',
+        'institute' => $row['institute_name'] ?? '',
+        'district' => $row['district'] ?? '',
+        'country' => $row['country'] ?? '',
+        'reason' => '',
+    ];
+}
+
+foreach ($this->response['error-data'] as $row) {
+    $errMsg = (string)($row['error'] ?? '');
+    $isDup = stripos($errMsg, 'duplicate') !== false || stripos($errMsg, 'already exist') !== false;
+    if ($isDup) { $duplicateCount++; } else { $otherErrorCount++; }
+    $mergedRows[] = [
+        'status' => $isDup ? 'dup' : 'err',
+        's_no' => $row['s_no'] ?? '',
+        'participant_id' => $row['participant_id'] ?? '',
+        'name' => trim(($row['participant_lab_name'] ?? '') . ' ' . ($row['participant_last_name'] ?? '')),
+        'email' => $row['participant_email'] ?? '',
+        'mobile' => $row['mobile_number'] ?? '',
+        'institute' => $row['institute_name'] ?? '',
+        'district' => $row['district'] ?? '',
+        'country' => $row['country'] ?? '',
+        'reason' => $errMsg,
+    ];
+}
+
+usort($mergedRows, function ($a, $b) {
+    return (int)$a['s_no'] <=> (int)$b['s_no'];
+});
+
+$totalCount = count($mergedRows);
+?>
+
+<div class="bi-result-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/participants">&larr; <?= $this->translate->_("Back to participants"); ?></a>
+        <h2><?= $this->translate->_("Bulk Import Participants"); ?></h2>
+        <div class="bi-sub"><?= $this->translate->_("Import complete. Review the results below."); ?></div>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step done"><span class="bi-num">1</span> <?= $this->translate->_("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step active"><span class="bi-num">2</span> <?= $this->translate->_("Done"); ?></div>
+    </div>
+
+    <div class="bi-card">
+        <div class="bi-done-head">
+            <div class="bi-check"><i class="icon-ok"></i></div>
+            <div class="bi-done-text">
+                <h3><?= $this->translate->_("Import complete"); ?></h3>
+                <div class="bi-done-sub">
+                    <?php if ($savedCount > 0): ?>
+                        <?= sprintf($this->translate->_("%d of %d row(s) were saved."), $savedCount, $totalCount); ?>
+                    <?php else: ?>
+                        <?= $this->translate->_("No new participants were added."); ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="bi-pills">
+                <span class="bi-pill ok"><i class="icon-ok-sign"></i> <?= $savedCount ?> <?= $this->translate->_("saved"); ?></span>
+                <span class="bi-pill dup"><i class="icon-warning-sign"></i> <?= $duplicateCount ?> <?= $this->translate->_("duplicate"); ?></span>
+                <span class="bi-pill err"><i class="icon-remove-sign"></i> <?= $otherErrorCount ?> <?= $this->translate->_("failed"); ?></span>
+            </div>
+        </div>
+
+        <div class="bi-done-actions">
+            <a class="btn btn-default" href="/admin/participants/bulk-import">
+                <i class="icon-upload"></i> <?= $this->translate->_("Import another file"); ?>
+            </a>
+            <?php if ($errorCount > 0): ?>
+                <button type="button" class="btn btn-warning" id="biExportErrors">
+                    <i class="icon-download"></i> <?= $this->translate->_("Export problematic rows"); ?>
+                </button>
+            <?php endif; ?>
+            <a class="btn btn-primary" href="/admin/participants">
+                <i class="icon-user"></i> <?= $this->translate->_("Back to participants"); ?>
+            </a>
+        </div>
+
+        <?php if ($totalCount > 0): ?>
+            <table class="table table-bordered table-striped table-hover dataTable" id="resultsTable">
                 <thead>
                     <tr>
-                        <td><?= $this->translate->_("S.NO"); ?>.</td>
-                        <td><?= $this->translate->_("Participant Unique ID"); ?></td>
-                        <td><?= $this->translate->_("Participant Name"); ?></td>
-                        <td><?= $this->translate->_("Unique Email"); ?></td>
+                        <td><?= $this->translate->_("Row"); ?></td>
+                        <td><?= $this->translate->_("Status"); ?></td>
+                        <td><?= $this->translate->_("Unique ID"); ?></td>
+                        <td><?= $this->translate->_("Name"); ?></td>
+                        <td><?= $this->translate->_("Email"); ?></td>
                         <td><?= $this->translate->_("Mobile"); ?></td>
                         <td><?= $this->translate->_("Institute"); ?></td>
                         <td><?= $this->translate->_("District"); ?></td>
                         <td><?= $this->translate->_("Country"); ?></td>
+                        <td><?= $this->translate->_("Reason"); ?></td>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($this->response['data'] as $key => $row) {
-                        echo '<tr>
-                                <td>' . $row['s_no'] . '</td>
-                                <td>' . $row['participant_id'] . '</td>
-                                <td>' . $row['participant_lab_name'] . ' ' . $row['participant_last_name'] . '</td>
-                                <td>' . $row['participant_email'] . '</td>
-                                <td>' . $row['mobile_number'] . '</td>
-                                <td>' . $row['institute_name'] . '</td>
-                                <td>' . $row['district'] . '</td>
-                                <td>' . $row['country'] . '</td>
-                            </tr>';
-                    } ?>
+                    <?php foreach ($mergedRows as $r): ?>
+                        <?php
+                        $label = $r['status'] === 'ok' ? $this->translate->_('ok') : ($r['status'] === 'dup' ? $this->translate->_('duplicate') : $this->translate->_('failed'));
+                        ?>
+                        <tr>
+                            <td><?= $this->escape((string)$r['s_no']) ?></td>
+                            <td><span class="bi-status <?= $r['status'] ?>"><?= $this->escape($label) ?></span></td>
+                            <td><?= $this->escape($r['participant_id']) ?></td>
+                            <td><?= $this->escape($r['name']) ?></td>
+                            <td><?= $this->escape($r['email']) ?></td>
+                            <td><?= $this->escape($r['mobile']) ?></td>
+                            <td><?= $this->escape($r['institute']) ?></td>
+                            <td><?= $this->escape($r['district']) ?></td>
+                            <td><?= $this->escape($r['country']) ?></td>
+                            <td class="<?= $r['status'] !== 'ok' ? 'reason' : '' ?>"><?= $this->escape($r['reason']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
-        <?php }
-        if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
-            <h3 class="text-danger"><?= $this->translate->_("The following participants were NOT SAVED."); ?> <br><small><?= $this->translate->_("The Primary Email and Participant ID have to be unique. If duplicates are found they do not get added."); ?> <br> <?= $this->translate->_("Also ensure that the Country names are entered correctly."); ?></small></h3>
-            <table class="table table-bordered table-striped table-hover dataTable table-responsive" id="errorTable">
-                <thead>
-                    <tr>
-                        <td><?= $this->translate->_("S.NO"); ?></td>
-                        <td><?= $this->translate->_("Participant Unique ID"); ?></td>
-                        <td><?= $this->translate->_("Participant Name"); ?></td>
-                        <td><?= $this->translate->_("Unique Email"); ?></td>
-                        <td><?= $this->translate->_("Mobile"); ?></td>
-                        <td><?= $this->translate->_("Institute"); ?></td>
-                        <td><?= $this->translate->_("District"); ?></td>
-                        <td><?= $this->translate->_("Country"); ?></td>
-                        <td><?= $this->translate->_("Possbile Error"); ?></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($this->response['error-data'] as $key => $row) {
-                        echo '<tr>
-                            <td>' . $row['s_no'] . '</td>
-                            <td>' . $row['participant_id'] . '</td>
-                            <td>' . $row['participant_lab_name'] . ' ' . $row['participant_last_name'] . '</td>
-                            <td>' . $row['participant_email'] . '</td>
-                            <td>' . $row['mobile_number'] . '</td>
-                            <td>' . $row['institute_name'] . '</td>
-                            <td>' . $row['district'] . '</td>
-                            <td>' . $row['country'] . '</td>
-                            <td>' . $row['error'] . '</td>
-                        </tr>';
-                    } ?>
-                </tbody>
-            </table>
-        <?php } ?>
+        <?php endif; ?>
     </div>
+</div>
 
-    <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-        <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants/bulk-import';" tabindex="8" value="<?= $this->translate->_("Back"); ?>" />
-    </div>
-</fieldset>
 <script type="text/javascript" src="<?php echo $this->baseUrl("assets/plugins/datatables/jquery.dataTables.min.js"); ?>"></script>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function() {
-        <?php if (isset($this->response['data']) && count($this->response['data']) > 0) { ?>
-            $('#successTable').dataTable();
-        <?php } ?>
-        <?php if (isset($this->response['error-data']) && count($this->response['error-data']) > 0) { ?>
-            $('#errorTable').dataTable();
-        <?php } ?>
+        <?php if ($totalCount > 0): ?>
+            $('#resultsTable').dataTable({
+                "order": [[0, "asc"]]
+            });
+        <?php endif; ?>
+
+        $('#biExportErrors').on('click', function() {
+            var headers = [
+                'Row', 'Status', 'Unique ID', 'Name', 'Email',
+                'Mobile', 'Institute', 'District', 'Country', 'Reason'
+            ];
+            var rows = [headers];
+            <?php foreach ($mergedRows as $r):
+                if ($r['status'] === 'ok') continue;
+                $label = $r['status'] === 'dup' ? 'duplicate' : 'failed';
+            ?>
+            rows.push([
+                <?= json_encode((string)$r['s_no']) ?>,
+                <?= json_encode($label) ?>,
+                <?= json_encode((string)$r['participant_id']) ?>,
+                <?= json_encode((string)$r['name']) ?>,
+                <?= json_encode((string)$r['email']) ?>,
+                <?= json_encode((string)$r['mobile']) ?>,
+                <?= json_encode((string)$r['institute']) ?>,
+                <?= json_encode((string)$r['district']) ?>,
+                <?= json_encode((string)$r['country']) ?>,
+                <?= json_encode((string)$r['reason']) ?>
+            ]);
+            <?php endforeach; ?>
+
+            var csv = rows.map(function(r) {
+                return r.map(function(cell) {
+                    var s = (cell == null ? '' : String(cell));
+                    if (/[",\n\r]/.test(s)) { s = '"' + s.replace(/"/g, '""') + '"'; }
+                    return s;
+                }).join(',');
+            }).join('\r\n');
+
+            var blob = new Blob(["﻿" + csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            var stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+            a.href = url;
+            a.download = 'participant-import-errors-' + stamp + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
     });
 </script>

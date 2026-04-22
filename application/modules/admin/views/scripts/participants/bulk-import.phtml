@@ -1,70 +1,184 @@
-<div class="well">
-    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>" class="form-horizontal bs-example" enctype="multipart/form-data" role="form" onsubmit="validateNow();
-            return false;">
-        <fieldset>
-            <legend><?= $this->translate->_("Bulk Import Participants"); ?></legend>
+<style>
+    .bulk-import-wrap { max-width: 1200px; margin: 0 auto; }
+    .bulk-import-wrap .bi-header { padding: 0 4px 8px; }
+    .bulk-import-wrap .bi-header h2 { margin: 0 0 4px; font-weight: 600; font-size: 22px; }
+    .bulk-import-wrap .bi-header .bi-sub { color: #888; font-size: 13px; }
+    .bulk-import-wrap .bi-header .bi-back { float: right; color: #337ab7; text-decoration: none; font-size: 13px; }
+    .bulk-import-wrap .bi-header .bi-back:hover { text-decoration: underline; }
 
-            <div class="form-group col-lg-12">
-                <div class="col-lg-7">
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Upload Options"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="form-control isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
-                                <option value="skip-duplicates"><?= $this->translate->_("Skip if Unique ID matches. Don't Update Duplicates"); ?></option>
-                                <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data if Unique ID matches"); ?></option>
+    .bi-steps { display: flex; align-items: center; gap: 10px; margin: 8px 4px 18px; font-size: 13px; color: #9aa3ad; }
+    .bi-steps .bi-step { display: flex; align-items: center; gap: 6px; }
+    .bi-steps .bi-step .bi-num { width: 22px; height: 22px; border-radius: 50%; background: #e6e9ee; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
+    .bi-steps .bi-step.active { color: #333; }
+    .bi-steps .bi-step.active .bi-num { background: #555; color: #fff; }
+    .bi-steps .bi-sep { color: #c4cbd4; }
+
+    .bi-layout { display: flex; gap: 18px; align-items: flex-start; }
+    .bi-layout .bi-main { flex: 1 1 0; min-width: 0; }
+    .bi-layout .bi-side { flex: 0 0 360px; display: flex; flex-direction: column; gap: 14px; }
+
+    .bi-card { background: #fff; border: 1px solid #e6e9ee; border-radius: 8px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .bi-card h4 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: #333; }
+
+    .bi-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .bi-chips .bi-chips-label { font-size: 11px; letter-spacing: 0.06em; color: #8a93a0; text-transform: uppercase; margin-right: 4px; }
+    .bi-chip { display: inline-block; padding: 2px 9px; border-radius: 3px; font-family: Menlo, Consolas, monospace; font-size: 12px; }
+    .bi-chip.required { background: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
+    .bi-chip.optional { background: #f1f3f5; color: #596270; border: 1px solid #e2e5ea; }
+
+    .bi-drop { position: relative; border: 2px dashed #cfd4dc; border-radius: 8px; padding: 32px 20px; text-align: center; background: #fbfcfd; transition: all 0.15s ease; cursor: pointer; }
+    .bi-drop:hover, .bi-drop.dragover { border-color: #66afe9; background: #f4f9ff; }
+    .bi-drop .bi-drop-icon { width: 44px; height: 44px; border-radius: 50%; background: #eef1f5; color: #6b7380; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+    .bi-drop .bi-drop-title { font-weight: 600; color: #333; margin: 0 0 4px; }
+    .bi-drop .bi-drop-sub { color: #8a93a0; font-size: 13px; }
+    .bi-drop .bi-drop-sub .bi-browse { color: #337ab7; text-decoration: underline; }
+    .bi-drop .bi-accepts { color: #9aa3ad; font-size: 12px; margin-top: 8px; }
+    .bi-drop .bi-accepts code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
+    .bi-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    .bi-filecard { display: none; align-items: center; gap: 12px; border: 1px dashed #b6c4e0; background: #f3f7fd; border-radius: 8px; padding: 14px 16px; }
+    .bi-filecard.active { display: flex; }
+    .bi-filecard .bi-file-icon { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 4px; background: #dde6f7; color: #337ab7; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .bi-filecard .bi-file-meta { flex: 1 1 auto; min-width: 0; }
+    .bi-filecard .bi-file-name { font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bi-filecard .bi-file-size { color: #8a93a0; font-size: 12px; }
+    .bi-filecard .bi-file-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
+    .bi-filecard .bi-file-actions a { color: #337ab7; font-size: 13px; text-decoration: none; cursor: pointer; }
+    .bi-filecard .bi-file-actions a:hover { text-decoration: underline; }
+    .bi-filecard .bi-file-actions .bi-remove { color: #8a93a0; font-size: 18px; line-height: 1; }
+
+    .bi-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+    .bi-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+    .bi-options label { display: block; font-size: 12px; font-weight: 600; color: #596270; margin: 0 0 4px; }
+    .bi-options select { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 13px; }
+
+    .bi-side .bi-side-cta { display: block; width: 100%; text-align: center; margin-bottom: 14px; }
+    .bi-side .bi-step-item { display: flex; gap: 10px; margin-bottom: 10px; }
+    .bi-side .bi-step-item .bi-step-num { flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; background: #eef1f5; color: #6b7380; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+    .bi-side .bi-step-item .bi-step-text { color: #555; font-size: 13px; line-height: 1.45; }
+    .bi-side .bi-side-sub { color: #8a93a0; font-size: 12px; margin: -6px 0 12px; }
+    .bi-side .bi-note code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #333; }
+
+    @media (max-width: 992px) {
+        .bi-layout { flex-direction: column; }
+        .bi-layout .bi-side { flex: 1 1 auto; width: 100%; }
+    }
+</style>
+
+<div class="bulk-import-wrap">
+    <div class="bi-header">
+        <a class="bi-back" href="/admin/participants">&larr; <?= $this->translate->_("Back to participants"); ?></a>
+        <h2><?= $this->translate->_("Bulk Import Participants"); ?></h2>
+        <div class="bi-sub"><?= $this->translate->_("Upload a CSV or XLSX of participants. Duplicates and errors will be listed after import."); ?></div>
+    </div>
+
+    <div class="bi-steps">
+        <div class="bi-step active"><span class="bi-num">1</span> <?= $this->translate->_("Upload"); ?></div>
+        <span class="bi-sep">&rsaquo;</span>
+        <div class="bi-step"><span class="bi-num">2</span> <?= $this->translate->_("Done"); ?></div>
+    </div>
+
+    <form name="bulkParticipantForm" id="bulkParticipantForm" method="post"
+          action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>"
+          enctype="multipart/form-data" role="form"
+          onsubmit="validateNow(); return false;">
+
+        <div class="bi-layout">
+            <div class="bi-main">
+                <div class="bi-card">
+                    <div class="bi-chips">
+                        <span class="bi-chips-label"><?= $this->translate->_("Required"); ?></span>
+                        <span class="bi-chip required">unique_identifier</span>
+                        <span class="bi-chip required">first_name</span>
+                        <span class="bi-chip required">primary_email</span>
+                        <span class="bi-chip required">country</span>
+                    </div>
+
+                    <div class="bi-options">
+                        <div>
+                            <label for="bulkUploadDuplicateSkip"><?= $this->translate->_("If a Unique ID already exists"); ?></label>
+                            <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
+                                <option value="skip-duplicates"><?= $this->translate->_("Skip the row (don't update)"); ?></option>
+                                <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data for that participant"); ?></option>
                             </select>
                         </div>
-                    </div><br>
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for=""><?= $this->translate->_("Allow Same Email for different Participants?"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="form-control isRequired" title="Please choose the upload options">
-                                <option value="allow-existing-email"><?= $this->translate->_("Allow existing Data Manager/PT Login Email for new participants"); ?></option>
-                                <option value="do-not-allow-existing-email"><?= $this->translate->_("Don't allow existing Data Manager/PT Login Email for new participants"); ?></option>
+                        <div>
+                            <label for="bulkUploadAllowEmailRepeat"><?= $this->translate->_("Same email across participants"); ?></label>
+                            <select name="bulkUploadAllowEmailRepeat" id="bulkUploadAllowEmailRepeat" class="isRequired" title="Please choose the upload options">
+                                <option value="allow-existing-email"><?= $this->translate->_("Allow — reuse existing DM / PT login email"); ?></option>
+                                <option value="do-not-allow-existing-email"><?= $this->translate->_("Don't allow — email must be unique"); ?></option>
                             </select>
                         </div>
-                    </div><br>
-                    <div class="row reset-password hide">
-                        <label class="col-lg-4 control-label" for="resetPassword"><?= $this->translate->_("Reset Password"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <select name="resetPassword" id="resetPassword" class="form-control" title="Please choose the reset password">
+                        <div class="reset-password hide">
+                            <label for="resetPassword"><?= $this->translate->_("Reset password on update"); ?></label>
+                            <select name="resetPassword" id="resetPassword">
                                 <option value="yes"><?= $this->translate->_("Yes"); ?></option>
                                 <option value="no"><?= $this->translate->_("No"); ?></option>
                             </select>
                         </div>
-                    </div><br>
-                    <div class="row">
-                        <label class="col-lg-4 control-label" for="fileName"><?= $this->translate->_("Select file to upload"); ?><span class="mandatory">*</span></label>
-                        <div class="col-lg-8">
-                            <input type="file" class="form-control isRequired" id="fileName" name="fileName" title="Please select participants import data file">
+                    </div>
+
+                    <div class="bi-drop" id="biDrop">
+                        <div class="bi-drop-icon"><i class="icon-upload"></i></div>
+                        <div class="bi-drop-title"><?= $this->translate->_("Drop your file here"); ?></div>
+                        <div class="bi-drop-sub"><?= $this->translate->_("or"); ?> <span class="bi-browse"><?= $this->translate->_("click to browse"); ?></span></div>
+                        <div class="bi-accepts"><?= $this->translate->_("Accepts"); ?> <code>.xls</code> <code>.xlsx</code></div>
+                        <input type="file" id="fileName" name="fileName" class="isRequired" accept=".xls,.xlsx" title="Please select participants import data file">
+                    </div>
+
+                    <div class="bi-filecard" id="biFileCard">
+                        <div class="bi-file-icon">XLS</div>
+                        <div class="bi-file-meta">
+                            <div class="bi-file-name" id="biFileName"></div>
+                            <div class="bi-file-size" id="biFileSize"></div>
+                        </div>
+                        <div class="bi-file-actions">
+                            <a id="biReplace"><i class="icon-refresh"></i> <?= $this->translate->_("Replace"); ?></a>
+                            <a class="bi-remove" id="biRemove" title="<?= $this->translate->_("Remove"); ?>">&times;</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5 ">
 
-                    <ul>
-                        <li> <a class="text-danger" style="text-decoration:underline;" href="<?php echo $this->baseUrl('/files/Participant-Bulk-Import-Excel-Format-v2.xlsx'); ?>" download><i class="fa fa-fw fa-download mr-1"></i> <?= $this->translate->_("Click here to download the Excel format for importing the participants"); ?></a> </li>
-                        <li> <?= $this->translate->_("Please note that the columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?> </li>
-                        <li> <?= $this->translate->_("The Unique Identifier field should have a unique id for the participant."); ?> </li>
-                        <li> <?= $this->translate->_("If the Participant is a Lab/Clinic, then put the Lab/Clinic Name in the place of 'First Name'"); ?> </li>
-                    </ul>
+                    <div class="bi-actions">
+                        <button type="button" class="btn btn-default" onclick="window.location.href='/admin/participants';"><?= $this->translate->_("Cancel"); ?></button>
+                        <button type="submit" class="btn btn-primary" id="biImportBtn" name="submitbtn"><i class="icon-upload"></i> <?= $this->translate->_("Import Excel"); ?></button>
+                    </div>
                 </div>
             </div>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="form-group col-lg-11" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Import Excel"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+            <div class="bi-side">
+                <div class="bi-card">
+                    <a class="btn btn-primary bi-side-cta" href="<?php echo $this->baseUrl('/files/Participant-Bulk-Import-Excel-Format-v2.xlsx'); ?>" download>
+                        <i class="icon-download"></i> <?= $this->translate->_("Download Excel template"); ?>
+                    </a>
+                    <h4><i class="icon-info-sign"></i> <?= $this->translate->_("How to prepare your file"); ?></h4>
+                    <div class="bi-side-sub"><?= $this->translate->_("Columns marked in"); ?> <span class="mandatory"><?= $this->translate->_("red"); ?></span> <?= $this->translate->_("are mandatory."); ?></div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">1</span>
+                        <div class="bi-step-text"><?= $this->translate->_("Download the template and fill one row per participant."); ?></div>
+                    </div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">2</span>
+                        <div class="bi-step-text"><?= $this->translate->_("The"); ?> <code>unique_identifier</code> <?= $this->translate->_("field must be unique for each participant."); ?></div>
+                    </div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">3</span>
+                        <div class="bi-step-text"><?= $this->translate->_("For a Lab or Clinic, put the Lab/Clinic Name in the"); ?> <code>first_name</code> <?= $this->translate->_("column."); ?></div>
+                    </div>
+                    <div class="bi-step-item">
+                        <span class="bi-step-num">4</span>
+                        <div class="bi-step-text"><?= $this->translate->_("After import, you'll see which rows were saved and which were skipped with reasons."); ?></div>
+                    </div>
+                </div>
             </div>
-        </fieldset>
+        </div>
     </form>
 </div>
+
 <script type="text/javascript">
     function validateNow() {
         $(".bootstrap-select").removeClass('isRequired');
-        //checkDuplicate('participant', 'unique_identifier', $("#pid"), null, 'This Participant ID already exists for another Participant. Please try something else.')
-        flag = deforayValidator.init({
-            formId: 'bulkParticipantForm'
-        });
+        var flag = deforayValidator.init({ formId: 'bulkParticipantForm' });
         if (flag && !duplicated) {
             $.blockUI();
             document.getElementById('bulkParticipantForm').submit();
@@ -83,7 +197,60 @@
         }
     }
 
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
     $(document).ready(function() {
         showHideResetPassword($('#bulkUploadDuplicateSkip').val());
+
+        var $drop = $('#biDrop');
+        var $input = $('#fileName');
+        var $card = $('#biFileCard');
+        var $name = $('#biFileName');
+        var $size = $('#biFileSize');
+
+        function showFile(file) {
+            if (!file) {
+                $card.removeClass('active');
+                $drop.show();
+                return;
+            }
+            $name.text(file.name);
+            $size.text(formatBytes(file.size));
+            $card.addClass('active');
+            $drop.hide();
+        }
+
+        $input.on('change', function() {
+            showFile(this.files && this.files[0]);
+        });
+
+        $('#biReplace').on('click', function(e) {
+            e.preventDefault();
+            $input.trigger('click');
+        });
+
+        $('#biRemove').on('click', function(e) {
+            e.preventDefault();
+            $input.val('');
+            showFile(null);
+        });
+
+        $drop.on('dragover dragenter', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            $(this).addClass('dragover');
+        }).on('dragleave dragend drop', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            $(this).removeClass('dragover');
+        }).on('drop', function(e) {
+            var files = e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files;
+            if (files && files.length) {
+                $input[0].files = files;
+                showFile(files[0]);
+            }
+        });
     });
 </script>
