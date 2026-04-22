@@ -1,6 +1,6 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<?php echo $this->render('partials/virtual-dual-list.phtml'); ?>
 
 <fieldset>
 	<legend><?php echo strtoupper($this->shipment->scheme_type); ?> <?= $this->translate->_("Shipment"); ?> : <?php echo $this->shipment->shipment_code . "(" . $this->dateFormat($this->shipment->shipment_date) . ") "; ?></legend>
@@ -148,8 +148,9 @@
 			</div>
 		</div>
 		<br />
+		<div id="participantsWidget"></div>
 		<div id="participantsLists">
-			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant">
+			<select id="participants" name="participants[]" multiple="multiple" class="isRequired" title="Please select at least one participant" style="display:none;">
 				<?php if (isset($this->previouslySelected) && $this->previouslySelected != null) {
 					foreach ($this->previouslySelected as $participant) { ?>
 						<option value="<?php echo $participant['participant_id']; ?>" selected="selected"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
@@ -206,8 +207,6 @@
 </fieldset>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
 	var updateList = true;
 	$(document).ready(function() {
@@ -243,79 +242,32 @@
 			allowClear: true
 		});
 
-		$('#participants').multiSelect({
-			selectableFooter: "<div class='custom-header'>Participants not yet enrolled for this scheme (<span id='msUnselectedCountHolder'></span>)</div>",
-			selectionFooter: "<div class='custom-header'>Enrolled/Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-			selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-			selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-			afterInit: function(ms) {
-				var that = this,
-					$selectableSearch = that.$selectableUl.prev(),
-					$selectionSearch = that.$selectionUl.prev(),
-					selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-					selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-				that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-					.on('keydown', function(e) {
-						if (e.which === 40) {
-							that.$selectableUl.focus();
-							return false;
-						}
-					});
-
-				that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-					.on('keydown', function(e) {
-						if (e.which == 40) {
-							that.$selectionUl.focus();
-							return false;
-						}
-					});
-			},
-			afterSelect: function() {
-				this.qs1.cache();
-				this.qs2.cache();
-			},
-			afterDeselect: function() {
-				this.qs1.cache();
-				this.qs2.cache();
-			}
-		});
-
-
-		$('#select-all').click(function() {
-			$('#participants').multiSelect('select_all');
-			return false;
-		});
-		$('#deselect-all').click(function() {
-			$('#participants').multiSelect('deselect_all');
-			return false;
+		VirtualDualList.bind('#participants', {
+			container: '#participantsWidget',
+			unselectedLabel: '<?= $this->translate->_("Participants not yet enrolled for this scheme"); ?>',
+			selectedLabel: '<?= $this->translate->_("Enrolled/Selected Participants"); ?>',
+			filterPlaceholder: '<?= $this->translate->_("Type Participant Name or Code To Filter"); ?>'
 		});
 
 		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
-			$('#participants').multiSelect({
-				afterSelect: function(values) {
-					if ($("#participantList").val() != "" && updateList) {
-						if (confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
-							// Do is confirm
-						} else {
-							$("#participantList").val('')
-						}
+			$('#participants').on('change', function() {
+				if ($("#participantList").val() != "" && updateList) {
+					if (!confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
+						$("#participantList").val('');
 					}
-					updateList = false;
-				},
-				afterDeselect: function(values) {
-					if ($("#participantList").val() != "" && updateList) {
-						if (confirm("<?= $this->translate->_("Are you sure! You want to update this list to selected participant list name?"); ?>")) {
-							// Do is confirm
-						} else {
-							$("#participantList").val('')
-						}
-					}
-					updateList = false;
 				}
-
+				updateList = false;
 			});
 		<?php } ?>
+
+		$('#select-all').click(function() {
+			VirtualDualList.get('#participants').selectAll();
+			return false;
+		});
+		$('#deselect-all').click(function() {
+			VirtualDualList.get('#participants').deselectAll();
+			return false;
+		});
 	});
 
 	function loadFiltersData() {
@@ -432,8 +384,7 @@
 				function(data) {
 					$.unblockUI();
 					$("#participants").html(data);
-					$('#participants').multiselect("refresh");
-
+					VirtualDualList.get('#participants').reload();
 				});
 		} else {
 			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
@@ -452,8 +403,7 @@
 				function(data) {
 					$.unblockUI();
 					$("#participants").html(data);
-					$('#participants').multiselect("refresh");
-
+					VirtualDualList.get('#participants').reload();
 				});
 			clearFilters();
 		}
@@ -478,8 +428,7 @@
 				},
 				function(data) {
 					if (data != "" && data != undefined) {
-						$('#participants').multiSelect('deselect_all');
-						$('#participants').multiSelect('select', data.split(","))
+						VirtualDualList.get('#participants').setSelectedIds(data.split(","));
 					}
 				});
 			clearFilters();

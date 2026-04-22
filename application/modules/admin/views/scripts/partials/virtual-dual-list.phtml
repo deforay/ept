@@ -1,0 +1,272 @@
+<?php
+/**
+ * Virtual-scroll dual-list widget bound to a native <select multiple>.
+ *
+ * Usage:
+ *   1. Render this partial ONCE on the page (emits CSS + window.VirtualDualList):
+ *        <?php echo $this->render('partials/virtual-dual-list.phtml'); ?>
+ *   2. Keep the existing <select id="foo" name="foo[]" multiple> in the DOM
+ *      (hide it with style="display:none;"). The widget mirrors its options
+ *      and keeps the native select in sync on every move, so existing form
+ *      submit code (reading #foo.val()) continues to work unchanged.
+ *   3. Place a container div where the widget should render:
+ *        <div id="fooWidget"></div>
+ *   4. On document ready:
+ *        VirtualDualList.bind('#foo', {
+ *            container: '#fooWidget',
+ *            unselectedLabel: 'Unselected Participants',
+ *            selectedLabel:   'Selected Participants',
+ *            filterPlaceholder: 'Type Participant Name To Filter'
+ *        });
+ *   5. After replacing the select's options via AJAX, refresh the widget:
+ *        VirtualDualList.get('#foo').reload();
+ */
+?>
+<style>
+    .vdl-wrapper { width: 100%; box-sizing: border-box; }
+    .vdl-dual { display: flex; gap: 20px; align-items: stretch; width: 100%; }
+    .vdl-dual .vdl-pane { flex: 1 1 0; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
+    .vdl-dual .vdl-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
+    .vdl-dual .vdl-pane-header input { width: 100%; box-sizing: border-box; }
+    .vdl-dual .vdl-pane-scroll { position: relative; height: 360px; overflow-y: auto; background: #fff; }
+    .vdl-dual .vdl-pane-inner { position: relative; width: 100%; }
+    .vdl-dual .vdl-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .vdl-dual .vdl-row:hover { background: #337ab7; color: #fff; }
+    .vdl-dual .vdl-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .vdl-dual .vdl-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
+</style>
+<script>
+(function() {
+    if (window.VirtualDualList) return;
+
+    var ROW_HEIGHT = 30;
+    var OVERSCAN = 6;
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function(c) {
+            return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+        });
+    }
+
+    function Instance($select, opts) {
+        this.$select = $select;
+        this.opts = opts || {};
+        this.state = { left: [], right: [] };
+        this.panes = {};
+        this._build();
+        this.reload();
+    }
+
+    Instance.prototype._build = function() {
+        var $container;
+        if (this.opts.container) {
+            $container = $(this.opts.container);
+        }
+        if (!$container || !$container.length) {
+            $container = $('<div></div>').insertBefore(this.$select);
+        }
+        $container.addClass('vdl-wrapper').empty();
+
+        var filterPh  = this.opts.filterPlaceholder || 'Type to filter';
+        var leftLbl   = this.opts.unselectedLabel    || 'Unselected';
+        var rightLbl  = this.opts.selectedLabel      || 'Selected';
+
+        var html =
+            '<div class="vdl-dual">' +
+                '<div class="vdl-pane" data-side="left">' +
+                    '<div class="vdl-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="' + escapeHtml(filterPh) + '"></div>' +
+                    '<div class="vdl-pane-scroll"><div class="vdl-pane-inner"></div></div>' +
+                    '<div class="vdl-pane-footer">' + escapeHtml(leftLbl) + ' (<span class="vdl-count">0</span>)</div>' +
+                '</div>' +
+                '<div class="vdl-arrows">&#8646;</div>' +
+                '<div class="vdl-pane" data-side="right">' +
+                    '<div class="vdl-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="' + escapeHtml(filterPh) + '"></div>' +
+                    '<div class="vdl-pane-scroll"><div class="vdl-pane-inner"></div></div>' +
+                    '<div class="vdl-pane-footer">' + escapeHtml(rightLbl) + ' (<span class="vdl-count">0</span>)</div>' +
+                '</div>' +
+            '</div>';
+
+        $container.html(html);
+        this.$container = $container;
+
+        var self = this;
+        $container.find('.vdl-pane').each(function() {
+            self._initPane($(this).attr('data-side'), this);
+        });
+    };
+
+    Instance.prototype._initPane = function(side, paneEl) {
+        var self = this;
+        var $pane = $(paneEl);
+        var pane = {
+            side: side,
+            $scroll: $pane.find('.vdl-pane-scroll'),
+            $inner:  $pane.find('.vdl-pane-inner'),
+            $search: $pane.find('.vdl-pane-header input'),
+            $count:  $pane.find('.vdl-count'),
+            filter: '',
+            filtered: []
+        };
+        pane.$scroll.on('scroll', function() { self._render(pane); });
+        pane.$search.on('input', function() {
+            pane.filter = pane.$search.val().toLowerCase();
+            self._recompute(pane);
+            pane.$scroll.scrollTop(0);
+            self._render(pane);
+        });
+        pane.$inner.on('click', '.vdl-row', function() {
+            self._move(side, $(this).attr('data-id'));
+        });
+        self.panes[side] = pane;
+    };
+
+    Instance.prototype._recompute = function(pane) {
+        var src = this.state[pane.side];
+        if (!pane.filter) {
+            pane.filtered = src;
+        } else {
+            var f = pane.filter;
+            pane.filtered = [];
+            for (var i = 0; i < src.length; i++) {
+                if (src[i]._lc.indexOf(f) !== -1) pane.filtered.push(src[i]);
+            }
+        }
+        pane.$count.text(pane.filtered.length);
+        pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+    };
+
+    Instance.prototype._render = function(pane) {
+        var st = pane.$scroll.scrollTop();
+        var h  = pane.$scroll.height();
+        var first = Math.max(0, Math.floor(st / ROW_HEIGHT) - OVERSCAN);
+        var last  = Math.min(pane.filtered.length, Math.ceil((st + h) / ROW_HEIGHT) + OVERSCAN);
+        var parts = [];
+        for (var i = first; i < last; i++) {
+            var it = pane.filtered[i];
+            parts.push('<div class="vdl-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
+        }
+        pane.$inner.html(parts.join(''));
+    };
+
+    Instance.prototype._refreshBoth = function() {
+        this._recompute(this.panes.left);
+        this._recompute(this.panes.right);
+        this._render(this.panes.left);
+        this._render(this.panes.right);
+    };
+
+    Instance.prototype._move = function(fromSide, id) {
+        var toSide = fromSide === 'left' ? 'right' : 'left';
+        var arr = this.state[fromSide];
+        for (var i = 0; i < arr.length; i++) {
+            if (String(arr[i].id) === String(id)) {
+                var item = arr.splice(i, 1)[0];
+                this.state[toSide].push(item);
+                break;
+            }
+        }
+        this._syncSelect();
+        this._refreshBoth();
+    };
+
+    Instance.prototype._syncSelect = function() {
+        var sel = {};
+        for (var i = 0; i < this.state.right.length; i++) sel[String(this.state.right[i].id)] = true;
+        this.$select.find('option').each(function() {
+            this.selected = !!sel[String($(this).val())];
+        });
+    };
+
+    Instance.prototype.reload = function() {
+        this.state = { left: [], right: [] };
+        var self = this;
+        this.$select.find('option').each(function() {
+            var $o = $(this);
+            var id = $o.val();
+            if (id === '' || id == null) return;
+            var label = $o.text();
+            var item = { id: id, label: label, _lc: String(label).toLowerCase() };
+            if (this.selected) self.state.right.push(item);
+            else self.state.left.push(item);
+        });
+        if (self.panes.left)  { self.panes.left.$search.val('');  self.panes.left.filter  = ''; self.panes.left.$scroll.scrollTop(0); }
+        if (self.panes.right) { self.panes.right.$search.val(''); self.panes.right.filter = ''; self.panes.right.$scroll.scrollTop(0); }
+        self._refreshBoth();
+    };
+
+    Instance.prototype.selectAll = function() {
+        var visible = {};
+        for (var i = 0; i < this.panes.left.filtered.length; i++) visible[this.panes.left.filtered[i].id] = true;
+        var keep = [];
+        for (var j = 0; j < this.state.left.length; j++) {
+            if (visible[this.state.left[j].id]) this.state.right.push(this.state.left[j]);
+            else keep.push(this.state.left[j]);
+        }
+        this.state.left = keep;
+        this._syncSelect();
+        this._refreshBoth();
+    };
+
+    Instance.prototype.deselectAll = function() {
+        var visible = {};
+        for (var i = 0; i < this.panes.right.filtered.length; i++) visible[this.panes.right.filtered[i].id] = true;
+        var keep = [];
+        for (var j = 0; j < this.state.right.length; j++) {
+            if (visible[this.state.right[j].id]) this.state.left.push(this.state.right[j]);
+            else keep.push(this.state.right[j]);
+        }
+        this.state.right = keep;
+        this._syncSelect();
+        this._refreshBoth();
+    };
+
+    Instance.prototype.setSelectedIds = function(ids) {
+        var want = {};
+        for (var i = 0; i < ids.length; i++) want[String(ids[i])] = true;
+        var newLeft = [], newRight = [];
+        var all = this.state.left.concat(this.state.right);
+        for (var j = 0; j < all.length; j++) {
+            if (want[String(all[j].id)]) newRight.push(all[j]);
+            else newLeft.push(all[j]);
+        }
+        this.state.left = newLeft;
+        this.state.right = newRight;
+        this._syncSelect();
+        this._refreshBoth();
+    };
+
+    Instance.prototype.addSelectedIds = function(ids) {
+        var want = {};
+        for (var i = 0; i < ids.length; i++) want[String(ids[i])] = true;
+        var keep = [];
+        for (var j = 0; j < this.state.left.length; j++) {
+            if (want[String(this.state.left[j].id)]) this.state.right.push(this.state.left[j]);
+            else keep.push(this.state.left[j]);
+        }
+        this.state.left = keep;
+        this._syncSelect();
+        this._refreshBoth();
+    };
+
+    Instance.prototype.getSelectedIds = function() {
+        var ids = [];
+        for (var i = 0; i < this.state.right.length; i++) ids.push(this.state.right[i].id);
+        return ids;
+    };
+
+    window.VirtualDualList = {
+        bind: function(selectSelector, opts) {
+            var $sel = $(selectSelector);
+            if (!$sel.length) return null;
+            var existing = $sel.data('vdl');
+            if (existing) return existing;
+            var inst = new Instance($sel, opts);
+            $sel.data('vdl', inst);
+            return inst;
+        },
+        get: function(selectSelector) {
+            return $(selectSelector).data('vdl') || null;
+        }
+    };
+})();
+</script>

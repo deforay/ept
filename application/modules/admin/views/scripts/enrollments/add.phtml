@@ -1,6 +1,6 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/multi-select.css'); ?>" />
+<?php echo $this->render('partials/virtual-dual-list.phtml'); ?>
 <div class="well">
 	<fieldset>
 		<legend><?= $this->translate->_("Enroll Participants"); ?></legend>
@@ -126,7 +126,8 @@
 				</div>
 			</div>
 			<br />
-			<select id="participants" name="participants[]" multiple="multiple">
+			<div id="participantsWidget"></div>
+			<select id="participants" name="participants[]" multiple="multiple" style="display:none;">
 				<?php foreach ($this->participants as $participant) { ?>
 					<option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
 				<?php }
@@ -146,59 +147,24 @@
 	</fieldset>
 
 </div>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.multi-select.js"); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.quicksearch.js"); ?>"></script>
 <script>
 	$(document).ready(function() {
 
-		$('#participants').multiSelect({
-			selectableFooter: "<div class='custom-header'>Unenrolled Participants (<span id='msUnselectedCountHolder'></span>)</div>",
-			selectionFooter: "<div class='custom-header'>Selected Participants (<span id='msSelectedCountHolder'></span>)</div>",
-			selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-			selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type Participant Name or Code To Filter'>",
-			afterInit: function(ms) {
-				var that = this,
-					$selectableSearch = that.$selectableUl.prev(),
-					$selectionSearch = that.$selectionUl.prev(),
-					selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-					selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-				that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-					.on('keydown', function(e) {
-						if (e.which === 40) {
-							that.$selectableUl.focus();
-							return false;
-						}
-					});
-
-				that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-					.on('keydown', function(e) {
-						if (e.which == 40) {
-							that.$selectionUl.focus();
-							return false;
-						}
-					});
-			},
-			afterSelect: function() {
-				this.qs1.cache();
-				this.qs2.cache();
-			},
-			afterDeselect: function() {
-				this.qs1.cache();
-				this.qs2.cache();
-			}
+		VirtualDualList.bind('#participants', {
+			container: '#participantsWidget',
+			unselectedLabel: '<?= $this->translate->_("Unenrolled Participants"); ?>',
+			selectedLabel: '<?= $this->translate->_("Selected Participants"); ?>',
+			filterPlaceholder: '<?= $this->translate->_("Type Participant Name or Code To Filter"); ?>'
 		});
 
-
 		$('#select-all').click(function() {
-			$('#participants').multiSelect('select_all');
+			VirtualDualList.get('#participants').selectAll();
 			return false;
 		});
 		$('#deselect-all').click(function() {
-			$('#participants').multiSelect('deselect_all');
+			VirtualDualList.get('#participants').deselectAll();
 			return false;
 		});
 	});
@@ -285,53 +251,7 @@
 			},
 			function(data) {
 				$('#participants').html(data);
-				$('#participants').multiSelect("destroy").multiSelect({
-					selectableFooter: "<div class='custom-header'>Unselected PT Logins (<span id='msUnselectedCountHolder'></span>)</div>",
-					selectionFooter: "<div class='custom-header'>Selected PT Logins (<span id='msSelectedCountHolder'></span>)</div>",
-					selectableHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-					selectionHeader: "<input type='text' class='search-input form-control' autocomplete='off' placeholder='Type PT Login Name To Filter'>",
-					afterInit: function(ms) {
-						var that = this,
-							$selectableSearch = that.$selectableUl.prev(),
-							$selectionSearch = that.$selectionUl.prev(),
-							selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-							selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-						that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-							.on('keydown', function(e) {
-								if (e.which === 40) {
-									that.$selectableUl.focus();
-									return false;
-								}
-							});
-
-						that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-							.on('keydown', function(e) {
-								if (e.which == 40) {
-									that.$selectionUl.focus();
-									return false;
-								}
-							});
-					},
-					afterSelect: function() {
-						this.qs1.cache();
-						this.qs2.cache();
-					},
-					afterDeselect: function() {
-						this.qs1.cache();
-						this.qs2.cache();
-					}
-				});
-
-
-				$('#select-all-participant').click(function() {
-					$('#participants').multiSelect('select_all');
-					return false;
-				});
-				$('#deselect-all-participant').click(function() {
-					$('#participants').multiSelect('deselect_all');
-					return false;
-				});
+				VirtualDualList.get('#participants').reload();
 				$.unblockUI();
 			});
 	}
