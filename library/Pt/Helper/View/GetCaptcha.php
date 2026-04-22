@@ -1,27 +1,27 @@
 <?php
 
 use Gregwar\Captcha\CaptchaBuilder;
-use Application_Service_Common as CommonService;
 
 class Pt_Helper_View_GetCaptcha extends Zend_View_Helper_Abstract
 {
 
     public function getCaptcha()
     {
-        $phrase = null;
         //if it is development environment, then let us keep it simple
         if (APPLICATION_ENV === "development") {
             $phrase = "zaq";
         } else {
-            // Mixed alphanumeric (excluding ambiguous 0/O/1/l/I) to resist OCR.
-            $alphabet = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
-            $phrase = '';
-            for ($i = 0; $i < 6; $i++) {
-                $phrase .= $alphabet[random_int(0, strlen($alphabet) - 1)];
-            }
+            // Simple 5-digit numeric. Kept readable on purpose — the heavy
+            // lifting against bots is done by the honeypot + single-use HMAC
+            // form token on the contact form, and server-side single-use
+            // enforcement on the login flows.
+            $phrase = (string) random_int(10000, 99999);
         }
 
         $builder = new CaptchaBuilder($phrase);
+        $builder->setDistortion(false);
+        $builder->setMaxBehindLines(0);
+        $builder->setMaxFrontLines(0);
         $builder->build(180, 70);
 
         $captchaSession = new Zend_Session_Namespace("DACAPTCHA");
