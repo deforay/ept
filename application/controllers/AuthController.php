@@ -93,11 +93,12 @@ class AuthController extends Zend_Controller_Action
 		try {
 			// Validate CAPTCHA
 			$captchaSession = new Zend_Session_Namespace('DACAPTCHA');
-			if (
-				!isset($captchaSession->captchaStatus) ||
-				empty($captchaSession->captchaStatus) ||
-				$captchaSession->captchaStatus === 'fail'
-			) {
+			$captchaPassed = isset($captchaSession->captchaStatus) && $captchaSession->captchaStatus === 'success';
+			// Single-use: consume immediately so one solved captcha can't be replayed
+			// across multiple login attempts (password spraying).
+			$captchaSession->captchaStatus = 'fail';
+			$captchaSession->code = null;
+			if (!$captchaPassed) {
 				$sessionAlert->message = "Please enter the correct text from the image.";
 				$sessionAlert->status = "failure";
 				$this->redirect($this->loginUri);
