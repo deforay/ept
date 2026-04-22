@@ -238,22 +238,10 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
                 </div>
             <?php } else { ?>
                 <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label class="control-label">
-                                <?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span>
-                            </label>
-                            <div class="col-lg-12">
-                                <select multiple="multiple" name="allparticipant[]" id="allparticipant"
-                                    placeholder="<?= $this->translate->_("Please choose a Participant"); ?>" title="
-                                <?= $this->translate->_("Please choose a Participant"); ?>">
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="col-lg-12">
+                        <?php echo $this->render('data-managers/_participant-dual-list.phtml'); ?>
                     </div>
                 </div>
-
             <?php } ?>
             <br>
             <div class="row">
@@ -343,83 +331,6 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             }
         });
 
-        // $("#allparticipant").select2({
-        //     placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-        //     minimumInputLength: 3,
-        //     width: '100%',
-        //     allowClear: true,
-        //     ajax: {
-        //         placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
-        //         url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-        //         dataType: 'json',
-        //         delay: 250,
-        //         data: function(params) {
-        //             return {
-        //                 search: params.term, // search term
-        //                 page: params.page
-        //             };
-        //         },
-        //         processResults: function(data, params) {
-        //             params.page = params.page || 1;
-        //             return {
-        //                 results: data.result,
-        //                 pagination: {
-        //                     more: (params.page * 30) < data.total_count
-        //                 }
-        //             };
-        //         },
-        //         //cache: true
-        //     },
-        //     escapeMarkup: function(markup) {
-        //         return markup;
-        //     }
-        // });
-
-        $('#allparticipant').selectize({
-            placeholder: "<?= $this->translate->_('Choose one or more Participant(s)'); ?>",
-            create: false,
-            maxItems: null, // Allow multiple selections
-            valueField: 'id', // This should match the 'id' in your AJAX response
-            labelField: 'text', // This should match the 'text' in your AJAX response
-            searchField: 'text', // This will allow searching by 'text'
-            options: [], // Initial empty options; will be populated dynamically
-            onInitialize: function() {
-                // Add the 'isRequired' class to the generated input
-                // this.$control.addClass('isRequired');
-            },
-            load: function(query, callback) {
-                if (query.length < 3) return callback(); // Don't send an empty query
-                $.ajax({
-                    url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {
-                        search: query,
-                        page: 1 // Adjust as needed
-                    },
-                    success: function(response) {
-                        console.log("AJAX response received:", response); // Log the response
-                        if (response && response.result) {
-                            callback(
-                                response.result.map(function(item) {
-                                    return {
-                                        id: item.id, // Matches 'valueField'
-                                        text: item.text // Matches 'labelField'
-                                    };
-                                })
-                            );
-                        } else {
-                            console.error("Unexpected response format:", response);
-                            callback();
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error("AJAX error:", textStatus, errorThrown); // Log errors
-                        callback();
-                    }
-                });
-            }
-        });
     });
 
     function ptccEnable(value) {
@@ -495,6 +406,18 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             formId: 'addUserForm'
         });
         if (flag && !duplicated) {
+            var isPtcc = $('#ptcc').val() === 'yes';
+            if (!isPtcc && typeof pdlInjectHiddenInputs === 'function') {
+                var count = pdlInjectHiddenInputs();
+                if (count === 0) {
+                    if (typeof pdlFlashError === 'function') pdlFlashError();
+                    alert("<?= $this->translate->_('Please select at least one Participant to map'); ?>");
+                    return false;
+                }
+                if (typeof pdlConfirmMulti === 'function' && !pdlConfirmMulti()) {
+                    return false;
+                }
+            }
             $.blockUI();
             document.getElementById('addUserForm').submit();
         }

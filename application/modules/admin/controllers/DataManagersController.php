@@ -91,6 +91,14 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->contact = $contact->getContact($this->_getParam('contact'));
         }
         $this->view->countriesList = $commonService->getcountriesList();
+        $this->view->countries = $participantService->getParticipantCountriesList();
+        $this->view->province = $commonService->getParticipantsProvinceList();
+        $this->view->district = $commonService->getParticipantsDistrictList();
+        $this->view->networksTier = $commonService->getAllnetwork();
+        $this->view->affiliation = $commonService->getAllParticipantAffiliates();
+        $this->view->institutes = $commonService->getAllInstitutes();
+        $this->view->dmId = 0;
+        $this->view->preSelectedParticipants = [];
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
     }
@@ -125,6 +133,16 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 $this->view->countriesList = $commonService->getcountriesList();
                 $this->view->provinceList = $commonService->getParticipantsProvinceList();
                 $this->view->districtList = $commonService->getParticipantsDistrictList();
+                $this->view->countries = $participantService->getParticipantCountriesList();
+                $this->view->province = $commonService->getParticipantsProvinceList();
+                $this->view->district = $commonService->getParticipantsDistrictList();
+                $this->view->networksTier = $commonService->getAllnetwork();
+                $this->view->affiliation = $commonService->getAllParticipantAffiliates();
+                $this->view->institutes = $commonService->getAllInstitutes();
+                $this->view->dmId = $userId;
+                $this->view->preSelectedParticipants = array_map(function ($p) {
+                    return (int)$p['participant_id'];
+                }, $this->view->participantList ?: []);
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
             }

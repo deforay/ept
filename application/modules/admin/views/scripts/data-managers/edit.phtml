@@ -190,18 +190,8 @@ foreach ($this->participantList as $part) {
                 </div>
             <?php } else { ?>
                 <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label class="control-label"><?= $this->translate->_("Choose Participant(s)"); ?><span class="mandatory">*</span></label>
-                            <div class="col-lg-12">
-                                <select multiple="multiple" name="allparticipant[]" id="allparticipant" placeholder="<?= $this->translate->_('Please choose a Participant'); ?>" title="Please choose a Participant">
-                                    <option value=""></option>
-                                    <?php foreach ($this->participants as $participant) { ?>
-                                        <option value="<?php echo $participant['participant_id']; ?>" <?php echo (isset($participantArray) && in_array($participant['participant_id'], $participantArray)) ? "selected='selected'" : ""; ?>><?php echo $participant['first_name'] . " " . $participant['last_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="col-lg-12">
+                        <?php echo $this->render('data-managers/_participant-dual-list.phtml'); ?>
                     </div>
                 </div>
             <?php } ?>
@@ -263,87 +253,6 @@ foreach ($this->participantList as $part) {
             },
             escapeMarkup: function(markup) {
                 return markup;
-            }
-        });
-
-        // $("#allparticipant").select2({
-        //     placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-        //     minimumInputLength: 3,
-        //     width: '100%',
-        //     allowClear: true,
-        //     ajax: {
-        //         placeholder: "<?= $this->translate->_("Type participant name to search"); ?>",
-        //         url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-        //         dataType: 'json',
-        //         delay: 250,
-        //         data: function(params) {
-        //             return {
-        //                 search: params.term, // search term
-        //                 page: params.page
-        //             };
-        //         },
-        //         processResults: function(data, params) {
-        //             params.page = params.page || 1;
-        //             return {
-        //                 results: data.result,
-        //                 pagination: {
-        //                     more: (params.page * 30) < data.total_count
-        //                 }
-        //             };
-        //         },
-        //         //cache: true
-        //     },
-        //     escapeMarkup: function(markup) {
-        //         return markup;
-        //     }
-        // });
-        $("#allparticipant").selectize({
-            placeholder: "<?= $this->translate->_("Choose one or more Participant(s)"); ?>",
-            maxItems: null, // Allow multiple selections
-            valueField: 'id', // The field in the AJAX response representing the value
-            labelField: 'text', // The field in the AJAX response representing the label
-            searchField: ['text', 'first_name', 'last_name', 'unique_identifier'], // Allow search on multiple fields
-            width: '100%',
-            allowClear: true,
-            create: false, // Prevent creating new options (select only from results)
-            load: function(query, callback) {
-                if (query.length < 3) {
-                    return callback(); // Don't trigger the AJAX if input length is less than 3
-                }
-
-                $.ajax({
-                    url: "<?php echo $this->url(array('module' => 'admin', 'controller' => 'data-managers', 'action' => 'get-participants-names')); ?>",
-                    dataType: 'json',
-                    data: {
-                        search: query, // The search term
-                        page: query.page || 1 // Pagination support
-                    },
-                    success: function(data) {
-                        callback(data.result); // Return the data
-                    },
-                    error: function() {
-                        callback([]); // Return empty array in case of error
-                    }
-                });
-            },
-            render: {
-                item: function(data, escape) {
-                    return '<div>' + escape(data.text) + '</div>';
-                },
-                option: function(data, escape) {
-                    return '<div>' + escape(data.text) + ' (' + escape(data.unique_identifier) + ')</div>';
-                }
-            },
-            onInitialize: function() {
-                var selectize = this;
-                var selectedValues = <?= json_encode($participantArray ?? []); ?>;
-                selectedValues.forEach(function(value) {
-                    selectize.addItem(value); // Add pre-selected items
-                });
-            },
-            // Disable the remove button from selected items
-            onItemRemove: function(value) {
-                return false; // Prevent the removal of selected items
             }
         });
 
@@ -429,6 +338,18 @@ foreach ($this->participantList as $part) {
             formId: 'editUserForm'
         });
         if (flag && !duplicated) {
+            var isPtcc = $('#ptcc').val() === 'yes';
+            if (!isPtcc && typeof pdlInjectHiddenInputs === 'function') {
+                var count = pdlInjectHiddenInputs();
+                if (count === 0) {
+                    if (typeof pdlFlashError === 'function') pdlFlashError();
+                    alert("<?= $this->translate->_('Please select at least one Participant to map'); ?>");
+                    return false;
+                }
+                if (typeof pdlConfirmMulti === 'function' && !pdlConfirmMulti()) {
+                    return false;
+                }
+            }
             $.blockUI();
             document.getElementById('editUserForm').submit();
         }

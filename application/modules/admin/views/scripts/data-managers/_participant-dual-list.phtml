@@ -1,0 +1,384 @@
+<?php
+/**
+ * Shared dual-list participant mapper for Data Manager add/edit.
+ * Expects on the view:
+ *   $this->dmId                         (int) 0 for add, dm_id for edit
+ *   $this->preSelectedParticipants      (array) participant_ids already mapped (edit only)
+ *   $this->countries, $this->province, $this->district,
+ *   $this->networksTier, $this->affiliation, $this->institutes (optional filter lists)
+ */
+$dmIdForMap = (int)($this->dmId ?? 0);
+$preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelectedParticipants : [];
+?>
+<style>
+    .pdl-wrapper { width: 100%; box-sizing: border-box; }
+    .pdl-wrapper .pdl-header { display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px 0; }
+    .pdl-wrapper .pdl-header label { margin: 0; font-weight: bold; font-size: 14px; }
+    .pdl-wrapper .pdl-hint { text-align: center; color: #3a87ad; padding: 8px 0; font-size: 13px; }
+    .pdl-wrapper .pdl-actions { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; }
+    .pdl-wrapper .advFilter { display: none; padding: 15px; border: 1px solid #80808069; margin: 10px 0 15px 0; background: #fafafa; }
+    .virt-dual-list { display: flex; gap: 20px; align-items: stretch; width: 100%; }
+    .virt-dual-list .virt-pane { flex: 1 1 0; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
+    .virt-dual-list .virt-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
+    .virt-dual-list .virt-pane-header input { width: 100%; box-sizing: border-box; }
+    .virt-dual-list .virt-pane-scroll { position: relative; height: 360px; overflow-y: auto; background: #fff; }
+    .virt-dual-list .virt-pane-inner { position: relative; width: 100%; }
+    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .virt-dual-list .virt-row:hover { background: #337ab7; color: #fff; }
+    .virt-dual-list .virt-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .virt-dual-list .virt-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
+    .virt-dual-list .virt-pane.pdl-error { border-color: #d9534f; box-shadow: 0 0 0 2px rgba(217,83,79,0.35); }
+    .virt-dual-list .virt-pane.pdl-error .virt-pane-footer { background: #d9534f; }
+</style>
+<div class="pdl-wrapper">
+    <div class="pdl-header">
+        <label>
+            <?= $this->translate->_("Choose Participant(s)"); ?> <span class="mandatory">*</span>
+        </label>
+        <a href="javascript:void(0);" onclick="pdlAdvFilter();" class="btn btn-xs btn-primary pdl-filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
+    </div>
+    <div class="advFilter">
+            <div class="row">
+                <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_country" id="pdl_country" onchange="pdlLoad();pdlGetStates(this.value);">
+                            <option value=""></option>
+                            <?php foreach ($this->countries as $c) { ?>
+                                <option value="<?php echo $c['id']; ?>"><?php echo $c['iso_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+                <?php if (isset($this->province) && count($this->province) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_province" id="pdl_province" onchange="pdlLoad();pdlGetDistricts(this.value);">
+                            <option value=""></option>
+                            <?php foreach ($this->province as $p) { ?>
+                                <option value="<?php echo $p['state']; ?>"><?php echo $p['state']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="row">
+                <?php if (isset($this->district) && count($this->district) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_district" id="pdl_district" onchange="pdlLoad();pdlGetInstitutes();">
+                            <option value=""></option>
+                            <?php foreach ($this->district as $d) { ?>
+                                <option value="<?php echo $d['district']; ?>"><?php echo $d['district']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+                <?php if (isset($this->institutes) && count($this->institutes) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Institute"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_institute" id="pdl_institute" onchange="pdlLoad();">
+                            <option value=""></option>
+                            <?php foreach ($this->institutes as $i) { ?>
+                                <option value="<?php echo $i['institute_name']; ?>"><?php echo $i['institute_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="row">
+                <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_networkTier" id="pdl_networkTier" onchange="pdlLoad();">
+                            <option value=""></option>
+                            <?php foreach ($this->networksTier as $n) { ?>
+                                <option value="<?php echo $n['network_id']; ?>"><?php echo $n['network_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+                <?php if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
+                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
+                    <div class="col-lg-4">
+                        <select class="pdl-select2" style="width:100%;" name="pdl_affiliation" id="pdl_affiliation" onchange="pdlLoad();">
+                            <option value=""></option>
+                            <?php foreach ($this->affiliation as $a) { ?>
+                                <option value="<?php echo $a['affiliate']; ?>"><?php echo $a['affiliate']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                <?php } ?>
+            </div>
+    </div>
+
+    <div class="pdl-hint"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?></div>
+    <div class="pdl-actions">
+        <a href="#" id="pdl-select-all" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
+        <a href="#" id="pdl-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+    </div>
+    <div class="virt-dual-list">
+        <div class="virt-pane" data-side="left">
+            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->translate->_('Type Participant Name To Filter'); ?>"></div>
+            <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
+            <div class="virt-pane-footer"><?= $this->translate->_('Unselected Participants'); ?> (<span class="virt-count">0</span>)</div>
+        </div>
+        <div class="virt-arrows">&#8646;</div>
+        <div class="virt-pane" data-side="right">
+            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->translate->_('Type Participant Name To Filter'); ?>"></div>
+            <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
+            <div class="virt-pane-footer"><?= $this->translate->_('Selected Participants'); ?> (<span class="virt-count">0</span>)</div>
+        </div>
+    </div>
+    <div id="pdl-hidden-inputs"></div>
+</div>
+
+<script>
+    var PDL_GET_PARTICIPANT_URL = "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant')); ?>";
+    var PDL_DM_ID = <?= $dmIdForMap; ?>;
+    var PDL_PRESELECTED = <?= json_encode(array_values(array_map('intval', $preSelected))); ?>;
+
+    var ParticipantDualList = (function() {
+        var ROW_HEIGHT = 30;
+        var OVERSCAN = 6;
+        var state = { left: [], right: [] };
+        var panes = {};
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function(c) {
+                return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+            });
+        }
+
+        function initPane(sideKey, paneEl) {
+            var $pane = $(paneEl);
+            var pane = {
+                sideKey: sideKey,
+                $scroll: $pane.find('.virt-pane-scroll'),
+                $inner: $pane.find('.virt-pane-inner'),
+                $search: $pane.find('.virt-pane-header input'),
+                $count: $pane.find('.virt-count'),
+                filter: '',
+                filtered: []
+            };
+            pane.$scroll.on('scroll', function() { render(pane); });
+            pane.$search.on('input', function() {
+                pane.filter = pane.$search.val().toLowerCase();
+                recomputeFiltered(pane);
+                pane.$scroll.scrollTop(0);
+                render(pane);
+            });
+            pane.$inner.on('click', '.virt-row', function() {
+                moveItem(pane.sideKey, $(this).attr('data-id'));
+            });
+            panes[sideKey] = pane;
+        }
+
+        function recomputeFiltered(pane) {
+            var src = state[pane.sideKey];
+            if (!pane.filter) {
+                pane.filtered = src;
+            } else {
+                var f = pane.filter;
+                pane.filtered = [];
+                for (var i = 0; i < src.length; i++) {
+                    if (src[i]._lc.indexOf(f) !== -1) pane.filtered.push(src[i]);
+                }
+            }
+            pane.$count.text(pane.filtered.length);
+            pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+        }
+
+        function render(pane) {
+            var scrollTop = pane.$scroll.scrollTop();
+            var h = pane.$scroll.height();
+            var first = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+            var last = Math.min(pane.filtered.length, Math.ceil((scrollTop + h) / ROW_HEIGHT) + OVERSCAN);
+            var parts = [];
+            for (var i = first; i < last; i++) {
+                var it = pane.filtered[i];
+                parts.push('<div class="virt-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
+            }
+            pane.$inner.html(parts.join(''));
+        }
+
+        function moveItem(fromSide, id) {
+            var toSide = fromSide === 'left' ? 'right' : 'left';
+            var arr = state[fromSide];
+            for (var i = 0; i < arr.length; i++) {
+                if (String(arr[i].id) === String(id)) {
+                    var item = arr.splice(i, 1)[0];
+                    state[toSide].push(item);
+                    break;
+                }
+            }
+            refresh();
+        }
+
+        function refresh() {
+            recomputeFiltered(panes.left);
+            recomputeFiltered(panes.right);
+            render(panes.left);
+            render(panes.right);
+        }
+
+        function load(items) {
+            state.left = [];
+            state.right = [];
+            for (var i = 0; i < items.length; i++) {
+                var it = items[i];
+                it._lc = String(it.label).toLowerCase();
+                if (it.selected) state.right.push(it);
+                else state.left.push(it);
+            }
+            if (panes.left) { panes.left.$search.val(''); panes.left.filter = ''; panes.left.$scroll.scrollTop(0); }
+            if (panes.right) { panes.right.$search.val(''); panes.right.filter = ''; panes.right.$scroll.scrollTop(0); }
+            refresh();
+        }
+
+        function selectAll() {
+            var visibleIds = {};
+            for (var i = 0; i < panes.left.filtered.length; i++) visibleIds[panes.left.filtered[i].id] = true;
+            var keep = [];
+            for (var j = 0; j < state.left.length; j++) {
+                if (visibleIds[state.left[j].id]) state.right.push(state.left[j]);
+                else keep.push(state.left[j]);
+            }
+            state.left = keep;
+            refresh();
+        }
+
+        function deselectAll() {
+            var visibleIds = {};
+            for (var i = 0; i < panes.right.filtered.length; i++) visibleIds[panes.right.filtered[i].id] = true;
+            var keep = [];
+            for (var j = 0; j < state.right.length; j++) {
+                if (visibleIds[state.right[j].id]) state.left.push(state.right[j]);
+                else keep.push(state.right[j]);
+            }
+            state.right = keep;
+            refresh();
+        }
+
+        function getSelectedIds() {
+            var ids = [];
+            for (var i = 0; i < state.right.length; i++) ids.push(state.right[i].id);
+            return ids;
+        }
+
+        return {
+            init: initPane,
+            load: load,
+            selectAll: selectAll,
+            deselectAll: deselectAll,
+            getSelectedIds: getSelectedIds
+        };
+    })();
+
+    function pdlAdvFilter() {
+        $('.pdl-wrapper .advFilter').toggle();
+        var $btn = $('.pdl-filter-btn');
+        $btn.text($btn.text().indexOf('Show') === 0 ? 'Hide advanced filters' : 'Show advanced filters');
+    }
+
+    function pdlGetStates(cid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-country-wise-states')); ?>", { cid: cid, format: "html" },
+            function(data) {
+                if (data) { $('#pdl_province').html(data); }
+                $.unblockUI();
+            });
+    }
+
+    function pdlGetDistricts(pid) {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-wise-districts')); ?>", { pid: pid, format: "html" },
+            function(data) {
+                if (data) { $('#pdl_district').html(data); }
+                $.unblockUI();
+            });
+    }
+
+    function pdlGetInstitutes() {
+        $.blockUI();
+        $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-state-districts-wise-institute')); ?>", {
+                pid: $('#pdl_province').val(),
+                did: $('#pdl_district').val(),
+                format: "html"
+            },
+            function(data) {
+                if (data) { $('#pdl_institute').html(data); }
+                $.unblockUI();
+            });
+    }
+
+    function pdlLoad() {
+        $.blockUI();
+        $.ajax({
+            url: PDL_GET_PARTICIPANT_URL,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                datamanagerId: PDL_DM_ID || '',
+                country: $('#pdl_country').val() || '',
+                province: $('#pdl_province').val() || '',
+                district: $('#pdl_district').val() || '',
+                network: $('#pdl_networkTier').val() || '',
+                affiliation: $('#pdl_affiliation').val() || '',
+                institute: $('#pdl_institute').val() || '',
+                format: 'html'
+            }
+        }).done(function(items) {
+            items = items || [];
+            if (!PDL_DM_ID && PDL_PRESELECTED && PDL_PRESELECTED.length) {
+                var preMap = {};
+                for (var i = 0; i < PDL_PRESELECTED.length; i++) preMap[PDL_PRESELECTED[i]] = true;
+                for (var j = 0; j < items.length; j++) {
+                    if (preMap[parseInt(items[j].id, 10)]) items[j].selected = true;
+                }
+            }
+            ParticipantDualList.load(items);
+        }).always(function() {
+            $.unblockUI();
+        });
+    }
+
+    function pdlInjectHiddenInputs() {
+        var ids = ParticipantDualList.getSelectedIds();
+        var $holder = $('#pdl-hidden-inputs');
+        $holder.empty();
+        for (var i = 0; i < ids.length; i++) {
+            $holder.append('<input type="hidden" name="allparticipant[]" value="' + ids[i] + '" />');
+        }
+        return ids.length;
+    }
+
+    function pdlFlashError() {
+        var $right = $('.pdl-wrapper .virt-pane[data-side="right"]');
+        $right.addClass('pdl-error');
+        $('html, body').animate({ scrollTop: $right.offset().top - 80 }, 300);
+        setTimeout(function () { $right.removeClass('pdl-error'); }, 2500);
+    }
+
+    function pdlConfirmMulti() {
+        var count = ParticipantDualList.getSelectedIds().length;
+        if (count <= 1) return true;
+        return confirm(
+            "You have selected " + count + " participants.\n\n" +
+            "This Data Manager will be able to access the data of ALL " + count +
+            " selected participants.\n\nAre you sure you want to continue?"
+        );
+    }
+
+    $(document).ready(function() {
+        if ($.fn.select2) {
+            $('.pdl-select2').select2({ allowClear: true, placeholder: '<?= $this->translate->_("All"); ?>' });
+        }
+        $('.pdl-wrapper .virt-pane').each(function() {
+            ParticipantDualList.init($(this).attr('data-side'), this);
+        });
+        $('#pdl-select-all').on('click', function(e) { e.preventDefault(); ParticipantDualList.selectAll(); });
+        $('#pdl-deselect-all').on('click', function(e) { e.preventDefault(); ParticipantDualList.deselectAll(); });
+        pdlLoad();
+    });
+</script>
