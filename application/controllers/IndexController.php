@@ -52,6 +52,30 @@ class IndexController extends Zend_Controller_Action
                 return;
             }
 
+            // Anti-replay: each form_token is single-use per session.
+            $tokenNamespace = new Zend_Session_Namespace('contactFormTokens');
+            $usedTokens = $tokenNamespace->used ?? [];
+            // Drop tokens older than the 1h HMAC window so the list can't grow unbounded.
+            $usedTokens = array_filter($usedTokens, static fn($ts) => $ts > time() - 3600);
+            if (isset($usedTokens[$hash])) {
+                $this->view->message = 1;
+                return;
+            }
+            $usedTokens[$hash] = time();
+            $tokenNamespace->used = $usedTokens;
+
+            // Server-side captcha check. The browser pre-checks via /captcha/check-captcha,
+            // but a direct POST would skip that entirely, so enforce it here too.
+            $captchaSession = new Zend_Session_Namespace('DACAPTCHA');
+            $captchaPassed = ($captchaSession->captchaStatus ?? null) === 'success';
+            // Single-use: invalidate immediately so a passed captcha can't be reused.
+            $captchaSession->captchaStatus = 'fail';
+            $captchaSession->code = null;
+            if (!$captchaPassed) {
+                $this->view->message = 1;
+                return;
+            }
+
             $common = new Application_Service_Common();
             $this->view->message = $common->contactForm($params);
         } else {

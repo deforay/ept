@@ -24,8 +24,11 @@ class CaptchaController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $params['challenge_field'] = htmlspecialchars($params['challenge_field']);
-            if (!empty($params['challenge_field']) && $captchaSession->code == $params['challenge_field']) {
+            $submitted = trim((string)($params['challenge_field'] ?? ''));
+            $expected = (string)($captchaSession->code ?? '');
+            // Case-insensitive compare; the mixed-case alphabet is there to confuse OCR,
+            // not humans. hash_equals avoids timing leaks on the code value.
+            if ($submitted !== '' && $expected !== '' && hash_equals(strtolower($expected), strtolower($submitted))) {
                 $captchaSession->captchaStatus = 'success';
                 $this->view->result = "success";
             } else {
