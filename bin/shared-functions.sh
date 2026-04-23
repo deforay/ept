@@ -1077,7 +1077,7 @@ install_npm_packages() {
 
     print info "Installing npm packages in ${app_path}..."
     cd "${app_path}"
-    sudo -u www-data npm install --production 2>/dev/null || npm install --production
+    sudo -u www-data npm install --omit=dev 2>/dev/null || npm install --omit=dev
     print success "npm packages installed."
     log_action "npm packages installed in ${app_path}."
 }
