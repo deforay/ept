@@ -15,7 +15,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
                 <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Date"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="Please enter the PT Survey date here" placeholder="Please enter the PT Survey date here" onchange="generateSurveyCode(this.value)" />
+                    <input type="text" id="distributionDate" name="distributionDate" size="50" maxlength="45" class="isRequired form-control datepicker" readonly title="<?= $this->escape($this->translate->_("Please enter the PT Survey date here")); ?>" placeholder="<?= $this->escape($this->translate->_("Please enter the PT Survey date here")); ?>" onchange="generateSurveyCode(this.value)" />
                     <span class="help-block"><?= $this->translate->_("Dates already having a PT Survey will be disabled and marked with a red circle."); ?></span>
                 </div>
 
@@ -24,7 +24,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
                 <label class="col-lg-3 control-label"><?= $this->translate->_("PT Survey Code"); ?> <span class="mandatory">*</span></label>
 
                 <div class="col-lg-6">
-                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" title="Please enter a Unique PT Survey Code here" placeholder="Please enter a Unique PT Survey Code here" onblur="checkDuplicate('distributions', 'distribution_code',this ,null , 'This code already exists for another PT Survey. Please try something else.')" />
+                    <input type="text" id="distributionCode" name="distributionCode" size="50" class="isRequired form-control" title="<?= $this->escape($this->translate->_("Please enter a Unique PT Survey Code here")); ?>" placeholder="<?= $this->escape($this->translate->_("Please enter a Unique PT Survey Code here")); ?>" onblur="checkDuplicate('distributions', 'distribution_code', this, null, duplicateCodeMsg)" />
                 </div>
             </div>
 
@@ -43,6 +43,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
     var duplicated = false;
     var duplicateCheckXhr = null;
     var submitting = false;
+    var duplicateCodeMsg = <?= json_encode($this->translate->_("This code already exists for another PT Survey. Please try something else.")); ?>;
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         if (obj.value == "" || obj.value == null) {
