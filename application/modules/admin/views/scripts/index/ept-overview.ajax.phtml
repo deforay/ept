@@ -126,15 +126,16 @@ ob_start();
             </td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Active Schemes</th>
+            <th style="<?= $esc($thStyle); ?>">Active Schemes (<?= count($activeSchemeNames); ?>)</th>
             <td style="<?= $esc($tdStyle); ?>">
-                <strong><?= count($activeSchemeNames); ?></strong>
-                <?php if (!empty($activeSchemeNames)): ?>
-                    <ul style="margin:6px 0 0 18px;padding:0;">
+                <?php if (empty($activeSchemeNames)): ?>
+                    —
+                <?php else: ?>
+                    <ol style="margin:0 0 0 20px;padding:0;">
                         <?php foreach ($activeSchemeNames as $schemeName): ?>
                             <li style="margin:2px 0;"><?= $esc($schemeName); ?></li>
                         <?php endforeach; ?>
-                    </ul>
+                    </ol>
                 <?php endif; ?>
             </td>
         </tr>
