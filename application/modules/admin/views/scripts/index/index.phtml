@@ -303,6 +303,25 @@ if (count($this->pendingParticipants) > 0) {
 		</div>
 	</div>
 </div>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default" id="ept-overview-panel">
+			<div class="panel-heading" style="cursor:pointer;" id="ept-overview-toggle"
+				role="button" aria-expanded="false" aria-controls="ept-overview-body">
+				<h3 class="panel-title">
+					<i class="icon-bar-chart"></i>&nbsp;&nbsp;<?= $this->translate->_("ePT Overview"); ?>
+					<i class="icon-chevron-down pull-right" id="ept-overview-chevron"></i>
+				</h3>
+			</div>
+			<div class="panel-body" id="ept-overview-body" style="display:none;">
+				<div id="ept-overview-content" class="text-center" style="padding:20px;color:#888;">
+					<i class="icon-spinner icon-spin"></i>&nbsp;<?= $this->translate->_("Loading..."); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <br />
 
 
@@ -346,6 +365,34 @@ if (count($this->pendingParticipants) > 0) {
 			})
 	});
 	// $('svg').height(500);
+
+	$(document).ready(function () {
+		var loaded = false;
+		$('#ept-overview-toggle').on('click', function () {
+			var $body = $('#ept-overview-body');
+			var $chev = $('#ept-overview-chevron');
+			var isOpen = $body.is(':visible');
+			if (isOpen) {
+				$body.slideUp(200);
+				$chev.removeClass('icon-chevron-up').addClass('icon-chevron-down');
+				$(this).attr('aria-expanded', 'false');
+				return;
+			}
+			$body.slideDown(200);
+			$chev.removeClass('icon-chevron-down').addClass('icon-chevron-up');
+			$(this).attr('aria-expanded', 'true');
+			if (!loaded) {
+				$.get("<?php echo $this->url(['module' => 'admin', 'controller' => 'index', 'action' => 'ept-overview'], 'default', true); ?>", {
+					format: "html"
+				}, function (data) {
+					$('#ept-overview-content').html(data);
+					loaded = true;
+				}).fail(function () {
+					$('#ept-overview-content').text('<?= $this->translate->_("Failed to load overview."); ?>');
+				});
+			}
+		});
+	});
 
 	function dismissEmailAlert() {
 		// Set cookie to remember dismissal for the entire session (browser close)

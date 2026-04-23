@@ -1,0 +1,307 @@
+<?php
+$o = $this->overview;
+$fmt = static function ($date) {
+    if (empty($date) || $date === '0000-00-00') {
+        return '—';
+    }
+    $ts = strtotime($date);
+    return $ts ? date('d-M-Y', $ts) : $date;
+};
+$num = static fn($n) => number_format((int) $n);
+
+$describeEdge = static function ($row) use ($fmt) {
+    if (empty($row) || empty($row['shipment_date'])) {
+        return ['date' => '—', 'code' => null, 'scheme' => null];
+    }
+    return [
+        'date'   => $fmt($row['shipment_date']),
+        'code'   => $row['shipment_code'] ?? null,
+        'scheme' => !empty($row['scheme_name'])
+            ? ucwords($row['scheme_name'])
+            : (isset($row['scheme_type']) ? strtoupper($row['scheme_type']) : null),
+    ];
+};
+$oldest = $describeEdge($o['oldest_shipment']);
+$latest = $describeEdge($o['latest_shipment']);
+$edgeText = static function ($e) {
+    $parts = [$e['date']];
+    if (!empty($e['code'])) {
+        $parts[] = $e['code'];
+    }
+    if (!empty($e['scheme'])) {
+        $parts[] = $e['scheme'];
+    }
+    return implode(' — ', $parts);
+};
+
+$activeSchemeNames = array_map(static function ($s) {
+    return ucwords($s['scheme_name']);
+}, $o['active_schemes']);
+
+$lines = [];
+$lines[] = 'ePT Overview — ' . date('d-M-Y');
+$lines[] = str_repeat('=', 40);
+$lines[] = 'Active Participants     : ' . $num($o['active_participants']);
+$lines[] = 'Total Shipments         : ' . $num($o['total_shipments']);
+$lines[] = 'Finalized Shipments     : ' . $num($o['finalized_shipments']);
+$lines[] = 'Shipments (This Year)   : ' . $num($o['shipments_this_year']);
+$lines[] = 'Shipments (Last 12 mo.) : ' . $num($o['shipments_last_12_months']);
+$lines[] = 'Oldest Shipment         : ' . $edgeText($oldest);
+$lines[] = 'Latest Shipment         : ' . $edgeText($latest);
+$lines[] = 'Active Schemes          : ' . count($activeSchemeNames);
+foreach ($activeSchemeNames as $schemeName) {
+    $lines[] = '  - ' . $schemeName;
+}
+$lines[] = '';
+$lines[] = 'Per Scheme Breakdown';
+$lines[] = str_repeat('-', 40);
+$lines[] = sprintf('%-18s %12s %12s', 'Scheme', 'Shipments', 'Participants');
+foreach ($o['scheme_breakdown'] as $row) {
+    $lines[] = sprintf(
+        '%-18s %12s %12s',
+        strtoupper($row['scheme_type']),
+        $num($row['shipment_count']),
+        $num($row['participant_count'])
+    );
+}
+$copyText = implode("\n", $lines);
+
+$esc = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+
+$statCards = [
+    ['label' => 'Active Participants', 'value' => $num($o['active_participants']),      'color' => '#2980b9'],
+    ['label' => 'Total Shipments',     'value' => $num($o['total_shipments']),          'color' => '#27ae60'],
+    ['label' => 'Finalized',           'value' => $num($o['finalized_shipments']),      'color' => '#16a085'],
+    ['label' => 'This Year (' . date('Y') . ')', 'value' => $num($o['shipments_this_year']),      'color' => '#8e44ad'],
+    ['label' => 'Last 12 months',      'value' => $num($o['shipments_last_12_months']), 'color' => '#d35400'],
+    ['label' => 'Active Schemes',      'value' => $num(count($activeSchemeNames)),      'color' => '#c0392b'],
+];
+
+$baseFont = 'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,Helvetica,sans-serif;';
+
+ob_start();
+?>
+<div
+    style="<?= $esc($baseFont); ?>font-size:13px;color:#2c3e50;line-height:1.45;background:#fff;padding:16px;">
+
+    <div style="margin-bottom:14px;">
+        <div style="font-size:20px;font-weight:700;color:#1a202c;"><?= $esc($this->translate->_('ePT Overview')); ?></div>
+        <div style="font-size:12px;color:#7a8591;"><?= $esc(date('d-M-Y')); ?></div>
+    </div>
+
+    <!-- Stat cards (table-based so it survives Gmail/Outlook) -->
+    <table cellspacing="0" cellpadding="0" border="0"
+        style="border-collapse:separate;border-spacing:8px 0;margin-bottom:18px;width:100%;">
+        <tr>
+            <?php foreach ($statCards as $card): ?>
+                <td style="padding:0;vertical-align:top;width:<?= (int) (100 / count($statCards)); ?>%;">
+                    <div
+                        style="background:#ffffff;border:1px solid #e3e6ea;border-left:4px solid <?= $esc($card['color']); ?>;border-radius:4px;padding:12px 14px;">
+                        <div
+                            style="font-size:24px;font-weight:700;color:#1a202c;line-height:1.1;">
+                            <?= $esc($card['value']); ?></div>
+                        <div
+                            style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#7a8591;margin-top:4px;">
+                            <?= $esc($card['label']); ?></div>
+                    </div>
+                </td>
+            <?php endforeach; ?>
+        </tr>
+    </table>
+
+    <!-- Oldest / Latest -->
+    <table cellspacing="0" cellpadding="0" border="0"
+        style="border-collapse:separate;border-spacing:8px 0;margin-bottom:18px;width:100%;">
+        <tr>
+            <?php foreach ([['oldest', $oldest, '#95a5a6'], ['latest', $latest, '#3498db']] as $edge): ?>
+                <?php [$key, $data, $col] = $edge; ?>
+                <td style="padding:0;vertical-align:top;width:50%;">
+                    <div
+                        style="background:#fff;border:1px solid #e3e6ea;border-left:4px solid <?= $esc($col); ?>;border-radius:4px;padding:14px 16px;">
+                        <div
+                            style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#7a8591;margin-bottom:4px;">
+                            <?= $esc($this->translate->_($key === 'oldest' ? 'Oldest Shipment' : 'Latest Shipment')); ?>
+                        </div>
+                        <div style="font-size:18px;font-weight:700;color:#1a202c;">
+                            <?= $esc($data['date']); ?></div>
+                        <?php if (!empty($data['code']) || !empty($data['scheme'])): ?>
+                            <div style="font-size:12px;color:#5a6573;margin-top:4px;">
+                                <?php if (!empty($data['code'])): ?>
+                                    <span
+                                        style="font-family:ui-monospace,Menlo,Consolas,monospace;background:#f3f5f8;border:1px solid #e3e6ea;padding:1px 6px;border-radius:3px;margin-right:6px;"><?= $esc($data['code']); ?></span>
+                                <?php endif; ?>
+                                <?php if (!empty($data['scheme'])): ?><?= $esc($data['scheme']); ?><?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </td>
+            <?php endforeach; ?>
+        </tr>
+    </table>
+
+    <!-- Schemes + breakdown -->
+    <table cellspacing="0" cellpadding="0" border="0"
+        style="border-collapse:separate;border-spacing:8px 0;width:100%;">
+        <tr>
+            <td style="padding:0;vertical-align:top;width:40%;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#7a8591;margin-bottom:8px;font-weight:600;">
+                    <?= $esc($this->translate->_('Active Schemes')); ?>
+                    <span
+                        style="background:#7a8591;color:#fff;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px;"><?= count($activeSchemeNames); ?></span>
+                </div>
+                <?php if (empty($activeSchemeNames)): ?>
+                    <div style="color:#999;">—</div>
+                <?php else: ?>
+                    <div style="line-height:2;">
+                        <?php foreach ($activeSchemeNames as $schemeName): ?>
+                            <span
+                                style="display:inline-block;background:#eef4fb;color:#1f5f8b;border:1px solid #cfe1f0;border-radius:12px;padding:2px 10px;font-size:12px;margin:0 4px 4px 0;"><?= $esc($schemeName); ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </td>
+            <td style="padding:0;vertical-align:top;width:60%;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#7a8591;margin-bottom:8px;font-weight:600;">
+                    <?= $esc($this->translate->_('Per Scheme Breakdown')); ?>
+                </div>
+                <table cellspacing="0" cellpadding="0" border="0"
+                    style="border-collapse:collapse;width:100%;background:#fff;border:1px solid #e3e6ea;border-radius:4px;">
+                    <thead>
+                        <tr>
+                            <th
+                                style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
+                                <?= $esc($this->translate->_('Scheme')); ?>
+                            </th>
+                            <th
+                                style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
+                                <?= $esc($this->translate->_('Shipments')); ?>
+                            </th>
+                            <th
+                                style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
+                                <?= $esc($this->translate->_('Participants')); ?>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($o['scheme_breakdown'])): ?>
+                            <tr>
+                                <td colspan="3" style="padding:12px;text-align:center;color:#999;">
+                                    <?= $esc($this->translate->_('No data')); ?></td>
+                            </tr>
+                        <?php else: ?>
+                            <?php $i = 0; ?>
+                            <?php foreach ($o['scheme_breakdown'] as $row): ?>
+                                <?php $bg = ($i++ % 2 === 0) ? '#ffffff' : '#fafbfc'; ?>
+                                <tr>
+                                    <td
+                                        style="padding:8px 12px;border-bottom:1px solid #eef0f3;background:<?= $bg; ?>;font-weight:600;color:#1a202c;">
+                                        <?= $esc(strtoupper($row['scheme_type'])); ?>
+                                    </td>
+                                    <td
+                                        style="padding:8px 12px;border-bottom:1px solid #eef0f3;background:<?= $bg; ?>;text-align:right;font-variant-numeric:tabular-nums;">
+                                        <?= $esc($num($row['shipment_count'])); ?>
+                                    </td>
+                                    <td
+                                        style="padding:8px 12px;border-bottom:1px solid #eef0f3;background:<?= $bg; ?>;text-align:right;font-variant-numeric:tabular-nums;">
+                                        <?= $esc($num($row['participant_count'])); ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+<?php
+$renderedHtml = trim(ob_get_clean());
+?>
+<div class="ept-overview-wrap">
+    <div class="text-right" style="margin-bottom:10px;">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-primary" id="ept-overview-copy-btn"
+                title="<?= $this->translate->_('Copy with formatting (paste into email or Word)'); ?>">
+                <i class="icon-copy"></i>&nbsp;<span class="copy-btn-label"><?= $this->translate->_("Copy"); ?></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-default" id="ept-overview-copy-plain-btn"
+                title="<?= $this->translate->_('Copy as plain text'); ?>">
+                <?= $this->translate->_("Copy as plain text"); ?>
+            </button>
+        </div>
+    </div>
+
+    <div id="ept-overview-rendered" style="background:#f5f7fa;padding:2px;border-radius:4px;">
+        <?= $renderedHtml ?>
+    </div>
+
+    <details style="margin-top:14px;">
+        <summary style="cursor:pointer;color:#7a8591;font-size:12px;">
+            <?= $this->translate->_("Preview plain-text version"); ?>
+        </summary>
+        <textarea id="ept-overview-copy-text" readonly
+            style="width:100%;height:260px;font-family:monospace;font-size:12px;margin-top:8px;"><?= $this->escape($copyText); ?></textarea>
+    </details>
+</div>
+
+<script>
+    (function () {
+        var richBtn = document.getElementById('ept-overview-copy-btn');
+        var plainBtn = document.getElementById('ept-overview-copy-plain-btn');
+        var rendered = document.getElementById('ept-overview-rendered');
+        var ta = document.getElementById('ept-overview-copy-text');
+        if (!richBtn || !plainBtn || !rendered || !ta) return;
+
+        var label = richBtn.querySelector('.copy-btn-label');
+        var flashCopied = function () {
+            if (!label) return;
+            var orig = label.textContent;
+            label.textContent = 'Copied';
+            setTimeout(function () { label.textContent = orig; }, 1500);
+        };
+
+        var copyViaSelection = function () {
+            var sel = window.getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(rendered);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            try { document.execCommand('copy'); } catch (e) {}
+            sel.removeAllRanges();
+        };
+
+        richBtn.addEventListener('click', function () {
+            var html = rendered.innerHTML;
+            var text = ta.value;
+            if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+                var item = new ClipboardItem({
+                    'text/html': new Blob([html], { type: 'text/html' }),
+                    'text/plain': new Blob([text], { type: 'text/plain' })
+                });
+                navigator.clipboard.write([item]).then(flashCopied, function () {
+                    copyViaSelection();
+                    flashCopied();
+                });
+            } else {
+                copyViaSelection();
+                flashCopied();
+            }
+        });
+
+        plainBtn.addEventListener('click', function () {
+            var text = ta.value;
+            var done = function () {
+                var orig = plainBtn.textContent;
+                plainBtn.textContent = 'Copied';
+                setTimeout(function () { plainBtn.textContent = orig; }, 1500);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, function () {
+                    ta.select(); document.execCommand('copy'); done();
+                });
+            } else {
+                ta.select(); document.execCommand('copy'); done();
+            }
+        });
+    })();
+</script>

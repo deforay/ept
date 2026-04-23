@@ -2084,4 +2084,110 @@ class Application_Service_Common
     {
         return Pt_Commons_SchemeConfig::get($name);
     }
+
+    public static function getEptOverview()
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $activeParticipants = (int) $db->fetchOne(
+            $db->select()
+                ->from('participant', new Zend_Db_Expr('COUNT(*)'))
+                ->where("status = ?", 'active')
+        );
+
+        $shipmentTotals = $db->fetchRow(
+            $db->select()
+                ->from('shipment', [
+                    'total'         => new Zend_Db_Expr('COUNT(*)'),
+                    'finalized'     => new Zend_Db_Expr("SUM(status = 'finalized')"),
+                    'this_year'     => new Zend_Db_Expr("SUM(YEAR(shipment_date) = YEAR(CURDATE()))"),
+                    'last_12_months' => new Zend_Db_Expr("SUM(shipment_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND shipment_date <= CURDATE())"),
+                ])
+                ->where("status != ?", 'pending')
+        );
+
+        $edgeShipmentCols = [
+            'shipment_date',
+            'shipment_code',
+            'scheme_type',
+        ];
+        $edgeSelect = $db->select()
+            ->from(['s' => 'shipment'], $edgeShipmentCols)
+            ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
+            ->where("s.status != ?", 'pending')
+            ->where("s.shipment_date IS NOT NULL")
+            ->where("s.shipment_date != '0000-00-00'")
+            ->limit(1);
+
+        $oldestShipment = $db->fetchRow((clone $edgeSelect)->order('s.shipment_date ASC'));
+        $latestShipment = $db->fetchRow((clone $edgeSelect)->order('s.shipment_date DESC'));
+
+        $activeSchemes = $db->fetchAll(
+            $db->select()
+                ->from('scheme_list', ['scheme_id', 'scheme_name'])
+                ->where("status = ?", 'active')
+                ->order('scheme_name')
+        );
+
+        $shipmentsPerScheme = $db->fetchAll(
+            $db->select()
+                ->from(['s' => 'shipment'], [
+                    'scheme_type' => 's.scheme_type',
+                    'shipment_count' => new Zend_Db_Expr('COUNT(*)'),
+                ])
+                ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
+                ->where("s.status != ?", 'pending')
+                ->group('s.scheme_type')
+                ->order('sl.scheme_name')
+        );
+
+        $participantsPerScheme = $db->fetchAll(
+            $db->select()
+                ->from(['s' => 'shipment'], [
+                    'scheme_type' => 's.scheme_type',
+                    'participant_count' => new Zend_Db_Expr('COUNT(DISTINCT sp.participant_id)'),
+                ])
+                ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', [])
+                ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
+                ->where("s.status != ?", 'pending')
+                ->group('s.scheme_type')
+                ->order('sl.scheme_name')
+        );
+
+        $schemeRows = [];
+        foreach ($shipmentsPerScheme as $row) {
+            $key = $row['scheme_type'];
+            $schemeRows[$key] = [
+                'scheme_type'       => $key,
+                'scheme_name'       => $row['scheme_name'] ?: strtoupper($key),
+                'shipment_count'    => (int) $row['shipment_count'],
+                'participant_count' => 0,
+            ];
+        }
+        foreach ($participantsPerScheme as $row) {
+            $key = $row['scheme_type'];
+            if (!isset($schemeRows[$key])) {
+                $schemeRows[$key] = [
+                    'scheme_type'       => $key,
+                    'scheme_name'       => $row['scheme_name'] ?: strtoupper($key),
+                    'shipment_count'    => 0,
+                    'participant_count' => 0,
+                ];
+            }
+            $schemeRows[$key]['participant_count'] = (int) $row['participant_count'];
+        }
+        ksort($schemeRows);
+
+        return [
+            'active_participants'      => $activeParticipants,
+            'total_shipments'          => (int) ($shipmentTotals['total'] ?? 0),
+            'finalized_shipments'      => (int) ($shipmentTotals['finalized'] ?? 0),
+            'shipments_this_year'      => (int) ($shipmentTotals['this_year'] ?? 0),
+            'shipments_last_12_months' => (int) ($shipmentTotals['last_12_months'] ?? 0),
+            'oldest_shipment'     => $oldestShipment ?: null,
+            'latest_shipment'     => $latestShipment ?: null,
+            'active_schemes'      => $activeSchemes,
+            'scheme_breakdown'    => array_values($schemeRows),
+        ];
+    }
 }

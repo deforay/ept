@@ -10,6 +10,7 @@ class Admin_IndexController extends Zend_Controller_Action
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
         $ajaxContext->addActionContext('get-scheme-participants', 'html')
             ->addActionContext('load-charts', 'html')
+            ->addActionContext('ept-overview', 'html')
             ->initContext();
     }
 
@@ -62,5 +63,10 @@ class Admin_IndexController extends Zend_Controller_Action
         }
         $this->view->ptchart = $shipmentService->getShipmentListBasedOnScheme();
         $this->view->schemeCountResult = $scheme->countEnrollmentSchemes();
+    }
+
+    public function eptOverviewAction()
+    {
+        $this->view->overview = Application_Service_Common::getEptOverview();
     }
 }
