@@ -223,8 +223,10 @@
                 oTable.fnFilter(value, colIdx);
             }, 400);
         });
-        // Don't let typing in the column-search inputs trigger sort on the header
-        $('#participantsTable thead').on('click', 'input.col-search', function (e) {
+        // Don't let interactions in the column-search inputs trigger sort on the header.
+        // DataTables binds its sort listener directly on <th>, so delegation on <thead>
+        // would run AFTER the sort fires — bind straight on the inputs instead.
+        $('#participantsTable thead input.col-search').on('click mousedown focus', function (e) {
             e.stopPropagation();
         });
 
