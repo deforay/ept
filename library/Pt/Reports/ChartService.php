@@ -6,16 +6,13 @@ class Pt_Reports_ChartService
 
     /**
      * Initialize the chart service. Call once at the start of a report batch.
-     * Uses Node.js + skia-canvas if available; falls back to JPGraph.
+     * Renders via Node.js + Chart.js + skia-canvas (chart-render.js).
      */
     public static function initialize(): void
     {
         self::$renderer = self::buildRenderer();
     }
 
-    /**
-     * No-op — Node.js renderer is stateless; nothing to tear down.
-     */
     public static function shutdown(): void
     {
         self::$renderer = null;
@@ -33,27 +30,7 @@ class Pt_Reports_ChartService
         if (self::$renderer === null) {
             self::$renderer = self::buildRenderer();
         }
-
-        try {
-            return self::$renderer->render($config, $outputDir);
-        } catch (RuntimeException $e) {
-            if (self::$renderer instanceof Pt_Reports_ChartRenderer_ChartJsNode) {
-                error_log('ChartService: Node renderer failed, falling back to JPGraph: ' . $e->getMessage());
-                $fallback = new Pt_Reports_ChartRenderer_JpGraph();
-                return $fallback->render($config, $outputDir);
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Returns the name of the active renderer (for logging/debugging).
-     */
-    public static function getActiveRenderer(): string
-    {
-        return (self::$renderer instanceof Pt_Reports_ChartRenderer_ChartJsNode)
-            ? 'ChartJsNode'
-            : 'JpGraph';
+        return self::$renderer->render($config, $outputDir);
     }
 
     // --- Internal ---
@@ -64,11 +41,21 @@ class Pt_Reports_ChartService
             ? ROOT_PATH . DIRECTORY_SEPARATOR . 'chart-render.js'
             : dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'chart-render.js';
 
-        if (self::nodeAvailable() && file_exists($scriptPath)) {
-            return new Pt_Reports_ChartRenderer_ChartJsNode($scriptPath);
+        if (!file_exists($scriptPath)) {
+            throw new RuntimeException(
+                "Chart renderer script not found at $scriptPath. " .
+                "Expected repository-root chart-render.js to be present."
+            );
+        }
+        if (!self::nodeAvailable()) {
+            throw new RuntimeException(
+                'Node.js is required for report chart rendering but was not found on PATH. ' .
+                'Install Node.js (Ubuntu: `apt install nodejs npm`; Docker: use a base image with Node) ' .
+                'and run `npm ci` at the repo root.'
+            );
         }
 
-        return new Pt_Reports_ChartRenderer_JpGraph();
+        return new Pt_Reports_ChartRenderer_ChartJsNode($scriptPath);
     }
 
     private static function nodeAvailable(): bool
@@ -88,14 +75,5 @@ class Pt_Reports_ChartService
         fclose($pipes[1]);
         fclose($pipes[2]);
         return proc_close($process) === 0;
-    }
-
-    private static function getConfigValue(string $name): ?string
-    {
-        try {
-            return Pt_Commons_General::getConfig($name);
-        } catch (\Throwable) {
-            return null;
-        }
     }
 }

@@ -1,9 +1,5 @@
 <?php
 
-use mitoteam\jpgraph\MtJpGraph;
-
-MtJpGraph::load(['bar', 'line', 'pie'], true);
-
 if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
     $shipmentAttributes = json_decode($resultArray['shipment']['shipment_attributes'], true);
     $tbTestType = (isset($shipmentAttributes['tb_test_type']) && !empty($shipmentAttributes['tb_test_type'])) ? $shipmentAttributes['tb_test_type'] : 'molecular';
@@ -181,7 +177,6 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                 'Participating' => round($resultArray['shipment']['summaryResult']['participated'], 1),
                 'Sites Scoring 100%' => round($resultArray['shipment']['summaryResult']['sitesScoring100'], 1)
             ];
-            // JPGraph Charts
             $dataX = [];
             $dataY = [];
             foreach ($barPoints as $key => $val) {
@@ -189,48 +184,18 @@ if (!empty($resultArray['shipment']) && $resultArray['shipment'] != "") {
                 $dataY[] = $key . ' (' . $val . ')';
             }
 
-            // Create the graph. These two calls are always required
-            $graph = new Graph(700, 300, 'auto');
-            $graph->SetScale("textlin");
-
-            $theme_class = new UniversalTheme;
-            $graph->SetTheme($theme_class);
-
-            // $graph->yaxis->SetTickPositions(array(0,30,60,90,120,150));
-            $graph->SetBox(false);
-
-            $graph->ygrid->SetFill(false);
-            $graph->xaxis->SetTickLabels($dataY);
-            $graph->yaxis->HideLine(false);
-            $graph->yaxis->HideTicks(false, false);
-
-            // Create the bar plots
-            $b1plot = new BarPlot($dataX);
-
-            // Create the grouped bar plot
-            $gbplot = new GroupBarPlot(array($b1plot));
-            // ...and add it to the graPH
-            $graph->Add($gbplot);
-
-
-            $b1plot->SetColor("white");
-            // $b1plot->SetFillColor("#cc1111");
-            // $b1plot->SetFillColor(array('brown4', 'red', 'yellow', 'darkgreen'));
-
-            // Setup the titles
-            $graph->title->Set("XTPT Site Enrollment, Participation, and Performance for " . $resultArray['shipment']['shipment_code']);
-            // $graph->xaxis->title->Set('% Score');
-            $graph->yaxis->title->Set('Number of Sites', 'center');
-
-            $graph->yaxis->SetTitleMargin(30);
-            $graph->xaxis->SetTitleMargin(32);
-            // Turn the tick mark out from the plot area
-            $graph->xaxis->SetTickSide(SIDE_DOWN);
-            $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-            // Display the graph
-            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-            $graph->Stroke($image_file);
+            $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
+            $image_file = Pt_Reports_ChartService::render([
+                'type' => 'bar',
+                'width' => 1400, 'height' => 600,
+                'filename' => 'bar_chart',
+                'title' => Pt_Commons_TranslateUtility::safeTranslate("XTPT Site Enrollment, Participation, and Performance for ") . $resultArray['shipment']['shipment_code'],
+                'xAxis' => ['labels' => $dataY],
+                'yAxis' => ['title' => Pt_Commons_TranslateUtility::safeTranslate('Number of Sites')],
+                'datasets' => [
+                    ['data' => $dataX, 'colors' => ['#3B82F6']],
+                ],
+            ], $outputDir);
 
             $y = $pdf->getY() + 5;
             $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);

@@ -110,6 +110,7 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
         if (!empty($ds['label'])) {
             $chartDataset['label'] = $ds['label'];
         }
+        $this->applyDatasetValueLabels($chartDataset, $ds);
 
         return [
             'type' => 'bar',
@@ -133,6 +134,7 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             if (!empty($ds['label'])) {
                 $chartDataset['label'] = $ds['label'];
             }
+            $this->applyDatasetValueLabels($chartDataset, $ds);
             $chartDatasets[] = $chartDataset;
         }
 
@@ -157,12 +159,26 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             if (!empty($ds['label'])) {
                 $chartDataset['label'] = $ds['label'];
             }
+            $this->applyDatasetValueLabels($chartDataset, $ds);
             $chartDatasets[] = $chartDataset;
         }
 
         $options = $this->buildBarOptions($config);
         $options['scales']['x']['stacked'] = true;
         $options['scales']['y']['stacked'] = true;
+
+        // Chart-level showValues on stacked = label the topmost segment with the stack total.
+        // The `_formatter` sentinel is replaced by a real JS function in chart-render.js.
+        if (!empty($config['showValues'])) {
+            $options['plugins']['datalabels'] = [
+                'display'    => true,
+                'anchor'     => 'end',
+                'align'      => 'end',
+                'color'      => $config['valueColor'] ?? '#111827',
+                'font'       => ['size' => 20, 'weight' => 'bold'],
+                '_formatter' => ['type' => 'stackTotal', 'format' => $config['valueFormat'] ?? '%d'],
+            ];
+        }
 
         return [
             'type' => 'bar',
@@ -353,6 +369,36 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
             $ticks['minRotation'] = $angle;
         }
         return $ticks;
+    }
+
+    // --- Data-label (value-on-bar) helpers ---
+
+    /**
+     * Translate a dataset's {showValues, valueColor, valueFormat} legacy keys into
+     * a chartjs-plugin-datalabels options block attached to the dataset.
+     * The `_formatter` sentinel is expanded into a real JS function in chart-render.js.
+     */
+    private function applyDatasetValueLabels(array &$chartDataset, array $ds): void
+    {
+        if (empty($ds['showValues'])) {
+            return;
+        }
+
+        $chartDataset['datalabels'] = [
+            'display' => true,
+            'anchor'  => $ds['valueAnchor'] ?? 'end',
+            'align'   => $ds['valueAlign'] ?? 'end',
+            'color'   => $this->mapColor($ds['valueColor'] ?? '#111827'),
+            'font'    => ['size' => 20, 'weight' => 'bold'],
+            'clamp'   => true,
+        ];
+
+        if (!empty($ds['valueFormat'])) {
+            $chartDataset['datalabels']['_formatter'] = [
+                'type'   => 'printf',
+                'format' => $ds['valueFormat'],
+            ];
+        }
     }
 
     // --- Color mapping (JPGraph named colors → CSS) ---

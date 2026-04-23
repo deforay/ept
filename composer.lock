@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99b280d66406e21bf0ac2298062f9269",
+    "content-hash": "50383991d663d624140de2b79bc01266",
     "packages": [
         {
             "name": "amitdugar/archiveutil",
@@ -915,61 +915,6 @@
                 "source": "https://github.com/MarkBaker/PHPMatrix/tree/3.0.1"
             },
             "time": "2022-12-02T22:17:43+00:00"
-        },
-        {
-            "name": "mitoteam/jpgraph",
-            "version": "10.5.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mitoteam/jpgraph.git",
-                "reference": "62658af06f619bd65a40fb4a2b26df7bdc36818a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mitoteam/jpgraph/zipball/62658af06f619bd65a40fb4a2b26df7bdc36818a",
-                "reference": "62658af06f619bd65a40fb4a2b26df7bdc36818a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5"
-            },
-            "replace": {
-                "jpgraph/jpgraph": "4.0.2",
-                "rulin132/jpgraph": "4.3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/MtJpGraph.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "QPL-1.0"
-            ],
-            "authors": [
-                {
-                    "name": "JpGraph team",
-                    "homepage": "https://jpgraph.net",
-                    "role": "Original Library Developers"
-                },
-                {
-                    "name": "MiTo Team",
-                    "email": "info@mito-team.com",
-                    "homepage": "https://www.mito-team.com",
-                    "role": "Composer package maintenance, PHP-compatibility patches"
-                }
-            ],
-            "description": "JpGraph library composer package with PHP 8.5 support",
-            "homepage": "https://github.com/mitoteam/jpgraph",
-            "keywords": [
-                "jpgraph"
-            ],
-            "support": {
-                "issues": "https://github.com/mitoteam/jpgraph/issues",
-                "source": "https://github.com/mitoteam/jpgraph/tree/10.5.4"
-            },
-            "time": "2026-04-06T04:38:38+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -4742,21 +4687,27 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.11.2",
+            "version": "6.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "e1e2ade18e574e963473f53271591edd8c0033ec"
+                "reference": "b18f6119161019916c5bb07cb8da5205ae5c1b63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/e1e2ade18e574e963473f53271591edd8c0033ec",
-                "reference": "e1e2ade18e574e963473f53271591edd8c0033ec",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/b18f6119161019916c5bb07cb8da5205ae5c1b63",
+                "reference": "b18f6119161019916c5bb07cb8da5205ae5c1b63",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "php": ">=7.1.0"
+            },
+            "suggest": {
+                "ext-gd": "Enables additional image handling in some workflows.",
+                "ext-imagick": "Enables additional image format support when available.",
+                "ext-zlib": "Recommended for compressed streams and related features.",
+                "tecnickcom/tc-lib-pdf": "Modern replacement for TCPDF for new projects."
             },
             "type": "library",
             "autoload": {
@@ -4788,8 +4739,8 @@
                     "role": "lead"
                 }
             ],
-            "description": "TCPDF is a PHP class for generating PDF documents and barcodes.",
-            "homepage": "http://www.tcpdf.org/",
+            "description": "Deprecated legacy PDF engine for PHP. For new projects use tecnickcom/tc-lib-pdf.",
+            "homepage": "https://tcpdf.org",
             "keywords": [
                 "PDFD32000-2008",
                 "TCPDF",
@@ -4801,15 +4752,15 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.11.2"
+                "source": "https://github.com/tecnickcom/TCPDF"
             },
             "funding": [
                 {
                     "url": "https://www.paypal.com/donate/?hosted_button_id=NZUEC5XS8MFBJ",
-                    "type": "custom"
+                    "type": "paypal"
                 }
             ],
-            "time": "2026-03-03T08:58:10+00:00"
+            "time": "2026-04-21T17:00:18+00:00"
         }
     ],
     "packages-dev": [

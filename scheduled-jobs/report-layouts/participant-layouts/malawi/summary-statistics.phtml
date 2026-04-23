@@ -32,51 +32,18 @@ if (isset($result['performance1']) && !empty($result['performance1'])) {
         $dataX[] = ($val['scored'] > 0) ? $val['scored'] : 0;
         $dataY[] = $val['distribution_code'];
     }
-    // Create the graph. These two calls are always required
-    $graph = new Graph(680, 200, 'auto');
-    $graph->SetScale("textlin");
-
-    $graph->SetBox(false);
-    $graph->SetMargin(80, 30, 10, 50);
-
-    $graph->ygrid->SetFill(false);
-    $graph->xaxis->SetTickLabels($dataY);
-    $graph->xaxis->SetPos(0.5);
-
-    $graph->yaxis->HideLine(false);
-    $graph->yaxis->HideTicks(false, false);
-    $graph->yaxis->scale->SetAutoMin(0);
-    $graph->yaxis->scale->SetAutoMax(100);
-    // Create the bar plots
-    $b1plot = new BarPlot($dataX);
-    // Create the grouped bar plot
-    $gbplot = new GroupBarPlot(array($b1plot));
-    // ...and add it to the graPH
-    $graph->Add($gbplot);
-    $b1plot->value->Show();
-    $b1plot->value->SetColor("black", "darkred");
-    $b1plot->value->SetFormat("%3d%%");
-
-    $b1plot->SetFillColor('#4F81BD');
-    $b1plot->SetColor("white");
-    $graph->title->Set("Your Performance for the last 5 surveys");
-    $graph->subtitle->Set('.');
-    $graph->xaxis->title->Set('PT Surveys');
-    $graph->yaxis->title->Set('Percentage of Performance');
-    $graph->yaxis->SetPos('min');
-    $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->yaxis->SetTitleMargin(40);
-    $graph->xaxis->SetTitleMargin(15);
-    // Turn the tick mark out from the plot area
-    $graph->xaxis->SetTickSide(SIDE_DOWN);
-    $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-    $image_file = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'bar_chart.png';
-    $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-    $graph->img->SetQuality(100); // Set the highest quality
-    $graph->Stroke($image_file);
+    $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+    $image_file = Pt_Reports_ChartService::render([
+        'type' => 'bar',
+        'width' => 1400, 'height' => 420,
+        'filename' => 'bar_chart',
+        'title' => Pt_Commons_TranslateUtility::safeTranslate('Your Performance for the last 5 surveys'),
+        'xAxis' => ['labels' => $dataY, 'title' => Pt_Commons_TranslateUtility::safeTranslate('PT Surveys')],
+        'yAxis' => ['title' => Pt_Commons_TranslateUtility::safeTranslate('Percentage of Performance')],
+        'datasets' => [
+            ['data' => $dataX, 'colors' => ['#4F81BD'], 'showValues' => true, 'valueFormat' => '%d%%'],
+        ],
+    ], $outputDir);
     $pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 600);
     if (file_exists($image_file)) {
         unlink($image_file);
@@ -90,61 +57,20 @@ if (isset($result['performance2']) && !empty($result['performance2'])) {
         $data2y[] = ($row['failed'] > 0) ? $row['failed'] : null;
         $label[] = $row['distribution_code'];
     }
-    // Create the graph. These two calls are always required
-    $graph = new Graph(680, 200, 'auto');
-    $graph->SetScale("textlin");
-
-    $graph->SetBox(false);
-    $graph->SetMargin(80, 30, 10, 50);
-    $graph->ygrid->SetFill(false);
-    $graph->xaxis->SetTickLabels($label);
-    $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->xaxis->HideLine(false);
-    $graph->yaxis->HideLine(false);
-    $graph->xaxis->HideTicks(false, false);
-    $graph->yaxis->HideTicks(false, false);
-
-    // Create the bar plots
-    $b1plot = new BarPlot($data1y);
-    $b2plot = new BarPlot($data2y);
-    // Create the grouped bar plot
-    $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
-    // ...and add it to the graPH
-    $graph->Add($gbplot);
-    $b1plot->value->Show();
-    $b1plot->value->SetColor("black", "darkred");
-    $b2plot->value->Show();
-    $b2plot->value->SetColor("darkred", "black");
-    $b1plot->value->SetFormat("%d");
-    $b2plot->value->SetFormat("%d");
-    $b1plot->SetFillColor("darkgreen");
-    $b1plot->SetColor("white");
-
-    $b2plot->SetFillColor("red");
-    $b2plot->SetColor("white");
-
-    $b1plot->SetFillColor('#4F81BD');
-    $b1plot->SetColor("white");
-    $b1plot->SetLegend('Passed');
-    $b2plot->SetLegend('Failed');
-    $graph->legend->SetShadow('gray@0.4', 5);
-    $graph->legend->SetPos(0.5, 0.95, 'center', 'bottom');
-    $graph->title->Set("Participants performance for the last 5 surveys");
-    $graph->subtitle->Set('.');
-    $graph->yaxis->title->Set('Number of Participants');
-    $graph->xaxis->title->Set('PT Surveys');
-    $graph->yaxis->SetTitleMargin(40);
-    $graph->xaxis->SetTitleMargin(15);
-    $graph->xaxis->SetTickSide(SIDE_DOWN);
-    $graph->yaxis->SetTickSide(SIDE_LEFT);
-
-    // Display the graph
-    $performance_of_surveys = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_surveys.png';
-    $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-    $graph->img->SetQuality(100); // Set the highest quality
-    $graph->Stroke($performance_of_surveys);
+    $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+    $performance_of_surveys = Pt_Reports_ChartService::render([
+        'type' => 'groupedBar',
+        'width' => 1400, 'height' => 420,
+        'filename' => 'performance_of_surveys',
+        'title' => Pt_Commons_TranslateUtility::safeTranslate('Participants performance for the last 5 surveys'),
+        'xAxis' => ['labels' => $label, 'title' => Pt_Commons_TranslateUtility::safeTranslate('PT Surveys')],
+        'yAxis' => ['title' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants')],
+        'datasets' => [
+            ['data' => $data1y, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Passed'), 'colors' => ['#4F81BD'], 'showValues' => true, 'valueFormat' => '%d'],
+            ['data' => $data2y, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Failed'), 'colors' => ['red'],     'showValues' => true, 'valueFormat' => '%d'],
+        ],
+        'legend' => ['position' => 'bottom'],
+    ], $outputDir);
     $addPoint = 0;
     if ($performance1) {
         $addPoint = 65;
@@ -166,60 +92,20 @@ if (isset($result['performance3']) && !empty($result['performance3'])) {
 
         $surveyNo = $row['distribution_code'];
     }
-    // Create the graph. These two calls are always required
-    $graph = new Graph(680, 200, 'auto');
-    $graph->SetScale("textlin");
-
-    $graph->SetBox(false);
-    $graph->SetMargin(80, 30, 10, 50);
-    $graph->ygrid->SetFill(false);
-    $graph->xaxis->SetTickLabels($label);
-    $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 10);
-    $graph->xaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->yaxis->title->SetFont(FF_FONT0, FS_NORMAL, 12);
-    $graph->xaxis->HideLine(false);
-    $graph->yaxis->HideLine(false);
-    $graph->xaxis->HideTicks(false, false);
-    $graph->yaxis->HideTicks(false, false);
-    // $graph->xaxis->SetPos(0.5);
-
-    // Create the bar plots
-    $b1plot = new BarPlot($data1y);
-    $b2plot = new BarPlot($data2y);
-    // Create the grouped bar plot
-    $gbplot = new GroupBarPlot(array($b1plot, $b2plot));
-    // ...and add it to the graPH
-    $graph->Add($gbplot);
-    $b1plot->value->Show();
-    $b1plot->value->SetColor("black", "darkred");
-    $b2plot->value->Show();
-    $b2plot->value->SetColor("darkred", "black");
-    $b1plot->value->SetFormat("%d");
-    $b2plot->value->SetFormat("%d");
-    $b1plot->SetFillColor("darkgreen");
-    $b1plot->SetColor("white");
-
-    $b2plot->SetFillColor("red");
-    $b2plot->SetColor("white");
-
-    $b1plot->SetFillColor('#4F81BD');
-    $b1plot->SetColor("white");
-    $graph->legend->SetShadow('gray@0.4', 5);
-    $graph->legend->SetPos(0.5, 0.2, 'center', 'bottom');
-    $graph->title->Set("Participants performance for the current survey panels");
-    $graph->subtitle->Set('Survey No: ' . $surveyNo);
-    $graph->subsubtitle->Set('.');
-    $graph->yaxis->title->Set('Number of Participants');
-    $graph->xaxis->title->Set('Samples');
-    $graph->yaxis->SetTitleMargin(40);
-    $graph->xaxis->SetTitleMargin(15);
-    $graph->xaxis->SetTickSide(SIDE_DOWN);
-    $graph->yaxis->SetTickSide(SIDE_LEFT);
-    // Display the graph
-    $performance_of_current_survey_anels = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . 'performance_of_current_survey_anels.png';
-    $graph->img->SetImgFormat('png'); // Ensure PNG format for better quality
-    $graph->img->SetQuality(100); // Set the highest quality
-    $graph->Stroke($performance_of_current_survey_anels);
+    $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'];
+    $performance_of_current_survey_anels = Pt_Reports_ChartService::render([
+        'type' => 'groupedBar',
+        'width' => 1400, 'height' => 420,
+        'filename' => 'performance_of_current_survey_anels',
+        'title' => Pt_Commons_TranslateUtility::safeTranslate('Participants performance for the current survey panels') . ' — ' . Pt_Commons_TranslateUtility::safeTranslate('Survey No: ') . $surveyNo,
+        'xAxis' => ['labels' => $label, 'title' => Pt_Commons_TranslateUtility::safeTranslate('Samples')],
+        'yAxis' => ['title' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants')],
+        'datasets' => [
+            ['data' => $data1y, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Passed'), 'colors' => ['#4F81BD'], 'showValues' => true, 'valueFormat' => '%d'],
+            ['data' => $data2y, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Failed'), 'colors' => ['red'],     'showValues' => true, 'valueFormat' => '%d'],
+        ],
+        'legend' => ['position' => 'bottom'],
+    ], $outputDir);
     $addPoint = 0;
     if ($performance1) {
         $addPoint = 65;
