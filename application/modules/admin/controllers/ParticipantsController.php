@@ -175,6 +175,9 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
             $params = $request->getPost();
             $participantService->addParticipantManagerMap($params);
+            if (!empty($params['isModal']) && !empty($params['datamanagerId'])) {
+                $this->redirect('/admin/participants/participant-manager-map/id/' . (int) $params['datamanagerId'] . '/modal/1');
+            }
             $this->redirect("/admin/participants/participant-manager-map");
         }
         $this->view->countries = $participantService->getParticipantCountriesList();
@@ -183,6 +186,30 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->networksTier = $commonService->getAllnetwork();
         $this->view->affiliation = $commonService->getAllParticipantAffiliates();
         $this->view->institutes = $commonService->getAllInstitutes();
+
+        $this->view->isModal = (bool) $this->_getParam('modal', false);
+        if ($this->view->isModal) {
+            $this->_helper->layout()->setLayout('modal');
+        }
+        $preselectedDmId = (int) $this->_getParam('id', 0);
+        if ($preselectedDmId > 0) {
+            $dataManagerService = new Application_Service_DataManagers();
+            $dm = $dataManagerService->getUserInfoBySystemId($preselectedDmId);
+            if (!empty($dm) && (!isset($dm['data_manager_type']) || $dm['data_manager_type'] !== 'ptcc')) {
+                $label = [];
+                if (!empty(trim($dm['first_name'] . ' ' . $dm['last_name']))) {
+                    $label[] = trim($dm['first_name'] . ' ' . $dm['last_name']);
+                }
+                if (!empty(trim($dm['institute']))) {
+                    $label[] = trim($dm['institute']);
+                }
+                if (!empty(trim($dm['primary_email']))) {
+                    $label[] = trim($dm['primary_email']);
+                }
+                $this->view->preselectedDmId = $preselectedDmId;
+                $this->view->preselectedDmLabel = implode(', ', $label);
+            }
+        }
     }
 
     public function getDatamanagerAction()

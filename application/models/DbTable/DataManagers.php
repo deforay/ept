@@ -260,7 +260,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             } else {
                 $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $translator->_("Reset Password") . '</a>';
             }
-            $row[] = $edit . $passwordReset;
+            $mapParticipants = '';
+            if ((!isset($parameters['from']) || $parameters['from'] != 'participant')
+                && (!isset($aRow['data_manager_type']) || $aRow['data_manager_type'] != 'ptcc')
+            ) {
+                $mapParticipants = ' <a href="javascript:void(0);" class="btn btn-success btn-xs" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_("Map Participants") . '</a>';
+            }
+            $row[] = $edit . $passwordReset . $mapParticipants;
 
             $output['aaData'][] = $row;
         }
