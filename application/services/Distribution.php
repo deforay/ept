@@ -87,7 +87,7 @@ class Application_Service_Distribution
 			->where("DATE_FORMAT(distribution_date, '%Y-%m') = ?", $ptDate)
 			->order('distribution_id desc');
 		$result = $db->fetchRow($sql);
-		$count = sprintf("%02d", (isset($result['count']) && $result['count'] == 0) ? 1 : $result['count']);
+		$count = sprintf("%02d", ((int)($result['count'] ?? 0)) + 1);
 		return "PT-$ptDate-$count";
 	}
 }
