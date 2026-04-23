@@ -784,12 +784,29 @@ class ReportGenerator
     ): void {
         $lastCount = $this->getPdfCount($evalRow['shipment_code']);
 
-        for ($offset = 0; $offset <= $reportedCount; $offset += $chunkSize) {
-            Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
+        // Loop-invariants — hoisted out of the per-batch loop.
+        if (($totParticipantsRes['is_user_configured'] ?? '') === 'yes') {
+            $totParticipantsRes['scheme_type'] = 'generic-test';
+        }
+        $participantLayoutFile = $this->resolveLayoutFile('participant', $totParticipantsRes['scheme_type']);
+        $baseContext = $this->buildParticipantLayoutContext($evalRow, $totParticipantsRes, $resultStatus, $allGeneTypes);
 
-            if (isset($totParticipantsRes['is_user_configured']) && $totParticipantsRes['is_user_configured'] == 'yes') {
-                $totParticipantsRes['scheme_type'] = 'generic-test';
-            }
+        $shipmentsUnderDistro = null;
+        if ($this->config->layout === 'zimbabwe') {
+            $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports(
+                $totParticipantsRes['distribution_id'],
+                $evalRow['shipment_id']
+            )[0];
+        }
+        $baseContext['shipmentsUnderDistro'] = $shipmentsUnderDistro;
+
+        $layoutBasename = basename($participantLayoutFile);
+
+        // reportedCount is an upper bound; the fetch query can return fewer
+        // rows (skipped participants, soft-deletes). Keep paging until a batch
+        // comes back empty rather than trusting the count.
+        for ($offset = 0; ; $offset += $chunkSize) {
+            Pt_Commons_MiscUtility::updateHeartbeat('queue_report_generation', 'shipment_id', $evalRow['shipment_id']);
 
             self::debugLog(
                 "Fetching participants for shipment {$evalRow['shipment_id']} (offset {$offset}, limit {$chunkSize})...",
@@ -799,54 +816,43 @@ class ReportGenerator
 
             $tFetchStart = microtime(true);
             $resultArray = $this->config->evalService->getIndividualReportsDataForPDF($evalRow['shipment_id'], $chunkSize, $offset);
+            $fetchedRows = count($resultArray['shipment'] ?? []);
             self::debugLog(
-                "Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows=" . count($resultArray['shipment'] ?? []),
+                "Fetched in " . round((microtime(true) - $tFetchStart) * 1000) . " ms; rows={$fetchedRows}",
                 $this->opts->isCli,
                 $this->opts->debug
             );
 
-            // Get distribution shipments for Zimbabwe layout
-            $shipmentsUnderDistro = null;
-            if ($this->config->layout == 'zimbabwe') {
-                $shipmentsUnderDistro = $this->config->shipmentService->getShipmentInReports($totParticipantsRes['distribution_id'], $evalRow['shipment_id'])[0];
+            if ($fetchedRows === 0) {
+                break;
             }
 
-            $endValue = min($offset + ($chunkSize - 1), $reportedCount);
-            $bulkfileNameVal = "{$offset}-{$endValue}";
+            $context = $baseContext;
+            $context['resultArray']     = $resultArray;
+            $context['bulkfileNameVal'] = "{$offset}-" . ($offset + $fetchedRows - 1);
 
-            if (!empty($resultArray)) {
-                $participantLayoutFile = $this->resolveLayoutFile('participant', $totParticipantsRes['scheme_type']);
+            self::debugLog(
+                "Rendering PDFs for offset {$offset} using {$layoutBasename}...",
+                $this->opts->isCli,
+                $this->opts->debug
+            );
 
-                $context = $this->buildParticipantLayoutContext($evalRow, $totParticipantsRes, $resultStatus, $allGeneTypes);
-                $context['resultArray'] = $resultArray;
-                $context['bulkfileNameVal'] = $bulkfileNameVal;
-                $context['shipmentsUnderDistro'] = $shipmentsUnderDistro;
+            $tRenderStart = microtime(true);
+            self::includeWithContext($participantLayoutFile, $context);
+            self::debugLog(
+                "Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms",
+                $this->opts->isCli,
+                $this->opts->debug
+            );
 
-                self::debugLog(
-                    "Rendering PDFs for offset {$offset} using " . basename($participantLayoutFile) . "...",
-                    $this->opts->isCli,
-                    $this->opts->debug
-                );
+            $this->markReportsGenerated($resultArray);
 
-                $tRenderStart = microtime(true);
-                self::includeWithContext($participantLayoutFile, $context);
-                self::debugLog(
-                    "Rendered PDFs in " . round((microtime(true) - $tRenderStart) * 1000) . " ms",
-                    $this->opts->isCli,
-                    $this->opts->debug
-                );
-
-                // Mark reports as generated
-                $this->markReportsGenerated($resultArray);
-
-                // Update progress bar
-                $newCount = $this->getPdfCount($evalRow['shipment_code']);
-                $delta = $newCount - $lastCount;
-                if ($delta > 0 && $progressBar) {
-                    Pt_Commons_MiscUtility::spinnerAdvance($progressBar, $delta);
-                }
-                $lastCount = $newCount;
+            $newCount = $this->getPdfCount($evalRow['shipment_code']);
+            $delta = $newCount - $lastCount;
+            if ($delta > 0 && $progressBar) {
+                Pt_Commons_MiscUtility::spinnerAdvance($progressBar, $delta);
             }
+            $lastCount = $newCount;
         }
     }
 
