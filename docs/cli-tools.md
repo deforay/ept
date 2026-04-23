@@ -6,6 +6,26 @@ All commands below assume you are in the ePT installation directory (e.g., `/var
 
 ---
 
+## Interactive Launcher
+
+If you don't remember which script does what, run the launcher — it lists every runnable script in `bin/` with a short description, shows the usage block for any you pick, and then runs it with the arguments you type.
+
+```bash
+# Interactive TUI — pick a script, see its usage, run it
+php bin/console.php
+
+# Plain listing (no prompts) — handy over non-interactive SSH or pipes
+php bin/console.php list
+
+# Show the usage block for one script (partial match works)
+php bin/console.php info reset-password
+php bin/console.php info reset          # ambiguous — lists all matches
+```
+
+In TUI mode, the child script inherits your terminal, so its own interactive prompts (password entry, confirmations, etc.) work normally.
+
+---
+
 ## Password Reset
 
 ### Reset Data Manager Password
