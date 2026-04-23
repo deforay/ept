@@ -43,7 +43,7 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
     var duplicated = false;
     var duplicateCheckXhr = null;
     var submitting = false;
-    var duplicateCodeMsg = <?= json_encode($this->translate->_("This code already exists for another PT Survey. Please try something else.")); ?>;
+    var duplicateCodeMsg = "<?= $this->jsTranslate("This code already exists for another PT Survey. Please try something else."); ?>";
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         if (obj.value == "" || obj.value == null) {
