@@ -253,28 +253,34 @@ if ($resultArray['shipment'] != "") {
                         $testKitResult[$row['testkitid']]['Repeat Test'] += (int) $row['Test-1-Repeat'];
                     }
                 } else {
-                    // FIX: First time seeing this testkitid — initialize name, mark as seen,
-                    // and initialize total to 0 before accumulating, so subsequent Test-N
-                    // values are added rather than overwriting each other.
-                    $testKitResult[$row['testkitid']]['name'] = $row['testkitname'];
+                    // First time seeing this testkitid — initialize all counters to 0
+                    // so the +=-based "seen again" branch above never touches an
+                    // uninitialized key.
+                    $testKitResult[$row['testkitid']] = [
+                        'name'        => $row['testkitname'],
+                        'total'       => 0,
+                        'Test 1'      => 0,
+                        'Test 2'      => 0,
+                        'Test 3'      => 0,
+                        'Repeat Test' => 0,
+                    ];
                     $testKitCheck[] = $row['testkitid'];
-                    $testKitResult[$row['testkitid']]['total'] = 0; // initialize before accumulating
 
-                    if (isset($row['Test-1']) && !empty($row['Test-1'])) {
-                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-1'];
-                        $testKitResult[$row['testkitid']]['Test 1'] = (int) $row['Test-1'];
+                    if (!empty($row['Test-1'])) {
+                        $testKitResult[$row['testkitid']]['total']  += (int) $row['Test-1'];
+                        $testKitResult[$row['testkitid']]['Test 1'] += (int) $row['Test-1'];
                     }
-                    if (isset($row['Test-2']) && !empty($row['Test-2'])) {
-                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-2'];
-                        $testKitResult[$row['testkitid']]['Test 2'] = (int) $row['Test-2'];
+                    if (!empty($row['Test-2'])) {
+                        $testKitResult[$row['testkitid']]['total']  += (int) $row['Test-2'];
+                        $testKitResult[$row['testkitid']]['Test 2'] += (int) $row['Test-2'];
                     }
-                    if (isset($row['Test-3']) && !empty($row['Test-3'])) {
-                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-3'];
-                        $testKitResult[$row['testkitid']]['Test 3'] = (int) $row['Test-3'];
+                    if (!empty($row['Test-3'])) {
+                        $testKitResult[$row['testkitid']]['total']  += (int) $row['Test-3'];
+                        $testKitResult[$row['testkitid']]['Test 3'] += (int) $row['Test-3'];
                     }
-                    if (isset($row['Test-1-Repeat']) && !empty($row['Test-1-Repeat'])) {
-                        $testKitResult[$row['testkitid']]['total'] += (int) $row['Test-1-Repeat'];
-                        $testKitResult[$row['testkitid']]['Repeat Test'] = (int) $row['Test-1-Repeat'];
+                    if (!empty($row['Test-1-Repeat'])) {
+                        $testKitResult[$row['testkitid']]['total']       += (int) $row['Test-1-Repeat'];
+                        $testKitResult[$row['testkitid']]['Repeat Test'] += (int) $row['Test-1-Repeat'];
                     }
                 }
             }
@@ -421,8 +427,9 @@ if ($resultArray['shipment'] != "") {
     $html .= '<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <p style="font-size:11px;text-align:center;font-weight:bold;"><u>End of ' . $reportType . ' Report</u>.</p>';
     $html .= '<p style="font-size:11px;font-weight:bold;"><i>This is the confidential report that summarizes your performance.</i></p>';
-    if (trim($resultArray['shipment']['shipment_comment']) != "") {
-        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $resultArray['shipment']['shipment_comment'] . '</p>';
+    $shipmentComment = $resultArray['shipment']['shipment_comment'] ?? '';
+    if (trim((string) $shipmentComment) !== '') {
+        $html .= '<p style="font-size:11px;"><b>Scheme Manager`s Comments:</b> ' . $shipmentComment . '</p>';
     }
     // $html .= '<p style="font-size:11px;font-weight:bold;text-align:center;"><i>NPH PT all rights reserved.</i></p>';
     $html .= '<p style="font-size:11px;font-weight:bold;">Report Print Date: ' . $commonService->humanReadableDateFormat(date('d-m-Y')) . '</p>';

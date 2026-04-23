@@ -1,5 +1,8 @@
 <?php
 
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'scatter'], true);
 if ($resultArray['shipment'] != "") {
 
     if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'])) {
@@ -323,29 +326,126 @@ if ($resultArray['shipment'] != "") {
         $avg[] = $totalBarAvg;
 
         if (count($noOfPaResponse) > 0 && ($totalBarPassed) > 0) {
-            $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
-            $image_file = Pt_Reports_ChartService::render([
-                'type' => 'bar+line',
-                'width' => 1400, 'height' => 700,
-                'filename' => 'all-participants-chart',
-                'title' => Pt_Commons_TranslateUtility::safeTranslate('All Participants Results Summary'),
-                'xAxis' => [
-                    'labels' => $allParticipantChartLabels,
-                    'labelAngle' => count($allParticipantChartLabels) >= 4 ? 10 : 0,
-                ],
-                'yAxis' => ['title' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants')],
-                'y2Axis' => [
-                    'title' => Pt_Commons_TranslateUtility::safeTranslate('Percent of Participants Scoring "100%"'),
-                    'min' => 0, 'max' => 100,
-                ],
-                'datasets' => [
-                    ['data' => $noOfPaResponse,  'label' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants Submitted Results'), 'colors' => ['#1471c1']],
-                    ['data' => $participantScore,'label' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants Scoring "100%"'),    'colors' => ['#92d14f']],
-                    ['data' => $scoreBelow,      'label' => Pt_Commons_TranslateUtility::safeTranslate('Number of Participants Scoring Below "100%"'), 'colors' => ['#fbda66']],
-                    ['type' => 'line', 'data' => $avg, 'label' => Pt_Commons_TranslateUtility::safeTranslate('% of Participants scoring "100%"'), 'colors' => ['red']],
-                ],
-                'legend' => ['position' => 'bottom'],
-            ], $outputDir);
+            /* JPGraph start */
+            // Create the graph and specify the scale for both Y-axis
+            $graph = new Graph(900, 400, 'auto');
+            //$graph->graph_theme = null;
+            $graph->SetScale("textlin");
+            $graph->SetY2Scale("lin", 0, 100);
+            $graph->SetY2OrderBack(false);
+
+            $graph->img->SetMargin(70, 70, 90, 140);
+            $graph->SetFrame(false);
+
+            // Create the two linear plot
+            $percentPlot = new LinePlot($avg);
+            $graph->AddY2($percentPlot);
+
+            $percentPlot->SetBarCenter(true);
+
+            $percentPlot->SetWeight(0);
+            $percentPlot->SetLineWeight(0);
+
+            $percentPlot->mark->SetType(MARK_FILLEDCIRCLE, '', 4.0);
+            $percentPlot->mark->SetWeight(10);
+            $percentPlot->mark->SetWidth(14);
+            $percentPlot->mark->setColor("red");
+            $percentPlot->mark->setFillColor("red");
+            $percentPlot->mark->SetSize(5);
+            $percentPlot->value->SetFormat("%d%%");
+            $percentPlot->value->SetMargin(14);
+
+            $percentPlot->value->Show();
+            $percentPlot->value->SetFont(FF_DEFAULT, FS_NORMAL, 10);
+            $percentPlot->value->SetColor("black");
+            //$percentPlot->value->SetMargin(5);
+
+            $percentPlot->SetLegend('% of Participants scoring "100%"');
+
+            $graph->title->Set("All Participants Results Summary");
+            $graph->title->SetMargin(10);
+            $graph->title->SetFont(FF_DEFAULT, FS_BOLD, 15);
+
+            $graph->yaxis->title->Set('Number of Participants', 'center');
+            $graph->yaxis->title->SetMargin(20);
+            $graph->yaxis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
+            //$graph->yscale->SetAutoMax(250);
+            $graph->yscale->SetAutoMin(0);
+
+            $graph->yaxis->HideLine(false);
+            $graph->yaxis->HideTicks(false, false);
+
+            $graph->y2axis->title->SetFont(FF_DEFAULT, FS_BOLD, 12);
+            $graph->y2axis->title->Set('Percent of Participants Scoring "100%"');
+            $graph->y2axis->title->SetMargin(30);
+            $graph->y2axis->SetLabelFormat('%d%%');
+
+            $graph->y2axis->HideLine(false);
+            $graph->y2axis->HideTicks(false, false);
+
+            $graph->y2scale->SetAutoMax(100);
+            $graph->y2scale->SetAutoMin(0);
+
+            // Add the plot to the graph
+
+            $graph->ygrid->SetFill(false);
+            $graph->xaxis->SetTickLabels($allParticipantChartLabels);
+            $graph->xaxis->SetTextLabelInterval(1);
+            $graph->xaxis->HideLine(false);
+            $graph->xaxis->HideTicks(false, false);
+
+            // $graph->xaxis->SetTextLabelInterval(sizeof($allParticipantChartLabels) + 2);
+            $graph->xaxis->SetLabelAlign('center');
+            $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 11);
+            // $graph->xaxis->scale->ticks->SetTextLabelStart(0.2);
+            //$graph->xaxis->scale->ticks->SupressFirst();
+            if (sizeof($allParticipantChartLabels) >= 4) {
+                $graph->xaxis->SetFont(FF_DEFAULT, FS_BOLD, 9);
+                $graph->xaxis->SetLabelAngle(10);
+            }
+
+            // Create the bar plots
+            $b1plot = new BarPlot($noOfPaResponse);
+            $b2plot = new BarPlot($participantScore);
+            $b3plot = new BarPlot($scoreBelow);
+
+            // Create the grouped bar plot
+            $gbplot = new GroupBarPlot(array($b1plot, $b2plot, $b3plot));
+            $b1plot->SetAlign('center');
+            $b1plot->SetLegend("Number of Participants Submitted Results");
+
+            $b1plot->SetAlign('center');
+            $b2plot->SetLegend('Number of Participants Scoring "100%"');
+
+            $b1plot->SetAlign('center');
+            $b3plot->SetLegend('Number of Participants Scoring Below "100%"');
+
+            $gbplot->SetWidth(0.5);
+
+
+
+            $graph->Add($gbplot);
+
+            $b1plot->SetAbsWidth(33);
+            $b2plot->SetAbsWidth(33);
+            $b3plot->SetAbsWidth(33);
+
+            $b1plot->SetColor("#1471c1");
+            $b2plot->SetColor("#92d14f");
+            $b3plot->SetColor("#fbda66");
+
+            $b1plot->SetFillColor("#1471c1");
+            $b2plot->SetFillColor("#92d14f");
+            $b3plot->SetFillColor("#fbda66");
+
+            $graph->legend->SetFrameWeight(1);
+            $graph->legend->SetColumns(2);
+            $graph->legend->SetVColMargin(12);
+            $graph->legend->SetFont(FF_DEFAULT, FS_BOLD, 10);
+            $graph->legend->SetPos(0.15, 0.85);
+
+            $image_file = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'] . DIRECTORY_SEPARATOR . 'all-participants-chart.png';
+            $graph->Stroke($image_file);
 
             //$pdf->Image($image_file, 5, $pdf->getY(), '', '', '', '', '', false, 300);
 

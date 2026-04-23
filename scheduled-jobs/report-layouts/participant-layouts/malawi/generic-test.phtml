@@ -1,5 +1,8 @@
 <?php
 
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
 $monochromaticColors = ['black', 'darkgray', 'gray', 'lightgray', 'dimgray', 'gainsboro', 'slategray', 'silver'];
 
 $schemeType = $resultArray['shipment'][0]['scheme_type'];

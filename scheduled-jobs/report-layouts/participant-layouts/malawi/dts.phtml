@@ -1,5 +1,9 @@
 <?php
 
+use mitoteam\jpgraph\MtJpGraph;
+
+MtJpGraph::load(['bar', 'line', 'pie'], true);
+
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 
 $pdfNew = new Zend_Pdf();
@@ -24,37 +28,43 @@ foreach ($possibleRecencyResults as $pr) {
     }
 }
 
-/**
- * Format DTS result strings for display.
- * Ensures "Nonreactive" / "Non Reactive" / "NONREACTIVE" etc. render as "Non-Reactive".
- */
-function formatDtsResult(string $value): string
-{
-    $normalised = strtolower(str_replace([' ', '-'], '', $value));
-    if ($normalised === 'nonreactive') {
-        return 'Non-Reactive';
+// Guarded: this template is include()d once per offset batch, so top-level
+// function declarations must not redeclare themselves on subsequent includes.
+if (!function_exists('formatDtsResult')) {
+    /**
+     * Format DTS result strings for display.
+     * Ensures "Nonreactive" / "Non Reactive" / "NONREACTIVE" etc. render as "Non-Reactive".
+     */
+    function formatDtsResult(string $value): string
+    {
+        $normalised = strtolower(str_replace([' ', '-'], '', $value));
+        if ($normalised === 'nonreactive') {
+            return 'Non-Reactive';
+        }
+        return ucwords(strtolower($value));
     }
-    return ucwords(strtolower($value));
 }
 
-/**
- * Safe lookup helper: resolves a test result ID through both maps and returns
- * a formatted display string, or an empty string if any key is missing.
- */
-function resolveDtsDisplay(array $dtsResults, array $dtsResultsMap, $resultId): string
-{
-    if (empty($resultId)) {
-        return '';
+if (!function_exists('resolveDtsDisplay')) {
+    /**
+     * Safe lookup helper: resolves a test result ID through both maps and returns
+     * a formatted display string, or an empty string if any key is missing.
+     */
+    function resolveDtsDisplay(array $dtsResults, array $dtsResultsMap, $resultId): string
+    {
+        if (empty($resultId)) {
+            return '';
+        }
+        $raw = $dtsResults[$resultId] ?? '';
+        if ($raw === '') {
+            return '';
+        }
+        $mapped = $dtsResultsMap[$raw] ?? '';
+        if ($mapped === '') {
+            return '';
+        }
+        return formatDtsResult($mapped);
     }
-    $raw = $dtsResults[$resultId] ?? '';
-    if ($raw === '') {
-        return '';
-    }
-    $mapped = $dtsResultsMap[$raw] ?? '';
-    if ($mapped === '') {
-        return '';
-    }
-    return formatDtsResult($mapped);
 }
 
 if (!empty($resultArray['shipment'])) {

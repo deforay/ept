@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "chart.js": "^4.4.0",
-    "chartjs-plugin-datalabels": "^2.2.0",
     "skia-canvas": "^3.0.8"
   }
 }
