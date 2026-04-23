@@ -382,9 +382,9 @@
     function newShipment() {
         getSampleForm();
         $("#configShipment").fadeIn('fast', function() {
-            $('html body').animate({
+            $('html, body').animate({
                 scrollTop: ($("#configShipment").offset().top - 50)
-            }, 1300, function() {
+            }, 600, function() {
                 $("#configShipment").effect("highlight", 2000);
                 $("#shipmentCode").val('');
                 $.blockUI();
