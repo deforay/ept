@@ -31,10 +31,12 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
             <br>
 
             <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;" tabindex="7" value="<?= $this->translate->_("Add"); ?>" />
-                <input class="btn btn-primary" type="button" onclick="validateNow('shipmentPage');return false;" tabindex="8" value="<?= $this->translate->_("Add and continue to Shipment"); ?>" />
+                <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow('shipmentPage');return false;" tabindex="7" value="<?= $this->translate->_("Add and continue to Shipment"); ?>" />
                 <input type="hidden" id="shipmentPage" name="shipmentPage" value="false" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';" tabindex="9" value="<?= $this->translate->_("Cancel"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href='/admin/distributions';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+                <div style="margin-top:10px;">
+                    <a href="javascript:void(0);" onclick="validateNow();return false;" tabindex="9" style="color:#777;font-size:12px;"><?= $this->translate->_("Save and add shipment later"); ?></a>
+                </div>
             </div>
         </fieldset>
     </form>
