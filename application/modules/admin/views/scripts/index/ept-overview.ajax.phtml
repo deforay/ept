@@ -68,6 +68,109 @@ $copyText = implode("\n", $lines);
 
 $esc = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
 
+// ----- Email/Word-friendly HTML (used only by the Copy button) -----
+$tdStyle = 'padding:6px 10px;border:1px solid #ccc;';
+$thStyle = $tdStyle . 'background:#f3f3f3;text-align:left;';
+$tdNum   = $tdStyle . 'text-align:right;font-variant-numeric:tabular-nums;';
+
+ob_start();
+?>
+<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222;">
+    <h3 style="margin:0 0 8px 0;font-family:Arial,Helvetica,sans-serif;">ePT Overview
+        <span style="font-weight:normal;color:#666;">— <?= $esc(date('d-M-Y')); ?></span></h3>
+
+    <table cellspacing="0" cellpadding="0"
+        style="border-collapse:collapse;margin-bottom:12px;min-width:420px;">
+        <tr>
+            <th style="<?= $esc($thStyle); ?>width:55%;">Active Participants</th>
+            <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['active_participants'])); ?></td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Total Shipments</th>
+            <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['total_shipments'])); ?></td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Finalized Shipments</th>
+            <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['finalized_shipments'])); ?></td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Shipments (<?= $esc(date('Y')); ?>)</th>
+            <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['shipments_this_year'])); ?></td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Shipments (Last 12 months)</th>
+            <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['shipments_last_12_months'])); ?></td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Oldest Shipment</th>
+            <td style="<?= $esc($tdStyle); ?>">
+                <strong><?= $esc($oldest['date']); ?></strong><?php if (!empty($oldest['code']) || !empty($oldest['scheme'])): ?>
+                    <br><span style="color:#555;font-size:12px;">
+                        <?php if (!empty($oldest['code'])): ?><?= $esc($oldest['code']); ?><?php endif; ?>
+                        <?php if (!empty($oldest['code']) && !empty($oldest['scheme'])): ?> — <?php endif; ?>
+                        <?php if (!empty($oldest['scheme'])): ?><?= $esc($oldest['scheme']); ?><?php endif; ?>
+                    </span>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Latest Shipment</th>
+            <td style="<?= $esc($tdStyle); ?>">
+                <strong><?= $esc($latest['date']); ?></strong><?php if (!empty($latest['code']) || !empty($latest['scheme'])): ?>
+                    <br><span style="color:#555;font-size:12px;">
+                        <?php if (!empty($latest['code'])): ?><?= $esc($latest['code']); ?><?php endif; ?>
+                        <?php if (!empty($latest['code']) && !empty($latest['scheme'])): ?> — <?php endif; ?>
+                        <?php if (!empty($latest['scheme'])): ?><?= $esc($latest['scheme']); ?><?php endif; ?>
+                    </span>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th style="<?= $esc($thStyle); ?>">Active Schemes</th>
+            <td style="<?= $esc($tdStyle); ?>">
+                <strong><?= count($activeSchemeNames); ?></strong>
+                <?php if (!empty($activeSchemeNames)): ?>
+                    <ul style="margin:6px 0 0 18px;padding:0;">
+                        <?php foreach ($activeSchemeNames as $schemeName): ?>
+                            <li style="margin:2px 0;"><?= $esc($schemeName); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+
+    <h4 style="margin:0 0 6px 0;font-family:Arial,Helvetica,sans-serif;">Per Scheme Breakdown</h4>
+    <table cellspacing="0" cellpadding="0"
+        style="border-collapse:collapse;min-width:420px;">
+        <thead>
+            <tr>
+                <th style="<?= $esc($thStyle); ?>">Scheme</th>
+                <th style="<?= $esc($thStyle); ?>text-align:right;">Shipments</th>
+                <th style="<?= $esc($thStyle); ?>text-align:right;">Participants</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($o['scheme_breakdown'])): ?>
+                <tr>
+                    <td colspan="3" style="<?= $esc($tdStyle); ?>text-align:center;">No data</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($o['scheme_breakdown'] as $row): ?>
+                    <tr>
+                        <td style="<?= $esc($tdStyle); ?>"><?= $esc(strtoupper($row['scheme_type'])); ?></td>
+                        <td style="<?= $esc($tdNum); ?>"><?= $esc($num($row['shipment_count'])); ?></td>
+                        <td style="<?= $esc($tdNum); ?>"><?= $esc($num($row['participant_count'])); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+<?php
+$copyHtml = trim(ob_get_clean());
+
+// ----- Visible web view -----
 $statCards = [
     ['label' => 'Active Participants', 'value' => $num($o['active_participants']),      'color' => '#2980b9'],
     ['label' => 'Total Shipments',     'value' => $num($o['total_shipments']),          'color' => '#27ae60'],
@@ -242,15 +345,21 @@ $renderedHtml = trim(ob_get_clean());
         <textarea id="ept-overview-copy-text" readonly
             style="width:100%;height:260px;font-family:monospace;font-size:12px;margin-top:8px;"><?= $this->escape($copyText); ?></textarea>
     </details>
+
+    <!-- Email/Word-friendly version (used only by the Copy button; kept off-screen via inline styles so global CSS can't reveal it) -->
+    <div id="ept-overview-copy-source" aria-hidden="true"
+        style="position:absolute !important;left:-99999px !important;top:auto !important;width:600px !important;height:auto !important;overflow:hidden !important;pointer-events:none !important;">
+        <?= $copyHtml ?>
+    </div>
 </div>
 
 <script>
     (function () {
         var richBtn = document.getElementById('ept-overview-copy-btn');
         var plainBtn = document.getElementById('ept-overview-copy-plain-btn');
-        var rendered = document.getElementById('ept-overview-rendered');
+        var copySource = document.getElementById('ept-overview-copy-source');
         var ta = document.getElementById('ept-overview-copy-text');
-        if (!richBtn || !plainBtn || !rendered || !ta) return;
+        if (!richBtn || !plainBtn || !copySource || !ta) return;
 
         var label = richBtn.querySelector('.copy-btn-label');
         var flashCopied = function () {
@@ -261,17 +370,23 @@ $renderedHtml = trim(ob_get_clean());
         };
 
         var copyViaSelection = function () {
+            // Temporarily make the off-screen source selectable
+            var prevLeft = copySource.style.left;
+            copySource.style.left = '0';
+            copySource.style.opacity = '0';
             var sel = window.getSelection();
             var range = document.createRange();
-            range.selectNodeContents(rendered);
+            range.selectNodeContents(copySource);
             sel.removeAllRanges();
             sel.addRange(range);
             try { document.execCommand('copy'); } catch (e) {}
             sel.removeAllRanges();
+            copySource.style.left = prevLeft || '-99999px';
+            copySource.style.opacity = '';
         };
 
         richBtn.addEventListener('click', function () {
-            var html = rendered.innerHTML;
+            var html = copySource.innerHTML;
             var text = ta.value;
             if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
                 var item = new ClipboardItem({
