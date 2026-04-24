@@ -112,13 +112,10 @@
 </legend>
 <table style="margin:20px 0;" class="table table-bordered">
 	<tr>
-		<td style="width:33%;text-align: center;font-weight:bold;">
+		<td style="width:50%;text-align: center;font-weight:bold;">
 			<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
 		</td>
-		<td style="width:33%;text-align: center;font-weight:bold;">
-			<?= $this->translate->_("Select Scheme Type (Optional)"); ?>
-		</td>
-		<td style="width:33%;text-align: center;font-weight:bold;"></td>
+		<td style="width:50%;text-align: center;font-weight:bold;"></td>
 	</tr>
 	<tr>
 		<td>
@@ -126,16 +123,8 @@
 				style="background: #fff" placeholder="Click here to pick a Date Range" />
 		</td>
 		<td>
-			<select id="scheme" name="scheme" class="form-control input-lg">
-				<option value=""> -- <?= $this->translate->_("Select Scheme Type"); ?> --</option>
-				<?php foreach ($this->schemes as $scheme) { ?>
-					<option value="<?php echo $scheme['scheme_id']; ?>"><?php echo $scheme['scheme_name']; ?></option>
-				<?php } ?>
-			</select>
-		</td>
-		<td>
 			<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
-				onclick="getDrawable()"><span><?= $this->translate->_("Get Report"); ?></span></button> <button
+				onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button
 				class="btn btn-danger btn-sm"
 				onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
 		</td>
@@ -158,6 +147,26 @@
 			<th style="text-align: center;"><?= $this->translate->_("Download Reports"); ?></th>
 			<th style="text-align: center;"><?= $this->translate->_("Download Excel"); ?></th>
 		</tr>
+		<tr class="column-search-row">
+			<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+			<th></th>
+			<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+			<th></th>
+			<th>
+				<select class="form-control input-sm col-search" data-col="4">
+					<option value=""><?= $this->translate->_("All"); ?></option>
+					<?php foreach ($this->schemes as $scheme) { ?>
+						<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>"><?php echo $scheme['scheme_name']; ?></option>
+					<?php } ?>
+				</select>
+			</th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
 	</thead>
 	<tbody>
 		<tr>
@@ -172,10 +181,6 @@
 	var startDate = "";
 	var endDate = "";
 	$(document).ready(function () {
-		$("#scheme").select2({
-			placeholder: "Select scheme type",
-			allowClear: true
-		});
 		$("#dataManager").select2({
 			placeholder: "Select PT participant login",
 			allowClear: true
@@ -241,6 +246,7 @@
 			"sPaginationType": "bootstrap",
 			"bRetrieve": false,
 			"bDestroy": true,
+			"bSortCellsTop": true,
 			"aoColumns": [{
 				"sClass": "center"
 			},
@@ -284,16 +290,11 @@
 			"bServerSide": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'reports', 'controller' => 'shipments', 'action' => 'index', 'format' => 'html')); ?>",
 			"fnServerParams": function (aoData) {
-				schemeType = $("#scheme").val();
 				dateRange = $("#dateRange").val();
 				dataManager = $("#dataManager").val();
 				aoData.push({
 					"name": "dateRange",
 					"value": dateRange
-				});
-				aoData.push({
-					"name": "scheme",
-					"value": schemeType
 				});
 				aoData.push({
 					"name": "startDate",
@@ -322,7 +323,26 @@
 			},
 		});
 
-
+		// Per-column search inputs — debounced so we don't fire a request on every keystroke.
+		// Re-bind each time drawTable() runs because bDestroy:true can reset header handlers.
+		var colSearchTimer = null;
+		$('#shipmentTable thead').off('keyup.colsearch change.colsearch').on('keyup.colsearch change.colsearch', '.col-search', function () {
+			var $el = $(this);
+			var colIdx = parseInt($el.data('col'), 10);
+			var value = $el.val();
+			clearTimeout(colSearchTimer);
+			colSearchTimer = setTimeout(function () {
+				if (oTable) {
+					oTable.fnFilter(value, colIdx);
+				}
+			}, 400);
+		});
+		// DataTables binds sort directly on <th>, so delegation from <thead> would run
+		// AFTER the sort fires — bind straight on the inputs.
+		$('#shipmentTable thead .col-search').off('click.colsearch mousedown.colsearch focus.colsearch')
+			.on('click.colsearch mousedown.colsearch focus.colsearch', function (e) {
+				e.stopPropagation();
+			});
 	};
 
 	function generateShipmentParticipantList(shipmentId, schemeType) {
