@@ -45,6 +45,25 @@
             <th>Mailed Count</th>-->
             <th><?= $this->translate->_("Action"); ?></th>
         </tr>
+        <tr class="column-search-row">
+            <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+            <th>
+                <select class="form-control input-sm col-search" data-col="1">
+                    <option value=""><?= $this->translate->_("All"); ?></option>
+                    <?php foreach ($this->schemes as $scheme) { ?>
+                        <option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>"><?php echo $scheme['scheme_name']; ?></option>
+                    <?php } ?>
+                </select>
+            </th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
         <tr>
@@ -214,6 +233,26 @@
 
         $('#currentType1, #currentType2, #currentType3').click(function() {
             drawTable();
+        });
+
+        // Per-column search inputs — debounced so we don't fire a request on every keystroke
+        var colSearchTimer = null;
+        $('#shipmentTable thead').on('keyup change', '.col-search', function() {
+            var $el = $(this);
+            var colIdx = parseInt($el.data('col'), 10);
+            var value = $el.val();
+            clearTimeout(colSearchTimer);
+            colSearchTimer = setTimeout(function() {
+                if (oTable) {
+                    oTable.fnFilter(value, colIdx);
+                }
+            }, 400);
+        });
+        // Don't let clicks on the filter inputs trigger the header's sort handler.
+        // DataTables binds sort directly on <th>, so delegation from <thead> runs AFTER
+        // the sort — bind straight on the inputs instead.
+        $('#shipmentTable thead .col-search').on('click mousedown focus', function(e) {
+            e.stopPropagation();
         });
     });
 
