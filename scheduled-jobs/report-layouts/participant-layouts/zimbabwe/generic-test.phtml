@@ -135,7 +135,7 @@ if (!empty($resultArray['shipment'])) {
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
         // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . '</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - ' . $result['scheme_name'] . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // Build laboratory information table
@@ -220,7 +220,12 @@ if (!empty($resultArray['shipment'])) {
         // $userTestConfig = Zend_Json_Decoder::decode($result['user_test_config'], true);
         // $passPercentage = $userTestConfig['passingScore'] ?? 100;
         $passPercentage = Pt_Commons_SchemeConfig::get($evalRow['scheme_type'] . '.passingScore');
-
+        $dtsModel = new Application_Model_Dts();
+        $testKitLists = $dtsModel->getAllDtsTestKitList();
+        $allTestKitLists = [];
+        foreach ($testKitLists as $testkit) {
+            $allTestKitLists[$testkit['TESTKITNAMEID']] = $testkit['TESTKITNAME'];
+        }
         // Generate results table based on test type
         if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') {
             // Quantitative results
@@ -311,15 +316,29 @@ if (!empty($resultArray['shipment'])) {
         } else {
             // Qualitative results
             if (isset($result['responseResult']) && !empty($result['responseResult'])) {
-                $labRes = '<span style="font-weight: bold;font-size:13px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
-                $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
+                $testkitName = $allTestKitLists[$attributes['kit_name']];
+                $expDate = Pt_Commons_DateUtility::isoDateFormat($attributes['kit_expiry_date']);
+                $labRes = '<span style="font-weight: bold;font-size:11px;">Your Dried Tube Specimen - ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
+                $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
+                    <tr>
+                        <td style="background-color:#8ECF64;">Test Kit Name</td>
+                        <td style="background-color:#8ECF64;">Test Kit Expiry</td>
+                        <td style="background-color:#8ECF64;">Test Kit Lot No</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:white;">' . $testkitName . '</td>
+                        <td style="background-color:white;">' . $attributes['kit_lot_number'] . '</td>
+                        <td style="background-color:white;">' . $expDate . '</td>
+                    </tr>
+                </table>';
+                $labRes .= '<br><br><table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
                     <tr style="background-color:#dbe4ee;width:100%;">
-                        <td style="text-align:center;font-weight:bold;">Sample ID</td>
-                        <td style="text-align:center;font-weight:bold;">Test-1</td>';
-                if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">Test-2</td>';
-                if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
-                    $labRes .= '<td style="text-align:center;font-weight:bold;">Test-3</td>';
+                        <td style="text-align:center;font-weight:bold;">Sample ID</td>';
+                // $labRes .= '<td style="text-align:center;font-weight:bold;">Test-1</td>';
+                // if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
+                //     $labRes .= '<td style="text-align:center;font-weight:bold;">Test-2</td>';
+                // if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
+                //     $labRes .= '<td style="text-align:center;font-weight:bold;">Test-3</td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Reported Result</td>';
                 $labRes .= '<td style="text-align:center;font-weight:bold;">Expected Result</td>';
 
@@ -335,12 +354,12 @@ if (!empty($resultArray['shipment'])) {
                 // Add result rows
                 foreach ($result['responseResult'] as $key => $response) {
                     $labRes .= '<tr>
-                        <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>
-                        <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_1']] ?? '') . '</td>';
-                    if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
-                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_2']] ?? '') . '</td>';
-                    if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
-                        $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_3']] ?? '') . '</td>';
+                        <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+                    // $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_1']] ?? '') . '</td>';
+                    // if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2)
+                    // $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_2']] ?? '') . '</td>';
+                    // if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3)
+                    // $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['result_3']] ?? '') . '</td>';
                     $labRes .= '<td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reported_result']] ?? '') . '</td>
                     <td style="text-align:center;">' . ucwords($otherTestPossibleResults[$response['reference_result']] ?? '') . '</td>';
 
@@ -356,13 +375,13 @@ if (!empty($resultArray['shipment'])) {
                 }
 
                 // Add testing score row
-                $shipmentScoreColspan = 4;
+                $shipmentScoreColspan = 3;
                 if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes')
                     $shipmentScoreColspan += 1;
-                if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2))
-                    $shipmentScoreColspan += 1;
-                if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3))
-                    $shipmentScoreColspan += 1;
+                // if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2))
+                // $shipmentScoreColspan += 1;
+                // if ((isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3))
+                // $shipmentScoreColspan += 1;
 
                 $labRes .= '<tr>
                     <td style="text-align:right;" colspan="' . $shipmentScoreColspan . '">TESTING SCORE </td>
@@ -459,7 +478,11 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage();
         $overallScore = ((int) $passPercentage == 100) ? $passPercentage : "&gt;= $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
-        $scorePerSample = round((100 / count($result['responseResult'])), 2);
+        if (count($result['responseResult']) > 0) {
+            $scorePerSample = round((100 / count($result['responseResult'])), 2);
+        } else {
+            $scorePerSample = round((100 / 1), 2);
+        }
         $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                         <ul>
                             <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
