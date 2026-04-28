@@ -9,6 +9,18 @@
 		}
 	}
 
+	/* Break out of the fixed-width .container in admin.phtml so the wide table fits comfortably. */
+	.shipments-wide {
+		width: 100vw;
+		position: relative;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		padding: 0 30px;
+		box-sizing: border-box;
+	}
+
 	#shipmentTable {
 		table-layout: fixed;
 		width: 100%;
@@ -20,10 +32,17 @@
 		overflow-wrap: break-word;
 	}
 
+	/* Don't break heading words mid-word — wrap on whitespace only. */
+	#shipmentTable thead th {
+		word-break: keep-all;
+		overflow-wrap: normal;
+		word-wrap: normal;
+	}
+
 	/* Column widths - total 100% */
 	#shipmentTable th:nth-child(1),
 	#shipmentTable td:nth-child(1) {
-		width: 11%;
+		width: 10%;
 	}
 
 	/* PT Survey Code */
@@ -37,7 +56,7 @@
 
 	#shipmentTable th:nth-child(3),
 	#shipmentTable td:nth-child(3) {
-		width: 10%;
+		width: 9%;
 	}
 
 	/* Shipment Code */
@@ -51,14 +70,14 @@
 
 	#shipmentTable th:nth-child(5),
 	#shipmentTable td:nth-child(5) {
-		width: 7%;
+		width: 15%;
 	}
 
 	/* Scheme */
 
 	#shipmentTable th:nth-child(6),
 	#shipmentTable td:nth-child(6) {
-		width: 8%;
+		width: 9%;
 	}
 
 	/* No. of Participants */
@@ -72,28 +91,28 @@
 
 	#shipmentTable th:nth-child(8),
 	#shipmentTable td:nth-child(8) {
-		width: 7%;
+		width: 6%;
 	}
 
 	/* Number Passed */
 
 	#shipmentTable th:nth-child(9),
 	#shipmentTable td:nth-child(9) {
-		width: 8%;
+		width: 7%;
 	}
 
 	/* Shipment Status */
 
 	#shipmentTable th:nth-child(10),
 	#shipmentTable td:nth-child(10) {
-		width: 13%;
+		width: 10%;
 	}
 
 	/* Download Participant Reports */
 
 	#shipmentTable th:nth-child(11),
 	#shipmentTable td:nth-child(11) {
-		width: 14%;
+		width: 12%;
 	}
 
 	/* Download Excel */
@@ -107,6 +126,7 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
+<div class="shipments-wide">
 <legend>
 	<h3><?= $this->translate->_("Shipments Report"); ?></h3>
 </legend>
@@ -174,6 +194,7 @@
 		</tr>
 	</tbody>
 </table>
+</div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
