@@ -527,6 +527,11 @@ foreach ($versions as $version) {
                     $isDropTableBenign = (strpos($qLower, 'drop table') === 0) &&
                         (strpos($msg, '1146') !== false || stripos($msg, "doesn't exist") !== false);
 
+                    // Seed-style INSERTs in migrations are re-runnable: a 1062 on a
+                    // pre-existing PK/UNIQUE row means the seed already landed.
+                    $isInsertDupBenign = (strpos($qLower, 'insert') === 0) &&
+                        (strpos($msg, '1062') !== false || stripos($msg, 'Duplicate entry') !== false);
+
                     $isOtherBenign =
                         stripos($msg, 'Duplicate column name') !== false ||
                         stripos($msg, 'Duplicate key name') !== false   ||
@@ -534,7 +539,7 @@ foreach ($versions as $version) {
                         stripos($msg, 'Multiple primary key defined') !== false || // MySQL #1068
                         strpos($msg, '1068') !== false;
 
-                    if ($isCreateTableBenign || $isDropTableBenign || $isOtherBenign) {
+                    if ($isCreateTableBenign || $isDropTableBenign || $isInsertDupBenign || $isOtherBenign) {
                         if (!$quietMode && getenv('MIG_VERBOSE')) {
                             echo "Benign idempotence:\n{$query}\n{$msg}\n";
                         }

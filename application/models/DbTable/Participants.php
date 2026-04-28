@@ -1553,42 +1553,36 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     private function validateUploadedFile($fileName, $templateFilePath)
     {
-        // Load the uploaded Excel file
         $uploadedSpreadsheet = IOFactory::load($fileName);
-
-        // Load the template Excel file
         $templateSpreadsheet = IOFactory::load($templateFilePath);
 
-        // Get the first sheet of the uploaded file
-        $uploadedSheet = $uploadedSpreadsheet->getSheet(0);
+        $uploadedHeaders = $uploadedSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
+        $templateHeaders = $templateSpreadsheet->getSheet(0)->rangeToArray('A1:Z1')[0];
 
-        // Get the first sheet of the template file
-        $templateSheet = $templateSpreadsheet->getSheet(0);
+        $normalize = function ($header) {
+            return strtolower(preg_replace('/\s+/', '', (string) $header));
+        };
 
-        // Extract headers from both sheets for comparison
-        $uploadedHeaders = $uploadedSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
-        $templateHeaders = $templateSheet->rangeToArray('A1:Z1')[0];  // Adjust range as needed
-
-        // Normalize headers for case-insensitive comparison and remove spaces/newlines
-        $normalizedUploadedHeaders = array_map(function ($header) {
-            return strtolower(preg_replace('/\s+/', '', $header));
-        }, $uploadedHeaders);
-
-        $normalizedTemplateHeaders = array_map(function ($header) {
-            return strtolower(preg_replace('/\s+/', '', $header));
-        }, $templateHeaders);
-
-        // Compare the column headers
-        if ($normalizedUploadedHeaders !== $normalizedTemplateHeaders) {
-            // The column headers do not match the template
-            return false;
+        $mismatches = [];
+        foreach ($templateHeaders as $idx => $expected) {
+            $actual = $uploadedHeaders[$idx] ?? null;
+            if ($normalize($expected) === $normalize($actual)) {
+                continue;
+            }
+            $colLetter = chr(ord('A') + $idx);
+            $expectedLabel = trim(preg_replace('/\s+/', ' ', (string) $expected));
+            $actualLabel   = trim(preg_replace('/\s+/', ' ', (string) $actual));
+            if ($expectedLabel === '' && $actualLabel === '') {
+                continue;
+            }
+            $mismatches[] = [
+                'column'   => $colLetter,
+                'expected' => $expectedLabel,
+                'actual'   => $actualLabel,
+            ];
         }
 
-        // Compare additional formatting, data types, or any other specific requirements
-        // ...
-
-        // If all checks pass, return true
-        return true;
+        return $mismatches;
     }
 
     public function processBulkImport($fileName, $allFakeEmail = false, $params = null)
@@ -1601,9 +1595,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
         // Validate file format
         $templateFilePath = realpath(WEB_ROOT) . "/files/Participant-Bulk-Import-Excel-Format-v2.xlsx";
-        if (!$this->validateUploadedFile($fileName, $templateFilePath)) {
-            $alertMsg->message = 'The uploaded file does not match the expected format.';
-            return $response;
+        $mismatches = $this->validateUploadedFile($fileName, $templateFilePath);
+        if (!empty($mismatches)) {
+            return [
+                'data' => [],
+                'error-data' => [],
+                'validation_error' => true,
+                'mismatches' => $mismatches,
+            ];
         }
 
         // Load Excel data
@@ -1660,6 +1659,70 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $participantExists = $duplicateChecks['participants'][$row['B']] ?? null;
                 if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'skip-duplicates' && $participantExists) {
                     $this->addError($response, $row, $i, "Unique ID {$row['B']} already exists.");
+                    continue;
+                }
+
+                // Email-only update mode: touch participant.email and DM primary_email, skip the rest
+                if (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-email-only' && $participantExists) {
+                    $participantId = $participantExists['participant_id'];
+
+                    $db->update('participant', ['email' => $originalEmail], $db->quoteInto('participant_id = ?', $participantId));
+
+                    $mappedDms = $db->fetchAll(
+                        $db->select()
+                            ->from(['pmm' => 'participant_manager_map'], ['dm_id'])
+                            ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', [])
+                            ->where('pmm.participant_id = ?', $participantId)
+                            ->where("IFNULL(dm.data_manager_type, 'manager') NOT IN ('ptcc', 'participant')")
+                    );
+
+                    $dmIdForResponse = 0;
+                    if (count($mappedDms) == 1) {
+                        $dmIdForResponse = $mappedDms[0]['dm_id'];
+                        $db->update('data_manager', ['primary_email' => $originalEmail], $db->quoteInto('dm_id = ?', $dmIdForResponse));
+                    } else {
+                        $newDmData = [
+                            'first_name' => MiscUtility::cleanString($row['D'] ?? ''),
+                            'last_name' => MiscUtility::cleanString($row['E'] ?? ''),
+                            'institute' => MiscUtility::cleanString($row['F'] ?? ''),
+                            'mobile' => MiscUtility::cleanString($row['Q'] ?? ''),
+                            'secondary_email' => MiscUtility::cleanString($row['T'] ?? ''),
+                            'primary_email' => $originalEmail,
+                            'force_password_reset' => 1,
+                            'created_by' => $authNameSpace->admin_id,
+                            'created_on' => new Zend_Db_Expr('now()'),
+                            'status' => 'active'
+                        ];
+                        $db->insert('data_manager', $newDmData);
+                        $dmIdForResponse = $db->lastInsertId();
+                        $common->insertIgnore('participant_manager_map', ['dm_id' => $dmIdForResponse, 'participant_id' => $participantId]);
+                    }
+
+                    $response['data'][] = [
+                        's_no' => $sheetData[$i]['A'] ?: ($i - 1),
+                        'participant_id' => $sheetData[$i]['B'],
+                        'individual' => $sheetData[$i]['C'] ?? 'no',
+                        'participant_lab_name' => $sheetData[$i]['D'],
+                        'participant_last_name' => $sheetData[$i]['E'],
+                        'institute_name' => $sheetData[$i]['F'] ?? null,
+                        'department' => $sheetData[$i]['G'] ?? null,
+                        'address' => $sheetData[$i]['H'] ?? null,
+                        'district' => $sheetData[$i]['J'] ?? null,
+                        'country' => $sheetData[$i]['M'],
+                        'zip' => $sheetData[$i]['N'] ?? null,
+                        'longitude' => $sheetData[$i]['O'] ?? null,
+                        'latitude' => $sheetData[$i]['P'] ?? null,
+                        'mobile_number' => $sheetData[$i]['Q'] ?? null,
+                        'participant_email' => $originalEmail,
+                        'participant_password' => $sheetData[$i]['S'],
+                        'additional_email' => $sheetData[$i]['T'] ?? null,
+                        'filename' => $tempUploadDirectory . DIRECTORY_SEPARATOR . $fileName,
+                        'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime()
+                    ];
+
+                    $duplicateChecks['fileParticipants'][$row['B']] = true;
+                    $duplicateChecks['fileDataManagers'][$originalEmail] = true;
+                    $duplicateChecks['dataManagers'][$originalEmail] = ['dm_id' => $dmIdForResponse];
                     continue;
                 }
 

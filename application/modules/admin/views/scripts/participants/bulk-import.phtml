@@ -49,6 +49,16 @@
 
     .bi-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
+    .bi-validation-error { background: #fdecea; border: 1px solid #f5c2bd; border-left: 4px solid #c0392b; border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; color: #5a1a13; }
+    .bi-validation-error .bi-ve-title { font-weight: 600; font-size: 14px; margin: 0 0 6px; color: #a02b1f; display: flex; align-items: center; gap: 6px; }
+    .bi-validation-error .bi-ve-sub { font-size: 13px; margin: 0 0 10px; color: #6b2a22; }
+    .bi-validation-error table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 4px; overflow: hidden; font-size: 13px; }
+    .bi-validation-error th, .bi-validation-error td { padding: 7px 10px; text-align: left; border-bottom: 1px solid #f1d6d2; }
+    .bi-validation-error th { background: #f9e3e0; color: #6b2a22; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .bi-validation-error tr:last-child td { border-bottom: 0; }
+    .bi-validation-error code { background: #f1f3f5; padding: 1px 6px; border-radius: 3px; font-size: 12px; color: #333; }
+    .bi-validation-error .bi-ve-empty { color: #8a93a0; font-style: italic; }
+
     .bi-options { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
     .bi-options label { display: block; font-size: 12px; font-weight: 600; color: #596270; margin: 0 0 4px; }
     .bi-options select { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-size: 13px; }
@@ -79,6 +89,31 @@
         <div class="bi-step"><span class="bi-num">2</span> <?= $this->translate->_("Done"); ?></div>
     </div>
 
+    <?php if (!empty($this->validationMismatches)): ?>
+        <div class="bi-validation-error" role="alert">
+            <p class="bi-ve-title"><i class="icon-exclamation-sign"></i> <?= $this->translate->_("The uploaded file does not match the template"); ?></p>
+            <p class="bi-ve-sub"><?= $this->translate->_("Please download the latest template and copy your data into it. We found the following column header issues:"); ?></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;"><?= $this->translate->_("Column"); ?></th>
+                        <th><?= $this->translate->_("Expected header"); ?></th>
+                        <th><?= $this->translate->_("Found in your file"); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($this->validationMismatches as $m): ?>
+                        <tr>
+                            <td><code><?= $this->escape($m['column']); ?></code></td>
+                            <td><?= $m['expected'] !== '' ? $this->escape($m['expected']) : '<span class="bi-ve-empty">' . $this->translate->_("(empty)") . '</span>'; ?></td>
+                            <td><?= $m['actual'] !== '' ? $this->escape($m['actual']) : '<span class="bi-ve-empty">' . $this->translate->_("(empty)") . '</span>'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+
     <form name="bulkParticipantForm" id="bulkParticipantForm" method="post"
           action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "participant-upload-statistics"), 'default', true) ?>"
           enctype="multipart/form-data" role="form"
@@ -101,6 +136,7 @@
                             <select name="bulkUploadDuplicateSkip" id="bulkUploadDuplicateSkip" class="isRequired" title="Please choose the upload options" onchange="showHideResetPassword(this.value);">
                                 <option value="skip-duplicates"><?= $this->translate->_("Skip the row (don't update)"); ?></option>
                                 <option value="update-on-unique-id-match"><?= $this->translate->_("Update all data for that participant"); ?></option>
+                                <option value="update-email-only"><?= $this->translate->_("Update email only (if changed)"); ?></option>
                             </select>
                         </div>
                         <div>

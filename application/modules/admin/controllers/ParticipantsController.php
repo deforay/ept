@@ -93,6 +93,13 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $participantService = new Application_Service_Participants();
+
+        $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
+        if (!empty($bulkImportSession->mismatches)) {
+            $this->view->validationMismatches = $bulkImportSession->mismatches;
+            unset($bulkImportSession->mismatches);
+        }
+
         if ($request->isPost()) {
             $this->view->response = $participantService->uploadBulkParticipants();
         }
@@ -106,7 +113,11 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $participantService->uploadBulkParticipants($params);
-            if (!$result) {
+            if (is_array($result) && !empty($result['validation_error'])) {
+                $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
+                $bulkImportSession->mismatches = $result['mismatches'];
+                $this->redirect("/admin/participants/bulk-import");
+            } elseif (!$result) {
                 $this->redirect("/admin/participants");
             } else {
                 $this->view->response = $result;
