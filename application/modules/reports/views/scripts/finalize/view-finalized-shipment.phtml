@@ -30,14 +30,30 @@ if (!empty($this->shipment)) {
 
                 <table class="table table-bordered table-striped table-hover">
                     <tr>
-                        <th style="text-align: center;">Shipment Code</th>
-                        <th style="text-align: center;">Scheme</th>
-                        <th style="text-align: center;">No. of Samples</th>
-                        <th style="text-align: center;">No. of Participants</th>
-                        <th style="text-align: center;">No. of Responses</th>
-                        <th style="text-align: center;">Response %</th>
-                        <th style="text-align: center;">Number Passed</th>
-                        <th style="text-align: center;">Shipment Status</th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("Shipment Code"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("Scheme"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("No. of Samples"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("No. of Participants"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("No. of Responses"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("Response %"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("Number Passed"); ?>
+                        </th>
+                        <th style="text-align: center;">
+                            <?= $this->htmlTranslate("Shipment Status"); ?>
+                        </th>
                     </tr>
                     <?php
                     if (count($this->shipmentsUnderDistro) > 0) {
@@ -64,7 +80,7 @@ if (!empty($this->shipment)) {
                         ?>
                         <tr>
                             <td colspan="8" align="center" style="text-align:center">
-                                No shipments for this PT Survey yet
+                                <?= $this->htmlTranslate("No shipments data."); ?>
                             </td>
                         </tr>
                         <?php
