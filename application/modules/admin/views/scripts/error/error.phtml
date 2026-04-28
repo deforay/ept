@@ -1,0 +1,28 @@
+<div class="container" style="max-width: 760px; margin: 40px auto;">
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h3 class="panel-title"><?= $this->translate->_("An error occurred"); ?></h3>
+        </div>
+        <div class="panel-body">
+            <p style="font-size: 15px; margin: 0 0 12px;"><?= $this->escape($this->message); ?></p>
+
+            <?php if (isset($this->exception)) : ?>
+                <hr />
+                <h4><?= $this->translate->_("Exception information"); ?></h4>
+                <p><b><?= $this->translate->_("Message"); ?>:</b> <?= $this->escape($this->exception->getMessage()); ?></p>
+
+                <h4><?= $this->translate->_("Stack trace"); ?></h4>
+                <pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow: auto;"><?= $this->escape($this->exception->getTraceAsString()); ?></pre>
+
+                <?php if (isset($this->request)) : ?>
+                    <h4><?= $this->translate->_("Request Parameters"); ?></h4>
+                    <pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow: auto;"><?= $this->escape(var_export($this->request->getParams(), true)); ?></pre>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <p style="margin-top: 16px;">
+                <a class="btn btn-default" href="/admin"><?= $this->translate->_("Go to dashboard"); ?></a>
+            </p>
+        </div>
+    </div>
+</div>
