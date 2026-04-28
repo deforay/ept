@@ -206,6 +206,11 @@ class Application_Service_Reports
             if (file_exists($tbFormPath) && $aRow['scheme_type'] == 'tb') {
                 $downloadAllTBForms = '<br/><a href="/admin/shipment/download-tb/sid/' . $aRow['shipment_id'] . '/file/' . base64_encode($tbFormPath) . '" class="btn btn-success btn-xs" style="margin:3px 0;" target="_BLANK"> <i class="icon icon-download"></i> ' . $this->translator->_("Download TB Forms") . '</a>';
             }
+
+            $viewFinalizedReports = '';
+            if ($isFinalized) {
+                $viewFinalizedReports = '<a href="/reports/finalize/view-finalized-shipment/sid/' . base64_encode($aRow['shipment_id']) . '" class="btn btn-info btn-xs" target="_blank" style="margin-top:5px;"><i class="icon-eye-open"></i> ' . $this->translator->_("View Finalized Reports") . '</a>';
+            }
             //$shipmentResults = $shipmentDb->getPendingShipmentsByDistribution($aRow['distribution_id']);
             $responsePercentage = ($aRow['reported_percentage'] != "") ? $aRow['reported_percentage'] : "0";
 
@@ -222,7 +227,7 @@ class Application_Service_Reports
             $row[] = $aRow['number_passed'];
             $row[] = $this->translator->_(ucwords($aRow['status']));
 
-            $row[] = trim("$summaryDownload $allReportsDownload $downloadAllTBForms");
+            $row[] = trim("$summaryDownload $allReportsDownload $viewFinalizedReports $downloadAllTBForms");
             if ($aRow['status'] != "pending") {
 
                 $exportReport = "<a href='javascript:void(0);' class='btn btn-success btn-xs' onclick='generateShipmentParticipantList(\"" . base64_encode($aRow['shipment_id']) . "\",\"" . $aRow['scheme_type'] . "\")'><i class='icon-download'></i> " . $this->translator->_("Overview Report") . "</a>";
