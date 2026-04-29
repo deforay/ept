@@ -27,6 +27,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             ->addActionContext('assay-formats', 'html')
             ->addActionContext('exclude-participant', 'html')
             ->addActionContext('shipment-participants', 'json')
+            ->addActionContext('shipment', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -76,32 +77,48 @@ class Admin_EvaluateController extends Zend_Controller_Action
 
     public function shipmentAction()
     {
-        if ($this->hasParam('sid')) {
-            $id = (int)base64_decode($this->_getParam('sid'));
-            $reEvaluate = false;
-            $override = "";
-            if ($this->hasParam('override')) {
-                if (base64_decode($this->_getParam('override')) == 'yes') {
-                    $override = 'yes';
-                }
-                if (base64_decode($this->_getParam('override')) == 'no') {
-                    $override = 'no';
-                }
-            }
-            if ($this->hasParam('re')) {
-                if (base64_decode($this->_getParam('re')) == 'yes') {
-                    $reEvaluate = true;
-                }
-            }
-            $evalService = new Application_Service_Evaluation();
-            $this->view->override = $override;
-            $this->view->id = $this->_getParam('sid');
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
 
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
-            $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
-        } else {
+        if (!$this->hasParam('sid')) {
             $this->redirect("/admin/evaluate/");
+            return;
         }
+
+        $id = (int)base64_decode($this->_getParam('sid'));
+        $override = '';
+        if ($this->hasParam('override')) {
+            $decoded = base64_decode($this->_getParam('override'));
+            if ($decoded === 'yes' || $decoded === 'no') {
+                $override = $decoded;
+            }
+        }
+        $evalService = new Application_Service_Evaluation();
+
+        if ($request->isPost()) {
+            // DataTables AJAX call — read-only, paginated; echoes JSON and returns.
+            $adminSession = new Zend_Session_Namespace('administrators');
+            $privileges = $adminSession->privileges ? explode(',', $adminSession->privileges) : [];
+            $params = $this->getAllParams();
+            $evalService->getEvaluateShipmentParticipantsForDataTable($id, $params, $override, $privileges);
+            return;
+        }
+
+        $reEvaluate = false;
+        if ($this->hasParam('re')) {
+            if (base64_decode($this->_getParam('re')) == 'yes') {
+                $reEvaluate = true;
+            }
+        }
+
+        $this->view->override = $override;
+        $this->view->id = $this->_getParam('sid');
+        $this->view->shipmentId = $id;
+
+        // Initial GET still runs the existing evaluation flow (so first-load triggers
+        // scheme-specific scoring). Subsequent paged loads come from the AJAX endpoint.
+        $shipment = $this->view->shipment = $evalService->getShipmentToEvaluate($id, $reEvaluate, $override);
+        $this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
     }
 
     public function editAction()
@@ -237,8 +254,13 @@ class Admin_EvaluateController extends Zend_Controller_Action
             if ($request->isPost()) {
                 $mapId = (int)base64_decode($this->_getParam('mid'));
                 $schemeType = ($this->_getParam('schemeType'));
+                $userConfig = ($this->_getParam('userConfig'));
                 $shipmentService = new Application_Service_Shipments();
-                if ($schemeType == 'dts') {
+                // User-configured (custom) tests share the generic-test storage regardless of
+                // the surface scheme name (HBV, HCV, etc.) — route them there first.
+                if ($userConfig === 'yes' || $schemeType === 'generic-test' || $schemeType === 'custom-test') {
+                    $this->view->result = $shipmentService->removeGenericTestResults($mapId);
+                } elseif ($schemeType == 'dts') {
                     $this->view->result = $shipmentService->removeDtsResults($mapId);
                 } elseif ($schemeType == 'eid') {
                     $this->view->result = $shipmentService->removeDtsEidResults($mapId);
@@ -248,8 +270,6 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->result = $shipmentService->removeCovid19Results($mapId);
                 } elseif ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
-                } elseif ($schemeType == 'generic-test') {
-                    $this->view->result = $shipmentService->removeGenericTestResults($mapId);
                 } else {
                     $this->view->result = "Failed to delete";
                 }

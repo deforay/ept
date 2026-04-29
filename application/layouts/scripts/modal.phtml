@@ -75,6 +75,69 @@
 		document.getElementById('dFrame').src = "";
 		hidedefModal();
 	}
+
+	function copyEmailContent() {
+		var pwd = document.getElementById('password') ? document.getElementById('password').value : '';
+		var loginIdEl = document.getElementById('primaryMail');
+		var loginUrlEl = document.getElementById('loginUrl');
+		var loginId = loginIdEl ? loginIdEl.value : '';
+		var loginUrl = loginUrlEl ? loginUrlEl.value : '';
+		if (!pwd) {
+			alert("Please enter or generate a password before copying email content.");
+			return false;
+		}
+		var emailBody = "Dear Participant,\n\n" +
+			"Please use the following to log in to ePT\n\n" +
+			"URL : " + loginUrl + "\n" +
+			"Login ID : " + loginId + "\n" +
+			"Password : " + pwd + "\n\n" +
+			"Thanks\n" +
+			"ePT Support";
+
+		var target = document.createElement("textarea");
+		target.style.position = "fixed";
+		target.style.left = "0";
+		target.style.top = "0";
+		target.style.opacity = "0";
+		target.value = emailBody;
+		document.body.appendChild(target);
+		target.focus();
+		target.select();
+		target.setSelectionRange(0, target.value.length);
+		var succeed = false;
+		try {
+			succeed = document.execCommand("copy");
+		} catch (e) {
+			succeed = false;
+		}
+		document.body.removeChild(target);
+
+		if (succeed) {
+			if (typeof Toastify === "function") {
+				Toastify({
+					text: "Email content copied to clipboard",
+					duration: 3000
+				}).showToast();
+			}
+			return false;
+		}
+
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			navigator.clipboard.writeText(emailBody).then(function () {
+				if (typeof Toastify === "function") {
+					Toastify({
+						text: "Email content copied to clipboard",
+						duration: 3000
+					}).showToast();
+				}
+			}, function () {
+				window.prompt("Copy the email content below:", emailBody);
+			});
+		} else {
+			window.prompt("Copy the email content below:", emailBody);
+		}
+		return false;
+	}
 </script>
 <img src="/images/loading.gif" style="display:none;" />
 </body>

@@ -1677,8 +1677,24 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     );
 
                     $dmIdForResponse = 0;
+                    $canBlindUpdate = false;
+                    $sharedDmToUnmap = 0;
                     if (count($mappedDms) == 1) {
-                        $dmIdForResponse = $mappedDms[0]['dm_id'];
+                        $singleDmId = (int) $mappedDms[0]['dm_id'];
+                        $sharedCount = (int) $db->fetchOne(
+                            $db->select()
+                                ->from('participant_manager_map', new Zend_Db_Expr('COUNT(*)'))
+                                ->where('dm_id = ?', $singleDmId)
+                        );
+                        if ($sharedCount <= 1) {
+                            $canBlindUpdate = true;
+                        } else {
+                            $sharedDmToUnmap = $singleDmId;
+                        }
+                    }
+
+                    if ($canBlindUpdate) {
+                        $dmIdForResponse = (int) $mappedDms[0]['dm_id'];
                         $db->update('data_manager', ['primary_email' => $originalEmail], $db->quoteInto('dm_id = ?', $dmIdForResponse));
                     } else {
                         $newDmData = [
@@ -1696,6 +1712,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         $db->insert('data_manager', $newDmData);
                         $dmIdForResponse = $db->lastInsertId();
                         $common->insertIgnore('participant_manager_map', ['dm_id' => $dmIdForResponse, 'participant_id' => $participantId]);
+
+                        if ($sharedDmToUnmap > 0) {
+                            $db->delete('participant_manager_map', [
+                                $db->quoteInto('dm_id = ?', $sharedDmToUnmap),
+                                $db->quoteInto('participant_id = ?', $participantId),
+                            ]);
+                        }
                     }
 
                     $response['data'][] = [
