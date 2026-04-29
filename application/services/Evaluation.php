@@ -1541,17 +1541,18 @@ class Application_Service_Evaluation
 	// Markup mirrors what the view used to render server-side.
 	private function renderFinalizedShipmentRow($shipment)
 	{
+		$translator = Zend_Registry::get('translate');
 		$btnClassName = 'btn-success';
 		$warnings = json_decode($shipment['failure_reason'] ?? '', true);
 		$finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != '' && $shipment['final_result'] != 0)
-			? $shipment['result_name'] : 'Not Evaluated';
+			? $shipment['result_name'] : $translator->_('Not Evaluated');
 
 		if (isset($shipment['display_result']) && $shipment['display_result'] === 'Fail') {
 			$btnClassName = 'btn-danger';
-		} elseif ((isset($shipment['final_result']) && $shipment['final_result'] == 3) || $finalResult === 'Excluded') {
+		} elseif ((isset($shipment['final_result']) && $shipment['final_result'] == 3) || $finalResult === $translator->_('Excluded')) {
 			$btnClassName = 'btn-default';
-			$finalResult = 'Excluded';
-		} elseif ($finalResult === 'Not Evaluated') {
+			$finalResult = $translator->_('Excluded');
+		} elseif ($finalResult === $translator->_('Not Evaluated')) {
 			$btnClassName = 'btn-default';
 		} elseif (isset($warnings) && count($warnings) > 0) {
 			$btnClassName = 'btn-warning';
@@ -1561,13 +1562,13 @@ class Application_Service_Evaluation
 		$documentationScore = (isset($shipment['documentation_score']) && $shipment['documentation_score'] !== '') ? $shipment['documentation_score'] : '0';
 
 		if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
-			$responseStatus = 'Not Responded';
+			$responseStatus = $translator->_('Not Responded');
 		} elseif ($shipment['response_status'] === 'responded') {
-			$responseStatus = 'Responded';
+			$responseStatus = $translator->_('Responded');
 		} elseif ($shipment['response_status'] === 'late') {
-			$responseStatus = 'Late Response';
+			$responseStatus = $translator->_('Late Response');
 		} else {
-			$responseStatus = 'Not Tested';
+			$responseStatus = $translator->_('Not Tested');
 		}
 
 		if (($shipment['status'] ?? '') === 'finalized') {
@@ -1598,24 +1599,27 @@ class Application_Service_Evaluation
 		$responseStatusCell = htmlspecialchars($responseStatus);
 		$respondedOn = Pt_Commons_DateUtility::humanReadableDateFormat($shipment['shipment_test_report_date'] ?? null, true) ?? '';
 
+		$downloadedBadge = '<span class="badge rounded-pill" style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;"><i class="icon-check"></i> ' . $translator->_('Downloaded') . '</span>';
+		$notDownloadedBadge = '<span class="badge rounded-pill" style="background-color:#fff3cd;color:#856404;font-weight:500;padding:6px 12px;"><i class="icon-remove"></i> ' . $translator->_('Not downloaded') . '</span>';
+
 		$hasIndividual = !empty($reportDownloadedOn['first_individual_report_on']) || !empty($reportDownloadedOn['latest_individual_report_on']);
 		if ($hasIndividual) {
 			$indDate = Pt_Commons_DateUtility::humanReadableDateFormat($reportDownloadedOn['first_individual_report_on'] ?? $reportDownloadedOn['latest_individual_report_on'], true);
-			$participantReport = '<span class="badge rounded-pill" style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;"><i class="icon-check"></i> Downloaded</span><br>'
+			$participantReport = $downloadedBadge . '<br>'
 				. '<strong>' . htmlspecialchars($shipment['individualParticipantName'] ?? '') . '</strong><br>'
 				. '<small class="text-body-secondary">' . htmlspecialchars((string) $indDate) . '</small>';
 		} else {
-			$participantReport = '<span class="badge rounded-pill" style="background-color:#fff3cd;color:#856404;font-weight:500;padding:6px 12px;"><i class="icon-remove"></i> Not downloaded</span>';
+			$participantReport = $notDownloadedBadge;
 		}
 
 		$hasSummary = !empty($reportDownloadedOn['first_summary_report_on']) || !empty($reportDownloadedOn['latest_summary_report_on']);
 		if ($hasSummary) {
 			$sumDate = Pt_Commons_DateUtility::humanReadableDateFormat($reportDownloadedOn['first_summary_report_on'] ?? $reportDownloadedOn['latest_summary_report_on'], true);
-			$summaryReport = '<span class="badge rounded-pill" style="background-color:#d4edda;color:#155724;font-weight:500;padding:6px 12px;"><i class="icon-check"></i> Downloaded</span><br>'
+			$summaryReport = $downloadedBadge . '<br>'
 				. '<strong>' . htmlspecialchars($shipment['summaryParticipantName'] ?? '') . '</strong><br>'
 				. '<small class="text-body-secondary">' . htmlspecialchars((string) $sumDate) . '</small>';
 		} else {
-			$summaryReport = '<span class="badge rounded-pill" style="background-color:#fff3cd;color:#856404;font-weight:500;padding:6px 12px;"><i class="icon-remove"></i> Not downloaded</span>';
+			$summaryReport = $notDownloadedBadge;
 		}
 
 		$updatedByName = trim($shipment['updatedByName'] ?? '');
@@ -1776,17 +1780,18 @@ class Application_Service_Evaluation
 	// Builds the row array for the distribution shipment participant DataTable.
 	private function renderDistributionShipmentRow($shipment, $reportQueue)
 	{
+		$translator = Zend_Registry::get('translate');
 		$btnClassName = 'btn-success';
 		$warnings = json_decode($shipment['failure_reason'] ?? '', true);
 		$finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != '' && $shipment['final_result'] != 0)
-			? $shipment['result_name'] : 'Not Evaluated';
+			? $shipment['result_name'] : $translator->_('Not Evaluated');
 
 		if (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
 			$btnClassName = 'btn-danger';
 		} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 3) {
 			$btnClassName = 'btn-default';
-			$finalResult = 'Excluded';
-		} elseif ($finalResult === 'Not Evaluated') {
+			$finalResult = $translator->_('Excluded');
+		} elseif ($finalResult === $translator->_('Not Evaluated')) {
 			$btnClassName = 'btn-default';
 		} elseif (isset($warnings) && count($warnings) > 0) {
 			$btnClassName = 'btn-warning';
@@ -1803,18 +1808,18 @@ class Application_Service_Evaluation
 				$invididualFilePath = $files[0] ?? '';
 			}
 			if ($invididualFilePath !== '' && file_exists($invididualFilePath) && $reportQueue !== 'disabled') {
-				$individualReports = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> Download Report</a>';
+				$individualReports = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> ' . $translator->_('Download Report') . '</a>';
 			}
 		}
 
 		if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
-			$responseStatus = 'Not Responded';
+			$responseStatus = $translator->_('Not Responded');
 		} elseif ($shipment['response_status'] === 'responded') {
-			$responseStatus = 'Responded';
+			$responseStatus = $translator->_('Responded');
 		} elseif ($shipment['response_status'] === 'late') {
-			$responseStatus = 'Late Response';
+			$responseStatus = $translator->_('Late Response');
 		} else {
-			$responseStatus = 'Not Tested';
+			$responseStatus = $translator->_('Not Tested');
 		}
 
 		$expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';

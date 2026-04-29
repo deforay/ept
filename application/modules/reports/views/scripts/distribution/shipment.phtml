@@ -20,6 +20,11 @@ if (!empty($this->shipment)) {
             padding: 0 30px;
             box-sizing: border-box;
         }
+
+        /* DataTables renders rows from JSON, so per-cell vertical-align in PHP is gone — restore it here. */
+        #shipmentEvaluation tbody td {
+            vertical-align: middle;
+        }
     </style>
     <div class="distribution-shipment-wide">
         <div class="well" style="clear: both;">
@@ -72,11 +77,11 @@ if (!empty($this->shipment)) {
                                     <?php if (isset($shipment['reported_count']) && $shipment['reported_count'] > 0) { ?>
                                         <a class="btn btn-success btn-xs"
                                             href="/reports/distribution/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
-                                                    class="icon-edit"></i> Report</span></a>
+                                                    class="icon-edit"></i> <?= $this->htmlTranslate("Report"); ?></span></a>
                                     <?php } else { ?>
                                         <a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i
                                                     class="icon-edit"></i>
-                                                Report</span></a>
+                                                <?= $this->htmlTranslate("Report"); ?></span></a>
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -124,11 +129,13 @@ if (!empty($this->shipment)) {
         </h4>
         <table class="table table-bordered" style="margin:0 auto;">
             <tr>
-                <th style="text-align: right">Scheme Type</th>
+                <th style="text-align: right">
+                    <?= $this->htmlTranslate("Scheme Type"); ?>
+                </th>
                 <td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-                <th style="text-align: right">PT Survey Code</th>
+                <th style="text-align: right"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
                 <td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-                <th style="text-align: right">PT Survey/Shipment Date</th>
+                <th style="text-align: right"><?= $this->htmlTranslate("PT Survey/Shipment Date"); ?></th>
                 <td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
             </tr>
         </table>

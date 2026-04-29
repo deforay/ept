@@ -128,12 +128,12 @@
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="shipments-wide">
 	<legend>
-		<h3><?= $this->translate->_("Shipments Report"); ?></h3>
+		<h3><?= $this->htmlTranslate("Shipments Report"); ?></h3>
 	</legend>
 	<table style="margin:20px 0;" class="table table-bordered">
 		<tr>
 			<td style="width:50%;text-align: center;font-weight:bold;">
-				<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+				<?= $this->htmlTranslate("Pick a Date Range (Optional)"); ?>
 			</td>
 			<td style="width:50%;text-align: center;font-weight:bold;"></td>
 		</tr>
@@ -144,9 +144,9 @@
 			</td>
 			<td>
 				<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
-					onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button
+					onclick="getDrawable()"><span><?= $this->htmlTranslate("Search"); ?></span></button> <button
 					class="btn btn-danger btn-sm"
-					onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
 			</td>
 		</tr>
 	</table>
@@ -154,29 +154,29 @@
 		id="shipmentTable">
 		<thead>
 			<tr>
-				<th style="text-align: center;"><?= $this->translate->_("PT Survey Code"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("PT Survey Date"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
 				<!-- <th style="text-align: center;">No. of Samples</th> -->
-				<th style="text-align: center;"><?= $this->translate->_("Participants"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Responses"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Passed"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Reports for Participants"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Reports for PT Admin"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
 			</tr>
 			<tr class="column-search-row">
 				<th><input type="text" class="form-control input-sm col-search" data-col="0"
-						placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+						placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
 				<th></th>
 				<th><input type="text" class="form-control input-sm col-search" data-col="2"
-						placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+						placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
 				<th></th>
 				<th>
 					<select class="form-control input-sm col-search" data-col="4">
-						<option value=""><?= $this->translate->_("All"); ?></option>
+						<option value=""><?= $this->htmlTranslate("All"); ?></option>
 						<?php foreach ($this->schemes as $scheme) { ?>
 							<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>">
 								<?php echo $scheme['scheme_name']; ?>
@@ -194,7 +194,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+				<td colspan="10" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
 			</tr>
 		</tbody>
 	</table>
@@ -396,7 +396,7 @@
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				} else {
-					alert('<?= $this->translate->_("No feedback responses found for this shipment"); ?>');
+					alert("<?= $this->jsTranslate("No feedback responses found for this shipment"); ?>");
 				}
 				$.unblockUI();
 			});
@@ -411,7 +411,7 @@
 		},
 			function (data) {
 				if (data == "" || data == null || data == undefined) {
-					alert('<?= $this->translate->_("Unable to generate download"); ?>');
+					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
 				} else {
 					document.location.href = '/temporary/' + data;
 				}

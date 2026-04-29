@@ -10,6 +10,11 @@
         padding: 0 30px;
         box-sizing: border-box;
     }
+
+    /* DataTables renders rows from JSON, so per-cell vertical-align in PHP is gone — restore it here. */
+    #shipmentEvaluation tbody td {
+        vertical-align: middle;
+    }
 </style>
 <?php
 if (!empty($this->shipment)) {
