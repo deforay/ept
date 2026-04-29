@@ -170,7 +170,7 @@ if ($shipmentAttributesRaw !== '') {
 					title="Please chosse corrective actiion file.">
 
 				<label for="comment" class="form-control-label">Comment for all Participants of this shipment</label>
-				<textarea rows="10" cols="20" class="form-control"
+				<textarea rows="5" cols="20" class="form-control"
 					placeholder="Comment for all Participants of this shipment"
 					title="Comment for all Participants of this shipment" name="comment"
 					id="comment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
@@ -260,8 +260,8 @@ if ($shipmentAttributesRaw !== '') {
 				}
 				?>
 				<tr>
-					<td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>" data-btn-class="<?php echo $btnClassName; ?>"><i
-								class="icon-plus"></i></a></td>
+					<td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"
+							data-btn-class="<?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
 					<td style="vertical-align:middle;">
 						<?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?>
 					</td>
@@ -314,12 +314,14 @@ if ($shipmentAttributesRaw !== '') {
 	?>
 	<?php if ($shipmentAttributesDisplay !== '') { ?>
 		<div style="margin-top:20px; text-align:right;">
-			<a href="javascript:void(0);" onclick="$('#shipmentAttributesDebug').slideToggle();" style="font-size:11px; color:#777; text-decoration:none;">
-				<?= $this->translate->_("shipment attributes"); ?>
+			<a href="javascript:void(0);" onclick="$('#shipmentAttributesDebug').slideToggle();"
+				style="font-size:11px; color:#777; text-decoration:none;">
+				<?= $this->translate->_("Shipment Attributes"); ?>
 			</a>
 		</div>
 		<div id="shipmentAttributesDebug" style="display:none; margin-top:6px;">
-			<pre style="margin:0; padding:10px; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:11px; color:#666; background:#f8f8f8; border:1px dashed #ddd;"><?php echo $this->escape($shipmentAttributesDisplay); ?></pre>
+			<pre
+				style="margin:0; padding:10px; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:11px; color:#666; background:#f8f8f8; border:1px dashed #ddd;"><?php echo $this->escape($shipmentAttributesDisplay); ?></pre>
 		</div>
 	<?php } ?>
 	<script type="text/javascript" charset="utf-8">
