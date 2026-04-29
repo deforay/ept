@@ -139,6 +139,27 @@
 		var copied = window.prompt("Copy the email content below:", emailBody);
 		return copied !== null;
 	}
+
+	function copyEmailAndSave() {
+		if (!copyEmailContent()) return;
+		var form = document.getElementById('resetForm');
+		if (!form) return;
+		var pwd = document.getElementById('password');
+		var cpwd = document.getElementById('confirmPassword');
+		if (!pwd || !pwd.value) {
+			alert("Please enter or generate a password first.");
+			return;
+		}
+		if (cpwd && cpwd.value && cpwd.value !== pwd.value) {
+			alert("Password and Repeat password should match.");
+			return;
+		}
+		if (cpwd && !cpwd.value) {
+			cpwd.value = pwd.value;
+		}
+		if (typeof $ !== "undefined" && $.blockUI) { $.blockUI(); }
+		form.submit();
+	}
 </script>
 <img src="/images/loading.gif" style="display:none;" />
 </body>

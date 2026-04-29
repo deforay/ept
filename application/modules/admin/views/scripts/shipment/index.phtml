@@ -235,24 +235,10 @@
             drawTable();
         });
 
-        // Per-column search inputs — debounced so we don't fire a request on every keystroke
-        var colSearchTimer = null;
-        $('#shipmentTable thead').on('keyup change', '.col-search', function() {
-            var $el = $(this);
-            var colIdx = parseInt($el.data('col'), 10);
-            var value = $el.val();
-            clearTimeout(colSearchTimer);
-            colSearchTimer = setTimeout(function() {
-                if (oTable) {
-                    oTable.fnFilter(value, colIdx);
-                }
-            }, 400);
-        });
-        // Don't let clicks on the filter inputs trigger the header's sort handler.
-        // DataTables binds sort directly on <th>, so delegation from <thead> runs AFTER
-        // the sort — bind straight on the inputs instead.
-        $('#shipmentTable thead .col-search').on('click mousedown focus', function(e) {
-            e.stopPropagation();
+        bindColSearch('#shipmentTable', function (value, colIdx) {
+            if (oTable) {
+                oTable.fnFilter(value, colIdx);
+            }
         });
     });
 
