@@ -119,7 +119,7 @@
 					duration: 3000
 				}).showToast();
 			}
-			return false;
+			return true;
 		}
 
 		if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -133,10 +133,11 @@
 			}, function () {
 				window.prompt("Copy the email content below:", emailBody);
 			});
-		} else {
-			window.prompt("Copy the email content below:", emailBody);
+			return true;
 		}
-		return false;
+
+		var copied = window.prompt("Copy the email content below:", emailBody);
+		return copied !== null;
 	}
 </script>
 <img src="/images/loading.gif" style="display:none;" />
