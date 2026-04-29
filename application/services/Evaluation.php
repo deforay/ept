@@ -1868,6 +1868,241 @@ class Application_Service_Evaluation
 		];
 	}
 
+	// DataTables server-side endpoint for /admin/evaluate/shipment.
+	// Read-only — assumes initial GET already triggered any required evaluation.
+	// Echoes JSON and does not return.
+	public function getEvaluateShipmentParticipantsForDataTable($shipmentId, $parameters, $override = '', $privileges = [])
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		// Column index → searchable/sortable expression (null = not searchable/sortable).
+		// 0 expand, 1 participant (name + uid), 2 score, 3 doc-score, 4 result, 5 response_status,
+		// 6 responded_on, 7 last_modified, 8 map_id (hidden), 9 action.
+		$searchColumns = [
+			null,
+			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''), ' ', COALESCE(p.last_name,''), ' (', COALESCE(p.unique_identifier,''), ')')"),
+			'sp.shipment_score',
+			'sp.documentation_score',
+			new Zend_Db_Expr("CASE sp.final_result WHEN 1 THEN 'Pass' WHEN 2 THEN 'Fail' WHEN 3 THEN 'Excluded' ELSE '' END"),
+			'sp.response_status',
+			'sp.shipment_test_report_date',
+			new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dmu.first_name,''), ' ', COALESCE(dmu.last_name,'')))"),
+			null,
+			null,
+		];
+		$orderColumns = $searchColumns;
+
+		$baseSelect = $db->select()
+			->from(['sp' => 'shipment_participant_map'])
+			->join(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id', ['shipment_id', 'shipment_code', 'scheme_type', 'corrective_action_file', 'shipment_status' => 's.status'])
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name', 'is_user_configured'])
+			->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['first_name', 'last_name', 'lab_name', 'unique_identifier', 'state', 'district'])
+			->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result', ['result_name'])
+			->joinLeft(
+				['dmu' => 'data_manager'],
+				'dmu.dm_id = sp.updated_by_user',
+				[
+					'updatedByName' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dmu.first_name,''), ' ', COALESCE(dmu.last_name,'')))"),
+					'updatedByEmail' => 'dmu.primary_email'
+				]
+			)
+			->where('s.shipment_id = ?', $shipmentId);
+
+		if ($override === 'yes' || $override === 'no') {
+			$baseSelect->where('sp.manual_override = ?', $override);
+		}
+
+		$countSelect = clone $baseSelect;
+		$countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
+		$countSelect->columns(new Zend_Db_Expr('COUNT(sp.map_id)'));
+		$iTotal = (int) $db->fetchOne($countSelect);
+
+		$filtered = $baseSelect;
+
+		if (!empty($parameters['sSearch'])) {
+			$search = $parameters['sSearch'];
+			$ors = [];
+			foreach ($searchColumns as $col) {
+				if ($col === null) {
+					continue;
+				}
+				$expr = ($col instanceof Zend_Db_Expr) ? (string) $col : $col;
+				$ors[] = $expr . ' LIKE ' . $db->quote('%' . $search . '%');
+			}
+			if (!empty($ors)) {
+				$filtered->where('(' . implode(' OR ', $ors) . ')');
+			}
+		}
+
+		$colCount = count($searchColumns);
+		for ($i = 0; $i < $colCount; $i++) {
+			if (!isset($parameters['sSearch_' . $i]) || $parameters['sSearch_' . $i] === '' || $searchColumns[$i] === null) {
+				continue;
+			}
+			$expr = ($searchColumns[$i] instanceof Zend_Db_Expr) ? (string) $searchColumns[$i] : $searchColumns[$i];
+			$filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
+		}
+
+		if (isset($parameters['iSortCol_0'])) {
+			$sortClauses = [];
+			$sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
+			for ($i = 0; $i < $sortingCols; $i++) {
+				$colIdx = (int) $parameters['iSortCol_' . $i];
+				if (empty($parameters['bSortable_' . $colIdx]) || $parameters['bSortable_' . $colIdx] !== 'true') {
+					continue;
+				}
+				if (!isset($orderColumns[$colIdx]) || $orderColumns[$colIdx] === null) {
+					continue;
+				}
+				$dir = (strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc') ? 'DESC' : 'ASC';
+				$expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
+				$sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
+			}
+			if (!empty($sortClauses)) {
+				$filtered->order($sortClauses);
+			}
+		}
+
+		$filteredCountSelect = clone $filtered;
+		$filteredCountSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
+		$filteredCountSelect->columns(new Zend_Db_Expr('COUNT(sp.map_id)'));
+		$iFilteredTotal = (int) $db->fetchOne($filteredCountSelect);
+
+		if (isset($parameters['iDisplayStart']) && isset($parameters['iDisplayLength']) && $parameters['iDisplayLength'] != '-1') {
+			$filtered->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
+		}
+
+		$rResult = $db->fetchAll($filtered);
+
+		$canEdit = in_array('edit-participant-response', $privileges, true);
+
+		$output = [
+			'sEcho' => (int) ($parameters['sEcho'] ?? 0),
+			'iTotalRecords' => $iTotal,
+			'iTotalDisplayRecords' => $iFilteredTotal,
+			'aaData' => [],
+		];
+
+		foreach ($rResult as $row) {
+			$output['aaData'][] = $this->renderEvaluateShipmentRow($row, $canEdit);
+		}
+
+		echo json_encode($output);
+	}
+
+	// Builds the row array for the /admin/evaluate/shipment participant DataTable.
+	private function renderEvaluateShipmentRow($shipment, $canEdit)
+	{
+		$translator = Zend_Registry::get('translate');
+
+		// Action-row scheme_type follows the same mapping the view used for editUrl:
+		// custom-test for user-configured, otherwise the raw scheme_type.
+		$rowSchemeType = (($shipment['is_user_configured'] ?? '') === 'yes')
+			? 'custom-test' : ($shipment['scheme_type'] ?? '');
+
+		$btnClassName = 'btn-success';
+		$displayResult = '';
+		if (isset($shipment['final_result']) && $shipment['final_result'] == 1) {
+			$displayResult = $translator->_('Pass');
+		} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
+			$btnClassName = 'btn-danger';
+			$displayResult = $translator->_('Fail');
+		} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 3) {
+			$btnClassName = 'btn-default';
+			$displayResult = $translator->_('Excluded');
+		} elseif (empty($shipment['final_result'])) {
+			$btnClassName = 'btn-default';
+		}
+		$warnings = json_decode($shipment['failure_reason'] ?? '', true);
+		if ($displayResult === '' && empty($shipment['final_result']) && !empty($warnings)) {
+			$btnClassName = 'btn-warning';
+		}
+
+		$shipmentScore = (isset($shipment['shipment_score']) && $shipment['shipment_score'] !== '') ? $shipment['shipment_score'] : '0';
+		$documentationScore = (isset($shipment['documentation_score']) && $shipment['documentation_score'] !== '') ? $shipment['documentation_score'] : '0';
+
+		if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
+			$responseStatus = $translator->_('Not Responded');
+		} elseif ($shipment['response_status'] === 'responded') {
+			$responseStatus = $translator->_('Responded');
+		} elseif ($shipment['response_status'] === 'late') {
+			$responseStatus = $translator->_('Late Response');
+		} else {
+			$responseStatus = $translator->_('Not Tested');
+		}
+
+		$expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';
+
+		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . '(' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
+		$score = '<div style="text-align:center;">' . htmlspecialchars($shipmentScore) . '</div>';
+		$docScore = '<div style="text-align:center;">' . htmlspecialchars($documentationScore) . '</div>';
+		$resultCell = '<div style="text-align:center;">' . htmlspecialchars($displayResult !== '' ? $displayResult : $translator->_('Not Evaluated')) . '</div>';
+		$responseStatusCell = htmlspecialchars($responseStatus);
+		$respondedOn = !empty($shipment['shipment_test_report_date'])
+			? (Pt_Commons_DateUtility::humanReadableDateFormat($shipment['shipment_test_report_date'], true) ?? '-')
+			: '-';
+
+		// Last Modified cell.
+		$updatedByName = trim($shipment['updatedByName'] ?? '');
+		$updatedByEmail = trim($shipment['updatedByEmail'] ?? '');
+		$updatedOnRaw = (!empty($shipment['updated_on_user']) && $shipment['updated_on_user'] !== '0000-00-00 00:00:00') ? $shipment['updated_on_user'] : '';
+		if ($updatedByName !== '' || $updatedByEmail !== '' || $updatedOnRaw !== '') {
+			$lastModified = '';
+			if ($updatedByName !== '' || $updatedByEmail !== '') {
+				$lastModified .= '<strong>' . htmlspecialchars($updatedByName !== '' ? $updatedByName : '—') . '</strong>';
+				if ($updatedByEmail !== '') {
+					$lastModified .= '<br><small class="text-body-secondary">(' . htmlspecialchars($updatedByEmail) . ')</small>';
+				}
+			}
+			if ($updatedOnRaw !== '') {
+				$updatedOnFormatted = Pt_Commons_DateUtility::humanReadableDateFormat($updatedOnRaw, true);
+				$lastModified .= '<br><small class="text-body-secondary">' . htmlspecialchars((string) $updatedOnFormatted) . '</small>';
+			}
+		} else {
+			$lastModified = '<span class="text-muted">&mdash;</span>';
+		}
+
+		// Action cell.
+		$actionParts = [];
+		if ($canEdit && $rowSchemeType !== '') {
+			$editUrl = '/' . $rowSchemeType . '/response/sid/' . (int) $shipment['shipment_id'] . '/pid/' . (int) $shipment['participant_id'] . '/eid/' . htmlspecialchars((string) ($shipment['evaluation_status'] ?? '')) . '/from/admin';
+			$actionParts[] = '<a class="btn btn-primary btn-xs" href="' . $editUrl . '"><span><i class="icon-pencil"></i> ' . $translator->_('Edit') . '</span></a>';
+		}
+
+		$shipmentStatus = $shipment['shipment_status'] ?? '';
+		$reportDate = $shipment['shipment_test_report_date'] ?? '';
+		if ($shipmentStatus !== 'finalized' && $reportDate !== '' && $reportDate !== '0000-00-00 00:00:00') {
+			$participantFullName = trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''));
+			$jsonOpts = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE;
+			$onclick = "removeSchemes("
+				. json_encode($rowSchemeType, $jsonOpts) . ", "
+				. json_encode(base64_encode($shipment['map_id']), $jsonOpts) . ", "
+				. json_encode($shipment['is_user_configured'] ?? '', $jsonOpts) . ", "
+				. json_encode($participantFullName, $jsonOpts) . ", "
+				. json_encode($shipment['unique_identifier'] ?? '', $jsonOpts)
+				. ")";
+			$actionParts[] = '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick=\'' . $onclick . '\'><span><i class="icon-remove"></i> ' . $translator->_('Delete') . '</span></a>';
+		}
+		if ($displayResult === $translator->_('Fail') && !empty($shipment['corrective_action_file'])) {
+			$actionParts[] = '<br><a class="btn btn-primary btn-xs" href="/uploads/corrective-action-files/' . htmlspecialchars($shipment['corrective_action_file']) . '" download=""><span><i class="icon-download"></i> ' . $translator->_('Download Corrective Action') . '</span></a>';
+		}
+		$actionCell = '<div style="white-space:nowrap;">' . implode(' ', $actionParts) . '</div>';
+
+		return [
+			$expandBtn,
+			$participantCell,
+			$score,
+			$docScore,
+			$resultCell,
+			$responseStatusCell,
+			$respondedOn,
+			$lastModified,
+			(int) $shipment['map_id'],
+			$actionCell,
+		];
+	}
+
 	public function getReportStatus($shipmentId, $type = '', $evaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();

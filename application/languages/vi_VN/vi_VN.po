@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-04-29 10:23+0530\n"
+"POT-Creation-Date: 2026-04-29 10:56+0530\n"
 "PO-Revision-Date: 2026-04-29 10:20+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: \n"
@@ -226,6 +226,7 @@ msgstr "lỗi"
 #: application/services/Evaluation.php:1552
 #: application/services/Evaluation.php:1554
 #: application/services/Evaluation.php:1793
+#: application/services/Evaluation.php:2013
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:396
 msgid "Excluded"
 msgstr "Không bao gồm"
@@ -239,6 +240,8 @@ msgid "excluded"
 msgstr "đã loại trừ"
 
 #: application/languages/db-translation-strings.php:99
+#: application/services/Evaluation.php:2010
+#: application/services/Evaluation.php:2087
 msgid "Fail"
 msgstr "Không Đạt"
 
@@ -535,6 +538,7 @@ msgstr "không phát hiện"
 #: application/services/Evaluation.php:1555
 #: application/services/Evaluation.php:1787
 #: application/services/Evaluation.php:1794
+#: application/services/Evaluation.php:2040
 msgid "Not Evaluated"
 msgstr "Không đánh giá"
 
@@ -621,6 +625,7 @@ msgstr ""
 #: application/languages/db-translation-strings.php:269
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:139
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:181
+#: application/services/Evaluation.php:2007
 #: application/views/scripts/participant/participant-performance.phtml:129
 #: application/views/scripts/participant/participant-performance.phtml:171
 msgid "Pass"
@@ -1477,6 +1482,7 @@ msgstr "Xác nhận"
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:24
 #: application/modules/admin/views/scripts/enrollments/add.phtml:144
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment.phtml:46
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:305
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:70
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:83
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:165
@@ -1817,6 +1823,7 @@ msgstr "Xem (%d)"
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:50
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:49
+#: application/services/Evaluation.php:2070
 msgid "Edit"
 msgstr "Chỉnh sửa"
 
@@ -1870,7 +1877,7 @@ msgstr "Thêm lô hàng"
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:267
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:118
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:180
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:105
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:118
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:89
 msgid "View"
 msgstr "Xem"
@@ -2222,7 +2229,7 @@ msgstr "Điểm bộ mẫu"
 
 #: application/models/Dts.php:2094
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:263
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:210
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:222
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:19
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:220
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:150
@@ -2257,8 +2264,8 @@ msgid "Manage Enrollment"
 msgstr "Quản lý việc đăng ký"
 
 #: application/modules/admin/controllers/SpotlightController.php:72
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:82
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:120
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:95
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:133
 #: application/services/Shipments.php:4207
 msgid "Evaluate"
 msgstr "Đánh giá"
@@ -2394,7 +2401,7 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/admin/views/scripts/alerts/email.phtml:22
 #: application/modules/admin/views/scripts/announcement/index.phtml:24
 #: application/modules/admin/views/scripts/api-history/index.phtml:78
-#: application/modules/admin/views/scripts/audit-log/index.phtml:64
+#: application/modules/admin/views/scripts/audit-log/index.phtml:65
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:167
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:33
 #: application/modules/admin/views/scripts/custom-test/index.phtml:26
@@ -2404,6 +2411,7 @@ msgstr "Nguyên nhân thất bại"
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:88
 #: application/modules/admin/views/scripts/enrollments/index.phtml:51
 #: application/modules/admin/views/scripts/evaluate/index.phtml:22
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:234
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:22
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:21
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:43
@@ -2539,7 +2547,7 @@ msgstr "Tỉnh"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:50
 #: application/modules/admin/views/scripts/api-history/index.phtml:73
-#: application/modules/admin/views/scripts/audit-log/index.phtml:56
+#: application/modules/admin/views/scripts/audit-log/index.phtml:57
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
 #: application/modules/admin/views/scripts/custom-test/add.phtml:137
 #: application/modules/admin/views/scripts/custom-test/add.phtml:417
@@ -2553,8 +2561,8 @@ msgstr "Tỉnh"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:46
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:70
 #: application/modules/admin/views/scripts/evaluate/index.phtml:17
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:62
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:75
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:228
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:74
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:17
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:16
@@ -2618,7 +2626,7 @@ msgstr "Chọn khoảng thời gian và phương án để hiển thị danh sá
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:87
 #: application/modules/admin/views/scripts/api-history/index.phtml:59
-#: application/modules/admin/views/scripts/audit-log/index.phtml:47
+#: application/modules/admin/views/scripts/audit-log/index.phtml:48
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:145
 #: application/modules/admin/views/scripts/enrollments/add.phtml:93
 #: application/modules/admin/views/scripts/enrollments/index.phtml:34
@@ -2732,7 +2740,7 @@ msgstr "Loại đồng bộ"
 
 #: application/modules/admin/views/scripts/api-history/index.phtml:70
 #: application/modules/admin/views/scripts/email-participants/index.phtml:95
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:155
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:168
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:66
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:49
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:23
@@ -2770,15 +2778,15 @@ msgstr "Chọn người dùng (Tùy chọn)"
 msgid "Select Context"
 msgstr "Chọn bối cảnh"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:57
+#: application/modules/admin/views/scripts/audit-log/index.phtml:58
 msgid "Action By"
 msgstr "Hành động bởi"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:58
+#: application/modules/admin/views/scripts/audit-log/index.phtml:59
 msgid "Action On"
 msgstr "Hành động"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:59
+#: application/modules/admin/views/scripts/audit-log/index.phtml:60
 msgid "Context"
 msgstr "Ngữ cảnh"
 
@@ -3141,7 +3149,7 @@ msgstr "Tên kiểu gen"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:44
 #: application/modules/admin/views/scripts/enrollments/view.phtml:7
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:63
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:53
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:66
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:277
 #: application/modules/admin/views/scripts/test-platform/add.phtml:41
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:46
@@ -3216,7 +3224,7 @@ msgstr "Tình trạng gen"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:382
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:10
 #: application/modules/admin/views/scripts/email-participants/index.phtml:27
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:193
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:206
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:34
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:44
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:34
@@ -3752,7 +3760,7 @@ msgstr "Loại xét nghiệm 3 được khuyến nghị "
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:774
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:789
 #: application/modules/admin/views/scripts/email-participants/index.phtml:104
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:150
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:163
 #: application/modules/admin/views/scripts/global-config/index.phtml:1298
 #: application/modules/admin/views/scripts/global-config/index.phtml:1307
 #: application/modules/admin/views/scripts/home-config/index.phtml:706
@@ -3799,7 +3807,7 @@ msgstr "Thêm trường tùy chỉnh?"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:114
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:123
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:134
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:197
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:210
 #: application/modules/admin/views/scripts/global-config/index.phtml:581
 #: application/modules/admin/views/scripts/global-config/index.phtml:760
 #: application/modules/admin/views/scripts/global-config/index.phtml:773
@@ -3952,7 +3960,7 @@ msgstr "Có"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:115
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:124
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:135
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:195
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:208
 #: application/modules/admin/views/scripts/global-config/index.phtml:580
 #: application/modules/admin/views/scripts/global-config/index.phtml:761
 #: application/modules/admin/views/scripts/global-config/index.phtml:774
@@ -4289,6 +4297,7 @@ msgstr "Tất cả "
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:298
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:499
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:561
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:283
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:217
 #: application/modules/reports/views/scripts/testkit/index.phtml:156
 #: application/views/scripts/participant/corrective.phtml:62
@@ -4924,6 +4933,8 @@ msgstr "Lọc theo ID, tên, cơ sở giáo dục hoặc email…"
 
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:19
 #: application/modules/admin/views/scripts/enrollments/index.phtml:41
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:288
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:297
 #: application/modules/admin/views/scripts/participants/add.phtml:26
 #: application/modules/admin/views/scripts/participants/edit.phtml:35
 #: application/modules/admin/views/scripts/participants/index.phtml:85
@@ -5123,7 +5134,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/distributions/index.phtml:31
 #: application/modules/admin/views/scripts/email-participants/index.phtml:96
 #: application/modules/admin/views/scripts/evaluate/index.phtml:14
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:157
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:170
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:67
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:50
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:24
@@ -5219,7 +5230,7 @@ msgstr "Các lô hàng thuộc cuộc khảo sát PT này"
 #: application/modules/admin/views/scripts/email-participants/index.phtml:94
 #: application/modules/admin/views/scripts/enrollments/view.phtml:13
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:62
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:52
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:65
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:13
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:65
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
@@ -5998,7 +6009,7 @@ msgid "Shipments Under PT Survey"
 msgstr "Các lô hàng được kiểm tra theo PT"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:64
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:54
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:67
 #: application/modules/admin/views/scripts/shipment/index.phtml:39
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:80
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:20
@@ -6012,7 +6023,7 @@ msgid "No. of Samples"
 msgstr "Số lượng mẫu"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:65
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:55
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:21
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:26
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:45
@@ -6023,7 +6034,7 @@ msgid "No. of Participants"
 msgstr "Số lượng người tham gia"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:66
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:56
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:69
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:22
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:27
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:46
@@ -6040,12 +6051,12 @@ msgid "No. of Responses"
 msgstr "Số lượng phản hồi"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:67
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:57
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:70
 msgid "Response%"
 msgstr "Tỷ lệ phản hồi%"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:68
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:58
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:71
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:24
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:49
@@ -6056,7 +6067,7 @@ msgid "Number Passed"
 msgstr "Số người đỗ"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:69
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:59
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:72
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:25
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:52
@@ -6081,7 +6092,7 @@ msgid "Regenerate Reports"
 msgstr "Tạo lại báo cáo"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:174
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:116
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:129
 msgid "Not Responded Participants"
 msgstr "Những người tham gia chưa trả lời"
 
@@ -6090,6 +6101,7 @@ msgid "Error loading VL reference scores. Please try again."
 msgstr "Lỗi khi tải điểm tham chiếu VL. Vui lòng thử lại."
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:220
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:413
 msgid "Shipment has been added to the queue. It will be evaluated shortly."
 msgstr ""
 "Lô hàng đã được thêm vào danh sách chờ. Lô hàng này sẽ sớm được xem xét."
@@ -6102,73 +6114,74 @@ msgstr "Xảy ra lỗi trong quá trình đánh giá lịch trình. Vui lòng th
 msgid "Evaluate PT Survey"
 msgstr "Đánh giá cuộc khảo sát PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:40
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:53
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:6
 msgid "Show/Hide Shipment List"
 msgstr "Hiển thị/Ẩn danh sách lô hàng"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:44
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:57
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:10
 msgid "All Shipments Under PT Survey"
 msgstr "Tất cả các lô hàng được kiểm tra theo PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:73
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:86
 msgid "Queued"
 msgstr "Đang chờ"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:76
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:89
 msgid "Processing"
 msgstr "Đang xử lý"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:79
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:145
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:92
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:158
 #: application/services/Shipments.php:4207
 msgid "Re-Evaluate"
 msgstr "Đánh giá lại"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:114
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:127
 #: application/modules/admin/views/scripts/profile/index.phtml:169
 msgid "Mail"
 msgstr "Thư"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:130
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:143
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:94
 msgid "No shipments for this PT Survey yet"
 msgstr "Hiện chưa có lô hàng nào cho cuộc khảo sát PT này"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:141
-msgid "You are currently evaluating Shipment"
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:154
+#, fuzzy
+msgid "You are currently evaluating"
 msgstr "Bạn hiện đang đánh giá lô hàng"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:159
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:172
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:91
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:138
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:137
 msgid "PT Survey/Shipment Date"
 msgstr "Ngày khảo sát/Ngày giao hàng"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:182
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:195
 msgid "Update File & Comment"
 msgstr "Cập nhật tệp & Bình luận"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:189
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:202
 msgid "Show only manually overridden results"
 msgstr "Chỉ hiển thị các kết quả đã được thay đổi thủ công"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:207
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:220
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:146
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:224
 msgid "Participant/Tester"
 msgstr "Người tham gia/Người thử nghiệm"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:208
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:221
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:149
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:223
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:230
 msgid "Response Score"
 msgstr "Điểm đánh giá"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:212
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
 #: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:417
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:254
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:409
@@ -6191,7 +6204,7 @@ msgstr "Điểm đánh giá"
 msgid "Result"
 msgstr "Kết quả"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:213
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:224
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:152
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:231
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:238
@@ -6200,7 +6213,7 @@ msgstr "Kết quả"
 msgid "Response Status"
 msgstr "Trạng thái phản hồi"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:214
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:225
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:153
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:232
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:239
@@ -6209,9 +6222,92 @@ msgstr "Trạng thái phản hồi"
 msgid "Responded On"
 msgstr "Đã trả lời vào"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:318
-msgid "shipment attributes"
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:226
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:237
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:242
+msgid "Last Modified"
+msgstr "Sửa đổi lần cuối"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:227
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:240
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:244
+msgid "Map ID"
+msgstr "ID Map"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:273
+msgid "Permanently delete this response?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:277
+msgid ""
+"This will permanently remove the response below. The participant's submitted "
+"results will be deleted and cannot be recovered."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:294
+#, fuzzy
+msgid "Type the Participant ID above to confirm:"
+msgstr "Nhập tên người tham gia để lọc"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:300
+msgid ""
+"That does not match the Participant ID. Please type it exactly as shown."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:309
+#, fuzzy
+msgid "Delete response"
+msgstr "Xóa phản hồi"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:320
+#, fuzzy
+msgid "Shipment Attributes"
 msgstr "thuộc tính lô hàng"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:506
+#: application/views/scripts/participant/defaulted-schemes.phtml:105
+msgid "Are you sure you want to remove this response? This cannot be undone!"
+msgstr ""
+"Bạn có chắc chắn muốn xóa phản hồi này không? Thao tác này không thể hoàn "
+"tác!"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:536
+#, fuzzy
+msgid "Response has been removed successfully. Reloading this evaluation."
+msgstr "Đã xóa phản hồi thành công"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:541
+#, fuzzy
+msgid ""
+"Failed to delete the response. Please try again or contact the administrator."
+msgstr ""
+"Không thể xóa. Vui lòng thử lại sau hoặc liên hệ với quản trị viên hệ thống "
+"để được hỗ trợ"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:546
+#, fuzzy
+msgid ""
+"Are you sure you want to send an email reminder to participants who have not "
+"yet responded?"
+msgstr ""
+"Bạn có chắc chắn muốn xóa đơn vị tham gia này không? Thao tác này không thể "
+"hoàn tác!"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:553
+#: application/modules/admin/views/scripts/shipment/index.phtml:481
+msgid "Mail Sent successfully"
+msgstr "Thư đã được gửi thành công"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:566
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:413
+msgid "No Shipment to evaluate."
+msgstr "Không có lô hàng nào để đánh giá."
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:567
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:415
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:368
+msgid "Click here to go back"
+msgstr "Chấp vào đây để trở lại"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:47
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:134
@@ -8651,6 +8747,7 @@ msgid "Delete Template"
 msgstr "Xóa mẫu"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:380
+#: application/services/Evaluation.php:2085
 msgid "Delete"
 msgstr "Xóa"
 
@@ -8844,10 +8941,6 @@ msgstr "Bạn có chắc chắn muốn xóa không? Thao tác này không thể 
 msgid "No shipment schemes under this Distribution yet"
 msgstr "Hiện chưa có kế hoạch gửi mẫu ngoại kiểm nào trong đợt  phân phối này"
 
-#: application/modules/admin/views/scripts/shipment/index.phtml:481
-msgid "Mail Sent successfully"
-msgstr "Thư đã được gửi thành công"
-
 #: application/modules/admin/views/scripts/shipment/index.phtml:490
 msgid "Are you sure you want to generate TB forms for this shipment?"
 msgstr ""
@@ -8861,6 +8954,7 @@ msgstr "Tạo biểu mẫu TB"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:120
 #: application/services/Evaluation.php:1567
 #: application/services/Evaluation.php:1818
+#: application/services/Evaluation.php:2028
 #: application/views/scripts/participant/shipment-response-report.phtml:120
 msgid "Responded"
 msgstr "Phản hồi "
@@ -8869,6 +8963,7 @@ msgstr "Phản hồi "
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:121
 #: application/services/Evaluation.php:1565
 #: application/services/Evaluation.php:1816
+#: application/services/Evaluation.php:2026
 #: application/views/scripts/participant/shipment-response-report.phtml:121
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:395
 msgid "Not Responded"
@@ -10238,25 +10333,6 @@ msgstr "Tải xuống Báo cáo tóm tắt xác nhận"
 msgid "Download All Reports"
 msgstr "Tải xuống tất cả các báo cáo"
 
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:237
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:242
-msgid "Last Modified"
-msgstr "Sửa đổi lần cuối"
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:240
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:244
-msgid "Map ID"
-msgstr "ID Map"
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:413
-msgid "No Shipment to evaluate."
-msgstr "Không có lô hàng nào để đánh giá."
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:415
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:368
-msgid "Click here to go back"
-msgstr "Chấp vào đây để trở lại"
-
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:94
 msgid "Participants Report"
 msgstr "Báo cáo của các đơn vị tham gia"
@@ -10637,12 +10713,14 @@ msgstr ""
 
 #: application/services/Evaluation.php:1569
 #: application/services/Evaluation.php:1820
+#: application/services/Evaluation.php:2030
 #, fuzzy
 msgid "Late Response"
 msgstr "Nhập phản hồi"
 
 #: application/services/Evaluation.php:1571
 #: application/services/Evaluation.php:1822
+#: application/services/Evaluation.php:2032
 #, fuzzy
 msgid "Not Tested"
 msgstr "chưa kiểm nghiệm"
@@ -10661,6 +10739,11 @@ msgstr "Chưa tải lên logo"
 #, fuzzy
 msgid "Download Report"
 msgstr "Tải xuống tất cả các báo cáo"
+
+#: application/services/Evaluation.php:2088
+#, fuzzy
+msgid "Download Corrective Action"
+msgstr "Hành động khắc phục"
 
 #: application/services/Reports.php:180
 msgid "Unavailable"
@@ -12400,12 +12483,6 @@ msgstr "Các phản hồi <br>chưa nhận được"
 #: application/views/scripts/participant/dashboard.phtml:541
 msgid "All Shipments"
 msgstr "Tất cả các đợt gửi mẫu"
-
-#: application/views/scripts/participant/defaulted-schemes.phtml:105
-msgid "Are you sure you want to remove this response? This cannot be undone!"
-msgstr ""
-"Bạn có chắc chắn muốn xóa phản hồi này không? Thao tác này không thể hoàn "
-"tác!"
 
 #: application/views/scripts/participant/feed-back.phtml:12
 msgid ""

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-04-29 10:23+0530\n"
+"POT-Creation-Date: 2026-04-29 10:56+0530\n"
 "PO-Revision-Date: 2026-04-29 10:20+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
@@ -222,6 +222,7 @@ msgstr "erreur"
 #: application/services/Evaluation.php:1552
 #: application/services/Evaluation.php:1554
 #: application/services/Evaluation.php:1793
+#: application/services/Evaluation.php:2013
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:396
 msgid "Excluded"
 msgstr "Exclu"
@@ -235,6 +236,8 @@ msgid "excluded"
 msgstr "exclus"
 
 #: application/languages/db-translation-strings.php:99
+#: application/services/Evaluation.php:2010
+#: application/services/Evaluation.php:2087
 msgid "Fail"
 msgstr "Echec"
 
@@ -536,6 +539,7 @@ msgstr "non détecté"
 #: application/services/Evaluation.php:1555
 #: application/services/Evaluation.php:1787
 #: application/services/Evaluation.php:1794
+#: application/services/Evaluation.php:2040
 msgid "Not Evaluated"
 msgstr "Non évaluée"
 
@@ -626,6 +630,7 @@ msgstr ""
 #: application/languages/db-translation-strings.php:269
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:139
 #: application/modules/reports/views/scripts/participant-trends/index.phtml:181
+#: application/services/Evaluation.php:2007
 #: application/views/scripts/participant/participant-performance.phtml:129
 #: application/views/scripts/participant/participant-performance.phtml:171
 msgid "Pass"
@@ -1484,6 +1489,7 @@ msgstr "Confirmer"
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:24
 #: application/modules/admin/views/scripts/enrollments/add.phtml:144
 #: application/modules/admin/views/scripts/enrollments/bulk-enrollment.phtml:46
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:305
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:70
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:83
 #: application/modules/admin/views/scripts/feedback-responses/feedback-form.phtml:165
@@ -1824,6 +1830,7 @@ msgstr "Afficher (%d)"
 #: application/modules/admin/controllers/SpotlightController.php:57
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:50
 #: application/modules/admin/views/scripts/participants/mapped-data-managers.ajax.phtml:49
+#: application/services/Evaluation.php:2070
 msgid "Edit"
 msgstr "Modifier"
 
@@ -1877,7 +1884,7 @@ msgstr "Ajouter un envoi"
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:267
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:118
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:180
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:105
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:118
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:89
 msgid "View"
 msgstr "Voir"
@@ -2229,7 +2236,7 @@ msgstr "Score du panel"
 
 #: application/models/Dts.php:2094
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:263
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:210
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:222
 #: application/modules/admin/views/scripts/recency-settings/index.phtml:19
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:220
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:150
@@ -2264,8 +2271,8 @@ msgid "Manage Enrollment"
 msgstr "Gérer l'inscription"
 
 #: application/modules/admin/controllers/SpotlightController.php:72
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:82
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:120
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:95
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:133
 #: application/services/Shipments.php:4207
 msgid "Evaluate"
 msgstr "Évaluer"
@@ -2401,7 +2408,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/alerts/email.phtml:22
 #: application/modules/admin/views/scripts/announcement/index.phtml:24
 #: application/modules/admin/views/scripts/api-history/index.phtml:78
-#: application/modules/admin/views/scripts/audit-log/index.phtml:64
+#: application/modules/admin/views/scripts/audit-log/index.phtml:65
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:167
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:33
 #: application/modules/admin/views/scripts/custom-test/index.phtml:26
@@ -2411,6 +2418,7 @@ msgstr "Raisons de l'échec"
 #: application/modules/admin/views/scripts/eid-assay/index.phtml:88
 #: application/modules/admin/views/scripts/enrollments/index.phtml:51
 #: application/modules/admin/views/scripts/evaluate/index.phtml:22
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:234
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:22
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:21
 #: application/modules/admin/views/scripts/home-section-links/index.phtml:43
@@ -2546,7 +2554,7 @@ msgstr "État"
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:50
 #: application/modules/admin/views/scripts/api-history/index.phtml:73
-#: application/modules/admin/views/scripts/audit-log/index.phtml:56
+#: application/modules/admin/views/scripts/audit-log/index.phtml:57
 #: application/modules/admin/views/scripts/covid19-gene-type/index.phtml:28
 #: application/modules/admin/views/scripts/custom-test/add.phtml:137
 #: application/modules/admin/views/scripts/custom-test/add.phtml:417
@@ -2560,8 +2568,8 @@ msgstr "État"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:46
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:70
 #: application/modules/admin/views/scripts/evaluate/index.phtml:17
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:62
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:216
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:75
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:228
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:74
 #: application/modules/admin/views/scripts/feedback-responses/questions.phtml:17
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:16
@@ -2625,7 +2633,7 @@ msgstr "Sélectionnez la plage de dates et le schéma pour alimenter cette liste
 
 #: application/modules/admin/views/scripts/announcement/compose.phtml:87
 #: application/modules/admin/views/scripts/api-history/index.phtml:59
-#: application/modules/admin/views/scripts/audit-log/index.phtml:47
+#: application/modules/admin/views/scripts/audit-log/index.phtml:48
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:145
 #: application/modules/admin/views/scripts/enrollments/add.phtml:93
 #: application/modules/admin/views/scripts/enrollments/index.phtml:34
@@ -2740,7 +2748,7 @@ msgstr "Type de synchronisation"
 
 #: application/modules/admin/views/scripts/api-history/index.phtml:70
 #: application/modules/admin/views/scripts/email-participants/index.phtml:95
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:155
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:168
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:66
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:49
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:23
@@ -2778,15 +2786,15 @@ msgstr "Sélectionner l'utilisateur (optionnel)"
 msgid "Select Context"
 msgstr "Choisir un contexte"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:57
+#: application/modules/admin/views/scripts/audit-log/index.phtml:58
 msgid "Action By"
 msgstr "Action de"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:58
+#: application/modules/admin/views/scripts/audit-log/index.phtml:59
 msgid "Action On"
 msgstr "Action"
 
-#: application/modules/admin/views/scripts/audit-log/index.phtml:59
+#: application/modules/admin/views/scripts/audit-log/index.phtml:60
 msgid "Context"
 msgstr "Contexte"
 
@@ -3152,7 +3160,7 @@ msgstr "Nom du type de gène"
 #: application/modules/admin/views/scripts/enrollments/index.phtml:44
 #: application/modules/admin/views/scripts/enrollments/view.phtml:7
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:63
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:53
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:66
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:277
 #: application/modules/admin/views/scripts/test-platform/add.phtml:41
 #: application/modules/admin/views/scripts/test-platform/edit.phtml:46
@@ -3227,7 +3235,7 @@ msgstr "Statut du gène"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:382
 #: application/modules/admin/views/scripts/eid-assay/add.phtml:10
 #: application/modules/admin/views/scripts/email-participants/index.phtml:27
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:193
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:206
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:34
 #: application/modules/admin/views/scripts/feedback-responses/add.phtml:44
 #: application/modules/admin/views/scripts/feedback-responses/edit.phtml:34
@@ -3764,7 +3772,7 @@ msgstr "Type de test recommandé 3"
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:774
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:789
 #: application/modules/admin/views/scripts/email-participants/index.phtml:104
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:150
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:163
 #: application/modules/admin/views/scripts/global-config/index.phtml:1298
 #: application/modules/admin/views/scripts/global-config/index.phtml:1307
 #: application/modules/admin/views/scripts/home-config/index.phtml:706
@@ -3813,7 +3821,7 @@ msgstr "Ajouter un ou plusieurs champs personnalisés ?"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:114
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:123
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:134
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:197
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:210
 #: application/modules/admin/views/scripts/global-config/index.phtml:581
 #: application/modules/admin/views/scripts/global-config/index.phtml:760
 #: application/modules/admin/views/scripts/global-config/index.phtml:773
@@ -3966,7 +3974,7 @@ msgstr "Oui"
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:115
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:124
 #: application/modules/admin/views/scripts/data-managers/edit.phtml:135
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:195
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:208
 #: application/modules/admin/views/scripts/global-config/index.phtml:580
 #: application/modules/admin/views/scripts/global-config/index.phtml:761
 #: application/modules/admin/views/scripts/global-config/index.phtml:774
@@ -4304,6 +4312,7 @@ msgstr "Tout"
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:298
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:499
 #: application/modules/admin/views/scripts/custom-test/edit.phtml:561
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:283
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:217
 #: application/modules/reports/views/scripts/testkit/index.phtml:156
 #: application/views/scripts/participant/corrective.phtml:62
@@ -4944,6 +4953,8 @@ msgstr "Filtrer par identifiant, nom, établissement ou adresse e-mail…"
 
 #: application/modules/admin/views/scripts/data-managers/mapped-participants.ajax.phtml:19
 #: application/modules/admin/views/scripts/enrollments/index.phtml:41
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:288
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:297
 #: application/modules/admin/views/scripts/participants/add.phtml:26
 #: application/modules/admin/views/scripts/participants/edit.phtml:35
 #: application/modules/admin/views/scripts/participants/index.phtml:85
@@ -5144,7 +5155,7 @@ msgstr ""
 #: application/modules/admin/views/scripts/distributions/index.phtml:31
 #: application/modules/admin/views/scripts/email-participants/index.phtml:96
 #: application/modules/admin/views/scripts/evaluate/index.phtml:14
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:157
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:170
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:67
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:50
 #: application/modules/admin/views/scripts/mail-template/get-push-notification.ajax.phtml:24
@@ -5239,7 +5250,7 @@ msgstr "Expéditions dans le cadre de cette enquête PT"
 #: application/modules/admin/views/scripts/email-participants/index.phtml:94
 #: application/modules/admin/views/scripts/enrollments/view.phtml:13
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:62
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:52
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:65
 #: application/modules/admin/views/scripts/feedback-responses/shipment-questions.phtml:13
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.ajax.phtml:65
 #: application/modules/admin/views/scripts/mail-template/get-mail-template.phtml:48
@@ -6023,7 +6034,7 @@ msgid "Shipments Under PT Survey"
 msgstr "Expéditions dans le cadre de l'enquête PT"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:64
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:54
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:67
 #: application/modules/admin/views/scripts/shipment/index.phtml:39
 #: application/modules/reports/views/scripts/corrective-preventive-actions/index.phtml:80
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:20
@@ -6037,7 +6048,7 @@ msgid "No. of Samples"
 msgstr "Nombre d'échantillons"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:65
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:55
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:68
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:21
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:26
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:45
@@ -6048,7 +6059,7 @@ msgid "No. of Participants"
 msgstr "Nombre de participants"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:66
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:56
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:69
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:22
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:27
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:46
@@ -6065,12 +6076,12 @@ msgid "No. of Responses"
 msgstr "Nombre de réponses"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:67
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:57
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:70
 msgid "Response%"
 msgstr "Réponse%"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:68
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:58
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:71
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:24
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:29
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:49
@@ -6081,7 +6092,7 @@ msgid "Number Passed"
 msgstr "Nombre d'élèves retenus"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:69
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:59
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:72
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:25
 #: application/modules/reports/views/scripts/distribution/get-shipments.ajax.phtml:30
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:52
@@ -6106,7 +6117,7 @@ msgid "Regenerate Reports"
 msgstr "Régénérer les rapports"
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:174
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:116
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:129
 msgid "Not Responded Participants"
 msgstr "Pas de réponse Participants"
 
@@ -6116,6 +6127,7 @@ msgstr ""
 "Erreur lors du chargement des scores de référence VL. Veuillez réessayer."
 
 #: application/modules/admin/views/scripts/evaluate/get-shipments.ajax.phtml:220
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:413
 msgid "Shipment has been added to the queue. It will be evaluated shortly."
 msgstr ""
 "L'expédition a été ajoutée à la file d'attente. Elle sera évaluée sous peu."
@@ -6128,74 +6140,75 @@ msgstr "Erreur lors de l'évaluation du planning. Veuillez réessayer."
 msgid "Evaluate PT Survey"
 msgstr "Évaluer l'enquête sur les PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:40
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:53
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:6
 msgid "Show/Hide Shipment List"
 msgstr "Afficher/masquer la liste des envois"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:44
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:57
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:10
 msgid "All Shipments Under PT Survey"
 msgstr "Tous les envois faisant l'objet d'une enquête PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:73
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:86
 msgid "Queued"
 msgstr "File d'attente"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:76
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:89
 msgid "Processing"
 msgstr "En cours"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:79
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:145
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:92
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:158
 #: application/services/Shipments.php:4207
 msgid "Re-Evaluate"
 msgstr "Réévaluer"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:114
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:127
 #: application/modules/admin/views/scripts/profile/index.phtml:169
 msgid "Mail"
 msgstr "Email"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:130
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:143
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:94
 msgid "No shipments for this PT Survey yet"
 msgstr "Il n'y a pas encore d'envois pour cette enquête PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:141
-msgid "You are currently evaluating Shipment"
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:154
+#, fuzzy
+msgid "You are currently evaluating"
 msgstr "Vous êtes en train d'évaluer l'expédition"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:159
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:172
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:91
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:138
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:137
 msgid "PT Survey/Shipment Date"
 msgstr "Date de l'enquête/envoi du PT"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:182
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:195
 msgid "Update File & Comment"
 msgstr "Mise à jour du dossier et des commentaires"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:189
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:202
 msgid "Show only manually overridden results"
 msgstr ""
 "N'afficher que les résultats qui ont fait l'objet d'une dérogation manuelle"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:207
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:220
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:146
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:224
 msgid "Participant/Tester"
 msgstr "Participant/testeur"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:208
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:221
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:149
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:223
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:230
 msgid "Response Score"
 msgstr "Score de réponse"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:212
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:223
 #: application/modules/admin/views/scripts/shipment/partials/schemes/covid19.phtml:417
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:254
 #: application/modules/admin/views/scripts/shipment/partials/schemes/dbs.phtml:409
@@ -6218,7 +6231,7 @@ msgstr "Score de réponse"
 msgid "Result"
 msgstr "Résultat"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:213
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:224
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:152
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:231
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:238
@@ -6227,7 +6240,7 @@ msgstr "Résultat"
 msgid "Response Status"
 msgstr "État de la réponse"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:214
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:225
 #: application/modules/reports/views/scripts/distribution/finalize.phtml:153
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:232
 #: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:239
@@ -6236,9 +6249,92 @@ msgstr "État de la réponse"
 msgid "Responded On"
 msgstr "Répondu le"
 
-#: application/modules/admin/views/scripts/evaluate/shipment.phtml:318
-msgid "shipment attributes"
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:226
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:237
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:242
+msgid "Last Modified"
+msgstr "Dernière modification"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:227
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:240
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:244
+msgid "Map ID"
+msgstr "ID de la carte"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:273
+msgid "Permanently delete this response?"
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:277
+msgid ""
+"This will permanently remove the response below. The participant's submitted "
+"results will be deleted and cannot be recovered."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:294
+#, fuzzy
+msgid "Type the Participant ID above to confirm:"
+msgstr "Saisissez le nom du participant à filtrer"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:300
+msgid ""
+"That does not match the Participant ID. Please type it exactly as shown."
+msgstr ""
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:309
+#, fuzzy
+msgid "Delete response"
+msgstr "Supprimer la réponse"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:320
+#, fuzzy
+msgid "Shipment Attributes"
 msgstr "caractéristiques de l'expédition"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:506
+#: application/views/scripts/participant/defaulted-schemes.phtml:105
+msgid "Are you sure you want to remove this response? This cannot be undone!"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer cette réponse ? Il n'est pas possible "
+"d'annuler cette réponse !"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:536
+#, fuzzy
+msgid "Response has been removed successfully. Reloading this evaluation."
+msgstr "La réponse a été supprimée avec succès"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:541
+#, fuzzy
+msgid ""
+"Failed to delete the response. Please try again or contact the administrator."
+msgstr ""
+"Impossible de supprimer. Veuillez réessayer plus tard ou contacter "
+"l'administrateur du système pour obtenir de l'aide"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:546
+#, fuzzy
+msgid ""
+"Are you sure you want to send an email reminder to participants who have not "
+"yet responded?"
+msgstr ""
+"Êtes-vous sûr de vouloir supprimer ce participant ? Cette opération ne peut "
+"être annulée !"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:553
+#: application/modules/admin/views/scripts/shipment/index.phtml:481
+msgid "Mail Sent successfully"
+msgstr "Mail envoyé avec succès"
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:566
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:413
+msgid "No Shipment to evaluate."
+msgstr "Aucune expédition à évaluer."
+
+#: application/modules/admin/views/scripts/evaluate/shipment.phtml:567
+#: application/modules/reports/views/scripts/distribution/shipment.phtml:415
+#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:368
+msgid "Click here to go back"
+msgstr "Cliquer ici pour revenir en arrière"
 
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:47
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:134
@@ -8696,6 +8792,7 @@ msgid "Delete Template"
 msgstr "Supprimer le modèle"
 
 #: application/modules/admin/views/scripts/report-config/index.phtml:380
+#: application/services/Evaluation.php:2085
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -8896,10 +8993,6 @@ msgstr ""
 msgid "No shipment schemes under this Distribution yet"
 msgstr "Pas encore d'actions de transfert dans le cadre de cette distribution"
 
-#: application/modules/admin/views/scripts/shipment/index.phtml:481
-msgid "Mail Sent successfully"
-msgstr "Mail envoyé avec succès"
-
 #: application/modules/admin/views/scripts/shipment/index.phtml:490
 msgid "Are you sure you want to generate TB forms for this shipment?"
 msgstr "Êtes-vous sûr de vouloir générer des formulaires TB pour cet envoi ?"
@@ -8912,6 +9005,7 @@ msgstr "Générer des formulaires TB"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:120
 #: application/services/Evaluation.php:1567
 #: application/services/Evaluation.php:1818
+#: application/services/Evaluation.php:2028
 #: application/views/scripts/participant/shipment-response-report.phtml:120
 msgid "Responded"
 msgstr "Répondu"
@@ -8920,6 +9014,7 @@ msgstr "Répondu"
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:121
 #: application/services/Evaluation.php:1565
 #: application/services/Evaluation.php:1816
+#: application/services/Evaluation.php:2026
 #: application/views/scripts/participant/shipment-response-report.phtml:121
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:395
 msgid "Not Responded"
@@ -10297,25 +10392,6 @@ msgstr "Télécharger le rapport de synthèse de confirmation"
 msgid "Download All Reports"
 msgstr "Télécharger tous les rapports"
 
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:237
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:242
-msgid "Last Modified"
-msgstr "Dernière modification"
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:240
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:244
-msgid "Map ID"
-msgstr "ID de la carte"
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:413
-msgid "No Shipment to evaluate."
-msgstr "Aucune expédition à évaluer."
-
-#: application/modules/reports/views/scripts/distribution/shipment.phtml:415
-#: application/modules/reports/views/scripts/finalize/view-finalized-shipment.phtml:368
-msgid "Click here to go back"
-msgstr "Cliquer ici pour revenir en arrière"
-
 #: application/modules/reports/views/scripts/finalize/get-shipments.ajax.phtml:94
 msgid "Participants Report"
 msgstr "Rapport des participants"
@@ -10700,12 +10776,14 @@ msgstr ""
 
 #: application/services/Evaluation.php:1569
 #: application/services/Evaluation.php:1820
+#: application/services/Evaluation.php:2030
 #, fuzzy
 msgid "Late Response"
 msgstr "Saisir la réponse"
 
 #: application/services/Evaluation.php:1571
 #: application/services/Evaluation.php:1822
+#: application/services/Evaluation.php:2032
 #, fuzzy
 msgid "Not Tested"
 msgstr "non testé"
@@ -10724,6 +10802,11 @@ msgstr "Aucun logo téléchargé"
 #, fuzzy
 msgid "Download Report"
 msgstr "Télécharger tous les rapports"
+
+#: application/services/Evaluation.php:2088
+#, fuzzy
+msgid "Download Corrective Action"
+msgstr "Mesures correctives"
 
 #: application/services/Reports.php:180
 msgid "Unavailable"
@@ -12466,12 +12549,6 @@ msgstr "Réponses <br>pas encore reçues"
 #: application/views/scripts/participant/dashboard.phtml:541
 msgid "All Shipments"
 msgstr "Tous les envois"
-
-#: application/views/scripts/participant/defaulted-schemes.phtml:105
-msgid "Are you sure you want to remove this response? This cannot be undone!"
-msgstr ""
-"Êtes-vous sûr de vouloir supprimer cette réponse ? Il n'est pas possible "
-"d'annuler cette réponse !"
 
 #: application/views/scripts/participant/feed-back.phtml:12
 msgid ""
