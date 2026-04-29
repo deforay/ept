@@ -174,6 +174,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $this->view->loginUrl = rtrim((string) $conf->domain, "/") . '/auth/login';
     }
 
     /* public function savePasswordAction()
