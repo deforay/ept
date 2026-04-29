@@ -113,7 +113,9 @@ if (!empty($this->shipment)) {
                 ?>
                 <a href="<?= htmlspecialchars($backHref, ENT_QUOTES); ?>"
                     onclick="if (window.history.length > 1 && document.referrer && document.referrer !== window.location.href) { event.preventDefault(); window.history.back(); }"
-                    class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;Back</a>
+                    class="btn btn-primary" style="float:right;"><i class="icon-chevron-left"></i>&nbsp;&nbsp;
+                    <?= $this->htmlTranslate("Back"); ?>
+                </a>
             </div>
         </h4>
         <table class="table table-bordered" style="margin:0 auto;">

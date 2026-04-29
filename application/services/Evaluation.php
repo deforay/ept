@@ -1654,6 +1654,215 @@ class Application_Service_Evaluation
 		];
 	}
 
+	// DataTables server-side endpoint for the distribution shipment participant table.
+	// Echoes JSON; does not return.
+	public function getDistributionShipmentParticipantsForDataTable($shipmentId, $parameters, $reportQueue = '')
+	{
+		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+		// Column index → searchable/sortable expression (null = not searchable/sortable).
+		// 0 expand, 1 participant (name + uid), 2 state, 3 district, 4 score,
+		// 5 doc-score, 6 result, 7 response_status, 8 responded_on, 9 report (action),
+		// 10 last modified.
+		$searchColumns = [
+			null,
+			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''), ' ', COALESCE(p.last_name,''), ' (', COALESCE(p.unique_identifier,''), ')')"),
+			'p.state',
+			'p.district',
+			'sp.shipment_score',
+			'sp.documentation_score',
+			'res.result_name',
+			'sp.response_status',
+			'sp.shipment_test_report_date',
+			null,
+			new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dmu.first_name,''), ' ', COALESCE(dmu.last_name,'')))"),
+		];
+		$orderColumns = $searchColumns;
+
+		$baseSelect = $db->select()
+			->from(['sp' => 'shipment_participant_map'])
+			->join(['s' => 'shipment'], 'sp.shipment_id=s.shipment_id')
+			->join(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
+			->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+			->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['first_name', 'last_name', 'lab_name', 'unique_identifier', 'country', 'state', 'district'])
+			->join(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
+			->joinLeft(['res' => 'r_results'], 'res.result_id=sp.final_result')
+			->joinLeft(
+				['dmu' => 'data_manager'],
+				'dmu.dm_id = sp.updated_by_user',
+				[
+					'updatedByName' => new Zend_Db_Expr("TRIM(CONCAT(COALESCE(dmu.first_name,''), ' ', COALESCE(dmu.last_name,'')))"),
+					'updatedByEmail' => 'dmu.primary_email'
+				]
+			)
+			->where('s.shipment_id = ?', $shipmentId);
+
+		$countSelect = clone $baseSelect;
+		$countSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
+		$countSelect->columns(new Zend_Db_Expr('COUNT(sp.map_id)'));
+		$iTotal = (int) $db->fetchOne($countSelect);
+
+		$filtered = $baseSelect;
+
+		if (!empty($parameters['sSearch'])) {
+			$search = $parameters['sSearch'];
+			$ors = [];
+			foreach ($searchColumns as $col) {
+				if ($col === null) {
+					continue;
+				}
+				$expr = ($col instanceof Zend_Db_Expr) ? (string) $col : $col;
+				$ors[] = $expr . ' LIKE ' . $db->quote('%' . $search . '%');
+			}
+			if (!empty($ors)) {
+				$filtered->where('(' . implode(' OR ', $ors) . ')');
+			}
+		}
+
+		$colCount = count($searchColumns);
+		for ($i = 0; $i < $colCount; $i++) {
+			if (!isset($parameters['sSearch_' . $i]) || $parameters['sSearch_' . $i] === '' || $searchColumns[$i] === null) {
+				continue;
+			}
+			$expr = ($searchColumns[$i] instanceof Zend_Db_Expr) ? (string) $searchColumns[$i] : $searchColumns[$i];
+			$filtered->where($expr . ' LIKE ?', '%' . $parameters['sSearch_' . $i] . '%');
+		}
+
+		if (isset($parameters['iSortCol_0'])) {
+			$sortClauses = [];
+			$sortingCols = (int) ($parameters['iSortingCols'] ?? 1);
+			for ($i = 0; $i < $sortingCols; $i++) {
+				$colIdx = (int) $parameters['iSortCol_' . $i];
+				if (empty($parameters['bSortable_' . $colIdx]) || $parameters['bSortable_' . $colIdx] !== 'true') {
+					continue;
+				}
+				if (!isset($orderColumns[$colIdx]) || $orderColumns[$colIdx] === null) {
+					continue;
+				}
+				$dir = (strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc') ? 'DESC' : 'ASC';
+				$expr = ($orderColumns[$colIdx] instanceof Zend_Db_Expr) ? (string) $orderColumns[$colIdx] : $orderColumns[$colIdx];
+				$sortClauses[] = new Zend_Db_Expr($expr . ' ' . $dir);
+			}
+			if (!empty($sortClauses)) {
+				$filtered->order($sortClauses);
+			}
+		}
+
+		$filteredCountSelect = clone $filtered;
+		$filteredCountSelect->reset(Zend_Db_Select::COLUMNS)->reset(Zend_Db_Select::ORDER)->reset(Zend_Db_Select::LIMIT_COUNT)->reset(Zend_Db_Select::LIMIT_OFFSET);
+		$filteredCountSelect->columns(new Zend_Db_Expr('COUNT(sp.map_id)'));
+		$iFilteredTotal = (int) $db->fetchOne($filteredCountSelect);
+
+		if (isset($parameters['iDisplayStart']) && isset($parameters['iDisplayLength']) && $parameters['iDisplayLength'] != '-1') {
+			$filtered->limit((int) $parameters['iDisplayLength'], (int) $parameters['iDisplayStart']);
+		}
+
+		$rResult = $db->fetchAll($filtered);
+
+		$output = [
+			'sEcho' => (int) ($parameters['sEcho'] ?? 0),
+			'iTotalRecords' => $iTotal,
+			'iTotalDisplayRecords' => $iFilteredTotal,
+			'aaData' => [],
+		];
+
+		foreach ($rResult as $shipment) {
+			$output['aaData'][] = $this->renderDistributionShipmentRow($shipment, $reportQueue);
+		}
+
+		echo json_encode($output);
+	}
+
+	// Builds the row array for the distribution shipment participant DataTable.
+	private function renderDistributionShipmentRow($shipment, $reportQueue)
+	{
+		$btnClassName = 'btn-success';
+		$warnings = json_decode($shipment['failure_reason'] ?? '', true);
+		$finalResult = (isset($shipment['final_result']) && $shipment['final_result'] != '' && $shipment['final_result'] != 0)
+			? $shipment['result_name'] : 'Not Evaluated';
+
+		if (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
+			$btnClassName = 'btn-danger';
+		} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 3) {
+			$btnClassName = 'btn-default';
+			$finalResult = 'Excluded';
+		} elseif ($finalResult === 'Not Evaluated') {
+			$btnClassName = 'btn-default';
+		} elseif (isset($warnings) && count($warnings) > 0) {
+			$btnClassName = 'btn-warning';
+		}
+
+		$shipmentScore = (isset($shipment['shipment_score']) && $shipment['shipment_score'] !== '') ? $shipment['shipment_score'] : '0';
+		$documentationScore = (isset($shipment['documentation_score']) && $shipment['documentation_score'] !== '') ? $shipment['documentation_score'] : '0';
+
+		$individualReports = '';
+		if (($shipment['status'] ?? '') === 'reports generated' && (int) ($shipment['final_result'] ?? 0) !== 3) {
+			$invididualFilePath = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . '-' . $shipment['map_id'] . '.pdf';
+			if (!file_exists($invididualFilePath)) {
+				$files = glob(DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . $shipment['shipment_code'] . DIRECTORY_SEPARATOR . '*-' . $shipment['map_id'] . '.pdf');
+				$invididualFilePath = $files[0] ?? '';
+			}
+			if ($invididualFilePath !== '' && file_exists($invididualFilePath) && $reportQueue !== 'disabled') {
+				$individualReports = '<a href="/d/' . base64_encode($invididualFilePath) . '" class="btn btn-sm btn-primary" style="text-decoration:none;overflow:hidden;margin-top:4px;width:100%;" target="_blank"><i class="icon icon-download"></i> Download Report</a>';
+			}
+		}
+
+		if (empty($shipment['response_status']) || $shipment['response_status'] === 'noresponse') {
+			$responseStatus = 'Not Responded';
+		} elseif ($shipment['response_status'] === 'responded') {
+			$responseStatus = 'Responded';
+		} elseif ($shipment['response_status'] === 'late') {
+			$responseStatus = 'Late Response';
+		} else {
+			$responseStatus = 'Not Tested';
+		}
+
+		$expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';
+
+		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . ' (' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
+		$state = '<div style="text-align:center;">' . htmlspecialchars($shipment['state'] ?? '') . '</div>';
+		$district = '<div style="text-align:center;">' . htmlspecialchars($shipment['district'] ?? '') . '</div>';
+		$score = '<div style="text-align:center;">' . htmlspecialchars($shipmentScore) . '</div>';
+		$docScore = '<div style="text-align:center;">' . htmlspecialchars($documentationScore) . '</div>';
+		$resultCell = '<div style="text-align:center;">' . htmlspecialchars($finalResult) . '</div>';
+		$responseStatusCell = htmlspecialchars($responseStatus);
+		$respondedOn = Pt_Commons_DateUtility::humanReadableDateFormat($shipment['shipment_test_report_date'] ?? null, true) ?? '';
+
+		$updatedByName = trim($shipment['updatedByName'] ?? '');
+		$updatedByEmail = trim($shipment['updatedByEmail'] ?? '');
+		$updatedOnRaw = (!empty($shipment['updated_on_user']) && $shipment['updated_on_user'] !== '0000-00-00 00:00:00') ? $shipment['updated_on_user'] : '';
+		if ($updatedByName !== '' || $updatedByEmail !== '' || $updatedOnRaw !== '') {
+			$lastModified = '';
+			if ($updatedByName !== '' || $updatedByEmail !== '') {
+				$lastModified .= '<strong>' . htmlspecialchars($updatedByName !== '' ? $updatedByName : '—') . '</strong>';
+				if ($updatedByEmail !== '') {
+					$lastModified .= '<br><small class="text-body-secondary">(' . htmlspecialchars($updatedByEmail) . ')</small>';
+				}
+			}
+			if ($updatedOnRaw !== '') {
+				$updatedOnFormatted = Pt_Commons_DateUtility::humanReadableDateFormat($updatedOnRaw, true);
+				$lastModified .= '<br><small class="text-body-secondary">' . htmlspecialchars((string) $updatedOnFormatted) . '</small>';
+			}
+		} else {
+			$lastModified = '<span class="text-muted">&mdash;</span>';
+		}
+
+		return [
+			$expandBtn,
+			$participantCell,
+			$state,
+			$district,
+			$score,
+			$docScore,
+			$resultCell,
+			$responseStatusCell,
+			$respondedOn,
+			$individualReports,
+			$lastModified,
+			(int) $shipment['map_id'],
+		];
+	}
+
 	public function getReportStatus($shipmentId, $type = '', $evaluate = false)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();

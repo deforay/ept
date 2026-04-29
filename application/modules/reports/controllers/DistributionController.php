@@ -25,6 +25,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             ->addActionContext('get-job-progress', 'json')
             ->addActionContext('cancel-job', 'json')
             ->addActionContext('shipment-participants', 'json')
+            ->addActionContext('shipment', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -53,21 +54,42 @@ class Reports_DistributionController extends Zend_Controller_Action
 
     public function shipmentAction()
     {
-        $shipmentService = new Application_Service_Shipments();
-        if ($this->hasParam('sid')) {
-            $id = (int) base64_decode($this->_getParam('sid'));
-            $reEvaluate = false;
-            $evalService = new Application_Service_Evaluation();
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
-            $this->view->shipmentStatus = $evalService->getReportStatus($id, 'generateReport');
-            $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $evalService = new Application_Service_Evaluation();
 
-
-            //$this->view->shipmentsUnderDistro = $evalService->getShipments($shipment[0]['distribution_id']);
-            $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
-        } else {
+        if (!$this->hasParam('sid')) {
             $this->redirect("/reports/distribution/");
+            return;
         }
+
+        $id = (int) base64_decode($this->_getParam('sid'));
+
+        if ($request->isPost()) {
+            // DataTables AJAX call — echoes JSON and exits.
+            $params = $this->getAllParams();
+            $reportStatus = $evalService->getReportStatus($id, 'generateReport');
+            $reportQueue = (isset($reportStatus['status']) && $reportStatus['status'] === 'pending') ? 'disabled' : '';
+            $evalService->getDistributionShipmentParticipantsForDataTable($id, $params, $reportQueue);
+            return;
+        }
+
+        $shipmentService = new Application_Service_Shipments();
+        $header = $evalService->getFinalizedShipmentHeader($id);
+        if (empty($header)) {
+            $this->redirect("/reports/distribution/");
+            return;
+        }
+        $this->view->shipment = [$header];
+        $this->view->shipmentId = $id;
+        $this->view->shipmentStatus = $evalService->getReportStatus($id, 'generateReport');
+        $this->view->responseCount = $evalService->getResponseCount($id, $header['distribution_id']);
+        $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($header['distribution_id']);
+
+        $navUrls = $evalService->getFinalizedShipmentNavUrls($id);
+        $evSession = new Zend_Session_Namespace('evalShipmentList');
+        $evSession->editUrlList = $navUrls['editUrlList'];
+        $evSession->viewUrlList = $navUrls['viewUrlList'];
     }
 
 

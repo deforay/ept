@@ -127,73 +127,77 @@
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <div class="shipments-wide">
-<legend>
-	<h3><?= $this->translate->_("Shipments Report"); ?></h3>
-</legend>
-<table style="margin:20px 0;" class="table table-bordered">
-	<tr>
-		<td style="width:50%;text-align: center;font-weight:bold;">
-			<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
-		</td>
-		<td style="width:50%;text-align: center;font-weight:bold;"></td>
-	</tr>
-	<tr>
-		<td>
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-				style="background: #fff" placeholder="Click here to pick a Date Range" />
-		</td>
-		<td>
-			<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
-				onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button
-				class="btn btn-danger btn-sm"
-				onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-		</td>
-	</tr>
-</table>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-	id="shipmentTable">
-	<thead>
+	<legend>
+		<h3><?= $this->translate->_("Shipments Report"); ?></h3>
+	</legend>
+	<table style="margin:20px 0;" class="table table-bordered">
 		<tr>
-			<th style="text-align: center;"><?= $this->translate->_("PT Survey Code"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("PT Survey Date"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-			<!-- <th style="text-align: center;">No. of Samples</th> -->
-			<th style="text-align: center;"><?= $this->translate->_("Participants"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Responses"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Passed"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Participant Reports"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Overview Reports"); ?></th>
+			<td style="width:50%;text-align: center;font-weight:bold;">
+				<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
+			</td>
+			<td style="width:50%;text-align: center;font-weight:bold;"></td>
 		</tr>
-		<tr class="column-search-row">
-			<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
-			<th></th>
-			<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
-			<th></th>
-			<th>
-				<select class="form-control input-sm col-search" data-col="4">
-					<option value=""><?= $this->translate->_("All"); ?></option>
-					<?php foreach ($this->schemes as $scheme) { ?>
-						<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>"><?php echo $scheme['scheme_name']; ?></option>
-					<?php } ?>
-				</select>
-			</th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
 		<tr>
-			<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+			<td>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+					style="background: #fff" placeholder="Click here to pick a Date Range" />
+			</td>
+			<td>
+				<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
+					onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button
+					class="btn btn-danger btn-sm"
+					onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
+			</td>
 		</tr>
-	</tbody>
-</table>
+	</table>
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
+		id="shipmentTable">
+		<thead>
+			<tr>
+				<th style="text-align: center;"><?= $this->translate->_("PT Survey Code"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("PT Survey Date"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+				<!-- <th style="text-align: center;">No. of Samples</th> -->
+				<th style="text-align: center;"><?= $this->translate->_("Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Responses"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Passed"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Reports for Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->translate->_("Reports for PT Admin"); ?></th>
+			</tr>
+			<tr class="column-search-row">
+				<th><input type="text" class="form-control input-sm col-search" data-col="0"
+						placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+				<th></th>
+				<th><input type="text" class="form-control input-sm col-search" data-col="2"
+						placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+				<th></th>
+				<th>
+					<select class="form-control input-sm col-search" data-col="4">
+						<option value=""><?= $this->translate->_("All"); ?></option>
+						<?php foreach ($this->schemes as $scheme) { ?>
+							<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>">
+								<?php echo $scheme['scheme_name']; ?>
+							</option>
+						<?php } ?>
+					</select>
+				</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+			</tr>
+		</tbody>
+	</table>
 </div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
