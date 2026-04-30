@@ -1396,30 +1396,30 @@ class Application_Model_Vl
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        // Join r_vl_assay with shipment_participant_map using JSON extraction
+        $totalSubquery = "SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = " . $db->quote($sid);
+
         $query = $db->select()
             ->from(
                 ['va' => 'r_vl_assay'],
                 [
-                    'assay_name'       => 'va.short_name',         // adjust column name if different
+                    'assay_name'         => 'va.short_name',
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
-                    'average_result' => new Zend_Db_Expr(
-                        "AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.vl_result')) AS DECIMAL(10,2)))"
+                    'percentage'         => new Zend_Db_Expr(
+                        "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
                     )
                 ]
             )
             ->joinLeft(
                 ['spm' => 'shipment_participant_map'],
                 new Zend_Db_Expr(
-                    "JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.vl_assay')) = va.id 
+                    "JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.vl_assay')) = va.id
                  AND spm.shipment_id = " . $db->quote($sid)
                 ),
-                [] // no extra columns from spm
+                []
             )
-            // ->where("spm.is_excluded != 'yes' OR spm.is_excluded IS NULL")  // exclude flagged participants
-            // ->where("spm.response_status != 'noresponse'")                  // only participants who responded
             ->where("va.status LIKE 'active'")
             ->group(['va.id', 'va.short_name']);
+
         return $db->fetchAll($query);
     }
 

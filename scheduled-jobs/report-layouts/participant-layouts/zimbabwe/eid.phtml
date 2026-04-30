@@ -1,8 +1,12 @@
 <?php
 
 // scheduled-jobs/report-layouts/participant-layouts/zimbabwe/eid.phtml
-
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
+$equipmentsReports = $reportService->getEidAssayByShipmentId($evalRow['shipment_id']);
+$eidPossibleResults = $schemeService->getPossibleResults('eid');
+$passPercentage = Pt_Commons_SchemeConfig::get('eid.passPercentage');
+$approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+
 $pdfNew = new Zend_Pdf();
 //$extractor = new Zend_Pdf_Resource_Extractor();
 $shipmentCode = '';
@@ -33,45 +37,12 @@ if (!empty($resultArray['shipment'])) {
         $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
         $issuingAuthority = $result['issuing_authority'] ?? '';
 
-        // Build footer table row conditionally
-        $footerCells = [];
-
-        // Add form version if not empty
-        if (!empty($formVersion)) {
-            $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Add issuing authority if not empty
-        if (!empty($issuingAuthority)) {
-            $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Add effective date if not empty
-        if (!empty($effectiveDate)) {
-            $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Only create footer if we have at least one element
-        $staticFooterHtml = '<hr style="border: 1px solid #000;">';
-        if (!empty($footerCells)) {
-            $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
-                    <tr align="center" style="text-align:center;">
-                        ' . implode('', $footerCells) . '
-                    </tr>
-                </table>';
-        }
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", "zimbabwe", $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
+            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, "zimbabwe", $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
         }
         // set document information
         //$pdf->SetCreator(PDF_CREATOR);
@@ -116,22 +87,6 @@ if (!empty($resultArray['shipment'])) {
         $pdf->AddPage();
 
 
-        // set some text to print
-        //$txt = <<<EOD
-        //International Laboratory Branch
-        //
-        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
-        //EOD;
-        //
-        //// print a block of text using Write()
-        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
-
-        // ---------------------------------------------------------
-
-        // if (trim($result['shipment_date'] ?? '') != "") {
-        //     $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
-        // }
-
         $responseDate = "";
         $shipmentTestDate = "";
         $shipmentTestReportDate = "";
@@ -163,88 +118,283 @@ if (!empty($resultArray['shipment'])) {
             $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
         }
 
-        //if($result['result_name']=='Fail'){
-        //    $wishes="";
-        //    $splStr=explode("###",$result['failure_reason']);
-        //    $k=sizeof($splStr);
-        //    for($c=0;$c<$k;$c++){
-        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
-        //    }
-        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
-        //
-        //}
+        // Add report title
+        $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - HIV-1 Early Infant Diagnosis Qualitative Testing</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
-        //Comment Details
+        $machine = $result['responseResult'][0]['extraction_assay_name'] ?? '';
+        // Prepare all fields with their labels and values
+        $fields = [
+            ['label' => 'Facility', 'value' => $result['first_name'] . " " . $result['last_name']],
+            ['label' => 'PT Panel Name & Date', 'value' => $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')'],
+            ['label' => 'LAB ID', 'value' => $result['unique_identifier']],
+            ['label' => 'Shipment Code', 'value' => $result['shipment_code']],
+            ['label' => 'Province / Country', 'value' => $result['state'] . '(' . $result['iso_name'] . ')'],
+            ['label' => 'Platform/ Assay Name', 'value' => $machine],
+            ['label' => 'Date Panels Received ', 'value' => $shipmentReceiptDate],
+            ['label' => 'Date Results Approved ', 'value' => Pt_Commons_DateUtility::humanReadableDateFormat($evalRow['date_finalised'])],
+            ['label' => 'Date Tested ', 'value' => $shipmentTestDate],
+            ['label' => 'Scheme Coordinator ', 'value' => $result['pt_co_ordinator_name']],
+            ['label' => 'Date Results Submitted ', 'value' => $responseDate],
+        ];
 
-
-        // Samples without response need not be generated
-        if (empty($result['responseResult'])) {
-            continue;
+        // Add custom fields if available
+        if (isset($haveCustom) && $haveCustom == 'yes') {
+            if (!empty($customField1) && !empty($result['custom_field_1'])) {
+                $fields[] = ['label' => $customField1, 'value' => $result['custom_field_1']];
+            }
+            if (!empty($customField2) && !empty($result['custom_field_2'])) {
+                $fields[] = ['label' => $customField2, 'value' => $result['custom_field_2']];
+            }
         }
+        // Build table with 2 columns per row
+        $labInfo = '<table cellpadding="3" border="1" style="font-size:11px;">';
+        $columnsPerRow = 2;
+        $fieldCount = count($fields);
+        for ($i = 0; $i < $fieldCount; $i += $columnsPerRow) {
+            $labInfo .= '<tr>';
 
-        if ($layout != 'zimbabwe') {
-            $htmlTitle = '<br><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+            for ($j = 0; $j < $columnsPerRow; $j++) {
+                $index = $i + $j;
+                if ($index < $fieldCount) {
+                    $field = $fields[$index];
+                    $labInfo .= '<th style="background-color: #ECF0F1;"><strong>' . $field['label'] . '</strong></th>';
+                    $labInfo .= '<td style="font-weight:normal;">' . $field['value'] . '</td>';
+                } else {
+                    // Empty cell for alignment
+                    $labInfo .= '<td>&nbsp;</td>';
+                    $labInfo .= '<td>&nbsp;</td>';
+                }
+            }
+
+            $labInfo .= '</tr>';
         }
-        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
-
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
-        $labInfo .= '</tr>';
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Laboratory ID : </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
-        $labInfo .= '</tr>';
-
-        $machine = $result['extractionAssayVal'];
-        if (isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == 6) {
-            $machine = 'Other' . " - " . ($attributes['other_assay'] ?? '');
-        }
-        $labInfo .= '<tr>';
-        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
-        $labInfo .= '</tr>';
 
         $labInfo .= '</table>';
-
-
         $pdf->writeHTML($labInfo, true, false, true, false, '');
-
-
+        if (count($result['responseResult']) > 0)
+            $calculatedScore = round(100 / count($result['responseResult']));
+        else
+            $calculatedScore = 'N/A';
         if (!empty($result['responseResult'])) {
             $n = count($result['responseResult']);
             $labRes = "";
-            //$labRes = '<br><span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/><br/></span>';
-
-            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
-            $labRes .= '<tr style="background-color:#dbe4ee;">';
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
-            //Sample codes
-            foreach ($result['responseResult'] as $response) {
-                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+            $labRes = '<span style="font-weight: bold;font-size:11px;">Your Dried Tube Specimen - HIV-1 Early Infant Diagnosis Qualitative Testing Proficiency results :<br/></span>';
+            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
+                <tr style="background-color:#dbe4ee;width:100%;">
+                        <td style="text-align:center;font-weight:bold;">Sample ID</td>
+                        <td style="text-align:center;font-weight:bold;">Reported Result</td>
+                        <td style="text-align:center;font-weight:bold;">Expected Result</td>
+                        <td style="text-align:center;font-weight:bold;">Score</td>
+                </tr>';
+            foreach ($result['responseResult'] as $key => $response) {
+                $calculatedScore = ($response['labResult'] == $response['referenceResult']) ? $calculatedScore : 0;
+                $labRes .= '<tr>
+                        <td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+                $labRes .= '<td style="text-align:center;">' . ucwords($response['labResult'] ?? '') . '</td>
+                    <td style="text-align:center;">' . ucwords($response['referenceResult'] ?? '') . '</td>';
+                $labRes .= '<td style="text-align:center;">' . round($calculatedScore, 2) . '</td>
+                    </tr>';
             }
-            $labRes .= '<td style="text-align:center;font-weight:bold;">Your Score(%)</td>';
-            $labRes .= '</tr>';
-            $labRes .= '<tr>';
-            $labRes .= '<td>Expected Result</td>';
-            foreach ($result['responseResult'] as $response) {
-                $labRes .= '<td style="text-align:left;">' . $response['referenceResult'] . '</td>';
-            }
-            $labRes .= '<td rowspan="2" style="text-align:center;"><br><br>' . $result['shipment_score'] . '</td>';
-            $labRes .= '</tr>';
-            $labRes .= '<tr>';
-            $labRes .= '<td>Your Results</td>';
-            foreach ($result['responseResult'] as $response) {
-                $labRes .= '<td style="text-align:left;">' . $response['labResult'] . '</td>';
-            }
-            $labRes .= '</tr>';
-
-            $labRes .= '</table>';
+            $labRes .= '<tr>
+                <td style="text-align:right;" colspan="3"><strong>TESTING SCORE</strong></td>
+                <td style="text-align:center;">' . round($result['shipment_score'], 2) . '</td>
+            </tr></table><br>';
 
             $pdf->SetLeftMargin(15);
             $pdf->writeHTML($labRes, true, false, true, false, '');
+
+            $totalScore = $result['shipment_score'] + $result['documentation_score'];
+            $grade = ($totalScore >= $passPercentage) ? 'Satisfactory' : 'Unsatisfactory';
+            // Overall score table
+            $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>
+                    <table border="1" style="font-size:12px;width:100%;">
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Testing Score</td>
+                            <td style="text-align:center;width:25%;">' . round($result['shipment_score'], 2) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Documentation Score</td>
+                            <td style="text-align:center;width:25%;">' . round($result['documentation_score']) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Total</td>
+                            <td style="text-align:center;width:25%;">' . round($result['shipment_score'] + $result['documentation_score'], 2) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Overall Grading</td>
+                            <td style="text-align:center;width:25%;">' . $grade . '</td>
+                        </tr>
+                    </table>';
+            $pdf->writeHTML($totalScoreTxt, true, false, true, false, '');
+
+
+            // Add failure reasons if available
+            if (
+                isset($result['responseResult'][0]['failure_reason']) &&
+                $result['responseResult'][0]['failure_reason'] != "" &&
+                $result['responseResult'][0]['failure_reason'] != "[]" &&
+                $result['responseResult'][0]['failure_reason'] != null
+            ) {
+
+                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+                $failRes .= '<table border="1" style="font-size:11px;">
+                        <tr style="background-color:#dbe4ee;">
+                            <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
+                            <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
+                        </tr>';
+
+                $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+                foreach ($warnings as $warning) {
+                    $failRes .= '<tr>
+                            <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
+                            <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
+                        </tr>';
+                }
+                $failRes .= '</table>';
+                $pdf->writeHTML($failRes, true, false, true, false, '');
+            }
+
+            // Summary count if provided
+            if (isset($shipmentsUnderDistro) && !empty($shipmentsUnderDistro)) {
+                $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
+                $passRate = round(($shipmentsUnderDistro['number_passed'] / $shipmentsUnderDistro['reported_count']) * 100);
+
+                $summaryCount = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores</span><br/>
+                    <table border="1" style="font-size:12px;width:100%;">
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Enrolled</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants That Participated</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;width:35%;">' . $shipmentsUnderDistro['participant_count'] . '</td>
+                            <td style="text-align:center;width:45%;">' . $shipmentsUnderDistro['reported_count'] . '</td>
+                            <td style="text-align:center;width:20%;">' . $responseRate . '%</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Submitted Results</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants Satisfactory Performance</td>
+                            <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;width:35%;">' . $shipmentsUnderDistro['reported_count'] . '</td>
+                            <td style="text-align:center;width:45%;">' . $shipmentsUnderDistro['number_passed'] . '</td>
+                            <td style="text-align:center;width:20%;">' . $passRate . '%</td>
+                        </tr>
+                    </table>';
+                $pdf->writeHTML($summaryCount, true, false, true, false, '');
+            }
+
+            // Equipmet response data
+            if (isset($equipmentsReports) && !empty($equipmentsReports)) {
+                $equipmentTxt = '<span style="font-weight:bold;font-size:12px;">Laboratory Participation By Equipment Used:</span><br/>
+                        <table border="1" style="font-size:12px;width:100%;">
+                            <tr>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Equipment</th>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of labs <br/> Participating</th>
+                                <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
+                            </tr>';
+                foreach ($equipmentsReports as $equipment) {
+                    $equipmentTxt .= '<tr>
+                                    <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
+                                    <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
+                                    <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                                </tr>';
+                }
+                $equipmentTxt .= '</table><br/>';
+                $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
+            }
+
+            $zscorehtml = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span><br/>';
+            $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>z Score</strong></th>';
+            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>Results Interpretation</strong></th>';
+            $zscorehtml .= '<th style="background-color:#BDD6EE;"><strong>Recommended Action</strong></th>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>z ≤ ±2.0</td>';
+            $zscorehtml .= '<td>Acceptable</td>';
+            $zscorehtml .= '<td>No action required</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>± 2.0 > z < ± 3.0</td>';
+            $zscorehtml .= '<td>Warning</td>';
+            $zscorehtml .= '<td>Closely monitor performance</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '<tr>';
+            $zscorehtml .= '<td>z ≥ ± 3.0</td>';
+            $zscorehtml .= '<td style="color:red;">Unacceptable</td>';
+            $zscorehtml .= '<td style="color:red;">Perform corrective action</td>';
+            $zscorehtml .= '</tr>';
+
+            $zscorehtml .= '</table>';
+            // $zscorehtml .= '<br/><span style="text-align:justify;font-size:8;"><i style="color:darkgreen;background-color:lightgreen;">NOTE: *Results due date was extended for ePT results validation from submitted participants to address discrepancies.</i></span>';
+            $pdf->writeHTML($zscorehtml, true, false, true, false, '');
+
+            $note = '<ul style="font-size:12px;">';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A testing score of 0 is awarded for any result that is incorrectly</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">reported A testing score of 20 is awarded for any result reported correctly</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Satisfactory is assigned when the participant overall score</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">is >= ' . $passPercentage . '% A grading of Unsatisfactory is assigned when the participant overall score is < ' . $passPercentage . '%</li>';
+            $note .= '<li style="text-align:justify;font-size:11px;font-weight:normal;">A grading of Ungraded is assigned when the participant has not submitted PT results</li>';
+            $note .= '</ul>';
+            $contentForReport = !empty($contentForIndividualVlReports) ? htmlspecialchars_decode($contentForIndividualVlReports) : null;
+            $contentForReport = str_replace("'", '"', $contentForReport);
+            if (isset($contentForReport) && !empty(trim($contentForReport)) && !empty(trim(strip_tags($contentForReport)))) {
+                $pdf->writeHTML($contentForReport, true, false, true, false, '');
+            } else {
+                $pdf->writeHTML($note, true, false, true, false, '');
+            }
+
+            $sign1 = WEB_ROOT . '/uploads/signatures/sign-1.png';
+            $sign2 = WEB_ROOT . '/uploads/signatures/sign-2.png';
+            // Row 1: Names
+            $pdf->SetFont('helvetica', '', 10);
+            $html = '
+                <table cellpadding="5" style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; text-align: left;">Reviewed By: ' . $approveTxt . ',</td>
+                        <td style="width: 50%; text-align: right;">Approved by: Lucia Sisya</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; text-align: left;"><img style="width:100px;" src="' . $sign1 . '" /></td>
+                        <td style="width: 50%; text-align: right;"><img style="width:100px;" src="' . $sign2 . '" /></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; text-align: left;">Scheme Coordinator</td>
+                        <td style="width: 50%; text-align: right;">Scheme Manager</td>
+                    </tr>
+                </table>';
+            $pdf->writeHTML($html, true, false, true, false, '');
+
+            // Additional information
+            $additionalInfo = '<br><br><span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
+                    <ol>
+                        <li>The person authorizing/Approving PT Reports: Lucia Sisya (PT scheme Manager).</li>
+                        <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
+                        <li>The laboratory name and contact details are indicated on top (Page 1 Header) of the PT report.</li>
+                        <li>Confidentiality: All participant information is treated as confidential by the Provider unless otherwise stated. Only Participant names and facilities are disclosed on PT reports for all participants in the PT schemes for purposes of improving performance and implementation of the schemes.</li>
+                        <li>The report number is the Participant Code on the PT Report</li>
+                        <li>Items used in the preparation of PT items have been carefully selected and quality control measures have been performed to ensure homogeneity and stability of the items.</li>
+                        <li>Assigned/expected values are determined by the PT provider but not against reference materials or standards. Participants are allowed to use their internal procedures approved by MoHCC to test the analytes contained in the PT panels. The same scoring system is used for all participants even if they are using different methods of testing. There have been established procedures for statistical analysis of all PT results submitted by participants.</li>
+                        <li>Each participant PT report contains the participant individual performance, summary of all laboratory performances and review remarks (Comments and recommendation).</li>
+                        <li>The participant has 15 days to appeal the performance score from the date the report is released.</li>
+                        <li>The PT scheme is a qualitative scheme and runs two times a year.</li>
+                        <li>Advisory services are provided internally by the PT team. This team comprises of personnel with technical expertise and experience in the field of testing, sampling as well as statistics for the PT scheme. NMRL will seek for external advisory services where it is required.</li>
+                        <li>PT reports are issued solely to the participating laboratory and are intended for internal quality assurance purposes. Participants may share their reports with accreditation bodies or regulatory authorities as evidence of participation and performance. PT reports or results shall not be used for marketing, advertising or public comparison without written consent from the provider.</li>
+                        <li>For more inquires, Queries, comments and reactions about the PT report, contact the PT scheme coordinator on +242-668908 or eqa@nmrl.org.zw.</li>
+                        <li>More information on the PT scheme can be obtained from each PT round instructions sent to participants or contact the PT scheme coordinator on+263-242-668908 or eqa@nmrl.org.zw or ,the PT scheme manager on +263-772621554 or the PT laboratory at eqa@nmrl.org.zw.</li>
+                    </ol>';
+            $pdf->writeHTML($additionalInfo, true, false, true, false, '');
         }
+
 
         if ($result['is_excluded'] == 'yes') {
             $wishes = '<p>Your response was not considered for evaluation</p>';
@@ -276,56 +426,12 @@ if (!empty($resultArray['shipment'])) {
             //$pdf->SetTopMargin(13);
             $pdf->writeHTML($comment, true, false, true, false, '');
         }
-        /* $html = '<h5>Participants with scores of less than 100%:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
-            Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under
-            the Main Navigation.</span>'; */
 
-        $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
-        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
-            homogeneity prior to shipment and met program requirements.</span>';
-
-        $html .= '<h5>Procedures used to establish the assigned value:</h5>';
-        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Unit using the Roche cobas® HIV-1/2 Qualitative Assay.</span>';
-
-        $html .= '<h5>Subcontracting:</h5>';
-        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program.  To ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
-
-        /* $html .= '<h5>Confidentiality:</h5>';
-            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>'; */
-
-        $pdf->writeHTML($html, true, false, true, false, '');
-
-        if (!empty(trim($result['shipment_comment'] ?? ''))) {
-            $comment = '<table border="1" style="width:100%;" cellpadding="3">';
-
-            $comment .= '<tr>';
-            $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
-            $comment .= '</tr>';
-
-            $comment .= '</table>';
-            //$pdf->SetTopMargin(13);
-            $pdf->writeHTML($comment, true, false, true, false, '');
-        }
-
-        $html = '';
-        // if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
-        $html .= '<br/><hr>';
-        if ($layout == 'zimbabwe') {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
-        }
-        if (!empty($approveTxt)) {
-            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Application_Service_Common::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
-        }
-        // }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
         $eodReportText = "End of report";
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
-
+        $html = '<br/><hr><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
         $pdf->writeHTML($html, true, false, true, false, '');
 
         if (ob_get_contents()) {

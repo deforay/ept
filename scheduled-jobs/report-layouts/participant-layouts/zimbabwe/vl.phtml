@@ -2,6 +2,8 @@
 $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
 $equipmentsReports = $reportService->getVlAssayByShipmentId($evalRow['shipment_id']);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
+$approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+
 $shipmentCode = '';
 
 if (!empty($resultArray['shipment'])) {
@@ -124,17 +126,12 @@ if (!empty($resultArray['shipment'])) {
             $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_report_date']);
         }
 
-        if ($layout != 'zimbabwe') {
-            $htmlTitle = '<br><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        } else {
-            // Add report title
-            $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
-            // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
-            $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-            $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - HIV-1 Quantitative Viral Load Testing</span><br>';
-            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
-        }
+        // Add report title
+        $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
+        // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
+        $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - HIV-1 Quantitative Viral Load Testing</span><br>';
+        $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
             $machine = 'Other' . " - " . $attributes['other_assay'];
         } else {
@@ -319,22 +316,24 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($labTxt, true, false, true, false, '');
 
                 // Equipmet response data
-                $equipmentTxt = '<span style="font-weight:bold;font-size:12px;">Laboratory Participation By Equipment Used:</span><br/>
-                <table border="1" style="font-size:12px;width:100%;">
-                    <tr>
-                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Equipment</th>
-                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of labs <br/> Participating</th>
-                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
-                    </tr>';
-                foreach ($equipmentsReports as $equipment) {
-                    $equipmentTxt .= '<tr>
-                            <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
-                            <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
-                            <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                if (isset($equipmentsReports) && !empty($equipmentsReports)) {
+                    $equipmentTxt = '<span style="font-weight:bold;font-size:12px;">Laboratory Participation By Equipment Used:</span><br/>
+                    <table border="1" style="font-size:12px;width:100%;">
+                        <tr>
+                            <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Equipment</th>
+                            <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of labs <br/> Participating</th>
+                            <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
                         </tr>';
+                    foreach ($equipmentsReports as $equipment) {
+                        $equipmentTxt .= '<tr>
+                                <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
+                                <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
+                                <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                            </tr>';
+                    }
+                    $equipmentTxt .= '</table><br/>';
+                    $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
                 }
-                $equipmentTxt .= '</table><br/>';
-                $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
 
                 $zscorehtml = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span><br/>';
                 $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
@@ -601,7 +600,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $html = '<br/><hr>';
         // if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
-        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+
         if ($layout == 'zimbabwe') {
             // $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         }

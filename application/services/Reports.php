@@ -5556,4 +5556,10 @@ class Application_Service_Reports
         $vlObj = new Application_Model_Vl();
         return $vlObj->fetchVlAssayByShipmentId($sid);
     }
+
+    public function getEidAssayByShipmentId($sid)
+    {
+        $eidObj = new Application_Model_Eid();
+        return $eidObj->fetchEidAssayByShipmentId($sid);
+    }
 }

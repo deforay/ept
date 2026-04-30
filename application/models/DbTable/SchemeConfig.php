@@ -8,25 +8,26 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
     public function getSchemeConfig(?string $name = null)
     {
         $result = null;
-        // Check if we're requesting a nested JSON value
+
         if (str_contains($name, '.')) {
             [$configName, $jsonKey] = explode('.', $name, 2);
+
             $jsonExpr = $this->getAdapter()->quoteInto(
-                "JSON_UNQUOTE(JSON_EXTRACT(scheme_config_value, CONCAT('$.', JSON_QUOTE(?))))",
-                $jsonKey
+                "JSON_UNQUOTE(JSON_EXTRACT(scheme_config_value, CONCAT('$.', ?)))",
+                $jsonKey  // quoteInto will safely quote this as a string value
             );
+
             $select = $this->select()
-                ->from($this->_name, array(
-                    'value' => new Zend_Db_Expr($jsonExpr)
-                ))
+                ->from($this->_name, ['value' => new Zend_Db_Expr($jsonExpr)])
                 ->where("scheme_config_name = ?", $configName);
             $res = $this->getAdapter()->fetchCol($select);
             $result = !empty($res[0]) ? $res[0] : null;
         } else {
-            // Original behavior for non-nested values
-            $res = $this->getAdapter()->fetchCol($this->select()
-                ->from($this->_name, array('scheme_config_value'))
-                ->where("scheme_config_name = ?", $name));
+            $res = $this->getAdapter()->fetchCol(
+                $this->select()
+                    ->from($this->_name, ['scheme_config_value'])
+                    ->where("scheme_config_name = ?", $name)
+            );
             $result = !empty($res[0]) ? $res[0] : null;
         }
 
