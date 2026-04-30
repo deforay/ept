@@ -24,6 +24,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
             ->addActionContext('get-finalized-shipments', 'html')
             ->addActionContext('send-report-mail', 'html')
             ->addActionContext('approve-replace-summary-report', 'html')
+            ->addActionContext('view-finalized-shipment', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'analyze';
     }
@@ -99,17 +100,39 @@ class Reports_FinalizeController extends Zend_Controller_Action
 
     public function viewFinalizedShipmentAction()
     {
-        $shipmentService = new Application_Service_Shipments();
-        if ($this->hasParam('sid')) {
-            $id = (int)base64_decode($this->_getParam('sid'));
-            $reEvaluate = false;
-            $evalService = new Application_Service_Evaluation();
-            $shipment = $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, $reEvaluate);
-            $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
-            $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
-        } else {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $evalService = new Application_Service_Evaluation();
+
+        if (!$this->hasParam('sid')) {
             $this->redirect("/reports/finalize/");
+            return;
         }
+
+        $id = (int)base64_decode($this->_getParam('sid'));
+
+        if ($request->isPost()) {
+            // DataTables AJAX call — echoes JSON and exits.
+            $params = $this->getAllParams();
+            $evalService->getFinalizedShipmentParticipantsForDataTable($id, $params);
+            return;
+        }
+
+        $shipmentService = new Application_Service_Shipments();
+        $header = $evalService->getFinalizedShipmentHeader($id);
+        if (empty($header)) {
+            $this->redirect("/reports/finalize/");
+            return;
+        }
+        $this->view->shipment = [$header];
+        $this->view->shipmentId = $id;
+        $this->view->responseCount = $evalService->getResponseCount($id, $header['distribution_id']);
+        $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($header['distribution_id']);
+
+        $navUrls = $evalService->getFinalizedShipmentNavUrls($id);
+        $evSession = new Zend_Session_Namespace('evalShipmentList');
+        $evSession->editUrlList = $navUrls['editUrlList'];
+        $evSession->viewUrlList = $navUrls['viewUrlList'];
     }
 
     public function replaceSummaryReportAction()

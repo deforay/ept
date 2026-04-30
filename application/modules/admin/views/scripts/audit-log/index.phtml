@@ -37,7 +37,8 @@
                 foreach ($this->systemAdmin as $admin) {
                     ?>
                     <option value="<?php echo $admin['primary_email']; ?>">
-                        <?php echo $admin['first_name'] . " " . $admin['last_name']; ?></option>
+                        <?php echo $admin['first_name'] . " " . $admin['last_name']; ?>
+                    </option>
                     <?php
                 }
                 ?>
@@ -53,15 +54,15 @@
     id="auditLogTable">
     <thead>
         <tr>
-            <th><?= $this->translate->_("Action"); ?></th>
-            <th><?= $this->translate->_("Action By"); ?></th>
-            <th><?= $this->translate->_("Action On"); ?></th>
-            <th><?= $this->translate->_("Context"); ?></th>
+            <th><?= $this->htmlTranslate("Action"); ?></th>
+            <th><?= $this->htmlTranslate("Action By"); ?></th>
+            <th><?= $this->htmlTranslate("Action On"); ?></th>
+            <th><?= $this->htmlTranslate("Context"); ?></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="2" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="2" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -120,12 +121,12 @@
             }
             ],
             "aaSorting": [
-                [0, "desc"]
+                [2, "desc"]
             ],
             "bProcessing": true,
             "bSortClasses": false,
             "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log', 'action' => 'index', 'format' => 'html')); ?>",
+            "sAjaxSource": "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'index', 'format' => 'html']); ?>",
             "fnServerParams": function (aoData) {
                 type = $("#type").val();
                 dateRange = $("#dateRange").val();

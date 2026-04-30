@@ -9,6 +9,18 @@
 		}
 	}
 
+	/* Break out of the fixed-width .container in admin.phtml so the wide table fits comfortably. */
+	.shipments-wide {
+		width: 100vw;
+		position: relative;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		padding: 0 30px;
+		box-sizing: border-box;
+	}
+
 	#shipmentTable {
 		table-layout: fixed;
 		width: 100%;
@@ -20,10 +32,17 @@
 		overflow-wrap: break-word;
 	}
 
+	/* Don't break heading words mid-word — wrap on whitespace only. */
+	#shipmentTable thead th {
+		word-break: keep-all;
+		overflow-wrap: normal;
+		word-wrap: normal;
+	}
+
 	/* Column widths - total 100% */
 	#shipmentTable th:nth-child(1),
 	#shipmentTable td:nth-child(1) {
-		width: 11%;
+		width: 10%;
 	}
 
 	/* PT Survey Code */
@@ -37,7 +56,7 @@
 
 	#shipmentTable th:nth-child(3),
 	#shipmentTable td:nth-child(3) {
-		width: 10%;
+		width: 9%;
 	}
 
 	/* Shipment Code */
@@ -51,14 +70,14 @@
 
 	#shipmentTable th:nth-child(5),
 	#shipmentTable td:nth-child(5) {
-		width: 7%;
+		width: 15%;
 	}
 
 	/* Scheme */
 
 	#shipmentTable th:nth-child(6),
 	#shipmentTable td:nth-child(6) {
-		width: 8%;
+		width: 9%;
 	}
 
 	/* No. of Participants */
@@ -72,28 +91,28 @@
 
 	#shipmentTable th:nth-child(8),
 	#shipmentTable td:nth-child(8) {
-		width: 7%;
+		width: 6%;
 	}
 
 	/* Number Passed */
 
 	#shipmentTable th:nth-child(9),
 	#shipmentTable td:nth-child(9) {
-		width: 8%;
+		width: 7%;
 	}
 
 	/* Shipment Status */
 
 	#shipmentTable th:nth-child(10),
 	#shipmentTable td:nth-child(10) {
-		width: 13%;
+		width: 10%;
 	}
 
 	/* Download Participant Reports */
 
 	#shipmentTable th:nth-child(11),
 	#shipmentTable td:nth-child(11) {
-		width: 14%;
+		width: 12%;
 	}
 
 	/* Download Excel */
@@ -107,73 +126,79 @@
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
-<legend>
-	<h3><?= $this->translate->_("Shipments Report"); ?></h3>
-</legend>
-<table style="margin:20px 0;" class="table table-bordered">
-	<tr>
-		<td style="width:50%;text-align: center;font-weight:bold;">
-			<?= $this->translate->_("Pick a Date Range (Optional)"); ?>
-		</td>
-		<td style="width:50%;text-align: center;font-weight:bold;"></td>
-	</tr>
-	<tr>
-		<td>
-			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-				style="background: #fff" placeholder="Click here to pick a Date Range" />
-		</td>
-		<td>
-			<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
-				onclick="getDrawable()"><span><?= $this->translate->_("Search"); ?></span></button> <button
-				class="btn btn-danger btn-sm"
-				onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-		</td>
-	</tr>
-</table>
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
-	id="shipmentTable">
-	<thead>
+<div class="shipments-wide">
+	<legend>
+		<h3><?= $this->htmlTranslate("Shipments Report"); ?></h3>
+	</legend>
+	<table style="margin:20px 0;" class="table table-bordered">
 		<tr>
-			<th style="text-align: center;"><?= $this->translate->_("PT Survey Code"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("PT Survey Date"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Result Due Date"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-			<!-- <th style="text-align: center;">No. of Samples</th> -->
-			<th style="text-align: center;"><?= $this->translate->_("Participants"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Responses"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Passed"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Status"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Download Reports"); ?></th>
-			<th style="text-align: center;"><?= $this->translate->_("Download Excel"); ?></th>
+			<td style="width:50%;text-align: center;font-weight:bold;">
+				<?= $this->htmlTranslate("Pick a Date Range (Optional)"); ?>
+			</td>
+			<td style="width:50%;text-align: center;font-weight:bold;"></td>
 		</tr>
-		<tr class="column-search-row">
-			<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
-			<th></th>
-			<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
-			<th></th>
-			<th>
-				<select class="form-control input-sm col-search" data-col="4">
-					<option value=""><?= $this->translate->_("All"); ?></option>
-					<?php foreach ($this->schemes as $scheme) { ?>
-						<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>"><?php echo $scheme['scheme_name']; ?></option>
-					<?php } ?>
-				</select>
-			</th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
 		<tr>
-			<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+			<td>
+				<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
+					style="background: #fff" placeholder="Click here to pick a Date Range" />
+			</td>
+			<td>
+				<button style=" margin-right: 10px; " class="btn btn-success btn-sm"
+					onclick="getDrawable()"><span><?= $this->htmlTranslate("Search"); ?></span></button> <button
+					class="btn btn-danger btn-sm"
+					onclick="document.location.href=document.location"><span><?= $this->htmlTranslate("Reset"); ?></span></button>
+			</td>
 		</tr>
-	</tbody>
-</table>
+	</table>
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover hide"
+		id="shipmentTable">
+		<thead>
+			<tr>
+				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
+				<!-- <th style="text-align: center;">No. of Samples</th> -->
+				<th style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
+				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
+			</tr>
+			<tr class="column-search-row">
+				<th><input type="text" class="form-control input-sm col-search" data-col="0"
+						placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
+				<th></th>
+				<th><input type="text" class="form-control input-sm col-search" data-col="2"
+						placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
+				<th></th>
+				<th>
+					<select class="form-control input-sm col-search" data-col="4">
+						<option value=""><?= $this->htmlTranslate("All"); ?></option>
+						<?php foreach ($this->schemes as $scheme) { ?>
+							<option value="<?php echo htmlspecialchars($scheme['scheme_name'], ENT_QUOTES); ?>">
+								<?php echo $scheme['scheme_name']; ?>
+							</option>
+						<?php } ?>
+					</select>
+				</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="10" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
@@ -323,26 +348,11 @@
 			},
 		});
 
-		// Per-column search inputs — debounced so we don't fire a request on every keystroke.
-		// Re-bind each time drawTable() runs because bDestroy:true can reset header handlers.
-		var colSearchTimer = null;
-		$('#shipmentTable thead').off('keyup.colsearch change.colsearch').on('keyup.colsearch change.colsearch', '.col-search', function () {
-			var $el = $(this);
-			var colIdx = parseInt($el.data('col'), 10);
-			var value = $el.val();
-			clearTimeout(colSearchTimer);
-			colSearchTimer = setTimeout(function () {
-				if (oTable) {
-					oTable.fnFilter(value, colIdx);
-				}
-			}, 400);
+		bindColSearch('#shipmentTable', function (value, colIdx) {
+			if (oTable) {
+				oTable.fnFilter(value, colIdx);
+			}
 		});
-		// DataTables binds sort directly on <th>, so delegation from <thead> would run
-		// AFTER the sort fires — bind straight on the inputs.
-		$('#shipmentTable thead .col-search').off('click.colsearch mousedown.colsearch focus.colsearch')
-			.on('click.colsearch mousedown.colsearch focus.colsearch', function (e) {
-				e.stopPropagation();
-			});
 	};
 
 	function generateShipmentParticipantList(shipmentId, schemeType) {
@@ -371,7 +381,7 @@
 				if (data != "") {
 					document.location.href = '/temporary/' + data;
 				} else {
-					alert('<?= $this->translate->_("No feedback responses found for this shipment"); ?>');
+					alert("<?= $this->jsTranslate("No feedback responses found for this shipment"); ?>");
 				}
 				$.unblockUI();
 			});
@@ -386,7 +396,7 @@
 		},
 			function (data) {
 				if (data == "" || data == null || data == undefined) {
-					alert('<?= $this->translate->_("Unable to generate download"); ?>');
+					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
 				} else {
 					document.location.href = '/temporary/' + data;
 				}

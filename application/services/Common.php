@@ -52,37 +52,19 @@ class Application_Service_Common
     public static function isoDateFormat($date, $includeTime = false)
     {
 
-        if (false === self::isDateValid($date)) {
-            return null;
-        } else {
-            $format = "Y-m-d";
-            if ($includeTime === true) {
-                $format = $format . " H:i:s";
-            }
-            return (new DateTimeImmutable($date))->format($format);
-        }
+        Pt_Commons_DateUtility::isoDateFormat($date, $includeTime);
     }
 
     // Returns the given date in d-M-Y format
     // (with or without time depending on the $includeTime parameter)
     public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
     {
-        if (false === self::isDateValid($date)) {
-            return null;
-        } else {
-
-            if ($includeTime === true) {
-                $format = $format . " H:i";
-            }
-
-            return (new DateTimeImmutable($date))->format($format);
-        }
+        return Pt_Commons_DateUtility::humanReadableDateFormat($date, $includeTime, $format);
     }
 
     public static function getDateTime($returnFormat = 'Y-m-d H:i:s')
     {
-        $date = new \DateTime(date('Y-m-d H:i:s'));
-        return $date->format($returnFormat);
+        return Pt_Commons_DateUtility::getDateTime($returnFormat);
     }
     public static function generateRandomString($length = 32): string
     {
@@ -173,12 +155,6 @@ class Application_Service_Common
         }
     }
 
-    // Returns current date time in Y-m-d H:i:s format or any specified format
-    public static function getCurrentDateTime($format = 'Y-m-d H:i:s')
-    {
-        return (new DateTimeImmutable())->format($format);
-    }
-
     public static function getConfig($name)
     {
         $gc = new Application_Model_DbTable_GlobalConfig();
@@ -200,7 +176,7 @@ class Application_Service_Common
     public static function generateFormToken(): string
     {
         $timestamp = time();
-        $hash = hash_hmac('sha256', (string)$timestamp, self::getFormSecret());
+        $hash = hash_hmac('sha256', (string) $timestamp, self::getFormSecret());
         return $timestamp . '.' . $hash;
     }
 
@@ -218,7 +194,7 @@ class Application_Service_Common
         if (!hash_equals($expected, $hash)) {
             return false;
         }
-        $elapsed = time() - (int)$timestamp;
+        $elapsed = time() - (int) $timestamp;
         if ($elapsed < $minAgeSeconds || $elapsed > 3600) {
             return false;
         }
@@ -2098,9 +2074,9 @@ class Application_Service_Common
         $shipmentTotals = $db->fetchRow(
             $db->select()
                 ->from('shipment', [
-                    'total'         => new Zend_Db_Expr('COUNT(*)'),
-                    'finalized'     => new Zend_Db_Expr("SUM(status = 'finalized')"),
-                    'this_year'     => new Zend_Db_Expr("SUM(YEAR(shipment_date) = YEAR(CURDATE()))"),
+                    'total' => new Zend_Db_Expr('COUNT(*)'),
+                    'finalized' => new Zend_Db_Expr("SUM(status = 'finalized')"),
+                    'this_year' => new Zend_Db_Expr("SUM(YEAR(shipment_date) = YEAR(CURDATE()))"),
                     'last_12_months' => new Zend_Db_Expr("SUM(shipment_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND shipment_date <= CURDATE())"),
                 ])
                 ->where("status != ?", 'pending')
@@ -2158,9 +2134,9 @@ class Application_Service_Common
         foreach ($shipmentsPerScheme as $row) {
             $key = $row['scheme_type'];
             $schemeRows[$key] = [
-                'scheme_type'       => $key,
-                'scheme_name'       => $row['scheme_name'] ?: strtoupper($key),
-                'shipment_count'    => (int) $row['shipment_count'],
+                'scheme_type' => $key,
+                'scheme_name' => $row['scheme_name'] ?: strtoupper($key),
+                'shipment_count' => (int) $row['shipment_count'],
                 'participant_count' => 0,
             ];
         }
@@ -2168,9 +2144,9 @@ class Application_Service_Common
             $key = $row['scheme_type'];
             if (!isset($schemeRows[$key])) {
                 $schemeRows[$key] = [
-                    'scheme_type'       => $key,
-                    'scheme_name'       => $row['scheme_name'] ?: strtoupper($key),
-                    'shipment_count'    => 0,
+                    'scheme_type' => $key,
+                    'scheme_name' => $row['scheme_name'] ?: strtoupper($key),
+                    'shipment_count' => 0,
                     'participant_count' => 0,
                 ];
             }
@@ -2179,15 +2155,15 @@ class Application_Service_Common
         ksort($schemeRows);
 
         return [
-            'active_participants'      => $activeParticipants,
-            'total_shipments'          => (int) ($shipmentTotals['total'] ?? 0),
-            'finalized_shipments'      => (int) ($shipmentTotals['finalized'] ?? 0),
-            'shipments_this_year'      => (int) ($shipmentTotals['this_year'] ?? 0),
+            'active_participants' => $activeParticipants,
+            'total_shipments' => (int) ($shipmentTotals['total'] ?? 0),
+            'finalized_shipments' => (int) ($shipmentTotals['finalized'] ?? 0),
+            'shipments_this_year' => (int) ($shipmentTotals['this_year'] ?? 0),
             'shipments_last_12_months' => (int) ($shipmentTotals['last_12_months'] ?? 0),
-            'oldest_shipment'     => $oldestShipment ?: null,
-            'latest_shipment'     => $latestShipment ?: null,
-            'active_schemes'      => $activeSchemes,
-            'scheme_breakdown'    => array_values($schemeRows),
+            'oldest_shipment' => $oldestShipment ?: null,
+            'latest_shipment' => $latestShipment ?: null,
+            'active_schemes' => $activeSchemes,
+            'scheme_breakdown' => array_values($schemeRows),
         ];
     }
 }

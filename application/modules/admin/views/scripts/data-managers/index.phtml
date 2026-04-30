@@ -210,22 +210,8 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             oTable.fnDraw();
         });
 
-        // Per-column search inputs — debounced so we don't fire a request on every keystroke
-        var colSearchTimer = null;
-        $('#usersTable thead').on('keyup change', 'input.col-search', function () {
-            var $input = $(this);
-            var colIdx = parseInt($input.data('col'), 10);
-            var value = $input.val();
-            clearTimeout(colSearchTimer);
-            colSearchTimer = setTimeout(function () {
-                oTable.fnFilter(value, colIdx);
-            }, 400);
-        });
-        // Don't let interactions in the column-search inputs trigger sort on the header.
-        // DataTables binds its sort listener directly on <th>, so delegation on <thead>
-        // would run AFTER the sort fires — bind straight on the inputs instead.
-        $('#usersTable thead input.col-search').on('click mousedown focus', function (e) {
-            e.stopPropagation();
+        bindColSearch('#usersTable', function (value, colIdx) {
+            oTable.fnFilter(value, colIdx);
         });
 
         // Mapped Participants column — expand/collapse child row with on-demand AJAX fetch

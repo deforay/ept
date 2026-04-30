@@ -32,16 +32,29 @@ if ($shipmentAttributesRaw !== '') {
 	td {
 		vertical-align: middle !important;
 	}
+
+	/* Break out of the fixed-width .container in admin.phtml so the wide tables fit comfortably. */
+	.evaluate-shipment-wide {
+		width: 100vw;
+		position: relative;
+		left: 50%;
+		right: 50%;
+		margin-left: -50vw;
+		margin-right: -50vw;
+		padding: 0 30px;
+		box-sizing: border-box;
+	}
 </style>
 <?php if (!empty($this->shipment)) {
 	?>
+	<div class="evaluate-shipment-wide">
 	<div class="well" style="clear: both;">
 		<a href="javascript:void(0);" onclick="$('#allShipmentList').fadeToggle()" class="btn btn-warning btn-xs pull-right"
-			style="margin-top:-10px;"><?= $this->translate->_("Show/Hide Shipment List"); ?></a>
+			style="margin-top:-10px;"><?= $this->htmlTranslate("Show/Hide Shipment List"); ?></a>
 		<div id="allShipmentList">
 
 			<legend>
-				<h4><?= $this->translate->_("All Shipments Under PT Survey"); ?>
+				<h4><?= $this->htmlTranslate("All Shipments Under PT Survey"); ?>
 					<?php echo $this->shipment[0]['distribution_code']; ?>
 					(<?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?>)
 				</h4>
@@ -49,17 +62,17 @@ if ($shipmentAttributesRaw !== '') {
 
 			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("Response%"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
-					<th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("No. of Samples"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("No. of Participants"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("No. of Responses"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Response%"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Number Passed"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Shipment Status"); ?></th>
 					<!--				<th style="text-align: center;">Last Mailed On</th>
 				<th style="text-align: center;">Mail Count</th>-->
-					<th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
+					<th style="text-align: center;"><?= $this->htmlTranslate("Action"); ?></th>
 				</tr>
 				<?php
 				if (count($this->shipmentsUnderDistro) > 0) {
@@ -70,16 +83,16 @@ if ($shipmentAttributesRaw !== '') {
 						$passed = (isset($shipment['number_passed']) && $shipment['number_passed'] >= 0) ? $shipment['number_passed'] : 0;
 						$nonResponse = $totalParticipant - $reported;
 						if ($shipment["shipment_status"] == 'queued') {
-							$buttonText = $this->translate->_("Queued");
+							$buttonText = $this->htmlTranslate("Queued");
 							$buttonStatus = false;
 						} elseif ($shipment["shipment_status"] == 'processing') {
-							$buttonText = $this->translate->_("Processing");
+							$buttonText = $this->htmlTranslate("Processing");
 							$buttonStatus = false;
 						} elseif ($shipment["shipment_status"] == 'evaluated') {
-							$buttonText = $this->translate->_("Re-Evaluate");
+							$buttonText = $this->htmlTranslate("Re-Evaluate");
 							$buttonStatus = true;
 						} else {
-							$buttonText = $this->translate->_("Evaluate");
+							$buttonText = $this->htmlTranslate("Evaluate");
 							$buttonStatus = true;
 						}
 						?>
@@ -102,7 +115,7 @@ if ($shipmentAttributesRaw !== '') {
 										?>
 										<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>"
 											href="/admin/evaluate/shipment/sid/<?php echo base64_encode($shipment['shipment_id']); ?>"><span><i
-													class="icon-eye-open"></i> <?= $this->translate->_("View"); ?></span></a>
+													class="icon-eye-open"></i> <?= $this->htmlTranslate("View"); ?></span></a>
 									<?php } ?>
 									<a class="btn btn-success btn-xs <?= ($buttonStatus) ? 'enabled' : 'disabled' ?>"
 										href="javascript:scheduleShipmentEvaluation('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i
@@ -111,13 +124,13 @@ if ($shipmentAttributesRaw !== '') {
 									<?php if ($nonResponse > 0) { ?>
 										<a class="btn btn-warning btn-xs" href="javascript:void(0);"
 											onclick="mailNonParticipants('<?php echo base64_encode($shipment['shipment_id']); ?>');"><span><i
-													class="icon-envelope"></i> <?= $this->translate->_("Mail"); ?>
+													class="icon-envelope"></i> <?= $this->htmlTranslate("Mail"); ?>
 												<?php echo $nonResponse ?>
-												<?= $this->translate->_("Not Responded Participants"); ?></span></a>
+												<?= $this->htmlTranslate("Not Responded Participants"); ?></span></a>
 									<?php }
 								} else { ?>
 									<a class="btn btn-primary btn-xs disabled" href="javascript:void(0)"><span><i class="icon-edit"></i>
-											<?= $this->translate->_("Evaluate"); ?></span></a>
+											<?= $this->htmlTranslate("Evaluate"); ?></span></a>
 								<?php } ?>
 							</td>
 						</tr>
@@ -127,7 +140,7 @@ if ($shipmentAttributesRaw !== '') {
 					?>
 					<tr>
 						<td colspan="5" align="center" style="text-align:center">
-							<?= $this->translate->_("No shipments for this PT Survey yet"); ?>
+							<?= $this->htmlTranslate("No shipments for this PT Survey yet"); ?>
 						</td>
 					</tr>
 					<?php
@@ -138,25 +151,25 @@ if ($shipmentAttributesRaw !== '') {
 	</div>
 	<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
 		<div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-			<?= $this->translate->_("You are currently evaluating Shipment"); ?>
+			<?= $this->htmlTranslate("You are currently evaluating"); ?>
 			<strong><?php echo $this->shipment[0]['shipment_code']; ?></strong> <a
 				href="javascript:scheduleShipmentEvaluation('<?= base64_encode($this->shipment[0]['shipment_id']); ?>')"
 				onclick="$.blockUI()" class="btn btn-primary btn-xs btn-danger"><span><i
-						class="icon-refresh"></i>&nbsp;&nbsp;<?= $this->translate->_("Re-Evaluate"); ?></span></a>
+						class="icon-refresh"></i>&nbsp;&nbsp;<?= $this->htmlTranslate("Re-Evaluate"); ?></span></a>
 		</div>
 		<div style="margin-top:10px;">
 			<a href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>"
 				class="btn btn-primary" style="float:right;"><i
-					class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Back"); ?></a>
+					class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->htmlTranslate("Back"); ?></a>
 		</div>
 	</h4>
 	<table class="table table-bordered" style="margin:0 auto;">
 		<tr>
-			<th style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
+			<th style="text-align: right"><?= $this->htmlTranslate("Scheme Type"); ?></th>
 			<td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-			<th style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
+			<th style="text-align: right"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
 			<td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-			<th style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
+			<th style="text-align: right"><?= $this->htmlTranslate("PT Survey/Shipment Date"); ?></th>
 			<td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
 		</tr>
 	</table>
@@ -170,7 +183,7 @@ if ($shipmentAttributesRaw !== '') {
 					title="Please chosse corrective actiion file.">
 
 				<label for="comment" class="form-control-label">Comment for all Participants of this shipment</label>
-				<textarea rows="10" cols="20" class="form-control"
+				<textarea rows="3" cols="20" class="form-control"
 					placeholder="Comment for all Participants of this shipment"
 					title="Comment for all Participants of this shipment" name="comment"
 					id="comment"><?php echo $this->shipment[0]['shipment_comment']; ?></textarea>
@@ -179,22 +192,22 @@ if ($shipmentAttributesRaw !== '') {
 				<input type="hidden" value="<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>" name="sid"
 					id="sid">
 				<button type="submit" class="btn btn-primary"
-					onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->translate->_("Update File & Comment"); ?></span></button>
+					onclick="updateComment('<?php echo base64_encode($this->shipment[0]['shipment_id']) ?>');return false;"><span><?= $this->htmlTranslate("Update File & Comment"); ?></span></button>
 			</div>
 		</div>
 		<hr>
 	</form>
 	<table class="table table-borderless" style="width:50%;float:left;" id="overrideTable">
 		<tr>
-			<td><label for="manuelOverride"><?= $this->translate->_("Show only manually overridden results"); ?></label>
+			<td><label for="manuelOverride"><?= $this->htmlTranslate("Show only manually overridden results"); ?></label>
 			</td>
 			<td><select name="manuelOverride" id="manuelOverride" class="form-control"
 					title="Please choose manual override yes or no" onchange="manualOverride(this.value)">
-					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+					<option value="">-- <?= $this->htmlTranslate("Select"); ?> --</option>
 					<option <?php echo (isset($this->override) && $this->override == "no") ? " selected='selected' " : ""; ?>
-						value="no"><?= $this->translate->_("No"); ?></option>
+						value="no"><?= $this->htmlTranslate("No"); ?></option>
 					<option <?php echo (isset($this->override) && $this->override == "yes") ? " selected='selected' " : ""; ?>
-						value="yes"><?= $this->translate->_("Yes"); ?></option>
+						value="yes"><?= $this->htmlTranslate("Yes"); ?></option>
 				</select></td>
 		</tr>
 	</table>
@@ -204,122 +217,112 @@ if ($shipmentAttributesRaw !== '') {
 		<thead>
 			<tr>
 				<th style="width:40px;"></th>
-				<th><?= $this->translate->_("Participant/Tester"); ?></th>
-				<th><?= $this->translate->_("Response Score"); ?></th>
-				<?php if ($this->shipment[0]['scheme_type'] != 'covid19') { ?>
-					<th><?= $this->translate->_("Documentation Score"); ?></th>
-				<?php } ?>
-				<th><?= $this->translate->_("Result"); ?></th>
-				<th><?= $this->translate->_("Response Status"); ?></th>
-				<th><?= $this->translate->_("Responded On"); ?></th>
-				<th style="display:none;">Map ID</th>
-				<th><?= $this->translate->_("Action"); ?></th>
+				<th><?= $this->htmlTranslate("Participant/Tester"); ?></th>
+				<th><?= $this->htmlTranslate("Response Score"); ?></th>
+				<th><?= $this->htmlTranslate("Documentation Score"); ?></th>
+				<th><?= $this->htmlTranslate("Result"); ?></th>
+				<th><?= $this->htmlTranslate("Response Status"); ?></th>
+				<th><?= $this->htmlTranslate("Responded On"); ?></th>
+				<th><?= $this->htmlTranslate("Last Modified"); ?></th>
+				<th style="display:none;"><?= $this->htmlTranslate("Map ID"); ?></th>
+				<th><?= $this->htmlTranslate("Action"); ?></th>
 			</tr>
 		</thead>
 		<tbody>
-
+			<tr>
+				<td colspan="9" class="dataTables_empty" style="text-align:center;">
+					<?= $this->htmlTranslate("Loading data from server"); ?>
+				</td>
+			</tr>
 			<?php
+			// Populate prev/next nav lists from the heavy initial-load result. AJAX paging
+			// doesn't drive these, so we keep the same session population the page expects.
 			$editList = [];
 			$viewList = [];
+			$schemeTypeForUrl = $this->shipment[0]['scheme_type'];
 			foreach ($this->shipment as $shipment) {
-				$this->shipment[0]['scheme_type'] = (isset($shipment['is_user_configured']) && $shipment['is_user_configured'] == 'yes') ? 'custom-test' : $this->shipment[0]['scheme_type'];
-				if ($shipment['manual_override'] == 'yes') {
-					$overrideStatus = "yes";
-				}
-				$btnClassName = "btn-success";
-				$editUrl = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-				$editList[] = "/" . $this->shipment[0]['scheme_type'] . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
-				// $editList[] = "/admin/evaluate/edit/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
+				$rowSchemeType = (isset($shipment['is_user_configured']) && $shipment['is_user_configured'] == 'yes') ? 'custom-test' : $schemeTypeForUrl;
+				$editList[] = "/" . $rowSchemeType . "/response/sid/" . $shipment['shipment_id'] . "/pid/" . $shipment['participant_id'] . "/eid/" . $shipment['evaluation_status'] . "/from/admin";
 				$viewList[] = "/admin/evaluate/view/sid/" . base64_encode($shipment['shipment_id']) . "/pid/" . base64_encode($shipment['participant_id']) . "/scheme/" . base64_encode($shipment['scheme_type']);
-				// Store map_id for AJAX loading of corrective actions (loaded on-demand)
-				$warnings = json_decode($shipment['failure_reason'] ?? '', true);
-				$shipment['display_result'] = '';
-				if (isset($shipment['final_result']) && $shipment['final_result'] == 1) {
-					$shipment['display_result'] = 'Pass';
-				} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 2) {
-					$btnClassName = "btn-danger";
-					$shipment['display_result'] = 'Fail';
-				} elseif (isset($shipment['final_result']) && $shipment['final_result'] == 3) {
-					$btnClassName = "btn-default";
-					$shipment['display_result'] = 'Excluded';
-				} elseif (empty($shipment['final_result'])) {
-					$btnClassName = "btn-default";
-				} elseif (isset($warnings) && count($warnings) > 0) {
-					$btnClassName = "btn-warning";
+				if (($shipment['manual_override'] ?? '') === 'yes') {
+					$overrideStatus = 'yes';
 				}
-				$shipment['shipment_score'] = (isset($shipment['shipment_score']) && $shipment['shipment_score'] != "") ? $shipment['shipment_score'] : '0';
-				$shipment['documentation_score'] = (isset($shipment['documentation_score']) && $shipment['documentation_score'] != "") ? $shipment['documentation_score'] : '0';
-				if (empty($shipment['response_status']) || $shipment['response_status'] == "noresponse") {
-					$responseStatus = "Not Responded";
-				} elseif ($shipment['response_status'] == "responded") {
-					$responseStatus = "Responded";
-				} elseif ($shipment['response_status'] == "late") {
-					$responseStatus = "Late Response";
-				} else {
-					$responseStatus = "Not Tested";
-				}
-				?>
-				<tr>
-					<td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>" data-btn-class="<?php echo $btnClassName; ?>"><i
-								class="icon-plus"></i></a></td>
-					<td style="vertical-align:middle;">
-						<?php echo $shipment['first_name'] . " " . $shipment['last_name'] . "(" . $shipment['unique_identifier'] . ")" ?>
-					</td>
-					<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['shipment_score'] ?></td>
-					<?php if ($this->shipment[0]['scheme_type'] != 'covid19') { ?>
-						<td style="text-align:center;vertical-align:middle;"><?php echo $shipment['documentation_score'] ?></td>
-					<?php } ?>
-					<td style="text-align:center;vertical-align:middle;">
-						<?php echo (isset($shipment['display_result']) && $shipment['display_result'] != "") ? $shipment['display_result'] : 'Not Evaluated'; ?>
-					</td>
-					<td style="text-align:left;vertical-align:middle;"><?php echo $responseStatus ?></td>
-					<td style="text-align:left;vertical-align:middle;">
-						<?php echo !empty($shipment['shipment_test_report_date']) ? $this->dateFormat($shipment['shipment_test_report_date']) : '-'; ?>
-					</td>
-					<td style="display:none;"><?php echo $shipment['map_id']; ?></td>
-					<td style="text-align:center;vertical-align:middle;white-space: nowrap">
-						<?php if (!$pstatus && in_array('edit-participant-response', $privileges)) { ?>
-							<!-- <a class="btn btn-primary btn-xs" href="/admin/evaluate/edit/sid/<?php echo base64_encode($shipment['shipment_id']) ?>/pid/<?php echo base64_encode($shipment['participant_id']) ?>/scheme/<?php echo base64_encode($shipment['scheme_type']) ?>"><span><i class="icon-pencil"></i> Edit</span></a>&nbsp; -->
-							<a class="btn btn-primary btn-xs" href="<?php echo $editUrl; ?>"><span><i class="icon-pencil"></i>
-									Edit</span></a>&nbsp;
-						<?php }
-						if ($shipment['shipment_status'] != 'finalized' && $shipment['shipment_test_report_date'] != '' && $shipment['shipment_test_report_date'] != '0000-00-00 00:00:00') { ?>
-							<a class="btn btn-primary btn-xs" href="javascript:void(0);"
-								onclick="removeSchemes('<?php echo $shipment['scheme_type']; ?>','<?php echo base64_encode($shipment['map_id']); ?>', '<?php echo $shipment['is_user_configured']; ?>')"><span><i
-										class="icon-remove"></i> Delete</span></a>
-						<?php }
-						if (($shipment['display_result'] == 'Fail') && (isset($shipment['corrective_action_file']) && $shipment['corrective_action_file'] != "")) { ?>
-							<br>
-							<a class="btn btn-primary btn-xs"
-								href="/uploads/corrective-action-files/<?php echo $shipment['corrective_action_file'] ?>"
-								download=""><span><i class="icon-download"></i> Download Corrective Action</span></a>
-						<?php } ?>
-					</td>
-				</tr>
-				<?php
 			}
 			$evSession = new Zend_Session_Namespace('evalShipmentList');
 			$evSession->editUrlList = $editList;
 			$evSession->viewUrlList = $viewList;
 			?>
-
 		</tbody>
 	</table>
-	<?php
-	if ($this->shipment[0]['scheme_type'] == 'covid19') {
-		$columns = '{"bSortable": false, "aTargets": [ 0 ] },{"sClass":""},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"bSearchable": false, "bVisible": false},{"sClass":"center","bSortable":false}';
-	} else {
-		$columns = '{"bSortable": false, "aTargets": [ 0 ] },{"sClass":""},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"bSearchable": false, "bVisible": false},{"sClass":"center","bSortable":false}';
-	}
-	?>
+
+	<!-- Type-to-confirm delete modal. One instance, populated dynamically per delete click.
+	     z-index bumped above admin layout's dialog/navbar so the backdrop doesn't trap clicks. -->
+	<style>
+		#deleteResponseConfirmModal { z-index: 10600; }
+		.modal-backdrop.delete-response-backdrop { z-index: 10500; }
+	</style>
+	<div class="modal fade" id="deleteResponseConfirmModal" tabindex="-1" role="dialog"
+		aria-labelledby="deleteResponseConfirmLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+							aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="deleteResponseConfirmLabel">
+						<i class="icon-warning-sign text-danger"></i>
+						<?= $this->htmlTranslate('Permanently delete this response?'); ?>
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p><?= $this->htmlTranslate("This will permanently remove the response below. The participant's submitted results will be deleted and cannot be recovered."); ?>
+					</p>
+					<div
+						style="background:#f8f8f8;border:1px solid #e5e5e5;border-radius:4px;padding:10px 14px;margin:12px 0;">
+						<div
+							style="font-size:11px;text-transform:uppercase;color:#888;letter-spacing:0.5px;margin-bottom:4px;">
+							<?= $this->htmlTranslate('Participant'); ?>
+						</div>
+						<div style="font-size:15px;font-weight:600;" id="deleteResponseParticipant"></div>
+						<div
+							style="font-size:11px;text-transform:uppercase;color:#888;letter-spacing:0.5px;margin:10px 0 4px;">
+							<?= $this->htmlTranslate('Participant ID'); ?>
+						</div>
+						<div style="font-family:monospace;font-size:14px;font-weight:600;" id="deleteResponseUniqueId">
+						</div>
+					</div>
+					<label for="deleteResponseConfirmInput" style="font-weight:500;">
+						<?= $this->htmlTranslate('Type the Participant ID above to confirm:'); ?>
+					</label>
+					<input type="text" id="deleteResponseConfirmInput" class="form-control" autocomplete="off"
+						spellcheck="false" placeholder="<?= $this->htmlTranslate('Participant ID'); ?>" />
+					<p id="deleteResponseMismatch" class="text-danger" style="display:none;margin-top:8px;font-size:13px;">
+						<i class="icon-exclamation-sign"></i>
+						<?= $this->htmlTranslate('That does not match the Participant ID. Please type it exactly as shown.'); ?>
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<?= $this->htmlTranslate('Cancel'); ?>
+					</button>
+					<button type="button" class="btn btn-danger" id="deleteResponseConfirmBtn" disabled>
+						<i class="icon-trash"></i>
+						<?= $this->htmlTranslate('Delete response'); ?>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<?php if ($shipmentAttributesDisplay !== '') { ?>
 		<div style="margin-top:20px; text-align:right;">
-			<a href="javascript:void(0);" onclick="$('#shipmentAttributesDebug').slideToggle();" style="font-size:11px; color:#777; text-decoration:none;">
-				<?= $this->translate->_("shipment attributes"); ?>
+			<a href="javascript:void(0);" onclick="$('#shipmentAttributesDebug').slideToggle();"
+				style="font-size:11px; color:#777; text-decoration:none;">
+				<?= $this->htmlTranslate("Shipment Attributes"); ?>
 			</a>
 		</div>
 		<div id="shipmentAttributesDebug" style="display:none; margin-top:6px;">
-			<pre style="margin:0; padding:10px; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:11px; color:#666; background:#f8f8f8; border:1px dashed #ddd;"><?php echo $this->escape($shipmentAttributesDisplay); ?></pre>
+			<pre
+				style="margin:0; padding:10px; max-height:220px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:11px; color:#666; background:#f8f8f8; border:1px dashed #ddd;"><?php echo $this->escape($shipmentAttributesDisplay); ?></pre>
 		</div>
 	<?php } ?>
 	<script type="text/javascript" charset="utf-8">
@@ -357,19 +360,45 @@ if ($shipmentAttributesRaw !== '') {
 			});
 
 			oTable = $("#shipmentEvaluation").dataTable({
-
 				"bJQueryUI": false,
 				"bAutoWidth": false,
 				"bInfo": true,
 				"bScrollCollapse": true,
 				"sPaginationType": "bootstrap",
-				"bRetrieve": true,
-				"bdestroy": false,
-				"aoColumns": [<?php echo $columns; ?>],
+				"bRetrieve": false,
+				"bDestroy": true,
+				"bProcessing": true,
+				"bServerSide": true,
+				"sAjaxSource": "<?php echo $this->url(['module' => 'admin', 'controller' => 'evaluate', 'action' => 'shipment', 'sid' => $this->id, 'format' => 'html']); ?>",
+				"fnServerParams": function (aoData) {
+					<?php if (!empty($this->override)) { ?>
+						aoData.push({ "name": "override", "value": "<?= $this->override; ?>" });
+					<?php } ?>
+				},
+				"fnServerData": function (sSource, aoData, fnCallback) {
+					$.ajax({
+						"dataType": "json",
+						"type": "POST",
+						"url": sSource,
+						"data": aoData,
+						"success": fnCallback
+					});
+				},
+				"aoColumns": [
+					{ "bSortable": false },
+					{ "sClass": "" },
+					{ "sClass": "center" },
+					{ "sClass": "center" },
+					{ "sClass": "center" },
+					{ "sClass": "" },
+					{ "sClass": "" },
+					{ "sClass": "center" },
+					{ "bSearchable": false, "bVisible": false },
+					{ "sClass": "center", "bSortable": false }
+				],
 				"aaSorting": [
 					[1, "asc"]
-				],
-				"bProcessing": true,
+				]
 			});
 		});
 
@@ -381,7 +410,7 @@ if ($shipmentAttributesRaw !== '') {
 			},
 				function (data) {
 					$.unblockUI();
-					alert('Shipment has been added to the queue. It will be evaluated shortly.');
+					alert("<?= $this->jsTranslate('Shipment has been added to the queue. It will be evaluated shortly.'); ?>");
 					document.location.href = "/admin/evaluate";
 				});
 		}
@@ -407,11 +436,8 @@ if ($shipmentAttributesRaw !== '') {
 		function fnFormatDetails(oTable, nTr) {
 			var aData = oTable.fnGetData(nTr);
 			var sOut = '<div class="text-center"><i class="icon-spinner icon-spin"></i> Loading...</div>';
-			<?php if ($this->shipment[0]['scheme_type'] == 'covid19') { ?>
-				var mapId = aData[6];
-			<?php } else { ?>
-				var mapId = aData[7];
-			<?php } ?>
+			// map_id is in the hidden column at index 8.
+			var mapId = aData[8];
 			// Load corrective actions via AJAX
 			$.ajax({
 				url: '/common/get-corrective-actions/mid/' + mapId,
@@ -428,35 +454,103 @@ if ($shipmentAttributesRaw !== '') {
 		}
 
 
-		function removeSchemes(schemeType, mid, userConfiguration = 'no') {
-			if (window.confirm("Are you sure you want to remove this response?\n This cannot be undone !")) {
-				$.blockUI();
-				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", {
-					mid: mid,
-					schemeType: schemeType,
-					userConfig: userConfiguration,
-					format: "html"
-				},
-					function (data) {
-						alert("Response has been removed successfully. Please wait while we reload this evaluation.");
-						// oTable.fnStandingRedraw();
-						// oTable.fnDraw();
-						document.location.href = '/admin/evaluate';
-						$.unblockUI();
-					});
+		// One-time bindings for the delete-confirm modal. Per-row params are stored on the
+		// modal's submit button via data() so handlers don't need to be rewired on each open.
+		$(function () {
+			var $modal = $('#deleteResponseConfirmModal');
+			if ($modal.length === 0) { return; }
+
+			// Escape the wrapping stacking context once so the backdrop never traps clicks.
+			if ($modal.parent().get(0) !== document.body) {
+				$modal.appendTo('body');
 			}
 
+			var $input = $('#deleteResponseConfirmInput');
+			var $btn = $('#deleteResponseConfirmBtn');
+			var $mismatch = $('#deleteResponseMismatch');
+
+			$input.on('input keyup', function () {
+				var expected = ($btn.data('uniqueId') || '').toString();
+				var matches = $(this).val().trim() === expected;
+				$btn.prop('disabled', !matches);
+				if (matches) { $mismatch.hide(); }
+			});
+
+			$btn.on('click', function () {
+				if ($btn.prop('disabled')) { return; }
+				var expected = ($btn.data('uniqueId') || '').toString();
+				if ($input.val().trim() !== expected) {
+					$mismatch.show();
+					return;
+				}
+				var schemeType = $btn.data('schemeType');
+				var mid = $btn.data('mid');
+				var userConfig = $btn.data('userConfig');
+				$modal.modal('hide');
+				doRemoveScheme(schemeType, mid, userConfig);
+			});
+
+			$modal.on('shown.bs.modal', function () {
+				$('.modal-backdrop').last().addClass('delete-response-backdrop');
+				$input.trigger('focus');
+			});
+		});
+
+		function removeSchemes(schemeType, mid, userConfiguration, participantName, uniqueId) {
+			if (typeof userConfiguration === 'undefined') { userConfiguration = 'no'; }
+			uniqueId = (uniqueId || '').toString();
+			participantName = (participantName || '').toString();
+
+			// Fallback for callers that didn't pass a uniqueId — keep the old single-confirm.
+			if (uniqueId === '') {
+				if (!window.confirm("<?= $this->jsTranslate('Are you sure you want to remove this response? This cannot be undone!'); ?>")) {
+					return;
+				}
+				doRemoveScheme(schemeType, mid, userConfiguration);
+				return;
+			}
+
+			$('#deleteResponseParticipant').text(participantName);
+			$('#deleteResponseUniqueId').text(uniqueId);
+			$('#deleteResponseConfirmInput').val('');
+			$('#deleteResponseMismatch').hide();
+			$('#deleteResponseConfirmBtn')
+				.prop('disabled', true)
+				.data('schemeType', schemeType)
+				.data('mid', mid)
+				.data('userConfig', userConfiguration)
+				.data('uniqueId', uniqueId);
+
+			$('#deleteResponseConfirmModal').modal('show');
+		}
+
+		function doRemoveScheme(schemeType, mid, userConfiguration) {
+			$.blockUI();
+			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'delete-dts-response'), 'default', true); ?>", {
+				mid: mid,
+				schemeType: schemeType,
+				userConfig: userConfiguration,
+				format: "html"
+			})
+				.done(function (data) {
+					alert("<?= $this->jsTranslate('Response has been removed successfully. Reloading this evaluation.'); ?>");
+					window.location.reload();
+				})
+				.fail(function (xhr) {
+					$.unblockUI();
+					alert("<?= $this->jsTranslate('Failed to delete the response. Please try again or contact the administrator.'); ?>");
+				});
 		}
 
 		function mailNonParticipants(sid) {
-			if (window.confirm("Are you sure you want to send an email reminder to participants who have not yet responded?")) {
+			if (window.confirm("<?= $this->jsTranslate('Are you sure you want to send an email reminder to participants who have not yet responded?'); ?>")) {
 				$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'not-participated-mail')); ?>", {
 					sid: sid,
 					format: "html"
 				},
 					function (data) {
 						if (data > 0) {
-							alert("Mail Sent successfully");
+							alert("<?= $this->jsTranslate('Mail Sent successfully'); ?>");
 						}
 						oTable.fnDraw();
 					});
@@ -464,12 +558,12 @@ if ($shipmentAttributesRaw !== '') {
 
 		}
 	</script>
+	</div>
 
 <?php } else { ?>
 
 	<br /><br /><br />
-	<h3 style="text-align: center">No Shipment to evaluate. <a
-			href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>">Click
-			here to go back</a></h3>
+	<h3 style="text-align: center"><?= $this->htmlTranslate('No Shipment to evaluate.'); ?> <a
+			href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'evaluate', 'action' => 'index'), 'default', true); ?>"><?= $this->htmlTranslate('Click here to go back'); ?></a></h3>
 
 <?php } ?>

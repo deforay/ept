@@ -42,28 +42,38 @@ class Admin_LoginController extends Zend_Controller_Action
 				// regenerate and delete old session to prevent fixation, before setting session data
 				Zend_Session::regenerateId();
 
-				$authNameSpace = new Zend_Session_Namespace('administrators');
-				$authNameSpace->primary_email = $params['username'];
-				$authNameSpace->admin_id = $result['admin_id'];
-				$authNameSpace->first_name = $result['first_name'];
-				$authNameSpace->last_name = $result['last_name'];
-				$authNameSpace->phone = $result['phone'];
-				$authNameSpace->language = $result['language'];
-				$authNameSpace->secondary_email = $result['secondary_email'];
-				$authNameSpace->forcePasswordReset = $result['force_password_reset'];
-				$authNameSpace->privileges = $result['privileges'];
-				$authNameSpace->activeScheme = $result['scheme'];
+				// Convert the row to an array so missing columns null-coalesce instead of
+				// throwing mid-write. A partially-populated session (e.g. admin_id set but
+				// privileges unset) presents as "logged in" but with no menus.
+				$row = is_object($result) && method_exists($result, 'toArray') ? $result->toArray() : (array)$result;
 
 				$schemeService = new Application_Service_Schemes();
-				$allSchemes = $schemeService->getAllSchemes();
 				$schemeList = [];
-				foreach ($allSchemes as $scheme) {
+				foreach ($schemeService->getAllSchemes() as $scheme) {
 					$schemeList[] = $scheme['scheme_id'];
 				}
-				$authNameSpace->activeSchemes = $schemeList;
+
+				$sessionData = [
+					'primary_email'      => $params['username'],
+					'admin_id'           => $row['admin_id'] ?? null,
+					'first_name'         => $row['first_name'] ?? null,
+					'last_name'          => $row['last_name'] ?? null,
+					'phone'              => $row['phone'] ?? null,
+					'language'           => $row['language'] ?? 'en_US',
+					'secondary_email'    => $row['secondary_email'] ?? null,
+					'forcePasswordReset' => $row['force_password_reset'] ?? null,
+					'privileges'         => $row['privileges'] ?? '',
+					'activeScheme'       => $row['scheme'] ?? null,
+					'activeSchemes'      => $schemeList,
+				];
+
+				$authNameSpace = new Zend_Session_Namespace('administrators');
+				foreach ($sessionData as $key => $value) {
+					$authNameSpace->$key = $value;
+				}
 
 				// Insert login history
-				$userId = $result['admin_id']; // Set this to the logged-in user's ID
+				$userId = $row['admin_id'] ?? null;
 
 				$loginHistoryModel = new Application_Model_DbTable_UserLoginHistory();
 				$loginData = [

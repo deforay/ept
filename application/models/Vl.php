@@ -1285,7 +1285,6 @@ class Application_Model_Vl
             foreach ($samples as $sample) {
                 $responseAssay = json_decode($sample['attributes'] ?? '{}', true);
                 $assayId = $responseAssay['vl_assay'] ?? null;
-
                 if ($assayId == 6) {
                     $assayName = $responseAssay['other_assay'] ?? '';
                 } else {
@@ -1310,7 +1309,6 @@ class Application_Model_Vl
                 $toReturn[$counter]['error_code'] = $sample['error_code'];
 
                 $grade = 'Not Applicable';
-
                 if (isset($vlRange[$assayId]) && isset($sample['sample_id']) && isset($vlRange[$assayId][$sample['sample_id']])) {
                     $sampleRange = $vlRange[$assayId][$sample['sample_id']];
                     $toReturn[$counter]['no_of_participants'] = $sampleRange['no_of_responses'] ?? 0;

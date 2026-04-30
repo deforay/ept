@@ -117,7 +117,7 @@ if (!empty($resultArray['shipment'])) {
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
         // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">' . $result['scheme_name'] . '</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - ' . $result['scheme_name'] . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
         // }
 

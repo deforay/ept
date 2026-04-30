@@ -20,10 +20,20 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 
         if (!$csrfCheck) {
             $translate = Zend_Registry::get('translate');
-            // Forward to the default error/error action
-            $request->setControllerName('error')
-                ->setActionName('error')
-                ->setParam('message', $translate->_('Invalid or expired request. Please try again'));
+            $expiredMessage = $translate->_('Your session has expired. Please sign in again.');
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = $expiredMessage;
+
+            // Admin/reports area: bounce to admin login. Public area: send to participant login.
+            if (in_array($request->getModuleName(), ['admin', 'reports'], true)) {
+                $request->setModuleName('admin')
+                    ->setControllerName('login')
+                    ->setActionName('index');
+            } else {
+                $request->setModuleName('default')
+                    ->setControllerName('auth')
+                    ->setActionName('login');
+            }
             $request->setDispatched(false);
             return;
         }
