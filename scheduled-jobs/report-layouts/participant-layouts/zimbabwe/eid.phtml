@@ -1,0 +1,366 @@
+<?php
+
+// scheduled-jobs/report-layouts/participant-layouts/zimbabwe/eid.phtml
+
+$schemeType = $resultArray['shipment'][0]['scheme_type'];
+$pdfNew = new Zend_Pdf();
+//$extractor = new Zend_Pdf_Resource_Extractor();
+$shipmentCode = '';
+if (!empty($resultArray['shipment'])) {
+    $totalPages = count($resultArray['shipment']);
+    $j = 1;
+    foreach ($resultArray['shipment'] as $count => $result) {
+
+        /* for Shipment attributes functionality start */
+        $shipmentAttributes = json_decode($result['shipment_attributes'], true);
+        $shipmentAttributes['shipment_id'] = $result['shipment_id'];
+        if ( /*(isset($result['responseResult'][0]['is_excluded']) && $result['responseResult'][0]['is_excluded'] == 'yes') || */
+            (isset($result['responseResult'][0]['is_pt_test_not_performed']) && $result['responseResult'][0]['is_pt_test_not_performed'] == 'yes')
+        ) {
+            continue;
+        }
+
+        if (!file_exists($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']) && !is_dir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'])) {
+            mkdir($reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code']);
+        }
+        //error_log($i);
+        // Extend the TCPDF class to create custom Header and Footer
+
+        // create new PDF document
+        $reportFormat = $reportService->getReportConfigValue('report-format');
+
+        $formVersion = $shipmentAttributes['formVersion'] ?? '';
+        $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
+        $issuingAuthority = $result['issuing_authority'] ?? '';
+
+        // Build footer table row conditionally
+        $footerCells = [];
+
+        // Add form version if not empty
+        if (!empty($formVersion)) {
+            $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Add issuing authority if not empty
+        if (!empty($issuingAuthority)) {
+            $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Add effective date if not empty
+        if (!empty($effectiveDate)) {
+            $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
+        } else {
+            $footerCells[] = "<td></td>";
+        }
+
+        // Only create footer if we have at least one element
+        $staticFooterHtml = '<hr style="border: 1px solid #000;">';
+        if (!empty($footerCells)) {
+            $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
+                    <tr align="center" style="text-align:center;">
+                        ' . implode('', $footerCells) . '
+                    </tr>
+                </table>';
+        }
+        if (isset($reportFormat) && !empty($reportFormat)) {
+            $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
+        } else {
+            $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
+        }
+        // set document information
+        //$pdf->SetCreator(PDF_CREATOR);
+        //$pdf->SetAuthor('ePT');
+        //$pdf->SetTitle('DEPARTMENT OF HEALTH AND HUMAN SERVICES');
+        //
+        //
+
+        // set default header data
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(array('freesans', '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $mt = ($layout == 'zimbabwe') ? 55 : 40;
+        if (isset($templateTopMargin) && !empty($templateTopMargin)) {
+            $mt = $templateTopMargin;
+        }
+        $pdf->SetMargins(PDF_MARGIN_LEFT, $mt, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+
+
+        // ---------------------------------------------------------
+
+        // set font
+        $pdf->SetFont('freesans', '', 11);
+
+        // add a page
+        $pdf->AddPage();
+
+
+        // set some text to print
+        //$txt = <<<EOD
+        //International Laboratory Branch
+        //
+        //Custom page header and footer are defined by extending the TCPDF class and overriding the Header() and Footer() methods.
+        //EOD;
+        //
+        //// print a block of text using Write()
+        //$pdf->Write(0, $txt, '', 0, 'C', true, 0, false, false, 0);
+
+        // ---------------------------------------------------------
+
+        // if (trim($result['shipment_date'] ?? '') != "") {
+        //     $result['shipment_date'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['shipment_date']);
+        // }
+
+        $responseDate = "";
+        $shipmentTestDate = "";
+        $shipmentTestReportDate = "";
+        $shipmentScore = 0;
+        $documentationScore = 0;
+        $score = 0;
+
+        /* for Shipment attributes functionality end */
+
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'] ?? '') != "") {
+            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
+            $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
+        }
+        $attributes = '';
+        if (isset($result['attributes'])) {
+            $attributes = json_decode($result['attributes'], true);
+        }
+
+        $shipmentReceiptDate = "";
+        if (isset($result['responseResult'][0]['shipment_receipt_date']) && trim($result['responseResult'][0]['shipment_receipt_date'] ?? '') != "") {
+            $shipmentReceiptDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_receipt_date']);
+        }
+
+        if (isset($result['responseResult'][0]['shipment_test_date']) && trim($result['responseResult'][0]['shipment_test_date'] ?? '') != "") {
+            $shipmentTestDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['shipment_test_date']);
+        }
+
+        if (isset($result['responseResult'][0]['responseDate']) && trim($result['responseResult'][0]['responseDate'] ?? '') != "") {
+            $shipmentTestReportDate = Pt_Commons_DateUtility::humanReadableDateFormat($result['responseResult'][0]['responseDate']);
+        }
+
+        //if($result['result_name']=='Fail'){
+        //    $wishes="";
+        //    $splStr=explode("###",$result['failure_reason']);
+        //    $k=sizeof($splStr);
+        //    for($c=0;$c<$k;$c++){
+        //        $wishes.='<p> '.$splStr[$c].'</p><br/>';
+        //    }
+        //    //$wishes = "<ul><li>" .str_replace("###","</li><li>",$result['failure_reason']) . "</li></ul>";
+        //
+        //}
+
+        //Comment Details
+
+
+        // Samples without response need not be generated
+        if (empty($result['responseResult'])) {
+            continue;
+        }
+
+        if ($layout != 'zimbabwe') {
+            $htmlTitle = '<br><br><br><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Early Infant Diagnosis Using Dried Blood Spots</span><br>';
+            $pdf->writeHTML($htmlTitle, true, false, true, false, '');
+        }
+        $labInfo = '<table cellpadding="4" style="font-size:12px;width:100%;">';
+
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date:</strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
+        $labInfo .= '</tr>';
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="50%"><strong>Laboratory ID : </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
+        $labInfo .= '</tr>';
+
+        $machine = $result['extractionAssayVal'];
+        if (isset($attributes['extraction_assay']) && $attributes['extraction_assay'] == 6) {
+            $machine = 'Other' . " - " . ($attributes['other_assay'] ?? '');
+        }
+        $labInfo .= '<tr>';
+        $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
+        $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
+        $labInfo .= '</tr>';
+
+        $labInfo .= '</table>';
+
+
+        $pdf->writeHTML($labInfo, true, false, true, false, '');
+
+
+        if (!empty($result['responseResult'])) {
+            $n = count($result['responseResult']);
+            $labRes = "";
+            //$labRes = '<br><span style="text-align:center;font-weight: bold;font-size:13px;">Individual Participant Results Report <br/><br/></span>';
+
+            $labRes .= '<table border="1" style="font-size:11px;" cellpadding="3">';
+            $labRes .= '<tr style="background-color:#dbe4ee;">';
+            $labRes .= '<td style="text-align:center;font-weight:bold;">Sample ID</td>';
+            //Sample codes
+            foreach ($result['responseResult'] as $response) {
+                $labRes .= '<td style="text-align:center;font-weight:bold;">' . $response['sample_label'] . '</td>';
+            }
+            $labRes .= '<td style="text-align:center;font-weight:bold;">Your Score(%)</td>';
+            $labRes .= '</tr>';
+            $labRes .= '<tr>';
+            $labRes .= '<td>Expected Result</td>';
+            foreach ($result['responseResult'] as $response) {
+                $labRes .= '<td style="text-align:left;">' . $response['referenceResult'] . '</td>';
+            }
+            $labRes .= '<td rowspan="2" style="text-align:center;"><br><br>' . $result['shipment_score'] . '</td>';
+            $labRes .= '</tr>';
+            $labRes .= '<tr>';
+            $labRes .= '<td>Your Results</td>';
+            foreach ($result['responseResult'] as $response) {
+                $labRes .= '<td style="text-align:left;">' . $response['labResult'] . '</td>';
+            }
+            $labRes .= '</tr>';
+
+            $labRes .= '</table>';
+
+            $pdf->SetLeftMargin(15);
+            $pdf->writeHTML($labRes, true, false, true, false, '');
+        }
+
+        if ($result['is_excluded'] == 'yes') {
+            $wishes = '<p>Your response was not considered for evaluation</p>';
+            $pdf->SetLeftMargin(15);
+            $pdf->writeHTML($wishes, true, false, true, false, '');
+        }
+
+        //if(trim($result['distribution_date'] ?? '')!=""){
+        //    $result['distribution_date']=Pt_Commons_DateUtility::humanReadableDateFormat($result['distribution_date']);
+        //}
+        if (trim($result['evaluationComments'] ?? '') != "" || trim($result['optional_eval_comment'] ?? '') != "") {
+            $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+
+            if (trim($result['evaluationComments'] ?? '') != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
+                $comment .= '</tr>';
+            }
+
+            if (trim($result['optional_eval_comment'] ?? '') != "") {
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment .= '</tr>';
+            }
+
+            $comment .= '</table>';
+            //$pdf->SetTopMargin(13);
+            $pdf->writeHTML($comment, true, false, true, false, '');
+        }
+        /* $html = '<h5>Participants with scores of less than 100%:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Laboratory must complete a Proficiency Testing Corrective Action Form within 30 days of report authorization date. Refer to Proficiency
+            Testing Corrective Action Flowchart for additional guidance. Documents are available on the ePT site in the “Corrective Action” tab under
+            the Main Navigation.</span>'; */
+
+        $html = '<h5>Information with respect to compliance with standards ISO 13528:2015(E):<br>Preparation of Proficiency Test items:</h5>';
+        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Dried Blood Spots were issued with instructions to report on detection using routine laboratory methods. Samples were tested for
+            homogeneity prior to shipment and met program requirements.</span>';
+
+        $html .= '<h5>Procedures used to establish the assigned value:</h5>';
+        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The results of participating laboratories were evaluated by comparing to the assigned values determined by the VL and EID Unit using the Roche cobas® HIV-1/2 Qualitative Assay.</span>';
+
+        $html .= '<h5>Subcontracting:</h5>';
+        $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">Only the transport of PT items is subcontracted. The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program.  To ensure anonymity in this final report, each participant has been assigned a unique identification number.</span>';
+
+        /* $html .= '<h5>Confidentiality:</h5>';
+            $html .= '<span style="text-align:justify;font-size:10;font-weight:normal;">The identity of participants is kept confidential and known only to the staff involved in the Proficiency Testing Program. Each participant has been assigned a unique identification number for database management purposes.</span>'; */
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        if (!empty(trim($result['shipment_comment'] ?? ''))) {
+            $comment = '<table border="1" style="width:100%;" cellpadding="3">';
+
+            $comment .= '<tr>';
+            $comment .= '<td style="font-size:10px;font-weight:bold;" colspan="2">' . $result['shipment_comment'] . '</td>';
+            $comment .= '</tr>';
+
+            $comment .= '</table>';
+            //$pdf->SetTopMargin(13);
+            $pdf->writeHTML($comment, true, false, true, false, '');
+        }
+
+        $html = '';
+        // if ((isset($resultArray['shipment'][0]['pt_co_ordinator_name']) && $resultArray['shipment'][0]['pt_co_ordinator_name'] != "") || $evalRow['saname'] != '') {
+        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'];
+        $html .= '<br/><hr>';
+        if ($layout == 'zimbabwe') {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
+        }
+        if (!empty($approveTxt)) {
+            $html .= '<span style="text-align:center;font-weight:normal;"><small>Report approved by ' . $approveTxt . '</small> &nbsp;|&nbsp; <small>Date of approval: ' . Application_Service_Common::humanReadableDateFormat($evalRow['date_finalised'] ?? date('d M Y')) . '</small></span>';
+        }
+        // }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>This is a system generated report. No signature required</small></span>';
+        $eodReportText = "End of report";
+        if ($evalRow['report_type'] == 'finalized') {
+            $eodReportText = "End of final report";
+        }
+        $html .= '<br/><span style="text-align:center;font-weight:normal;"><small>- ' . $eodReportText . ' -</small></span>';
+
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        if (ob_get_contents()) {
+            ob_end_clean();
+        }
+
+        //Close and output PDF document
+        if (isset($result['last_name']) && trim($result['last_name'] ?? '') != "") {
+            $result['last_name'] = "_" . $result['last_name'];
+        }
+
+        $nameParts = [];
+        $keys = ['shipment_code', 'unique_identifier', 'region', 'state', 'district', 'city'];
+
+        foreach ($keys as $key) {
+            if (!empty($result[$key]) && strtoupper($result[$key]) != 'NULL') {
+                $nameParts[] = ($key == 'shipment_code') ? $result[$key] : strtoupper($result[$key]);
+            }
+        }
+
+        $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
+        $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
+        $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
+        $created = $pdf->Output($filePath, "F");
+
+        //$pdf->Output($fileName, 'I');
+
+        // $loadpdf = Zend_Pdf::load($filePath);
+
+        // foreach ($loadpdf->pages as $page) {
+        //     $pdfExtract = $extractor->clonePage($page);
+        //     //$pdfExtract->setFont($font, 8) ->drawText('Page '.$j.' / '.$totalPages, 280, 50);
+        //     $pdfNew->pages[] = $pdfExtract;
+        // }
+        $shipmentCode = $result['shipment_code'];
+        $j++;
+    }
+}

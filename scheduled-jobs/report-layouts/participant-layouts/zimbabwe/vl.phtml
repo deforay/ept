@@ -1,5 +1,6 @@
 <?php
 $participantPerformance = $reportService->getParticipantPerformanceReportByShipmentId($evalRow['shipment_id']);
+$equipmentsReports = $reportService->getVlAssayByShipmentId($evalRow['shipment_id']);
 $schemeType = $resultArray['shipment'][0]['scheme_type'];
 $shipmentCode = '';
 
@@ -36,49 +37,15 @@ if (!empty($resultArray['shipment'])) {
         $effectiveDate = $shipmentAttributes['effectiveDate'] ?? '';
         $issuingAuthority = $result['issuing_authority'] ?? '';
 
-        // Build footer table row conditionally
-        $footerCells = [];
-
-        // Add form version if not empty
-        if (!empty($formVersion)) {
-            $footerCells[] = "<td align='left' style='text-align:left; font-size:14px;'>$formVersion</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Add issuing authority if not empty
-        if (!empty($issuingAuthority)) {
-            $footerCells[] = "<td align='center' style='text-align:center; font-size:14px;'>Issuing Authority: $issuingAuthority</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Add effective date if not empty
-        if (!empty($effectiveDate)) {
-            $footerCells[] = "<td align='right' style='text-align:right; font-size:14px;'>Effective Date: $effectiveDate</td>";
-        } else {
-            $footerCells[] = "<td></td>";
-        }
-
-        // Only create footer if we have at least one element
-        $staticFooterHtml = '<hr style="border: 1px solid #000;">';
-        if (!empty($footerCells)) {
-            $staticFooterHtml .= '<table style="width:100%;" cellpadding="0" cellspacing="0" border="0">
-                    <tr align="center" style="text-align:center;">
-                        ' . implode('', $footerCells) . '
-                    </tr>
-                </table>';
-        }
-
         if (isset($reportFormat) && !empty($reportFormat)) {
             $pdf = new Pt_Reports_FpdiReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", $layout, $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
+            $pdf->setParams($resultStatus, $evalRow['date_finalised'], "", $watermark, "INDIVIDUAL", 'zimbabwe', $result['scheme_name'], $result['scheme_type'], "", $staticFooterHtml, $shipmentAttributes);
         } else {
             $pdf = new Pt_Reports_IndividualPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
             if ($methodOfEvaluation == 'iso17043') {
-                $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, $evalRow['date_finalised'], $instituteAddressPosition);
+                $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'zimbabwe', $evalRow['date_finalised'], "", $watermark, $evalRow['date_finalised'], $instituteAddressPosition);
             } else {
-                $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, $layout, $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
+                $pdf->setSchemeName($header, $result['scheme_name'], $logo, $logoRight, $resultStatus, $schemeType, 'zimbabwe', $evalRow['date_finalised'], "", $watermark, "", $instituteAddressPosition);
             }
         }
         // set document information
@@ -224,43 +191,6 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '</table>';
         $pdf->writeHTML($labInfo, true, false, true, false, '');
 
-        // $labInfo = '<br><table cellpadding="4" style="font-size:12px;width:100%;">';
-
-        // /* $labInfo .= '<tr>';
-        // $labInfo .= '<tr>';
-        // $labInfo .= '	<td width="20%"><strong>Laboratory Name : </strong></td>';
-        // $labInfo .= '	<td width="80%" style="font-weight: normal;">' . $result['first_name'] . ' ' . $result['last_name'] . '</td>';
-        // $labInfo .= '</tr>'; */
-
-        // $labInfo .= '<tr>';
-        // $labInfo .= '	<td width="50%"><strong>PT Panel Name and Due Date : </strong><span style="font-weight: normal;">' . $result['distribution_code'] . '(' . Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']) . ')</span></td>';
-        // $labInfo .= '	<td width="50%"><strong>Panel Received Date : </strong><span style="font-weight: normal;">' . $shipmentReceiptDate . '</span></td>';
-        // $labInfo .= '</tr>';
-
-        // $labInfo .= '<tr>';
-        // $labInfo .= '	<td width="50%"><strong>Laboratory ID : </strong><span style="font-weight: normal;">' . $result['unique_identifier'] . '</span></td>';
-        // $labInfo .= '	<td width="50%"><strong>Panel Tested Date : </strong><span style="font-weight: normal;">' . $shipmentTestDate . '</span></td>';
-        // $labInfo .= '</tr>';
-
-        // if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
-        //     $machine = 'Other' . " - " . $attributes['other_assay'];
-        // } else {
-        //     $machine = $result['responseResult'][0]['vl_assay'];
-        // }
-        // $labInfo .= '<tr>';
-        // $labInfo .= '	<td width="50%"><strong>Platform/Assay Name : </strong><span style="font-weight: normal;">' . $machine . '</span></td>';
-        // $labInfo .= '	<td width="50%"><strong>Results Submitted Date : </strong><span style="font-weight: normal;">' . $shipmentTestReportDate . '</span></td>';
-        // $labInfo .= '</tr>';
-        // if ($layout == 'zimbabwe') {
-        //     $labInfo .= '<tr>';
-        //     $labInfo .= '	<td width="50%"><strong>Supervisor Name : </strong><span style="font-weight: normal;">' . $result['participant_supervisor'] . '</span></td>';
-        //     $labInfo .= '	<td width="50%"><strong>Co Ordinator Name : </strong><span style="font-weight: normal;">' . $result['pt_co_ordinator_name'] . '</span></td>';
-        //     $labInfo .= '</tr>';
-        // }
-        // $labInfo .= '</table>';
-        // //shipment_test_date
-        // $pdf->writeHTML($labInfo, true, false, true, false, '');
-
         $methodOfEvaluation == 'iso17043';
         if ($methodOfEvaluation == 'iso17043') {
             if (!empty($result['responseResult'])) {
@@ -300,22 +230,22 @@ if (!empty($resultArray['shipment'])) {
                         if ($result['is_excluded'] == 'yes') {
                             $response['grade'] = "Not Evaluated";
                             $response['shipment_score'] = " N.A.";
-                            $overallGrade = "<br/><br/><br/>Un-<br/>satisfactory";
+                            $overallGrade = "Un-<br/>Satisfactory";
                         } else {
-                            $overallGrade = "<br/><br/><br/>Satisfactory";
+                            $overallGrade = "Satisfactory";
                             $response['shipment_score'] = round($response['shipment_score'], 2) . "%";
                         }
 
                         $labRes .= '<tr>
-                                <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                <td>' . $yrResult . '</td>
-                                <td>' . $response['no_of_participants'] . '</td>
-                                <td>' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
-                                <td>' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
-                                <td>' . (null !== $response['zscore'] ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
-                                <td style="color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
+                                <td style="text-align:center;font-weight:normal;">' . $response['sample_label'] . '</td>
+                                <td style="font-weight:normal;">' . $yrResult . '</td>
+                                <td style="font-weight:normal;">' . $response['no_of_participants'] . '</td>
+                                <td style="font-weight:normal;">' . number_format(round($response['median'], 2), 2, '.', '') . '</td>
+                                <td style="font-weight:normal;">' . number_format(round($response['sd'], 2), 2, '.', '') . '</td>
+                                <td style="font-weight:normal;">' . (null !== $response['zscore'] ? number_format(round($response['zscore'], 2), 2, '.', '') : '-') . '</td>
+                                <td style="font-weight:normal;color:' . $txtcolor . ';">' . $response['grade'] . '</td>';
                         if ($key == 0) {
-                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br>' . $overallGrade . '</td>';
+                            $labRes .= '<td style="color:' . $color . ';vertical-align: middle;" rowspan="' . $rowspan . '"><br><br><br>' . $overallGrade . '</td>';
                         }
                         $labRes .= '</tr>';
                     }
@@ -339,9 +269,9 @@ if (!empty($resultArray['shipment'])) {
                         }
                         $labRes .= '<tr>
                                         <td style="text-align:center;">' . $response['sample_label'] . '</td>
-                                        <td>' . $yrResult . '</td>
-                                        <!-- <td>' . $response['no_of_participants'] . '</td> -->
-                                        <td>Not Graded</td>
+                                        <td style="font-weight:normal;">' . $yrResult . '</td>
+                                        <!-- <td style="font-weight:normal;">' . $response['no_of_participants'] . '</td> -->
+                                        <td style="font-weight:normal;">Not Graded</td>
                                     </tr>';
                     }
 
@@ -350,7 +280,7 @@ if (!empty($resultArray['shipment'])) {
                     if (isset($attributes['vl_assay']) && $attributes['vl_assay'] == 6) {
                         $labRes .= " - " . $attributes['other_assay'];
                     }
-                    $labRes .= ' platform was not analyzed or graded</h5>';
+                    // $labRes .= ' platform was not analyzed or graded</h5>';
                 }
 
                 //if(isset($attributes['vl_assay']) && $attributes['vl_assay']==6){
@@ -358,9 +288,9 @@ if (!empty($resultArray['shipment'])) {
                 //}
 
                 // $labRes .= '<br><small>0.00 indicated Target Not Detected (TND) results and NA for Not Applicable</small>';
-
                 $pdf->SetLeftMargin(15);
                 $pdf->writeHTML($labRes, true, false, true, false, '');
+
                 $participantPerformance['valid_responses'] = ($participantPerformance['valid_responses'] > 0) ? $participantPerformance['valid_responses'] : 1;
                 $participantPerformance['total_shipped'] = ($participantPerformance['total_shipped'] > 0) ? $participantPerformance['total_shipped'] : 1;
                 $labTxt = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores:</span><br/>
@@ -371,9 +301,9 @@ if (!empty($resultArray['shipment'])) {
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Response Rate</td>
                     </tr>
                     <tr>
-                        <td style="text-align:center;width:40%;">' . round($participantPerformance['total_shipped']) . '</td>
-                        <td style="text-align:center;width:40%;">' . round($participantPerformance['total_responses']) . '</td>
-                        <td style="text-align:center;width:20%;">' . (round($participantPerformance['total_responses'] / $participantPerformance['total_shipped'], 2) * 100) . '%</td>
+                        <td style="text-align:center;width:40%;font-weight:normal;">' . round($participantPerformance['total_shipped']) . '</td>
+                        <td style="text-align:center;width:40%;font-weight:normal;">' . round($participantPerformance['total_responses']) . '</td>
+                        <td style="text-align:center;width:20%;font-weight:normal;">' . (round($participantPerformance['total_responses'] / $participantPerformance['total_shipped'], 2) * 100) . '%</td>
                     </tr>
                     <tr>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total Number of Participants submitted results</td>
@@ -381,12 +311,30 @@ if (!empty($resultArray['shipment'])) {
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Pass Rate</td>
                     </tr>
                     <tr>
-                        <td style="text-align:center;width:40%;">' . round($participantPerformance['valid_responses']) . '</td>
-                        <td style="text-align:center;width:40%;">' . round($participantPerformance['number_passed']) . '</td>
-                        <td style="text-align:center;width:20%;">' . (round($participantPerformance['number_passed'] / $participantPerformance['valid_responses'], 2) * 100) . '%</td>
+                        <td style="text-align:center;width:40%;font-weight:normal;">' . round($participantPerformance['valid_responses']) . '</td>
+                        <td style="text-align:center;width:40%;font-weight:normal;">' . round($participantPerformance['number_passed']) . '</td>
+                        <td style="text-align:center;width:20%;font-weight:normal;">' . (round($participantPerformance['number_passed'] / $participantPerformance['valid_responses'], 2) * 100) . '%</td>
                     </tr>
                 </table>';
                 $pdf->writeHTML($labTxt, true, false, true, false, '');
+
+                // Equipmet response data
+                $equipmentTxt = '<span style="font-weight:bold;font-size:12px;">Laboratory Participation By Equipment Used:</span><br/>
+                <table border="1" style="font-size:12px;width:100%;">
+                    <tr>
+                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Equipment</th>
+                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:40%;">Total No# of labs <br/> Participating</th>
+                        <th style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:20%;">Percentage</th>
+                    </tr>';
+                foreach ($equipmentsReports as $equipment) {
+                    $equipmentTxt .= '<tr>
+                            <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['assay_name'] . '</td>
+                            <td style="text-align:left;width:40%;font-weight:normal;">' . $equipment['total_participated'] . '</td>
+                            <td style="text-align:left;width:20%;font-weight:normal;">' . $equipment['average_result'] . '</td>
+                        </tr>';
+                }
+                $equipmentTxt .= '</table><br/>';
+                $pdf->writeHTML($equipmentTxt, true, false, true, false, '');
 
                 $zscorehtml = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria):</span><br/>';
                 $zscorehtml .= '<table border="1" style="text-align:center;width:650px;font-size:11px;">   ';
