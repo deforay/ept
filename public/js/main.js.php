@@ -35,6 +35,43 @@
         });
 
     });
+
+    // Shared per-column DataTables search binder.
+    // Debounces typing (1s), fires immediately on Enter, flushes on blur/change,
+    // and skips redundant requests when the value hasn't changed.
+    window.bindColSearch = function (tableSelector, onSearch, opts) {
+        opts = opts || {};
+        var delay = typeof opts.delay === 'number' ? opts.delay : 1000;
+        var inputSelector = opts.inputSelector || '.col-search';
+        var $head = $(tableSelector + ' thead');
+        if (!$head.length) return;
+        var timer = null;
+        var last = {};
+        function apply($input) {
+            var col = parseInt($input.data('col'), 10);
+            var val = $input.val();
+            if (last[col] === val) return;
+            last[col] = val;
+            onSearch(val, col);
+        }
+        var ns = '.colsearch_' + tableSelector.replace(/[^a-z0-9]/gi, '_');
+        $head.off('keyup' + ns + ' change' + ns + ' blur' + ns)
+            .on('keyup' + ns, inputSelector, function (e) {
+                var $input = $(this);
+                clearTimeout(timer);
+                if (e.keyCode === 13) { apply($input); return; }
+                timer = setTimeout(function () { apply($input); }, delay);
+            })
+            .on('change' + ns + ' blur' + ns, inputSelector, function () {
+                clearTimeout(timer);
+                apply($(this));
+            });
+        $head.find(inputSelector).off('click' + ns + ' mousedown' + ns + ' focus' + ns)
+            .on('click' + ns + ' mousedown' + ns + ' focus' + ns, function (e) {
+                e.stopPropagation();
+            });
+    };
+
     $.extend(true, $.fn.dataTable.defaults, {
         "language": {
             "lengthMenu": "_MENU_ <?= $this->jsTranslate("records per page"); ?>",

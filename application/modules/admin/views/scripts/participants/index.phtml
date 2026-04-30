@@ -212,23 +212,8 @@
             oTable.fnDraw();
         });
 
-        // Per-column search inputs — debounced so we don't fire a request on every keystroke
-        var colSearchTimer = null;
-        $('#participantsTable thead').on('keyup change', 'input.col-search', function () {
-            var $input = $(this);
-            var colIdx = parseInt($input.data('col'), 10);
-            var value = $input.val();
-            clearTimeout(colSearchTimer);
-            colSearchTimer = setTimeout(function () {
-                // fnFilter(value, columnIndex) — sends sSearch_<colIdx> to the server
-                oTable.fnFilter(value, colIdx);
-            }, 400);
-        });
-        // Don't let interactions in the column-search inputs trigger sort on the header.
-        // DataTables binds its sort listener directly on <th>, so delegation on <thead>
-        // would run AFTER the sort fires — bind straight on the inputs instead.
-        $('#participantsTable thead input.col-search').on('click mousedown focus', function (e) {
-            e.stopPropagation();
+        bindColSearch('#participantsTable', function (value, colIdx) {
+            oTable.fnFilter(value, colIdx);
         });
 
         // Data Managers column — expand/collapse child row with on-demand AJAX fetch

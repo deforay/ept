@@ -348,26 +348,11 @@
 			},
 		});
 
-		// Per-column search inputs — debounced so we don't fire a request on every keystroke.
-		// Re-bind each time drawTable() runs because bDestroy:true can reset header handlers.
-		var colSearchTimer = null;
-		$('#shipmentTable thead').off('keyup.colsearch change.colsearch').on('keyup.colsearch change.colsearch', '.col-search', function () {
-			var $el = $(this);
-			var colIdx = parseInt($el.data('col'), 10);
-			var value = $el.val();
-			clearTimeout(colSearchTimer);
-			colSearchTimer = setTimeout(function () {
-				if (oTable) {
-					oTable.fnFilter(value, colIdx);
-				}
-			}, 400);
+		bindColSearch('#shipmentTable', function (value, colIdx) {
+			if (oTable) {
+				oTable.fnFilter(value, colIdx);
+			}
 		});
-		// DataTables binds sort directly on <th>, so delegation from <thead> would run
-		// AFTER the sort fires — bind straight on the inputs.
-		$('#shipmentTable thead .col-search').off('click.colsearch mousedown.colsearch focus.colsearch')
-			.on('click.colsearch mousedown.colsearch focus.colsearch', function (e) {
-				e.stopPropagation();
-			});
 	};
 
 	function generateShipmentParticipantList(shipmentId, schemeType) {
