@@ -321,7 +321,7 @@ if ($resultArray['shipment'] != "") {
                     'xAxis' => ['labels' => $testkitname, 'labelAngle' => 25],
                     'datasets' => [
                         ['data' => $passedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Satisfactory Score'), 'colors' => ['#22C55E']],
-                        ['data' => $failedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unsatisfactory Score'), 'colors' => ['#3B82F6']],
+                        ['data' => $failedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unsatisfactory Score'), 'colors' => ['#B91C1C']],
                     ],
                     'legend' => ['position' => 'bottom'],
                 ], $outputDir);
@@ -399,16 +399,20 @@ if ($resultArray['shipment'] != "") {
                     ],
                     'legend' => ['position' => 'bottom'],
                 ], $outputDir);
-                // Pie chart below bar chart
-                $barDisplayH = (700 / 1400) * $chartW;
+                // Pie chart below bar chart. Bar canvas is 1400x600 after the
+                // renderer's min-width upscale (700x300 -> 1400x600).
+                $barDisplayH = (600 / 1400) * $chartW;
                 $hrY = $barY + $barDisplayH + 3;
                 $pdf->Line(PDF_MARGIN_LEFT, $hrY, $pdf->getPageWidth() - PDF_MARGIN_RIGHT, $hrY);
                 $pieY = $hrY + 3;
                 $pieW = $chartW * 0.6;
                 $pieX = PDF_MARGIN_LEFT + ($chartW - $pieW) / 2;
+                // Chart.js forces pie/doughnut canvases to 1:1 aspect, so the rendered
+                // PNG dimensions can differ from what we requested. Read them back.
+                [$pngW, $pngH] = getimagesize($performancePiechart);
+                $pieDisplayH = ($pngH / $pngW) * $pieW;
                 $pdf->Image($performancePiechart, $pieX, $pieY, $pieW, 0, '', '', '', false, 300);
-                $pieDisplayH = (800 / 1400) * $pieW + 20; // aspect ratio height + legend buffer
-                $pdf->SetY($pieY + $pieDisplayH + 3);
+                $pdf->SetY($pieY + $pieDisplayH + 4);
                 if (file_exists($performancePiechart)) {
                     unlink($performancePiechart);
                 }
