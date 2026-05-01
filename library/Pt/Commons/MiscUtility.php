@@ -140,14 +140,38 @@ final class Pt_Commons_MiscUtility
         return strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $input));
     }
 
+    /**
+     * Normalize a participant unique ID. Returns the slugified ID if it
+     * contains at least $minAlphanumeric letter/digit characters, else null.
+     */
+    public static function normalizeUniqueId(?string $input, int $minAlphanumeric = 3): ?string
+    {
+        if ($input === null || trim($input) === '') {
+            return null;
+        }
+        $slug = self::slugify($input);
+        if (strlen(preg_replace('/[^a-zA-Z0-9]/', '', $slug)) < $minAlphanumeric) {
+            return null;
+        }
+        return $slug;
+    }
+
     public static function generateFakeEmailId($uniqueId, $participantName)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+        $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
+
         $sanitizedUniqueId = self::sanitizeInput(self::cleanString($uniqueId));
         $sanitizedParticipantName = self::sanitizeInput(self::cleanString($participantName));
-        $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
-        return "{$sanitizedUniqueId}@$host";
+
+        $localPart = trim($sanitizedUniqueId ?: $sanitizedParticipantName, '_');
+
+        if ($localPart === '') {
+            throw new InvalidArgumentException('Cannot generate fake email: both unique ID and participant name are empty or contain no usable characters.');
+        }
+
+        return "{$localPart}@{$host}";
     }
 
     public static function randomHexColor(): string

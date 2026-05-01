@@ -64,6 +64,36 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
     }
 
+    public function quickCreateAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+        header('Content-Type: application/json');
+
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'POST required.']);
+            return;
+        }
+
+        $userService = new Application_Service_DataManagers();
+        $result = $userService->quickCreateDataManager($request->getPost());
+        if (!empty($result['error'])) {
+            http_response_code(422);
+            echo json_encode(['status' => 'error', 'message' => $result['error']]);
+            return;
+        }
+        echo json_encode([
+            'status' => 'success',
+            'dm' => [
+                'dm_id' => (int)$result['dm_id'],
+                'label' => $result['label'],
+            ],
+        ]);
+    }
+
     public function addAction()
     {
         $userService = new Application_Service_DataManagers();

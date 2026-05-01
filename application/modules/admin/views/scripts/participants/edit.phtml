@@ -5,14 +5,32 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
         $selectedResponse = ['id' => $row['dm_id'], 'text' => $row['first_name'] . ' ' . $row['last_name'] . ' ' . $row['institute'] . ' ' . $row['primary_email']];
     }
 }
+$directParticipantLogin = (isset($this->directParticipantLogin) && $this->directParticipantLogin == 'yes');
 ?>
 <style>
-    .tomselected {
-        display: none;
+    .shipping-address-section {
+        clear: both;
+        margin-left: 0;
+        margin-right: 0;
+        padding-top: 14px;
+        padding-bottom: 12px;
+        border-top: 1px solid #b8c4ca;
+        border-bottom: 1px solid #d4dde2;
+        background-color: #f8fafb;
+    }
+
+    .shipping-address-section .help {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .participant-form-divider,
+    .participant-form-actions,
+    .pt-login-dev {
+        clear: both;
     }
 </style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css" integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
 <style>
     .hide {
@@ -82,37 +100,27 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                 </div>
             </div>
 
-
-            <div class="form-group col-lg-12" style="clear:both !important;">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("Reset Password?"); ?></label>
-                <div class="col-lg-4">
-                    <select id="togglePasswordReset" class="form-control">
-                        <option value="no"><?= $this->translate->_("No"); ?></option>
-                        <option value="yes"><?= $this->translate->_("Yes"); ?></option>
-                    </select>
-                </div>
-            </div>
-
-
-            <div class="form-group col-lg-12" id="passwordGroup">
-                <div class="col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
-                    <div class="col-lg-8">
-                        <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword"
-                            class="form-control isPassword"
-                            title="<?= $this->translate->_("Please enter a valid password with minimum length of") . " " . ($this->passLength ?? 8); ?>"
-                            placeholder="<?= $this->translate->_("Please enter a password"); ?>" autocomplete="off">
+            <?php if ($directParticipantLogin) { ?>
+                <div class="form-group col-lg-12" id="passwordGroup" style="clear:both !important;">
+                    <div class="col-lg-6">
+                        <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
+                        <div class="col-lg-8">
+                            <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword"
+                                class="form-control isPassword"
+                                title="<?= $this->translate->_("Please enter a valid password with minimum length of") . " " . ($this->passLength ?? 8); ?>"
+                                placeholder="<?= $this->translate->_("Please enter a password"); ?>" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
+                        <div class="col-lg-8">
+                            <input type="password" id="confirmPassword" name="dmPassword"
+                                class="form-control confirmPassword" title="<?= $this->translate->_("Please repeat the same password"); ?>"
+                                placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
-                    <div class="col-lg-8">
-                        <input type="password" id="confirmPassword" name="dmPassword"
-                            class="form-control confirmPassword" title="<?= $this->translate->_("Please repeat the same password"); ?>"
-                            placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
-                    </div>
-                </div>
-            </div>
+            <?php } ?>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
@@ -132,6 +140,11 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                 </div>
             </div>
             <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
+
+                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" class="form-control" title="Please enter the Zip/Postal here" placeholder="Please enter the Zip/Postal here" value="<?php echo $this->participant['zip']; ?>" /></div>
+            </div>
+            <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("State/Province"); ?><span class="mandatory">*</span></label>
 
                 <div class="col-lg-8"><input type="text" id="state" name="state" size="50" maxlength="255" class="form-control isRequired" title="Please enter the state here" placeholder="Please enter the state/province here" value="<?php echo $this->participant['state']; ?>" /></div>
@@ -145,6 +158,17 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                 <label class="col-lg-4 control-label"><?= $this->translate->_("City"); ?></label>
 
                 <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="255" class="form-control" title="Please enter the city here" placeholder="Please enter the city here" value="<?php echo $this->participant['city']; ?>" /></div>
+            </div>
+            <div class="form-group col-lg-12 shipping-address-section">
+                <label class="col-lg-2 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
+
+                <div class="col-lg-10">
+                    <textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control" title="Please enter the shipping address here" placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea>
+                    <span class="help"><?= $this->translate->_("Ship-to address. Use this only if different from the physical address."); ?></span>
+                    <label class="checkbox-inline" style="padding-top: 8px;">
+                        <input type="checkbox" id="copyPhysicalAddress"> <?= $this->translate->_("Same as physical address"); ?>
+                    </label>
+                </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Region"); ?></label>
@@ -224,45 +248,6 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                     <input type="text" value="<?php echo $this->participant['pepfar_id'] ?? null ?>" name="pepfarID" id="pepfarID" class="form-control" placeholder="Enter the pepfar ID" title="Please enter the pepfar ID" />
                 </div>
             </div>
-            <hr style="border:1px solid #ccc;background: #ccc;width:90%;" />
-
-            <div class="form-group col-lg-12 pt-login-dev">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("Map to Existing Data Manager(s)"); ?></label>
-                <div class="col-lg-10">
-
-                    <select style="width:100%;" class="form-control" multiple="multiple" name="dataManager[]" id="dataManager" title="Please choose one or more PT Participant Logins" placeholder="Please choose one or more PT Participant Logins">
-                        <?php
-                        $dataManagers = explode(",", $this->participant['data_manager']);
-                        foreach ($this->dataManagers as $dm) {
-                            $dmName = [];
-                            if (!empty(trim($dm['first_name'] . " " . $dm['last_name']))) {
-                                $dmName[] = trim($dm['first_name'] . " " . $dm['last_name']);
-                            }
-                            if (!empty(trim($dm['institute']))) {
-                                $dmName[] = trim($dm['institute']);
-                            }
-                            if (!empty(trim($dm['primary_email']))) {
-                                $dmName[] = trim($dm['primary_email']);
-                            }
-                        ?>
-                            <option value="<?php echo $dm['dm_id']; ?>" <?php echo (in_array($dm['dm_id'], $dataManagers)) ? "selected='selected'" : "" ?>><?php echo implode(", ", $dmName); ?></option>
-                        <?php
-                        }
-                        ?>
-                    </select>
-
-                </div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
-
-                <div class="col-lg-8"><textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea></div>
-            </div>
-            <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
-
-                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" class="form-control" title="Please enter the Zip/Postal here" placeholder="Please enter the Zip/Postal here" value="<?php echo $this->participant['zip']; ?>" /></div>
-            </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Cell/Mobile No."); ?></label>
 
@@ -335,10 +320,15 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
                 </div>
             </div>
 
-            </table>
+            <hr class="participant-form-divider" style="border:1px solid #ccc;background: #ccc;width:90%;" />
+
+            <div class="dml-form-group pt-login-dev" style="width:90%; margin:0 auto; clear:both;">
+                <?php echo $this->render('participants/_data-manager-dual-list.phtml'); ?>
+            </div>
+
             <br>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="col-lg-11" align="center">
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="col-lg-11 participant-form-actions" align="center">
                 <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
                 <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
@@ -347,7 +337,6 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
 </div>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/bootstrap-select.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/select2.min.js'); ?>"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/js/tom-select.complete.min.js" integrity="sha512-PLbucJiSkC5G/5kCLg/tz+fDvIqDQSB92CrLn0bypi2KUmTS6Iv4l1C/eSX7RrlczdSrqzL1KVUBfcnjk9wV+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
     var duplicated = false;
 
@@ -358,99 +347,41 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
         }); */
         checkIndividualParticipant();
 
-
-        // Hide and disable password fields by default
-        $('#passwordGroup').hide();
-        $('#dmPassword, #confirmPassword').prop('disabled', true);
-
-        // Toggle visibility when dropdown changes
-        $('#togglePasswordReset').on('change', function() {
-            const shouldShow = $(this).val() === 'yes';
-            $('#passwordGroup').toggle(shouldShow);
-            $('#dmPassword, #confirmPassword').prop('disabled', !shouldShow).val('');
+        $('#copyPhysicalAddress').on('change', function() {
+            if (this.checked) {
+                copyPhysicalAddressToShipping();
+            }
         });
-
+        $('#address, #city, #zip').on('input', function() {
+            if ($('#copyPhysicalAddress').is(':checked')) {
+                copyPhysicalAddressToShipping();
+            }
+        });
+        $('#country').on('change changed.bs.select', function() {
+            if ($('#copyPhysicalAddress').is(':checked')) {
+                copyPhysicalAddressToShipping();
+            }
+        });
 
         $('#enrolledProgram').selectpicker();
         // $('#country').selectpicker();
         $('#scheme').selectpicker();
-
-        let _tables = ['data_manager'];
-        let _elements = ['dataManager'];
-        let _returnId = ['dm_id'];
-        let _fieldNames = [
-            ['first_name', 'last_name', 'institute', 'primary_email']
-        ];
-        let _concat = [
-            ['first_name', 'last_name', 'institute', 'primary_email']
-        ];
-
-        // Initialize Tom Select for each element
-        _elements.forEach(function(elementId, i) {
-            var selectElement = document.getElementById(elementId);
-            if (!selectElement) return;
-
-            // Extract pre-selected options from the existing select element
-            var preloadedOptions = [];
-            var preloadedValues = [];
-            Array.from(selectElement.options).forEach(function(option) {
-                if (option.value) {
-                    preloadedOptions.push({
-                        id: option.value,
-                        text: option.text
-                    });
-                    if (option.selected) {
-                        preloadedValues.push(option.value);
-                    }
-                }
-            });
-
-            var tomSelectInstance = new TomSelect('#' + elementId, {
-                plugins: ['remove_button'],
-                valueField: 'id',
-                labelField: 'text',
-                searchField: 'text',
-                placeholder: "<?= $this->translate->_("Choose multiple options"); ?>",
-                loadThrottle: 250,
-                preload: false,
-                allowEmptyOption: true,
-                options: preloadedOptions, // ✅ Add preloaded options
-                items: preloadedValues, // ✅ Set pre-selected values
-                load: function(query, callback) {
-                    var url = "<?php echo $this->url(array('module' => 'reports', 'controller' => 'common', 'action' => 'get-ajax-drop-downs')); ?>";
-
-                    fetch(url + '?' + new URLSearchParams({
-                            tableName: _tables[i],
-                            returnId: _returnId[i],
-                            fieldNames: JSON.stringify(_fieldNames[i]),
-                            concat: JSON.stringify(_concat[i]),
-                            search: query,
-                            page: 1
-                        }))
-                        .then(response => response.json())
-                        .then(json => {
-                            callback(json.result || []);
-                        })
-                        .catch(() => {
-                            callback();
-                        });
-                },
-                render: {
-                    option: function(item, escape) {
-                        return '<div>' + escape(item.text) + '</div>';
-                    },
-                    item: function(item, escape) {
-                        return '<div>' + escape(item.text) + '</div>';
-                    }
-                }
-            });
-
-            // Store instances for later use
-            if (elementId === 'dataManager') {
-                dataManagerSelect = tomSelectInstance;
-            }
-        });
     });
+
+    function copyPhysicalAddressToShipping() {
+        const addressParts = [
+            $('#address').val(),
+            $('#city').val(),
+            $('#zip').val(),
+            $('#country option:selected').text()
+        ].map(function(value) {
+            return $.trim(value || '');
+        }).filter(function(value) {
+            return value !== '';
+        });
+
+        $('#shippingAddress').val(addressParts.join("\n"));
+    }
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
@@ -472,14 +403,11 @@ if (isset($this->selectedPtLogins) && !empty($this->selectedPtLogins)) {
     }
 
     function validateNow() {
-        if ($('#dmPassword').val() == '' && $('#dataManager').val() == '') {
-            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please choose either to log in with your PT account or enter your email ID and password."); ?>");
+        if (typeof dmlValidateRequired === 'function' && !dmlValidateRequired()) {
+            alert("<?= Pt_Commons_TranslateUtility::jsTranslate("Please choose at least one Data Manager."); ?>");
             return false;
         }
         $(".bootstrap-select").removeClass('isRequired');
-        //checkDuplicate('participants', 'unique_identifier', $("#pid"), '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')
-        if ($('.direct-participant-div').hasClass('hide'))
-            $('#dataManager').val('').trigger('change');
         flag = deforayValidator.init({
             formId: 'editParticipantForm'
         });

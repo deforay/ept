@@ -15,6 +15,74 @@ class Application_Service_DataManagers
         return $this->datamanagersDb->addUser($params);
     }
 
+    /**
+     * Minimal Data Manager creation used by the inline picker on the
+     * participant add/edit form. Only email + password are required.
+     *
+     * @return array{dm_id?: int, label?: string, error?: string}
+     */
+    public function quickCreateDataManager($params)
+    {
+        $email = isset($params['email']) ? trim((string)$params['email']) : '';
+        $password = isset($params['password']) ? (string)$params['password'] : '';
+        $firstName = isset($params['first_name']) ? trim((string)$params['first_name']) : '';
+        $lastName = isset($params['last_name']) ? trim((string)$params['last_name']) : '';
+        $institute = isset($params['institute']) ? trim((string)$params['institute']) : '';
+
+        $email = Pt_Commons_MiscUtility::sanitizeAndValidateEmail($email);
+        if (!$email) {
+            return ['error' => 'A valid email address is required.'];
+        }
+
+        $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+        $minLen = (int)$globalConfigDb->getValue('participant_login_password_length');
+        if ($minLen <= 0) {
+            $minLen = 8;
+        }
+        if (strlen($password) < $minLen) {
+            return ['error' => 'Password must be at least ' . $minLen . ' characters.'];
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $existing = $db->fetchRow($db->select()->from('data_manager')->where('LOWER(primary_email) = ?', strtolower($email)));
+        if ($existing) {
+            return ['error' => 'A Data Manager with this email already exists.'];
+        }
+
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $data = [
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'institute' => $institute,
+            'primary_email' => $email,
+            'password' => Application_Service_Common::passwordHash($password),
+            'data_manager_type' => 'manager',
+            'status' => 'active',
+            'force_password_reset' => 1,
+            'created_by' => $authNameSpace->admin_id ?? null,
+            'created_on' => new Zend_Db_Expr('now()'),
+        ];
+        $db->insert('data_manager', $data);
+        $dmId = (int)$db->lastInsertId();
+        if ($dmId <= 0) {
+            return ['error' => 'Failed to create Data Manager.'];
+        }
+
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Quick-created Data Manager - {$email}", "participants");
+
+        $labelParts = [];
+        $name = trim($firstName . ' ' . $lastName);
+        if ($name !== '') $labelParts[] = $name;
+        if ($institute !== '') $labelParts[] = $institute;
+        $labelParts[] = $email;
+
+        return [
+            'dm_id' => $dmId,
+            'label' => implode(', ', $labelParts),
+        ];
+    }
+
     public function updateUser($params)
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');

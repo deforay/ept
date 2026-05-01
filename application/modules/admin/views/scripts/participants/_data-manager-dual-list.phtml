@@ -1,0 +1,328 @@
+<?php
+/**
+ * Dual-list Data Manager picker for participant add/edit.
+ * Expects:
+ *   $this->dataManagers                 (array) all candidate DMs
+ *   $this->participant['data_manager']  (csv of selected dm_ids; edit only)
+ *   $this->directParticipantLogin       (string) 'yes' / 'no'
+ *   $this->passLength                   (int) min password length
+ */
+$selectedDmIds = [];
+if (isset($this->participant['data_manager']) && $this->participant['data_manager'] !== '') {
+    foreach (explode(',', $this->participant['data_manager']) as $sid) {
+        $sid = trim($sid);
+        if ($sid !== '') {
+            $selectedDmIds[(int)$sid] = true;
+        }
+    }
+}
+$dmItems = [];
+if (!empty($this->dataManagers)) {
+    foreach ($this->dataManagers as $dm) {
+        $first = (string)($dm['first_name'] ?? '');
+        $last  = (string)($dm['last_name'] ?? '');
+        $institute = (string)($dm['institute'] ?? '');
+        $email = (string)($dm['primary_email'] ?? '');
+        $parts = [];
+        $name = trim($first . ' ' . $last);
+        if ($name !== '') $parts[] = $name;
+        if ($institute !== '') $parts[] = $institute;
+        if ($email !== '') $parts[] = $email;
+        $dmItems[] = [
+            'id'       => (int)$dm['dm_id'],
+            'label'    => implode(', ', $parts),
+            'selected' => isset($selectedDmIds[(int)$dm['dm_id']]),
+        ];
+    }
+}
+$directParticipantLoginYes = (isset($this->directParticipantLogin) && $this->directParticipantLogin == 'yes');
+$dmlPassLen = (int)($this->passLength ?? 8);
+if ($dmlPassLen <= 0) {
+    $dmlPassLen = 8;
+}
+?>
+<style>
+    /* Self-contained dualbox section. Reset all inherited form-horizontal weirdness. */
+    .form-horizontal .dml-form-group { clear: both; float: none; width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
+    .dml-section { display: block; clear: both; width: 100%; margin: 20px 0 0 0; box-sizing: border-box; }
+    .dml-section *, .dml-section *::before, .dml-section *::after { box-sizing: border-box; }
+    .dml-section .dml-header { display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px 0; }
+    .dml-section .dml-header label { margin: 0; font-weight: bold; font-size: 14px; }
+    .dml-section .dml-hint { text-align: center; color: #3a87ad; padding: 6px 0; font-size: 13px; }
+    .dml-section .dml-actions { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; }
+    .dml-section .dml-dual { display: flex; gap: 16px; align-items: stretch; width: 100%; min-width: 0; }
+    .dml-section .dml-pane { flex: 1 1 0; min-width: 0; max-width: 50%; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; }
+    .dml-section .dml-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
+    .dml-section .dml-pane-header input { width: 100%; }
+    .dml-section .dml-pane-scroll { position: relative; height: 280px; overflow-y: auto; overflow-x: hidden; background: #fff; }
+    .dml-section .dml-row { padding: 6px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dml-section .dml-row:hover { background: #337ab7; color: #fff; }
+    .dml-section .dml-pane-footer { padding: 8px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .dml-section .dml-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
+    .dml-section .dml-pane.dml-error { border-color: #d9534f; box-shadow: 0 0 0 2px rgba(217,83,79,0.35); }
+    .dml-section .dml-pane.dml-error .dml-pane-footer { background: #d9534f; }
+    #dmlCreateModal { z-index: 10600; }
+    .modal-backdrop.dml-create-backdrop { z-index: 10500; }
+</style>
+
+<div class="dml-section" id="dmlSection">
+    <div class="dml-header">
+        <label>
+            <?php if ($directParticipantLoginYes) { ?>
+                <?= $this->translate->_("Map additional Data Manager(s) for this participant?"); ?>
+            <?php } else { ?>
+                <?= $this->translate->_("Map to Existing Data Manager(s)"); ?>
+                <span class="mandatory">*</span>
+            <?php } ?>
+        </label>
+        <a href="javascript:void(0);" id="dml-create-btn" class="btn btn-xs btn-success">
+            <i class="icon-plus icon-white"></i>&nbsp;<?= $this->translate->_("Create New Data Manager"); ?>
+        </a>
+    </div>
+    <div class="dml-hint"><?= $this->translate->_("Click on a Data Manager to move them between the two sections"); ?></div>
+    <div class="dml-actions">
+        <a href="#" id="dml-select-all" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
+        <a href="#" id="dml-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+    </div>
+    <div class="dml-dual">
+        <div class="dml-pane" data-side="left">
+            <div class="dml-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Filter Data Managers'); ?>"></div>
+            <div class="dml-pane-scroll"></div>
+            <div class="dml-pane-footer"><?= $this->translate->_('Available Data Managers'); ?> (<span class="dml-count">0</span>)</div>
+        </div>
+        <div class="dml-arrows">&#8646;</div>
+        <div class="dml-pane" data-side="right">
+            <div class="dml-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Filter Selected'); ?>"></div>
+            <div class="dml-pane-scroll"></div>
+            <div class="dml-pane-footer"><?= $this->translate->_('Selected Data Managers'); ?> (<span class="dml-count">0</span>)</div>
+        </div>
+    </div>
+    <div id="dml-hidden-inputs"></div>
+</div>
+
+<!-- Create New Data Manager modal -->
+<div class="modal fade" id="dmlCreateModal" tabindex="-1" role="dialog" aria-labelledby="dmlCreateModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="dmlCreateModalLabel"><?= $this->translate->_("Create New Data Manager"); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><?= $this->translate->_("E-mail"); ?> <span class="mandatory">*</span></label>
+                    <input type="email" id="dmlNewEmail" class="form-control" placeholder="<?= $this->htmlTranslate('Please enter the email address here'); ?>" />
+                </div>
+                <div class="form-group">
+                    <label><?= $this->translate->_("Password"); ?> <span class="mandatory">*</span></label>
+                    <input type="password" id="dmlNewPassword" class="form-control" pattern=".{<?= $dmlPassLen; ?>,}" title="<?= $this->htmlTranslate('Please enter a valid password with a minimum length of') . ' ' . $dmlPassLen; ?>" placeholder="<?= $this->htmlTranslate('Please enter a password'); ?>" autocomplete="new-password" />
+                </div>
+                <div class="form-group">
+                    <label><?= $this->translate->_("First Name / Lab Name"); ?></label>
+                    <input type="text" id="dmlNewFirstName" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant first/lab name'); ?>" />
+                </div>
+                <div class="form-group">
+                    <label><?= $this->translate->_("Last Name"); ?></label>
+                    <input type="text" id="dmlNewLastName" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant last name'); ?>" />
+                </div>
+                <div class="form-group">
+                    <label><?= $this->translate->_("Institute"); ?></label>
+                    <input type="text" id="dmlNewInstitute" class="form-control" placeholder="<?= $this->htmlTranslate('Optional — defaults to participant institute'); ?>" />
+                </div>
+                <div id="dmlCreateError" class="alert alert-danger" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?= $this->translate->_("Cancel"); ?></button>
+                <button type="button" id="dmlCreateSave" class="btn btn-primary"><?= $this->translate->_("Create and Add"); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var DML_ITEMS = <?= json_encode($dmItems, JSON_UNESCAPED_UNICODE); ?>;
+    var DML_DIRECT_PARTICIPANT_LOGIN = <?= $directParticipantLoginYes ? 'true' : 'false'; ?>;
+    var DML_CREATE_URL = "<?php echo $this->url(['module' => 'admin', 'controller' => 'data-managers', 'action' => 'quick-create']); ?>";
+
+    var DataManagerDualList = (function () {
+        var state = { left: [], right: [] };
+        var panes = {};
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+            });
+        }
+
+        function initPane(sideKey, paneEl) {
+            var $pane = $(paneEl);
+            var pane = {
+                sideKey: sideKey,
+                $scroll: $pane.find('.dml-pane-scroll'),
+                $search: $pane.find('.dml-pane-header input'),
+                $count: $pane.find('.dml-count'),
+                filter: ''
+            };
+            pane.$search.on('input', function () { pane.filter = pane.$search.val().toLowerCase(); render(pane); });
+            pane.$scroll.on('click', '.dml-row', function () { moveItem(pane.sideKey, $(this).attr('data-id')); });
+            panes[sideKey] = pane;
+        }
+
+        function filteredItems(pane) {
+            var src = state[pane.sideKey];
+            if (!pane.filter) return src;
+            var f = pane.filter;
+            return src.filter(function (it) { return it._lc.indexOf(f) !== -1; });
+        }
+
+        function render(pane) {
+            var items = filteredItems(pane);
+            var html = '';
+            for (var i = 0; i < items.length; i++) {
+                html += '<div class="dml-row" data-id="' + escapeHtml(items[i].id) + '">' + escapeHtml(items[i].label) + '</div>';
+            }
+            pane.$scroll.html(html);
+            pane.$count.text(items.length);
+        }
+
+        function moveItem(fromSide, id) {
+            var toSide = fromSide === 'left' ? 'right' : 'left';
+            var arr = state[fromSide];
+            for (var i = 0; i < arr.length; i++) {
+                if (String(arr[i].id) === String(id)) { state[toSide].push(arr.splice(i, 1)[0]); break; }
+            }
+            renderAll();
+        }
+
+        function renderAll() { render(panes.left); render(panes.right); }
+
+        function load(items) {
+            state.left = []; state.right = [];
+            items.forEach(function (it) {
+                it._lc = String(it.label).toLowerCase();
+                if (it.selected) state.right.push(it); else state.left.push(it);
+            });
+            renderAll();
+        }
+
+        function addAndSelect(item) {
+            item._lc = String(item.label).toLowerCase();
+            state.right.push(item);
+            renderAll();
+        }
+
+        function selectAll() {
+            var visible = filteredItems(panes.left);
+            var visibleIds = {};
+            visible.forEach(function (it) { visibleIds[it.id] = true; });
+            var keep = [];
+            state.left.forEach(function (it) { if (visibleIds[it.id]) state.right.push(it); else keep.push(it); });
+            state.left = keep;
+            renderAll();
+        }
+
+        function deselectAll() {
+            var visible = filteredItems(panes.right);
+            var visibleIds = {};
+            visible.forEach(function (it) { visibleIds[it.id] = true; });
+            var keep = [];
+            state.right.forEach(function (it) { if (visibleIds[it.id]) state.left.push(it); else keep.push(it); });
+            state.right = keep;
+            renderAll();
+        }
+
+        function getSelectedIds() {
+            return state.right.map(function (it) { return it.id; });
+        }
+
+        return { init: initPane, load: load, addAndSelect: addAndSelect, selectAll: selectAll, deselectAll: deselectAll, getSelectedIds: getSelectedIds };
+    })();
+
+    function dmlInjectHiddenInputs() {
+        var ids = DataManagerDualList.getSelectedIds();
+        var $h = $('#dml-hidden-inputs');
+        $h.empty();
+        ids.forEach(function (id) {
+            $h.append('<input type="hidden" name="dataManager[]" value="' + id + '" />');
+        });
+        return ids.length;
+    }
+
+    function dmlValidateRequired() {
+        var n = dmlInjectHiddenInputs();
+        if (DML_DIRECT_PARTICIPANT_LOGIN) return true;
+        if (n === 0) {
+            var $right = $('#dmlSection .dml-pane[data-side="right"]');
+            $right.addClass('dml-error');
+            try { $right[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+            setTimeout(function () { $right.removeClass('dml-error'); }, 2500);
+            return false;
+        }
+        return true;
+    }
+
+    $(document).ready(function () {
+        $('#dmlSection .dml-pane').each(function () {
+            DataManagerDualList.init($(this).attr('data-side'), this);
+        });
+        DataManagerDualList.load(DML_ITEMS);
+        $('#dml-select-all').on('click', function (e) { e.preventDefault(); DataManagerDualList.selectAll(); });
+        $('#dml-deselect-all').on('click', function (e) { e.preventDefault(); DataManagerDualList.deselectAll(); });
+
+        $('#dmlCreateModal').appendTo('body');
+        $('#dmlCreateModal').on('shown.bs.modal', function () {
+            $('.modal-backdrop').last().addClass('dml-create-backdrop');
+            $('#dmlNewEmail').trigger('focus');
+        });
+
+        $('#dml-create-btn').on('click', function () {
+            $('#dmlCreateError').hide().text('');
+            $('#dmlNewEmail').val('');
+            $('#dmlNewPassword').val('');
+            $('#dmlNewFirstName').val($('#pfname').val() || '');
+            $('#dmlNewLastName').val($('#plname').val() || '');
+            $('#dmlNewInstitute').val($('#instituteName').val() || '');
+            $('#dmlCreateModal').modal('show');
+        });
+
+        $('#dmlCreateSave').on('click', function () {
+            var email = $.trim($('#dmlNewEmail').val());
+            var password = $('#dmlNewPassword').val();
+            var firstName = $.trim($('#dmlNewFirstName').val());
+            var lastName = $.trim($('#dmlNewLastName').val());
+            var institute = $.trim($('#dmlNewInstitute').val());
+
+            if (!email || !password) {
+                $('#dmlCreateError').text("<?= $this->jsTranslate('Email and password are required.'); ?>").show();
+                return;
+            }
+            var minLen = <?= $dmlPassLen; ?>;
+            if (password.length < minLen) {
+                $('#dmlCreateError').text("<?= $this->jsTranslate('Password must be at least'); ?> " + minLen + " <?= $this->jsTranslate('characters'); ?>").show();
+                return;
+            }
+
+            $.blockUI();
+            $.post(DML_CREATE_URL, {
+                email: email, password: password, first_name: firstName, last_name: lastName, institute: institute, format: 'json'
+            }).done(function (resp) {
+                if (resp && resp.status === 'success' && resp.dm) {
+                    DataManagerDualList.addAndSelect({
+                        id: parseInt(resp.dm.dm_id, 10),
+                        label: resp.dm.label,
+                        selected: true
+                    });
+                    $('#dmlCreateModal').modal('hide');
+                } else {
+                    $('#dmlCreateError').text((resp && resp.message) || "<?= $this->jsTranslate('Failed to create Data Manager.'); ?>").show();
+                }
+            }).fail(function (xhr) {
+                var msg = "<?= $this->jsTranslate('Failed to create Data Manager.'); ?>";
+                try { var j = JSON.parse(xhr.responseText); if (j && j.message) msg = j.message; } catch (e) { }
+                $('#dmlCreateError').text(msg).show();
+            }).always(function () {
+                $.unblockUI();
+            });
+        });
+    });
+</script>

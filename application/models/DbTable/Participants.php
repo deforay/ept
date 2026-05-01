@@ -277,6 +277,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function updateParticipant($params)
     {
+        $normalizedPid = MiscUtility::normalizeUniqueId($params['pid'] ?? null);
+        if ($normalizedPid === null) {
+            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — must contain at least 3 letters or numbers.");
+        }
+        $currentParticipantId = (int) ($params['participantId'] ?? 0);
+        $existing = $this->fetchRow(
+            $this->select()
+                ->where('unique_identifier = ?', $normalizedPid)
+                ->where('participant_id <> ?', $currentParticipantId)
+        );
+        if ($existing) {
+            throw new InvalidArgumentException("Participant ID '{$normalizedPid}' already exists for another participant.");
+        }
+        $params['pid'] = $normalizedPid;
+
         $firstName = isset($params['pfname']) && $params['pfname'] != '' ? $params['pfname'] : NULL;
         $lastName = isset($params['plname']) && $params['plname'] != '' ? $params['plname'] : NULL;
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -401,6 +416,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     public function addParticipant($params)
     {
+
+        $normalizedPid = MiscUtility::normalizeUniqueId($params['pid'] ?? null);
+        if ($normalizedPid === null) {
+            throw new InvalidArgumentException("Participant ID '" . ($params['pid'] ?? '') . "' is invalid — must contain at least 3 letters or numbers.");
+        }
+        $existing = $this->fetchRow($this->select()->where('unique_identifier = ?', $normalizedPid));
+        if ($existing) {
+            throw new InvalidArgumentException("Participant ID '{$normalizedPid}' already exists for another participant.");
+        }
+        $params['pid'] = $normalizedPid;
 
         $globalDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $globalDb->getValue('participant_login_prefix');
@@ -1637,7 +1662,18 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 // Clean and prepare data
                 $row['R'] = MiscUtility::sanitizeAndValidateEmail($row['R'] ?? '');
                 $row['T'] = MiscUtility::sanitizeAndValidateEmail($row['T'] ?? '');
-                $row['B'] = empty($row['B']) ? "PT-" . strtoupper(MiscUtility::generateRandomString(5)) : MiscUtility::slugify($row['B']);
+
+                if (empty($row['B'])) {
+                    $row['B'] = "PT-" . strtoupper(MiscUtility::generateRandomString(5));
+                } else {
+                    $rawUniqueId = $row['B'];
+                    $normalized = MiscUtility::normalizeUniqueId($rawUniqueId);
+                    if ($normalized === null) {
+                        $this->addError($response, $row, $i, "Unique ID '{$rawUniqueId}' is invalid — must contain at least 3 letters or numbers.");
+                        continue;
+                    }
+                    $row['B'] = $normalized;
+                }
 
                 // Handle email
                 $originalEmail = $row['R'] ?? null;
@@ -1995,10 +2031,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         for ($i = 2; $i <= count($sheetData); $i++) {
             if (!empty($sheetData[$i]['B'])) {
                 $cleanId = MiscUtility::slugify($sheetData[$i]['B']);
-                if (empty($cleanId)) {
-                    $cleanId = "PT-" . strtoupper(MiscUtility::generateRandomString(5));
+                if (!empty($cleanId)) {
+                    $uniqueIds[] = $cleanId;
                 }
-                $uniqueIds[] = $cleanId;
             }
 
             $email = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
