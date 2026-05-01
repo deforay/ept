@@ -303,7 +303,7 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
                 copyPhysicalAddressToShipping();
             }
         });
-        $('#address, #city, #zip').on('input', function() {
+        $('#address, #city, #state, #district, #zip').on('input', function() {
             if ($('#copyPhysicalAddress').is(':checked')) {
                 copyPhysicalAddressToShipping();
             }
@@ -320,6 +320,8 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
         const addressParts = [
             $('#address').val(),
             $('#city').val(),
+            $('#state').val(),
+            $('#district').val(),
             $('#zip').val(),
             $('#country option:selected').text()
         ].map(function(value) {

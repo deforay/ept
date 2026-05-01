@@ -352,7 +352,7 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 copyPhysicalAddressToShipping();
             }
         });
-        $('#address, #city, #zip').on('input', function() {
+        $('#address, #city, #state, #district, #zip').on('input', function() {
             if ($('#copyPhysicalAddress').is(':checked')) {
                 copyPhysicalAddressToShipping();
             }
@@ -372,6 +372,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
         const addressParts = [
             $('#address').val(),
             $('#city').val(),
+            $('#state').val(),
+            $('#district').val(),
             $('#zip').val(),
             $('#country option:selected').text()
         ].map(function(value) {
