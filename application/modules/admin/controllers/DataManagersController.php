@@ -21,6 +21,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-participants-names', 'html')
             ->addActionContext('reset-password', 'html')
+            ->addActionContext('change-primary-email', 'html')
             ->addActionContext('save-password', 'html')
             ->addActionContext('check-dm-duplicate', 'html')
             ->addActionContext('export-ptcc', 'html')
@@ -176,6 +177,20 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
         $this->view->loginUrl = rtrim((string) $conf->domain, "/") . '/auth/login';
+    }
+
+    public function changePrimaryEmailAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $userService = new Application_Service_DataManagers();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $this->view->result = $userService->changePrimaryEmailFromAdmin($request->getPost());
+        } elseif ($this->hasParam('id')) {
+            $userId = (int) $this->_getParam('id');
+            $this->view->user = $userService->getUserInfoBySystemId($userId);
+        }
     }
 
     /* public function savePasswordAction()

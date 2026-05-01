@@ -248,25 +248,24 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-participant-row" data-dm-id="' . (int)$aRow['dm_id'] . '"><i class="icon-user"></i> ' . $pLabel . '</a>';
             }
 
-            if (isset($parameters['from']) && $parameters['from'] == 'participant') {
-                $edit = '';
-            } elseif (isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc') {
-                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '/ptcc/1" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $translator->_("Edit") . '</a>';
-            } else {
-                $edit = '<a href="/admin/data-managers/edit/id/' . $aRow['dm_id'] . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> ' . $translator->_("Edit") . '</a>';
+            $fromParticipant = isset($parameters['from']) && $parameters['from'] == 'participant';
+            $isPtcc = isset($aRow['data_manager_type']) && $aRow['data_manager_type'] == 'ptcc';
+            $urlPrefix = $fromParticipant ? '' : '/admin';
+            $editUrl = '/admin/data-managers/edit/id/' . (int)$aRow['dm_id'] . ($isPtcc ? '/ptcc/1' : '');
+            $resetUrl = $urlPrefix . '/data-managers/reset-password/id/' . (int)$aRow['dm_id'];
+            $changeEmailUrl = $urlPrefix . '/data-managers/change-primary-email/id/' . (int)$aRow['dm_id'];
+
+            $btnStyle = 'margin:1px;';
+            $actions = '';
+            if (!$fromParticipant) {
+                $actions .= '<a href="' . $editUrl . '" class="btn btn-warning btn-xs" style="' . $btnStyle . '"><i class="icon-pencil"></i> ' . $translator->_("Edit") . '</a>';
             }
-            if (isset($parameters['from']) && $parameters['from'] == 'participant') {
-                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $translator->_("Reset Password") . '</a>';
-            } else {
-                $passwordReset = '<a href="javascript:void(0);" class="btn btn-info btn-xs" onclick="layoutModal(\'/admin/data-managers/reset-password/id/' . $aRow['dm_id'] . '\',\'980\',\'500\');" >' . $translator->_("Reset Password") . '</a>';
+            $actions .= '<a href="javascript:void(0);" class="btn btn-info btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $resetUrl . '\',\'980\',\'500\');"><i class="icon-key"></i> ' . $translator->_("Reset Password") . '</a>';
+            $actions .= '<a href="javascript:void(0);" class="btn btn-default btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'' . $changeEmailUrl . '\',\'700\',\'520\');"><i class="icon-envelope"></i> ' . $translator->_("Change Email") . '</a>';
+            if (!$fromParticipant && !$isPtcc) {
+                $actions .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int)$aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_("Map Participants") . '</a>';
             }
-            $mapParticipants = '';
-            if ((!isset($parameters['from']) || $parameters['from'] != 'participant')
-                && (!isset($aRow['data_manager_type']) || $aRow['data_manager_type'] != 'ptcc')
-            ) {
-                $mapParticipants = ' <a href="javascript:void(0);" class="btn btn-success btn-xs" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . $aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_("Map Participants") . '</a>';
-            }
-            $row[] = $edit . $passwordReset . $mapParticipants;
+            $row[] = $actions;
 
             $output['aaData'][] = $row;
         }
@@ -1058,6 +1057,55 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function setStatusByEmail($status, $email)
     {
         return $this->update(['status' => $status], "primary_email = '$email'");
+    }
+
+    /**
+     * Admin-driven primary email change. No verification email is sent — the
+     * admin has already confirmed the change in the UI. Clears any in-flight
+     * pending email/profile-check flags so the new address is immediately the
+     * one the user logs in with.
+     *
+     * Returns ['ok' => bool, 'message' => string, 'old' => string|null].
+     */
+    public function changePrimaryEmailById($dmId, $newEmail)
+    {
+        $dmId = (int)$dmId;
+        $newEmail = strtolower(trim((string)$newEmail));
+        if ($dmId <= 0 || $newEmail === '') {
+            return ['ok' => false, 'message' => 'Invalid request.', 'old' => null];
+        }
+
+        $current = $this->fetchRow($this->select()->where('dm_id = ?', $dmId));
+        if (!$current) {
+            return ['ok' => false, 'message' => 'Data manager not found.', 'old' => null];
+        }
+        $oldEmail = $current['primary_email'];
+        if (strtolower((string)$oldEmail) === $newEmail) {
+            return ['ok' => false, 'message' => 'New email is the same as the current email.', 'old' => $oldEmail];
+        }
+
+        // Reject if any other DM already uses this email (primary or pending).
+        $clash = $this->fetchRow(
+            $this->select()
+                ->where('dm_id <> ?', $dmId)
+                ->where('LOWER(primary_email) = ? OR LOWER(new_email) = ?', $newEmail)
+        );
+        if ($clash) {
+            return ['ok' => false, 'message' => 'This email is already in use by another data manager.', 'old' => $oldEmail];
+        }
+
+        $authNameSpace = new Zend_Session_Namespace('administrators');
+        $rows = $this->update(
+            [
+                'primary_email' => $newEmail,
+                'new_email' => null,
+                'force_profile_check' => 'no',
+                'updated_by' => $authNameSpace->admin_id ?? null,
+                'updated_on' => new Zend_Db_Expr('now()'),
+            ],
+            ['dm_id = ?' => $dmId]
+        );
+        return ['ok' => $rows > 0, 'message' => $rows > 0 ? 'Primary email updated.' : 'Update failed.', 'old' => $oldEmail];
     }
 
     public function addQuickDm($params, $participantId)

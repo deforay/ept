@@ -244,6 +244,26 @@ class Application_Service_DataManagers
     }
 
 
+    /**
+     * Admin-driven primary email change. The admin has already confirmed the
+     * change in the UI, so we update directly without dispatching a verification
+     * email — the user simply uses the new address on next login.
+     */
+    public function changePrimaryEmailFromAdmin($params)
+    {
+        $dmId = (int)($params['dmId'] ?? 0);
+        $newEmail = Application_Service_Common::validateEmail((string)($params['newEmail'] ?? ''));
+        $confirmEmail = Application_Service_Common::validateEmail((string)($params['confirmEmail'] ?? ''));
+        if (!$newEmail || !$confirmEmail) {
+            return ['ok' => false, 'message' => $this->translator->_('Please enter a valid email address.')];
+        }
+        if (strtolower($newEmail) !== strtolower($confirmEmail)) {
+            return ['ok' => false, 'message' => $this->translator->_('The two email addresses do not match.')];
+        }
+        return $this->datamanagersDb->changePrimaryEmailById($dmId, $newEmail);
+    }
+
+
     public function resetPasswordFromAdmin($params, $forcePasswordReset = false)
     {
         $result = $this->datamanagersDb->updatePasswordFromAdmin($params['primaryMail'], $params['password'], $forcePasswordReset);
