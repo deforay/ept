@@ -74,7 +74,7 @@ if (!empty($this->shipment)) {
     </div>
     <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
         <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-            <?= $this->translate->_("You are currently generating reports for Shipment"); ?>
+            <?= $this->translate->_("You are currently finalizing reports for"); ?>&nbsp;
             <strong><?php echo $this->shipment[0]['shipment_code']; ?></strong>
         </div>
         <div style="margin-top:10px;">
@@ -207,8 +207,8 @@ if (!empty($this->shipment)) {
 
                 ?>
                 <tr>
-                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>" data-btn-class="<?php echo $btnClassName; ?>"><i
-                                class="icon-plus"></i></a></td>
+                    <td class="center "><a href="javascript:void(0);" class="btn btn-xs clicker <?php echo $btnClassName; ?>"
+                            data-btn-class="<?php echo $btnClassName; ?>"><i class="icon-plus"></i></a></td>
                     <td style="text-align:center;vertical-align:middle;"><?php echo $shipment['unique_identifier'] ?></td>
                     <td style="text-align:center;vertical-align:middle;">
                         <?php echo $shipment['first_name'] . " " . $shipment['last_name'] ?>
