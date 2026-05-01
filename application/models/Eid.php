@@ -416,4 +416,64 @@ class Application_Model_Eid
         $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
         return $filename;
     }
+
+    public function fetchEidAssayByShipmentId($sid)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $totalSubquery = "SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = " . $db->quote($sid);
+
+        // --- Query 1: detection_assay ---
+        $detectionQuery = $db->select()
+            ->from(
+                ['da' => 'r_eid_detection_assay'],
+                [
+                    'assay_name'         => 'da.name',
+                    'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
+                    'percentage'         => new Zend_Db_Expr(
+                        "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
+                    )
+                ]
+            )
+            ->joinLeft(
+                ['spm' => 'shipment_participant_map'],
+                new Zend_Db_Expr(
+                    "JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.detection_assay')) = da.id
+                 AND spm.shipment_id = " . $db->quote($sid)
+                ),
+                []
+            )
+            ->where("da.status LIKE 'active'")
+            ->group(['da.id', 'da.name']);
+
+        // --- Query 2: extraction_assay ---
+        $extractionQuery = $db->select()
+            ->from(
+                ['ea' => 'r_eid_extraction_assay'],
+                [
+                    'assay_name'         => 'ea.name',
+                    'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
+                    'percentage'         => new Zend_Db_Expr(
+                        "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
+                    )
+                ]
+            )
+            ->joinLeft(
+                ['spm' => 'shipment_participant_map'],
+                new Zend_Db_Expr(
+                    "JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.extraction_assay')) = ea.id
+                 AND spm.shipment_id = " . $db->quote($sid)
+                ),
+                []
+            )
+            ->where("ea.status LIKE 'active'")
+            ->group(['ea.id', 'ea.name']);
+
+        // --- UNION both ---
+        $unionSql = '(' . $detectionQuery->__toString() . ')'
+            . ' UNION ALL '
+            . '(' . $extractionQuery->__toString() . ')';
+
+        return $db->fetchAll($unionSql);
+    }
 }

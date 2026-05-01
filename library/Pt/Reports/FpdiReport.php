@@ -172,7 +172,10 @@ class Pt_Reports_FpdiReport extends Fpdi
 
             $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
             $completeFooterHtml .= '<tr>';
-            $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:left;">Effective Date ' . htmlspecialchars($effectiveDate ?? '') . '</td>';
+            $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:left;">';
+            if (isset($effectiveDate) && !empty($effectiveDate))
+                $completeFooterHtml .= 'Effective Date ' . htmlspecialchars($effectiveDate ?? '');
+            $completeFooterHtml .= '</td>';
             $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:center;">' . htmlspecialchars($reportVersion ?? '') . '</td>';
             $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
             $completeFooterHtml .= '</tr>';

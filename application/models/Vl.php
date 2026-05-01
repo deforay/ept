@@ -1392,6 +1392,37 @@ class Application_Model_Vl
         }
     }
 
+    public function fetchVlAssayByShipmentId($sid)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+
+        $totalSubquery = "SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = " . $db->quote($sid);
+
+        $query = $db->select()
+            ->from(
+                ['va' => 'r_vl_assay'],
+                [
+                    'assay_name'         => 'va.short_name',
+                    'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
+                    'percentage'         => new Zend_Db_Expr(
+                        "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
+                    )
+                ]
+            )
+            ->joinLeft(
+                ['spm' => 'shipment_participant_map'],
+                new Zend_Db_Expr(
+                    "JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, '$.vl_assay')) = va.id
+                 AND spm.shipment_id = " . $db->quote($sid)
+                ),
+                []
+            )
+            ->where("va.status LIKE 'active'")
+            ->group(['va.id', 'va.short_name']);
+
+        return $db->fetchAll($query);
+    }
+
     public function setVlRange($shipmentId)
     {
 
