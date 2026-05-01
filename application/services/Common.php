@@ -51,8 +51,7 @@ class Application_Service_Common
 
     public static function isoDateFormat($date, $includeTime = false)
     {
-
-        Pt_Commons_DateUtility::isoDateFormat($date, $includeTime);
+        return Pt_Commons_DateUtility::isoDateFormat($date, $includeTime);
     }
 
     // Returns the given date in d-M-Y format

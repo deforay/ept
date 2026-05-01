@@ -20,6 +20,26 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $this->_defaultPasswordHash = Common::passwordHash($this->_defaultPassword);
     }
 
+    /**
+     * SQL expression for a participant's display name: lab_name when the
+     * participant is an organisation (individual='no'), else first+last.
+     */
+    public static function participantNameExpr(string $alias = 'p'): string
+    {
+        return "CASE WHEN {$alias}.individual = 'no' THEN COALESCE({$alias}.lab_name, '') "
+            . "ELSE CONCAT(COALESCE({$alias}.first_name, ''), ' ', COALESCE({$alias}.last_name, '')) END";
+    }
+
+    /**
+     * GROUP_CONCAT-aggregated participant display name; honours the same
+     * lab_name vs first+last rule as participantNameExpr().
+     */
+    public static function participantNameGroupConcatExpr(string $alias = 'p'): string
+    {
+        $name = self::participantNameExpr($alias);
+        return "GROUP_CONCAT(DISTINCT $name ORDER BY {$alias}.first_name SEPARATOR ', ')";
+    }
+
     public function getParticipantsByUserSystemId($userSystemId)
     {
         $sql = $this->getAdapter()->select()->from(array('p' => $this->_name), array(
@@ -82,7 +102,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -98,7 +118,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -141,7 +162,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameExpr('p')), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
             ->join(array('c' => 'countries'), 'c.id=p.country')
             ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array())
             ->group("p.participant_id");
@@ -207,7 +228,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where('participant_id IN (?)', $pageParticipantIds)
                 ->group('participant_id');
             foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
-                $dmCountByParticipant[$cntRow['participant_id']] = (int)$cntRow['cnt'];
+                $dmCountByParticipant[$cntRow['participant_id']] = (int) $cntRow['cnt'];
             }
         }
 
@@ -257,7 +278,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 $row[] = '<em class="text-muted' . $unmappedClass . '" style="font-size:11px;">' . $translator->_('None mapped') . '</em>';
             } else {
                 $label = sprintf($translator->_('View (%d)'), $dmCount);
-                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-dm-row" data-participant-id="' . (int)$aRow['participant_id'] . '"><i class="icon-user"></i> ' . $label . '</a>';
+                $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-dm-row" data-participant-id="' . (int) $aRow['participant_id'] . '"><i class="icon-user"></i> ' . $label . '</a>';
             }
 
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
@@ -642,7 +663,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -768,7 +790,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1006,7 +1029,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function getShipmentRespondedParticipants($parameters)
     {
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1022,7 +1045,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1097,7 +1121,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     'p.affiliation',
                     'p.email',
                     'p.status',
-                    'participantName' => new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ',COALESCE(p.last_name,''))")
+                    'participantName' => new Zend_Db_Expr(self::participantNameExpr('p'))
                 ]
             )
             ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
@@ -1166,7 +1190,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'p.institute_name', 'p.state', 'p.district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'p.institute_name', 'p.state', 'p.district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1182,7 +1206,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1225,7 +1250,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))])
             ->joinLeft(['c' => 'countries'], 'c.id=p.country')
             // ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL)")
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
@@ -1292,7 +1317,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
+        $aColumns = array('first_name', 'unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'institute_name', 'state', 'district', 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'p.status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         //  $sIndexColumn = "participant_id";
@@ -1308,7 +1333,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -1354,7 +1380,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             ->where("sp.shipment_id = ?", $parameters['shipmentId'])
             ->group("sp.participant_id");
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("p.participant_id NOT IN ?", $subSql)
             ->where("p.status='active'")
@@ -1497,10 +1523,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = $this->getAdapter();
         $sql = $sql->where(
             $db->quoteInto("first_name LIKE ?", $searchPattern) . " OR " .
-                $db->quoteInto("last_name LIKE ?", $searchPattern) . " OR " .
-                $db->quoteInto("unique_identifier LIKE ?", $searchPattern) . " OR " .
-                $db->quoteInto("institute_name LIKE ?", $searchPattern) . " OR " .
-                $db->quoteInto("region LIKE ?", $searchPattern)
+            $db->quoteInto("last_name LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("unique_identifier LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("institute_name LIKE ?", $searchPattern) . " OR " .
+            $db->quoteInto("region LIKE ?", $searchPattern)
         )
             ->where("status like 'active'");
         return $this->fetchAll($sql);
@@ -1596,14 +1622,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
             $colLetter = chr(ord('A') + $idx);
             $expectedLabel = trim(preg_replace('/\s+/', ' ', (string) $expected));
-            $actualLabel   = trim(preg_replace('/\s+/', ' ', (string) $actual));
+            $actualLabel = trim(preg_replace('/\s+/', ' ', (string) $actual));
             if ($expectedLabel === '' && $actualLabel === '') {
                 continue;
             }
             $mismatches[] = [
-                'column'   => $colLetter,
+                'column' => $colLetter,
                 'expected' => $expectedLabel,
-                'actual'   => $actualLabel,
+                'actual' => $actualLabel,
             ];
         }
 
@@ -2136,7 +2162,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = [new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ', COALESCE(p.last_name,''))"), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result'];
+        $aColumns = [new Zend_Db_Expr(self::participantNameExpr('p')), 'institute_name', 'iso_name', 'state', 'district', 'shipment_code', 'response_status', 'shipment_test_report_date', 'final_result'];
 
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -2149,7 +2175,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         if (isset($parameters['iSortCol_0'])) {
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder[] = $aColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]);
+                    $sortDir = strtolower($parameters['sSortDir_' . $i]) === 'desc' ? 'desc' : 'asc';
+                    $sOrder[] = new Zend_Db_Expr(((string) $aColumns[intval($parameters['iSortCol_' . $i])]) . ' ' . $sortDir);
                 }
             }
         }
@@ -2192,14 +2219,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->joinLeft(array('sp' => 'shipment_participant_map'), 'p.participant_id=sp.participant_id', array('shipment_test_report_date', 'final_result', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
             ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response', 'status'))
             ->group("p.participant_id");
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
+            $sQuery = $sQuery->where("s.scheme_type IN (?)", (array) $parameters['scheme']);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
@@ -2207,13 +2234,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
                 ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
         }
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        if (empty($parameters['shipmentId']) && isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
             $sQuery = $sQuery->where("DATE(s.shipment_date) >= ?", Common::isoDateFormat($parameters['startDate']));
             $sQuery = $sQuery->where("DATE(s.shipment_date) <= ?", Common::isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
-            $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
+            $sQuery = $sQuery->where("s.shipment_id IN (?)", (array) $parameters['shipmentId']);
         }
 
         if (isset($parameters['country']) && $parameters['country'] != "") {
@@ -2256,23 +2283,23 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
+        $output = [
             "sEcho" => intval($parameters['sEcho']),
             "iTotalRecords" => $iTotal,
             "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+            "aaData" => []
+        ];
 
         $finalResult = array(1 => 'Pass', 2 => 'Fail', 3 => 'Excluded');
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
             $row = [];
 
-            $row[] = ucwords($aRow['participantName']);
-            $row[] = ucwords($aRow['institute_name']);
-            $row[] = ucwords($aRow['iso_name']);
-            $row[] = ucwords($aRow['state']);
-            $row[] = ucwords($aRow['district']);
+            $row[] = ($aRow['participantName']);
+            $row[] = ($aRow['institute_name']);
+            $row[] = ($aRow['iso_name']);
+            $row[] = ($aRow['state']);
+            $row[] = ($aRow['district']);
             $row[] = $aRow['shipment_code'];
             $row[] = ucwords($aRow['RESPONSE']);
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['shipment_test_report_date'] ?? '');
@@ -2415,7 +2442,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function notRespondedParticipants($shipmentId)
     {
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))))
             ->joinLeft(array('c' => 'countries'), 'c.id=p.country')
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
             ->where("sp.shipment_id = ?", $shipmentId)
@@ -2426,7 +2453,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
     public function fetchNotRespondedParticipantsByDmId($dmId)
     {
         $sQuery = $this->getAdapter()->select()->from(array('sp' => 'shipment_participant_map'), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS sp.map_id'), 'sp.participant_id', 'sp.shipment_test_date', 'shipment_id', "RESPONSE" => new Zend_Db_Expr("CASE WHEN (sp.is_excluded ='yes') THEN 'Excluded'  WHEN (sp.shipment_test_date not like '' AND sp.shipment_test_date!='0000-00-00' AND sp.shipment_test_date not like 'NULL') THEN 'Responded' ELSE 'Not Responded' END")))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")))
+            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.participant_id', 'p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.city', 'p.state', 'p.district', 'p.country', 'p.mobile', 'p.state', 'p.phone', 'p.affiliation', 'p.email', 'p.phone', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameGroupConcatExpr('p'))))
             ->join(array('pmm' => 'participant_manager_map'), 'p.participant_id=pmm.participant_id', array())
             ->where("(sp.shipment_test_report_date IS NULL OR DATE(sp.shipment_test_report_date) = '0000-00-00' OR response_status like 'noresponse')")
             ->where("pmm.dm_id = ?", $dmId)

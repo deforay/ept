@@ -1502,7 +1502,7 @@ class Application_Service_Reports
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $dbAdapter->select()->from(['res' => 'response_result_dts'], ['totalTest' => new Zend_Db_Expr("CAST((COUNT('shipment_map_id')/s.number_of_samples) as UNSIGNED)")])
             ->joinLeft(['sp' => 'shipment_participant_map'], 'sp.map_id=res.shipment_map_id', [])
-            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.lab_name', 'participantName' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,\" \",p.last_name ORDER BY p.first_name SEPARATOR ', ')")])
+            ->joinLeft(['p' => 'participant'], 'sp.participant_id=p.participant_id', ['p.lab_name', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
             ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', []);
         //  ->group("p.participant_id");
 
@@ -4150,12 +4150,12 @@ class Application_Service_Reports
             ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('shipment_code', 'scheme_type', 'lastdate_response'));
 
         if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_type like ?", $parameters['scheme']);
+            $sQuery = $sQuery->where("s.scheme_type IN (?)", (array) $parameters['scheme']);
         }
 
 
         if (isset($parameters['shipmentId']) && $parameters['shipmentId'] != "") {
-            $sQuery = $sQuery->where("s.shipment_id like ?", $parameters['shipmentId']);
+            $sQuery = $sQuery->where("s.shipment_id IN (?)", (array) $parameters['shipmentId']);
         }
 
         if (isset($parameters['country']) && $parameters['country'] != "") {

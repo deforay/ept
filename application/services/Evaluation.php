@@ -1414,7 +1414,7 @@ class Application_Service_Evaluation
 		$searchColumns = [
 			null,
 			'p.unique_identifier',
-			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''), ' ', COALESCE(p.last_name,''))"),
+			new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameExpr('p')),
 			'c.iso_name',
 			'sp.shipment_score',
 			'sp.documentation_score',
@@ -1670,7 +1670,7 @@ class Application_Service_Evaluation
 		// 10 last modified.
 		$searchColumns = [
 			null,
-			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''), ' ', COALESCE(p.last_name,''), ' (', COALESCE(p.unique_identifier,''), ')')"),
+			new Zend_Db_Expr("CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", ' (', COALESCE(p.unique_identifier, ''), ')')"),
 			'p.state',
 			'p.district',
 			'sp.shipment_score',
@@ -1880,7 +1880,7 @@ class Application_Service_Evaluation
 		// 6 responded_on, 7 last_modified, 8 map_id (hidden), 9 action.
 		$searchColumns = [
 			null,
-			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''), ' ', COALESCE(p.last_name,''), ' (', COALESCE(p.unique_identifier,''), ')')"),
+			new Zend_Db_Expr("CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", ' (', COALESCE(p.unique_identifier, ''), ')')"),
 			'sp.shipment_score',
 			'sp.documentation_score',
 			new Zend_Db_Expr("CASE sp.final_result WHEN 1 THEN 'Pass' WHEN 2 THEN 'Fail' WHEN 3 THEN 'Excluded' ELSE '' END"),
@@ -4079,7 +4079,7 @@ class Application_Service_Evaluation
 
 		$aColumns = [
 			'sp.map_id',
-			new Zend_Db_Expr("CONCAT(COALESCE(p.first_name,''),' ',COALESCE(p.last_name,''),'(',p.unique_identifier,')')"),
+			new Zend_Db_Expr("CONCAT(" . Application_Model_DbTable_Participants::participantNameExpr('p') . ", '(', COALESCE(p.unique_identifier, ''), ')')"),
 			'p.state',
 			'p.district',
 			'sp.shipment_score',
@@ -4101,7 +4101,8 @@ class Application_Service_Evaluation
 				$colIdx = intval($parameters['iSortCol_' . $i] ?? 0);
 				if (isset($parameters['bSortable_' . $colIdx]) && $parameters['bSortable_' . $colIdx] == "true") {
 					if (isset($aColumns[$colIdx])) {
-						$sOrder[] = $aColumns[$colIdx] . " " . ($parameters['sSortDir_' . $i] ?? 'asc');
+						$sortDir = strtolower($parameters['sSortDir_' . $i] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+						$sOrder[] = new Zend_Db_Expr(((string) $aColumns[$colIdx]) . ' ' . $sortDir);
 					}
 				}
 			}

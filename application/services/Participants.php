@@ -949,7 +949,7 @@ class Application_Service_Participants
 		if (in_array('participant', (array) $data['sendMail'], true)) {
 			$sql = $db->select()->from(['p' => 'participant'], [
 				'p.email',
-				'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT p.first_name,' ',p.last_name ORDER BY p.first_name SEPARATOR ', ')")
+				'name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))
 			])
 				->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
 				->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])

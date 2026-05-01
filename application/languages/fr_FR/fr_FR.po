@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ePT\n"
 "Report-Msgid-Bugs-To: support@deforay.com\n"
-"POT-Creation-Date: 2026-05-01 17:08+0530\n"
-"PO-Revision-Date: 2026-05-01 17:08+0530\n"
+"POT-Creation-Date: 2026-05-01 17:37+0530\n"
+"PO-Revision-Date: 2026-05-01 17:37+0530\n"
 "Last-Translator: Amit <amit@deforay.com>\n"
 "Language-Team: ePT\n"
 "Language: fr\n"
@@ -1596,9 +1596,9 @@ msgstr ""
 "fins de formation. Ne l'utilisez pas pour des enquêtes PT réelles."
 
 #: application/layouts/scripts/admin.phtml:68
-#: application/layouts/scripts/admin.phtml:761
+#: application/layouts/scripts/admin.phtml:791
 #: application/layouts/scripts/home.phtml:121
-#: application/layouts/scripts/layout.phtml:257
+#: application/layouts/scripts/layout.phtml:284
 #: application/modules/admin/views/scripts/help/index.phtml:13
 #: application/modules/admin/views/scripts/index/index.phtml:51
 #: application/views/scripts/participant/dashboard.phtml:197
@@ -1606,12 +1606,12 @@ msgid "Dashboard"
 msgstr "Tableau de bord"
 
 #: application/layouts/scripts/admin.phtml:69
-#: application/layouts/scripts/admin.phtml:1172
+#: application/layouts/scripts/admin.phtml:1208
 msgid "Navigation"
 msgstr "Navigation"
 
 #: application/layouts/scripts/admin.phtml:79
-#: application/layouts/scripts/admin.phtml:770
+#: application/layouts/scripts/admin.phtml:800
 msgid "PT Managers"
 msgstr "Responsables PT"
 
@@ -1649,35 +1649,35 @@ msgstr "Responsables PT"
 #: application/layouts/scripts/admin.phtml:373
 #: application/layouts/scripts/admin.phtml:381
 #: application/layouts/scripts/admin.phtml:389
-#: application/layouts/scripts/admin.phtml:765
-#: application/layouts/scripts/admin.phtml:1173
+#: application/layouts/scripts/admin.phtml:795
+#: application/layouts/scripts/admin.phtml:1209
 msgid "Configure"
 msgstr "Configurer"
 
 #: application/layouts/scripts/admin.phtml:90
-#: application/layouts/scripts/admin.phtml:805
+#: application/layouts/scripts/admin.phtml:835
 msgid "Configure Feedback"
 msgstr "Configurer le retour d'information"
 
 #: application/layouts/scripts/admin.phtml:98
-#: application/layouts/scripts/admin.phtml:808
+#: application/layouts/scripts/admin.phtml:838
 #: application/modules/admin/views/scripts/global-config/index.phtml:857
 msgid "Enable Feedback"
 msgstr "Activer les commentaires"
 
 #: application/layouts/scripts/admin.phtml:110
-#: application/layouts/scripts/admin.phtml:813
+#: application/layouts/scripts/admin.phtml:843
 msgid "Test Kits"
 msgstr "Kits de test"
 
 #: application/layouts/scripts/admin.phtml:118
-#: application/layouts/scripts/admin.phtml:830
+#: application/layouts/scripts/admin.phtml:860
 #: application/modules/admin/views/scripts/dts-settings/index.phtml:220
 msgid "HIV Serology Settings"
 msgstr "Sérologie du VIH"
 
 #: application/layouts/scripts/admin.phtml:128
-#: application/layouts/scripts/admin.phtml:818
+#: application/layouts/scripts/admin.phtml:848
 #: application/modules/admin/views/scripts/evaluate/vl-range.ajax.phtml:48
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:243
 #: application/modules/admin/views/scripts/shipment/partials/schemes/vl.phtml:434
@@ -1685,56 +1685,56 @@ msgid "VL Assay"
 msgstr "Essai VL"
 
 #: application/layouts/scripts/admin.phtml:136
-#: application/layouts/scripts/admin.phtml:835
+#: application/layouts/scripts/admin.phtml:865
 #: application/modules/admin/views/scripts/vl-settings/index.phtml:211
 msgid "VL Settings"
 msgstr "Réglages VL"
 
 #: application/layouts/scripts/admin.phtml:146
-#: application/layouts/scripts/admin.phtml:823
+#: application/layouts/scripts/admin.phtml:853
 msgid "EID Assay"
 msgstr "Essai EID"
 
 #: application/layouts/scripts/admin.phtml:156
-#: application/layouts/scripts/admin.phtml:840
+#: application/layouts/scripts/admin.phtml:870
 #: application/modules/admin/views/scripts/tb-settings/index.phtml:14
 msgid "TB Settings"
 msgstr "Réglages TB"
 
 #: application/layouts/scripts/admin.phtml:166
-#: application/layouts/scripts/admin.phtml:845
+#: application/layouts/scripts/admin.phtml:875
 msgid "Manage Custom Tests"
 msgstr "Gérer les tests personnalisés"
 
 #: application/layouts/scripts/admin.phtml:176
-#: application/layouts/scripts/admin.phtml:851
+#: application/layouts/scripts/admin.phtml:881
 msgid "SARS-CoV-2 Test Platforms"
 msgstr "Plateformes de test SARS-CoV-2"
 
 #: application/layouts/scripts/admin.phtml:184
-#: application/layouts/scripts/admin.phtml:854
+#: application/layouts/scripts/admin.phtml:884
 msgid "SARS-CoV-2 Gene Types"
 msgstr "Types de gènes du SARS-CoV-2"
 
 #: application/layouts/scripts/admin.phtml:192
-#: application/layouts/scripts/admin.phtml:857
+#: application/layouts/scripts/admin.phtml:887
 #: application/modules/admin/views/scripts/covid19-settings/index.phtml:213
 msgid "SARS-CoV-2 Settings"
 msgstr "SARS-CoV-2 Paramètres"
 
 #: application/layouts/scripts/admin.phtml:202
-#: application/layouts/scripts/admin.phtml:863
+#: application/layouts/scripts/admin.phtml:893
 msgid "HIV Recency (RTRI) Settings"
 msgstr "Paramètres de récurrence du VIH (RTRI)"
 
 #: application/layouts/scripts/admin.phtml:213
-#: application/layouts/scripts/admin.phtml:868
+#: application/layouts/scripts/admin.phtml:898
 #: application/modules/admin/views/scripts/global-config/index.phtml:467
 msgid "ePT Global Settings"
 msgstr "paramètres globaux de l'ePT"
 
 #: application/layouts/scripts/admin.phtml:222
-#: application/layouts/scripts/admin.phtml:871
+#: application/layouts/scripts/admin.phtml:901
 #: application/modules/admin/views/scripts/home-config/index.phtml:354
 #: application/modules/admin/views/scripts/home-section-links/add.phtml:21
 #: application/modules/admin/views/scripts/home-section-links/edit.phtml:20
@@ -1743,70 +1743,70 @@ msgid "Home Page Settings"
 msgstr "Réglages de la page d’accueil"
 
 #: application/layouts/scripts/admin.phtml:230
-#: application/layouts/scripts/admin.phtml:874
+#: application/layouts/scripts/admin.phtml:904
 #: application/modules/admin/views/scripts/report-config/index.phtml:206
 msgid "PDF Report Settings"
 msgstr "Paramètres du rapport PDF"
 
 #: application/layouts/scripts/admin.phtml:238
-#: application/layouts/scripts/admin.phtml:877
+#: application/layouts/scripts/admin.phtml:907
 msgid "Shipment Custom Fields"
 msgstr "Champs personnalisés de l'envoi"
 
 #: application/layouts/scripts/admin.phtml:246
-#: application/layouts/scripts/admin.phtml:881
+#: application/layouts/scripts/admin.phtml:911
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:171
 msgid "Certificate Templates"
 msgstr "Modèles de certificats"
 
 #: application/layouts/scripts/admin.phtml:254
-#: application/layouts/scripts/admin.phtml:883
+#: application/layouts/scripts/admin.phtml:913
 #: application/modules/admin/views/scripts/alerts/email.phtml:4
 msgid "Failed Emails"
 msgstr "E-mails non envoyés"
 
 #: application/layouts/scripts/admin.phtml:262
-#: application/layouts/scripts/admin.phtml:885
+#: application/layouts/scripts/admin.phtml:915
 #: application/modules/admin/views/scripts/mail-template/index.phtml:85
 msgid "Mail Template"
 msgstr "Modèle de mail"
 
 #: application/layouts/scripts/admin.phtml:270
-#: application/layouts/scripts/admin.phtml:888
+#: application/layouts/scripts/admin.phtml:918
 msgid "Partners"
 msgstr "Partenaires"
 
 #: application/layouts/scripts/admin.phtml:278
-#: application/layouts/scripts/admin.phtml:891
+#: application/layouts/scripts/admin.phtml:921
 msgid "Contact Messages"
 msgstr "Messages du contact"
 
 #: application/layouts/scripts/admin.phtml:286
-#: application/layouts/scripts/admin.phtml:895
+#: application/layouts/scripts/admin.phtml:925
 #: application/modules/admin/views/scripts/api-history/index.phtml:4
 #: application/modules/admin/views/scripts/audit-log/index.phtml:5
 msgid "Audit Log"
 msgstr "Journal d'audit"
 
 #: application/layouts/scripts/admin.phtml:294
-#: application/layouts/scripts/admin.phtml:898
+#: application/layouts/scripts/admin.phtml:928
 msgid "API Sync History"
 msgstr "Historique de la synchronisation de l'API"
 
 #: application/layouts/scripts/admin.phtml:302
-#: application/layouts/scripts/admin.phtml:901
+#: application/layouts/scripts/admin.phtml:931
 #: application/modules/admin/views/scripts/job-tracking/index.phtml:65
 msgid "Job Tracking"
 msgstr "Suivi des jobs"
 
 #: application/layouts/scripts/admin.phtml:310
-#: application/layouts/scripts/admin.phtml:904
+#: application/layouts/scripts/admin.phtml:934
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:101
 msgid "Certificate Batches"
 msgstr "Lots de certificats"
 
 #: application/layouts/scripts/admin.phtml:321
-#: application/layouts/scripts/admin.phtml:777
+#: application/layouts/scripts/admin.phtml:807
 msgid "PT Participants"
 msgstr "Participants au PT"
 
@@ -1817,8 +1817,8 @@ msgstr "Ajouter un participant"
 #: application/layouts/scripts/admin.phtml:331
 #: application/layouts/scripts/admin.phtml:339
 #: application/layouts/scripts/admin.phtml:458
-#: application/layouts/scripts/admin.phtml:1166
-#: application/layouts/scripts/admin.phtml:1171
+#: application/layouts/scripts/admin.phtml:1202
+#: application/layouts/scripts/admin.phtml:1207
 msgid "Quick Actions"
 msgstr "Actions rapides"
 
@@ -1827,38 +1827,38 @@ msgid "Bulk Add Participants"
 msgstr "Ajouter des participants en lot"
 
 #: application/layouts/scripts/admin.phtml:346
-#: application/layouts/scripts/admin.phtml:780
+#: application/layouts/scripts/admin.phtml:810
 msgid "Data Manager (Participant Login)"
 msgstr "Gestionnaire de données (connexion des participants)"
 
 #: application/layouts/scripts/admin.phtml:355
-#: application/layouts/scripts/admin.phtml:784
+#: application/layouts/scripts/admin.phtml:814
 msgid "Manage PTCC"
 msgstr "Gérer le CCPT"
 
 #: application/layouts/scripts/admin.phtml:364
-#: application/layouts/scripts/admin.phtml:788
+#: application/layouts/scripts/admin.phtml:818
 msgid "Participant Login Map"
 msgstr "Carte de connexion des participants"
 
 #: application/layouts/scripts/admin.phtml:372
-#: application/layouts/scripts/admin.phtml:792
+#: application/layouts/scripts/admin.phtml:822
 msgid "Scheme Enrollments"
 msgstr "Inscriptions au programme"
 
 #: application/layouts/scripts/admin.phtml:380
-#: application/layouts/scripts/admin.phtml:795
+#: application/layouts/scripts/admin.phtml:825
 #: application/modules/admin/views/scripts/email-participants/index.phtml:22
 msgid "Email Participants"
 msgstr "Envoyer un courriel aux participants"
 
 #: application/layouts/scripts/admin.phtml:388
-#: application/layouts/scripts/admin.phtml:798
+#: application/layouts/scripts/admin.phtml:828
 msgid "Not Tested Reasons"
 msgstr "Motifs de non-test"
 
 #: application/layouts/scripts/admin.phtml:400
-#: application/layouts/scripts/admin.phtml:918
+#: application/layouts/scripts/admin.phtml:948
 #: application/modules/reports/views/scripts/distribution/shipment.phtml:36
 #: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:55
 msgid "PT Survey"
@@ -1866,15 +1866,15 @@ msgstr "Enquête sur les PT"
 
 #: application/layouts/scripts/admin.phtml:401
 #: application/layouts/scripts/admin.phtml:409
-#: application/layouts/scripts/admin.phtml:913
-#: application/layouts/scripts/admin.phtml:1174
-#: application/layouts/scripts/layout.phtml:312
+#: application/layouts/scripts/admin.phtml:943
+#: application/layouts/scripts/admin.phtml:1210
+#: application/layouts/scripts/layout.phtml:339
 msgid "Manage"
 msgstr "Gérer"
 
 #: application/layouts/scripts/admin.phtml:408
-#: application/layouts/scripts/admin.phtml:921
-#: application/layouts/scripts/admin.phtml:1162
+#: application/layouts/scripts/admin.phtml:951
+#: application/layouts/scripts/admin.phtml:1198
 #: application/modules/admin/views/scripts/audit-log/index.phtml:30
 #: application/modules/admin/views/scripts/certificate-batches/index.phtml:156
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:281
@@ -1883,7 +1883,7 @@ msgid "Shipments"
 msgstr "Expéditions"
 
 #: application/layouts/scripts/admin.phtml:420
-#: application/layouts/scripts/admin.phtml:933
+#: application/layouts/scripts/admin.phtml:963
 msgid "Evaluate Responses"
 msgstr "Évaluer les réponses"
 
@@ -1891,24 +1891,24 @@ msgstr "Évaluer les réponses"
 #: application/layouts/scripts/admin.phtml:429
 #: application/layouts/scripts/admin.phtml:437
 #: application/layouts/scripts/admin.phtml:445
-#: application/layouts/scripts/admin.phtml:929
-#: application/layouts/scripts/admin.phtml:1175
+#: application/layouts/scripts/admin.phtml:959
+#: application/layouts/scripts/admin.phtml:1211
 msgid "Analyze"
 msgstr "Analyse"
 
 #: application/layouts/scripts/admin.phtml:436
-#: application/layouts/scripts/admin.phtml:939
+#: application/layouts/scripts/admin.phtml:969
 msgid "Finalize Reports"
 msgstr "Finaliser les rapports"
 
 #: application/layouts/scripts/admin.phtml:444
-#: application/layouts/scripts/admin.phtml:943
+#: application/layouts/scripts/admin.phtml:973
 msgid "View Finalized Shipments"
 msgstr "Voir les envois finalisés"
 
 #: application/layouts/scripts/admin.phtml:457
 #: application/layouts/scripts/admin.phtml:465
-#: application/layouts/scripts/admin.phtml:955
+#: application/layouts/scripts/admin.phtml:985
 #: application/modules/reports/views/scripts/shipments/index.phtml:131
 #: application/views/scripts/participant/shipments-reports.phtml:17
 msgid "Shipments Report"
@@ -1930,108 +1930,108 @@ msgstr "Rapport sur les expéditions"
 #: application/layouts/scripts/admin.phtml:580
 #: application/layouts/scripts/admin.phtml:588
 #: application/layouts/scripts/admin.phtml:597
-#: application/layouts/scripts/admin.phtml:951
-#: application/layouts/scripts/admin.phtml:1176
+#: application/layouts/scripts/admin.phtml:981
+#: application/layouts/scripts/admin.phtml:1212
 msgid "Reports"
 msgstr "Rapports"
 
 #: application/layouts/scripts/admin.phtml:473
-#: application/layouts/scripts/admin.phtml:958
+#: application/layouts/scripts/admin.phtml:988
 #: application/modules/reports/views/scripts/shipment-response-report/index.phtml:16
 #: application/views/scripts/participant/shipment-response-report.phtml:16
 msgid "Shipment Response Report"
 msgstr "Rapport d'intervention sur l'envoi"
 
 #: application/layouts/scripts/admin.phtml:481
-#: application/layouts/scripts/admin.phtml:961
+#: application/layouts/scripts/admin.phtml:991
 msgid "Testing Facility By Ownership"
 msgstr "Installation d'essai par propriétaire"
 
 #: application/layouts/scripts/admin.phtml:489
-#: application/layouts/scripts/admin.phtml:965
+#: application/layouts/scripts/admin.phtml:995
 #: application/modules/reports/views/scripts/detailed/index.phtml:15
 #: application/views/scripts/participant/response-report.phtml:15
 msgid "Participant Response Report"
 msgstr "Rapport sur les réponses des participants"
 
 #: application/layouts/scripts/admin.phtml:497
-#: application/layouts/scripts/admin.phtml:968
+#: application/layouts/scripts/admin.phtml:998
 msgid "Participant Performance Report"
 msgstr "Rapport sur les performances des participants"
 
 #: application/layouts/scripts/admin.phtml:505
-#: application/layouts/scripts/admin.phtml:971
+#: application/layouts/scripts/admin.phtml:1001
 msgid "Participant Trends"
 msgstr "Tendances des participants"
 
 #: application/layouts/scripts/admin.phtml:513
-#: application/layouts/scripts/admin.phtml:974
+#: application/layouts/scripts/admin.phtml:1004
 msgid "Corrective Actions Report"
 msgstr "Rapport sur les actions correctives"
 
 #: application/layouts/scripts/admin.phtml:522
-#: application/layouts/scripts/admin.phtml:978
+#: application/layouts/scripts/admin.phtml:1008
 msgid "Corrective and Preventive Actions"
 msgstr "Actions correctives et préventives"
 
 #: application/layouts/scripts/admin.phtml:533
-#: application/layouts/scripts/admin.phtml:985
+#: application/layouts/scripts/admin.phtml:1015
 msgid "Test Kit Report For HIV Serology"
 msgstr "Rapport sur le kit de test pour la sérologie VIH"
 
 #: application/layouts/scripts/admin.phtml:544
-#: application/layouts/scripts/admin.phtml:990
+#: application/layouts/scripts/admin.phtml:1020
 msgid "XTPT Indicators"
 msgstr "Indicateurs XTPT"
 
 #: application/layouts/scripts/admin.phtml:552
-#: application/layouts/scripts/admin.phtml:993
+#: application/layouts/scripts/admin.phtml:1023
 msgid "TB: Number of Participants per Country"
 msgstr "TB : Nombre de participants par pays"
 
 #: application/layouts/scripts/admin.phtml:560
-#: application/layouts/scripts/admin.phtml:996
+#: application/layouts/scripts/admin.phtml:1026
 msgid "TB: Result of PT Panel per Site"
 msgstr "TB : Résultat du panel de PT par site"
 
 #: application/layouts/scripts/admin.phtml:568
-#: application/layouts/scripts/admin.phtml:999
+#: application/layouts/scripts/admin.phtml:1029
 msgid "TB: All Sites' Results"
 msgstr "TB : Résultats de tous les sites"
 
 #: application/layouts/scripts/admin.phtml:579
-#: application/layouts/scripts/admin.phtml:1007
+#: application/layouts/scripts/admin.phtml:1037
 msgid "VL Sample Analysis"
 msgstr "Analyse des échantillons VL"
 
 #: application/layouts/scripts/admin.phtml:587
-#: application/layouts/scripts/admin.phtml:1010
+#: application/layouts/scripts/admin.phtml:1040
 msgid "VL Assay Distribution"
 msgstr "Distribution de l'essai VL"
 
 #: application/layouts/scripts/admin.phtml:596
-#: application/layouts/scripts/admin.phtml:1015
+#: application/layouts/scripts/admin.phtml:1045
 #: application/modules/reports/views/scripts/annual/index.phtml:5
 msgid "Annual Performance Report"
 msgstr "Rapport annuel de performance"
 
-#: application/layouts/scripts/admin.phtml:719
+#: application/layouts/scripts/admin.phtml:749
 msgid "Enter your Password to Confirm"
 msgstr "Saisissez votre mot de passe pour confirmer"
 
-#: application/layouts/scripts/admin.phtml:725
+#: application/layouts/scripts/admin.phtml:755
 msgid "Enter your Password"
 msgstr "Entrez votre mot de passe"
 
-#: application/layouts/scripts/admin.phtml:726
+#: application/layouts/scripts/admin.phtml:756
 msgid "Please enter the your password"
 msgstr "Veuillez saisir votre mot de passe"
 
-#: application/layouts/scripts/admin.phtml:735
+#: application/layouts/scripts/admin.phtml:765
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: application/layouts/scripts/admin.phtml:736
+#: application/layouts/scripts/admin.phtml:766
 #: application/modules/admin/views/scripts/announcement/compose.phtml:108
 #: application/modules/admin/views/scripts/covid19-gene-type/add.phtml:40
 #: application/modules/admin/views/scripts/covid19-gene-type/edit.phtml:38
@@ -2116,30 +2116,39 @@ msgstr "Confirmer"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: application/layouts/scripts/admin.phtml:755
+#: application/layouts/scripts/admin.phtml:785
 #: application/modules/admin/views/scripts/login/index.phtml:111
 msgid "ePT Admin"
 msgstr "admin ePT"
 
-#: application/layouts/scripts/admin.phtml:790
+#: application/layouts/scripts/admin.phtml:820
 msgid "Pending PT Participants"
 msgstr "Participants au PT en attente"
 
-#: application/layouts/scripts/admin.phtml:1077
+#: application/layouts/scripts/admin.phtml:1059
+#: application/modules/admin/views/scripts/help/index.phtml:11
+#: application/modules/admin/views/scripts/help/index.phtml:14
+#: application/views/partials/help-drawer.phtml:25
+#: application/views/scripts/help/index.phtml:11
+#: application/views/scripts/help/index.phtml:14
+msgid "Help"
+msgstr "Aide"
+
+#: application/layouts/scripts/admin.phtml:1113
 #: application/modules/admin/views/scripts/profile/index.phtml:153
 msgid "My Profile"
 msgstr "Mon profil"
 
-#: application/layouts/scripts/admin.phtml:1087
+#: application/layouts/scripts/admin.phtml:1123
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: application/layouts/scripts/admin.phtml:1104
-#: application/layouts/scripts/layout.phtml:393
+#: application/layouts/scripts/admin.phtml:1140
+#: application/layouts/scripts/layout.phtml:420
 msgid "some problem"
 msgstr "un problème"
 
-#: application/layouts/scripts/admin.phtml:1115
+#: application/layouts/scripts/admin.phtml:1151
 #: application/layouts/scripts/home.phtml:177
 msgid ""
 " This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -2150,41 +2159,41 @@ msgstr ""
 "contre le sida (PEPFAR) par l'intermédiaire des Centres américains de "
 "contrôle et de prévention des maladies (CDC)."
 
-#: application/layouts/scripts/admin.phtml:1161
+#: application/layouts/scripts/admin.phtml:1197
 msgid "No results found"
 msgstr "Aucun résultat trouvé"
 
-#: application/layouts/scripts/admin.phtml:1163
+#: application/layouts/scripts/admin.phtml:1199
 msgid "Searching..."
 msgstr "Recherche en cours..."
 
-#: application/layouts/scripts/admin.phtml:1165
-#: application/layouts/scripts/admin.phtml:1170
+#: application/layouts/scripts/admin.phtml:1201
+#: application/layouts/scripts/admin.phtml:1206
 msgid "Recent Shipments"
 msgstr "Expéditions récentes"
 
-#: application/layouts/scripts/admin.phtml:1448
+#: application/layouts/scripts/admin.phtml:1484
 msgid "Search menus, actions..."
 msgstr "Rechercher dans les menus, les actions..."
 
-#: application/layouts/scripts/admin.phtml:1455
+#: application/layouts/scripts/admin.phtml:1491
 msgid "Navigate"
 msgstr "Naviguer"
 
-#: application/layouts/scripts/admin.phtml:1456
+#: application/layouts/scripts/admin.phtml:1492
 #: application/views/scripts/custom-test/response.phtml:403
 msgid "Enter"
 msgstr "Entrer"
 
-#: application/layouts/scripts/admin.phtml:1456
+#: application/layouts/scripts/admin.phtml:1492
 msgid "Open"
 msgstr "Ouvert"
 
-#: application/layouts/scripts/admin.phtml:1458
+#: application/layouts/scripts/admin.phtml:1494
 msgid "Esc"
 msgstr "Échap"
 
-#: application/layouts/scripts/admin.phtml:1459
+#: application/layouts/scripts/admin.phtml:1495
 #: application/modules/admin/views/scripts/certificate-templates/index.phtml:537
 #: application/views/partials/help-drawer.phtml:37
 msgid "Close"
@@ -2216,92 +2225,96 @@ msgid "Contact"
 msgstr "Contact"
 
 #: application/layouts/scripts/home.phtml:116
-#: application/layouts/scripts/layout.phtml:227
-#: application/layouts/scripts/layout.phtml:358
+#: application/layouts/scripts/layout.phtml:254
+#: application/layouts/scripts/layout.phtml:385
 #: application/layouts/scripts/menu.phtml:27
 msgid "Participant Login"
 msgstr "Connexion des participants"
 
-#: application/layouts/scripts/layout.phtml:35
+#: application/layouts/scripts/layout.phtml:52
 msgid "Online Lab Proficiency Testing"
 msgstr "Tests de compétence en laboratoire en ligne"
 
-#: application/layouts/scripts/layout.phtml:210
+#: application/layouts/scripts/layout.phtml:229
 msgid "Toggle navigation"
 msgstr "Basculer la navigation"
 
-#: application/layouts/scripts/layout.phtml:240
+#: application/layouts/scripts/layout.phtml:238
+msgid "Help (Ctrl+/)"
+msgstr "Aide (Ctrl+/)"
+
+#: application/layouts/scripts/layout.phtml:267
 msgid "MAIN NAVIGATION"
 msgstr "NAVIGATION PRINCIPALE"
 
-#: application/layouts/scripts/layout.phtml:246
+#: application/layouts/scripts/layout.phtml:273
 msgid "Program Information"
 msgstr "Informations sur le programme"
 
-#: application/layouts/scripts/layout.phtml:264
+#: application/layouts/scripts/layout.phtml:291
 msgid "PT Result Submission"
 msgstr "Envoi des résultats du PT"
 
-#: application/layouts/scripts/layout.phtml:272
+#: application/layouts/scripts/layout.phtml:299
 msgid "CAPA"
 msgstr "CAPA"
 
-#: application/layouts/scripts/layout.phtml:278
+#: application/layouts/scripts/layout.phtml:305
 msgid "View PT Result"
 msgstr "Voir le résultat du PT"
 
-#: application/layouts/scripts/layout.phtml:299
+#: application/layouts/scripts/layout.phtml:326
 #: application/modules/admin/views/scripts/shipment/index.phtml:18
 #: application/views/scripts/participant/current-schemes.phtml:12
 msgid "All Schemes"
 msgstr "Tous les régimes"
 
-#: application/layouts/scripts/layout.phtml:306
+#: application/layouts/scripts/layout.phtml:333
 #: application/views/scripts/participant/defaulted-schemes.phtml:2
 msgid "Defaulted Schemes"
 msgstr "Régimes en défaut"
 
-#: application/layouts/scripts/layout.phtml:317
+#: application/layouts/scripts/layout.phtml:344
 #: application/modules/admin/views/scripts/participants/index.phtml:93
 #: application/views/scripts/data-managers/index.phtml:2
 msgid "Data Managers"
 msgstr "Gestionnaires de données"
 
-#: application/layouts/scripts/layout.phtml:320
+#: application/layouts/scripts/layout.phtml:347
 #: application/modules/admin/views/scripts/audit-log/index.phtml:29
 #: application/modules/admin/views/scripts/index/ept-overview.ajax.phtml:285
 #: application/modules/reports/views/scripts/shipments/index.phtml:163
 msgid "Participants"
 msgstr "Participants"
 
-#: application/layouts/scripts/layout.phtml:322
+#: application/layouts/scripts/layout.phtml:349
 msgid "PTCC Participant Map"
 msgstr "Carte des participants au CCPT"
 
-#: application/layouts/scripts/layout.phtml:325
+#: application/layouts/scripts/layout.phtml:352
 #: application/layouts/scripts/menu.phtml:35
 #: application/views/scripts/participant/user-info.phtml:7
 msgid "My Login Information"
 msgstr "Mes informations de connexion"
 
-#: application/layouts/scripts/layout.phtml:328
+#: application/layouts/scripts/layout.phtml:355
 #: application/layouts/scripts/menu.phtml:36
 msgid "PT Participant Info"
 msgstr "Informations sur les participants au PT"
 
-#: application/layouts/scripts/layout.phtml:331
+#: application/layouts/scripts/layout.phtml:358
 #: application/layouts/scripts/menu.phtml:37
 msgid "Scheme Information"
 msgstr "Informations sur le régime"
 
-#: application/layouts/scripts/layout.phtml:335
+#: application/layouts/scripts/layout.phtml:362
 #: application/modules/admin/views/scripts/data-managers/change-primary-email.phtml:26
 #: application/views/scripts/data-managers/change-primary-email.phtml:26
 #: application/views/scripts/participant/change-primary-email.phtml:4
 msgid "Change Primary Email"
 msgstr "Modifier l'adresse électronique principale"
 
-#: application/layouts/scripts/layout.phtml:339
+#: application/layouts/scripts/layout.phtml:366
 #: application/layouts/scripts/menu.phtml:38
 #: application/modules/admin/views/scripts/profile/index.phtml:289
 #: application/views/scripts/participant/password.phtml:77
@@ -2309,19 +2322,19 @@ msgstr "Modifier l'adresse électronique principale"
 msgid "Change Password"
 msgstr "Modifier le mot de passe"
 
-#: application/layouts/scripts/layout.phtml:344
+#: application/layouts/scripts/layout.phtml:371
 msgid "Participant Message"
 msgstr "Message du participant"
 
-#: application/layouts/scripts/layout.phtml:349
+#: application/layouts/scripts/layout.phtml:376
 msgid "Downloads"
 msgstr "Téléchargements"
 
-#: application/layouts/scripts/layout.phtml:364
+#: application/layouts/scripts/layout.phtml:391
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: application/layouts/scripts/layout.phtml:405
+#: application/layouts/scripts/layout.phtml:432
 #: application/modules/admin/views/scripts/login/index.phtml:164
 msgid ""
 "This project is supported by the U.S. President's Emergency Plan for AIDS "
@@ -6805,14 +6818,6 @@ msgstr "Ajouter colonnes"
 #: application/modules/admin/views/scripts/home-config/index.phtml:787
 msgid "Remove row"
 msgstr "Supprimer la rangée"
-
-#: application/modules/admin/views/scripts/help/index.phtml:11
-#: application/modules/admin/views/scripts/help/index.phtml:14
-#: application/views/partials/help-drawer.phtml:25
-#: application/views/scripts/help/index.phtml:11
-#: application/views/scripts/help/index.phtml:14
-msgid "Help"
-msgstr "Aide"
 
 #: application/modules/admin/views/scripts/help/index.phtml:23
 #: application/views/scripts/help/index.phtml:23
@@ -13118,36 +13123,36 @@ msgstr "% Score"
 msgid "Shipment Participant Result Report"
 msgstr "Rapport des résultats des participants par envoi"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:422
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:426
 msgid "END OF REPORT"
 msgstr "FIN DU RAPPORT"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:424
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:428
 msgid "No screening participants there"
 msgstr "Aucun participant de dépistage"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:431
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:435
 msgid "All PT material is produced in line with the standard ISO17043:2023"
 msgstr "Tout le matériel PT est produit conformément à la norme ISO17043:2023"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:433
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:437
 msgid "Report approved by"
 msgstr "Rapport approuvé par"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:434
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:438
 msgid "Date of approval"
 msgstr "Date d'approbation"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:436
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:440
 msgid "This is a system generated report. No signature required"
 msgstr ""
 "Ceci est un rapport généré par le système. Aucune signature n'est requise"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:437
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:441
 msgid "End of report"
 msgstr "Fin du rapport"
 
-#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:439
+#: scheduled-jobs/report-layouts/summary-layouts/default/dts.phtml:443
 msgid "End of final report"
 msgstr "Fin du rapport final"
 
