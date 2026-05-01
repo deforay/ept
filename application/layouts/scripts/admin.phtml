@@ -600,6 +600,35 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 		'keywords' => ['yearly', 'annual', 'summary']
 	];
 }
+
+// In-app help: map current page → help slug. Pages not listed here open the
+// drawer onto the topic index instead. Keep in sync as new help docs land.
+$audience    = 'admin';
+$helpBaseUrl = $this->baseUrl('/admin/help');
+$helpSlugMap = [
+	'index/index'                  => 'dashboard',
+	'index/dashboard'              => 'dashboard',
+	'participants/index'           => 'participants',
+	'participants/edit'            => 'participants',
+	'participants/manage'          => 'participants',
+	'shipments/index'              => 'shipments',
+	'shipments/add'                => 'shipments',
+	'shipments/edit'               => 'shipments',
+	'shipments/manage'             => 'shipments',
+	'distributions/index'          => 'distributions',
+	'distributions/manage'         => 'distributions',
+	'reports/index'                => 'reports',
+	'evaluate/index'               => 'reports',
+	'system-admins/index'          => 'users',
+	'system-admins/edit'           => 'users',
+	'users/index'                  => 'users',
+	'users/edit'                   => 'users',
+	'schemes/index'                => 'schemes',
+	'schemes/edit'                 => 'schemes',
+];
+$resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
+	?? $helpSlugMap["$controllerName/index"]
+	?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -615,6 +644,7 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/deforayModal.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/font_awesome.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/spotlight-search.css"); ?>" type="text/css" media="all">
+	<link rel="stylesheet" href="<?php echo $this->baseUrl("css/helpDrawer.css"); ?>" type="text/css" media="all">
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/1.4.0/css/tom-select.bootstrap3.min.css"
 		integrity="sha512-+lPxmafk1K1gkBbXYid5MlLLg5T+oHynkrG/zr6a01ZcZ8FZtuffnAsWkcpygRgWzbLgR8fofRJexXEUGygfYg=="
@@ -1025,6 +1055,12 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 							<span class="hidden-xs kbd-hint">Ctrl+K</span>
 						</a>
 					</li>
+						<li>
+							<a href="javascript:void(0);" data-help-open="1" title="<?= $this->htmlTranslate('Help'); ?> (Ctrl+/)" class="help-trigger-nav">
+								<i class="icon-question-sign"></i>
+								<span class="hidden-xs kbd-hint">Ctrl+/</span>
+							</a>
+						</li>
 					<?php if ($notifyCount > 0) { ?>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i
@@ -1460,6 +1496,10 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 			</div>
 		</div>
 	</div>
+
+
+	<?php include APPLICATION_PATH . '/views/partials/help-drawer.phtml'; ?>
+	<script src="<?= $this->baseUrl('js/helpDrawer.js'); ?>"></script>
 
 </body>
 

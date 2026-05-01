@@ -25,6 +25,23 @@ if (isset($configData['training_instance_text']) && !empty($configData['training
 
 $genderHelper = $this->getHelper('DateFormat');
 $dtFormat =  $genderHelper->getDateFormat();
+
+// In-app help: map current page → help slug. Pages not listed here open the
+// drawer onto the topic index instead. Keep in sync as new help docs land.
+$audience    = 'participant';
+$helpBaseUrl = $this->baseUrl('/help');
+$helpSlugMap = [
+    'dashboard'        => 'dashboard',
+    'current-schemes'  => 'result-submission',
+    'all-schemes'      => 'result-submission',
+    'defaulted-schemes'=> 'result-submission',
+    'capa-schemes'     => 'corrective-action',
+    'corrective-action'=> 'corrective-action',
+    'view-reports'     => 'view-reports',
+    'my-account'       => 'my-account',
+    'file-download'    => 'file-download',
+];
+$resolvedHelpSlug = $helpSlugMap[$activeMenu] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -166,6 +183,8 @@ $dtFormat =  $genderHelper->getDateFormat();
         }
     </style>
 
+    <link rel="stylesheet" href="<?= $this->baseUrl('css/helpDrawer.css'); ?>" type="text/css" media="all">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -212,6 +231,14 @@ $dtFormat =  $genderHelper->getDateFormat();
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <?php if (isset($authNameSpace->dm_id)) { ?>
+                            <li>
+                                <a href="javascript:void(0);"
+                                   class="help-trigger-nav"
+                                   data-help-open="1"
+                                   title="<?= $this->htmlTranslate("Help (Ctrl+/)"); ?>">
+                                    <i class="fa fa-question-circle"></i>
+                                </a>
+                            </li>
                             <li class="dropdown user user-menu">
                                 <a
                                     href="<?php echo $this->url(array("controller" => "participant", "action" => "dashboard"), null, true) ?>">
@@ -541,6 +568,9 @@ $dtFormat =  $genderHelper->getDateFormat();
             return true;
         }
     </script>
+
+    <?php include APPLICATION_PATH . '/views/partials/help-drawer.phtml'; ?>
+    <script src="<?= $this->baseUrl('js/helpDrawer.js'); ?>"></script>
 </body>
 
 </html>

@@ -1,0 +1,77 @@
+<?php
+/**
+ * Participant help — full-page index. Every topic rendered inline so the
+ * page is searchable (browser Cmd+F), printable, and deep-linkable via #slug.
+ *
+ * Expects: $this->topics — array of {slug, title, summary, html, locale, ...}
+ */
+$topics = $this->topics ?? [];
+?>
+<section class="content-header">
+    <h1><?= $this->htmlTranslate("Help"); ?></h1>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-dashboard"></i> <?= $this->htmlTranslate("Home"); ?></a></li>
+        <li class="active"><?= $this->htmlTranslate("Help"); ?></li>
+    </ol>
+</section>
+
+<section class="content help-page">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><?= $this->htmlTranslate("Topics"); ?></h3>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="nav nav-pills nav-stacked help-toc">
+                        <?php foreach ($topics as $t): ?>
+                            <li>
+                                <a href="#<?= htmlspecialchars($t['slug']); ?>">
+                                    <?= htmlspecialchars($t['title']); ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <?php if (empty($topics)): ?>
+                <div class="box box-default">
+                    <div class="box-body">
+                        <p><?= $this->htmlTranslate("No help topics are available yet."); ?></p>
+                    </div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($topics as $t): ?>
+                    <article id="<?= htmlspecialchars($t['slug']); ?>" class="box box-default help-topic">
+                        <div class="box-header with-border">
+                            <h2 class="box-title" style="font-size: 18px; font-weight: 600;">
+                                <?= htmlspecialchars($t['title']); ?>
+                            </h2>
+                        </div>
+                        <div class="box-body help-prose">
+                            <?php if (!empty($t['summary'])): ?>
+                                <p class="text-muted"><em><?= htmlspecialchars($t['summary']); ?></em></p>
+                            <?php endif; ?>
+                            <?= $t['html']; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<style>
+.help-page .help-toc a { padding: 8px 12px; font-size: 13px; }
+.help-page .help-topic { scroll-margin-top: 80px; }
+.help-page .help-prose h1 { display: none; } /* repeated of box title */
+.help-page .help-prose h2 { font-size: 16px; font-weight: 600; margin-top: 18px; }
+.help-page .help-prose h3 { font-size: 14px; font-weight: 600; margin-top: 14px; }
+.help-page .help-prose p, .help-page .help-prose li { font-size: 14px; line-height: 1.6; }
+.help-page .help-prose code { padding: 1px 5px; background: #f4f4f4; border-radius: 3px; }
+.help-page .help-prose pre { padding: 10px; background: #f4f4f4; border-radius: 4px; overflow-x: auto; }
+.help-page .help-prose blockquote { border-left: 3px solid #3c8dbc; padding: 6px 12px; margin: 12px 0; background: #f4f9fd; font-size: 13px; }
+</style>

@@ -1,0 +1,101 @@
+<?php
+/**
+ * In-app help drawer. Slides in from the right when the user presses
+ * Cmd/Ctrl+/ (handled in helpDrawer.js — fires a window 'help-drawer:open'
+ * event with the current page's resolved help slug).
+ *
+ * Expects from the calling layout:
+ *   $audience          'admin' | 'participant'
+ *   $resolvedHelpSlug  string  — slug for the current page (empty = open index)
+ *   $helpBaseUrl       string  — '/help' or '/admin/help'
+ *
+ * All chrome strings use htmlTranslate (HTML/attribute context) or
+ * jsTranslate (JS context).
+ */
+$audience          = $audience          ?? 'participant';
+$resolvedHelpSlug  = $resolvedHelpSlug  ?? '';
+$helpBaseUrl       = $helpBaseUrl       ?? '/help';
+?>
+<div id="help-drawer-root" class="help-drawer-root" aria-hidden="true">
+    <div class="help-drawer-backdrop" data-help-close="1"></div>
+    <aside class="help-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="help-drawer-title">
+        <header class="help-drawer-header">
+            <div class="help-drawer-header-left">
+                <i class="fa fa-question-circle"></i>
+                <h2 id="help-drawer-title" class="help-drawer-title"><?= $this->htmlTranslate("Help"); ?></h2>
+            </div>
+            <div class="help-drawer-header-right">
+                <a id="help-drawer-fullpage"
+                   href="<?= htmlspecialchars($helpBaseUrl); ?>"
+                   target="_blank" rel="noopener"
+                   title="<?= $this->htmlTranslate("Open full page in new tab"); ?>"
+                   class="help-drawer-iconbtn">
+                    <i class="fa fa-external-link"></i>
+                </a>
+                <button type="button"
+                        class="help-drawer-iconbtn"
+                        title="<?= $this->htmlTranslate("Close"); ?>"
+                        data-help-close="1">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="help-drawer-body">
+            <div id="help-drawer-loading" class="help-drawer-loading">
+                <?= $this->htmlTranslate("Loading…"); ?>
+            </div>
+
+            <div id="help-drawer-topic" class="help-prose" style="display:none;"></div>
+
+            <div id="help-drawer-index" class="help-drawer-index" style="display:none;">
+                <div class="help-drawer-callout">
+                    <i class="fa fa-info-circle"></i>
+                    <div>
+                        <strong><?= $this->htmlTranslate("No dedicated help for this page yet."); ?></strong>
+                        <div class="help-drawer-callout-sub">
+                            <?= $this->htmlTranslate("Browse or search the topics below."); ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="help-drawer-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text"
+                           id="help-drawer-search"
+                           placeholder="<?= $this->htmlTranslate("Search topics"); ?>"
+                           autocomplete="off">
+                </div>
+                <nav id="help-drawer-toc" class="help-drawer-toc"></nav>
+                <div id="help-drawer-no-results" class="help-drawer-no-results" style="display:none;">
+                    <?= $this->htmlTranslate("No topics match your search."); ?>
+                </div>
+            </div>
+
+            <div id="help-drawer-error" class="help-drawer-error" style="display:none;">
+                <?= $this->htmlTranslate("Couldn't load help. Please try again."); ?>
+            </div>
+        </div>
+
+        <footer class="help-drawer-footer">
+            <span>
+                <kbd id="help-drawer-shortcut">Ctrl+/</kbd>
+                <?= $this->htmlTranslate("anywhere to open"); ?>
+            </span>
+            <span>
+                <kbd>Esc</kbd>
+                <?= $this->htmlTranslate("to close"); ?>
+            </span>
+        </footer>
+    </aside>
+</div>
+
+<script>
+window.HELP_AUDIENCE = "<?= $this->jsTranslate($audience); ?>";
+window.HELP_BASE_URL = "<?= $this->jsTranslate($helpBaseUrl); ?>";
+window.HELP_SLUG     = "<?= $this->jsTranslate($resolvedHelpSlug); ?>";
+window.HELP_I18N = {
+    failedToLoad:  "<?= $this->jsTranslate("Couldn't load help. Please try again."); ?>",
+    noResults:     "<?= $this->jsTranslate("No topics match your search."); ?>",
+    openInNewTab:  "<?= $this->jsTranslate("Open full page in new tab"); ?>"
+};
+</script>
