@@ -315,13 +315,13 @@ if ($resultArray['shipment'] != "") {
                 $chartW = $pdf->getPageWidth() - PDF_MARGIN_LEFT - PDF_MARGIN_RIGHT;
                 $image_file = Pt_Reports_ChartService::render([
                     'type' => 'stackedBar',
-                    'width' => 700, 'height' => 375,
+                    'width' => 700, 'height' => 600,
                     'filename' => 'testkit_bar_chart',
                     'title' => Pt_Commons_TranslateUtility::safeTranslate("Testkit Evaluation Report"),
                     'xAxis' => ['labels' => $testkitname, 'labelAngle' => 25],
                     'datasets' => [
                         ['data' => $passedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Satisfactory Score'), 'colors' => ['#22C55E']],
-                        ['data' => $failedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unsatisfactory Score'), 'colors' => ['#DC3545']],
+                        ['data' => $failedTestKits, 'label' => Pt_Commons_TranslateUtility::safeTranslate('Unsatisfactory Score'), 'colors' => ['#3B82F6']],
                     ],
                     'legend' => ['position' => 'bottom'],
                 ], $outputDir);
@@ -348,7 +348,7 @@ if ($resultArray['shipment'] != "") {
         $outputDir = $reportsPath . DIRECTORY_SEPARATOR . $resultArray['shipment']['shipment_code'];
         $image_file = Pt_Reports_ChartService::render([
             'type' => 'bar',
-            'width' => 700, 'height' => 350,
+            'width' => 700, 'height' => 300,
             'filename' => 'bar_chart',
             'title' => Pt_Commons_TranslateUtility::safeTranslate("Comparison of test performance between participating laboratories"),
             'xAxis' => ['labels' => $dataY, 'title' => Pt_Commons_TranslateUtility::safeTranslate('% Score')],
@@ -384,7 +384,7 @@ if ($resultArray['shipment'] != "") {
             if ($passed > 0 || $failed > 0 || $notResponded > 0 || $excluded > 0) {
                 $performancePiechart = Pt_Reports_ChartService::render([
                     'type' => 'pie',
-                    'width' => 600, 'height' => 450,
+                    'width' => 700, 'height' => 400,
                     'filename' => 'performanceChart',
                     'title' => Pt_Commons_TranslateUtility::safeTranslate("Shipment Participant Result Report") . " (N=" . $total . ")",
                     'slices' => [
@@ -404,10 +404,10 @@ if ($resultArray['shipment'] != "") {
                 $hrY = $barY + $barDisplayH + 3;
                 $pdf->Line(PDF_MARGIN_LEFT, $hrY, $pdf->getPageWidth() - PDF_MARGIN_RIGHT, $hrY);
                 $pieY = $hrY + 3;
-                $pieW = $chartW * 0.5;
+                $pieW = $chartW * 0.6;
                 $pieX = PDF_MARGIN_LEFT + ($chartW - $pieW) / 2;
                 $pdf->Image($performancePiechart, $pieX, $pieY, $pieW, 0, '', '', '', false, 300);
-                $pieDisplayH = (900 / 1200) * $pieW + 20; // aspect ratio height + legend buffer
+                $pieDisplayH = (800 / 1400) * $pieW + 20; // aspect ratio height + legend buffer
                 $pdf->SetY($pieY + $pieDisplayH + 3);
                 if (file_exists($performancePiechart)) {
                     unlink($performancePiechart);
