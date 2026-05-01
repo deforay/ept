@@ -164,7 +164,7 @@
 	var paginate = true;
 	var startDate = "";
 	var endDate = "";
-	$(document).ready(function() {
+	$(document).ready(function () {
 		$("#scheme").select2({
 			placeholder: "<?= $this->translate->_("Select one or more schemes"); ?>",
 			allowClear: true
@@ -192,29 +192,29 @@
 		// $.blockUI();
 
 		$('#dateRange').daterangepicker({
-				locale: {
-					cancelLabel: 'Clear',
-					format: 'DD-MMM-YYYY',
-					separator: ' to ',
-				},
-				autoApply: true,
-				showDropdowns: true,
-				alwaysShowCalendars: true,
-				autoUpdateInput: true,
-				startDate: moment().subtract(179, 'days'),
-				endDate: moment(),
-				maxDate: moment(),
-				ranges: {
-					'This Month': [moment().startOf('month'), moment().endOf('month')],
-					'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-					'Last 60 Days': [moment().subtract(59, 'days'), moment()],
-					'Last 90 Days': [moment().subtract(89, 'days'), moment()],
-					'Last 180 Days': [moment().subtract(179, 'days'), moment()],
-					'Last 12 Months': [moment().subtract(12, 'month'), moment()],
-					'Last 18 Months': [moment().subtract(18, 'month'), moment()],
-				}
+			locale: {
+				cancelLabel: 'Clear',
+				format: 'DD-MMM-YYYY',
+				separator: ' to ',
 			},
-			function(start, end) {
+			autoApply: true,
+			showDropdowns: true,
+			alwaysShowCalendars: true,
+			autoUpdateInput: true,
+			startDate: moment().subtract(179, 'days'),
+			endDate: moment(),
+			maxDate: moment(),
+			ranges: {
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+				'Last 60 Days': [moment().subtract(59, 'days'), moment()],
+				'Last 90 Days': [moment().subtract(89, 'days'), moment()],
+				'Last 180 Days': [moment().subtract(179, 'days'), moment()],
+				'Last 12 Months': [moment().subtract(12, 'month'), moment()],
+				'Last 18 Months': [moment().subtract(18, 'month'), moment()],
+			}
+		},
+			function (start, end) {
 				startDate = start.format('DD-MMM-YYYY');
 				endDate = end.format('DD-MMM-YYYY');
 			});
@@ -239,20 +239,20 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			}
 			],
 			"aaSorting": [
 				[1, "desc"]
@@ -262,7 +262,7 @@
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'shipment-response-report', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -296,7 +296,7 @@
 					"value": endDate
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -305,7 +305,7 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
 				$.unblockUI();
 			},
 		});
@@ -320,32 +320,32 @@
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": ""
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				},
-				{
-					"sClass": "center"
-				}
+				"sClass": ""
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			},
+			{
+				"sClass": "center"
+			}
 			],
 			"aaSorting": [
 				[0, "desc"]
@@ -355,7 +355,7 @@
 			"bAutoWidth": false,
 			"bStateSave": true,
 			"sAjaxSource": "<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'participant-response', 'format' => 'html')); ?>",
-			"fnServerParams": function(aoData) {
+			"fnServerParams": function (aoData) {
 				aoData.push({
 					"name": "country",
 					"value": $("#country").val()
@@ -389,7 +389,7 @@
 					"value": endDate
 				});
 			},
-			"fnServerData": function(sSource, aoData, fnCallback) {
+			"fnServerData": function (sSource, aoData, fnCallback) {
 				$.ajax({
 					"dataType": 'json',
 					"type": "POST",
@@ -398,7 +398,7 @@
 					"success": fnCallback
 				});
 			},
-			"fnRowCallback": function(nRow, aData, iDisplayIndex) {
+			"fnRowCallback": function (nRow, aData, iDisplayIndex) {
 				$.unblockUI();
 			},
 		});
@@ -406,13 +406,13 @@
 
 	function getDrawable() {
 		if ($("#dateRange").val() == '') {
-			alert("Please select date range");
+			alert("<?= $this->jsTranslate("Please select a date range"); ?>");
 			return false;
 		} else if ($("#scheme").val() == '') {
-			alert('Please select the scheme type');
+			alert("<?= $this->jsTranslate("Please select a scheme type"); ?>");
 			return;
 		} else if ($("#shipmentId").val() == '') {
-			alert('Please select the shipment');
+			alert("<?= $this->jsTranslate("Please select a shipment"); ?>");
 			return;
 		} else {
 			$.blockUI();
@@ -427,12 +427,12 @@
 
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-shipments-by-date')); ?>", {
-				schemeType: schemeType,
-				startDate: startDate,
-				endDate: endDate,
-				format: "html"
-			},
-			function(data) {
+			schemeType: schemeType,
+			startDate: startDate,
+			endDate: endDate,
+			format: "html"
+		},
+			function (data) {
 				if (data == 0) {
 					shipmentCode = false;
 				} else {
@@ -447,13 +447,13 @@
 	function getOptions(table, searchfield, returnfield, searchvalue, returnid) {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'get-options-by-value')); ?>", {
-				table: table,
-				searchfield: searchfield,
-				returnfield: returnfield,
-				searchvalue: searchvalue,
-				format: "html"
-			},
-			function(data) {
+			table: table,
+			searchfield: searchfield,
+			returnfield: returnfield,
+			searchvalue: searchvalue,
+			format: "html"
+		},
+			function (data) {
 				if (data != 0 && data != '' && data != undefined) {
 					$("#" + returnid).html(data);
 				}
@@ -465,10 +465,10 @@
 	function exportParticipantData() {
 		$.blockUI();
 		$.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'participant', 'action' => 'export-participants-response-details', 'format' => 'html')); ?>", {},
-			function(data) {
+			function (data) {
 				$.unblockUI();
 				if (data == "" || data == null || data == undefined || $.trim(data) == 'not-found' || !data) {
-					alert('<?= $this->translate->_("Unable to generate download"); ?>');
+					alert("<?= $this->jsTranslate("Unable to generate download"); ?>");
 				} else {
 					window.open('/temporary/' + data, '_blank');
 				}
