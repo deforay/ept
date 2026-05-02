@@ -29,12 +29,18 @@ _('algorithm');
 _('approval');
 // admin/eid-assay-add#tags, admin/eid-assay#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
 _('assay');
+// admin/participants-manager-map#summary
+_('Assign participants to a Data Manager (Participant Login) so the right person sees the right participants when filling out responses');
 // admin/home-config#tags
 _('banner');
-// admin/participants-bulk-import#tags
+// admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags, admin/participants-bulk-import#tags, admin/participants-manager-map#tags
 _('bulk-import');
+// admin/enrollments-bulk-enrollment#title
+_('Bulk Enroll Participants');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
+// admin/email-participants#tags
+_('communication');
 // admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
 // admin/distributions-add#tags, admin/participants-add#tags
@@ -51,8 +57,12 @@ _('Create a new test kit, optionally enabling Additional Information capture for
 _('Create a new Viral Load assay / platform');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
-// admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
+// admin/data-managers#tags, admin/participants-manager-map#tags
+_('data-manager');
+// admin/email-participants#tags, admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
+// admin/data-managers#title
+_('Data Managers (Participant Logins) and PT Country Coordinators');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('detection');
 // admin/reports-distribution#tags, admin/reports-finalize#tags
@@ -65,6 +75,8 @@ _('draft');
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
+// admin/enrollments-add#tags
+_('dual-list');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('early-infant-diagnosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags, admin/vl-assay-edit#tags
@@ -81,6 +93,18 @@ _('Edit VL Assay / Platform');
 _('eid');
 // admin/eid-assay#title
 _('EID Assays / Platforms');
+// admin/email-participants#tags
+_('email');
+// admin/email-participants#title
+_('Email Participants');
+// admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
+_('enrollment');
+// admin/enrollments#title
+_('Enrollments');
+// admin/enrollments-add#summary
+_('Enroll or unenroll many participants in a scheme using a filtered dual-list selector');
+// admin/enrollments-add#title
+_('Enroll Participants');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('evaluate');
 // admin/evaluate#summary
@@ -89,12 +113,14 @@ _('Evaluate participant responses, generate reports, and finalize shipments');
 _('Evaluate PT Survey');
 // admin/evaluate#tags
 _('evaluation');
-// admin/participants-bulk-import#tags
+// admin/enrollments-bulk-enrollment#tags, admin/participants-bulk-import#tags
 _('excel');
 // admin/eid-assay-add#tags, admin/eid-assay#tags
 _('extraction');
 // admin/home-config#tags
 _('faq');
+// admin/enrollments-add#tags
+_('filters');
 // admin/evaluate#tags, admin/reports-finalize#tags
 _('finalize');
 // admin/reports-finalize#title
@@ -137,16 +163,24 @@ _('List, filter, approve, and manage test kits used by participants in their res
 _('List Early Infant Diagnosis Extraction and Detection assays, add new ones, and toggle their active status');
 // admin/report-config#tags
 _('logo');
+// admin/data-managers#summary
+_('Manage Data Manager / PT Login accounts and PT Country Coordinators (PTCCs) — add, edit, reset password, change email, and map to participants');
 // admin/evaluate-shipment#tags
 _('manual-override');
-// admin/participants#tags, admin/testkit-standard-kit#tags
+// admin/participants-manager-map#title
+_('Map Participants to Data Managers');
+// admin/data-managers#tags, admin/participants-manager-map#tags, admin/participants#tags, admin/testkit-standard-kit#tags
 _('mapping');
 // admin/testkit-standard-kit#title
 _('Map Test Kits to Tests');
-// admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants#tags
+// admin/data-managers#tags
+_('participant-login');
+// admin/email-participants#tags, admin/enrollments-add#tags, admin/enrollments#tags, admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants-manager-map#tags, admin/participants#tags
 _('participants');
 // admin/participants#title
 _('Participants');
+// admin/data-managers#tags
+_('password');
 // admin/report-config#tags
 _('pdf');
 // admin/report-config#title
@@ -155,8 +189,12 @@ _('PDF Report Settings');
 _('Per-participant breakdown for a single shipment, with re-evaluation, manual overrides, and shared comments');
 // admin/eid-assay#tags, admin/vl-assay#tags
 _('platform');
+// admin/data-managers#tags, admin/participants-manager-map#tags
+_('pt-login');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('pt-survey');
+// admin/data-managers#tags, admin/email-participants#tags
+_('ptcc');
 // admin/distributions#title
 _('PT Surveys');
 // admin/reports-finalize#tags
@@ -171,6 +209,8 @@ _('Re-generate and lock in reports — only finalized reports are visible to par
 _('Rename a Viral Load assay / platform');
 // admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
 _('reports');
+// admin/enrollments-add#tags, admin/enrollments-bulk-enrollment#tags, admin/enrollments#tags
+_('scheme');
 // admin/participants-edit#tags
 _('schemes');
 // admin/dts-settings#tags, admin/tb-settings#tags, admin/vl-settings#tags
@@ -183,6 +223,8 @@ _('Scoring, report metadata, and report content for TB PT');
 _('Scoring, sample/testing options, and national algorithm test-kit enforcement for HIV Serology PT');
 // admin/testkit-standard-kit#summary
 _('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
+// admin/email-participants#summary
+_('Send a templated bulk email to participants, data managers, or PTCCs for a given shipment date range');
 // admin/global-config#tags
 _('settings');
 // admin/distributions#tags
@@ -199,6 +241,8 @@ _('tb');
 _('TB Settings');
 // admin/report-config#tags
 _('template');
+// admin/email-participants#tags
+_('templates');
 // admin/dts-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('testkit');
 // admin/testkit#title
@@ -219,12 +263,16 @@ _('Update a test kit\'s details, approval status, scheme/test mapping, and Addit
 _('upload');
 // admin/participants-bulk-import#summary
 _('Upload an Excel file to create or update many participants at once');
+// admin/enrollments-bulk-enrollment#summary
+_('Upload an Excel file to enroll many participants in a scheme at once');
 // admin/evaluate-shipment#tags
 _('view');
 // admin/distributions#summary
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
 // admin/evaluate-shipment#title
 _('View / Re-Evaluate Shipment');
+// admin/enrollments#summary
+_('View and manage which participants are enrolled in each scheme; bulk-import enrollments from a spreadsheet');
 // admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('viral-load');
 // admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
