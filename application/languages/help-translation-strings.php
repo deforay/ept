@@ -15,16 +15,24 @@ _('Add, view, edit, and manage your PT participants');
 _('Add Participant');
 // admin/distributions-add#title
 _('Add PT Survey');
+// admin/dts-settings#tags
+_('algorithm');
+// admin/home-config#tags
+_('banner');
 // admin/participants-bulk-import#tags
 _('bulk-import');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
+// admin/dts-settings#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/vl-settings#tags
+_('config');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
 // admin/participants-add#summary
 _('Create a new participant record and map them to one or more Data Managers');
 // admin/distributions-add#summary
 _('Create a new PT Survey on a specific date with a unique code');
+// admin/home-config#summary
+_('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
 // admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
 // admin/reports-distribution#tags, admin/reports-finalize#tags
@@ -33,6 +41,10 @@ _('distribution');
 _('distributions');
 // admin/reports-distribution#tags
 _('draft');
+// admin/dts-settings#tags
+_('dts');
+// admin/dts-settings#title
+_('DTS (HIV Serology) Settings');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('edit');
 // admin/participants-edit#title
@@ -49,6 +61,8 @@ _('Evaluate PT Survey');
 _('evaluation');
 // admin/participants-bulk-import#tags
 _('excel');
+// admin/home-config#tags
+_('faq');
 // admin/evaluate#tags, admin/reports-finalize#tags
 _('finalize');
 // admin/reports-finalize#title
@@ -59,8 +73,30 @@ _('generate');
 _('Generate draft per-participant and summary reports for internal review (not yet visible to participants)');
 // admin/reports-distribution#title
 _('Generate Reports');
+// admin/global-config#tags
+_('global');
+// admin/global-config#title
+_('Global Settings');
+// admin/report-config#summary
+_('Header text, logo, layout, and PDF template used on generated reports');
+// admin/home-config#tags
+_('hero');
+// admin/vl-settings#tags
+_('hiv');
+// admin/dts-settings#tags
+_('hiv-serology');
+// admin/home-config#tags
+_('home');
+// admin/home-config#title
+_('Home Page Settings');
+// admin/global-config#tags
+_('instance');
 // admin/participants#tags
 _('labs');
+// admin/home-config#tags
+_('landing');
+// admin/report-config#tags
+_('logo');
 // admin/evaluate-shipment#tags
 _('manual-override');
 // admin/participants#tags
@@ -69,6 +105,10 @@ _('mapping');
 _('participants');
 // admin/participants#title
 _('Participants');
+// admin/report-config#tags
+_('pdf');
+// admin/report-config#title
+_('PDF Report Settings');
 // admin/evaluate-shipment#summary
 _('Per-participant breakdown for a single shipment, with re-evaluation, manual overrides, and shared comments');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
@@ -83,14 +123,40 @@ _('queue');
 _('re-evaluate');
 // admin/reports-finalize#summary
 _('Re-generate and lock in reports — only finalized reports are visible to participants');
-// admin/evaluate#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
+// admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
 _('reports');
 // admin/participants-edit#tags
 _('schemes');
+// admin/dts-settings#tags, admin/tb-settings#tags, admin/vl-settings#tags
+_('scoring');
+// admin/vl-settings#summary
+_('Scoring, report metadata, and report content for HIV Viral Load PT');
+// admin/tb-settings#summary
+_('Scoring, report metadata, and report content for TB PT');
+// admin/dts-settings#summary
+_('Scoring, sample/testing options, and national algorithm test-kit enforcement for HIV Serology PT');
+// admin/global-config#tags
+_('settings');
 // admin/distributions#tags
 _('ship');
 // admin/distributions#tags
 _('shipments');
+// admin/global-config#tags
+_('smtp');
+// admin/global-config#summary
+_('System-wide configuration applied across the entire ePT application');
+// admin/tb-settings#tags
+_('tb');
+// admin/tb-settings#title
+_('TB Settings');
+// admin/report-config#tags
+_('template');
+// admin/dts-settings#tags
+_('testkit');
+// admin/global-config#tags
+_('theme');
+// admin/tb-settings#tags
+_('tuberculosis');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('update');
 // admin/participants-edit#summary
@@ -107,3 +173,9 @@ _('view');
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
 // admin/evaluate-shipment#title
 _('View / Re-Evaluate Shipment');
+// admin/vl-settings#tags
+_('viral-load');
+// admin/vl-settings#tags
+_('vl');
+// admin/vl-settings#title
+_('VL (HIV Viral Load) Settings');
