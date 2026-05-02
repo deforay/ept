@@ -35,20 +35,38 @@ _('edit');
 _('Edit Participant');
 // admin/distributions-edit#title
 _('Edit PT Survey');
+// admin/evaluate-shipment#tags, admin/evaluate#tags
+_('evaluate');
+// admin/evaluate#summary
+_('Evaluate participant responses, generate reports, and finalize shipments');
+// admin/evaluate#title
+_('Evaluate PT Survey');
+// admin/evaluate#tags
+_('evaluation');
 // admin/participants-bulk-import#tags
 _('excel');
+// admin/evaluate#tags
+_('finalize');
 // admin/participants#tags
 _('labs');
+// admin/evaluate-shipment#tags
+_('manual-override');
 // admin/participants#tags
 _('mapping');
-// admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants#tags
+// admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants#tags
 _('participants');
 // admin/participants#title
 _('Participants');
+// admin/evaluate-shipment#summary
+_('Per-participant breakdown for a single shipment, with re-evaluation, manual overrides, and shared comments');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('pt-survey');
 // admin/distributions#title
 _('PT Surveys');
+// admin/evaluate-shipment#tags, admin/evaluate#tags
+_('re-evaluate');
+// admin/evaluate#tags
+_('reports');
 // admin/participants-edit#tags
 _('schemes');
 // admin/distributions#tags
@@ -65,5 +83,9 @@ _('Update an existing PT Survey\'s code or date before it has been shipped');
 _('upload');
 // admin/participants-bulk-import#summary
 _('Upload an Excel file to create or update many participants at once');
+// admin/evaluate-shipment#tags
+_('view');
 // admin/distributions#summary
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
+// admin/evaluate-shipment#title
+_('View / Re-Evaluate Shipment');
