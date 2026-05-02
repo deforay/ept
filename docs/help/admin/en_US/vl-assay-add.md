@@ -1,0 +1,31 @@
+---
+title: Add VL Assay / Platform
+summary: Create a new Viral Load assay / platform
+tags: [config, vl, viral-load, assay, add]
+---
+
+# Add VL Assay / Platform
+
+Creates a new HIV Viral Load assay / platform. Once added, it
+appears in the participant VL response form for every shipment
+going forward.
+
+## Fields
+
+- **Name** *(required)* — full assay / platform name. Checked for
+  duplicates as you tab out.
+- **Short Name** *(required)* — shorter label for tight spaces.
+  Also checked for duplicates.
+
+## Saving
+
+- **Add** — saves and returns to the VL Assay list.
+- **Cancel** — discards changes and returns to the list.
+
+## Tips
+
+- Use the **manufacturer + product line** for the *Name* (e.g.
+  *Abbott RealTime HIV-1*) — it's the convention participants
+  expect to see in their dropdown.
+- Keep the **Short Name** under ~20 characters — it shows up in
+  charts and report columns where horizontal space is limited.

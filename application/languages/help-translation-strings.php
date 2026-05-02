@@ -7,10 +7,12 @@
 // Body markdown content is translated by adding sibling locale files under
 // docs/help/{audience}/{locale}/{slug}.md — not via gettext.
 
-// admin/distributions-add#tags, admin/participants-add#tags, admin/testkit-add#tags
+// admin/distributions-add#tags, admin/eid-assay-add#tags, admin/participants-add#tags, admin/testkit-add#tags, admin/vl-assay-add#tags
 _('add');
 // admin/participants#summary
 _('Add, view, edit, and manage your PT participants');
+// admin/eid-assay-add#title
+_('Add EID Assay / Platform');
 // admin/testkit-add#tags, admin/testkit-edit#tags
 _('additional-info');
 // admin/participants-add#title
@@ -19,30 +21,40 @@ _('Add Participant');
 _('Add PT Survey');
 // admin/testkit-add#title
 _('Add Test Kit');
+// admin/vl-assay-add#title
+_('Add VL Assay / Platform');
 // admin/dts-settings#tags
 _('algorithm');
 // admin/testkit-edit#tags, admin/testkit#tags
 _('approval');
+// admin/eid-assay-add#tags, admin/eid-assay#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags
+_('assay');
 // admin/home-config#tags
 _('banner');
 // admin/participants-bulk-import#tags
 _('bulk-import');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
-// admin/dts-settings#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-settings#tags
+// admin/dts-settings#tags, admin/eid-assay-add#tags, admin/eid-assay#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('config');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
+// admin/eid-assay-add#summary
+_('Create a new Early Infant Diagnosis Extraction or Detection assay');
 // admin/participants-add#summary
 _('Create a new participant record and map them to one or more Data Managers');
 // admin/distributions-add#summary
 _('Create a new PT Survey on a specific date with a unique code');
 // admin/testkit-add#summary
 _('Create a new test kit, optionally enabling Additional Information capture for OD / Ct / custom values');
+// admin/vl-assay-add#summary
+_('Create a new Viral Load assay / platform');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
 // admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
+// admin/eid-assay-add#tags, admin/eid-assay#tags
+_('detection');
 // admin/reports-distribution#tags, admin/reports-finalize#tags
 _('distribution');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
@@ -53,7 +65,9 @@ _('draft');
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
-// admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags
+// admin/eid-assay-add#tags, admin/eid-assay#tags
+_('early-infant-diagnosis');
+// admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags, admin/vl-assay-edit#tags
 _('edit');
 // admin/participants-edit#title
 _('Edit Participant');
@@ -61,6 +75,12 @@ _('Edit Participant');
 _('Edit PT Survey');
 // admin/testkit-edit#title
 _('Edit Test Kit');
+// admin/vl-assay-edit#title
+_('Edit VL Assay / Platform');
+// admin/eid-assay-add#tags, admin/eid-assay#tags
+_('eid');
+// admin/eid-assay#title
+_('EID Assays / Platforms');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('evaluate');
 // admin/evaluate#summary
@@ -71,6 +91,8 @@ _('Evaluate PT Survey');
 _('evaluation');
 // admin/participants-bulk-import#tags
 _('excel');
+// admin/eid-assay-add#tags, admin/eid-assay#tags
+_('extraction');
 // admin/home-config#tags
 _('faq');
 // admin/evaluate#tags, admin/reports-finalize#tags
@@ -107,8 +129,12 @@ _('instance');
 _('labs');
 // admin/home-config#tags
 _('landing');
+// admin/vl-assay#summary
+_('List, add, and edit Viral Load assays / platforms used by participants');
 // admin/testkit#summary
 _('List, filter, approve, and manage test kits used by participants in their response forms');
+// admin/eid-assay#summary
+_('List Early Infant Diagnosis Extraction and Detection assays, add new ones, and toggle their active status');
 // admin/report-config#tags
 _('logo');
 // admin/evaluate-shipment#tags
@@ -127,6 +153,8 @@ _('pdf');
 _('PDF Report Settings');
 // admin/evaluate-shipment#summary
 _('Per-participant breakdown for a single shipment, with re-evaluation, manual overrides, and shared comments');
+// admin/eid-assay#tags, admin/vl-assay#tags
+_('platform');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('pt-survey');
 // admin/distributions#title
@@ -139,6 +167,8 @@ _('queue');
 _('re-evaluate');
 // admin/reports-finalize#summary
 _('Re-generate and lock in reports — only finalized reports are visible to participants');
+// admin/vl-assay-edit#summary
+_('Rename a Viral Load assay / platform');
 // admin/evaluate#tags, admin/report-config#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
 _('reports');
 // admin/participants-edit#tags
@@ -195,9 +225,11 @@ _('view');
 _('View, add, edit, and ship PT Surveys (distributions) and their shipments');
 // admin/evaluate-shipment#title
 _('View / Re-Evaluate Shipment');
-// admin/vl-settings#tags
+// admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('viral-load');
-// admin/vl-settings#tags
+// admin/vl-assay-add#tags, admin/vl-assay-edit#tags, admin/vl-assay#tags, admin/vl-settings#tags
 _('vl');
 // admin/vl-settings#title
 _('VL (HIV Viral Load) Settings');
+// admin/vl-assay#title
+_('VL Assays / Platforms');
