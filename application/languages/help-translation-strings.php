@@ -7,26 +7,34 @@
 // Body markdown content is translated by adding sibling locale files under
 // docs/help/{audience}/{locale}/{slug}.md — not via gettext.
 
-// admin/participants-add#tags
+// admin/distributions-add#tags, admin/participants-add#tags
 _('add');
 // admin/participants#summary
 _('Add, view, edit, and manage your PT participants');
 // admin/participants-add#title
 _('Add Participant');
+// admin/distributions-add#title
+_('Add PT Survey');
 // admin/participants-bulk-import#tags
 _('bulk-import');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
-// admin/participants-add#tags
+// admin/distributions-add#tags, admin/participants-add#tags
 _('create');
 // admin/participants-add#summary
 _('Create a new participant record and map them to one or more Data Managers');
+// admin/distributions-add#summary
+_('Create a new PT Survey on a specific date with a unique code');
 // admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
-// admin/participants-edit#tags
+// admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
+_('distributions');
+// admin/distributions-edit#tags, admin/participants-edit#tags
 _('edit');
 // admin/participants-edit#title
 _('Edit Participant');
+// admin/distributions-edit#title
+_('Edit PT Survey');
 // admin/participants-bulk-import#tags
 _('excel');
 // admin/participants#tags
@@ -37,13 +45,25 @@ _('mapping');
 _('participants');
 // admin/participants#title
 _('Participants');
+// admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
+_('pt-survey');
+// admin/distributions#title
+_('PT Surveys');
 // admin/participants-edit#tags
 _('schemes');
-// admin/participants-edit#tags
+// admin/distributions#tags
+_('ship');
+// admin/distributions#tags
+_('shipments');
+// admin/distributions-edit#tags, admin/participants-edit#tags
 _('update');
 // admin/participants-edit#summary
 _('Update an existing participant\'s details, mapped Data Managers, and enrolled schemes');
+// admin/distributions-edit#summary
+_('Update an existing PT Survey\'s code or date before it has been shipped');
 // admin/participants-bulk-import#tags
 _('upload');
 // admin/participants-bulk-import#summary
 _('Upload an Excel file to create or update many participants at once');
+// admin/distributions#summary
+_('View, add, edit, and ship PT Surveys (distributions) and their shipments');
