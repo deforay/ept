@@ -27,8 +27,12 @@ _('Create a new participant record and map them to one or more Data Managers');
 _('Create a new PT Survey on a specific date with a unique code');
 // admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
 _('data-managers');
+// admin/reports-distribution#tags, admin/reports-finalize#tags
+_('distribution');
 // admin/distributions-add#tags, admin/distributions-edit#tags, admin/distributions#tags
 _('distributions');
+// admin/reports-distribution#tags
+_('draft');
 // admin/distributions-edit#tags, admin/participants-edit#tags
 _('edit');
 // admin/participants-edit#title
@@ -45,8 +49,16 @@ _('Evaluate PT Survey');
 _('evaluation');
 // admin/participants-bulk-import#tags
 _('excel');
-// admin/evaluate#tags
+// admin/evaluate#tags, admin/reports-finalize#tags
 _('finalize');
+// admin/reports-finalize#title
+_('Finalize Reports');
+// admin/reports-distribution#tags
+_('generate');
+// admin/reports-distribution#summary
+_('Generate draft per-participant and summary reports for internal review (not yet visible to participants)');
+// admin/reports-distribution#title
+_('Generate Reports');
 // admin/participants#tags
 _('labs');
 // admin/evaluate-shipment#tags
@@ -63,9 +75,15 @@ _('Per-participant breakdown for a single shipment, with re-evaluation, manual o
 _('pt-survey');
 // admin/distributions#title
 _('PT Surveys');
+// admin/reports-finalize#tags
+_('publish');
+// admin/reports-distribution#tags, admin/reports-finalize#tags
+_('queue');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('re-evaluate');
-// admin/evaluate#tags
+// admin/reports-finalize#summary
+_('Re-generate and lock in reports — only finalized reports are visible to participants');
+// admin/evaluate#tags, admin/reports-distribution#tags, admin/reports-finalize#tags
 _('reports');
 // admin/participants-edit#tags
 _('schemes');
