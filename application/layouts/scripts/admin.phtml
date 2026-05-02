@@ -609,7 +609,9 @@ $helpSlugMap = [
 	'index/index'                  => 'dashboard',
 	'index/dashboard'              => 'dashboard',
 	'participants/index'           => 'participants',
-	'participants/edit'            => 'participants',
+	'participants/add'             => 'participants-add',
+	'participants/edit'            => 'participants-edit',
+	'participants/bulk-import'     => 'participants-bulk-import',
 	'participants/manage'          => 'participants',
 	'shipments/index'              => 'shipments',
 	'shipments/add'                => 'shipments',
@@ -1052,13 +1054,11 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 					<li class="spotlight-trigger-wrapper">
 						<a href="#" id="spotlightTrigger" title="<?= $this->translate->_('Search'); ?> (Ctrl+K)">
 							<i class="icon-search"></i>
-							<span class="hidden-xs kbd-hint">Ctrl+K</span>
 						</a>
 					</li>
 						<li>
 							<a href="javascript:void(0);" data-help-open="1" title="<?= $this->htmlTranslate('Help'); ?> (Ctrl+/)" class="help-trigger-nav">
 								<i class="icon-question-sign"></i>
-								<span class="hidden-xs kbd-hint">Ctrl+/</span>
 							</a>
 						</li>
 					<?php if ($notifyCount > 0) { ?>

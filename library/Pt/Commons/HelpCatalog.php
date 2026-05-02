@@ -65,9 +65,12 @@ final class Pt_Commons_HelpCatalog
             if ($meta === null) continue;
             $out[] = [
                 'slug' => $slug,
-                'title' => (string) ($meta['title'] ?? $slug),
-                'summary' => (string) ($meta['summary'] ?? ''),
-                'tags' => array_values(array_map('strval', (array) ($meta['tags'] ?? []))),
+                'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
+                'summary' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['summary'] ?? '')),
+                'tags' => array_values(array_map(
+                    fn ($t) => Pt_Commons_TranslateUtility::safeTranslate((string) $t),
+                    (array) ($meta['tags'] ?? [])
+                )),
             ];
         }
 
@@ -93,9 +96,12 @@ final class Pt_Commons_HelpCatalog
 
         return [
             'slug' => $slug,
-            'title' => (string) ($meta['title'] ?? $slug),
-            'summary' => (string) ($meta['summary'] ?? ''),
-            'tags' => array_values(array_map('strval', (array) ($meta['tags'] ?? []))),
+            'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
+            'summary' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['summary'] ?? '')),
+            'tags' => array_values(array_map(
+                fn ($t) => Pt_Commons_TranslateUtility::safeTranslate((string) $t),
+                (array) ($meta['tags'] ?? [])
+            )),
             'html' => $html,
             'locale' => $usedLocale,
         ];

@@ -44,6 +44,20 @@ Body markdown here…
 
 ## Translating
 
-Drop a translated copy into `{audience}/{locale}/{slug}.md`. Missing
-translations gracefully fall back to `en_US`. Frontmatter (title, summary,
-tags) is also translated by being authored in each locale's file.
+**Body content** — Drop a translated copy into `{audience}/{locale}/{slug}.md`.
+Missing translations gracefully fall back to `en_US`. Long-form prose
+translates better as whole documents than as gettext strings.
+
+**Frontmatter (title, summary, tags)** — Translated through the normal
+PO/MO gettext flow. After authoring or editing a topic, run:
+
+```bash
+php bin/generate-help-translation-strings.php
+```
+
+This regenerates `application/languages/help-translation-strings.php`,
+a stub file that exists only so xgettext can discover the frontmatter
+strings. Translators then translate them in their PO file like any other
+UI string. The catalog runs every frontmatter value through the
+translator at read time, so the topic index, drawer header, and search
+are localised even when a body translation hasn't landed yet.

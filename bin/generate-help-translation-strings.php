@@ -1,0 +1,209 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+if (php_sapi_name() !== 'cli') {
+    exit(0);
+}
+
+$options = getopt('', ['output::', 'help']);
+
+if (isset($options['help'])) {
+    echo <<<TXT
+Usage:
+  php bin/generate-help-translation-strings.php [--output=/path/to/file.php]
+
+Scans docs/help/{audience}/en_US/*.md and emits a PHP stub with _() calls
+for every frontmatter title, summary, and tag, so xgettext can pick them
+up and translators can translate them through the normal PO/MO flow.
+
+Options:
+  --output    Output PHP file. Defaults to application/languages/help-translation-strings.php
+  --help      Show this help text.
+
+TXT;
+    exit(0);
+}
+
+require_once __DIR__ . '/../cli-bootstrap.php';
+require_once __DIR__ . '/console-helpers.php';
+
+const DEFAULT_HELP_OUTPUT_FILE = APPLICATION_PATH . '/languages/help-translation-strings.php';
+const HELP_DOCS_ROOT = APPLICATION_PATH . '/../docs/help';
+const HELP_AUDIENCES = ['admin', 'participant'];
+
+try {
+    $io = createCliStyle();
+    $io->title('Generate Help Translation Strings');
+
+    $outputFile = (string) ($options['output'] ?? DEFAULT_HELP_OUTPUT_FILE);
+
+    $entries = collectHelpStrings(HELP_DOCS_ROOT, HELP_AUDIENCES);
+    writeHelpTranslationFile($outputFile, $entries);
+
+    $io->definitionList(
+        ['Output file' => $outputFile],
+        ['Audiences scanned' => implode(', ', HELP_AUDIENCES)],
+        ['Topics scanned' => (string) array_sum(array_map(fn($a) => count($a), $entries))],
+        ['Unique strings' => (string) countUniqueHelpStrings($entries)]
+    );
+    $io->success('Help translation strings generated successfully.');
+} catch (Throwable $e) {
+    $io ??= createCliStyle();
+    $io->error('Help translation string generation failed: ' . $e->getMessage());
+    exit(1);
+}
+
+/**
+ * Walk docs/help/{audience}/en_US/*.md and return:
+ *   [audience => [slug => ['title' => ..., 'summary' => ..., 'tags' => [...]]]]
+ *
+ * @param string[] $audiences
+ * @return array<string, array<string, array{title:string, summary:string, tags:list<string>}>>
+ */
+function collectHelpStrings(string $root, array $audiences): array
+{
+    $entries = [];
+    foreach ($audiences as $audience) {
+        $dir = $root . '/' . $audience . '/en_US';
+        if (!is_dir($dir)) {
+            continue;
+        }
+        $files = glob($dir . '/*.md') ?: [];
+        sort($files, SORT_NATURAL | SORT_FLAG_CASE);
+        foreach ($files as $file) {
+            $slug = pathinfo($file, PATHINFO_FILENAME);
+            $meta = parseHelpFrontmatter($file);
+            if ($meta === null) {
+                continue;
+            }
+            $entries[$audience][$slug] = [
+                'title' => trim((string) ($meta['title'] ?? '')),
+                'summary' => trim((string) ($meta['summary'] ?? '')),
+                'tags' => array_values(array_filter(
+                    array_map('trim', array_map('strval', (array) ($meta['tags'] ?? []))),
+                    static fn(string $t): bool => $t !== ''
+                )),
+            ];
+        }
+    }
+    return $entries;
+}
+
+/**
+ * Tiny YAML-ish frontmatter parser — must match Pt_Commons_HelpCatalog so the
+ * generated stub stays in sync with what the catalog actually reads.
+ *
+ * @return array<string, mixed>|null
+ */
+function parseHelpFrontmatter(string $file): ?array
+{
+    $raw = (string) file_get_contents($file);
+    if ($raw === '' || !str_starts_with($raw, "---\n")) {
+        return null;
+    }
+    $end = strpos($raw, "\n---", 4);
+    if ($end === false) {
+        return null;
+    }
+    $block = substr($raw, 4, $end - 4);
+    $out = [];
+    foreach (explode("\n", $block) as $line) {
+        if (!preg_match('/^([a-z_]+)\s*:\s*(.*)$/i', trim($line), $m)) {
+            continue;
+        }
+        $key = $m[1];
+        $val = trim($m[2]);
+        if ($val === '') {
+            $out[$key] = '';
+            continue;
+        }
+        if (str_starts_with($val, '[') && str_ends_with($val, ']')) {
+            $items = substr($val, 1, -1);
+            $parts = array_filter(array_map('trim', explode(',', $items)), fn($s) => $s !== '');
+            $out[$key] = array_map(fn($s) => trim($s, "'\""), $parts);
+            continue;
+        }
+        $out[$key] = trim($val, "'\"");
+    }
+    return $out;
+}
+
+/**
+ * @param array<string, array<string, array{title:string, summary:string, tags:list<string>}>> $entries
+ */
+function writeHelpTranslationFile(string $outputFile, array $entries): void
+{
+    $outputDirectory = dirname($outputFile);
+    if (!is_dir($outputDirectory) && !mkdir($outputDirectory, 0775, true) && !is_dir($outputDirectory)) {
+        throw new RuntimeException("Failed to create output directory '{$outputDirectory}'.");
+    }
+
+    $lines = [
+        '<?php',
+        '',
+        '// SYSTEM GENERATED FILE. DO NOT EDIT.',
+        '// Generated by bin/generate-help-translation-strings.php from docs/help/{audience}/en_US/*.md',
+        '// This file exists only so gettext/xgettext can discover help frontmatter strings',
+        '// (title, summary, tags) and feed them into the normal PO/MO translation flow.',
+        '// Body markdown content is translated by adding sibling locale files under',
+        '// docs/help/{audience}/{locale}/{slug}.md — not via gettext.',
+        '',
+    ];
+
+    // Collect unique strings with their sources for nicer comments.
+    $stringSources = [];
+    foreach ($entries as $audience => $topics) {
+        foreach ($topics as $slug => $meta) {
+            $tagFor = "{$audience}/{$slug}";
+            if ($meta['title'] !== '') {
+                $stringSources[$meta['title']]["{$tagFor}#title"] = true;
+            }
+            if ($meta['summary'] !== '') {
+                $stringSources[$meta['summary']]["{$tagFor}#summary"] = true;
+            }
+            foreach ($meta['tags'] as $tag) {
+                $stringSources[$tag]["{$tagFor}#tags"] = true;
+            }
+        }
+    }
+
+    ksort($stringSources, SORT_NATURAL | SORT_FLAG_CASE);
+
+    foreach ($stringSources as $string => $sources) {
+        $lines[] = '// ' . implode(', ', array_keys($sources));
+        $lines[] = '_(' . var_export($string, true) . ');';
+    }
+
+    $lines[] = '';
+
+    $result = file_put_contents($outputFile, implode(PHP_EOL, $lines));
+    if ($result === false) {
+        throw new RuntimeException("Failed to write output file '{$outputFile}'.");
+    }
+}
+
+/**
+ * @param array<string, array<string, array{title:string, summary:string, tags:list<string>}>> $entries
+ */
+function countUniqueHelpStrings(array $entries): int
+{
+    $unique = [];
+    foreach ($entries as $topics) {
+        foreach ($topics as $meta) {
+            if ($meta['title'] !== '') {
+                $unique[$meta['title']] = true;
+            }
+            if ($meta['summary'] !== '') {
+                $unique[$meta['summary']] = true;
+            }
+            foreach ($meta['tags'] as $tag) {
+                $unique[$tag] = true;
+            }
+        }
+    }
+    return count($unique);
+}
