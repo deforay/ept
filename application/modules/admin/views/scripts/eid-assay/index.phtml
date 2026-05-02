@@ -37,18 +37,21 @@
         <li class="tab-link <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>"
             data-tab="tab-1"><?= $this->translate->_("EID Extraction Assay"); ?></li>
         <li class="tab-link <?php echo ($this->source == "detection") ? 'current' : ''; ?>" data-tab="tab-2">
-            <?= $this->translate->_("EID Detection Assay"); ?></li>
+            <?= $this->translate->_("EID Detection Assay"); ?>
+        </li>
     </ul>
 
     <div id="tab-1"
         class="tab-content <?php echo ($this->source == "" || $this->source == "extraction") ? 'current' : ''; ?>">
         <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
             <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-                <?= $this->translate->_("List of all EID Extraction Assay"); ?></div>
+                <?= $this->translate->_("List of all EID Extraction Assay/Platforms"); ?>
+            </div>
             <div style="margin-top:10px;"><a
                     href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'extraction'), 'default', true); ?>"
                     class="btn btn-primary" style="float:right;"><i
-                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
+                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay/Platform"); ?></a>
+            </div>
         </h4>
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="eidExtractionAssayTable">
@@ -69,11 +72,13 @@
     <div id="tab-2" class="tab-content <?php echo ($this->source == "detection") ? 'current' : ''; ?>">
         <h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
             <div style="font-size:22.5px;line-height:36px;color:#333;float:left;">
-                <?= $this->translate->_("List of All Eid Detection Assay"); ?></div>
+                <?= $this->translate->_("List of All Eid Detection Assay/Platforms"); ?>
+            </div>
             <div style="margin-top:10px;"><a
                     href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay', 'action' => 'add', 'source' => 'detection'), 'default', true); ?>"
                     class="btn btn-primary" style="float:right;"><i
-                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay"); ?></a></div>
+                        class="icon-plus"></i>&nbsp;&nbsp;<?= $this->translate->_("Add New EID Assay/Platform"); ?></a>
+            </div>
         </h4>
         <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
             id="eidDetectionAssayTable">
