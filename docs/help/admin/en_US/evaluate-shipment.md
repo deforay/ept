@@ -29,18 +29,55 @@ The top of the page shows what you're working on:
 
 ## Corrective Action File and shared comment
 
-Below the header is a small form for shipment-wide content that
-appears on every participant's report:
+Below the header is a small form for **shipment-wide** content. Both
+fields apply to every participant mapped to this shipment, and both
+flow through to the per-participant reports.
 
-- **Corrective Action Files** — upload a PDF/document with
-  guidance for participants who didn't pass. The file becomes part
-  of every participant's report for this shipment.
-- **Comment for all Participants of this shipment** — free-text
-  note that's printed on every participant's report (e.g.
-  explaining a problematic sample, summarising overall performance,
-  flagging a known issue).
-- **Update File & Comment** — saves both. You can change them and
-  resave at any time before finalizing.
+### Corrective Action Files
+
+A single file (typically a PDF) describing what participants who
+didn't pass should do — common formats are corrective-action SOPs,
+remediation guidance, or a write-up explaining issues with the
+panel. Despite the plural label, **only one file is stored per
+shipment** — uploading a new file *replaces* the previous one.
+
+- Click **Choose file** to pick a file from your computer. The
+  filename appears next to the button once selected. The system
+  cleans the filename (strips spaces and unsafe characters) before
+  saving.
+- Files are stored under `/uploads/corrective-action-files/` and
+  attached to the shipment record.
+- On the participant side, a **Corrective Action** download button
+  appears alongside the participant's report — primarily for
+  participants who didn't pass, so they get the remediation
+  guidance with their result.
+- To remove the current file, upload a different one in its place.
+  Submitting the form without a file selected leaves the existing
+  file untouched.
+
+### Comment for all Participants of this shipment
+
+Free-text note that's saved on the shipment record and surfaces on
+every participant's report — typical uses are explaining a
+problematic sample, summarising overall performance, or flagging a
+known issue with the panel.
+
+- The textarea is pre-filled with whatever comment is currently
+  saved, so you're always editing the latest version (not adding
+  to a history).
+- **Saving overwrites the previous comment** — there's only one
+  comment per shipment. If you need to keep old context, copy it
+  out before editing.
+- The same comment is editable later from the
+  reports/finalize page if you need to tweak it after generating
+  reports.
+
+### Update File & Comment
+
+The single button under the form saves *both* fields together. The
+file is optional on each save — leave it blank to update only the
+comment, or pick a file to update both. Both can be edited and
+resaved any number of times until the shipment is finalized.
 
 ## Manual override filter
 
