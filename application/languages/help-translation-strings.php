@@ -7,23 +7,29 @@
 // Body markdown content is translated by adding sibling locale files under
 // docs/help/{audience}/{locale}/{slug}.md — not via gettext.
 
-// admin/distributions-add#tags, admin/participants-add#tags
+// admin/distributions-add#tags, admin/participants-add#tags, admin/testkit-add#tags
 _('add');
 // admin/participants#summary
 _('Add, view, edit, and manage your PT participants');
+// admin/testkit-add#tags, admin/testkit-edit#tags
+_('additional-info');
 // admin/participants-add#title
 _('Add Participant');
 // admin/distributions-add#title
 _('Add PT Survey');
+// admin/testkit-add#title
+_('Add Test Kit');
 // admin/dts-settings#tags
 _('algorithm');
+// admin/testkit-edit#tags, admin/testkit#tags
+_('approval');
 // admin/home-config#tags
 _('banner');
 // admin/participants-bulk-import#tags
 _('bulk-import');
 // admin/participants-bulk-import#title
 _('Bulk Import Participants');
-// admin/dts-settings#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/vl-settings#tags
+// admin/dts-settings#tags, admin/global-config#tags, admin/home-config#tags, admin/report-config#tags, admin/tb-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags, admin/vl-settings#tags
 _('config');
 // admin/distributions-add#tags, admin/participants-add#tags
 _('create');
@@ -31,6 +37,8 @@ _('create');
 _('Create a new participant record and map them to one or more Data Managers');
 // admin/distributions-add#summary
 _('Create a new PT Survey on a specific date with a unique code');
+// admin/testkit-add#summary
+_('Create a new test kit, optionally enabling Additional Information capture for OD / Ct / custom values');
 // admin/home-config#summary
 _('Customize the public home page — hero text, banner image, resource cards, logos, and FAQ');
 // admin/participants-add#tags, admin/participants-edit#tags, admin/participants#tags
@@ -41,16 +49,18 @@ _('distribution');
 _('distributions');
 // admin/reports-distribution#tags
 _('draft');
-// admin/dts-settings#tags
+// admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('dts');
 // admin/dts-settings#title
 _('DTS (HIV Serology) Settings');
-// admin/distributions-edit#tags, admin/participants-edit#tags
+// admin/distributions-edit#tags, admin/participants-edit#tags, admin/testkit-edit#tags
 _('edit');
 // admin/participants-edit#title
 _('Edit Participant');
 // admin/distributions-edit#title
 _('Edit PT Survey');
+// admin/testkit-edit#title
+_('Edit Test Kit');
 // admin/evaluate-shipment#tags, admin/evaluate#tags
 _('evaluate');
 // admin/evaluate#summary
@@ -73,6 +83,8 @@ _('generate');
 _('Generate draft per-participant and summary reports for internal review (not yet visible to participants)');
 // admin/reports-distribution#title
 _('Generate Reports');
+// admin/testkit-standard-kit#tags
+_('generic-scheme');
 // admin/global-config#tags
 _('global');
 // admin/global-config#title
@@ -83,7 +95,7 @@ _('Header text, logo, layout, and PDF template used on generated reports');
 _('hero');
 // admin/vl-settings#tags
 _('hiv');
-// admin/dts-settings#tags
+// admin/dts-settings#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('hiv-serology');
 // admin/home-config#tags
 _('home');
@@ -95,12 +107,16 @@ _('instance');
 _('labs');
 // admin/home-config#tags
 _('landing');
+// admin/testkit#summary
+_('List, filter, approve, and manage test kits used by participants in their response forms');
 // admin/report-config#tags
 _('logo');
 // admin/evaluate-shipment#tags
 _('manual-override');
-// admin/participants#tags
+// admin/participants#tags, admin/testkit-standard-kit#tags
 _('mapping');
+// admin/testkit-standard-kit#title
+_('Map Test Kits to Tests');
 // admin/evaluate-shipment#tags, admin/participants-add#tags, admin/participants-bulk-import#tags, admin/participants-edit#tags, admin/participants#tags
 _('participants');
 // admin/participants#title
@@ -135,6 +151,8 @@ _('Scoring, report metadata, and report content for HIV Viral Load PT');
 _('Scoring, report metadata, and report content for TB PT');
 // admin/dts-settings#summary
 _('Scoring, sample/testing options, and national algorithm test-kit enforcement for HIV Serology PT');
+// admin/testkit-standard-kit#summary
+_('Select which test kits appear in the participant response form for each test position (Test 1, Test 2, Test 3, etc.)');
 // admin/global-config#tags
 _('settings');
 // admin/distributions#tags
@@ -151,8 +169,10 @@ _('tb');
 _('TB Settings');
 // admin/report-config#tags
 _('template');
-// admin/dts-settings#tags
+// admin/dts-settings#tags, admin/testkit-add#tags, admin/testkit-edit#tags, admin/testkit-standard-kit#tags, admin/testkit#tags
 _('testkit');
+// admin/testkit#title
+_('Test Kits');
 // admin/global-config#tags
 _('theme');
 // admin/tb-settings#tags
@@ -163,6 +183,8 @@ _('update');
 _('Update an existing participant\'s details, mapped Data Managers, and enrolled schemes');
 // admin/distributions-edit#summary
 _('Update an existing PT Survey\'s code or date before it has been shipped');
+// admin/testkit-edit#summary
+_('Update a test kit\'s details, approval status, scheme/test mapping, and Additional Information settings');
 // admin/participants-bulk-import#tags
 _('upload');
 // admin/participants-bulk-import#summary

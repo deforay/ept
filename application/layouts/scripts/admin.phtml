@@ -125,7 +125,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 	if (isset($adminSession->activeSchemes) && in_array('vl', $adminSession->activeSchemes)) {
 		$spotlightItems[] = [
 			'id' => 'vl-assay',
-			'title' => $this->translate->_('VL Assay'),
+			'title' => $this->translate->_('VL Assay/Platforms'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-tint',
 			'url' => $this->url(['module' => 'admin', 'controller' => 'vl-assay'], 'default', true),
@@ -143,7 +143,7 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 	if (isset($adminSession->activeSchemes) && in_array('eid', $adminSession->activeSchemes)) {
 		$spotlightItems[] = [
 			'id' => 'eid-assay',
-			'title' => $this->translate->_('EID Assay'),
+			'title' => $this->translate->_('EID Assay/Platforms'),
 			'category' => $this->translate->_('Configure'),
 			'icon' => 'icon-tint',
 			'url' => $this->url(['module' => 'admin', 'controller' => 'eid-assay'], 'default', true),
@@ -603,41 +603,45 @@ if (!$pstatus && in_array('access-reports', $privileges)) {
 
 // In-app help: map current page → help slug. Pages not listed here open the
 // drawer onto the topic index instead. Keep in sync as new help docs land.
-$audience    = 'admin';
+$audience = 'admin';
 $helpBaseUrl = $this->baseUrl('/admin/help');
 $helpSlugMap = [
-	'index/index'                  => 'dashboard',
-	'index/dashboard'              => 'dashboard',
-	'participants/index'           => 'participants',
-	'participants/add'             => 'participants-add',
-	'participants/edit'            => 'participants-edit',
-	'participants/bulk-import'     => 'participants-bulk-import',
-	'participants/manage'          => 'participants',
-	'shipments/index'              => 'shipments',
-	'shipments/add'                => 'shipments',
-	'shipments/edit'               => 'shipments',
-	'shipments/manage'             => 'shipments',
-	'distributions/index'          => 'distributions',
-	'distributions/add'            => 'distributions-add',
-	'distributions/edit'           => 'distributions-edit',
-	'distributions/manage'         => 'distributions',
-	'reports/index'                => 'reports',
-	'evaluate/index'               => 'evaluate',
-	'evaluate/shipment'            => 'evaluate-shipment',
-	'distribution/index'           => 'reports-distribution',
-	'finalize/index'               => 'reports-finalize',
-	'system-admins/index'          => 'users',
-	'system-admins/edit'           => 'users',
-	'users/index'                  => 'users',
-	'users/edit'                   => 'users',
-	'schemes/index'                => 'schemes',
-	'schemes/edit'                 => 'schemes',
-	'global-config/index'          => 'global-config',
-	'report-config/index'          => 'report-config',
-	'home-config/index'            => 'home-config',
-	'dts-settings/index'           => 'dts-settings',
-	'vl-settings/index'            => 'vl-settings',
-	'tb-settings/index'            => 'tb-settings',
+	'index/index' => 'dashboard',
+	'index/dashboard' => 'dashboard',
+	'participants/index' => 'participants',
+	'participants/add' => 'participants-add',
+	'participants/edit' => 'participants-edit',
+	'participants/bulk-import' => 'participants-bulk-import',
+	'participants/manage' => 'participants',
+	'shipments/index' => 'shipments',
+	'shipments/add' => 'shipments',
+	'shipments/edit' => 'shipments',
+	'shipments/manage' => 'shipments',
+	'distributions/index' => 'distributions',
+	'distributions/add' => 'distributions-add',
+	'distributions/edit' => 'distributions-edit',
+	'distributions/manage' => 'distributions',
+	'reports/index' => 'reports',
+	'evaluate/index' => 'evaluate',
+	'evaluate/shipment' => 'evaluate-shipment',
+	'distribution/index' => 'reports-distribution',
+	'finalize/index' => 'reports-finalize',
+	'system-admins/index' => 'users',
+	'system-admins/edit' => 'users',
+	'users/index' => 'users',
+	'users/edit' => 'users',
+	'schemes/index' => 'schemes',
+	'schemes/edit' => 'schemes',
+	'global-config/index' => 'global-config',
+	'report-config/index' => 'report-config',
+	'home-config/index' => 'home-config',
+	'dts-settings/index' => 'dts-settings',
+	'vl-settings/index' => 'vl-settings',
+	'tb-settings/index' => 'tb-settings',
+	'testkit/index' => 'testkit',
+	'testkit/add' => 'testkit-add',
+	'testkit/edit' => 'testkit-edit',
+	'testkit/standard-kit' => 'testkit-standard-kit',
 ];
 $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 	?? $helpSlugMap["$controllerName/index"]
@@ -858,12 +862,12 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 									<?php } ?>
 									<?php if (in_array('vl', $adminSession->activeSchemes)) { ?>
 										<li id="VLAssay"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay"); ?></a>
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'vl-assay'), 'default', true); ?>"><?= $this->translate->_("VL Assay/Platforms"); ?></a>
 										</li>
 									<?php } ?>
 									<?php if (in_array('eid', $adminSession->activeSchemes)) { ?>
 										<li id="EIDAssay"><a
-												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay"); ?></a>
+												href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'eid-assay'), 'default', true); ?>"><?= $this->translate->_("EID Assay/Platforms"); ?></a>
 										</li>
 									<?php } ?>
 									<?php if (in_array('dts', $adminSession->activeSchemes) || in_array('tb', $adminSession->activeSchemes)) { ?>
@@ -1067,11 +1071,12 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 							<i class="icon-search"></i>
 						</a>
 					</li>
-						<li>
-							<a href="javascript:void(0);" data-help-open="1" title="<?= $this->htmlTranslate('Help'); ?> (Ctrl+/)" class="help-trigger-nav">
-								<i class="icon-question-sign"></i>
-							</a>
-						</li>
+					<li>
+						<a href="javascript:void(0);" data-help-open="1"
+							title="<?= $this->htmlTranslate('Help'); ?> (Ctrl+/)" class="help-trigger-nav">
+							<i class="icon-question-sign"></i>
+						</a>
+					</li>
 					<?php if ($notifyCount > 0) { ?>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="General Notification"><i
