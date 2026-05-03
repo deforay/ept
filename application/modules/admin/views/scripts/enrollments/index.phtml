@@ -61,6 +61,13 @@
         schemeSelected($("#scheme").val())
     });
 
+    // Fires on initial load and on bfcache restore (back/forward).
+    // Browsers restore the <select> value after document.ready, so re-run
+    // here to make the Enroll button reflect the restored selection.
+    $(window).on('pageshow', function () {
+        schemeSelected($("#scheme").val());
+    });
+
 
     function schemeSelected(scheme) {
         drawTable();

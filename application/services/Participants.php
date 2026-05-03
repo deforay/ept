@@ -62,13 +62,15 @@ class Application_Service_Participants
 		$enrollments = new Application_Model_DbTable_Enrollments();
 		return $enrollments->getAllEnrollments($params);
 	}
-	public function getEnrollmentDetails($pid, $sid)
+	public function getEnrollmentDetails($pid)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
 		$sql = $db->select()->from(['p' => 'participant'])
 			->joinLeft(['sp' => 'shipment_participant_map'], 'p.participant_id=sp.participant_id')
 			->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id')
-			->where("p.participant_id=$pid");
+			->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['scheme_name'])
+			->where("p.participant_id = ?", (int) $pid)
+			->order('s.shipment_date DESC');
 		return $db->fetchAll($sql);
 	}
 

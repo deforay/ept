@@ -50,7 +50,19 @@ When a scheme is picked, two buttons appear above the table:
   schemes appears as three rows.
 - **Enrolled On** — date of enrollment. Default sort is most
   recent first.
-- **Action** — per-row button(s).
+- **Action** — **Know More** *(blue, eye icon)*. Opens
+  *`/admin/enrollments/view/pid/{participant_id}`*, a
+  per-participant **Shipment History** page listing every
+  shipment the participant has ever been on across **all**
+  their schemes: *Shipment Code*, *Shipment Date*, *Shipment
+  Type* (the scheme), and *Status*. Sort by *Shipment Type* if
+  you want to scope the view to a single scheme. This is the
+  only place to see this — *Analyze → Evaluate* is per-shipment
+  and disappears once a shipment is finalized, so for
+  **historical, cross-shipment** lookups ("how has this lab
+  done over the last two years?"), Know More is the surface to
+  use. Rows with no scheme show `--` here instead of the
+  button.
 
 ## Tips
 

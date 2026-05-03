@@ -39,11 +39,10 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
 
     public function viewAction()
     {
-        if ($this->hasParam('pid') && $this->hasParam('sid')) {
-            $pid = $this->_getParam('pid');
-            $this->view->sid = $sid = $this->_getParam('sid');
+        if ($this->hasParam('pid')) {
+            $pid = (int) $this->_getParam('pid');
             $participantService = new Application_Service_Participants();
-            $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid, $sid);
+            $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid);
         } else {
             $this->redirect("/admin/enrollments");
         }
