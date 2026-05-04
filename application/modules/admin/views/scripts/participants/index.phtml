@@ -217,6 +217,21 @@
         });
 
         // Data Managers column — expand/collapse child row with on-demand AJAX fetch
+        function loadDmChildRow(tr, participantId) {
+            $.post(
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'mapped-data-managers', 'format' => 'html')); ?>",
+                { id: participantId },
+                function (html) {
+                    // fnOpen wraps our content in a td inside a tr — replace that td's content
+                    var $childTr = $(tr).next('tr');
+                    $childTr.find('td').first().html(html);
+                }
+            ).fail(function () {
+                var $childTr = $(tr).next('tr');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+            });
+        }
+
         $('#participantsTable tbody').on('click', 'a.toggle-dm-row', function (e) {
             e.preventDefault();
             var $btn = $(this);
@@ -231,19 +246,15 @@
             var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
             oTable.fnOpen(tr, placeholder, 'dm-child-container');
             $btn.removeClass('btn-primary').addClass('btn-success');
-            $.post(
-                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'mapped-data-managers', 'format' => 'html')); ?>",
-                { id: participantId },
-                function (html) {
-                    // fnOpen wraps our content in a td inside a tr — replace that td's content
-                    var $childTr = $(tr).next('tr');
-                    $childTr.find('td').first().html(html);
-                }
-            ).fail(function () {
-                var $childTr = $(tr).next('tr');
-                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
-            });
+            loadDmChildRow(tr, participantId);
         });
+
+        // Hook called by reset-password / change-primary-email modals on success.
+        // Redraw the participants table in place — fnDraw closes expanded child
+        // rows by design, so the user re-expands if they need to inspect.
+        window.afterDmActionSuccess = function () {
+            oTable.fnDraw(false);
+        };
 
         // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
         $('#participantsTable tbody').on('input', 'input.dm-filter-input', function () {
