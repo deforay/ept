@@ -9,7 +9,21 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
         })
             .done(function () {
                 $.unblockUI();
-                JobProgressTracker.init(sId);
+
+                // Re-run whichever AJAX table loader the host page defines so the
+                // row's status flips to "Queued" immediately. Single-shipment
+                // detail pages have no loader — fall back to a reload there.
+                if (typeof currentHighlighted !== 'undefined' && currentHighlighted) {
+                    if (typeof getShipments === 'function') {
+                        getShipments(currentHighlighted);
+                    } else if (typeof getShipmentInReports === 'function') {
+                        getShipmentInReports(currentHighlighted);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    location.reload();
+                }
             })
             .fail(function () {
                 $.unblockUI();
