@@ -335,18 +335,75 @@ class Application_Service_DataManagers
     public function resetPasswordFromAdmin($params, $forcePasswordReset = false)
     {
         $result = $this->datamanagersDb->updatePasswordFromAdmin($params['primaryMail'], $params['password'], $forcePasswordReset);
-        //$conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        //$eptDomain = rtrim($conf->domain, "/");
-        if ($result) {
-            // $common = new Application_Service_Common();
-            // $message = "Dear Participant,<br/><br/> You have requested a password reset for the PT account for email " . $params['primaryMail'] . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "'>" . $eptDomain . "/auth/new-password/email/" . base64_encode($email) . "</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>";
-            // $fromMail = Application_Service_Common::getConfig('admin_email');
-            // $fromName = Application_Service_Common::getConfig('admin-name');
-            // $common->insertTempMail($params['primaryMail'], null, null, "Password Reset - ePT", $message, $fromMail, $fromName);
-            return true;
-        } else {
+        if (!$result) {
             return false;
         }
+
+        // If admin chose "Reset & Email", queue a credentials email via temp_mail.
+        if (isset($params['mode']) && $params['mode'] === 'email') {
+            $this->queueCredentialsEmail($params);
+        }
+        return true;
+    }
+
+    /* Queues a login-credentials email through temp_mail. Recipients come from the
+       admin (To defaults to the user's primary email; Bcc defaults to the admin
+       email) — see views/scripts/data-managers/reset-password.phtml. */
+    private function queueCredentialsEmail(array $params): void
+    {
+        $cleanList = function ($raw) {
+            $out = [];
+            foreach (preg_split('/[\s,;]+/', (string) $raw) ?: [] as $addr) {
+                $addr = trim($addr);
+                if ($addr === '') {
+                    continue;
+                }
+                $valid = Application_Service_Common::validateEmail($addr);
+                if ($valid !== null) {
+                    $out[strtolower($valid)] = $valid;
+                }
+            }
+            return array_values($out);
+        };
+
+        $to  = $cleanList($params['emailTo']  ?? ($params['primaryMail'] ?? ''));
+        $cc  = $cleanList($params['emailCc']  ?? '');
+        $bcc = $cleanList($params['emailBcc'] ?? '');
+
+        if (empty($to)) {
+            return;
+        }
+
+        $loginUrl = trim((string) ($params['loginUrl'] ?? ''));
+        $loginId  = (string) ($params['primaryMail'] ?? $to[0]);
+        $password = (string) ($params['password'] ?? '');
+
+        $subject = 'Your ePT Login Credentials';
+        $message = "Dear Participant,<br/><br/>"
+            . "Please use the following to log in to ePT:<br/><br/>"
+            . "URL: <a href=\"" . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . "\">"
+            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . "</a><br/>"
+            . "Login ID: " . htmlspecialchars($loginId, ENT_QUOTES, 'UTF-8') . "<br/>"
+            . "Password: " . htmlspecialchars($password, ENT_QUOTES, 'UTF-8') . "<br/><br/>"
+            . "Thanks,<br/>ePT Support";
+
+        $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
+        $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
+        $fromName  = $mailCfg->fromName  ?? (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
+
+        $common = new Application_Service_Common();
+        $common->insertTempMail(
+            implode(',', $to),
+            !empty($cc)  ? implode(',', $cc)  : null,
+            !empty($bcc) ? implode(',', $bcc) : null,
+            $subject,
+            $message,
+            $fromEmail,
+            $fromName
+        );
+
+        $alert = new Zend_Session_Namespace('alertSpace');
+        $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
 

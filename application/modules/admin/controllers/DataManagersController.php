@@ -196,8 +196,13 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $userService = new Application_Service_DataManagers();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $loginUrl = rtrim((string) $conf->domain, "/") . '/auth/login';
         if ($request->isPost()) {
             $params = $request->getPost();
+            if (empty($params['loginUrl'])) {
+                $params['loginUrl'] = $loginUrl;
+            }
             $this->view->result = $userService->resetPasswordFromAdmin($params);
         } elseif ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
@@ -205,8 +210,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
-        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $this->view->loginUrl = rtrim((string) $conf->domain, "/") . '/auth/login';
+        $this->view->loginUrl = $loginUrl;
     }
 
     public function changePrimaryEmailAction()
