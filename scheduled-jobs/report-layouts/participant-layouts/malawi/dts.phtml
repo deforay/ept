@@ -823,82 +823,47 @@ if (!empty($resultArray['shipment'])) {
             $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score:</span> <br/>';
             $docRes .= '<table border="1" style="font-size:12px;width:100%;">';
             $docRes .= '<tr style="background-color:#dbe4ee;">';
-            $docRes .= '<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
-            $docRes .= '<td style="text-align:center;font-weight:bold;width:25%;" colspan="2">Score</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:85%;">Documentation Item</td>';
+            $docRes .= '<td style="text-align:center;font-weight:bold;width:15%;">Status</td>';
             $docRes .= '</tr>';
 
             // Receipt date
-            if (!empty($result['responseResult'][0]['shipment_receipt_date'])) {
-                $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
-            } else {
-                $scoreDoc = 0;
-                $img = $imgFail;
-            }
+            $img = !empty($result['responseResult'][0]['shipment_receipt_date']) ? $imgPass : $imgFail;
             $docRes .= '<tr>';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
-            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             // Rehydration date (dried samples only)
-            if (!empty($attributes['sample_rehydration_date']) && $shipmentAttributesSampleTypeDisplay == "") {
-                $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
-            } else {
-                $scoreDoc = 0;
-                $img = $imgFail;
-            }
+            $img = (!empty($attributes['sample_rehydration_date']) && $shipmentAttributesSampleTypeDisplay == "") ? $imgPass : $imgFail;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
-            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             // Test date
-            if (!empty($result['responseResult'][0]['shipment_test_date'])) {
-                $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
-            } else {
-                $scoreDoc = 0;
-                $img = $imgFail;
-            }
+            $img = !empty($result['responseResult'][0]['shipment_test_date']) ? $imgPass : $imgFail;
             $docRes .= '<tr>';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
-            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             // Rehydration timing
-            if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
-                $scoreDoc = 0;
-                $img = $imgFail;
-            } else {
-                $scoreDoc = $documentationScorePerItem;
-                $img = $imgPass;
-            }
+            $img = ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) ? $imgFail : $imgPass;
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
             $docRes .= '<td style="text-align:center;"><img style="width:11px;" src="' . $img . '" /></td>';
-            $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
             $docRes .= '</tr>';
 
             // Supervisor approval (not Myanmar)
             if (($attributes['algorithm'] ?? '') != 'myanmarNationalDtsAlgo') {
-                if (
+                $img = (
                     strtolower($result['responseResult'][0]['supervisor_approval'] ?? '') == 'yes'
                     && trim($result['responseResult'][0]['participant_supervisor'] ?? '') != ""
-                ) {
-                    $scoreDoc = $documentationScorePerItem;
-                    $img = $imgPass;
-                } else {
-                    $scoreDoc = 0;
-                    $img = $imgFail;
-                }
+                ) ? $imgPass : $imgFail;
                 $docRes .= '<tr>';
                 $docRes .= '<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
                 $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
-                $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
                 $docRes .= '</tr>';
             }
 
@@ -910,17 +875,10 @@ if (!empty($resultArray['shipment'])) {
                     ['label' => 'Reporting the availability of Stop Watch', 'key' => 'stop_watch'],
                 ];
                 foreach ($malawiItems as $item) {
-                    if (!empty($attributes[$item['key']])) {
-                        $scoreDoc = $documentationScorePerItem;
-                        $img = $imgPass;
-                    } else {
-                        $scoreDoc = 0;
-                        $img = $imgFail;
-                    }
+                    $img = !empty($attributes[$item['key']]) ? $imgPass : $imgFail;
                     $docRes .= '<tr>';
                     $docRes .= '<td style="text-align:left;font-weight:bold;">' . $item['label'] . '</td>';
                     $docRes .= '<td style="text-align:center;"><img style="width:9px;" src="' . $img . '" /></td>';
-                    $docRes .= '<td style="text-align:center;">' . $scoreDoc . '</td>';
                     $docRes .= '</tr>';
                 }
             }
