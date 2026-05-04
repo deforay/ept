@@ -510,7 +510,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($labTxt, true, false, true, false, '');
 
             $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
-            $scorePerSample = round((100 / count($result['responseResult'])), 2);
+            $scorePerSample = round((90 / count($result['responseResult'])), 2);
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                 <ul>
                     <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
