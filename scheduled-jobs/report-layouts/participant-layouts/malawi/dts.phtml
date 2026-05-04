@@ -771,6 +771,33 @@ if (!empty($resultArray['shipment'])) {
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
 
+            // ---- Summary block (placed right after panel results, per Malawi request) ----
+            $totalScore = $result['shipment_score'] + $result['documentation_score'];
+
+            if ($result['is_excluded'] == 'yes') {
+                $wishes = '<p>Your response was not considered for evaluation</p>';
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($wishes, true, false, true, false, '');
+            } else {
+                $evaluationResult = ($result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
+
+                $accuracy = ($mandatorySampleCount > 0)
+                    ? round(($successRate / $mandatorySampleCount) * 100, 2)
+                    : 0;
+
+                // Participant's total score (shipment + documentation) — same units as the
+                // survey-wide AVG(shipment_score + documentation_score) shown below.
+                $computedMean = round($totalScore, 2);
+
+                $wishes  = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
+                $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
+                $wishes .= '<strong>Your Computed Mean Score: </strong> ' . $computedMean . '.<br>';
+                $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
+                $wishes .= '<strong>Performance Comment:</strong> ' . $evaluationResult . '</p>';
+                $pdf->SetLeftMargin(15);
+                $pdf->writeHTML($wishes, true, false, true, false, '');
+            }
+
             // ---- Documentation score ----
             $totalDocumentationItems = 0;
             if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
@@ -924,33 +951,6 @@ if (!empty($resultArray['shipment'])) {
                 $failRes .= '</table>';
                 $pdf->writeHTML($failRes, true, false, true, false, '');
             }
-        }
-
-        $totalScore = $result['shipment_score'] + $result['documentation_score'];
-
-        if ($result['is_excluded'] == 'yes') {
-            $wishes = '<p>Your response was not considered for evaluation</p>';
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($wishes, true, false, true, false, '');
-        } else {
-            $evaluationResult = ($result['final_result'] == 1) ? 'Acceptable' : 'Unacceptable';
-
-            // FIX #5: divide by $mandatorySampleCount (not total responseResult count)
-            $accuracy = ($mandatorySampleCount > 0)
-                ? round(($successRate / $mandatorySampleCount) * 100, 2)
-                : 0;
-
-            // Participant's total score (shipment + documentation) — same units as the
-            // survey-wide AVG(shipment_score + documentation_score) shown below.
-            $computedMean = round($totalScore, 2);
-
-            $wishes  = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
-            $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
-            $wishes .= '<strong>Your Computed Mean Score: </strong> ' . $computedMean . '.<br>';
-            $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
-            $wishes .= '<strong>Performance Comment:</strong> ' . $evaluationResult . '</p>';
-            $pdf->SetLeftMargin(15);
-            $pdf->writeHTML($wishes, true, false, true, false, '');
         }
 
         if (
