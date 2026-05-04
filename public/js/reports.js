@@ -3,29 +3,18 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
     if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
 
-        document.location.reload(true);
-        var individual = null;
-        $.when(
-            $.post("/reports/distribution/queue-reports-generation", {
-                sid: sId,
-                type: _type
-            },
-                function (data) {
-                    individual = data;
-                })
-        ).then(function () {
-            if (individual) {
-                // Initialize progress tracker instead of immediate reload
-                if (typeof JobProgressTracker !== 'undefined') {
-                    $.unblockUI();
-                    JobProgressTracker.init(sId);
-                } else {
-                    $.unblockUI();
-                }
-            } else {
+        $.post("/reports/distribution/queue-reports-generation", {
+            sid: sId,
+            type: _type
+        })
+            .done(function () {
                 $.unblockUI();
-            }
-        });
+                JobProgressTracker.init(sId);
+            })
+            .fail(function () {
+                $.unblockUI();
+                alert("Failed to queue report generation. Please try again.");
+            });
     } else {
         $.unblockUI();
         alert("You cannot generate reports on or before PT Survey Date (" + surveyDate + ").\n\n\nYou can change the PT Survey Date and retry.");
