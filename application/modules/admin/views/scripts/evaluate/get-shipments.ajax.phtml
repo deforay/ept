@@ -87,6 +87,7 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 					$isEvaluated = $btnStates['isEvaluated'];
 					$hasReportsGenerated = $btnStates['hasReportsGenerated'];
 					$isFinalized = $btnStates['isFinalized'];
+					$isEphemeral = $btnStates['isEphemeral'];
 					$viewEnabled = $btnStates['viewEnabled'];
 					$generateReportsEnabled = $btnStates['generateReportsEnabled'];
 					$finalizeEnabled = $btnStates['finalizeEnabled'];
@@ -139,10 +140,12 @@ if (isset($this->shipmentStatus['finalized']['status'])) {
 								<?php if (!$isFinalized): ?>
 								<div style="display: inline;">
 									<?php if ($hasReportsGenerated): ?>
+										<?php if (!$isEphemeral): ?>
 										<a class="btn btn-info btn-xs"
 											href="/reports/distribution/shipment/sid/<?= $encodedShipmentId; ?>">
 											<i class="icon-eye-open"></i> <?= $this->translate->_("View Reports"); ?>
 										</a>
+										<?php endif; ?>
 										<a href="javascript:void(0)"
 											class="btn btn-xs btn-warning <?= $generateReportsClass; ?>"
 											onclick="generateReports('<?= $encodedShipmentId; ?>', <?= $canGenerateIndividualReport; ?>, '<?= $this->dateFormat($shipment['distribution_date']); ?>', 'generateReport')">

@@ -76,9 +76,11 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             return 0;
         }
 
-        // Update status to 'queued' and set previous_status to the original status value
+        // Update status to 'queued', set previous_status to the original status value,
+        // and clear reports_generated_at / finalized_at so stale "View Reports" / "Finalized"
+        // buttons disappear immediately. Files are removed when evaluate-shipments.php runs.
         $db->query(
-            "UPDATE shipment SET previous_status = `status`, `status` = 'queued', updated_on_admin = ? WHERE shipment_id = ?",
+            "UPDATE shipment SET previous_status = `status`, `status` = 'queued', updated_on_admin = ?, reports_generated_at = NULL, finalized_at = NULL WHERE shipment_id = ?",
             [Pt_Commons_DateUtility::getCurrentDateTime(), $safeShipmentId]
         );
 
