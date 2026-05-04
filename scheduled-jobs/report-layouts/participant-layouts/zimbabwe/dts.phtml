@@ -106,6 +106,7 @@ if (!empty($resultArray['shipment'])) {
         $screeningTestDisplay = (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') ? "display:none;" : "";
         $sampleTypeDisplay = (isset($shipmentAttributes["sampleType"]) && in_array($shipmentAttributes["sampleType"], ['serum', 'plasma'])) ? "display:none;" : "";
         $passPercentage = $config['passPercentage'];
+        $dtsPanelScore = $config['panelScore'];
         if ($screeningTestDisplay == "display:none;") {
             $testThreeOptionalDisplay = "display:none;";
         }
@@ -510,7 +511,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($labTxt, true, false, true, false, '');
 
             $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
-            $scorePerSample = round((90 / count($result['responseResult'])), 2);
+            $scorePerSample = round(($dtsPanelScore / count($result['responseResult'])), 2);
             $summaryNote = '<span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
                 <ul>
                     <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
