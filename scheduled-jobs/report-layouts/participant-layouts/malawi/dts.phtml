@@ -782,7 +782,7 @@ if (!empty($resultArray['shipment'])) {
                 }
             }
             if (($attributes['algorithm'] ?? '') == 'malawiNationalDtsAlgo') {
-                $totalDocumentationItems += 4;
+                $totalDocumentationItems += 3;
             }
 
             $documentationScorePerItem = ($totalDocumentationItems > 0)
@@ -940,10 +940,9 @@ if (!empty($resultArray['shipment'])) {
                 ? round(($successRate / $mandatorySampleCount) * 100, 2)
                 : 0;
 
-            // FIX #10: compute and display per-shipment mean score
-            $computedMean = (count($meanScore) > 0)
-                ? round(array_sum($meanScore) / count($meanScore), 2)
-                : 0;
+            // Participant's total score (shipment + documentation) — same units as the
+            // survey-wide AVG(shipment_score + documentation_score) shown below.
+            $computedMean = round($totalScore, 2);
 
             $wishes  = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
             $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
