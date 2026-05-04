@@ -13,7 +13,7 @@ $shipmentCode = '';
 
 $rtriResultsMap = $dtsResultsMap = $dtsResults = [];
 
-$possibleDtsResults    = $schemeService->getPossibleResults('dts');
+$possibleDtsResults = $schemeService->getPossibleResults('dts');
 $possibleRecencyResults = $schemeService->getPossibleResults('recency');
 
 foreach ($possibleDtsResults as $pr) {
@@ -122,34 +122,34 @@ if (!empty($resultArray['shipment'])) {
             $result['lastdate_response'] = Pt_Commons_DateUtility::humanReadableDateFormat($result['lastdate_response']);
         }
 
-        $responseDate         = "";
-        $shipmentTestDate     = "";
-        $distributionDate     = "";
-        $shipmentScore        = 0;
-        $documentationScore   = 0;
-        $score                = 0;
-        $testThreeHidden      = false;
-        $testTwoHidden        = false;
-        $screeningTest        = false;
-        $noTest               = 1;
+        $responseDate = "";
+        $shipmentTestDate = "";
+        $distributionDate = "";
+        $shipmentScore = 0;
+        $documentationScore = 0;
+        $score = 0;
+        $testThreeHidden = false;
+        $testTwoHidden = false;
+        $screeningTest = false;
+        $noTest = 1;
         // FIX #4: reset evaluationResult at the start of each shipment iteration
-        $evaluationResult     = "";
+        $evaluationResult = "";
 
-        $allowRepeatTests  = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
+        $allowRepeatTests = Pt_Commons_SchemeConfig::get('dts.allowRepeatTests');
         $allowedAlgorithms = Pt_Commons_SchemeConfig::get('dts.allowedAlgorithms');
         if ($allowedAlgorithms !== null && !is_array($allowedAlgorithms)) {
             $allowedAlgorithms = explode(',', $allowedAlgorithms);
         }
-        $dtsSchemeType       = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
-        $dtsOptionalTest3    = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
+        $dtsSchemeType = Pt_Commons_SchemeConfig::get('dts.dtsSchemeType');
+        $dtsOptionalTest3 = Pt_Commons_SchemeConfig::get('dts.dtsOptionalTest3');
         $sampleRehydrateDays = Pt_Commons_SchemeConfig::get('dts.sampleRehydrateDays') ?? 0;
-        $documentationScore  = Pt_Commons_SchemeConfig::get('dts.documentationScore');
-        $flag                = UPLOAD_PATH . '/../images/red-flag.png';
+        $documentationScore = Pt_Commons_SchemeConfig::get('dts.documentationScore');
+        $flag = UPLOAD_PATH . '/../images/red-flag.png';
 
         $testThreeOptionalDisplay = "";
         if (isset($dtsOptionalTest3) && $dtsOptionalTest3 == 'yes') {
             $testThreeOptionalDisplay = "display:none;";
-            $testThreeHidden          = true;
+            $testThreeHidden = true;
         }
 
         // FIX #3a: first (and only) decode of $attributes
@@ -162,38 +162,38 @@ if (!empty($resultArray['shipment'])) {
         $shipmentAttributesScreeningTestDisplay = "";
         if (isset($shipmentAttributes["screeningTest"]) && $shipmentAttributes["screeningTest"] == 'yes') {
             $shipmentAttributesScreeningTestDisplay = "display:none;";
-            $testThreeOptionalDisplay               = "display:none;";
-            $testTwoHidden                          = true;
+            $testThreeOptionalDisplay = "display:none;";
+            $testTwoHidden = true;
         }
 
-        $dtsSchemeType  = (isset($dtsSchemeType) && $dtsSchemeType != "") ? $dtsSchemeType : 'standard';
+        $dtsSchemeType = (isset($dtsSchemeType) && $dtsSchemeType != "") ? $dtsSchemeType : 'standard';
         $syphilisActive = false;
 
         if ($dtsSchemeType == 'updated-3-tests') {
             $allowedAlgorithms = ['dts-3-tests'];
-            $allowRepeatTests  = $repeatTest1 = true;
-            $testThreeHidden   = false;
-            $testTwoHidden     = false;
+            $allowRepeatTests = $repeatTest1 = true;
+            $testThreeHidden = false;
+            $testTwoHidden = false;
         } elseif ($dtsSchemeType == 'malawi') {
             $displaySampleConditionFields = true;
-            $allowRepeatTests             = $repeatTest1 = true;
-            $testThreeHidden              = false;
-            $testTwoHidden                = false;
+            $allowRepeatTests = $repeatTest1 = true;
+            $testThreeHidden = false;
+            $testTwoHidden = false;
         } elseif ($dtsSchemeType == 'myanmar') {
             $testThreeHidden = false;
-            $testTwoHidden   = false;
+            $testTwoHidden = false;
         } elseif ($dtsSchemeType == 'ghana') {
             $testThreeHidden = false;
-            $testTwoHidden   = false;
+            $testTwoHidden = false;
             // FIX #11: track syphilis flag so column is rendered below
             if (isset($shipmentAttributes['enableSyphilis']) && $shipmentAttributes['enableSyphilis'] == "yes") {
-                $syphilisActive      = true;
-                $isThisRetestField   = true;
+                $syphilisActive = true;
+                $isThisRetestField = true;
             }
         }
 
         $allowRepeatTests = isset($allowRepeatTests) ? $allowRepeatTests : 0;
-        $repeatTest1      = isset($repeatTest1) ? $repeatTest1 : false;
+        $repeatTest1 = isset($repeatTest1) ? $repeatTest1 : false;
 
         // --- Determine number of visible primary test columns ---
         if ($testTwoHidden) {
@@ -224,7 +224,7 @@ if (!empty($resultArray['shipment'])) {
         $trailingEmptyCols = $noRepeatTests + $syphilisColCount + 3;
 
         $width = round(100 / $totalCols, 2);
-        $w     = $width . '%';
+        $w = $width . '%';
 
         $shipmentAttributesSampleTypeDisplay = "";
         if (
@@ -238,7 +238,7 @@ if (!empty($resultArray['shipment'])) {
             isset($result['responseResult'][0]['responseDate'])
             && trim($result['responseResult'][0]['responseDate']) != ""
         ) {
-            $splitDate    = explode(" ", $result['responseResult'][0]['responseDate']);
+            $splitDate = explode(" ", $result['responseResult'][0]['responseDate']);
             $responseDate = Pt_Commons_DateUtility::humanReadableDateFormat($splitDate[0]);
         }
 
@@ -265,7 +265,7 @@ if (!empty($resultArray['shipment'])) {
         }
         $interval = $srDate->diff($testedOnDate);
 
-        $rehydrateHours     = $sampleRehydrateDays * 24;
+        $rehydrateHours = $sampleRehydrateDays * 24;
         $sampleConditionFields = (isset($displaySampleConditionFields) && $displaySampleConditionFields != "") ? $displaySampleConditionFields : 'no';
 
         $sampleRehydrationDate = "";
@@ -312,13 +312,13 @@ if (!empty($resultArray['shipment'])) {
         $labInfo .= '<hr><br>'; */
 
         $result['mobile'] = $result['mobile'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
-        $result['email']  = $result['email']  ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
+        $result['email'] = $result['email'] ?? '_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ';
 
         $instituteName = Pt_Commons_General::getConfig('institute_name');
         $instituteAddress = Pt_Commons_General::getConfig('institute_address');
         $instituteAdditionalDetails = Pt_Commons_General::getConfig('additional_institute_details');
 
-        $labInfo  = '<h4 style="text-align:center;">SEROLOGY PROFICIENCY TESTING SCHEMES</h4>';
+        $labInfo = '<h4 style="text-align:center;">SEROLOGY PROFICIENCY TESTING SCHEMES</h4>';
 
         $labInfo .= '<table cellpadding="4" style="font-size:11px; width:100%;">';
         $labInfo .= '<tr>';
@@ -333,7 +333,7 @@ if (!empty($resultArray['shipment'])) {
         $approveTxt = $result['issuing_authority'] ?? ($resultArray['shipment'][0]['issuing_authority'] ?? ($evalRow['saname'] ?? null));
         // Center column - Report type and HIV (center-aligned, ~30% width)
         $labInfo .= '<td style="width:30%; vertical-align:middle; text-align:center;">'
-            . '<strong>Individual ' . $reportType . ' Report</strong><br><br>'
+            . '<strong>Individual Final Report</strong><br><br>'
             . '<strong><big>HIV</big></strong>'
             . '</td>';
 
@@ -443,7 +443,7 @@ if (!empty($resultArray['shipment'])) {
             //   [Syphilis?] [Your Result] [Expected Result] [Evaluation]
             // -----------------------------------------------------------------
 
-            $labRes  = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results: <br/></span>';
+            $labRes = '<span style="font-weight: bold;font-size:12px;">Your HIV Proficiency results: <br/></span>';
             $labRes .= '<table border="1" style="font-size:12px;">';
 
             // ---- Column headers ----
@@ -597,17 +597,17 @@ if (!empty($resultArray['shipment'])) {
             $labRes .= '</tr>';
 
             // ---- Data rows ----
-            $nonMandatorySamples  = [];
-            $controlSamples       = [];
-            $correctSamples       = [];
-            $totalProperSamples   = 0;
-            $correctSamplesCount  = 0;
-            $wrongSamples         = [];
-            $otherSamples         = [];
-            $allSamples           = [];
+            $nonMandatorySamples = [];
+            $controlSamples = [];
+            $correctSamples = [];
+            $totalProperSamples = 0;
+            $correctSamplesCount = 0;
+            $wrongSamples = [];
+            $otherSamples = [];
+            $allSamples = [];
             $mandatorySampleCount = 0;
             // FIX #4: $evaluationResult already reset above at top of outer loop
-            $successRate          = 0;
+            $successRate = 0;
 
             foreach ($result['responseResult'] as $response) {
                 $allSamples[] = $response['sample_label'];
@@ -624,19 +624,19 @@ if (!empty($resultArray['shipment'])) {
                         $successRate++;
                     } elseif ($response['calculated_score'] == 'Fail') {
                         $evaluationResult = 'Unacceptable';
-                        $wrongSamples[]   = $response['sample_label'];
+                        $wrongSamples[] = $response['sample_label'];
                     } else {
                         $evaluationResult = 'Unacceptable';
-                        $otherSamples[]   = $response['sample_label'];
+                        $otherSamples[] = $response['sample_label'];
                     }
                 }
             }
 
-            $correctSamplesCount    = count($correctSamples);
-            $totalProperSamples     = $correctSamplesCount + count($wrongSamples);
+            $correctSamplesCount = count($correctSamples);
+            $totalProperSamples = $correctSamplesCount + count($wrongSamples);
             $maxDocumentationPoints = (isset($documentationScore) && $documentationScore > 0) ? $documentationScore : 0;
-            $maximumResponseScore   = 100 - $maxDocumentationPoints;
-            $scorePerCorrectSample  = ($mandatorySampleCount > 0)
+            $maximumResponseScore = 100 - $maxDocumentationPoints;
+            $scorePerCorrectSample = ($mandatorySampleCount > 0)
                 ? round($maximumResponseScore / $mandatorySampleCount, 2)
                 : 0;
             $meanScore = [];
@@ -766,7 +766,7 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($labRes, true, false, true, false, '');
 
             if (!empty($nonMandatorySamples)) {
-                $nmsTable  = "The following samples have been excluded from this evaluation: " . implode(", ", $nonMandatorySamples);
+                $nmsTable = "The following samples have been excluded from this evaluation: " . implode(", ", $nonMandatorySamples);
                 $nmsTable .= "<br/>";
                 $pdf->writeHTML($nmsTable, true, false, true, false, '');
             }
@@ -789,7 +789,7 @@ if (!empty($resultArray['shipment'])) {
                 // survey-wide AVG(shipment_score + documentation_score) shown below.
                 $computedMean = round($totalScore, 2);
 
-                $wishes  = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
+                $wishes = '<p style="font-size:11px;"><strong>Total score: </strong> ' . round($totalScore) . ' <strong>/100</strong><br>';
                 $wishes .= '<strong>Your Percentage Score: </strong> ' . $accuracy . '%.<br>';
                 $wishes .= '<strong>Your Computed Mean Score: </strong> ' . $computedMean . '.<br>';
                 $wishes .= '<strong>Survey Mean Score: </strong> ' . round($resultArray['meanScore']['mean_score'], 2) . '.<br>';
@@ -820,7 +820,7 @@ if (!empty($resultArray['shipment'])) {
             $imgPass = WEB_ROOT . '/images/check.jpg';
             $imgFail = WEB_ROOT . '/images/cross.jpg';
 
-            $docRes  = '<span style="font-weight:bold;font-size:12px;">Your documentation score:</span> <br/>';
+            $docRes = '<span style="font-weight:bold;font-size:12px;">Your documentation score:</span> <br/>';
             $docRes .= '<table border="1" style="font-size:12px;width:100%;">';
             $docRes .= '<tr style="background-color:#dbe4ee;">';
             $docRes .= '<td style="text-align:center;font-weight:bold;width:75%;">Documentation Item</td>';
@@ -830,10 +830,10 @@ if (!empty($resultArray['shipment'])) {
             // Receipt date
             if (!empty($result['responseResult'][0]['shipment_receipt_date'])) {
                 $scoreDoc = $documentationScorePerItem;
-                $img      = $imgPass;
+                $img = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img      = $imgFail;
+                $img = $imgFail;
             }
             $docRes .= '<tr>';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Panel/Shipment Receipt Date Specified</td>';
@@ -844,10 +844,10 @@ if (!empty($resultArray['shipment'])) {
             // Rehydration date (dried samples only)
             if (!empty($attributes['sample_rehydration_date']) && $shipmentAttributesSampleTypeDisplay == "") {
                 $scoreDoc = $documentationScorePerItem;
-                $img      = $imgPass;
+                $img = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img      = $imgFail;
+                $img = $imgFail;
             }
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Sample Rehydration Date</td>';
@@ -858,10 +858,10 @@ if (!empty($resultArray['shipment'])) {
             // Test date
             if (!empty($result['responseResult'][0]['shipment_test_date'])) {
                 $scoreDoc = $documentationScorePerItem;
-                $img      = $imgPass;
+                $img = $imgPass;
             } else {
                 $scoreDoc = 0;
-                $img      = $imgFail;
+                $img = $imgFail;
             }
             $docRes .= '<tr>';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Reporting of the Shipment Test Date</td>';
@@ -872,10 +872,10 @@ if (!empty($resultArray['shipment'])) {
             // Rehydration timing
             if ($interval->days < $sampleRehydrateDays || $interval->days > ($sampleRehydrateDays + 1)) {
                 $scoreDoc = 0;
-                $img      = $imgFail;
+                $img = $imgFail;
             } else {
                 $scoreDoc = $documentationScorePerItem;
-                $img      = $imgPass;
+                $img = $imgPass;
             }
             $docRes .= '<tr style="' . $shipmentAttributesSampleTypeDisplay . '">';
             $docRes .= '<td style="text-align:left;font-weight:bold;">Testing to be done within ' . $rehydrateHours . ' hours of rehydration.</td>';
@@ -890,10 +890,10 @@ if (!empty($resultArray['shipment'])) {
                     && trim($result['responseResult'][0]['participant_supervisor'] ?? '') != ""
                 ) {
                     $scoreDoc = $documentationScorePerItem;
-                    $img      = $imgPass;
+                    $img = $imgPass;
                 } else {
                     $scoreDoc = 0;
-                    $img      = $imgFail;
+                    $img = $imgFail;
                 }
                 $docRes .= '<tr>';
                 $docRes .= '<td style="text-align:left;font-weight:bold;">Supervisor Approval</td>';
@@ -906,16 +906,16 @@ if (!empty($resultArray['shipment'])) {
             if (($attributes['algorithm'] ?? '') == 'malawiNationalDtsAlgo') {
                 $malawiItems = [
                     ['label' => 'Reporting the Condition of PT Samples', 'key' => 'condition_pt_samples'],
-                    ['label' => 'Reporting the Room Temperature',        'key' => 'room_temperature'],
+                    ['label' => 'Reporting the Room Temperature', 'key' => 'room_temperature'],
                     ['label' => 'Reporting the availability of Stop Watch', 'key' => 'stop_watch'],
                 ];
                 foreach ($malawiItems as $item) {
                     if (!empty($attributes[$item['key']])) {
                         $scoreDoc = $documentationScorePerItem;
-                        $img      = $imgPass;
+                        $img = $imgPass;
                     } else {
                         $scoreDoc = 0;
-                        $img      = $imgFail;
+                        $img = $imgFail;
                     }
                     $docRes .= '<tr>';
                     $docRes .= '<td style="text-align:left;font-weight:bold;">' . $item['label'] . '</td>';
@@ -936,14 +936,14 @@ if (!empty($resultArray['shipment'])) {
                 && $result['responseResult'][0]['failure_reason'] !== null
             ) {
 
-                $failRes  = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response:</span> <br/>';
+                $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response:</span> <br/>';
                 $failRes .= '<table border="1" style="font-size:11px;">';
                 $failRes .= '<tr style="background-color:#dbe4ee;"><td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td><td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td></tr>';
                 $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
                 if (is_array($warnings)) {
                     foreach ($warnings as $warning) {
                         $failRes .= '<tr>';
-                        $failRes .= '<td> ' . ($warning['warning']         ?? '') . ' </td>';
+                        $failRes .= '<td> ' . ($warning['warning'] ?? '') . ' </td>';
                         $failRes .= '<td> ' . ($warning['correctiveAction'] ?? '') . ' </td>';
                         $failRes .= '</tr>';
                     }
@@ -959,22 +959,22 @@ if (!empty($resultArray['shipment'])) {
             || trim($result['optional_eval_comment'] ?? '') != ""
         ) {
 
-            $comment   = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment = '<br><br><table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
             $cmdStatus = false;
 
             if (trim($result['evaluationComments'] ?? '') != "") {
                 $cmdStatus = true;
-                $comment  .= '<tr>';
-                $comment  .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
-                $comment  .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
-                $comment  .= '</tr>';
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Evaluation Comments </td>';
+                $comment .= '<td style="width:70%;">' . $result['evaluationComments'] . '</td>';
+                $comment .= '</tr>';
             }
             if (trim($result['optional_eval_comment'] ?? '') != "") {
                 $cmdStatus = true;
-                $comment  .= '<tr>';
-                $comment  .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
-                $comment  .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
-                $comment  .= '</tr>';
+                $comment .= '<tr>';
+                $comment .= '<td style="font-weight:bold;width:30%;">Specific Comments/Feedback</td>';
+                $comment .= '<td style="width:70%;">' . $result['optional_eval_comment'] . '</td>';
+                $comment .= '</tr>';
             }
             $comment .= '</table>';
             if ($cmdStatus) {
@@ -993,7 +993,7 @@ if (!empty($resultArray['shipment'])) {
         if ($evalRow['report_type'] == 'finalized') {
             $eodReportText = "End of final report";
         }
-        $html  = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
+        $html = $br . '<span style="font-size:11px;font-weight:bold;">PT Scheme Manager Comments:</span><br>';
         $html .= '<span style="font-size:11px;">This is a confidential report that summarizes your performance. The National Public Health Quality Assurance Program recommends that the results of this Proficiency Testing Scheme comparison not be used as the sole criterion for judging the performance of any individual testing facility/laboratory.</span><br>';
         if (trim($result['shipment_comment'] ?? '') != "") {
             $html .= '<span style="font-size:11px;"><b>Scheme Manager\'s Comments:</b> ' . $result['shipment_comment'] . '</span><br>';
@@ -1021,7 +1021,7 @@ if (!empty($resultArray['shipment'])) {
         $fileName = implode("-", $nameParts) . "-" . $result['map_id'];
         $fileName = Application_Service_Common::makeFileNameFriendly($fileName) . ".pdf";
         $filePath = $reportsPath . DIRECTORY_SEPARATOR . $result['shipment_code'] . DIRECTORY_SEPARATOR . $fileName;
-        $created  = $pdf->Output($filePath, "F");
+        $created = $pdf->Output($filePath, "F");
 
         $loadpdf = Zend_Pdf::load($filePath);
         foreach ($loadpdf->pages as $page) {
