@@ -1886,14 +1886,22 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $dataManagerData['password'] = ($password == $this->_defaultPassword) ? $this->_defaultPasswordHash : Common::passwordHash($password);
                 }
 
-                // Insert/update data manager
+                // Insert/update data manager. Wrap in try/catch so a stray duplicate-
+                // email collision (e.g. cache miss, or a DM that slipped past the
+                // pre-check) becomes a per-row error instead of aborting the batch.
                 $dmId = 0;
-                if (empty($dataManagerExists)) {
-                    $db->insert('data_manager', $dataManagerData);
-                    $dmId = $db->lastInsertId();
-                } else {
-                    $dmId = $dataManagerExists['dm_id'];
-                    $db->update('data_manager', $dataManagerData, $db->quoteInto('dm_id = ?', $dmId));
+                try {
+                    if (empty($dataManagerExists)) {
+                        $db->insert('data_manager', $dataManagerData);
+                        $dmId = $db->lastInsertId();
+                    } else {
+                        $dmId = $dataManagerExists['dm_id'];
+                        $db->update('data_manager', $dataManagerData, $db->quoteInto('dm_id = ?', $dmId));
+                    }
+                } catch (Exception $e) {
+                    error_log("Data Manager save error: " . $e->getMessage());
+                    $this->addError($response, $row, $i, "Could not save Data Manager for {$row['B']} ({$originalEmail}). The email may already be in use.");
+                    continue;
                 }
 
                 // Handle direct participant login
@@ -2090,7 +2098,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             }
         }
 
-        // Get existing data managers
+        // Get existing data managers. Per-row lookups use a lowercased email
+        // (sanitizeAndValidateEmail), so key the cache the same way — DB collation
+        // is case-insensitive but the array key isn't, and a mixed-case row in
+        // data_manager would otherwise miss the cache and crash on INSERT.
         $existingDataManagers = [];
         if (!empty($emails)) {
             $sql = $db->select()
@@ -2098,7 +2109,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->where('primary_email IN (?)', $emails);
             $results = $db->fetchAll($sql);
             foreach ($results as $row) {
-                $existingDataManagers[$row['primary_email']] = $row;
+                $existingDataManagers[strtolower(trim((string) $row['primary_email']))] = $row;
             }
         }
 
