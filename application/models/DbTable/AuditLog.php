@@ -25,7 +25,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
          */
 
 
-        $aColumns = array('statement', 'created_by', 'created_on', 'type');
+        $aColumns = array('al.statement', 'al.created_by', 'al.created_on', 'al.type');
 
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
