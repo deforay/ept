@@ -28,13 +28,14 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
 
     public function questionsAction()
     {
+        $feedbackService = new Application_Service_FeedBack();
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
             $parameters = $this->getAllParams();
-            $feedbackService = new Application_Service_FeedBack();
             $feedbackService->getAllFeedBackResponses($parameters, "");
         }
+        $this->view->pendingCount = 1;
     }
 
     public function addAction()
