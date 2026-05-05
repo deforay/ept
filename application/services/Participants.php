@@ -754,10 +754,30 @@ class Application_Service_Participants
 		} catch (Throwable $exc) {
 			error_log($exc->getFile() . ":" . $exc->getLine() . ":" . $exc->getMessage());
 			error_log($exc->getTraceAsString());
-			$alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
+			$alertMsg->message = $this->describeBulkImportFailure($exc);
 			return false;
 		}
 		return $response;
+	}
+
+	private function describeBulkImportFailure(Throwable $exc): string
+	{
+		// Map common failure shapes to user-friendly hints. Sensitive details (paths,
+		// SQL, stack traces) stay in error_log; the user only sees the category.
+		if ($exc instanceof InvalidArgumentException) {
+			return 'File not uploaded. ' . $exc->getMessage();
+		}
+		$class = get_class($exc);
+		if (stripos($class, 'PhpSpreadsheet') !== false || stripos($class, 'PhpOffice') !== false) {
+			return 'File not uploaded. The spreadsheet could not be read. Please open it, save again as .xlsx or .csv, and retry.';
+		}
+		if ($exc instanceof PDOException || $exc instanceof Zend_Db_Exception) {
+			return 'File not uploaded. The data could not be saved — please check for duplicate IDs or invalid values and try again.';
+		}
+		if (stripos($exc->getMessage(), 'memory') !== false || stripos($exc->getMessage(), 'allowed memory') !== false) {
+			return 'File not uploaded. The file is too large to process. Please split it into smaller batches and try again.';
+		}
+		return 'File not uploaded. An unexpected error occurred while processing the file. Please try again, or contact the administrator if the issue persists.';
 	}
 
 	public function getFilterDetailsAPI($params)
