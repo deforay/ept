@@ -42,6 +42,11 @@ class Admin_PartnersController extends Zend_Controller_Action
             $params = $request->getPost();
             $partnerService = new Application_Service_Partner();
             $partnerService->addPartner($params);
+
+            $name = trim((string) ($params['partnerName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Added a new partner - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/partners");
         }
     }
@@ -54,6 +59,11 @@ class Admin_PartnersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $partnerService->updatePartner($params);
+
+            $name = trim((string) ($params['partnerName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated partner - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/partners");
         }
         if ($this->hasParam('id')) {

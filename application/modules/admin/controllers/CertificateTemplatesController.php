@@ -31,6 +31,11 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $service->saveCertificateTemplate($params);
+
+            $schemeCount = isset($params['scheme']) && is_array($params['scheme']) ? count($params['scheme']) : 0;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated certificate template config ({$schemeCount} schemes)", "certificate");
+
             $this->redirect("/admin/certificate-templates");
         }
         $scheme = new Application_Service_Schemes();
@@ -199,6 +204,11 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         $service = new Application_Service_CertificateTemplates();
         $result = $service->uploadTemplate($scheme, $type, $_FILES['template']);
 
+        if (!empty($result['success'])) {
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Uploaded {$type} certificate template for scheme {$scheme}", "certificate");
+        }
+
         $this->_helper->json($result);
     }
 
@@ -245,6 +255,11 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
 
         $service = new Application_Service_CertificateTemplates();
         $success = $service->removeTemplate($scheme, $type);
+
+        if ($success) {
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Removed {$type} certificate template for scheme {$scheme}", "certificate");
+        }
 
         $this->_helper->json([
             'success' => $success,

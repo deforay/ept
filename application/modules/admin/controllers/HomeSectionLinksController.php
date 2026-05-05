@@ -46,6 +46,11 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
+
+            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Added a new home section link" . ($heading !== '' ? " - {$heading}" : ''), "config");
+
             $this->redirect("/admin/home-section-links");
         }
 
@@ -62,6 +67,11 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
+
+            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated home section link" . ($heading !== '' ? " - {$heading}" : ''), "config");
+
             $this->redirect("/admin/home-section-links");
         }
         if ($this->hasParam('id')) {

@@ -44,6 +44,11 @@ class Admin_TestPlatformController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->addTestType($params);
+
+            $name = trim((string) ($params['testPlatformName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Added a new test platform - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/test-platform");
         }
     }
@@ -57,6 +62,11 @@ class Admin_TestPlatformController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->updateTestType($params);
+
+            $name = trim((string) ($params['testPlatformName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated test platform - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/test-platform");
         } elseif ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
@@ -74,6 +84,10 @@ class Admin_TestPlatformController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->updateTestTypeStage($params);
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated test platform stage settings", "config");
+
             $this->redirect("/admin/test-platform/standard-Type");
         }
     }

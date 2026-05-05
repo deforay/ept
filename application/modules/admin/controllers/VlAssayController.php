@@ -42,6 +42,11 @@ class Admin_VlAssayController extends Zend_Controller_Action
             $params = $request->getPost();
             $vlAssayService = new Application_Service_VlAssay();
             $vlAssayService->addVlAssay($params);
+
+            $name = trim((string) ($params['name'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Added a new VL assay - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/vl-assay");
         }
     }
@@ -54,6 +59,11 @@ class Admin_VlAssayController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $vlAssayService->updateVlAssay($params);
+
+            $name = trim((string) ($params['name'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated VL assay - " . ($name !== '' ? $name : '(unnamed)'), "config");
+
             $this->redirect("/admin/vl-assay");
         }
         if ($this->hasParam('id')) {

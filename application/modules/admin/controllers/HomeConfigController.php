@@ -87,6 +87,23 @@ class Admin_HomeConfigController extends Zend_Controller_Action
 
                 // Handle home banner upload
                 $common->updateHomeBanner($params);
+
+                $changedSections = [];
+                if (!empty($params['delete_home_left_logo']) || !empty($_FILES['home_left_logo']['name'])) {
+                    $changedSections[] = 'left logo';
+                }
+                if (!empty($params['delete_home_right_logo']) || !empty($_FILES['home_right_logo']['name'])) {
+                    $changedSections[] = 'right logo';
+                }
+                if (!empty($params['home'])) {
+                    $changedSections[] = 'home content';
+                }
+                if (!empty($params['faqQuestions'])) {
+                    $changedSections[] = 'FAQs';
+                }
+                $detail = empty($changedSections) ? '' : ' — ' . implode(', ', $changedSections);
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Updated home page config{$detail}", "config");
             }
 
             $this->view->home = json_decode($common->getConfig('home'));
