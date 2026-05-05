@@ -130,8 +130,9 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $parameters['endDate']);
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['type']) && $parameters['type'] != "") {
