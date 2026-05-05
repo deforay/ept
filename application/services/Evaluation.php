@@ -2034,7 +2034,7 @@ class Application_Service_Evaluation
 
 		$expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';
 
-		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . '(' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
+		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . ' (' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
 		$score = '<div style="text-align:center;">' . htmlspecialchars($shipmentScore) . '</div>';
 		$docScore = '<div style="text-align:center;">' . htmlspecialchars($documentationScore) . '</div>';
 		$resultCell = '<div style="text-align:center;">' . htmlspecialchars($displayResult !== '' ? $displayResult : $translator->_('Not Evaluated')) . '</div>';
