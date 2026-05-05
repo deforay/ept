@@ -18,21 +18,38 @@ class Admin_AuditLogController extends Zend_Controller_Action
         }
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('index', 'html')
+        $ajaxContext->addActionContext('feed', 'json')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
     public function indexAction()
     {
-        /** @var Zend_Controller_Request_Http $request */
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $params = $this->getAllParams();
-            $service = new Application_Service_Common();
-            $service->getAllAuditLogDetailsByGrid($params);
-        }
         $systemAdmin = new Application_Service_SystemAdmin();
         $this->view->systemAdmin = $systemAdmin->getSystemAllAdmin();
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $contextRows = $db->fetchCol(
+            $db->select()
+                ->from('audit_log', array('type'))
+                ->where("type IS NOT NULL AND type != ''")
+                ->group('type')
+                ->order('type ASC')
+        );
+        $this->view->contextTypes = $contextRows;
+    }
+
+    public function feedAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $params = $this->getAllParams();
+        $auditLog = new Application_Model_DbTable_AuditLog();
+        $payload = $auditLog->fetchAuditLogFeed($params);
+
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($payload));
     }
 }

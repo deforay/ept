@@ -18,148 +18,140 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
     }
 
-    public function fetchAllAuditLogDetailsByGrid($parameters)
+    private function classifyAction($statement)
     {
-        /* Array of database columns which should be read and sent back to DataTables. Use a space where
-         * you want to insert a non-database field (for example a counter or static image)
-         */
+        $s = strtolower(trim($statement));
+        if (strpos($s, 'deleted') === 0 || strpos($s, 'removed') === 0) {
+            return 'delete';
+        }
+        if (strpos($s, 'bulk imported') === 0 || strpos($s, 'imported') === 0) {
+            return 'import';
+        }
+        if (strpos($s, 'added') === 0 || strpos($s, 'created') === 0 || strpos($s, 'quick-created') === 0) {
+            return 'create';
+        }
+        if (strpos($s, 'updated') === 0 || strpos($s, 'edited') === 0 || strpos($s, 'modified') === 0) {
+            return 'update';
+        }
+        if (strpos($s, 'downloaded') === 0 || strpos($s, 'feedback downloaded') !== false || strpos($s, 'downloaded by') !== false || strpos($s, 'report downloaded') !== false) {
+            return 'download';
+        }
+        if (strpos($s, 'email') === 0 || strpos($s, 'sent') === 0) {
+            return 'message';
+        }
+        return 'other';
+    }
 
+    public function fetchAuditLogFeed($parameters)
+    {
+        $page = isset($parameters['page']) ? max(1, (int)$parameters['page']) : 1;
+        $pageSize = isset($parameters['pageSize']) ? (int)$parameters['pageSize'] : 25;
+        if ($pageSize < 5) {
+            $pageSize = 5;
+        }
+        if ($pageSize > 200) {
+            $pageSize = 200;
+        }
+        $offset = ($page - 1) * $pageSize;
 
-        $aColumns = array('al.statement', 'al.created_by', 'al.created_on', 'al.type');
+        $search = isset($parameters['search']) ? trim($parameters['search']) : '';
+        $type = isset($parameters['type']) ? trim($parameters['type']) : '';
+        $createdBy = isset($parameters['createdBy']) ? trim($parameters['createdBy']) : '';
+        $startDate = isset($parameters['startDate']) ? trim($parameters['startDate']) : '';
+        $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
 
-        $sLimit = "";
-        if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
-            $sOffset = $parameters['iDisplayStart'];
-            $sLimit = $parameters['iDisplayLength'];
+        $db = $this->getAdapter();
+        $select = $db->select()
+            ->from(array('al' => $this->_name), array('statement', 'created_by', 'created_on', 'type'))
+            ->joinLeft(
+                array('sa' => 'system_admin'),
+                'al.created_by = sa.primary_email',
+                array(
+                    'first_name' => 'sa.first_name',
+                    'last_name' => 'sa.last_name'
+                )
+            );
+
+        if ($createdBy !== '') {
+            $select->where('al.created_by = ?', $createdBy);
         }
 
-
-        $sOrder = "";
-        if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
-            for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
-                }
-            }
-
-            $sOrder = substr_replace($sOrder, "", -2);
-        }
-
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
-            foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
-                } else {
-                    $sWhereSub .= " AND (";
-                }
-                $colSize = count($aColumns);
-
-                for ($i = 0; $i < $colSize; $i++) {
-                    if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
-                    } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
-                    }
-                }
-                $sWhereSub .= ")";
-            }
-            $sWhere .= $sWhereSub;
-        }
-
-        /* Individual column filtering */
-        for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
-                    $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
-                } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
-                }
-            }
-        }
-
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('al' => $this->_name))
-            ->joinLeft(array('sa' => 'system_admin'), 'al.created_by=sa.primary_email', array('name' => new Zend_Db_Expr("CONCAT(sa.first_name,' ',sa.last_name, ' - ', sa.primary_email)")));
-
-        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("al.created_by = ? ", $parameters['createdBy']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        if ($startDate !== '' && $endDate !== '') {
             $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
+            $select->where('DATE(al.created_on) >= ?', $common->isoDateFormat($startDate));
+            $select->where('DATE(al.created_on) <= ?', $common->isoDateFormat($endDate));
         }
 
-        if (isset($parameters['type']) && $parameters['type'] != "") {
-            $sQuery = $sQuery->where("al.type = ? ", $parameters['type']);
+        if ($type !== '') {
+            $select->where('al.type = ?', $type);
         }
 
-        if (isset($sWhere) && $sWhere != "") {
-            $sQuery = $sQuery->where($sWhere);
+        if ($search !== '') {
+            $like = '%' . $search . '%';
+            $q = $db->quote($like);
+            $select->where(
+                "al.statement LIKE $q OR al.created_by LIKE $q OR al.type LIKE $q OR sa.first_name LIKE $q OR sa.last_name LIKE $q OR CONCAT_WS(' ', sa.first_name, sa.last_name) LIKE $q"
+            );
         }
 
-        if (!empty($sOrder)) {
-            $sQuery = $sQuery->order($sOrder);
+        $countSelect = clone $select;
+        $countSelect->reset(Zend_Db_Select::COLUMNS);
+        $countSelect->reset(Zend_Db_Select::ORDER);
+        $countSelect->reset(Zend_Db_Select::LIMIT_COUNT);
+        $countSelect->reset(Zend_Db_Select::LIMIT_OFFSET);
+        $countSelect->columns(new Zend_Db_Expr('COUNT(*)'));
+        $total = (int)$db->fetchOne($countSelect);
+
+        $select->order('al.created_on DESC')->limit($pageSize, $offset);
+        $rows = $db->fetchAll($select);
+
+        $items = array();
+        foreach ($rows as $row) {
+            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            if ($name === '') {
+                $name = $row['created_by'];
+            }
+            $ts = strtotime($row['created_on']);
+            $items[] = array(
+                'action' => $row['statement'],
+                'actionType' => $this->classifyAction($row['statement']),
+                'userName' => $name,
+                'userEmail' => $row['created_by'],
+                'userInitials' => $this->initials($name),
+                'context' => $row['type'] ? ucwords(str_replace('-', ' ', $row['type'])) : '',
+                'contextSlug' => $row['type'],
+                'timestamp' => $row['created_on'],
+                'time' => $ts ? date('g:i a', $ts) : '',
+                'dateKey' => $ts ? date('Y-m-d', $ts) : '',
+                'dateLabel' => $ts ? date('D, d M Y', $ts) : ''
+            );
         }
 
-        if (isset($sLimit) && isset($sOffset)) {
-            $sQuery = $sQuery->limit($sLimit, $sOffset);
-        }
-
-        $rResult = $this->getAdapter()->fetchAll($sQuery);
-
-        /* Data set length after filtering */
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
-        $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
-        $aResultFilterTotal = $this->getAdapter()->fetchAll($sQuery);
-        $iFilteredTotal = count($aResultFilterTotal);
-
-        /* Total data set length */
-        $sQuery = $this->getAdapter()->select()->from(array("al" => $this->_name), new Zend_Db_Expr("COUNT('" . $this->_primary . "')"));
-
-        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("al.created_by = ? ", $parameters['createdBy']);
-        }
-
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
-        }
-
-        if (isset($parameters['type']) && $parameters['type'] != "") {
-            $sQuery = $sQuery->where("al.type = ? ", $parameters['type']);
-        }
-        $aResultTotal = $this->getAdapter()->fetchCol($sQuery);
-        $iTotal = $aResultTotal[0];
-
-        /*
-         * Output
-         */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
+        return array(
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'total' => $total,
+            'totalPages' => $pageSize > 0 ? (int)ceil($total / $pageSize) : 1,
+            'items' => $items
         );
-        foreach ($rResult as $aRow) {
-            $row = [];
-            $row[] = $aRow['statement'];
-            $row[] = $aRow['name'];
-            $row[] = date("d-M-Y (g:i:s a)", strtotime($aRow['created_on']));
-            $row[] = ucwords($aRow['type']);
+    }
 
-            $output['aaData'][] = $row;
+    private function initials($name)
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return '?';
         }
-
-        echo json_encode($output);
+        $parts = preg_split('/\s+/', $name);
+        $out = '';
+        foreach ($parts as $p) {
+            if ($p !== '' && ctype_alpha(substr($p, 0, 1))) {
+                $out .= strtoupper(substr($p, 0, 1));
+            }
+            if (strlen($out) >= 2) {
+                break;
+            }
+        }
+        return $out !== '' ? $out : strtoupper(substr($name, 0, 1));
     }
 }

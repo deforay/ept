@@ -702,12 +702,6 @@ class Application_Service_Common
         return $browser;
     }
 
-    public function getAllAuditLogDetailsByGrid($params)
-    {
-        $auditLogDb = new Application_Model_DbTable_AuditLog();
-        return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
-    }
-
     public function insertMultiple($table, array $data, $addIgnore = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
