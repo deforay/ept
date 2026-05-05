@@ -71,7 +71,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated Report Config ", "config");
+        $auditDb->addNewAuditLog("Updated report config", "config");
         return $this->update($data, "name='report-header'");
     }
 

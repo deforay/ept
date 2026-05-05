@@ -69,7 +69,7 @@ class Application_Service_DataManagers
         }
 
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Quick-created Data Manager - {$email}", "participants");
+        $auditDb->addNewAuditLog("Quick-created data manager - {$email}", "participants");
 
         $labelParts = [];
         $name = trim($firstName . ' ' . $lastName);

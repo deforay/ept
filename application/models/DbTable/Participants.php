@@ -429,7 +429,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $name = "$firstName $lastName";
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated Participant - $userName", "participants");
+            $auditDb->addNewAuditLog("Updated participant - $userName", "participants");
         }
 
         return $noOfRows;
@@ -2195,7 +2195,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 // $id = $db->query("SET FOREIGN_KEY_CHECKS=1");
                 if ($participantId > 0) {
                     $auditDb = new Application_Model_DbTable_AuditLog();
-                    $auditDb->addNewAuditLog("Deleted a participant - " . $partcipant['unique_identifier'], "participants");
+                    $auditDb->addNewAuditLog("Deleted participant - " . $partcipant['unique_identifier'], "participants");
                 }
 
                 return ($id);

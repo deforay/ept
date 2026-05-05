@@ -1225,7 +1225,7 @@ class Application_Model_Vl
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("DTS Viral Load report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog("Downloaded DTS Viral Load report", "shipment");
 
         $excel->setActiveSheetIndex(0);
 

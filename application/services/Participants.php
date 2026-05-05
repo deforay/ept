@@ -503,7 +503,7 @@ class Application_Service_Participants
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$authNameSpace = new Zend_Session_Namespace('administrators');
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded Participant Data", "participants");
+			$auditDb->addNewAuditLog("Downloaded participant data", "participants");
 			return $filename;
 		} catch (Exception $exc) {
 
@@ -645,7 +645,7 @@ class Application_Service_Participants
 			$name = $firstName . " " . $lastName;
 			$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Feedback downloaded by $userName", "feedback");
+			$auditDb->addNewAuditLog("Downloaded feedback report", "feedback");
 
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
@@ -881,7 +881,7 @@ class Application_Service_Participants
 			$filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded a participant data", "participants");
+			$auditDb->addNewAuditLog("Downloaded participant response data", "participants");
 			echo $filename;
 		} catch (Exception $exc) {
 			$sQuerySession->shipmentRespondedParticipantQuery = '';

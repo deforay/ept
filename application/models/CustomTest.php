@@ -748,7 +748,7 @@ class Application_Model_CustomTest
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Generic test excel report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog("Downloaded Generic Test Excel report", "shipment");
 
         $excel->setActiveSheetIndex(0);
 

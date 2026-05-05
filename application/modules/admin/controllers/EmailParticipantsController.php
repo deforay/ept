@@ -37,7 +37,7 @@ class Admin_EmailParticipantsController extends Zend_Controller_Action
             $data = $request->getPost();
             $participantService->sendParticipantEmail($data);
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Email Participants", "config");
+            $auditDb->addNewAuditLog("Sent email to participants", "config");
         }
         $shipment = new Application_Service_Shipments();
         if ($this->hasParam('id')) {

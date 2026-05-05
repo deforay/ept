@@ -407,7 +407,7 @@ class Application_Model_Eid
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("DTS EID excel report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog("Downloaded DTS EID Excel report", "shipment");
 
         $excel->setActiveSheetIndex(0);
 

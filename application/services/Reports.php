@@ -4937,7 +4937,7 @@ class Application_Service_Reports
                 $filename = $resultSet[0]['shipment_code'] . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
                 $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
                 $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Downloaded a pending sites", "participants");
+                $auditDb->addNewAuditLog("Downloaded pending sites report", "participants");
                 return $filename;
             } else {
                 return '';

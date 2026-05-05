@@ -1171,7 +1171,7 @@ class Application_Model_Covid19
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Covid 19 excel report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog("Downloaded COVID-19 Excel report", "shipment");
 
         $excel->setActiveSheetIndex(0);
 

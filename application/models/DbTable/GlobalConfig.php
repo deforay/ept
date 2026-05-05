@@ -118,7 +118,7 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
             }
         }
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated global config ", "config");
+        $auditDb->addNewAuditLog("Updated global config", "config");
     }
 
     public function getPTProgramName()

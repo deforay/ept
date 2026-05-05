@@ -58,7 +58,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new data-manager - $userName", "participants");
+            $auditDb->addNewAuditLog("Added a new data manager - $userName", "participants");
         }
         return $dmId;
     }
@@ -388,7 +388,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $name = "$firstName $lastName";
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated data manager $userName", "participants");
+            $auditDb->addNewAuditLog("Updated data manager - $userName", "participants");
         }
         return $dmId;
     }
