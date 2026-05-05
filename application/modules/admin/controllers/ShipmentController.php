@@ -68,7 +68,10 @@ class Admin_ShipmentController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            //  echo "<pre>"; print_r($params); die;
+            if (empty($params['sampleName']) || !is_array($params['sampleName'])
+                || empty($params['control']) || !is_array($params['control'])) {
+                $this->redirect("/admin/shipment");
+            }
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->addShipment($params);
             if (isset($params['selectedDistribution']) && $params['selectedDistribution'] != "" && $params['selectedDistribution'] != null) {
