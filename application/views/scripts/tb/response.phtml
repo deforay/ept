@@ -889,7 +889,6 @@ if (isset($this->shipment['vl_not_tested_reason']) && ($this->shipment['vl_not_t
 			$('.ptNotPerformedSection').hide();
 			$('.vlResultMandatory').css('visibility', 'visible');
 			$('#vlNotTestedReason').removeClass('isRequired');
-			$('#participantSupervisor').removeClass('isRequired');
 			$('#shipmentTestDate,#receiptDate,#sampleRehydrationDate,#supervisorApproval,.vlResultValues,#supervisorApproval').addClass('isRequired');
 		}
 	}

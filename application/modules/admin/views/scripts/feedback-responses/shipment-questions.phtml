@@ -15,6 +15,12 @@
             <th style="width:30%;"><?= $this->translate->_("Number of Question Mapped"); ?></th>
             <th style="width:10%;"><?= $this->translate->_("Action"); ?></th>
         </tr>
+        <tr class="column-search-row">
+            <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+            <th></th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
         <tr>
@@ -63,8 +69,70 @@
                     "data": aoData,
                     "success": fnCallback
                 });
+            },
+             "fnRowCallback": function (nRow, aData) {
+                // Highlight rows with no mapped data managers (the DM column emits
+                // <em class="unmapped-tag">…</em> when the count is 0)
+                if ($(nRow).find('.unmapped-tag').length > 0) {
+                    $(nRow).addClass('row-unmapped');
+                } else {
+                    $(nRow).removeClass('row-unmapped');
+                }
+                return nRow;
             }
         });
+
+    $("#mappingFilter").change(function () {
+        oTable.fnDraw();
+    });
+
+    bindColSearch('#feedbackResponse', function (value, colIdx) {
+        oTable.fnFilter(value, colIdx);
+    });
+
+     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
+        $('#feedbackResponse tbody').on('click', 'a.toggle-dm-row', function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var participantId = $btn.data('participant-id');
+            var tr = $btn.closest('tr')[0];
+            if (oTable.fnIsOpen(tr)) {
+                oTable.fnClose(tr);
+                $btn.removeClass('btn-success').addClass('btn-primary');
+                return;
+            }
+            // Inject a placeholder child row, then populate via AJAX
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            oTable.fnOpen(tr, placeholder, 'dm-child-container');
+            $btn.removeClass('btn-primary').addClass('btn-success');
+            $.post(
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'feedback-responses', 'action' => 'shipment-questions', 'format' => 'html')); ?>",
+                { id: participantId },
+                function (html) {
+                    // fnOpen wraps our content in a td inside a tr — replace that td's content
+                    var $childTr = $(tr).next('tr');
+                    $childTr.find('td').first().html(html);
+                }
+            ).fail(function () {
+                var $childTr = $(tr).next('tr');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+            });
+        });
+
+        // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
+        $('#feedbackResponse tbody').on('input', 'input.dm-filter-input', function () {
+            var q = $(this).val().toLowerCase().trim();
+            var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
+            if (q === '') {
+                $rows.show();
+                return;
+            }
+            $rows.each(function () {
+                var blob = $(this).attr('data-dm-search') || '';
+                $(this).toggle(blob.indexOf(q) !== -1);
+            });
+        });
+
 
     });
 
