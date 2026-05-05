@@ -141,7 +141,11 @@
 													<input type="text" name="qualitative[expectedResult][1][1]" class="form-control qualitative-input-11 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />
 												</td>
 												<td>
-													<input type="text" name="qualitative[resultCode][1][1]" class="form-control qualitative-input-11 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />
+													<div class="input-group input-group-sm">
+														<span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>
+														<input type="text" class="form-control qualitative-input-11 input-sm resultCodeSuffix" placeholder="<?= $this->translate->_("Code"); ?>" maxlength="20" title="<?= $this->translate->_("Please enter the result code"); ?>" />
+													</div>
+													<input type="hidden" name="qualitative[resultCode][1][1]" class="resultCodeHidden" />
 												</td>
 												<td>
 													<select id="resultType11" name="qualitative[resultType][1][1]" class="form-control qualitative-input-11 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(1, 1)">
@@ -359,7 +363,11 @@
 				<input type="text" name="qualitative[expectedResult][' + row1 + '][' + row2 + ']" class="form-control qualitative-input-' + row1 + row2 + ' input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 			</td>\
 			<td>\
-				<input type="text" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);"/>\
+				<div class="input-group input-group-sm">\
+					<span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>\
+					<input type="text" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultCodeSuffix" placeholder="Code" maxlength="20" title="Please enter the result code"/>\
+				</div>\
+				<input type="hidden" name="qualitative[resultCode][' + row1 + '][' + row2 + ']" class="resultCodeHidden" />\
 			</td>\
 			<td>\
 				<select id="resultType' + row1 + row2 + '"  name="qualitative[resultType][' + row1 + '][' + row2 + ']" class="form-control isRequired qualitative-input-' + row1 + row2 + ' input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(' + row1 + ', ' + row2 + ')">\
@@ -421,7 +429,11 @@
 											<input type="text" name="qualitative[expectedResult][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm" placeholder="Enter the expected result" title="Please enter the expected result" />\
 										</td>\
 										<td>\
-											<input type="text" name="qualitative[resultCode][' + sampleCounter + '][1]" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeInput" placeholder="Enter the result code" title="Please enter the result code" onchange="resultCodeChange(this);" />\
+											<div class="input-group input-group-sm">\
+												<span class="input-group-addon resultCodePrefix" style="display:none;padding:6px 8px;"></span>\
+												<input type="text" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultCodeSuffix" placeholder="Code" maxlength="20" title="Please enter the result code" />\
+											</div>\
+											<input type="hidden" name="qualitative[resultCode][' + sampleCounter + '][1]" class="resultCodeHidden" />\
 										</td>\
 										<td>\
 											<select name="qualitative[resultType][' + sampleCounter + '][1]" id="resultType' + sampleCounter + '1" class="form-control qualitative-input-' + sampleCounter + '1 input-sm resultTypeInput" placeholder="Select the result type" title="Please select the result type" onchange="resultTypeChange(' + sampleCounter + ', 1)">\
@@ -510,8 +522,16 @@
 			dateFormat: '<?php echo $this->defaultDateFormat(); ?>'
 		});
 
-		$('.resultCodeInput').on('input', function() {
-			$(this).val($(this).val().replace(/[^a-z0-9-]/gi, ''));
+		$(document).on('input', '.resultCodeSuffix', function() {
+			updateResultCode($(this).closest('tr'));
+		});
+		$('#schemeCode').on('input', function() {
+			$('.resultCodeSuffix').each(function() {
+				updateResultCode($(this).closest('tr'));
+			});
+		});
+		$('.resultCodeSuffix').each(function() {
+			initResultCodeRow($(this).closest('tr'));
 		});
 	});
 
@@ -547,25 +567,45 @@
 		}
 	}
 
-	function resultCodeChange(obj) {
-		var schemeCode = $('#schemeCode').val().toUpperCase();
-		var row = $(obj).closest('tr');
+	function getResultCodePrefix(row) {
+		var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim();
 		var resultType = row.find('.resultTypeInput').val();
-		var currentVal = $(obj).val().toUpperCase().replace(/[^A-Z0-9]/g, '');
+		if (!schemeCode) return '';
+		if (resultType === 'test-result') return schemeCode + '-T-';
+		if (resultType === 'final-interpretation') return schemeCode + '-F-';
+		return schemeCode + '-';
+	}
 
-		// Build the result code based on result type
-		// Test Result: PREFIX-T-{value}, Final Interpretation: PREFIX-F-{value}
-		var typeCode = (resultType === 'test-result') ? 'T' : (resultType === 'final-interpretation') ? 'F' : '';
-		var prefix = schemeCode + '-' + typeCode + '-';
-
-		// If result type is selected, use the pattern; otherwise just use schemeCode prefix
-		if (typeCode && currentVal) {
-			// Remove any existing prefix pattern to get the base value
-			var baseVal = currentVal.replace(new RegExp('^' + schemeCode + '-[TF]-', 'i'), '');
-			$(obj).val(prefix + baseVal);
-		} else if (currentVal && !currentVal.startsWith(schemeCode + '-')) {
-			$(obj).val(schemeCode + '-' + currentVal);
+	function updateResultCode(row) {
+		var prefix = getResultCodePrefix(row);
+		var $suffix = row.find('.resultCodeSuffix');
+		var raw = ($suffix.val() || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+		if ($suffix.val() !== raw) {
+			$suffix.val(raw);
 		}
+		var $addon = row.find('.resultCodePrefix');
+		if (prefix) {
+			$addon.text(prefix).show();
+		} else {
+			$addon.text('').hide();
+		}
+		row.find('.resultCodeHidden').val(raw ? prefix + raw : '');
+	}
+
+	function initResultCodeRow(row) {
+		var $suffix = row.find('.resultCodeSuffix');
+		var raw = ($suffix.val() || '').toUpperCase();
+		var prefix = getResultCodePrefix(row);
+		if (prefix && raw.indexOf(prefix) === 0) {
+			$suffix.val(raw.substring(prefix.length));
+		} else {
+			var schemeCode = ($('#schemeCode').val() || '').toUpperCase().trim();
+			if (schemeCode && raw.indexOf(schemeCode + '-') === 0) {
+				var rest = raw.substring(schemeCode.length + 1).replace(/^[TF]-/, '');
+				$suffix.val(rest);
+			}
+		}
+		updateResultCode(row);
 	}
 
 	function resultTypeChange(rrow, srow) {
@@ -573,13 +613,7 @@
 		if (resultType == 'test-result') {
 			$('#displayContext' + rrow + srow).val('participant');
 		}
-
-		// Update the result code when result type changes
-		var row = $('#resultType' + rrow + srow).closest('tr');
-		var resultCodeInput = row.find('.resultCodeInput');
-		if (resultCodeInput.val()) {
-			resultCodeChange(resultCodeInput[0]);
-		}
+		updateResultCode($('#resultType' + rrow + srow).closest('tr'));
 	}
 
 	$(function() {
