@@ -1703,8 +1703,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
                 // Handle email
                 $originalEmail = $row['R'] ?? null;
+                $emailWasSynthesized = false;
                 if (empty($originalEmail) || $allFakeEmail) {
                     $originalEmail = MiscUtility::generateFakeEmailId($row['B'], trim(($row['D'] ?? '') . " " . ($row['E'] ?? '')));
+                    $emailWasSynthesized = true;
                 }
 
                 // Validation checks
@@ -1818,7 +1820,11 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
                 $dataManagerExists = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
                 if (isset($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && $dataManagerExists) {
-                    $this->addError($response, $row, $i, "Data Manager email $originalEmail already exists. Skipping for participant {$row['B']}.");
+                    if ($emailWasSynthesized) {
+                        $this->addError($response, $row, $i, "Auto-generated login email {$originalEmail} (derived from Unique ID '{$row['B']}') is already in use. Either provide a unique email in column R or change the Unique ID.");
+                    } else {
+                        $this->addError($response, $row, $i, "Data Manager email {$originalEmail} already exists. Skipping for participant {$row['B']}.");
+                    }
                     continue;
                 }
 
@@ -1900,7 +1906,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     }
                 } catch (Exception $e) {
                     error_log("Data Manager save error: " . $e->getMessage());
-                    $this->addError($response, $row, $i, "Could not save Data Manager for {$row['B']} ({$originalEmail}). The email may already be in use.");
+                    $emailHint = $emailWasSynthesized
+                        ? "Auto-generated login email {$originalEmail} (derived from Unique ID)"
+                        : "Email {$originalEmail}";
+                    $this->addError($response, $row, $i, "Could not save Data Manager for {$row['B']}. {$emailHint} may already be in use.");
                     continue;
                 }
 
@@ -2073,6 +2082,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $email = MiscUtility::sanitizeAndValidateEmail($sheetData[$i]['R']);
             if ($email) {
                 $emails[] = $email;
+            } elseif (!empty($sheetData[$i]['B'])) {
+                // Blank email → import will synthesize <uniqueId>@<host>; pre-check that too
+                // so the per-row duplicate-email guard catches it before the INSERT.
+                try {
+                    $fakeEmail = MiscUtility::generateFakeEmailId(
+                        $sheetData[$i]['B'],
+                        trim(($sheetData[$i]['D'] ?? '') . ' ' . ($sheetData[$i]['E'] ?? ''))
+                    );
+                    $fakeEmail = strtolower(trim((string) $fakeEmail));
+                    if ($fakeEmail !== '') {
+                        $emails[] = $fakeEmail;
+                    }
+                } catch (Throwable $ignore) {
+                    // Synthesis failed (no usable id/name) — the per-row code will report it.
+                }
             }
 
             // Also check for direct participant login emails
