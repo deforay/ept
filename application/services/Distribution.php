@@ -23,6 +23,11 @@ class Application_Service_Distribution
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();
 		return $disrtibutionDb->updateDistribution($params);
 	}
+	public function deleteDistribution($distributionId)
+	{
+		$disrtibutionDb = new Application_Model_DbTable_Distribution();
+		return $disrtibutionDb->deleteDistribution($distributionId);
+	}
 	public function getDistributionDates()
 	{
 		$disrtibutionDb = new Application_Model_DbTable_Distribution();

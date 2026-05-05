@@ -46,6 +46,53 @@ $status = [
 
 </div><!-- /.modal -->
 
+<style>
+    #deleteDistributionConfirmModal { z-index: 10600; }
+    .modal-backdrop.delete-distribution-backdrop { z-index: 10500; }
+</style>
+<div class="modal fade" id="deleteDistributionConfirmModal" tabindex="-1" role="dialog"
+    aria-labelledby="deleteDistributionConfirmLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="deleteDistributionConfirmLabel">
+                    <i class="icon-warning-sign text-danger"></i>
+                    <?= $this->htmlTranslate('Permanently delete this PT Survey?'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p><?= $this->htmlTranslate("This will permanently remove the PT Survey below. It can only be deleted because no shipments exist under it."); ?></p>
+                <div style="background:#f8f8f8;border:1px solid #e5e5e5;border-radius:4px;padding:10px 14px;margin:12px 0;">
+                    <div style="font-size:11px;text-transform:uppercase;color:#888;letter-spacing:0.5px;margin-bottom:4px;">
+                        <?= $this->htmlTranslate('PT Survey Code'); ?>
+                    </div>
+                    <div style="font-family:monospace;font-size:14px;font-weight:600;" id="deleteDistributionCode"></div>
+                </div>
+                <label for="deleteDistributionConfirmInput" style="font-weight:500;">
+                    <?= $this->htmlTranslate('Type the PT Survey Code above to confirm:'); ?>
+                </label>
+                <input type="text" id="deleteDistributionConfirmInput" class="form-control" autocomplete="off"
+                    spellcheck="false" placeholder="<?= $this->htmlTranslate('PT Survey Code'); ?>" />
+                <p id="deleteDistributionMismatch" class="text-danger" style="display:none;margin-top:8px;font-size:13px;">
+                    <i class="icon-exclamation-sign"></i>
+                    <?= $this->htmlTranslate('That does not match the PT Survey Code. Please type it exactly as shown.'); ?>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?= $this->htmlTranslate('Cancel'); ?>
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteDistributionConfirmBtn" disabled>
+                    <i class="icon-trash"></i>
+                    <?= $this->htmlTranslate('Delete PT Survey'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript" charset="utf-8">
     $('#myModal').on('hidden.bs.modal', function () {
         $(this).removeData('bs.modal');
@@ -123,5 +170,73 @@ $status = [
                 oTable.fnDraw();
                 $.unblockUI();
             });
+    }
+
+    // Type-to-confirm delete for a PT Survey. Per-row params are stored on the modal's
+    // submit button via data() so the click handler is wired only once.
+    $(function () {
+        var $modal = $('#deleteDistributionConfirmModal');
+        if ($modal.length === 0) { return; }
+
+        if ($modal.parent().get(0) !== document.body) {
+            $modal.appendTo('body');
+        }
+
+        var $input = $('#deleteDistributionConfirmInput');
+        var $btn = $('#deleteDistributionConfirmBtn');
+        var $mismatch = $('#deleteDistributionMismatch');
+
+        $input.on('input keyup', function () {
+            var expected = ($btn.data('expectedCode') || '').toString();
+            var matches = $(this).val().trim() === expected;
+            $btn.prop('disabled', !matches);
+            if (matches) { $mismatch.hide(); }
+        });
+
+        $btn.on('click', function () {
+            if ($btn.prop('disabled')) { return; }
+            var expected = ($btn.data('expectedCode') || '').toString();
+            if ($input.val().trim() !== expected) {
+                $mismatch.show();
+                return;
+            }
+            var did = $btn.data('did');
+            $modal.modal('hide');
+            $.blockUI();
+            $.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'distributions', 'action' => 'delete')); ?>", {
+                did: did,
+                format: "html"
+            })
+                .done(function (data) {
+                    $.unblockUI();
+                    var msg = (data || '').toString().trim();
+                    if (msg === 'OK') {
+                        oTable.fnDraw();
+                    } else {
+                        alert(msg || "<?= $this->translate->_('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
+                    }
+                })
+                .fail(function () {
+                    $.unblockUI();
+                    alert("<?= $this->translate->_('Failed to delete the PT Survey. Please try again or contact the administrator.'); ?>");
+                });
+        });
+
+        $modal.on('shown.bs.modal', function () {
+            $('.modal-backdrop').last().addClass('delete-distribution-backdrop');
+            $input.trigger('focus');
+        });
+    });
+
+    function confirmDeleteDistribution(did, distributionCode) {
+        distributionCode = (distributionCode || '').toString();
+        $('#deleteDistributionCode').text(distributionCode);
+        $('#deleteDistributionConfirmInput').val('');
+        $('#deleteDistributionMismatch').hide();
+        $('#deleteDistributionConfirmBtn')
+            .prop('disabled', true)
+            .data('did', did)
+            .data('expectedCode', distributionCode);
+        $('#deleteDistributionConfirmModal').modal('show');
     }
 </script>

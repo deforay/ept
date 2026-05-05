@@ -136,19 +136,25 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
             $row[] = $aRow['shipments'] ?: '<span style="color:#ccc;">' . Pt_Commons_TranslateUtility::htmlTranslate("No Shipment/Panel Added") . '</span>';
             $row[] = ucwords($aRow['status']);
             $edit = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Edit") . '</span></a>';
+            $actionHtml = '';
             if (isset($aRow['status']) && $aRow['status'] == 'configured') {
                 if ($shipNowStatus) {
-                    $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Ship Now") . '</span></a> &nbsp;&nbsp;';
+                    $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="shipDistribution(\'' . base64_encode($aRow['distribution_id']) . '\')"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Ship Now") . '</span></a> &nbsp;&nbsp;';
                 } else {
-                    $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-user"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Add Participants") . '</span></a>';
-                    // $row[] = $edit;
+                    $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-user"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Add Participants") . '</span></a>';
                 }
             } elseif (isset($aRow['status']) && $aRow['status'] == 'shipped') {
-                $row[] = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '/5h8pp3t/shipped"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Edit") . '</span></a>' . ' ' . '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Shipped") . '</span></a>
+                $actionHtml = '<a class="btn btn-primary btn-xs" href="/admin/distributions/edit/d8s5_8d/' . base64_encode($aRow['distribution_id']) . '/5h8pp3t/shipped"><span><i class="icon-pencil"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Edit") . '</span></a>' . ' ' . '<a class="btn btn-primary btn-xs disabled" href="javascript:void(0);"><span><i class="icon-ambulance"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Shipped") . '</span></a>
                 <a class="btn btn-warning btn-xs" href="/admin/email-participants/index/id/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-envelope"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Send Email to Participants") . '</span></a>';
             } else {
-                $row[] = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-plus"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Add Shipment") . '</span></a>';
+                $actionHtml = $edit . ' ' . '<a class="btn btn-primary btn-xs" href="/admin/shipment/index/did/' . base64_encode($aRow['distribution_id']) . '"><span><i class="icon-plus"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Add Shipment") . '</span></a>';
             }
+            // Delete only allowed when there are no shipments under this PT survey.
+            if (empty($aRow['shipments']) && (!isset($aRow['status']) || $aRow['status'] !== 'shipped')) {
+                $codeAttr = htmlspecialchars((string) $aRow['distribution_code'], ENT_QUOTES);
+                $actionHtml .= ' <a class="btn btn-danger btn-xs" href="javascript:void(0);" onclick="confirmDeleteDistribution(\'' . base64_encode($aRow['distribution_id']) . '\', \'' . $codeAttr . '\')"><span><i class="icon-trash"></i> ' . Pt_Commons_TranslateUtility::htmlTranslate("Delete") . '</span></a>';
+            }
+            $row[] = $actionHtml;
             $output['aaData'][] = $row;
         }
 
@@ -196,6 +202,31 @@ class Application_Model_DbTable_Distribution extends Zend_Db_Table_Abstract
     public function getDistribution($did)
     {
         return $this->fetchRow("distribution_id = " . $did);
+    }
+
+    public function deleteDistribution($id)
+    {
+        $id = (int) $id;
+        if ($id <= 0) {
+            return "Invalid PT Survey.";
+        }
+        $shipmentCount = (int) $this->getAdapter()->fetchOne(
+            $this->getAdapter()->select()
+                ->from('shipment', new Zend_Db_Expr('COUNT(*)'))
+                ->where('distribution_id = ?', $id)
+        );
+        if ($shipmentCount > 0) {
+            return "Cannot delete a PT Survey that has shipments under it.";
+        }
+        $row = $this->fetchRow("distribution_id = $id");
+        if (!$row) {
+            return "PT Survey not found.";
+        }
+        $code = $row['distribution_code'];
+        $this->delete("distribution_id = $id");
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Deleted PT Survey - " . $code, "shipment");
+        return "OK";
     }
 
     public function updateDistribution($params)

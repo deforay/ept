@@ -21,6 +21,7 @@ class Admin_DistributionsController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('view-shipment', 'html')
             ->addActionContext('ship-distribution', 'html')
+            ->addActionContext('delete', 'html')
             ->addActionContext('generate-survey-code', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'manageMenu';
@@ -79,6 +80,19 @@ class Admin_DistributionsController extends Zend_Controller_Action
             $this->view->message = $distributionService->shipDistribution($id);
         } else {
             $this->view->message = "Unable to ship. Please try again later or contact system admin for help";
+        }
+    }
+
+    public function deleteAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost() && $this->hasParam('did')) {
+            $id = (int) base64_decode($this->_getParam('did'));
+            $distributionService = new Application_Service_Distribution();
+            $this->view->message = $distributionService->deleteDistribution($id);
+        } else {
+            $this->view->message = "Unable to delete. Please try again later or contact system admin for help.";
         }
     }
 
