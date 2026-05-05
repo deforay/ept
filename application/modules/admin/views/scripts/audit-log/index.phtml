@@ -308,6 +308,34 @@
         letter-spacing: 0.03em;
     }
 
+    .audit-role {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 1px solid transparent;
+    }
+
+    .audit-role.admin { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .audit-role.datamanager { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+    .audit-role.ptcc { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+    .audit-role.participant { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+    .audit-role.system { background: #e2e8f0; color: #475569; border-color: #cbd5e0; }
+
+    .audit-ip {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .audit-ua {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
     .audit-time {
         color: #a0aec0;
         font-size: 12px;
@@ -524,10 +552,47 @@
         return safe.replace(re, '<mark>$1</mark>');
     }
 
+    function parseUserAgent(ua) {
+        if (!ua) return '';
+        var browser = 'Unknown';
+        var os = '';
+        if (/Edg\//.test(ua)) browser = 'Edge';
+        else if (/OPR\/|Opera/.test(ua)) browser = 'Opera';
+        else if (/Chrome\//.test(ua)) browser = 'Chrome';
+        else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+        else if (/Firefox\//.test(ua)) browser = 'Firefox';
+        else if (/MSIE|Trident/.test(ua)) browser = 'IE';
+        if (/Windows NT 10/.test(ua)) os = 'Windows 10';
+        else if (/Windows NT 11/.test(ua)) os = 'Windows 11';
+        else if (/Windows/.test(ua)) os = 'Windows';
+        else if (/Mac OS X/.test(ua)) os = 'macOS';
+        else if (/Android/.test(ua)) os = 'Android';
+        else if (/iPhone|iPad|iOS/.test(ua)) os = 'iOS';
+        else if (/Linux/.test(ua)) os = 'Linux';
+        return os ? browser + ' on ' + os : browser;
+    }
+
+    function roleSlug(role) {
+        if (!role) return 'system';
+        var r = String(role).toLowerCase();
+        if (r === 'data manager') return 'datamanager';
+        return r;
+    }
+
     function renderItem(item, term) {
         var iconClass = actionIcons[item.actionType] || actionIcons.other;
         var contextHtml = item.context
             ? '<span class="audit-context">' + escapeHtml(item.context) + '</span>'
+            : '';
+        var roleHtml = item.userRole
+            ? '<span class="audit-role ' + roleSlug(item.userRole) + '">' + escapeHtml(item.userRole) + '</span>'
+            : '';
+        var ipHtml = item.ipAddress
+            ? '<span class="audit-ip" title="IP address">' + escapeHtml(item.ipAddress) + '</span>'
+            : '';
+        var uaShort = parseUserAgent(item.userAgent);
+        var uaHtml = uaShort
+            ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent) + '">' + escapeHtml(uaShort) + '</span>'
             : '';
         return ''
             + '<div class="audit-item">'
@@ -541,7 +606,10 @@
             +         '<span class="audit-avatar">' + escapeHtml(item.userInitials) + '</span>'
             +         '<span class="audit-user-name">' + highlight(item.userName, term) + '</span>'
             +       '</span>'
+            +       roleHtml
             +       contextHtml
+            +       ipHtml
+            +       uaHtml
             +     '</div>'
             +   '</div>'
             +   '<div class="audit-time">' + escapeHtml(item.time) + '</div>'

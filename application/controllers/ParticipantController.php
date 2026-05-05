@@ -120,6 +120,10 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $userService->updateUser($params);
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Updated own user info", "participants");
+
             // To check the re-drection for participant after logged in
             $dbUsersProfile = new Application_Service_Participants();
             $shipmentService = new Application_Service_Shipments();
@@ -186,6 +190,8 @@ class ParticipantController extends Zend_Controller_Action
             $oldPassword = $request->getPost('oldpassword');
             $response = $user->changePassword($oldPassword, $newPassword);
             if ($response) {
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Changed password", "auth");
                 $this->redirect('/participant/current-schemes');
             }
         }
@@ -207,6 +213,9 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $response = $user->confirmPrimaryMail($params, true);
             if ($response) {
+                $newEmail = trim((string) ($params['primaryEmail'] ?? ''));
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog("Requested primary email change" . ($newEmail !== '' ? " to {$newEmail}" : ''), "auth");
                 $this->redirect('/participant/current-schemes');
             }
         }
@@ -249,6 +258,9 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $data = $request->getPost();
             $participantService->updateParticipant($data);
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $uid = trim((string) ($data['uniqueIdentifier'] ?? ''));
+            $auditDb->addNewAuditLog("Updated tester profile" . ($uid !== '' ? " - {$uid}" : ''), "participants");
             $this->redirect('/participant/testers');
         } else {
             $this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));

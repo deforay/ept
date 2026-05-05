@@ -292,6 +292,9 @@ class AuthController extends Zend_Controller_Action
 				);
 
 				$loginHistoryModel->addLoginHistory($loginData);
+
+				$auditDb = new Application_Model_DbTable_AuditLog();
+				$auditDb->addNewAuditLog("Logged in", "auth");
 				// To check the re-drection for participant after logged in
 				$dbUsersProfile = new Application_Service_Participants();
 				$shipmentService = new Application_Service_Shipments();
@@ -369,6 +372,8 @@ class AuthController extends Zend_Controller_Action
 	}
 	public function logoutAction()
 	{
+		$auditDb = new Application_Model_DbTable_AuditLog();
+		$auditDb->addNewAuditLog("Logged out", "auth");
 		Zend_Auth::getInstance()->clearIdentity();
 		Zend_Session::destroy();
 		$this->redirect('/');
@@ -395,7 +400,10 @@ class AuthController extends Zend_Controller_Action
 				return;
 			}
 			$userService = new Application_Service_DataManagers();
-			$userService->resetPassword($params['registeredEmail'] ?? null);
+			$email = trim((string) ($params['registeredEmail'] ?? ''));
+			$userService->resetPassword($email !== '' ? $email : null);
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog("Requested password reset" . ($email !== '' ? " - {$email}" : ''), "auth");
 			$this->redirect($this->loginUri);
 		}
 		$this->view->formToken = Application_Service_Common::generateFormToken();
@@ -422,7 +430,10 @@ class AuthController extends Zend_Controller_Action
 				$this->redirect($request->getRequestUri());
 				return;
 			}
-			$this->redirect($userService->newPassword($params));
+			$redirectTo = $userService->newPassword($params);
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog("Set new password via reset link", "auth");
+			$this->redirect($redirectTo);
 		} else {
 			if ($this->hasParam('email')) {
 				$email = $this->_getParam('email');

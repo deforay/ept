@@ -52,5 +52,7 @@ class DownloadController extends Zend_Controller_Action
         $this->_helper->layout()->disableLayout();
         //$this->_helper->viewRenderer->setNoRender(true);
 
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Downloaded file - " . basename($realPath), "download");
     }
 }

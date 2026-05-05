@@ -7,15 +7,65 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
     public function addNewAuditLog($stateMent, $type = null)
     {
-        $authNameSpace = new Zend_Session_Namespace('administrators');
-        if (isset($stateMent) && $stateMent != "") {
-            return $this->insert(array(
-                "statement" => $stateMent,
-                "created_by" => $authNameSpace->primary_email,
-                "created_on" => new Zend_Db_Expr('now()'),
-                "type" => $type
-            ));
+        if (!isset($stateMent) || $stateMent === '') {
+            return null;
         }
+        [$email, $role] = $this->resolveActor();
+        return $this->insert(array(
+            "statement" => $stateMent,
+            "created_by" => $email,
+            "created_by_role" => $role,
+            "created_on" => new Zend_Db_Expr('now()'),
+            "type" => $type,
+            "ip_address" => $this->captureIp(),
+            "user_agent" => $this->captureUserAgent()
+        ));
+    }
+
+    private function resolveActor()
+    {
+        $admin = new Zend_Session_Namespace('administrators');
+        if (!empty($admin->primary_email)) {
+            return [$admin->primary_email, 'admin'];
+        }
+        $dm = new Zend_Session_Namespace('datamanagers');
+        if (!empty($dm->primary_email)) {
+            $role = ($dm->data_manager_type ?? null) === 'ptcc' ? 'ptcc' : 'datamanager';
+            return [$dm->primary_email, $role];
+        }
+        $participant = new Zend_Session_Namespace('participants');
+        if (!empty($participant->primary_email)) {
+            return [$participant->primary_email, 'participant'];
+        }
+        if (!empty($participant->email)) {
+            return [$participant->email, 'participant'];
+        }
+        return [null, 'system'];
+    }
+
+    private function captureIp()
+    {
+        if (php_sapi_name() === 'cli') {
+            return null;
+        }
+        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'REMOTE_ADDR'] as $key) {
+            if (!empty($_SERVER[$key])) {
+                $val = $_SERVER[$key];
+                if ($key === 'HTTP_X_FORWARDED_FOR') {
+                    $val = trim(explode(',', $val)[0]);
+                }
+                return substr($val, 0, 64);
+            }
+        }
+        return null;
+    }
+
+    private function captureUserAgent()
+    {
+        if (empty($_SERVER['HTTP_USER_AGENT'])) {
+            return null;
+        }
+        return substr($_SERVER['HTTP_USER_AGENT'], 0, 512);
     }
 
     private function classifyAction($statement)
@@ -62,13 +112,32 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
         $db = $this->getAdapter();
         $select = $db->select()
-            ->from(array('al' => $this->_name), array('statement', 'created_by', 'created_on', 'type'))
+            ->from(array('al' => $this->_name), array('statement', 'created_by', 'created_by_role', 'created_on', 'type', 'ip_address', 'user_agent'))
             ->joinLeft(
                 array('sa' => 'system_admin'),
                 'al.created_by = sa.primary_email',
                 array(
-                    'first_name' => 'sa.first_name',
-                    'last_name' => 'sa.last_name'
+                    'sa_first_name' => 'sa.first_name',
+                    'sa_last_name' => 'sa.last_name'
+                )
+            )
+            ->joinLeft(
+                array('dm' => 'data_manager'),
+                'al.created_by = dm.primary_email',
+                array(
+                    'dm_first_name' => 'dm.first_name',
+                    'dm_last_name' => 'dm.last_name',
+                    'dm_type' => 'dm.data_manager_type'
+                )
+            )
+            ->joinLeft(
+                array('p' => 'participant'),
+                'al.created_by = p.email',
+                array(
+                    'p_first_name' => 'p.first_name',
+                    'p_last_name' => 'p.last_name',
+                    'p_lab_name' => 'p.lab_name',
+                    'p_unique_id' => 'p.unique_identifier'
                 )
             );
 
@@ -90,7 +159,10 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $like = '%' . $search . '%';
             $q = $db->quote($like);
             $select->where(
-                "al.statement LIKE $q OR al.created_by LIKE $q OR al.type LIKE $q OR sa.first_name LIKE $q OR sa.last_name LIKE $q OR CONCAT_WS(' ', sa.first_name, sa.last_name) LIKE $q"
+                "al.statement LIKE $q OR al.created_by LIKE $q OR al.type LIKE $q "
+                . "OR sa.first_name LIKE $q OR sa.last_name LIKE $q OR CONCAT_WS(' ', sa.first_name, sa.last_name) LIKE $q "
+                . "OR dm.first_name LIKE $q OR dm.last_name LIKE $q OR CONCAT_WS(' ', dm.first_name, dm.last_name) LIKE $q "
+                . "OR p.first_name LIKE $q OR p.last_name LIKE $q OR p.lab_name LIKE $q OR p.unique_identifier LIKE $q"
             );
         }
 
@@ -107,17 +179,36 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
 
         $items = array();
         foreach ($rows as $row) {
-            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            $role = 'Unknown';
+            $name = '';
+            if (!empty($row['sa_first_name']) || !empty($row['sa_last_name'])) {
+                $name = trim(($row['sa_first_name'] ?? '') . ' ' . ($row['sa_last_name'] ?? ''));
+                $role = 'Admin';
+            } elseif (!empty($row['dm_first_name']) || !empty($row['dm_last_name'])) {
+                $name = trim(($row['dm_first_name'] ?? '') . ' ' . ($row['dm_last_name'] ?? ''));
+                $role = ($row['dm_type'] === 'ptcc') ? 'PTCC' : 'Data Manager';
+            } elseif (!empty($row['p_first_name']) || !empty($row['p_last_name']) || !empty($row['p_lab_name'])) {
+                $name = !empty($row['p_lab_name'])
+                    ? $row['p_lab_name']
+                    : trim(($row['p_first_name'] ?? '') . ' ' . ($row['p_last_name'] ?? ''));
+                $role = 'Participant';
+                if (!empty($row['p_unique_id']) && $name !== '') {
+                    $name .= ' (' . $row['p_unique_id'] . ')';
+                }
+            }
             if ($name === '') {
-                $name = $row['created_by'];
+                $name = $row['created_by'] ?? 'System';
             }
             $ts = strtotime($row['created_on']);
             $items[] = array(
                 'action' => $row['statement'],
                 'actionType' => $this->classifyAction($row['statement']),
                 'userName' => $name,
+                'userRole' => $role,
                 'userEmail' => $row['created_by'],
                 'userInitials' => $this->initials($name),
+                'ipAddress' => $row['ip_address'] ?? '',
+                'userAgent' => $row['user_agent'] ?? '',
                 'context' => $row['type'] ? ucwords(str_replace('-', ' ', $row['type'])) : '',
                 'contextSlug' => $row['type'],
                 'timestamp' => $row['created_on'],

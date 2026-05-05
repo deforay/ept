@@ -17,6 +17,49 @@ class Application_Service_Shipments
         $this->translator = Zend_Registry::get('translate');
     }
 
+    private function logResponseSave($scheme, $params)
+    {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $shipmentCode = '';
+        $participantLabel = '';
+        if (!empty($params['shipmentId'])) {
+            $shipmentCode = (string) $db->fetchOne(
+                $db->select()->from('shipment', 'shipment_code')->where('shipment_id = ?', $params['shipmentId'])
+            );
+        }
+        if (!empty($params['participantId'])) {
+            $row = $db->fetchRow(
+                $db->select()
+                    ->from('participant', ['unique_identifier', 'lab_name', 'first_name', 'last_name'])
+                    ->where('participant_id = ?', $params['participantId'])
+            );
+            if ($row) {
+                $name = trim((string) ($row['lab_name'] ?? '')) ?: trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                $uid = (string) ($row['unique_identifier'] ?? '');
+                $participantLabel = $uid !== '' ? $uid : $name;
+            }
+        }
+
+        $confirmForm = isset($params['confirmForm']) && trim($params['confirmForm']) === 'yes';
+        $adminOverride = isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin';
+        if ($adminOverride) {
+            $verb = 'Admin saved';
+        } elseif ($confirmForm) {
+            $verb = 'Submitted';
+        } else {
+            $verb = 'Saved draft';
+        }
+
+        $shipmentLabel = $shipmentCode !== '' ? $shipmentCode : ('#' . ($params['shipmentId'] ?? '?'));
+        $partLabel = $participantLabel !== '' ? $participantLabel : ('#' . ($params['participantId'] ?? '?'));
+
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog(
+            "{$verb} {$scheme} response - {$shipmentLabel} / {$partLabel}",
+            "response"
+        );
+    }
+
     private function calculateMandatorySampleCount($mandatoryArr, $controlArr)
     {
         $count = 0;
@@ -451,6 +494,7 @@ class Application_Service_Shipments
             $this->saveAdminData($params);
 
             $db->commit();
+            $this->logResponseSave('EID', $params);
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
@@ -590,6 +634,7 @@ class Application_Service_Shipments
             $recencyResponseDb = new Application_Model_DbTable_ResponseRecency();
             $recencyResponseDb->updateResults($params);
             $db->commit();
+            $this->logResponseSave('Recency', $params);
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
@@ -749,6 +794,7 @@ class Application_Service_Shipments
             $this->saveAdminData($params);
 
             $db->commit();
+            $this->logResponseSave('DTS', $params);
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
@@ -862,6 +908,7 @@ class Application_Service_Shipments
             $covid19ResponseDb->updateResults($params);
             $this->saveAdminData($params);
             $db->commit();
+            $this->logResponseSave('COVID-19', $params);
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
@@ -1258,6 +1305,7 @@ class Application_Service_Shipments
             $dbsResponseDb = new Application_Model_DbTable_ResponseDbs();
             $dbsResponseDb->updateResults($params);
             $db->commit();
+            $this->logResponseSave('DBS', $params);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -1377,6 +1425,7 @@ class Application_Service_Shipments
             $this->saveAdminData($params);
 
             $db->commit();
+            $this->logResponseSave('TB', $params);
             $alertMessage = '';
             if ($responseStatus === 'draft') {
                 $alertMessage = "Draft saved successfully. Please ensure to complete and submit your response before due date.\\n\\n\\nOnly fully submitted responses will be considered for evaluation";
@@ -1468,6 +1517,7 @@ class Application_Service_Shipments
             $genericTestResponseDb->updateResults($params);
             $this->saveAdminData($params);
             $db->commit();
+            $this->logResponseSave('Generic Test', $params);
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
             } elseif (isset($params['confirmForm']) && trim($params['confirmForm']) == 'yes') {
@@ -1640,6 +1690,7 @@ class Application_Service_Shipments
             $vlResponseDb->updateResults($params);
             $this->saveAdminData($params);
             $db->commit();
+            $this->logResponseSave('VL', $params);
 
             if (isset($params['reqAccessFrom']) && !empty($params['reqAccessFrom']) && $params['reqAccessFrom'] == 'admin') {
                 $alertMsg->message = "Updated Successfully";
