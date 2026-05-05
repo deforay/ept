@@ -1820,12 +1820,28 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
                 $dataManagerExists = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
                 if (isset($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && $dataManagerExists) {
-                    if ($emailWasSynthesized) {
-                        $this->addError($response, $row, $i, "Auto-generated login email {$originalEmail} (derived from Unique ID '{$row['B']}') is already in use. Either provide a unique email in column R or change the Unique ID.");
-                    } else {
-                        $this->addError($response, $row, $i, "Data Manager email {$originalEmail} already exists. Skipping for participant {$row['B']}.");
+                    // The "don't allow" rule is meant to prevent two different participants
+                    // sharing an email — not to block a participant from updating its own DM.
+                    // If the existing DM is already mapped to the participant we're updating,
+                    // fall through and let the regular update path run.
+                    $alreadyLinkedToThisParticipant = false;
+                    if ($participantExists) {
+                        $linkCount = (int) $db->fetchOne(
+                            $db->select()
+                                ->from('participant_manager_map', new Zend_Db_Expr('COUNT(*)'))
+                                ->where('dm_id = ?', $dataManagerExists['dm_id'])
+                                ->where('participant_id = ?', $participantExists['participant_id'])
+                        );
+                        $alreadyLinkedToThisParticipant = $linkCount > 0;
                     }
-                    continue;
+                    if (!$alreadyLinkedToThisParticipant) {
+                        if ($emailWasSynthesized) {
+                            $this->addError($response, $row, $i, "Auto-generated login email {$originalEmail} (derived from Unique ID '{$row['B']}') is already in use by another participant. Either provide a unique email in column R or change the Unique ID.");
+                        } else {
+                            $this->addError($response, $row, $i, "Data Manager email {$originalEmail} already exists for another participant. Skipping for participant {$row['B']}.");
+                        }
+                        continue;
+                    }
                 }
 
                 // Prepare participant data
