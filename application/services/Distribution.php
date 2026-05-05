@@ -57,6 +57,16 @@ class Application_Service_Distribution
 	public function shipDistribution($distributionId)
 	{
 		$db = Zend_Db_Table_Abstract::getDefaultAdapter();
+		$distroCode = $db->fetchOne(
+			$db->select()
+				->from('distributions', ['distribution_code'])
+				->where('distribution_id = ?', $distributionId)
+		);
+		$shipmentCount = (int) $db->fetchOne(
+			$db->select()
+				->from('shipment', new Zend_Db_Expr('COUNT(*)'))
+				->where('distribution_id = ?', $distributionId)
+		);
 		$db->beginTransaction();
 		try {
 			$shipmentDb = new Application_Model_DbTable_Shipments();
@@ -64,6 +74,13 @@ class Application_Service_Distribution
 			$disrtibutionDb = new Application_Model_DbTable_Distribution();
 			$disrtibutionDb->updateDistributionStatus($distributionId, "shipped");
 			$db->commit();
+
+			$auditDb = new Application_Model_DbTable_AuditLog();
+			$auditDb->addNewAuditLog(
+				"Shipped PT Survey - " . ($distroCode ?: "#$distributionId") . " ({$shipmentCount} shipments)",
+				"shipment"
+			);
+
 			return "PT Event shipped!";
 		} catch (Exception $e) {
 			$db->rollBack();

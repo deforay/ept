@@ -176,6 +176,13 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 ];
                 $common->insertIgnore($this->_name, $data);
             }
+
+            $enrolledCount = is_array($params['selectedForEnrollment']) ? count($params['selectedForEnrollment']) : 0;
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(
+                "Enrolled {$enrolledCount} participants in scheme {$params['schemeId']} (list: {$listName})",
+                "enrollment"
+            );
         }
     }
 

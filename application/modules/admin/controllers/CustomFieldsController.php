@@ -31,15 +31,12 @@ class Admin_CustomFieldsController extends Zend_Controller_Action
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $customFieldInConfig = $globalConfigDb->getValue('custom_field_1');
 
-            if ($haveCustom == 'yes') {
-                $globalConfigDb->updateConfigDetails(array('custom_field_1' => $customField1));
-                $globalConfigDb->updateConfigDetails(array('custom_field_2' => $customField2));
-            } else {
-                $globalConfigDb->updateConfigDetails(array('custom_field_1' => ''));
-                $globalConfigDb->updateConfigDetails(array('custom_field_2' => ''));
-            }
-
-            $globalConfigDb->updateConfigDetails(array('custom_field_needed' => $haveCustom));
+            $configUpdate = [
+                'custom_field_1' => ($haveCustom == 'yes') ? $customField1 : '',
+                'custom_field_2' => ($haveCustom == 'yes') ? $customField2 : '',
+                'custom_field_needed' => $haveCustom,
+            ];
+            $globalConfigDb->updateConfigDetails($configUpdate);
         }
 
         $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');

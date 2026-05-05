@@ -106,6 +106,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             }
             /* New shipment mail alert end */
             $this->getAdapter()->commit();
+
+            $participantCount = is_array($params['selectedForEnrollment']) ? count($params['selectedForEnrollment']) : 0;
+            $shipmentCode = $shipmentRow['shipment_code'] ?? "#{$params['shipmentId']}";
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(
+                "Shipped shipment - {$shipmentCode} ({$participantCount} participants)",
+                "shipment"
+            );
+
             return true;
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();

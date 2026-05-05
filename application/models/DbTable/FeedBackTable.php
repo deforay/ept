@@ -175,10 +175,18 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'modified_by' => $authNameSpace->admin_id
             );
 
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $code = $params['questionCode'] ?: '(no code)';
+
             if (isset($params['questionID']) && !empty($params['questionID']) && $params['formType'] != 'clone') {
-                return $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
+                $result = $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
+                $auditDb->addNewAuditLog("Updated feedback question - {$code}", "feedback");
+                return $result;
             } else {
-                return $this->insert($data);
+                $result = $this->insert($data);
+                $verb = (isset($params['formType']) && $params['formType'] === 'clone') ? 'Cloned' : 'Added a new';
+                $auditDb->addNewAuditLog("{$verb} feedback question - {$code}", "feedback");
+                return $result;
             }
         }
     }
@@ -304,6 +312,16 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 
             $db->insert('r_participant_feedback_form_question_map', $questionData);
         }
+
+        $shipmentCode = $db->fetchOne(
+            $db->select()->from('shipment', 'shipment_code')->where('shipment_id = ?', $params['shipmentId'])
+        );
+        $questionCount = count((array) $params['question']);
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog(
+            "Mapped feedback form for shipment - " . ($shipmentCode ?: "#{$params['shipmentId']}") . " ({$questionCount} questions)",
+            "feedback"
+        );
     }
 
     public function fetchAllFeedBackResponses($parameters, $type)

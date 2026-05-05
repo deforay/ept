@@ -996,13 +996,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $params['participantsList'] = json_decode($params['selectedForMapping'], true);
                     $dm->dmParticipantMap($params, $params['datamanagerId'], false);
 
-                    /* $db->delete('participant_manager_map', "dm_id = " . $params['datamanagerId']);
-                    if ($type == null || $type != 'participant-side') {
-                        $params['participants'] = json_decode($params['selectedForMapping'], true);
-                        foreach ($params['participants'] as $participants) {
-                            $db->insert('participant_manager_map', array('participant_id' => $participants, 'dm_id' => $params['datamanagerId']));
-                        }
-                    }*/
+                    $mappedCount = is_array($params['participantsList']) ? count($params['participantsList']) : 0;
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog(
+                        "Mapped {$mappedCount} participants to data manager #{$params['datamanagerId']}",
+                        "data-managers"
+                    );
 
                     $alertMsg->message = "Participants mapped successfully";
                 }
@@ -1013,10 +1012,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $params['participantsList'][] = $params['participantId'];
                     $dm->dmParticipantMap($params, $params['dataManager'], false);
 
-                    /* $db->delete('participant_manager_map', "participant_id = " . $params['participantId']);
-                    foreach ($params['datamangers'] as $datamangers) {
-                        $db->insert('participant_manager_map', array('dm_id' => $datamangers, 'participant_id' => $params['participantId']));
-                    } */
+                    $auditDb = new Application_Model_DbTable_AuditLog();
+                    $auditDb->addNewAuditLog(
+                        "Mapped participant #{$params['participantId']} to data manager #{$params['dataManager']}",
+                        "data-managers"
+                    );
+
                     $alertMsg->message = "Datamanager mapped successfully";
                 }
             }

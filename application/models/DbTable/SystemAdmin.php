@@ -192,16 +192,19 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'updated_by' => $authNameSpace->admin_id,
             'updated_on' => new Zend_Db_Expr('now()')
         );
+        $sensitiveChanges = [];
         if (isset($params['password']) && $params['password'] != "") {
             $password = Application_Service_Common::passwordHash($params['password']);
             $data['password'] = $password ?? null;
             $data['force_password_reset'] = 1;
+            $sensitiveChanges[] = 'password reset';
         }
         if (isset($params['schemeId']) && $params['schemeId'] != "") {
             $data['scheme'] = implode(',', $params['schemeId'] ?? []);
         }
         if (isset($params['privileges']) && $params['privileges'] != "") {
             $data['privileges'] = implode(',', $params['privileges'] ?? []);
+            $sensitiveChanges[] = 'privileges';
         }
         if (isset($params['language']) && $params['language'] != "") {
             $authNameSpace->language = $params['language'];
@@ -209,10 +212,15 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         $adminId = $this->update($data, "admin_id=" . $params['adminId']);
 
         if ($adminId > 0) {
-            $name = $firstName . " " . $lastName;
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $name = trim(($firstName ?? '') . " " . ($lastName ?? ''));
+            if ($name === '') {
+                $name = $params['primaryEmail'];
+            }
+            $isSelf = (int) $params['adminId'] === (int) ($authNameSpace->admin_id ?? 0);
+            $verb = $isSelf ? 'Updated own profile' : 'Updated admin';
+            $detail = empty($sensitiveChanges) ? '' : ' (' . implode(', ', $sensitiveChanges) . ')';
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated admin - " . $name, "admin");
+            $auditDb->addNewAuditLog("{$verb} - {$name}{$detail}", "admin");
         }
 
         return $adminId;

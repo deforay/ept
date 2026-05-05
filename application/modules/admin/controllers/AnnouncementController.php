@@ -32,6 +32,12 @@ class Admin_AnnouncementController extends Zend_Controller_Action
             $params = $request->getPost();
             $service = new Application_Service_Announcement();
             $service->composeNewAnnouncement($params);
+
+            $subject = trim((string) ($params['subject'] ?? ''));
+            $detail = $subject !== '' ? " - \"{$subject}\"" : '';
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Composed announcement{$detail}", "announcement");
+
             $this->redirect("/admin/announcement");
         }
         $scheme = new Application_Service_Schemes();
