@@ -3,29 +3,32 @@ function generateReports(sId, checkReportDate, surveyDate, _type) {
     if (checkReportDate == 1 || checkReportDate == true) {
         $.blockUI();
 
-        document.location.reload(true);
-        var individual = null;
-        $.when(
-            $.post("/reports/distribution/queue-reports-generation", {
-                sid: sId,
-                type: _type
-            },
-                function (data) {
-                    individual = data;
-                })
-        ).then(function () {
-            if (individual) {
-                // Initialize progress tracker instead of immediate reload
-                if (typeof JobProgressTracker !== 'undefined') {
-                    $.unblockUI();
-                    JobProgressTracker.init(sId);
-                } else {
-                    $.unblockUI();
-                }
-            } else {
+        $.post("/reports/distribution/queue-reports-generation", {
+            sid: sId,
+            type: _type
+        })
+            .done(function () {
                 $.unblockUI();
-            }
-        });
+
+                // Re-run whichever AJAX table loader the host page defines so the
+                // row's status flips to "Queued" immediately. Single-shipment
+                // detail pages have no loader — fall back to a reload there.
+                if (typeof currentHighlighted !== 'undefined' && currentHighlighted) {
+                    if (typeof getShipments === 'function') {
+                        getShipments(currentHighlighted);
+                    } else if (typeof getShipmentInReports === 'function') {
+                        getShipmentInReports(currentHighlighted);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    location.reload();
+                }
+            })
+            .fail(function () {
+                $.unblockUI();
+                alert("Failed to queue report generation. Please try again.");
+            });
     } else {
         $.unblockUI();
         alert("You cannot generate reports on or before PT Survey Date (" + surveyDate + ").\n\n\nYou can change the PT Survey Date and retry.");

@@ -801,8 +801,8 @@ final class Application_Model_Dts
 		}
 
 		if ($dtsSchemeType == 'malawi' || $attributes['algorithm'] == 'malawiNationalDtsAlgo') {
-			// For Malawi we have 4 more documentation items to consider - Sample Condition, Fridge, Stop Watch and Room Temp
-			$totalDocumentationItems += 4;
+			// For Malawi we have 3 more documentation items to consider - Sample Condition, Stop Watch and Room Temp
+			$totalDocumentationItems += 3;
 		}
 		$docScore = $config['documentationScore'] ?? 0;
 		$documentationScorePerItem = ($docScore > 0) ? round($docScore / $totalDocumentationItems, 2) : 0;

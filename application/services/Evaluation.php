@@ -2034,7 +2034,7 @@ class Application_Service_Evaluation
 
 		$expandBtn = '<a href="javascript:void(0);" class="btn btn-xs clicker ' . $btnClassName . '" data-btn-class="' . $btnClassName . '" data-map-id="' . (int) $shipment['map_id'] . '"><i class="icon-plus"></i></a>';
 
-		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . '(' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
+		$participantCell = htmlspecialchars(trim(($shipment['first_name'] ?? '') . ' ' . ($shipment['last_name'] ?? ''))) . ' (' . htmlspecialchars($shipment['unique_identifier'] ?? '') . ')';
 		$score = '<div style="text-align:center;">' . htmlspecialchars($shipmentScore) . '</div>';
 		$docScore = '<div style="text-align:center;">' . htmlspecialchars($documentationScore) . '</div>';
 		$resultCell = '<div style="text-align:center;">' . htmlspecialchars($displayResult !== '' ? $displayResult : $translator->_('Not Evaluated')) . '</div>';
@@ -2202,12 +2202,13 @@ class Application_Service_Evaluation
 		$passPercentage = Pt_Commons_SchemeConfig::get($testType . '.passPercentage') ?? 100;
 		$score = (isset($passPercentage) && !empty($passPercentage) && $passPercentage > 0) ? $passPercentage : '100';
 		if (isset($layout) && !empty($layout) && $layout == 'malawi') {
-			$q = "SELECT AVG(shipment_score + documentation_score) AS mean_score FROM shipment_participant_map WHERE IFNULL(response_status, 'noresponse') = 'responded' AND IFNULL(is_excluded, 'no') = 'no'";
 			$q = $db->select()->from(['spm' => 'shipment_participant_map'], [
-				'mean_score' => new Zend_Db_Expr("( ( (SUM(CASE WHEN ((spm.shipment_score + spm.documentation_score) >= $score) THEN 1 ELSE 0 END) )*100)/ COUNT(*) )"),
+				'mean_score' => new Zend_Db_Expr("AVG(spm.shipment_score + spm.documentation_score)"),
 			])
 				->where("spm.shipment_id = ?", $shipmentId)
-				->group(array('spm.shipment_id'));
+				->where("IFNULL(spm.response_status, 'noresponse') = 'responded'")
+				->where("IFNULL(spm.is_excluded, 'no') = 'no'")
+				->group('spm.shipment_id');
 			$meanScore = $db->fetchRow($q);
 		}
 		$i = 0;

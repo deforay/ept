@@ -3,10 +3,12 @@ $csrfNamespace = new Zend_Session_Namespace('csrf');
 $result = $this->result ?? null;
 if ($result && !empty($result['ok'])) { ?>
     <script type="text/javascript">
-        if (window.parent && typeof window.parent.closeLayoutModal === 'function') {
-            window.parent.closeLayoutModal();
-            if (window.parent.location && typeof window.parent.location.reload === 'function') {
-                window.parent.location.reload();
+        if (window.parent) {
+            if (typeof window.parent.afterDmActionSuccess === 'function') {
+                window.parent.afterDmActionSuccess(<?= (int)($user['dm_id'] ?? 0); ?>);
+            }
+            if (typeof window.parent.closeLayoutModal === 'function') {
+                window.parent.closeLayoutModal();
             }
         }
     </script>

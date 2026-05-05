@@ -25,7 +25,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
          */
 
 
-        $aColumns = array('statement', 'created_by', 'created_on', 'type');
+        $aColumns = array('al.statement', 'al.created_by', 'al.created_on', 'al.type');
 
         $sLimit = "";
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
@@ -130,8 +130,9 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
 
         if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
-            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $parameters['startDate']);
-            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $parameters['endDate']);
+            $common = new Application_Service_Common();
+            $sQuery = $sQuery->where("DATE(al.created_on) >= ?", $common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where("DATE(al.created_on) <= ?", $common->isoDateFormat($parameters['endDate']));
         }
 
         if (isset($parameters['type']) && $parameters['type'] != "") {

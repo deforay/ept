@@ -51,6 +51,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     </div>
 </div>
 <style>
+    #usersTable > tbody > tr > td { vertical-align: middle; }
     #usersTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
     #usersTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
 </style>
@@ -240,6 +241,13 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load participants. Please try again."); ?></div>');
             });
         });
+
+        // Hook called by reset-password / change-primary-email modals on success.
+        // Redraw the data-managers table in place so the updated email/status shows
+        // without reloading the whole page.
+        window.afterDmActionSuccess = function () {
+            oTable.fnDraw(false);
+        };
 
         // Inline filter for the expanded participants list (only present when > 5 mapped)
         $('#usersTable tbody').on('input', 'input.participant-filter-input', function () {
