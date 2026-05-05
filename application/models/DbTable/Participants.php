@@ -917,6 +917,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                             unset($sheetData[1]);
 
                             $authNameSpace = new Zend_Session_Namespace('administrators');
+                            $mappedCount = 0;
 
                             foreach ($sheetData as $row) {
 
@@ -970,11 +971,12 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                                 if ($dmId > 0) {
                                     $dmData = ['dm_id' => $dmId, 'participant_id' => $participantId];
                                     $common->insertIgnore('participant_manager_map', $dmData);
+                                    $mappedCount++;
                                 }
                             }
                             $authNameSpace = new Zend_Session_Namespace('administrators');
                             $auditDb = new Application_Model_DbTable_AuditLog();
-                            $auditDb->addNewAuditLog("Bulk imported participants map", "data-managers");
+                            $auditDb->addNewAuditLog("Bulk imported {$mappedCount} participant–data manager mappings", "data-managers");
                             $alertMsg->message = 'Mapping completed successfully';
                         } else {
                             $alertMsg->message = 'Mapping import failed';
@@ -2022,8 +2024,9 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $db->commit();
 
             // Log audit
+            $importedCount = count($response['data'] ?? []);
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Bulk imported participants", "participants");
+            $auditDb->addNewAuditLog("Bulk imported {$importedCount} participants", "participants");
 
             $alertMsg->message = 'Your file was imported successfully';
         } catch (Exception $e) {

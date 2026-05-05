@@ -495,15 +495,21 @@ class Application_Service_Participants
 			$sheet = $this->common->setAllColumnWidthsInSheet($sheet, 20);
 
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
+			$rowCount = count($rResult);
 			if ($params['type'] == 'from-participant') {
 				$filename = 'PARTICIPANT-LIST-' . date('d-M-Y-H-i-s') . '.xlsx';
+				$auditAction = "Downloaded participant list ({$rowCount} rows)";
 			} else {
-				$filename = strtoupper($params['shipmentCode']) . '-PARTICIPANT-RESPONSE-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
+				$shipmentCode = strtoupper((string) ($params['shipmentCode'] ?? ''));
+				$filename = $shipmentCode . '-PARTICIPANT-RESPONSE-REPORT-' . date('d-M-Y-H-i-s') . '.xlsx';
+				$auditAction = $shipmentCode !== ''
+					? "Downloaded participant response report - {$shipmentCode} ({$rowCount} rows)"
+					: "Downloaded participant response report ({$rowCount} rows)";
 			}
 			$writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
 			$authNameSpace = new Zend_Session_Namespace('administrators');
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded participant data", "participants");
+			$auditDb->addNewAuditLog($auditAction, "participants");
 			return $filename;
 		} catch (Exception $exc) {
 
@@ -639,13 +645,11 @@ class Application_Service_Participants
 				}
 			}
 
-			$authNameSpace = new Zend_Session_Namespace('datamanagers');
-			$firstName = $authNameSpace->first_name;
-			$lastName = $authNameSpace->last_name;
-			$name = $firstName . " " . $lastName;
-			$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+			$rowCount = count($rResult);
+			$shipmentCode = trim((string) ($params['shipmentCode'] ?? ''));
+			$detail = $shipmentCode !== '' ? " - {$shipmentCode}" : '';
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded feedback report", "feedback");
+			$auditDb->addNewAuditLog("Downloaded non-respondents report{$detail} ({$rowCount} rows)", "shipment");
 
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = $params['shipmentCode'] . '-not-responded-participant-report-' . date('d-M-Y-H-i-s') . '.xlsx';
@@ -880,8 +884,9 @@ class Application_Service_Participants
 			$writer = IOFactory::createWriter($excel, 'Xlsx');
 			$filename = 'Shipment-Participant-Response-Report-' . date('d-M-Y-H-i-s') . '.xlsx';
 			$writer->save($tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+			$rowCount = count($rResult);
 			$auditDb = new Application_Model_DbTable_AuditLog();
-			$auditDb->addNewAuditLog("Downloaded participant response data", "participants");
+			$auditDb->addNewAuditLog("Downloaded participant response data ({$rowCount} rows)", "participants");
 			echo $filename;
 		} catch (Exception $exc) {
 			$sQuerySession->shipmentRespondedParticipantQuery = '';

@@ -930,7 +930,7 @@ class Application_Model_Tb
             $name = $firstName . " " . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Downloaded TB Excel report", "shipment");
+            $auditDb->addNewAuditLog("Downloaded TB Excel report - " . ($shipmentCode ?? '?'), "shipment");
 
             $excel->setActiveSheetIndex(0);
 

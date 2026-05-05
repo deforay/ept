@@ -9,6 +9,7 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
     public function updateReportDetails($params)
     {
         $data = array('value' => $params['content']);
+        $changedSections = ['report header'];
 
         if (isset($_FILES['logo_image']['tmp_name']) && file_exists($_FILES['logo_image']['tmp_name']) && is_uploaded_file($_FILES['logo_image']['tmp_name'])) {
 
@@ -28,17 +29,21 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
                     $resizeObj->saveImage($uploadDirectory . DIRECTORY_SEPARATOR . "logo" . DIRECTORY_SEPARATOR . $imageName, 100);
                 }
                 $this->update(['value' => $imageName], "name='logo'");
+                $changedSections[] = 'logo';
             }
         }
         if (isset($params['reportLayout']) && !empty($params['reportLayout'])) {
             $this->update(['value' => $params['reportLayout']], "name='report-layout'");
+            $changedSections[] = 'layout';
         }
 
         if (isset($params['instituteAddressPosition'])) {
             $this->update(['value' => $params['instituteAddressPosition']], "name='institute-address-postition'");
+            $changedSections[] = 'institute address position';
         }
         if (isset($params['templateTopMargin'])) {
             $this->update(['value' => $params['templateTopMargin']], "name='template-top-margin'");
+            $changedSections[] = 'top margin';
         }
 
         //$imageName ="logo_example.jpg";
@@ -55,11 +60,13 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats', 0777, true);
         if (isset($params['deleteTemplate']) && !empty($params['deleteTemplate']) && $params['deleteTemplate'] == 'yes') {
             $this->update(array('value' => null), "name='report-format'");
+            $changedSections[] = 'PDF template removed';
         }
         if (isset($_FILES['reportTemplate']['name']) && !empty($_FILES['reportTemplate']['name'])) {
             if (in_array($extension, $pdfFormatAllowedExtensions)) {
                 if (move_uploaded_file($_FILES['reportTemplate']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . 'report-formats' . DIRECTORY_SEPARATOR . $fileName)) {
                     $this->update(array('value' => $fileName), "name='report-format'");
+                    $changedSections[] = 'PDF template';
                 }
             } else {
                 $alertMsg->message = 'Unable to upload file. Please upload only PDF files';
@@ -70,8 +77,9 @@ class Application_Model_DbTable_ReportConfig extends Zend_Db_Table_Abstract
         $alertMsg->message = 'PDF Config Updated';
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $detail = ' — ' . implode(', ', array_unique($changedSections));
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated report config", "config");
+        $auditDb->addNewAuditLog("Updated report config" . $detail, "config");
         return $this->update($data, "name='report-header'");
     }
 

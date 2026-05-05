@@ -37,26 +37,34 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 
     public function updateConfigDetails($params)
     {
+        $changedSchemes = [];
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
             $this->insertOrUpdate('mail', json_encode($params['emailConfig'], true));
+            $changedSchemes[] = 'email';
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
             $this->insertOrUpdate('covid19', json_encode($params['covid19'], true));
+            $changedSchemes[] = 'COVID-19';
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
             $this->insertOrUpdate('vl', json_encode($params['vl'], true));
+            $changedSchemes[] = 'VL';
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
             $this->insertOrUpdate('recency', json_encode($params['recency'], true));
+            $changedSchemes[] = 'Recency';
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
             $this->insertOrUpdate('tb', json_encode($params['tb'], true));
+            $changedSchemes[] = 'TB';
         }
         if (isset($params['dts']) && !empty($params['dts'])) {
             $this->insertOrUpdate('dts', json_encode($params['dts'], true));
+            $changedSchemes[] = 'DTS';
         }
         if (isset($params['home']) && !empty($params['home'])) {
             $this->insertOrUpdate('home', json_encode($params['home'], true));
+            $changedSchemes[] = 'home page';
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
             $faqResponse = [];
@@ -64,14 +72,12 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
             $this->insertOrUpdate('faqs', json_encode($faqResponse, true));
+            $changedSchemes[] = 'FAQs';
         }
 
-        /* foreach ($params as $fieldName => $fieldValue) {
-            $this->insertOrUpdate($fieldName, $fieldValue);
-        } */
-
+        $detail = empty($changedSchemes) ? '' : ' — ' . implode(', ', $changedSchemes);
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated scheme config", "config");
+        $auditDb->addNewAuditLog("Updated scheme config" . $detail, "config");
     }
 
     public function saveSchemeConfigByName($value, $name)

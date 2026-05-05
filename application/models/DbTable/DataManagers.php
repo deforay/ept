@@ -1227,6 +1227,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $count = count($sheetData);
+            $importedCount = 0;
 
             // Pre-load cached data to reduce database queries
             $countryCache = $this->buildCountryCache();
@@ -1294,9 +1295,13 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 if (empty($dmresult)) {
                     $db->insert('data_manager', $dataManagerData);
                     $lastInsertedId = $db->lastInsertId();
+                    if ($lastInsertedId > 0) {
+                        $importedCount++;
+                    }
                 } elseif (isset($params['bulkUploadDuplicateSkip']) && $params['bulkUploadDuplicateSkip'] == 'update-on-primary-email-match') {
                     $db->update('data_manager', $dataManagerData, "primary_email = '$originalEmail'");
                     $lastInsertedId = $dmresult['dm_id'];
+                    $importedCount++;
                 } else {
                     $lastInsertedId = $dmresult['dm_id'];
                 }
@@ -1334,8 +1339,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         }
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
+        $managerLabel = ($type === 'ptcc') ? 'PTCCs' : 'data managers';
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Bulk imported participants", "participants");
+        $auditDb->addNewAuditLog("Bulk imported {$importedCount} {$managerLabel}", "data-managers");
 
         $alertMsg->message = 'Your file was imported successfully';
         return $response;

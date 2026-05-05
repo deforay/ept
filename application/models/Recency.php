@@ -1049,7 +1049,7 @@ class Application_Model_Recency
         $name = $firstName . " " . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Downloaded Recency Excel report", "shipment");
+        $auditDb->addNewAuditLog("Downloaded Recency Excel report - " . ($result['shipment_code'] ?? '?'), "shipment");
 
         $excel->setActiveSheetIndex(0);
 

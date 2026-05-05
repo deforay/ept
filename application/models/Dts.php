@@ -2113,7 +2113,7 @@ final class Application_Model_Dts
 		$name = $firstName . " " . $lastName;
 		$userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
 		$auditDb = new Application_Model_DbTable_AuditLog();
-		$auditDb->addNewAuditLog("Downloaded DTS Rapid HIV report", "shipment");
+		$auditDb->addNewAuditLog("Downloaded DTS Rapid HIV report - " . ($shipmentCode ?? '?'), "shipment");
 
 		$writer = IOFactory::createWriter($excel, 'Xlsx');
 		$filename = $shipmentCode . '-' . date('d-M-Y-H-i-s') . '.xlsx';

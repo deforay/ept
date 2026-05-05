@@ -4934,10 +4934,12 @@ class Application_Service_Reports
                 }
 
                 $writer = IOFactory::createWriter($excel, 'Xlsx');
-                $filename = $resultSet[0]['shipment_code'] . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
-                $writer->save($this->tempUploadDirectory . DIRECTORY_SEPARATOR . $filename);
+                $shipmentCode = (string) ($resultSet[0]['shipment_code'] ?? '');
+                $filename = $shipmentCode . '-Response-Status-' . date('d-M-Y-H-i-s') . '.xlsx';
+                $rowCount = count($resultSet);
+                $detail = $shipmentCode !== '' ? " - {$shipmentCode}" : '';
                 $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Downloaded pending sites report", "participants");
+                $auditDb->addNewAuditLog("Downloaded pending sites report{$detail} ({$rowCount} rows)", "shipment");
                 return $filename;
             } else {
                 return '';
