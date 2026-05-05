@@ -3538,8 +3538,8 @@ class Application_Service_Reports
         } else {
             $shQuery = $db->select()->from(array('s' => 'shipment'))->where("s.scheme_type='vl'");
             if (isset($params['start']) && $params['start'] != "" && isset($params['end']) && $params['end'] != "") {
-                $shQuery = $shQuery->where("DATE(s.shipment_date) >= ?", $params['start']);
-                $shQuery = $shQuery->where("DATE(s.shipment_date) <= ?", $params['end']);
+                $shQuery = $shQuery->where("DATE(s.shipment_date) >= ?", $this->common->isoDateFormat($params['start']));
+                $shQuery = $shQuery->where("DATE(s.shipment_date) <= ?", $this->common->isoDateFormat($params['end']));
             }
             $shimentResult = $db->fetchAll($shQuery);
         }
