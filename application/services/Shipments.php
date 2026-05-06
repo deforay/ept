@@ -78,10 +78,21 @@ class Application_Service_Shipments
 
         $confirmForm = isset($params['confirmForm']) && trim($params['confirmForm']) === 'yes';
         $adminOverride = isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin';
+        // Only TB has a real "Save as Draft" path. For every other scheme, the
+        // first click of Submit is a UX confirmation step that re-renders the
+        // form expecting a Confirm click — not a draft. Skip logging it so the
+        // audit log only records the final submission.
+        $isTbDraft = $scheme === 'TB' && isset($params['isDraft']) && trim($params['isDraft']) === 'yes';
+
+        if (!$confirmForm && !$adminOverride && !$isTbDraft) {
+            return;
+        }
 
         if ($adminOverride) {
             $verb = $priorSave ? 'Admin edited' : 'Admin saved';
-        } elseif ($confirmForm) {
+        } elseif ($isTbDraft) {
+            $verb = $priorSave ? 'Edited draft' : 'Saved draft';
+        } else {
             if ($priorSubmit) {
                 $verb = 'Edited submitted';
             } elseif ($priorSave) {
@@ -89,8 +100,6 @@ class Application_Service_Shipments
             } else {
                 $verb = 'Submitted';
             }
-        } else {
-            $verb = $priorSave ? 'Edited draft' : 'Saved draft';
         }
 
         $auditDb = new Application_Model_DbTable_AuditLog();
