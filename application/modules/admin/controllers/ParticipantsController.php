@@ -27,6 +27,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             ->addActionContext('delete-participant', 'html')
             ->addActionContext('export-participants-map', 'html')
             ->addActionContext('mapped-data-managers', 'html')
+            ->addActionContext('participant-shipments', 'html')
             ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
@@ -45,6 +46,34 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->pendingCount = (int)$db->fetchOne(
             $db->select()->from('participant', new Zend_Db_Expr('COUNT(*)'))->where("status = ?", 'pending')
         );
+    }
+
+    /* Returns the list of shipments a participant is part of, rendered as a fragment
+       to be inserted into a DataTables child row on /admin/participants. Latest
+       shipment first (by shipment_date desc). */
+    public function participantShipmentsAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $participantId = (int)$this->_getParam('id');
+        $this->view->participantId = $participantId;
+        $this->view->shipments = [];
+        if ($participantId > 0) {
+            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+            $select = $db->select()
+                ->from(array('spm' => 'shipment_participant_map'), array(
+                    'map_id', 'response_status', 'final_result', 'is_excluded',
+                    'shipment_test_date', 'shipment_test_report_date',
+                ))
+                ->join(array('s' => 'shipment'), 's.shipment_id = spm.shipment_id', array(
+                    'shipment_id', 'shipment_code', 'shipment_date',
+                    'shipment_status' => 's.status',
+                ))
+                ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id = s.scheme_type', array('scheme_name'))
+                ->where('spm.participant_id = ?', $participantId)
+                ->order('s.shipment_date DESC')
+                ->order('s.shipment_id DESC');
+            $this->view->shipments = $db->fetchAll($select);
+        }
     }
 
     /* Returns the list of data managers mapped to a participant, rendered as a fragment

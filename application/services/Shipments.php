@@ -30,11 +30,11 @@ class Application_Service_Shipments
         if (!empty($params['participantId'])) {
             $row = $db->fetchRow(
                 $db->select()
-                    ->from('participant', ['unique_identifier', 'lab_name', 'first_name', 'last_name'])
+                    ->from('participant', ['unique_identifier', 'individual', 'lab_name', 'first_name', 'last_name'])
                     ->where('participant_id = ?', $params['participantId'])
             );
             if ($row) {
-                $name = trim((string) ($row['lab_name'] ?? '')) ?: trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                $name = Application_Model_DbTable_Participants::formatParticipantName($row);
                 $uid = (string) ($row['unique_identifier'] ?? '');
                 $participantLabel = $uid !== '' ? $uid : $name;
             }
