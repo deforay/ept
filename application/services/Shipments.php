@@ -40,18 +40,58 @@ class Application_Service_Shipments
             }
         }
 
-        $confirmForm = isset($params['confirmForm']) && trim($params['confirmForm']) === 'yes';
-        $adminOverride = isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin';
-        if ($adminOverride) {
-            $verb = 'Admin saved';
-        } elseif ($confirmForm) {
-            $verb = 'Submitted';
-        } else {
-            $verb = 'Saved draft';
-        }
-
         $shipmentLabel = $shipmentCode !== '' ? $shipmentCode : ('#' . ($params['shipmentId'] ?? '?'));
         $partLabel = $participantLabel !== '' ? $participantLabel : ('#' . ($params['participantId'] ?? '?'));
+
+        // Detect prior saves: was the response already submitted before this save?
+        // shipment_participant_map.created_on_user is set on the first user save and not
+        // overwritten on later saves; if it predates this request we are editing.
+        $priorSave = false;
+        $priorSubmit = false;
+        if (!empty($params['shipmentId']) && !empty($params['participantId'])) {
+            $row = $db->fetchRow(
+                $db->select()
+                    ->from('shipment_participant_map', ['created_on_user', 'evaluation_status'])
+                    ->where('shipment_id = ?', $params['shipmentId'])
+                    ->where('participant_id = ?', $params['participantId'])
+            );
+            if ($row && !empty($row['created_on_user'])) {
+                $createdAt = strtotime((string) $row['created_on_user']);
+                // Treat anything older than the current minute as a prior save
+                if ($createdAt && $createdAt < (time() - 60)) {
+                    $priorSave = true;
+                }
+            }
+            if ($priorSave) {
+                // Look back at audit log to see if it was previously fully submitted
+                $likeMatch = "%{$scheme} response - {$shipmentLabel} / {$partLabel}";
+                $priorSubmit = (bool) $db->fetchOne(
+                    $db->select()
+                        ->from('audit_log', new Zend_Db_Expr('1'))
+                        ->where('type = ?', 'response')
+                        ->where("statement LIKE 'Submitted %' OR statement LIKE 'Admin saved %'")
+                        ->where('statement LIKE ?', $likeMatch)
+                        ->limit(1)
+                );
+            }
+        }
+
+        $confirmForm = isset($params['confirmForm']) && trim($params['confirmForm']) === 'yes';
+        $adminOverride = isset($params['reqAccessFrom']) && $params['reqAccessFrom'] === 'admin';
+
+        if ($adminOverride) {
+            $verb = $priorSave ? 'Admin edited' : 'Admin saved';
+        } elseif ($confirmForm) {
+            if ($priorSubmit) {
+                $verb = 'Edited submitted';
+            } elseif ($priorSave) {
+                $verb = 'Submitted (after draft)';
+            } else {
+                $verb = 'Submitted';
+            }
+        } else {
+            $verb = $priorSave ? 'Edited draft' : 'Saved draft';
+        }
 
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog(
