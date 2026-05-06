@@ -5,21 +5,58 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
     protected $_name = 'audit_log';
     protected $_primary = 'audit_log_id';
 
+    private static $columnsCache = null;
+
+    /**
+     * Detect which audit_log columns exist on this DB, so the code is safe to
+     * run on instances where the 7.4.0 migration has not yet been applied.
+     */
+    private function availableColumns()
+    {
+        if (self::$columnsCache !== null) {
+            return self::$columnsCache;
+        }
+        try {
+            $rows = $this->getAdapter()->fetchCol(
+                "SELECT COLUMN_NAME FROM information_schema.COLUMNS "
+                . "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?",
+                [$this->_name]
+            );
+            self::$columnsCache = array_flip(array_map('strtolower', $rows));
+        } catch (Exception $e) {
+            self::$columnsCache = [];
+        }
+        return self::$columnsCache;
+    }
+
+    private function hasColumn($name)
+    {
+        $cols = $this->availableColumns();
+        return isset($cols[strtolower($name)]);
+    }
+
     public function addNewAuditLog($stateMent, $type = null)
     {
         if (!isset($stateMent) || $stateMent === '') {
             return null;
         }
         [$email, $role] = $this->resolveActor();
-        return $this->insert(array(
+        $data = [
             "statement" => $stateMent,
             "created_by" => $email,
-            "created_by_role" => $role,
             "created_on" => new Zend_Db_Expr('now()'),
             "type" => $type,
-            "ip_address" => $this->captureIp(),
-            "user_agent" => $this->captureUserAgent()
-        ));
+        ];
+        if ($this->hasColumn('created_by_role')) {
+            $data['created_by_role'] = $role;
+        }
+        if ($this->hasColumn('ip_address')) {
+            $data['ip_address'] = $this->captureIp();
+        }
+        if ($this->hasColumn('user_agent')) {
+            $data['user_agent'] = $this->captureUserAgent();
+        }
+        return $this->insert($data);
     }
 
     private function resolveActor()
@@ -111,8 +148,18 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $endDate = isset($parameters['endDate']) ? trim($parameters['endDate']) : '';
 
         $db = $this->getAdapter();
+        $alCols = ['statement', 'created_by', 'created_on', 'type'];
+        if ($this->hasColumn('created_by_role')) {
+            $alCols[] = 'created_by_role';
+        }
+        if ($this->hasColumn('ip_address')) {
+            $alCols[] = 'ip_address';
+        }
+        if ($this->hasColumn('user_agent')) {
+            $alCols[] = 'user_agent';
+        }
         $select = $db->select()
-            ->from(array('al' => $this->_name), array('statement', 'created_by', 'created_by_role', 'created_on', 'type', 'ip_address', 'user_agent'))
+            ->from(array('al' => $this->_name), $alCols)
             ->joinLeft(
                 array('sa' => 'system_admin'),
                 'al.created_by = sa.primary_email',
