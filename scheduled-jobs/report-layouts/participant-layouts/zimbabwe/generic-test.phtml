@@ -75,7 +75,7 @@ if (!empty($resultArray['shipment'])) {
                 $instituteAddressPosition
             );
         }
-
+        $approveTxt = $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? $evalRow['saname'] ?? null;
         // Configure PDF settings
         $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
         $pdf->setHeaderFont(array('freesans', '', PDF_FONT_SIZE_MAIN));
@@ -135,7 +135,7 @@ if (!empty($resultArray['shipment'])) {
         $titleFinal = ($evalRow['report_type'] == 'finalized') ? "FINAL " : "";
         // if (empty($reportFormat) && !isset($reportFormat) && $reportFormat == '') {
         $htmlTitle = '<span style="font-weight: bold;text-align:center;font-size:10;">' . $titleFinal . ' Individual Participant Report</span><br>';
-        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - ' . $result['scheme_name'] . '</span><br>';
+        $htmlTitle .= '<span style="font-weight: bold;text-align:center;font-size:10;">Proficiency Testing Scheme - Dried Tube Specimen - ' . $result['scheme_name'] . '</span><br>';
         $pdf->writeHTML($htmlTitle, true, false, true, false, '');
 
         // Build laboratory information table
@@ -315,7 +315,7 @@ if (!empty($resultArray['shipment'])) {
             // Qualitative results
             if (isset($result['responseResult']) && !empty($result['responseResult'])) {
                 $testkitName = $allTestKitLists[$attributes['kit_name']];
-                $expDate = Pt_Commons_DateUtility::isoDateFormat($attributes['kit_expiry_date']);
+                $expDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['kit_expiry_date']);
                 $labRes = '<span style="font-weight: bold;font-size:11px;">Your Dried Tube Specimen - ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
                 $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                     <tr>
@@ -325,8 +325,8 @@ if (!empty($resultArray['shipment'])) {
                     </tr>
                     <tr>
                         <td style="background-color:white;">' . $testkitName . '</td>
-                        <td style="background-color:white;">' . $attributes['kit_lot_number'] . '</td>
                         <td style="background-color:white;">' . $expDate . '</td>
+                        <td style="background-color:white;">' . $attributes['kit_lot_number'] . '</td>
                     </tr>
                 </table>';
                 $labRes .= '<br><br><table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
@@ -415,6 +415,32 @@ if (!empty($resultArray['shipment'])) {
                 </table>';
         $pdf->writeHTML($totalScoreTxt, true, false, true, false, '');
 
+        // Add failure reasons if available
+        if (
+            isset($result['responseResult'][0]['failure_reason']) &&
+            $result['responseResult'][0]['failure_reason'] != "" &&
+            $result['responseResult'][0]['failure_reason'] != "[]" &&
+            $result['responseResult'][0]['failure_reason'] != null
+        ) {
+
+            $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+            $failRes .= '<table border="1" style="font-size:11px;">
+                    <tr style="background-color:#dbe4ee;">
+                        <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
+                        <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
+                    </tr>';
+
+            $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
+            foreach ($warnings as $warning) {
+                $failRes .= '<tr>
+                        <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
+                        <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
+                    </tr>';
+            }
+            $failRes .= '</table>';
+            $pdf->writeHTML($failRes, true, false, true, false, '');
+        }
+
         // Summary count if provided
         if (isset($shipmentsUnderDistro) && !empty($shipmentsUnderDistro)) {
             $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
@@ -446,35 +472,9 @@ if (!empty($resultArray['shipment'])) {
             $pdf->writeHTML($summaryCount, true, false, true, false, '');
         }
 
-        // Add failure reasons if available
-        if (
-            isset($result['responseResult'][0]['failure_reason']) &&
-            $result['responseResult'][0]['failure_reason'] != "" &&
-            $result['responseResult'][0]['failure_reason'] != "[]" &&
-            $result['responseResult'][0]['failure_reason'] != null
-        ) {
-
-            $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
-            $failRes .= '<table border="1" style="font-size:11px;">
-                    <tr style="background-color:#dbe4ee;">
-                        <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
-                        <td style="text-align:center;font-weight:bold;">Corrective Actions (if any)</td>
-                    </tr>';
-
-            $warnings = json_decode($result['responseResult'][0]['failure_reason'], true);
-            foreach ($warnings as $warning) {
-                $failRes .= '<tr>
-                        <td>' . (isset($warning['warning']) ? $warning['warning'] : "") . '</td>
-                        <td>' . (isset($warning['correctiveAction']) ? $warning['correctiveAction'] : "") . '</td>
-                    </tr>';
-            }
-            $failRes .= '</table>';
-            $pdf->writeHTML($failRes, true, false, true, false, '');
-        }
-
         // Add new page and performance criteria
         $pdf->AddPage();
-        $overallScore = ((int) $passPercentage == 100) ? $passPercentage : "&gt;= $passPercentage";
+        $overallScore = ((int) $passPercentage == 100) ? " = $passPercentage" : "&gt;= $passPercentage";
         $unsatisfactoryScore = "&lt; $passPercentage";
         if (count($result['responseResult']) > 0) {
             $scorePerSample = round((100 / count($result['responseResult'])), 2);
