@@ -920,7 +920,7 @@ class Application_Service_Participants
 			foreach ($downloads as $uniqueId) {
 				$path = DOWNLOADS_FOLDER . DIRECTORY_SEPARATOR . $uniqueId['unique_identifier'];
 				if (is_dir($path) && count(scandir($path)) > 2) {
-					$lab = (isset($uniqueId['lab_name']) && $uniqueId['lab_name'] != '') ? $uniqueId['lab_name'] : $uniqueId['first_name'] . " " . $uniqueId['last_name'];
+					$lab = Application_Model_DbTable_Participants::formatParticipantName($uniqueId);
 
 
 					$files = [];

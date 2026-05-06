@@ -38,6 +38,7 @@ nav:
   - Home: README.md
   - Setup & Operations:
       - Setup: setup.md
+      - Infrastructure Planning: infrastructure.md
       - CLI Tools: cli-tools.md
   - Guides:
       - Architecture: ARCHITECTURE.md

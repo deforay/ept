@@ -25,6 +25,32 @@ if ((isset($this->directParticipantLogin) && !empty($this->directParticipantLogi
     .pt-login-dev {
         clear: both;
     }
+
+    /* The form-groups inside the fieldset use col-lg-6 floats with no .row
+       wrappers, so a tall cell makes subsequent col-lg-6 cells wrap around
+       it and the right column drifts out of sync. Switch to CSS Grid at the
+       lg breakpoint so cells lay out in true rows regardless of cell height. */
+    @media (min-width: 1200px) {
+        #addParticipantForm > fieldset {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 0;
+        }
+        #addParticipantForm > fieldset > legend,
+        #addParticipantForm > fieldset > .col-lg-12,
+        #addParticipantForm > fieldset > .shipping-address-section,
+        #addParticipantForm > fieldset > .participant-form-divider,
+        #addParticipantForm > fieldset > .pt-login-dev,
+        #addParticipantForm > fieldset > .participant-form-actions,
+        #addParticipantForm > fieldset > br,
+        #addParticipantForm > fieldset > hr {
+            grid-column: 1 / -1;
+        }
+        #addParticipantForm > fieldset > .form-group.col-lg-6 {
+            width: auto;
+            float: none;
+        }
+    }
 </style>
 
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />

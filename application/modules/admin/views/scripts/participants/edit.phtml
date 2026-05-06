@@ -29,6 +29,35 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
     .pt-login-dev {
         clear: both;
     }
+
+    /* The form-groups inside the fieldset use col-lg-6 floats with no .row
+       wrappers, so a tall cell (e.g. the Physical Address textarea) makes
+       subsequent col-lg-6 cells wrap around it and the right column drifts
+       out of sync. Switch to CSS Grid at the lg breakpoint so cells lay out
+       in true rows regardless of cell height. */
+    @media (min-width: 1200px) {
+        #editParticipantForm>fieldset {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 0;
+        }
+
+        #editParticipantForm>fieldset>legend,
+        #editParticipantForm>fieldset>.col-lg-12,
+        #editParticipantForm>fieldset>.shipping-address-section,
+        #editParticipantForm>fieldset>.participant-form-divider,
+        #editParticipantForm>fieldset>.pt-login-dev,
+        #editParticipantForm>fieldset>.participant-form-actions,
+        #editParticipantForm>fieldset>br,
+        #editParticipantForm>fieldset>hr {
+            grid-column: 1 / -1;
+        }
+
+        #editParticipantForm>fieldset>.form-group.col-lg-6 {
+            width: auto;
+            float: none;
+        }
+    }
 </style>
 <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl('css/bootstrap-select.min.css'); ?>" />
 <link href="<?php echo $this->baseUrl('css/select2.css'); ?>" rel="stylesheet" />
@@ -38,65 +67,101 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
     }
 </style>
 <div class="well">
-    <form name="editParticipantForm" id="editParticipantForm" method="post" action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>" class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
+    <form name="editParticipantForm" id="editParticipantForm" method="post"
+        action="<?php echo $this->url(array("module" => "admin", "controller" => "participants", "action" => "edit"), 'default', true) ?>"
+        class="form-horizontal bs-example" role="form" onsubmit="validPassword();return false;" autocomplete="off">
         <fieldset>
-            <legend><?= $this->translate->_("Edit Participant"); ?> (<?php echo ucwords($this->participant['status']); ?>)</legend>
+            <legend><?= $this->translate->_("Edit Participant"); ?>
+                (<?php echo ucwords($this->participant['status']); ?>)</legend>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"></label>
                 <div class="col-lg-8">
-                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo (isset($this->participant['individual']) && $this->participant['individual'] == 'yes') ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant()"><b> <?= $this->translate->_("Individual Participant"); ?></b>
+                    <input type="checkbox" name="individualParticipant" id="individualParticipant" <?php echo (isset($this->participant['individual']) && $this->participant['individual'] == 'yes') ? 'checked="checked"' : ''; ?> onclick="checkIndividualParticipant()"><b>
+                        <?= $this->translate->_("Individual Participant"); ?></b>
                 </div>
             </div>
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Participant ID"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Participant ID"); ?> <span
+                        class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="pid" name="pid" size="50" class="isRequired form-control" title="Please enter the Participant id here" placeholder="Please enter the Participant id here" value="<?php echo $this->participant['unique_identifier']; ?>" onblur="checkDuplicate('participant', 'unique_identifier', this, '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')" />
+                    <input type="text" id="pid" name="pid" size="50" class="isRequired form-control"
+                        title="Please enter the Participant id here" placeholder="Please enter the Participant id here"
+                        value="<?php echo $this->participant['unique_identifier']; ?>"
+                        onblur="checkDuplicate('participant', 'unique_identifier', this, '<?php echo "participant_id##" . $this->participant['participant_id']; ?>', 'This Participant ID already exists for another Participant. Please try something else.')" />
                 </div>
-                <input type="hidden" id="participantId" name="participantId" size="50" maxlength=tip"255" class="isRequired form-control" value="<?php echo $this->participant['participant_id']; ?>" />
+                <input type="hidden" id="participantId" name="participantId" size="50" maxlength="255"
+                    class="isRequired form-control" value="<?php echo $this->participant['participant_id']; ?>" />
             </div>
 
             <div class="form-group col-lg-6 individualParticipantNameFields" id="firstNameDiv">
-                <label class="col-lg-4 control-label"><span id="pfnameLabel"><?= $this->translate->_("First Name"); ?></span><span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><span
+                        id="pfnameLabel"><?= $this->translate->_("First Name"); ?></span><span
+                        class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control" title="Please enter the First or lab Name or First Name here" placeholder="Please enter the Lab Name or First Name here" value="<?php echo $this->participant['first_name']; ?>" />
+                    <input type="text" id="pfname" name="pfname" size="50" maxlength="255" class="form-control"
+                        title="Please enter the First or lab Name or First Name here"
+                        placeholder="Please enter the Lab Name or First Name here"
+                        value="<?php echo $this->participant['first_name']; ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6 individualParticipantNameFields" id="lastNameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Last Name"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255" class="form-control" title="Please enter the last name here" placeholder="Please enter the last name here" value="<?php echo $this->participant['last_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="plname" name="plname" size="50" maxlength="255"
+                        class="form-control" title="Please enter the last name here"
+                        placeholder="Please enter the last name here"
+                        value="<?php echo $this->participant['last_name']; ?>" /></div>
             </div>
 
             <div class="form-group col-lg-6 labParticipantNameFields" id="contactnameDiv">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Contact Person Name"); ?> </label>
 
-                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255" class="form-control" title="Please enter the contact name here" placeholder="Please enter the contact name here" value="<?php echo $this->participant['contact_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="contactname" name="contactname" size="50" maxlength="255"
+                        class="form-control" title="Please enter the contact name here"
+                        placeholder="Please enter the contact name here"
+                        value="<?php echo $this->participant['contact_name']; ?>" /></div>
             </div>
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Institute Name"); ?> <span
+                        class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="instituteName" name="instituteName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Institute Name here" placeholder="Please enter the Institute Name here" value="<?php echo $this->participant['institute_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="instituteName" name="instituteName" size="50"
+                        maxlength="255" class="isRequired form-control" title="Please enter the Institute Name here"
+                        placeholder="Please enter the Institute Name here"
+                        value="<?php echo $this->participant['institute_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Department Name"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Department Name"); ?> <span
+                        class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="departmentName" name="departmentName" size="50" maxlength="255" class="isRequired form-control" title="Please enter the Department Name here" placeholder="Please enter the Department Name here" value="<?php echo $this->participant['department_name']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="departmentName" name="departmentName" size="50"
+                        maxlength="255" class="isRequired form-control" title="Please enter the Department Name here"
+                        placeholder="Please enter the Department Name here"
+                        value="<?php echo $this->participant['department_name']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("E-mail"); ?><span
+                        class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255" class="isRequired isEmail form-control" title="Please enter the email id here" value="<?php echo $this->participant['email']; ?>" placeholder="Please enter the email id here" /></div>
+                <div class="col-lg-8"><input type="text" id="pemail" name="pemail" size="50" maxlength="255"
+                        class="isRequired isEmail form-control" title="Please enter the email id here"
+                        value="<?php echo $this->participant['email']; ?>"
+                        placeholder="Please enter the email id here" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Additional/Alternate E-mail"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50" maxlength="255" class="form-control" title="Please enter the email id here" placeholder="Please enter the additional email id here" value="<?php echo $this->participant['additional_email']; ?>" />
-                    <span class="help"><?= $this->translate->_("(Please enter comma separated multiple emails)"); ?></span>
+                <div class="col-lg-8"><input type="text" id="additionalEmail" name="additionalEmail" size="50"
+                        maxlength="255" class="form-control" title="Please enter the email id here"
+                        placeholder="Please enter the additional email id here"
+                        value="<?php echo $this->participant['additional_email']; ?>" />
+                    <span
+                        class="help"><?= $this->translate->_("(Please enter comma separated multiple emails)"); ?></span>
                 </div>
             </div>
 
@@ -105,8 +170,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                     <div class="col-lg-6">
                         <label class="col-lg-4 control-label"><?= $this->translate->_("Password"); ?></label>
                         <div class="col-lg-8">
-                            <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword" name="dmPassword"
-                                class="form-control isPassword"
+                            <input type="password" pattern=".{<?= $this->passLength ?? 8; ?>,}" id="dmPassword"
+                                name="dmPassword" class="form-control isPassword"
                                 title="<?= $this->translate->_("Please enter a valid password with minimum length of") . " " . ($this->passLength ?? 8); ?>"
                                 placeholder="<?= $this->translate->_("Please enter a password"); ?>" autocomplete="off">
                         </div>
@@ -115,7 +180,8 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                         <label class="col-lg-4 control-label"><?= $this->translate->_("Confirm Password"); ?></label>
                         <div class="col-lg-8">
                             <input type="password" id="confirmPassword" name="dmPassword"
-                                class="form-control confirmPassword" title="<?= $this->translate->_("Please repeat the same password"); ?>"
+                                class="form-control confirmPassword"
+                                title="<?= $this->translate->_("Please repeat the same password"); ?>"
                                 placeholder="<?= $this->translate->_("Please repeat the same password"); ?>" />
                         </div>
                     </div>
@@ -125,77 +191,115 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Physical Address"); ?></label>
 
-                <div class="col-lg-8"><textarea id="address" name="address" size="50" class="form-control" title="Please enter the address here" placeholder="Please enter the address here"><?php echo $this->participant['address']; ?></textarea></div>
+                <div class="col-lg-8"><textarea id="address" name="address" size="50" class="form-control"
+                        title="Please enter the address here"
+                        placeholder="Please enter the address here"><?php echo $this->participant['address']; ?></textarea>
+                </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Country"); ?> <span
+                        class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <select class="form-control isRequired" name="country" id="country" title="Please choose the country here">
+                    <select class="form-control isRequired" name="country" id="country"
+                        title="Please choose the country here">
                         <option value=""></option>
                         <?php foreach ($this->countriesList as $cou) { ?>
-                            <option value="<?php echo $cou['id']; ?>" <?php echo (isset($this->participant["country"]) && $this->participant["country"] == $cou['id']) ? 'selected="selected"' : ''; ?>><?php echo $cou['iso_name']; ?></option>
+                            <option value="<?php echo $cou['id']; ?>" <?php echo (isset($this->participant["country"]) && $this->participant["country"] == $cou['id']) ? 'selected="selected"' : ''; ?>>
+                                <?php echo $cou['iso_name']; ?>
+                            </option>
                         <?php } ?>
                     </select>
                 </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
+                <label
+                    class="col-lg-4 control-label"><?= $this->translate->_("Zip/Postal Code (if applicable)"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255" class="form-control" title="Please enter the Zip/Postal here" placeholder="Please enter the Zip/Postal here" value="<?php echo $this->participant['zip']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="zip" name="zip" size="50" maxlength="255"
+                        class="form-control" title="Please enter the Zip/Postal here"
+                        placeholder="Please enter the Zip/Postal here"
+                        value="<?php echo $this->participant['zip']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("State/Province"); ?><span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("State/Province"); ?><span
+                        class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="state" name="state" size="50" maxlength="255" class="form-control isRequired" title="Please enter the state here" placeholder="Please enter the state/province here" value="<?php echo $this->participant['state']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="state" name="state" size="50" maxlength="255"
+                        class="form-control isRequired" title="Please enter the state here"
+                        placeholder="Please enter the state/province here"
+                        value="<?php echo $this->participant['state']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label" for="district"><?= $this->translate->_("District/County"); ?><span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label" for="district"><?= $this->translate->_("District/County"); ?><span
+                        class="mandatory">*</span></label>
 
-                <div class="col-lg-8"><input type="text" id="district" name="district" size="50" maxlength="255" class="form-control isRequired" title="Please enter the district here" placeholder="Please enter the district/county here" value="<?php echo $this->participant['district']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="district" name="district" size="50" maxlength="255"
+                        class="form-control isRequired" title="Please enter the district here"
+                        placeholder="Please enter the district/county here"
+                        value="<?php echo $this->participant['district']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("City"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="255" class="form-control" title="Please enter the city here" placeholder="Please enter the city here" value="<?php echo $this->participant['city']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="city" name="city" size="50" maxlength="255"
+                        class="form-control" title="Please enter the city here" placeholder="Please enter the city here"
+                        value="<?php echo $this->participant['city']; ?>" /></div>
             </div>
             <div class="form-group col-lg-12 shipping-address-section">
-                <label class="col-lg-2 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
+                <label
+                    class="col-lg-2 control-label"><?= $this->translate->_("Shipping Address (include city and country)"); ?></label>
 
                 <div class="col-lg-10">
-                    <textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control" title="Please enter the shipping address here" placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea>
-                    <span class="help"><?= $this->translate->_("Ship-to address. Use this only if different from the physical address."); ?></span>
+                    <textarea id="shippingAddress" name="shippingAddress" size="50" class="form-control"
+                        title="Please enter the shipping address here"
+                        placeholder="Please enter the Shipping Address here"><?php echo $this->participant['shipping_address']; ?></textarea>
+                    <span
+                        class="help"><?= $this->translate->_("Ship-to address. Use this only if different from the physical address."); ?></span>
                     <label class="checkbox-inline" style="padding-top: 8px;">
-                        <input type="checkbox" id="copyPhysicalAddress"> <?= $this->translate->_("Same as physical address"); ?>
+                        <input type="checkbox" id="copyPhysicalAddress">
+                        <?= $this->translate->_("Same as physical address"); ?>
                     </label>
                 </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Region"); ?></label>
                 <div class="col-lg-8">
-                    <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control" title="Please enter region here" placeholder="Please enter the region here" value="<?php echo $this->participant['region']; ?>" />
+                    <input type="text" id="region" name="region" size="50" maxlength="255" class="form-control"
+                        title="Please enter region here" placeholder="Please enter the region here"
+                        value="<?php echo $this->participant['region']; ?>" />
                 </div>
             </div>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Latitude"); ?></label>
-                <div class="col-lg-8"><input type="text" id="lat" name="lat" size="50" maxlength="255" class="form-control" title="Please enter the latitude here" placeholder="Please enter the latitude here" value="<?php echo $this->participant['lat']; ?>" />
+                <div class="col-lg-8"><input type="text" id="lat" name="lat" size="50" maxlength="255"
+                        class="form-control" title="Please enter the latitude here"
+                        placeholder="Please enter the latitude here" value="<?php echo $this->participant['lat']; ?>" />
                 </div>
             </div>
 
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Longitude"); ?></label>
 
-                <div class="col-lg-8"><input type="text" id="long" name="long" size="50" maxlength="255" class="form-control" title="Please enter the longitude here" placeholder="Please enter the longitude here" value="<?php echo $this->participant['long']; ?>" /></div>
+                <div class="col-lg-8"><input type="text" id="long" name="long" size="50" maxlength="255"
+                        class="form-control" title="Please enter the longitude here"
+                        placeholder="Please enter the longitude here"
+                        value="<?php echo $this->participant['long']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Funding Source"); ?></label>
 
                 <div class="col-lg-8">
-                    <select id="fundingSource" name="fundingSource" class="form-control" title="Please select the funding source">
+                    <select id="fundingSource" name="fundingSource" class="form-control"
+                        title="Please select the funding source">
                         <option value="">--<?= $this->translate->_("Select"); ?>--</option>
-                        <option value="government" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'government') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Government"); ?></option>
-                        <option value="private" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'private') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Private"); ?></option>
+                        <option value="government" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'government') ? 'selected="selected"' : ''; ?>>
+                            <?= $this->translate->_("Government"); ?>
+                        </option>
+                        <option value="private" <?php echo (isset($this->participant['funding_source']) && $this->participant['funding_source'] == 'private') ? 'selected="selected"' : ''; ?>>
+                            <?= $this->translate->_("Private"); ?>
+                        </option>
                         <?php if (isset($this->participant['funding_source']) && !in_array($this->participant['funding_source'], ['government', 'private'])) {
                             echo '<option value="' . $this->participant['funding_source'] . '">' . $this->participant['funding_source'] . '</option>';
                         } ?>
@@ -206,17 +310,23 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Testing Volume"); ?></label>
 
                 <div class="col-lg-8">
-                    <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255" class="form-control" title="Please enter testing volume here" placeholder="Please enter the testing volume here" value="<?php echo $this->participant['testing_volume']; ?>" />
+                    <input type="text" id="testingVolume" name="testingVolume" size="50" maxlength="255"
+                        class="form-control" title="Please enter testing volume here"
+                        placeholder="Please enter the testing volume here"
+                        value="<?php echo $this->participant['testing_volume']; ?>" />
                 </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Enrolled Programs"); ?> </label>
                 <div class="col-lg-8">
-                    <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control" data-selected-text-format="count>3" title="Please choose Enrolled Programs">
+                    <select name="enrolledProgram[]" id="enrolledProgram" multiple="multiple" class="form-control"
+                        data-selected-text-format="count>3" title="Please choose Enrolled Programs">
                         <?php
                         $enrolledProg = explode(",", $this->participant['enrolled_prog']);
                         foreach ($this->enrolledPrograms as $enrolledPrograms) { ?>
-                            <option value="<?php echo $enrolledPrograms['r_epid']; ?>" <?php echo (in_array($enrolledPrograms['r_epid'], $enrolledProg)) ? "selected='selected'" : "" ?>><?php echo $enrolledPrograms['enrolled_programs']; ?></option>
+                            <option value="<?php echo $enrolledPrograms['r_epid']; ?>" <?php echo (in_array($enrolledPrograms['r_epid'], $enrolledProg)) ? "selected='selected'" : "" ?>>
+                                <?php echo $enrolledPrograms['enrolled_programs']; ?>
+                            </option>
                         <?php } ?>
                     </select>
                 </div>
@@ -227,7 +337,9 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                     <select name="siteType" id="siteType" class="form-control">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->siteType as $siteType) { ?>
-                            <option value="<?php echo $siteType['r_stid']; ?>" <?php echo ($this->participant['site_type'] == $siteType['r_stid']) ? "selected='selected'" : ""; ?>><?php echo $siteType['site_type']; ?></option>
+                            <option value="<?php echo $siteType['r_stid']; ?>" <?php echo ($this->participant['site_type'] == $siteType['r_stid']) ? "selected='selected'" : ""; ?>>
+                                <?php echo $siteType['site_type']; ?>
+                            </option>
                         <?php } ?>
                     </select>
                 </div>
@@ -237,36 +349,52 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
                 <div class="col-lg-8">
                     <select name="anc" id="anc" class="form-control" title="Please choose ANC">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                        <option value="yes" <?php echo (isset($this->participant['anc']) && $this->participant['anc'] == "yes") ? "selected='selected'" : ""; ?>><?= $this->translate->_("Yes"); ?></option>
-                        <option value="no" <?php echo (isset($this->participant['anc']) && $this->participant['anc'] == "no") ? "selected='selected'" : ""; ?>><?= $this->translate->_("No"); ?></option>
+                        <option value="yes" <?php echo (isset($this->participant['anc']) && $this->participant['anc'] == "yes") ? "selected='selected'" : ""; ?>>
+                            <?= $this->translate->_("Yes"); ?>
+                        </option>
+                        <option value="no" <?php echo (isset($this->participant['anc']) && $this->participant['anc'] == "no") ? "selected='selected'" : ""; ?>>
+                            <?= $this->translate->_("No"); ?>
+                        </option>
                     </select>
                 </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("PEPFAR ID"); ?> </label>
                 <div class="col-lg-8">
-                    <input type="text" value="<?php echo $this->participant['pepfar_id'] ?? null ?>" name="pepfarID" id="pepfarID" class="form-control" placeholder="Enter the pepfar ID" title="Please enter the pepfar ID" />
+                    <input type="text" value="<?php echo $this->participant['pepfar_id'] ?? null ?>" name="pepfarID"
+                        id="pepfarID" class="form-control" placeholder="Enter the pepfar ID"
+                        title="Please enter the pepfar ID" />
                 </div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Cell/Mobile No."); ?></label>
 
-                <div class="col-lg-8"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50" maxlength="255" class="form-control isNumeric checkNum" title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here" value="<?php echo $this->participant['mobile']; ?>" /></div>
+                <div class="col-lg-8"><input id="phone1" type="text" id="pphone2" name="pphone2" size="50"
+                        maxlength="255" class="form-control isNumeric checkNum"
+                        title="Please enter mobile/cell number here" placeholder="Please enter mobile/cell number here"
+                        value="<?php echo $this->participant['mobile']; ?>" /></div>
             </div>
             <div class="form-group col-lg-6">
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Phone Number"); ?></label>
 
-                <div class="col-lg-8"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50" maxlength="255" placeholder="Please enter phone number here" class="form-control isNumeric checkNum" value="<?php echo $this->participant['phone']; ?>" /></div>
+                <div class="col-lg-8"><input id="phone2" type="text" id="pphone1" name="pphone1" size="50"
+                        maxlength="255" placeholder="Please enter phone number here"
+                        class="form-control isNumeric checkNum" value="<?php echo $this->participant['phone']; ?>" />
+                </div>
             </div>
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Network Tier"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Network Tier"); ?> <span
+                        class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <select name="network" id="network" class="form-control isRequired" title="Please choose the network tier">
+                    <select name="network" id="network" class="form-control isRequired"
+                        title="Please choose the network tier">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->networks as $nw) {
-                        ?>
-                            <option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->participant['network_tier'] == $nw['network_id']) ? "selected='selected'" : "" ?>><?php echo $nw['network_name']; ?></option>
+                            ?>
+                            <option value="<?php echo $nw['network_id']; ?>" <?php echo ($this->participant['network_tier'] == $nw['network_id']) ? "selected='selected'" : "" ?>>
+                                <?php echo $nw['network_name']; ?>
+                            </option>
                         <?php }
                         ?>
                     </select>
@@ -274,14 +402,18 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             </div>
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Affiliation"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Affiliation"); ?> <span
+                        class="mandatory">*</span></label>
 
                 <div class="col-lg-8">
-                    <select name="partAff" id="partAff" class="form-control isRequired" title="Please choose the affiliation here">
+                    <select name="partAff" id="partAff" class="form-control isRequired"
+                        title="Please choose the affiliation here">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <?php foreach ($this->affiliates as $aff) {
-                        ?>
-                            <option value="<?php echo $aff['affiliate']; ?>" <?php echo ($this->participant['affiliation'] == $aff['affiliate']) ? "selected='selected'" : "" ?>><?php echo $aff['affiliate']; ?></option>
+                            ?>
+                            <option value="<?php echo $aff['affiliate']; ?>" <?php echo ($this->participant['affiliation'] == $aff['affiliate']) ? "selected='selected'" : "" ?>>
+                                <?php echo $aff['affiliate']; ?>
+                            </option>
                         <?php }
                         ?>
                     </select>
@@ -289,15 +421,19 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             </div>
             <?php if ($this->participant['status'] == "pending") { ?>
                 <div class="form-group col-lg-6">
-                    <label class="col-lg-4 control-label"><?= $this->translate->_("Schemes"); ?> <span class="mandatory">*</span></label>
+                    <label class="col-lg-4 control-label"><?= $this->translate->_("Schemes"); ?> <span
+                            class="mandatory">*</span></label>
 
                     <div class="col-lg-8">
-                        <select id="scheme" name="scheme[]" class="form-control isRequired" multiple="multiple" title="Please choose one or more Schemes" data-selected-text-format="count>3">
+                        <select id="scheme" name="scheme[]" class="form-control isRequired" multiple="multiple"
+                            title="Please choose one or more Schemes" data-selected-text-format="count>3">
                             <?php
                             foreach ($this->schemes as $scheme) {
-                            ?>
-                                <option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (in_array($scheme['scheme_id'], $this->participantSchemes) ? "selected='selected'" : ""); ?>><?php echo $scheme['scheme_name']; ?></option>
-                            <?php
+                                ?>
+                                <option value="<?php echo $scheme['scheme_id']; ?>" <?php echo (in_array($scheme['scheme_id'], $this->participantSchemes) ? "selected='selected'" : ""); ?>>
+                                    <?php echo $scheme['scheme_name']; ?>
+                                </option>
+                                <?php
                             }
                             ?>
                         </select>
@@ -306,9 +442,11 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             <?php } ?>
 
             <div class="form-group col-lg-6">
-                <label class="col-lg-4 control-label"><?= $this->translate->_("Status"); ?> <span class="mandatory">*</span></label>
+                <label class="col-lg-4 control-label"><?= $this->translate->_("Status"); ?> <span
+                        class="mandatory">*</span></label>
                 <div class="col-lg-8">
-                    <select type="text" id="status" name="status" class="isRequired form-control" title="Please select user status here">
+                    <select type="text" id="status" name="status" class="isRequired form-control"
+                        title="Please select user status here">
                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                         <option value="active" <?php echo ($this->participant['status'] == "active") ? "selected='selected'" : ""; ?>>
                             <?= $this->translate->_("Active"); ?>
@@ -328,9 +466,12 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
             <br>
 
-            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" class="col-lg-11 participant-form-actions" align="center">
-                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7" value="<?= $this->translate->_("Update"); ?>" />
-                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';" tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
+            <div id="respond" style="margin: 0px auto 0px auto; text-align: center;"
+                class="col-lg-11 participant-form-actions" align="center">
+                <input name="submitbtn" class="btn btn-primary" type="submit" tabindex="7"
+                    value="<?= $this->translate->_("Update"); ?>" />
+                <input class="btn btn-danger" type="button" onclick="window.location.href = '/admin/participants';"
+                    tabindex="8" value="<?= $this->translate->_("Cancel"); ?>" />
             </div>
         </fieldset>
     </form>
@@ -340,24 +481,24 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 <script type="text/javascript">
     var duplicated = false;
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         //$('#dataManager').selectpicker();
         /* $(".select2").select2({
             allowClear: true
         }); */
         checkIndividualParticipant();
 
-        $('#copyPhysicalAddress').on('change', function() {
+        $('#copyPhysicalAddress').on('change', function () {
             if (this.checked) {
                 copyPhysicalAddressToShipping();
             }
         });
-        $('#address, #city, #state, #district, #zip').on('input', function() {
+        $('#address, #city, #state, #district, #zip').on('input', function () {
             if ($('#copyPhysicalAddress').is(':checked')) {
                 copyPhysicalAddressToShipping();
             }
         });
-        $('#country').on('change changed.bs.select', function() {
+        $('#country').on('change changed.bs.select', function () {
             if ($('#copyPhysicalAddress').is(':checked')) {
                 copyPhysicalAddressToShipping();
             }
@@ -376,9 +517,9 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
             $('#district').val(),
             $('#zip').val(),
             $('#country option:selected').text()
-        ].map(function(value) {
+        ].map(function (value) {
             return $.trim(value || '');
-        }).filter(function(value) {
+        }).filter(function (value) {
             return value !== '';
         });
 
@@ -387,13 +528,13 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
 
     function checkDuplicate(tableName, fieldName, obj, fnct, msg) {
         $.post("<?php echo $this->url(array('module' => 'default', 'controller' => 'common', 'action' => 'check-duplicate')); ?>", {
-                tableName: tableName,
-                fieldName: fieldName,
-                value: obj.value,
-                fnct: fnct,
-                format: "html"
-            },
-            function(data) {
+            tableName: tableName,
+            fieldName: fieldName,
+            value: obj.value,
+            fnct: fnct,
+            format: "html"
+        },
+            function (data) {
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
@@ -442,12 +583,12 @@ $directParticipantLogin = (isset($this->directParticipantLogin) && $this->direct
         // $.blockUI();
         if ($('#dmPassword').is(':visible') && $('#dmPassword').val() != '') {
             $.post("<?php echo $this->url(['module' => 'reports', 'controller' => 'common', 'action' => 'validate-password']); ?>", {
-                    name: $('#contactname').val(),
-                    email: $('#pemail').val(),
-                    password: $('#dmPassword').val(),
-                    format: "html"
-                },
-                function(data) {
+                name: $('#contactname').val(),
+                email: $('#pemail').val(),
+                password: $('#dmPassword').val(),
+                format: "html"
+            },
+                function (data) {
                     if (data == 'success') {
                         validateNow();
                     }

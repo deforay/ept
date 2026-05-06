@@ -16,7 +16,8 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', "DATE_FORMAT(e.enrolled_on,'%d-%b-%Y')"];
+        $aColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', 'e.enrolled_on'];
+        $aSortColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 'MIN(s.scheme_name)', 'MIN(e.enrolled_on)'];
 
 
         $sLimit = "";
@@ -31,7 +32,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sOrder = "";
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
                 if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
+                    $sOrder .= $aSortColumns[intval($parameters['iSortCol_' . $i])] . "
 				 	" . ($parameters['sSortDir_' . $i]) . ", ";
                 }
             }

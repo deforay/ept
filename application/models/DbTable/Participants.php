@@ -26,8 +26,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
      */
     public static function participantNameExpr(string $alias = 'p'): string
     {
-        return "CASE WHEN {$alias}.individual = 'no' THEN COALESCE({$alias}.lab_name, '') "
-            . "ELSE CONCAT(COALESCE({$alias}.first_name, ''), ' ', COALESCE({$alias}.last_name, '')) END";
+        // individual='yes' → first+last; everything else (including NULL/empty)
+        // is treated as a lab participant. Lab participants canonically live in
+        // lab_name; fall back to first_name for legacy rows that pre-date the
+        // lab_name column and haven't been backfilled yet.
+        return "TRIM(CASE WHEN {$alias}.individual = 'yes' "
+            . "THEN CONCAT(COALESCE({$alias}.first_name, ''), ' ', COALESCE({$alias}.last_name, '')) "
+            . "ELSE COALESCE(NULLIF(TRIM({$alias}.lab_name), ''), {$alias}.first_name, '') END)";
     }
 
     /**
@@ -40,17 +45,35 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         return "GROUP_CONCAT(DISTINCT $name ORDER BY {$alias}.first_name SEPARATOR ', ')";
     }
 
+    /**
+     * PHP-side mirror of participantNameExpr(): given a participant row
+     * (associative array with individual / lab_name / first_name / last_name),
+     * return the display name. Use this instead of hand-rolling the
+     * lab_name-vs-first/last fallback at every call site.
+     */
+    public static function formatParticipantName($row): string
+    {
+        if (!is_array($row) && !($row instanceof ArrayAccess)) {
+            return '';
+        }
+        $individual = isset($row['individual']) ? strtolower(trim((string) $row['individual'])) : '';
+        if ($individual === 'yes') {
+            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            return $name;
+        }
+        $lab = trim((string) ($row['lab_name'] ?? ''));
+        if ($lab !== '') {
+            return $lab;
+        }
+        // Legacy rows: lab name was stored in first_name before lab_name existed.
+        return trim((string) ($row['first_name'] ?? ''));
+    }
+
     public function getParticipantsByUserSystemId($userSystemId)
     {
         $sql = $this->getAdapter()->select()->from(array('p' => $this->_name), array(
             '*',
-            'participant_name' => new Zend_Db_Expr("
-                CASE 
-                    WHEN p.individual = 'yes' THEN CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.last_name, ''))
-                    WHEN p.individual = 'no' THEN COALESCE(p.lab_name, '')
-                    ELSE ''
-                END
-            ")
+            'participant_name' => new Zend_Db_Expr(self::participantNameExpr('p'))
         ))
             ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['data_manager' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT pmm.dm_id SEPARATOR ', ')")])
             ->joinLeft(['c' => 'countries'], 'p.country=c.id', ['country_name' => 'iso_name'])
@@ -102,7 +125,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'mobile', 'phone', 'affiliation', 'email', 'status');
+        $aColumns = array('unique_identifier', new Zend_Db_Expr(self::participantNameExpr('p')), 'iso_name', 'p.state', 'p.district', 'email', 'status');
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = "participant_id";
@@ -162,7 +185,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
 
 
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.mobile', 'p.phone', 'p.affiliation', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameExpr('p')), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
+        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name), array(new Zend_Db_Expr('SQL_CALC_FOUND_ROWS p.participant_id'), 'p.unique_identifier', 'p.institute_name', 'p.country', 'p.state', 'p.district', 'p.email', 'p.status', 'participantName' => new Zend_Db_Expr(self::participantNameExpr('p')), 'mapCount' => new Zend_Db_Expr("COUNT(spm.map_id)")))
             ->join(array('c' => 'countries'), 'c.id=p.country')
             ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.participant_id=p.participant_id', array())
             ->group("p.participant_id");
@@ -221,6 +244,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         /* Lightweight count of mapped DMs per participant on this page — the full list
            is loaded on demand via AJAX when the user expands a row. */
         $dmCountByParticipant = [];
+        $shipmentCountByParticipant = [];
         $pageParticipantIds = array_column($rResult, 'participant_id');
         if (!empty($pageParticipantIds)) {
             $countSelect = $this->getAdapter()->select()
@@ -229,6 +253,13 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 ->group('participant_id');
             foreach ($this->getAdapter()->fetchAll($countSelect) as $cntRow) {
                 $dmCountByParticipant[$cntRow['participant_id']] = (int) $cntRow['cnt'];
+            }
+            $shipCountSelect = $this->getAdapter()->select()
+                ->from('shipment_participant_map', array('participant_id', 'cnt' => new Zend_Db_Expr('COUNT(*)')))
+                ->where('participant_id IN (?)', $pageParticipantIds)
+                ->group('participant_id');
+            foreach ($this->getAdapter()->fetchAll($shipCountSelect) as $cntRow) {
+                $shipmentCountByParticipant[$cntRow['participant_id']] = (int) $cntRow['cnt'];
             }
         }
 
@@ -261,9 +292,8 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $row[] = $aRow['unique_identifier'];
             $row[] = $aRow['participantName'];
             $row[] = $aRow['iso_name'];
-            $row[] = $aRow['mobile'];
-            $row[] = $aRow['phone'];
-            $row[] = $aRow['affiliation'];
+            $row[] = $aRow['state'];
+            $row[] = $aRow['district'];
             $row[] = $aRow['email'];
             $row[] = ucwords($aRow['status']);
 
@@ -279,6 +309,15 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             } else {
                 $label = sprintf($translator->_('View (%d)'), $dmCount);
                 $row[] = '<a href="javascript:void(0);" class="btn btn-primary btn-xs toggle-dm-row" data-participant-id="' . (int) $aRow['participant_id'] . '"><i class="icon-user"></i> ' . $label . '</a>';
+            }
+
+            /* Shipments column — same on-demand pattern as Data Managers. */
+            $shipCount = isset($shipmentCountByParticipant[$aRow['participant_id']]) ? $shipmentCountByParticipant[$aRow['participant_id']] : 0;
+            if ($shipCount === 0) {
+                $row[] = '<em class="text-muted" style="font-size:11px;">' . $translator->_('None') . '</em>';
+            } else {
+                $label = sprintf($translator->_('View (%d)'), $shipCount);
+                $row[] = '<a href="javascript:void(0);" class="btn btn-success btn-xs toggle-shipments-row" data-participant-id="' . (int) $aRow['participant_id'] . '"><i class="icon-truck"></i> ' . $label . '</a>';
             }
 
             if (isset($parameters['from']) && $parameters['from'] == 'participant') {
@@ -1704,11 +1743,14 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     $row['B'] = $normalized;
                 }
 
-                // Handle email
-                $originalEmail = $row['R'] ?? null;
+                // Handle email. Normalize to the same lowercased/trimmed form used by
+                // the duplicate-checks cache (batchCheckDuplicates) so cache lookups hit.
+                $rawEmail = $row['R'] ?? null;
+                $originalEmail = $rawEmail ? MiscUtility::sanitizeAndValidateEmail($rawEmail) : null;
                 $emailWasSynthesized = false;
                 if (empty($originalEmail) || $allFakeEmail) {
                     $originalEmail = MiscUtility::generateFakeEmailId($row['B'], trim(($row['D'] ?? '') . " " . ($row['E'] ?? '')));
+                    $originalEmail = strtolower(trim((string) $originalEmail));
                     $emailWasSynthesized = true;
                 }
 
@@ -1760,24 +1802,68 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         }
                     }
 
+                    $existingDmForEmail = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+                    if (empty($existingDmForEmail)) {
+                        // Cache miss safety net: hit the DB directly. The prefetch can miss
+                        // if the stored primary_email has invisible chars / odd whitespace,
+                        // or if this email never appeared in the upload file at all.
+                        $dbDmId = $db->fetchOne(
+                            $db->select()
+                                ->from('data_manager', 'dm_id')
+                                ->where('LOWER(TRIM(primary_email)) = ?', $originalEmail)
+                        );
+                        if ($dbDmId) {
+                            $existingDmForEmail = ['dm_id' => (int) $dbDmId];
+                            $duplicateChecks['dataManagers'][$originalEmail] = $existingDmForEmail;
+                        }
+                    }
+                    $allowEmailReuse = isset($params['bulkUploadAllowEmailRepeat'])
+                        && $params['bulkUploadAllowEmailRepeat'] == 'allow-existing-email';
+
                     if ($canBlindUpdate) {
-                        $dmIdForResponse = (int) $mappedDms[0]['dm_id'];
-                        $db->update('data_manager', ['primary_email' => $originalEmail], $db->quoteInto('dm_id = ?', $dmIdForResponse));
+                        $currentDmId = (int) $mappedDms[0]['dm_id'];
+                        if ($existingDmForEmail && (int) $existingDmForEmail['dm_id'] !== $currentDmId) {
+                            // Target email already belongs to a different DM — updating
+                            // would hit the primary_email unique key. Re-map instead.
+                            if (!$allowEmailReuse) {
+                                $this->addError($response, $row, $i, "Email {$originalEmail} is already in use by another Data Manager. Skipping {$row['B']}.");
+                                continue;
+                            }
+                            $dmIdForResponse = (int) $existingDmForEmail['dm_id'];
+                            $common->insertIgnore('participant_manager_map', ['dm_id' => $dmIdForResponse, 'participant_id' => $participantId]);
+                            $db->delete('participant_manager_map', [
+                                $db->quoteInto('dm_id = ?', $currentDmId),
+                                $db->quoteInto('participant_id = ?', $participantId),
+                            ]);
+                        } else {
+                            $dmIdForResponse = $currentDmId;
+                            $db->update('data_manager', ['primary_email' => $originalEmail], $db->quoteInto('dm_id = ?', $dmIdForResponse));
+                        }
                     } else {
-                        $newDmData = [
-                            'first_name' => MiscUtility::cleanString($row['D'] ?? ''),
-                            'last_name' => MiscUtility::cleanString($row['E'] ?? ''),
-                            'institute' => MiscUtility::cleanString($row['F'] ?? ''),
-                            'mobile' => MiscUtility::cleanString($row['Q'] ?? ''),
-                            'secondary_email' => MiscUtility::cleanString($row['T'] ?? ''),
-                            'primary_email' => $originalEmail,
-                            'force_password_reset' => 1,
-                            'created_by' => $authNameSpace->admin_id,
-                            'created_on' => new Zend_Db_Expr('now()'),
-                            'status' => 'active'
-                        ];
-                        $db->insert('data_manager', $newDmData);
-                        $dmIdForResponse = $db->lastInsertId();
+                        if ($existingDmForEmail) {
+                            // A DM with this email already exists — reuse it instead of
+                            // inserting (which would collide on primary_email).
+                            if (!$allowEmailReuse) {
+                                $this->addError($response, $row, $i, "Email {$originalEmail} is already in use by another Data Manager. Skipping {$row['B']}.");
+                                continue;
+                            }
+                            $dmIdForResponse = (int) $existingDmForEmail['dm_id'];
+                        } else {
+                            $newDmData = [
+                                'first_name' => MiscUtility::cleanString($row['D'] ?? ''),
+                                'last_name' => MiscUtility::cleanString($row['E'] ?? ''),
+                                'institute' => MiscUtility::cleanString($row['F'] ?? ''),
+                                'mobile' => MiscUtility::cleanString($row['Q'] ?? ''),
+                                'secondary_email' => MiscUtility::cleanString($row['T'] ?? ''),
+                                'primary_email' => $originalEmail,
+                                'force_password_reset' => 1,
+                                'created_by' => $authNameSpace->admin_id,
+                                'created_on' => new Zend_Db_Expr('now()'),
+                                'status' => 'active'
+                            ];
+                            $db->insert('data_manager', $newDmData);
+                            $dmIdForResponse = $db->lastInsertId();
+                        }
                         $common->insertIgnore('participant_manager_map', ['dm_id' => $dmIdForResponse, 'participant_id' => $participantId]);
 
                         if ($sharedDmToUnmap > 0) {
@@ -1822,6 +1908,21 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     continue;
                 }
                 $dataManagerExists = $duplicateChecks['dataManagers'][$originalEmail] ?? null;
+                if (empty($dataManagerExists)) {
+                    // Cache miss safety net (mirror of the update-email-only branch): if the
+                    // prefetch missed a DB row (whitespace/zero-width in stored email, or the
+                    // email never appearing in the upload file), look it up directly so we
+                    // reuse the existing DM instead of attempting a duplicate insert.
+                    $dbDmId = $db->fetchOne(
+                        $db->select()
+                            ->from('data_manager', 'dm_id')
+                            ->where('LOWER(TRIM(primary_email)) = ?', $originalEmail)
+                    );
+                    if ($dbDmId) {
+                        $dataManagerExists = ['dm_id' => (int) $dbDmId];
+                        $duplicateChecks['dataManagers'][$originalEmail] = $dataManagerExists;
+                    }
+                }
                 if (isset($params['bulkUploadAllowEmailRepeat']) && $params['bulkUploadAllowEmailRepeat'] == 'do-not-allow-existing-email' && $dataManagerExists) {
                     // The "don't allow" rule is meant to prevent two different participants
                     // sharing an email — not to block a participant from updating its own DM.
@@ -2404,7 +2505,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             $colNo = 0;
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $pQuery = $this->getAdapter()->select()
-                ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr("CASE WHEN (lab_name IS NOT NULL AND lab_name NOT LIKE '') THEN lab_name ELSE first_name END"), 'pmobile' => 'mobile', 'email'))
+                ->from(array('p' => $this->_name), array('unique_identifier', 'labName' => new Zend_Db_Expr(self::participantNameExpr('p')), 'pmobile' => 'mobile', 'email'))
                 ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('c.iso_name'))
                 ->where("participant_id NOT IN(SELECT DISTINCT participant_id FROM participant_manager_map WHERE dm_id in (SELECT dm_id FROM data_manager WHERE data_manager_type like 'manager' or data_manager_type = '' or data_manager_type is null))")
                 ->group(array('p.participant_id'));
