@@ -2576,45 +2576,35 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['p' => 'participant'], ['participant_id', 'unique_identifier', 'first_name', 'last_name'])
             ->where('p.status= ?', 'active');
-        if (isset($params['country']) && $params['country'] != '') {
-            $country = (is_array($params['country'])) ? implode(',', $params['country']) : $params['country'];
-            $sql = $sql->where('country IN (?)', $country);
+        if (!empty($params['country'])) {
+            $sql->where('country IN (?)', (array) $params['country']);
         }
-        if (isset($params['state']) && $params['state'] != '') {
-            $state = (is_array($params['state'])) ? implode(',', $params['state']) : $params['state'];
-            $sql = $sql->where('state IN (?)', $state);
+        if (!empty($params['state'])) {
+            $sql->where('state IN (?)', (array) $params['state']);
         }
-        if (isset($params['region']) && $params['region'] != '') {
-            $region = (is_array($params['region'])) ? implode(',', $params['region']) : $params['region'];
-            $sql = $sql->where('region IN (?)', $region);
+        if (!empty($params['region'])) {
+            $sql->where('region IN (?)', (array) $params['region']);
         }
-        if (isset($params['district']) && $params['district'] != '') {
-            $district = (is_array($params['district'])) ? implode(',', $params['district']) : $params['district'];
-            $sql = $sql->where('district IN (?)', $district);
+        if (!empty($params['district'])) {
+            $sql->where('district IN (?)', (array) $params['district']);
         }
-        if (isset($params['city']) && $params['city'] != '') {
-            $city = (is_array($params['city'])) ? implode(',', $params['city']) : $params['city'];
-            $sql = $sql->where('city IN (?)', $city);
+        if (!empty($params['city'])) {
+            $sql->where('city IN (?)', (array) $params['city']);
         }
-        if (isset($params['network']) && $params['network'] != '') {
-            $network = (is_array($params['network'])) ? implode(',', $params['network']) : $params['network'];
-            $sql = $sql->where('network_tier IN (?)', $network);
+        if (!empty($params['network'])) {
+            $sql->where('network_tier IN (?)', (array) $params['network']);
         }
-        if (isset($params['affiliation']) && $params['affiliation'] != '') {
-            $affiliation = (is_array($params['affiliation'])) ? implode(',', $params['affiliation']) : $params['affiliation'];
-            $sql = $sql->where('affiliation IN (?)', $affiliation);
+        if (!empty($params['affiliation'])) {
+            $sql->where('affiliation IN (?)', (array) $params['affiliation']);
         }
-        if (isset($params['institute']) && $params['institute'] != '') {
-            $institute = (is_array($params['institute'])) ? implode(',', $params['institute']) : $params['institute'];
-            $sql = $sql->where('institute_name IN (?)', $institute);
+        if (!empty($params['institute'])) {
+            $sql->where('institute_name IN (?)', (array) $params['institute']);
         }
-        if (isset($params['siteType']) && $params['siteType'] != '') {
-            $siteType = (is_array($params['siteType'])) ? implode(',', $params['siteType']) : $params['siteType'];
-            $sql = $sql->where('site_type IN (?)', $siteType);
+        if (!empty($params['siteType'])) {
+            $sql->where('site_type IN (?)', (array) $params['siteType']);
         }
-        if (isset($params['enrolledPrograms']) && $params['enrolledPrograms'] != '') {
-            $enrolledPrograms = (is_array($params['enrolledPrograms'])) ? implode(',', $params['enrolledPrograms']) : $params['enrolledPrograms'];
-            $sql = $sql->where('enrolled_programs IN (?)', $enrolledPrograms);
+        if (!empty($params['enrolledPrograms'])) {
+            $sql->where('enrolled_programs IN (?)', (array) $params['enrolledPrograms']);
         }
         if (isset($params['schemeId']) && !empty($params['schemeId'])) {
             $subSql = $db->select()->from(['e' => 'enrollments'], 'participant_id')
