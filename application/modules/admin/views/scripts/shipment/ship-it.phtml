@@ -298,59 +298,29 @@
 	function fetchParticipants($type) {
 
 		var shipId = $("#shipmentId").val();
-		var stateId = [$("#state").val()].join(',');
-		var cityId = [$("#city").val()].join(',');
-		var pId = [$("#labName").val()].join(',');
-		var countryId = [$("#country").val()].join(',');
-		var regionId = [$("#region").val()].join(',');
-		var districtId = [$("#district").val()].join(',');
-		var networkId = [$("#networkTier").val()].join(',');
-		var affiliationId = [$("#affiliation").val()].join(',');
-		var siteTypeId = [$("#siteType").val()].join(',');
-		var enrolledProgramsId = [$("#enrolledPrograms").val()].join(',');
 		$.blockUI();
+		var payload = { sid: shipId, format: "html" };
 		if ($type == 'filter') {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-					sid: shipId,
-					selectedStates: stateId,
-					selectedCities: cityId,
-					choosenPid: pId,
-					selectedCountries: countryId,
-					selectedRegions: regionId,
-					selectedDistricts: districtId,
-					selectedNetworks: networkId,
-					selectedAffiliations: affiliationId,
-					selectedSiteTypes: siteTypeId,
-					selectedEnrolledPrograms: enrolledProgramsId,
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					$("#participants").html(data);
-					VirtualDualList.get('#participants').reload();
-				});
-		} else {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-					sid: shipId,
-					selectedStates: '',
-					selectedCities: '',
-					selectedCountries: '',
-					selectedRegions: '',
-					selectedDistricts: '',
-					selectedNetworks: '',
-					selectedAffiliations: '',
-					selectedSiteTypes: '',
-					selectedEnrolledPrograms: '',
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					$("#participants").html(data);
-					VirtualDualList.get('#participants').reload();
-				});
+			payload.choosenPid = $("#labName").val() || [];
+			payload.selectedCountries = $("#country").val() || [];
+			payload.selectedRegions = $("#region").val() || [];
+			payload.selectedStates = $("#state").val() || [];
+			payload.selectedDistricts = $("#district").val() || [];
+			payload.selectedCities = $("#city").val() || [];
+			payload.selectedNetworks = $("#networkTier").val() || [];
+			payload.selectedAffiliations = $("#affiliation").val() || [];
+			payload.selectedSiteTypes = $("#siteType").val() || [];
+			payload.selectedEnrolledPrograms = $("#enrolledPrograms").val() || [];
+		}
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", payload,
+			function(data) {
+				$.unblockUI();
+				$("#participants").html(data);
+				VirtualDualList.get('#participants').reload();
+			});
+		if ($type != 'filter') {
 			clearFilters();
 		}
-
 	}
 
 	function getEnrollmentParticipantsList() {

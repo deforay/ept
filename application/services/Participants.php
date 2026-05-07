@@ -130,47 +130,7 @@ class Application_Service_Participants
             ->where("p.status='active'")
             ->order('first_name')
             ->group('p.participant_id');
-        if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
-            $pId = explode(',', $params['choosenPid']);
-            $sql = $sql->where('p.institute_name IN (?)', $pId);
-        }
-        if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
-            $countryId = explode(',', $params['selectedCountries']);
-            $sql = $sql->where('p.country IN (?)', $countryId);
-        }
-        if (isset($params['selectedRegions']) && trim($params['selectedRegions']) != '') {
-            $regionId = explode(',', $params['selectedRegions']);
-            $sql = $sql->where('p.region IN (?)', $regionId);
-        }
-        if (isset($params['selectedDistricts']) && trim($params['selectedDistricts']) != '') {
-            $districtId = explode(',', $params['selectedDistricts']);
-            $sql = $sql->where('p.district IN (?)', $districtId);
-        }
-        if (isset($params['selectedStates']) && trim($params['selectedStates']) != '') {
-            $stateId = explode(',', $params['selectedStates']);
-            $sql = $sql->where('p.state IN (?)', $stateId);
-        }
-
-        if (isset($params['selectedCities']) && trim($params['selectedCities']) != '') {
-            $cityId = explode(',', $params['selectedCities']);
-            $sql = $sql->where('p.city IN (?)', $cityId);
-        }
-        if (isset($params['selectedNetworks']) && trim($params['selectedNetworks']) != '') {
-            $networkId = explode(',', $params['selectedNetworks']);
-            $sql = $sql->where('p.network_tier IN (?)', $networkId);
-        }
-        if (isset($params['selectedAffiliations']) && trim($params['selectedAffiliations']) != '') {
-            $affiliationId = explode(',', $params['selectedAffiliations']);
-            $sql = $sql->where('p.affiliation IN (?)', $affiliationId);
-        }
-        if (isset($params['selectedSiteTypes']) && trim($params['selectedSiteTypes']) != '') {
-            $siteTypeId = explode(',', $params['selectedSiteTypes']);
-            $sql = $sql->where('p.site_type IN (?)', $siteTypeId);
-        }
-        if (isset($params['selectedEnrolledPrograms']) && trim($params['selectedEnrolledPrograms']) != '') {
-            $enrolledProgramsId = explode(',', $params['selectedEnrolledPrograms']);
-            $sql = $sql->where('p.enrolled_programs IN (?)', $enrolledProgramsId);
-        }
+        $this->applyParticipantFilters($sql, $params);
         return $db->fetchAll($sql);
     }
     public function getEnrolledBySchemeCode($scheme, $schemeName = '')
@@ -228,48 +188,39 @@ class Application_Service_Participants
             ->group('p.participant_id');
         $sql = $db->select()->from(['p' => 'participant'])->where('participant_id NOT IN ?', $subSql)
             ->order('p.first_name');
-        if (isset($params['choosenPid']) && trim($params['choosenPid']) != '') {
-            $pId = explode(',', $params['choosenPid']);
-            $sql = $sql->where('p.institute_name IN (?)', $pId);
-        }
-        if (isset($params['selectedCountries']) && trim($params['selectedCountries']) != '') {
-            $countryId = explode(',', $params['selectedCountries']);
-            $sql = $sql->where('p.country IN (?)', $countryId);
-        }
-        if (isset($params['selectedRegions']) && trim($params['selectedRegions']) != '') {
-            $regionId = explode(',', $params['selectedRegions']);
-            $sql = $sql->where('p.region IN (?)', $regionId);
-        }
-        if (isset($params['selectedDistricts']) && trim($params['selectedDistricts']) != '') {
-            $districtId = explode(',', $params['selectedDistricts']);
-            $sql = $sql->where('p.district IN (?)', $districtId);
-        }
-        if (isset($params['selectedStates']) && trim($params['selectedStates']) != '') {
-            $stateId = explode(',', $params['selectedStates']);
-            $sql = $sql->where('p.state IN (?)', $stateId);
-        }
-
-        if (isset($params['selectedCities']) && trim($params['selectedCities']) != '') {
-            $cityId = explode(',', $params['selectedCities']);
-            $sql = $sql->where('p.city IN (?)', $cityId);
-        }
-        if (isset($params['selectedNetworks']) && trim($params['selectedNetworks']) != '') {
-            $networkId = explode(',', $params['selectedNetworks']);
-            $sql = $sql->where('p.network_tier IN (?)', $networkId);
-        }
-        if (isset($params['selectedAffiliations']) && trim($params['selectedAffiliations']) != '') {
-            $affiliationId = explode(',', $params['selectedAffiliations']);
-            $sql = $sql->where('p.affiliation IN (?)', $affiliationId);
-        }
-        if (isset($params['selectedSiteTypes']) && trim($params['selectedSiteTypes']) != '') {
-            $siteTypeId = explode(',', $params['selectedSiteTypes']);
-            $sql = $sql->where('p.site_type IN (?)', $siteTypeId);
-        }
-        if (isset($params['selectedEnrolledPrograms']) && trim($params['selectedEnrolledPrograms']) != '') {
-            $enrolledProgramsId = explode(',', $params['selectedEnrolledPrograms']);
-            $sql = $sql->where('p.enrolled_programs IN (?)', $enrolledProgramsId);
-        }
+        $this->applyParticipantFilters($sql, $params);
         return $db->fetchAll($sql);
+    }
+
+    private function applyParticipantFilters(Zend_Db_Select $sql, $params): void
+    {
+        if (!is_array($params)) {
+            return;
+        }
+        $map = [
+            'choosenPid' => 'p.institute_name',
+            'selectedCountries' => 'p.country',
+            'selectedRegions' => 'p.region',
+            'selectedDistricts' => 'p.district',
+            'selectedStates' => 'p.state',
+            'selectedCities' => 'p.city',
+            'selectedNetworks' => 'p.network_tier',
+            'selectedAffiliations' => 'p.affiliation',
+            'selectedSiteTypes' => 'p.site_type',
+            'selectedEnrolledPrograms' => 'p.enrolled_programs',
+        ];
+        foreach ($map as $key => $column) {
+            if (empty($params[$key])) {
+                continue;
+            }
+            $values = is_array($params[$key])
+                ? $params[$key]
+                : explode(',', $params[$key]);
+            $values = array_values(array_filter(array_map('trim', $values), 'strlen'));
+            if ($values) {
+                $sql->where($column . ' IN (?)', $values);
+            }
+        }
     }
 
     public function enrollParticipants($params)
