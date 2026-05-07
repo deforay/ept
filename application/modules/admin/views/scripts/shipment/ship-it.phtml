@@ -296,21 +296,26 @@
 	}
 
 	function fetchParticipants($type) {
-
-		var shipId = $("#shipmentId").val();
 		$.blockUI();
-		var payload = { sid: shipId, format: "html" };
+		var payload = {
+			sid: $("#shipmentId").val(),
+			format: "html"
+		};
 		if ($type == 'filter') {
-			payload.choosenPid = $("#labName").val() || [];
-			payload.selectedCountries = $("#country").val() || [];
-			payload.selectedRegions = $("#region").val() || [];
-			payload.selectedStates = $("#state").val() || [];
-			payload.selectedDistricts = $("#district").val() || [];
-			payload.selectedCities = $("#city").val() || [];
-			payload.selectedNetworks = $("#networkTier").val() || [];
-			payload.selectedAffiliations = $("#affiliation").val() || [];
-			payload.selectedSiteTypes = $("#siteType").val() || [];
-			payload.selectedEnrolledPrograms = $("#enrolledPrograms").val() || [];
+			// JSON-encode all filter values into a single POST var to avoid
+			// PHP's max_input_vars truncating large multi-selects.
+			payload.filters = JSON.stringify({
+				choosenPid: $("#labName").val() || [],
+				selectedCountries: $("#country").val() || [],
+				selectedRegions: $("#region").val() || [],
+				selectedStates: $("#state").val() || [],
+				selectedDistricts: $("#district").val() || [],
+				selectedCities: $("#city").val() || [],
+				selectedNetworks: $("#networkTier").val() || [],
+				selectedAffiliations: $("#affiliation").val() || [],
+				selectedSiteTypes: $("#siteType").val() || [],
+				selectedEnrolledPrograms: $("#enrolledPrograms").val() || []
+			});
 		}
 		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", payload,
 			function(data) {

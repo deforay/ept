@@ -305,6 +305,14 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $clientsServices = new Application_Service_Participants();
         if ($request->isPost()) {
             $params = $request->getPost();
+            // Filter values are JSON-encoded into a single 'filters' POST var
+            // to dodge PHP's max_input_vars truncating large multi-selects.
+            if (!empty($params['filters']) && is_string($params['filters'])) {
+                $decoded = json_decode($params['filters'], true);
+                if (is_array($decoded)) {
+                    $params = array_merge($params, $decoded);
+                }
+            }
             $this->view->participants = $clientsServices->getParticipantList($params);
             if (isset($params['schemeId']) && !empty($params['schemeId'])) {
                 $this->view->mappedParticipant = $clientsServices->getEnrolledBySchemeCode($params['schemeId']);

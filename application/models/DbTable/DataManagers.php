@@ -48,7 +48,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             return 0;
         }
         if ($dmId > 0) {
-            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
+            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
@@ -371,7 +371,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 $db->delete('ptcc_countries_map', 'ptcc_id = ' . $params['deleteSystemId']);
                 $this->delete("dm_id = {$params['deleteSystemId']}");
             }
-            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($params['allparticipant']) : [];
+            $params['participantsList'] = isset($params['allparticipant']) ? Common::removeEmpty($this->decodeParticipantList($params['allparticipant'])) : [];
             $this->dmParticipantMap($params, $dmId, $isPtcc);
 
             $firstName = isset($params['fname']) && $params['fname'] != '' ? $params['fname'] : null;
@@ -1652,5 +1652,22 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             ->joinLeft(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email'])
             ->where('pmm.participant_id = ?', $participantId);
         return $this->getAdapter()->fetchAll($query);
+    }
+
+    private function decodeParticipantList($value): array
+    {
+        // Front-end sends the selected participant ids as a single
+        // JSON-encoded hidden input to dodge PHP's max_input_vars cap.
+        // Tolerate the legacy array form too.
+        if (is_array($value)) {
+            return $value;
+        }
+        if (is_string($value) && $value !== '') {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+        return [];
     }
 }

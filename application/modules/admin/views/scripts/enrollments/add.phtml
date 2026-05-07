@@ -177,20 +177,27 @@
 
 	function fetchParticipants($type) {
 		$.blockUI();
-		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant-list')); ?>", {
-				labId: $('#labName').val(),
-				country: $('#country').val(),
-				region: $('#region').val(),
-				district: $('#district').val(),
-				city: $('#city').val(),
-				network: $('#networkTier').val(),
-				affiliation: $('#affiliation').val(),
-				institute: $('#institute').val(),
-				siteType: $('#siteType').val(),
-				enrolledPrograms: $('#enrolledPrograms').val(),
-				schemeId: $('#schemeId').val(),
-				format: "html"
-			},
+		var payload = {
+			schemeId: $('#schemeId').val(),
+			format: "html"
+		};
+		if ($type == 'filter') {
+			// JSON-encode all filter values into a single POST var to avoid
+			// PHP's max_input_vars truncating large multi-selects.
+			payload.filters = JSON.stringify({
+				country: $('#country').val() || [],
+				region: $('#region').val() || [],
+				state: $('#state').val() || [],
+				district: $('#district').val() || [],
+				city: $('#city').val() || [],
+				network: $('#networkTier').val() || [],
+				affiliation: $('#affiliation').val() || [],
+				institute: $('#institute').val() || [],
+				siteType: $('#siteType').val() || [],
+				enrolledPrograms: $('#enrolledPrograms').val() || []
+			});
+		}
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'get-participant-list')); ?>", payload,
 			function(data) {
 				$('#participants').html(data);
 				VirtualDualList.get('#participants').reload();

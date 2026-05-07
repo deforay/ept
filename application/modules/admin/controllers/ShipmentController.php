@@ -438,7 +438,15 @@ class Admin_ShipmentController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $params = $params = $request->getPost();
+            $params = $request->getPost();
+            // Filter values are JSON-encoded into a single 'filters' POST var
+            // to dodge PHP's max_input_vars truncating large multi-selects.
+            if (!empty($params['filters']) && is_string($params['filters'])) {
+                $decoded = json_decode($params['filters'], true);
+                if (is_array($decoded)) {
+                    $params = array_merge($params, $decoded);
+                }
+            }
 
             if ($params['sid']) {
                 $participantService = new Application_Service_Participants();
