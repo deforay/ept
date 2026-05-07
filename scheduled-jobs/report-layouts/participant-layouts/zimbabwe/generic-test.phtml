@@ -86,7 +86,7 @@ if (!empty($resultArray['shipment'])) {
         $topMargin = isset($templateTopMargin) && !empty($templateTopMargin) ? $templateTopMargin : 40;
         $pdf->SetMargins(PDF_MARGIN_LEFT, $topMargin, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->SetFooterMargin(5);
 
         // Configure page settings
         $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
@@ -218,8 +218,8 @@ if (!empty($resultArray['shipment'])) {
 
         // Parse user test configuration
         $passPercentage = Pt_Commons_SchemeConfig::get($evalRow['scheme_type'] . '.passingScore');
-        $dtsModel = new Application_Model_Dts();
-        $testKitLists = $dtsModel->getAllDtsTestKitList();
+        $kitDb = new Application_Model_DbTable_Testkitnames();
+        $testKitLists = $kitDb->getAllTestKitList($evalRow['scheme_type']);
         $allTestKitLists = [];
         foreach ($testKitLists as $testkit) {
             $allTestKitLists[$testkit['TESTKITNAMEID']] = $testkit['TESTKITNAME'];
@@ -230,7 +230,7 @@ if (!empty($resultArray['shipment'])) {
             if (count($resultArray['shipment']) > 0) {
                 $rowspan = count($result['responseResult']);
 
-                $labRes = '<span style="font-weight: bold;font-size:13px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
+                $labRes = '<span style="font-weight: bold;font-size:11px;">Your ' . $result['scheme_name'] . ' Proficiency results : <br/></span>';
                 $labRes .= '<table border="1" style="text-align:center;font-weight:bold;width:650px;font-size:11px;">
                     <tr>
                         <td style="background-color:white;" colspan="2"></td>
@@ -324,12 +324,12 @@ if (!empty($resultArray['shipment'])) {
                         <td style="background-color:#8ECF64;">Test Kit Lot No</td>
                     </tr>
                     <tr>
-                        <td style="background-color:white;">' . $testkitName . '</td>
-                        <td style="background-color:white;">' . $expDate . '</td>
-                        <td style="background-color:white;">' . $attributes['kit_lot_number'] . '</td>
+                        <td style="background-color:white;font-weight: normal;">' . $testkitName . '</td>
+                        <td style="background-color:white;font-weight: normal;">' . $expDate . '</td>
+                        <td style="background-color:white;font-weight: normal;">' . $attributes['kit_lot_number'] . '</td>
                     </tr>
                 </table>';
-                $labRes .= '<br><br><table border="1" style="font-size:11px;" cellpadding="3" style="width:100%;">
+                $labRes .= '<br><br><table border="1" cellpadding="3" style="width:100%;font-size:11px;">
                     <tr style="background-color:#dbe4ee;width:100%;">
                         <td style="text-align:center;font-weight:bold;">Sample ID</td>';
                 // $labRes .= '<td style="text-align:center;font-weight:bold;">Test-1</td>';
@@ -394,8 +394,8 @@ if (!empty($resultArray['shipment'])) {
         $totalScore = $result['shipment_score'] + $result['documentation_score'];
         $grade = ($totalScore >= $passPercentage) ? 'Satisfactory' : 'Unsatisfactory';
         // Overall score table
-        $totalScoreTxt = '<span style="font-weight:bold;font-size:12px;">Overall Score :</span><br/>
-                <table border="1" style="font-size:12px;width:100%;">
+        $totalScoreTxt = '<span style="font-weight:bold;font-size:11px;">Overall Score :</span><br/>
+                <table border="1" style="font-size:11px;width:100%;">
                     <tr>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:75%;">Testing Score</td>
                         <td style="text-align:center;width:25%;">' . round($result['shipment_score'], 2) . '</td>
@@ -423,7 +423,7 @@ if (!empty($resultArray['shipment'])) {
             $result['responseResult'][0]['failure_reason'] != null
         ) {
 
-            $failRes = '<span style="font-weight:bold;font-size:12px;">Suggested Corrective actions for your response :</span> <br/>';
+            $failRes = '<span style="font-weight:bold;font-size:11px;">Suggested Corrective actions for your response :</span> <br/>';
             $failRes .= '<table border="1" style="font-size:11px;">
                     <tr style="background-color:#dbe4ee;">
                         <td style="text-align:center;font-weight:bold;">Failure Reasons (or) Warnings</td>
@@ -446,8 +446,8 @@ if (!empty($resultArray['shipment'])) {
             $responseRate = round(($shipmentsUnderDistro['reported_count'] / $shipmentsUnderDistro['participant_count']) * 100);
             $passRate = round(($shipmentsUnderDistro['number_passed'] / $shipmentsUnderDistro['reported_count']) * 100);
 
-            $summaryCount = '<span style="font-weight:bold;font-size:12px;">Summary of Laboratory Scores</span><br/>
-                <table border="1" style="font-size:12px;width:100%;">
+            $summaryCount = '<span style="font-weight:bold;font-size:11px;">Summary of Laboratory Scores</span><br/>
+                <table border="1" style="font-size:11px;width:100%;">
                     <tr>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:35%;">Total Number of Participants Enrolled</td>
                         <td style="background-color:#dbe4ee;text-align:center;font-weight:bold;width:45%;">Total Number of Participants That Participated</td>
@@ -481,7 +481,7 @@ if (!empty($resultArray['shipment'])) {
         } else {
             $scorePerSample = round((100 / 1), 2);
         }
-        $summaryNote = '<br><span style="font-weight:bold;font-size:12px;">Interpretation of Scores (Performance criteria)</span>
+        $summaryNote = '<br><span style="font-weight:bold;font-size:11px;">Interpretation of Scores (Performance criteria)</span>
                         <ul>
                             <li>A testing score of 0 is awarded for any result that is incorrectly reported</li>
                             <li>A testing score of ' . $scorePerSample . ' is awarded for any result reported correctly</li>
@@ -513,7 +513,7 @@ if (!empty($resultArray['shipment'])) {
         $pdf->writeHTML($html, true, false, true, false, '');
 
         // Additional information
-        $additionalInfo = '<br><br><span style="font-weight:bold;font-size:12px;">ADDITIONAL INFORMATION</span>
+        $additionalInfo = '<span style="font-weight:bold;font-size:11px;">ADDITIONAL INFORMATION</span>
         <ol>
             <li>The person authorizing/Approving PT Reports: Lucia Sisya (PT scheme Manager).</li>
             <li>The services in the PT scheme that are subcontracted are: transportation of samples to Provincial Laboratories.</li>
@@ -537,16 +537,16 @@ if (!empty($resultArray['shipment'])) {
             $kitResult = $kitDb->fetchGivenKitApprovalStatus($attributes['kit_name']);
             $wishes = '';
             if ((!isset($kitResult['Approval']) || empty($kitResult['Approval'])) && $kitResult['Approval'] == 0 && $instance == 'philippines') {
-                $wishes .= '<p style="font-size:12px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
+                $wishes .= '<p style="font-size:11px;margin-top:-20px;">For further evaluation. Participant is requested to submit a copy of the updated Certificate of Product Registration (CPR) issued by the Food and Drug Administration (FDA) Philippines.</p><br><br>';
             } else {
                 if ($result['is_excluded'] == 'yes') {
                     $wishes = '<p>Your response was not considered for evaluation</p>';
                 } else {
                     $totalScore = $result['shipment_score'] + $result['documentation_score'];
                     if ($totalScore >= $passPercentage && $instance != 'philippines') {
-                        $wishes = '<p style="font-size:12px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
+                        $wishes = '<p style="font-size:11px;margin-top:-20px;">Congratulations! You have received a satisfactory score of ' . round($totalScore, 2) . '%</p><br><br>';
                     } else {
-                        $wishes = '<p style="font-size:12px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
+                        $wishes = '<p style="font-size:11px;margin-top:-20px;">You have received a score of ' . round($totalScore, 2) . '%</p><br><br>';
                     }
                 }
             }
@@ -554,7 +554,7 @@ if (!empty($resultArray['shipment'])) {
 
         // Add evaluation comments if available
         if (!empty(trim($result['evaluationComments'])) || !empty(trim($result['optional_eval_comment']))) {
-            $comment = '<table border="1" style="width:100%;font-size:12px;" cellpadding="3">';
+            $comment = '<table border="1" style="width:100%;font-size:11px;" cellpadding="3">';
 
             if (!empty(trim($result['evaluationComments']))) {
                 $comment .= '<tr>
@@ -592,7 +592,7 @@ if (!empty($resultArray['shipment'])) {
         }
 
         $eodReportText = ($evalRow['report_type'] == 'finalized') ? "End of final report" : "End of Report";
-        $html = '<p style="font-size:12px;text-align:center;"> - ' . $eodReportText . ' - </p>';
+        $html = '<p style="font-size:11px;text-align:center;"> - ' . $eodReportText . ' - </p>';
 
         /* $html .= '<span style="text-align:center;font-weight:normal;"><small>All PT material is produced in line with the standard ISO17043:2023</small></span><br/>';
         $approveTxt = $evalRow['saname'] ?? $resultArray['shipment'][0]['pt_co_ordinator_name'] ?? null;
