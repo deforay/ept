@@ -1,0 +1,29 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - application
+        - library/Pt
+        - bin
+        - cli-bootstrap.php
+        - constants.php
+        - db-tools.php
+        - env-loader.php
+    excludePaths:
+        - vendor
+        - node_modules
+        - public
+        - run-once/_archive (?)
+        - logs
+        - backups
+        - downloads
+        - database
+        - scheduled-jobs
+        - docs
+        - '*.phtml.bak'
+    fileExtensions:
+        - php
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false

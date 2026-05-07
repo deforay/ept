@@ -53,3 +53,4 @@ chart-render-test.json
 rector.php
 .env
 .venv/*
+.php-cs-fixer.cache
