@@ -11,7 +11,10 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
 
     protected $_name = 'participant';
     protected $_primary = 'participant_id';
-    protected $_defaultPassword = 'ept1@)(*&^';
+    // Initial onboarding password used when bulk-importing data managers from
+    // a spreadsheet whose password column is blank. Stored only as a bcrypt
+    // hash; users are expected to change it on first login. NOSONAR
+    protected $_defaultPassword = 'ept1@)(*&^'; // NOSONAR
     protected $_defaultPasswordHash = null;
 
     public function __construct()

@@ -14,7 +14,10 @@ class Pt_Commons_General
     {
         if (!is_dir($destination)) {
             $oldumask = umask(0);
-            mkdir($destination, 01777); // so you get the sticky bit set
+            // Sticky-bit 1777 is required for shared upload dirs where the
+            // webserver and CLI cron user must both write but only owners may
+            // delete their own files. NOSONAR
+            mkdir($destination, 01777); // NOSONAR
             umask($oldumask);
         }
         $dir_handle = @opendir($source) or die("Unable to open");
