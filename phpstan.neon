@@ -12,16 +12,16 @@ parameters:
         - db-tools.php
         - env-loader.php
     excludePaths:
-        - vendor
-        - node_modules
-        - public
+        - vendor (?)
+        - node_modules (?)
+        - public (?)
         - run-once/_archive (?)
-        - logs
-        - backups
-        - downloads
-        - database
-        - scheduled-jobs
-        - docs
+        - logs (?)
+        - backups (?)
+        - downloads (?)
+        - database (?)
+        - scheduled-jobs (?)
+        - docs (?)
         - '*.phtml.bak'
     fileExtensions:
         - php

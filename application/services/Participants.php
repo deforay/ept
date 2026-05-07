@@ -216,7 +216,7 @@ class Application_Service_Participants
             $values = is_array($params[$key])
                 ? $params[$key]
                 : explode(',', $params[$key]);
-            $values = array_values(array_filter(array_map('trim', $values), 'strlen'));
+            $values = array_values(array_filter(array_map('trim', $values), static fn (string $v): bool => $v !== ''));
             if ($values) {
                 $sql->where($column . ' IN (?)', $values);
             }
