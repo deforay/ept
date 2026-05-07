@@ -26,7 +26,8 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                         </tr>
                         <tr align="left" class="alert-success" style="display: none;">
                             <td colspan="2" style=" text-align: center; background:lightgreen; color:darkgreen;">
-                                <?= $this->translate->_("Please check your email for the verification link."); ?></td>
+                                <?= $this->translate->_("Please check your email for the verification link."); ?>
+                            </td>
                         </tr>
                     <?php } ?>
 
@@ -49,25 +50,27 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                                 placeholder="Please enter your first name here" /></td>
                     </tr>
                     <tr align="left" class="dark">
-                        <td><?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span></td>
-                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="lname" type="text"
+                        <td><?= $this->translate->_("Last Name"); ?></td>
+
+                               
+                                                       <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="lname" type="text"
                                 id="lname" name="lname" size="50" maxlength="45" class=" form-control"
                                 value="<?php echo $this->rsUser['last_name']; ?>"
                                 title="Please enter your last name here"
                                 placeholder="Please enter your last name here" /></td>
                     </tr>
                     <tr align="left" class="light">
-                        <td><?= $this->translate->_("Secondary e-mail address"); ?> <span class="mandatory">*</span>
+                        <td><?= $this->translate->_("Secondary e-mail address"); ?>
                         </td>
                         <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['secondary_email']; ?>" class="isRequired form-control"
+                                value="<?php echo $this->rsUser['secondary_email']; ?>" class="form-control"
                                 title="Please enter a secondary email id here"
                                 placeholder="Please enter a secondary email id here" /></td>
                     </tr>
                     <tr align="left" class="dark">
-                        <td><?= $this->translate->_("Cell Phone Number"); ?> <span class="mandatory">*</span></td>
+                        <td><?= $this->translate->_("Cell Phone Number"); ?> </td>
                         <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['mobile']; ?>" class="isRequired isNumeric form-control"
+                                value="<?php echo $this->rsUser['mobile']; ?>" class=" isNumeric form-control"
                                 title="Please enter your contact number here"
                                 placeholder="Please enter your contact number here" /></td>
                     </tr>
@@ -82,12 +85,18 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                             <select id="language" name="language" value="<?php echo $this->rsUser['phone']; ?>"
                                 class="form-control" title="Please select the language">
                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
-                                <option value="en_US" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "en_US") ? "selected='selected'" : ""; ?>>
-                                    <?= $this->translate->_("English"); ?></option>
-                                <option value="fr_FR" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "fr_FR") ? "selected='selected'" : ""; ?>>
-                                    <?= $this->translate->_("French"); ?></option>
-                                <option value="vi_VN" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "vi_VN") ? "selected='selected'" : ""; ?>>
-                                    <?= $this->translate->_("Vietnamese"); ?></option>
+            
+                                                       <option value="en_US" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "en_US") ? "selected='selected'" : ""; ?>>
+                                    <?= $this->translate->_("English"); ?>
+                                </option>
+
+                                                                   <option value="fr_FR" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "fr_FR") ? "selected='selected'" : ""; ?>>
+                                    <?= $this->translate->_("French"); ?>
+                                </option>
+
+                                                                   <option value="vi_VN" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "vi_VN") ? "selected='selected'" : ""; ?>>
+                                    <?= $this->translate->_("Vietnamese"); ?>
+                                </option>
                             </select>
                         </td>
                     </tr>
