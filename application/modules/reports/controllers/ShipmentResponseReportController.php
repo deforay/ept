@@ -2,7 +2,6 @@
 
 class Reports_ShipmentResponseReportController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -43,7 +42,6 @@ class Reports_ShipmentResponseReportController extends Zend_Controller_Action
         $this->view->states = $participants->getAllParticipantStates();
         $this->view->districts = $participants->getAllParticipantDistricts();
     }
-
 
     public function participantResponseAction()
     {

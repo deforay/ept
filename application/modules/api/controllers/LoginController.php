@@ -1,4 +1,5 @@
 <?php
+
 class Api_LoginController extends Zend_Controller_Action
 {
     public function init()

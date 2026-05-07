@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'scheme_list';
     protected $_primary = 'scheme_id';
 
@@ -11,13 +10,14 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $schemes = [];
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
-            foreach (explode(",", $authNameSpace->activeScheme) as $scheme) {
-                $schemes[] = sprintf("'%s'", $scheme);;
+            foreach (explode(',', $authNameSpace->activeScheme) as $scheme) {
+                $schemes[] = sprintf("'%s'", $scheme);
+                ;
             }
         }
-        $sQuery = $this->getAdapter()->select()->from(array("s" => $this->_name), array('*'))->where("status='active'")->order("scheme_name");
+        $sQuery = $this->getAdapter()->select()->from(['s' => $this->_name], ['*'])->where("status='active'")->order('scheme_name');
         if (isset($authNameSpace->activeScheme) && !empty($authNameSpace->activeScheme)) {
-            $sQuery = $sQuery->where("scheme_id IN(" . implode(",", $schemes) . ")");
+            $sQuery = $sQuery->where('scheme_id IN(' . implode(',', $schemes) . ')');
         }
         return $this->getAdapter()->fetchAll($sQuery);
     }
@@ -36,14 +36,15 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function countEnrollmentSchemes()
     {
-        $result = array();;
+        $result = [];
+        ;
         $sql = $this->fetchAll($this->select()->where("status='active'"));
 
         foreach ($sql as $scheme) {
-            $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'), array())
-                ->join(array('e' => 'enrollments'), 'p.participant_id = e.participant_id', new Zend_Db_Expr("COUNT('e.participant_id')"))
+            $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'], [])
+                ->join(['e' => 'enrollments'], 'p.participant_id = e.participant_id', new Zend_Db_Expr("COUNT('e.participant_id')"))
                 ->where("p.status='active'")
-                ->where("e.scheme_id=?", $scheme['scheme_id']);
+                ->where('e.scheme_id=?', $scheme['scheme_id']);
             $aResult = $this->getAdapter()->fetchCol($sQuery);
             $result[strtoupper($scheme['scheme_name'])] =  $aResult[0];
         }
@@ -58,39 +59,36 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('scheme_name', 'scheme_id', 'status');
+        $aColumns = ['scheme_name', 'scheme_id', 'status'];
 
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -101,29 +99,26 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
-
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('s' => $this->_name))
+        $sQuery = $this->getAdapter()->select()->from(['s' => $this->_name])
             ->where('is_user_configured = "yes"')->group('scheme_id');
 
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -135,9 +130,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -153,12 +146,12 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];
@@ -215,7 +208,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                             } else {
                                 $subGrp = null;
                             }
-                            $this->getAdapter()->insert('r_possibleresult', array(
+                            $this->getAdapter()->insert('r_possibleresult', [
                                 'scheme_id'         => $params['schemeCode'],
                                 'sub_scheme'        => $params['resultSubGroup'][$key],
                                 'scheme_sub_group'  => $subGrp,
@@ -224,13 +217,13 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                                 'result_code'       => $params[$test]['resultCode'][$key][$ikey],
                                 'display_context'   => $params[$test]['displayContext'][$key][$ikey],
                                 'sort_order'        => $params[$test]['sortOrder'][$key][$ikey],
-                            ));
+                            ]);
                         }
                         $sortOrder = $params[$test]['sortOrder'][$key][$ikey];
                     }
                 } elseif ($test == 'quantitative') {
                     $sortOrder++;
-                    $this->getAdapter()->insert('r_possibleresult', array(
+                    $this->getAdapter()->insert('r_possibleresult', [
                         'scheme_id'         => $params['schemeCode'],
                         'sub_scheme'        => $params['resultSubGroup'][$key],
                         'result_type'       => $test,
@@ -242,7 +235,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
                         'uncertainy_threshold'      => $params[$test]['uncertainyThreshold'][$key],
                         'minimum_number_of_responses' => $params[$test]['minNumberOfResponses'][$key],
                         'sort_order'        => $sortOrder,
-                    ));
+                    ]);
                 }
             }
         }
@@ -253,7 +246,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
         $response = [];
         if (!empty($id)) {
             $response['schemeResult'] = $this->fetchRow($this->select()->where('scheme_id = "' . $id . '"'))->toArray();
-            $response['possibleResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', array('*'))->where('scheme_id = "' . $id . '"')->order("sort_order asc"));
+            $response['possibleResult'] = $this->getAdapter()->fetchAll($this->getAdapter()->select()->from('r_possibleresult', ['*'])->where('scheme_id = "' . $id . '"')->order('sort_order asc'));
         }
         return $response;
     }
@@ -266,7 +259,7 @@ class Application_Model_DbTable_SchemeList extends Zend_Db_Table_Abstract
 
     public function fetchGenericSchemeLists()
     {
-        $sql = $this->getAdapter()->select()->from(array('s' => $this->_name), array('scheme_id', 'scheme_name'))->where('is_user_configured = "yes"')->group('scheme_id');
+        $sql = $this->getAdapter()->select()->from(['s' => $this->_name], ['scheme_id', 'scheme_name'])->where('is_user_configured = "yes"')->group('scheme_id');
         return $this->getAdapter()->fetchAll($sql);
     }
 

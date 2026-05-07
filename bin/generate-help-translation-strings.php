@@ -3,8 +3,6 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Console\Style\SymfonyStyle;
-
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
@@ -47,7 +45,7 @@ try {
     $io->definitionList(
         ['Output file' => $outputFile],
         ['Audiences scanned' => implode(', ', HELP_AUDIENCES)],
-        ['Topics scanned' => (string) array_sum(array_map(fn($a) => count($a), $entries))],
+        ['Topics scanned' => (string) array_sum(array_map(fn ($a) => count($a), $entries))],
         ['Unique strings' => (string) countUniqueHelpStrings($entries)]
     );
     $io->success('Help translation strings generated successfully.');
@@ -85,7 +83,7 @@ function collectHelpStrings(string $root, array $audiences): array
                 'summary' => trim((string) ($meta['summary'] ?? '')),
                 'tags' => array_values(array_filter(
                     array_map('trim', array_map('strval', (array) ($meta['tags'] ?? []))),
-                    static fn(string $t): bool => $t !== ''
+                    static fn (string $t): bool => $t !== ''
                 )),
             ];
         }
@@ -123,8 +121,8 @@ function parseHelpFrontmatter(string $file): ?array
         }
         if (str_starts_with($val, '[') && str_ends_with($val, ']')) {
             $items = substr($val, 1, -1);
-            $parts = array_filter(array_map('trim', explode(',', $items)), fn($s) => $s !== '');
-            $out[$key] = array_map(fn($s) => trim($s, "'\""), $parts);
+            $parts = array_filter(array_map('trim', explode(',', $items)), fn ($s) => $s !== '');
+            $out[$key] = array_map(fn ($s) => trim($s, "'\""), $parts);
             continue;
         }
         $out[$key] = trim($val, "'\"");

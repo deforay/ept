@@ -18,11 +18,11 @@ $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLI
 
 // Ensure the script only runs for VLSM APP VERSION >= 4.4.3
 if (version_compare(APP_VERSION, '4.4.3', '<')) {
-    exit("This script requires VERSION 4.4.3 or higher. Current version: " . APP_VERSION . "\n");
+    exit('This script requires VERSION 4.4.3 or higher. Current version: ' . APP_VERSION . "\n");
 }
 
 // Define the logs directory path
-$logsDir = ROOT_PATH . "/logs";
+$logsDir = ROOT_PATH . '/logs';
 
 const MIG_NOT_HANDLED = 0;
 const MIG_EXECUTED    = 1;
@@ -44,13 +44,13 @@ try {
     $db = Zend_Db::factory($conf->resources->db);
     Zend_Db_Table::setDefaultAdapter($db);
 } catch (Exception $e) {
-    echo "Error: Failed to connect to database: " . $e->getMessage() . "\n";
+    echo 'Error: Failed to connect to database: ' . $e->getMessage() . "\n";
     exit(1);
 }
 
 /* ---------------------- CLI flags ---------------------- */
 
-$options = getopt("yqdv:");  // -y auto-continue on error, -q quiet, -d dry-run, -v version
+$options = getopt('yqdv:');  // -y auto-continue on error, -q quiet, -d dry-run, -v version
 $autoContinueOnError = isset($options['y']);
 $quietMode           = isset($options['q']);
 $DRY_RUN             = isset($options['d']); // global-ish flag (read inside helpers)
@@ -73,8 +73,8 @@ function current_db(Zend_Db_Adapter_Abstract $db): string
 
 function table_exists(Zend_Db_Adapter_Abstract $db, string $table): bool
 {
-    $sql = "SELECT 1 FROM information_schema.TABLES
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1";
+    $sql = 'SELECT 1 FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? LIMIT 1';
     return (bool)$db->fetchOne($sql, [current_db($db), $table]);
 }
 
@@ -92,7 +92,9 @@ function table_primary_key(Zend_Db_Adapter_Abstract $db, string $table): array
                 AND t.CONSTRAINT_TYPE = 'PRIMARY KEY'
                 ORDER BY k.ORDINAL_POSITION";
     $rows = $db->fetchCol($sql, [current_db($db), $table]);
-    if (!$rows) return [];
+    if (!$rows) {
+        return [];
+    }
     return array_map(function ($c) {
         return strtolower(trim($c, "` \t\r\n"));
     }, $rows);
@@ -101,10 +103,10 @@ function table_primary_key(Zend_Db_Adapter_Abstract $db, string $table): array
 /** Any inbound foreign keys referencing this table? (returns array of refs) */
 function inbound_foreign_keys(Zend_Db_Adapter_Abstract $db, string $table): array
 {
-    $sql = "SELECT CONSTRAINT_NAME, TABLE_NAME
+    $sql = 'SELECT CONSTRAINT_NAME, TABLE_NAME
                 FROM information_schema.KEY_COLUMN_USAGE
                 WHERE REFERENCED_TABLE_SCHEMA = ?
-                AND REFERENCED_TABLE_NAME   = ?";
+                AND REFERENCED_TABLE_NAME   = ?';
     return (array)$db->fetchAll($sql, [current_db($db), $table]);
 }
 
@@ -126,16 +128,24 @@ function foreign_key_matches(
     string $refTable,
     array $refCols
 ): bool {
-    $sql = "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+    $sql = 'SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
             FROM information_schema.KEY_COLUMN_USAGE
             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = ?
-            ORDER BY ORDINAL_POSITION";
+            ORDER BY ORDINAL_POSITION';
     $rows = $db->fetchAll($sql, [current_db($db), $table, $name]);
-    if (count($rows) !== count($cols)) return false;
+    if (count($rows) !== count($cols)) {
+        return false;
+    }
     foreach ($rows as $i => $r) {
-        if (strtolower($r['COLUMN_NAME']) !== strtolower($cols[$i])) return false;
-        if (strtolower((string)$r['REFERENCED_TABLE_NAME']) !== strtolower($refTable)) return false;
-        if (strtolower((string)$r['REFERENCED_COLUMN_NAME']) !== strtolower($refCols[$i])) return false;
+        if (strtolower($r['COLUMN_NAME']) !== strtolower($cols[$i])) {
+            return false;
+        }
+        if (strtolower((string)$r['REFERENCED_TABLE_NAME']) !== strtolower($refTable)) {
+            return false;
+        }
+        if (strtolower((string)$r['REFERENCED_COLUMN_NAME']) !== strtolower($refCols[$i])) {
+            return false;
+        }
     }
     return true;
 }
@@ -157,16 +167,16 @@ function parse_cols_list(string $list): array
 /** Column exists? */
 function column_exists(Zend_Db_Adapter_Abstract $db, string $table, string $column): bool
 {
-    $sql = "SELECT 1 FROM information_schema.COLUMNS
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1";
+    $sql = 'SELECT 1 FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1';
     return (bool)$db->fetchOne($sql, [current_db($db), $table, $column]);
 }
 
 /** Index exists by name? */
 function index_exists(Zend_Db_Adapter_Abstract $db, string $table, string $index): bool
 {
-    $sql = "SELECT 1 FROM information_schema.STATISTICS
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ? LIMIT 1";
+    $sql = 'SELECT 1 FROM information_schema.STATISTICS
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND INDEX_NAME = ? LIMIT 1';
     return (bool)$db->fetchOne($sql, [current_db($db), $table, $index]);
 }
 
@@ -263,14 +273,14 @@ function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, str
             return MIG_SKIPPED;
         }
         run_sql($db, "ALTER TABLE `{$table}` DROP PRIMARY KEY");
-        $colsSql = implode(',', array_map(fn($c) => "`$c`", $wantedCols));
+        $colsSql = implode(',', array_map(fn ($c) => "`$c`", $wantedCols));
         run_sql($db, "ALTER TABLE `{$table}` ADD PRIMARY KEY ($colsSql)");
         return MIG_EXECUTED;
     }
 
     if (getenv('MIG_VERBOSE')) {
         echo "NOTE: Skipping PK change on {$table} (have: "
-            . implode(',', $haveCols) . " want: "
+            . implode(',', $haveCols) . ' want: '
             . implode(',', $wantedCols)
             . "). Set MIG_REPLACE_PK=1 to force.\n";
     }
@@ -394,7 +404,9 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
 function progress_bar(int $current, int $total, int $size = 30): void
 {
     static $startTime;
-    if (!isset($startTime)) $startTime = time();
+    if (!isset($startTime)) {
+        $startTime = time();
+    }
 
     $elapsed = time() - $startTime;
     $pct = ($total > 0) ? $current / $total : 0;
@@ -442,7 +454,7 @@ if (isset($options['v'])) {
 
 // collect migrations
 $migrationFiles = (array)glob(DB_PATH . '/migrations/*.sql');
-$versions = array_map(fn($file) => basename($file, '.sql'), $migrationFiles);
+$versions = array_map(fn ($file) => basename($file, '.sql'), $migrationFiles);
 usort($versions, 'version_compare');
 
 // counters
@@ -451,8 +463,6 @@ $totalQueries      = 0;
 $successfulQueries = 0;
 $skippedQueries    = 0;
 $totalErrors       = 0;
-
-
 
 foreach ($versions as $version) {
     $file = DB_PATH . '/migrations/' . $version . '.sql';
@@ -474,7 +484,9 @@ foreach ($versions as $version) {
         $builtStatements = [];
         foreach ($parser->statements as $st) {
             $q = trim($st->build() ?? '');
-            if ($q !== '') $builtStatements[] = $q;
+            if ($q !== '') {
+                $builtStatements[] = $q;
+            }
         }
         $versionTotal = count($builtStatements);
         $processedForVersion = 0;
@@ -490,7 +502,7 @@ foreach ($versions as $version) {
 
         try {
             if (!$DRY_RUN) {
-                $db->query("SET FOREIGN_KEY_CHECKS = 0;");
+                $db->query('SET FOREIGN_KEY_CHECKS = 0;');
             } else {
                 echo "[DRY-RUN] SET FOREIGN_KEY_CHECKS = 0;\n";
             }
@@ -554,13 +566,13 @@ foreach ($versions as $version) {
                             }
                         }
                         if (!$autoContinueOnError) {
-                            echo "Do you want to continue? (y/n): ";
-                            $handle = fopen("php://stdin", "r");
+                            echo 'Do you want to continue? (y/n): ';
+                            $handle = fopen('php://stdin', 'r');
                             $response = trim(fgets($handle));
                             fclose($handle);
                             if (strtolower($response) !== 'y') {
                                 $aborted = true;
-                                throw new RuntimeException("Migration aborted by user.");
+                                throw new RuntimeException('Migration aborted by user.');
                             }
                         }
                     }
@@ -577,7 +589,7 @@ foreach ($versions as $version) {
             // restore FKs and finish transaction
             try {
                 if (!$DRY_RUN) {
-                    $db->query("SET FOREIGN_KEY_CHECKS = 1;");
+                    $db->query('SET FOREIGN_KEY_CHECKS = 1;');
                 } else {
                     echo "[DRY-RUN] SET FOREIGN_KEY_CHECKS = 1;\n";
                 }
@@ -585,7 +597,9 @@ foreach ($versions as $version) {
             }
 
             if ($aborted) {
-                if (!$DRY_RUN) $db->rollBack();
+                if (!$DRY_RUN) {
+                    $db->rollBack();
+                }
                 exit("Migration aborted by user.\n");
             }
 

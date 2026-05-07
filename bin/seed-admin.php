@@ -60,12 +60,12 @@ function readPassword(string $prompt): string
 }
 
 // Collect admin details
-$firstName = readInput("First name: ");
-$lastName = readInput("Last name: ");
+$firstName = readInput('First name: ');
+$lastName = readInput('Last name: ');
 
 // Email with validation
 do {
-    $email = readInput("Email (used for login): ");
+    $email = readInput('Email (used for login): ');
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "Invalid email format. Please try again.\n";
         $email = '';
@@ -74,12 +74,12 @@ do {
 
 // Password with confirmation
 do {
-    $password = readPassword("Password (min 6 characters): ");
+    $password = readPassword('Password (min 6 characters): ');
     if (strlen($password) < 6) {
         echo "Password must be at least 6 characters. Please try again.\n";
         continue;
     }
-    $confirmPassword = readPassword("Confirm password: ");
+    $confirmPassword = readPassword('Confirm password: ');
     if ($password !== $confirmPassword) {
         echo "Passwords do not match. Please try again.\n";
         $password = '';

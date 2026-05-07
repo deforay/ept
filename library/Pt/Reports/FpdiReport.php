@@ -4,22 +4,22 @@ use setasign\Fpdi\Tcpdf\Fpdi;
 
 class Pt_Reports_FpdiReport extends Fpdi
 {
-    public $resultStatus = "";
-    public $dateTime = "";
-    public $watermark = "";
-    public $angle = "";
-    public $config = "";
+    public $resultStatus = '';
+    public $dateTime = '';
+    public $watermark = '';
+    public $angle = '';
+    public $config = '';
     public $generalModel;
-    public $reportType = "";
-    public $template = "";
-    public $layout = "";
-    public $scheme = "";
-    public $templateTopMargin = "";
-    public $schemeType = "";
-    public $approveTxt = "";
-    public $instance = "";
-    public $staticFooterHtml = "";
-    public $shipmentAttributes = "";
+    public $reportType = '';
+    public $template = '';
+    public $layout = '';
+    public $scheme = '';
+    public $templateTopMargin = '';
+    public $schemeType = '';
+    public $approveTxt = '';
+    public $instance = '';
+    public $staticFooterHtml = '';
+    public $shipmentAttributes = '';
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false)
     {
@@ -27,7 +27,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         $this->generalModel = new Pt_Commons_General();
     }
 
-    public function setParams($resultStatus, $dateTime, $config = "", $watermark, $reportType, $layout, $scheme = "", $schemeType = "", $approveTxt = "", $staticFooterHtml = "", $shipmentAttributes = "")
+    public function setParams($resultStatus, $dateTime, $config = '', $watermark, $reportType, $layout, $scheme = '', $schemeType = '', $approveTxt = '', $staticFooterHtml = '', $shipmentAttributes = '')
     {
         $this->resultStatus       = $resultStatus;
         $this->dateTime           = $dateTime;
@@ -54,7 +54,7 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function Header()
     {
-        if (!empty($this->template) && $this->template != "") {
+        if (!empty($this->template) && $this->template != '') {
             $this->setSourceFile($this->template);
             $template = $this->ImportPage(1);
             $this->useImportedPage($template);
@@ -71,13 +71,13 @@ class Pt_Reports_FpdiReport extends Fpdi
         }
         if ($this->layout != 'malawi' && $this->layout != 'zimbabwe') {
             if (isset($this->reportType) && !empty($this->reportType) && strtolower($this->reportType) == 'summary' && $this->PageNo() == 1) {
-                $this->writeHTML("<br>All Participants Results Report", true, false, true, false, 'C');
+                $this->writeHTML('<br>All Participants Results Report', true, false, true, false, 'C');
             } elseif (strtolower($this->reportType) == 'individual' && $this->PageNo() == 1 && $this->schemeType != 'dts') {
-                $this->writeHTML("Individual Participant Results Report", true, false, true, false, 'C');
+                $this->writeHTML('Individual Participant Results Report', true, false, true, false, 'C');
             }
         }
 
-        if (isset($this->watermark) && $this->watermark != "") {
+        if (isset($this->watermark) && $this->watermark != '') {
             $this->SetAlpha(0.2);
             $this->SetFont('freesans', 'B', 120, '', false);
             $this->SetTextColor(211, 211, 211);
@@ -88,9 +88,15 @@ class Pt_Reports_FpdiReport extends Fpdi
 
     public function Rotate($angle, $x = -1, $y = -1)
     {
-        if ($x == -1) $x = $this->x;
-        if ($y == -1) $y = $this->y;
-        if ($this->angle != 0) $this->_out('Q');
+        if ($x == -1) {
+            $x = $this->x;
+        }
+        if ($y == -1) {
+            $y = $this->y;
+        }
+        if ($this->angle != 0) {
+            $this->_out('Q');
+        }
         $this->angle = $angle;
         if ($angle != 0) {
             $angle *= M_PI / 180;
@@ -134,11 +140,11 @@ class Pt_Reports_FpdiReport extends Fpdi
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'effectiveDate') : null);
         $reportVersion = $attrs['reportVersion']
             ?? ($shipmentId ? $shipmentService->getShipmentAttributes($shipmentId, 'reportVersion') : null);
-        $showTime   = $this->dateTime ?? date("Y-m-d H:i:s");
+        $showTime   = $this->dateTime ?? date('Y-m-d H:i:s');
         $reportDate = Pt_Commons_DateUtility::humanReadableDateFormat($showTime);
         $pageNumber = 'Page ' . $this->getAliasNumPage() . ' of ' . $this->getAliasNbPages();
 
-        $finalizeReport = (isset($this->resultStatus) && trim($this->resultStatus) == "finalized")
+        $finalizeReport = (isset($this->resultStatus) && trim($this->resultStatus) == 'finalized')
             ? " | {$this->reportType} REPORT | FINALIZED "
             : " | {$this->reportType} REPORT ";
 
@@ -173,8 +179,9 @@ class Pt_Reports_FpdiReport extends Fpdi
             $completeFooterHtml  = '<table style="width:100%; border-collapse:collapse;">';
             $completeFooterHtml .= '<tr>';
             $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:left;">';
-            if (isset($effectiveDate) && !empty($effectiveDate))
+            if (isset($effectiveDate) && !empty($effectiveDate)) {
                 $completeFooterHtml .= 'Effective Date ' . htmlspecialchars($effectiveDate ?? '');
+            }
             $completeFooterHtml .= '</td>';
             $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:center;">' . htmlspecialchars($reportVersion ?? '') . '</td>';
             $completeFooterHtml .= '<td style="width:33.33%; ' . $td . ' text-align:right;">' . $pageNumber . '</td>';
@@ -200,7 +207,7 @@ class Pt_Reports_FpdiReport extends Fpdi
         if (!empty($this->instance) && $this->instance == 'philippines') {
             $text = (!empty($this->approveTxt))
                 ? "This document has been reviewed and validated by EQA officers and authorized personnel of {$this->approveTxt}"
-                : "This document has been reviewed and validated by EQA officers.";
+                : 'This document has been reviewed and validated by EQA officers.';
             $completeFooterHtml = '<div style="text-align:center; font-size:7px;">' . $text . '</div>' . $completeFooterHtml;
         }
 

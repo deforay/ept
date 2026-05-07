@@ -67,9 +67,15 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   `audit_log_id` int NOT NULL AUTO_INCREMENT,
   `statement` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `created_by` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `created_by_role` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`audit_log_id`)
+  `ip_address` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `user_agent` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`audit_log_id`),
+  KEY `idx_audit_log_created_by` (`created_by`),
+  KEY `idx_audit_log_created_on` (`created_on`),
+  KEY `idx_audit_log_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------

@@ -2,13 +2,12 @@
 
 class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'mail_template';
     protected $_primary = 'mail_temp_id';
 
     public function updateMailTemplateDetails($params)
     {
-        $data = array(
+        $data = [
             'mail_purpose' => $params['mailPurpose'],
             'from_name' => $params['adminName'],
             'mail_from' => $params['adminEmail'],
@@ -16,16 +15,16 @@ class Application_Model_DbTable_MailTemplate extends Zend_Db_Table_Abstract
             'mail_bcc' => $params['adminBcc'],
             'mail_subject' => $params['subject'],
             'mail_content' => $params['message'],
-            'mail_footer' => $params['footer']
-        );
+            'mail_footer' => $params['footer'],
+        ];
         if (isset($params['mailId']) && $params['mailId'] != '') {
-            $this->update($data, "mail_temp_id=" . $params['mailId']);
+            $this->update($data, 'mail_temp_id=' . $params['mailId']);
         } else {
             $this->insert($data);
         }
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated a mail template - " . $params['mailPurpose'], "mail-template");
+        $auditDb->addNewAuditLog('Updated mail template - ' . $params['mailPurpose'], 'mail-template');
     }
     public function getEmailTemplateDetails($mailPurpose)
     {

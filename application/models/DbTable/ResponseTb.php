@@ -2,22 +2,21 @@
 
 class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'response_result_tb';
     protected $_primary = ['shipment_map_id', 'sample_id'];
-    const NOW = 'now()';
+    public const NOW = 'now()';
 
     public function updateResults($params)
     {
         $sampleIds = $params['sampleId'];
 
         foreach ($sampleIds as $key => $sampleId) {
-            $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $data = [
                 'shipment_map_id' => $params['smid'],
                 'sample_id' => $sampleId,
-                'response_attributes' => (isset($params['cepheidMTBXDRTest'][$sampleId]) && !empty($params['cepheidMTBXDRTest'][$sampleId]) && $params['mtbcDetected'][$key] == "detected") ? json_encode($params['cepheidMTBXDRTest'][$sampleId]) : null,
+                'response_attributes' => (isset($params['cepheidMTBXDRTest'][$sampleId]) && !empty($params['cepheidMTBXDRTest'][$sampleId]) && $params['mtbcDetected'][$key] == 'detected') ? json_encode($params['cepheidMTBXDRTest'][$sampleId]) : null,
                 'assay_id' => $params['assayName'],
                 'mtb_detected' => (isset($params['mtbcDetected'][$key]) && !empty($params['mtbcDetected'][$key])) ? $params['mtbcDetected'][$key] : null,
                 'rif_resistance' => (isset($params['rifResistance'][$key]) && !empty($params['rifResistance'][$key])) ? $params['rifResistance'][$key] : null,
@@ -36,7 +35,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
                 'gene_xpert_module_no' => isset($params['geneXpertModuleNo'][$key]) && !empty($params['geneXpertModuleNo'][$key]) ? $params['geneXpertModuleNo'][$key] : null,
                 'test_date' => Pt_Commons_DateUtility::isoDateFormat($params['dateTested'][$key] ?? ''),
                 'tester_name' => isset($params['testerName'][$key]) && !empty($params['testerName'][$key]) ? $params['testerName'][$key] : null,
-                'error_code' => isset($params['errCode'][$key]) && !empty($params['errCode'][$key]) ? $params['errCode'][$key] : null
+                'error_code' => isset($params['errCode'][$key]) && !empty($params['errCode'][$key]) ? $params['errCode'][$key] : null,
             ];
             if (!empty($params['isPtTestNotPerformed']) && $params['isPtTestNotPerformed'] === 'yes') {
                 /* To skip field to save while PT test not performed */
@@ -67,7 +66,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             }
             /* Check if assay xpert or ultra */
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where("id = " . $params['assayName']);
+            $sQuery = $db->select()->from('r_tb_assay', 'short_name')->where('id = ' . $params['assayName']);
             $assayName = $db->fetchRow($sQuery);
             if (isset($assayName['short_name']) && !empty($assayName['short_name']) && $assayName['short_name'] == 'xpert-mtb-rif') {
                 $data['spc_xpert'] = $params['spc'][$key] ?? null;
@@ -81,7 +80,7 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             } else {
                 $data['updated_by'] = $authNameSpace->dm_id;
                 $data['updated_on'] = new Zend_Db_Expr(self::NOW);
-                $this->update($data, "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                $this->update($data, 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
             }
         }
     }
@@ -113,8 +112,8 @@ class Application_Model_DbTable_ResponseTb extends Zend_Db_Table_Abstract
             'calculated_score' => '',
             'error_code' => '',
             'updated_by' => $authNameSpace->dm_id,
-            'updated_on' => new Zend_Db_Expr(self::NOW)
+            'updated_on' => new Zend_Db_Expr(self::NOW),
         ];
-        return $this->update($data, "shipment_map_id = " . $mapId);
+        return $this->update($data, 'shipment_map_id = ' . $mapId);
     }
 }

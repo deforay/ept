@@ -2,7 +2,6 @@
 
 class Reports_FinalizeController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -105,7 +104,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
         $evalService = new Application_Service_Evaluation();
 
         if (!$this->hasParam('sid')) {
-            $this->redirect("/reports/finalize/");
+            $this->redirect('/reports/finalize/');
             return;
         }
 
@@ -121,7 +120,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
         $shipmentService = new Application_Service_Shipments();
         $header = $evalService->getFinalizedShipmentHeader($id);
         if (empty($header)) {
-            $this->redirect("/reports/finalize/");
+            $this->redirect('/reports/finalize/');
             return;
         }
         $this->view->shipment = [$header];
@@ -144,7 +143,7 @@ class Reports_FinalizeController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $shipmentService->replaceSummaryReport($params);
-            $this->redirect("/reports/finalize/replace-summary-report/id/" . base64_encode($params['schipmentId']));
+            $this->redirect('/reports/finalize/replace-summary-report/id/' . base64_encode($params['schipmentId']));
         } elseif ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));
             $this->view->shipment = $evalService->getShipmentToEvaluateReports($id, false);

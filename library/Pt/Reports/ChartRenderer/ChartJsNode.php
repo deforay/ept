@@ -381,6 +381,6 @@ class Pt_Reports_ChartRenderer_ChartJsNode implements Pt_Reports_ChartRenderer_R
 
     private function mapColors(array $colors): array
     {
-        return array_map(fn(string $c) => $this->mapColor($c), $colors);
+        return array_map(fn (string $c) => $this->mapColor($c), $colors);
     }
 }

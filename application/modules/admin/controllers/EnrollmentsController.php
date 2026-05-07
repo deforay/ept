@@ -2,7 +2,6 @@
 
 class Admin_EnrollmentsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -44,7 +43,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
             $participantService = new Application_Service_Participants();
             $this->view->enrollmentDetails = $participantService->getEnrollmentDetails($pid);
         } else {
-            $this->redirect("/admin/enrollments");
+            $this->redirect('/admin/enrollments');
         }
     }
 
@@ -56,7 +55,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
             $params = $request->getPost();
             $participants = new Application_Service_Participants();
             $participants->enrollParticipants($params);
-            $this->redirect("/admin/enrollments");
+            $this->redirect('/admin/enrollments');
         } else {
             if ($this->hasParam('scheme')) {
                 $participants = new Application_Service_Participants();
@@ -75,7 +74,7 @@ class Admin_EnrollmentsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->response = $participantService->uploadBulkEnrollment($params);
-            $this->redirect("/admin/enrollments/bulk-enrollment");
+            $this->redirect('/admin/enrollments/bulk-enrollment');
         } else {
             $scheme = new Application_Service_Schemes();
             $this->view->schemes = $scheme->getAllSchemes();

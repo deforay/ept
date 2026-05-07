@@ -24,7 +24,9 @@ class Admin_HelpController extends Zend_Controller_Action
         $topics = [];
         foreach ($catalog->all() as $meta) {
             $topic = $catalog->find($meta['slug']);
-            if ($topic !== null) $topics[] = $topic;
+            if ($topic !== null) {
+                $topics[] = $topic;
+            }
         }
         $this->view->topics = $topics;
     }

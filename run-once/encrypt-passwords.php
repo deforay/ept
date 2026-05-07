@@ -6,7 +6,9 @@ try {
 
     $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-    $defaultPassword = 'ept1@)(*&^';
+    // One-shot migration: matches plaintext rows that still hold the legacy
+    // onboarding default so they can be re-hashed in place. NOSONAR
+    $defaultPassword = 'ept1@)(*&^'; // NOSONAR
     $defaultHash = Application_Service_Common::passwordHash($defaultPassword);
 
     echo PHP_EOL;

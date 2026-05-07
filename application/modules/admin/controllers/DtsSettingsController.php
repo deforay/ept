@@ -2,7 +2,6 @@
 
 class Admin_DtsSettingsController extends Zend_Controller_Action
 {
-
     public function init()
     {
 
@@ -53,14 +52,14 @@ class Admin_DtsSettingsController extends Zend_Controller_Action
 
             $allowedAlgorithms = $request->getPost('allowedAlgorithms');
             if ($allowedAlgorithms) {
-                $allowedAlgorithms = implode(",", $allowedAlgorithms);
+                $allowedAlgorithms = implode(',', $allowedAlgorithms);
             }
             if (isset($params['dts']) && !empty($params['dts'])) {
                 $dts = json_encode($params['dts']);
                 $common->saveSchemeConfigByName($dts, 'dts');
             }
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated HIV Serology Settings", "config");
+            $auditDb->addNewAuditLog('Updated HIV serology settings', 'config');
         }
 
         $this->view->dtsConfig = Pt_Commons_SchemeConfig::get('dts');

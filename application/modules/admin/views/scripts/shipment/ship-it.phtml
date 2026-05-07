@@ -9,113 +9,56 @@
 		<br><br>
 		<div class="filter" style="display: none;">
 			<div class="row">
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="labName"><?= $this->translate->_("Institute"); ?></label>
-						<div class="col-lg-8">
-							<select id="labName" name="labName[]" multiple="multiple" title="Please enter the facility to filter the participants" class="form-control input-sm">
-								<option value=""> -- <?= $this->translate->_("Select Lab/Participant Name"); ?> --</option>
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="labName"><?= $this->translate->_("Institute"); ?></label>
+					<select id="labName" name="labName[]" multiple="multiple" title="Please enter the facility to filter the participants" class="form-control" style="width:100%">
+						<option value=""> -- <?= $this->translate->_("Select Lab/Participant Name"); ?> --</option>
+					</select>
 				</div>
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="country"><?= $this->translate->_("Country"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="country[]" id="country" multiple="multiple" title="Select one or more Country" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="country"><?= $this->translate->_("Country"); ?></label>
+					<select class="form-control" style="width:100%" name="country[]" id="country" multiple="multiple" title="Select one or more Country" data-selected-text-format="count>3"></select>
 				</div>
-
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="region"><?= $this->translate->_("Region"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="region[]" id="region" multiple="multiple" title="Select one or more Region" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="region"><?= $this->translate->_("Region"); ?></label>
+					<select class="form-control" style="width:100%" name="region[]" id="region" multiple="multiple" title="Select one or more Region" data-selected-text-format="count>3"></select>
 				</div>
-			</div>
-			<br>
-			<div class="row">
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="state"><?= $this->translate->_("State"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="state"><?= $this->translate->_("State"); ?></label>
+					<select class="form-control" style="width:100%" name="state[]" id="state" multiple="multiple" title="Select one or more State" data-selected-text-format="count>3"></select>
 				</div>
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="district"><?= $this->translate->_("District"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="district[]" id="district" multiple="multiple" title="Select one or more District" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="district"><?= $this->translate->_("District"); ?></label>
+					<select class="form-control" style="width:100%" name="district[]" id="district" multiple="multiple" title="Select one or more District" data-selected-text-format="count>3"></select>
 				</div>
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="city"><?= $this->translate->_("City"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="city"><?= $this->translate->_("City"); ?></label>
+					<select class="form-control" style="width:100%" name="city[]" id="city" multiple="multiple" title="Select one or more City" data-selected-text-format="count>3"></select>
+				</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="networkTier"><?= $this->translate->_("Network"); ?></label>
+					<select class="form-control" style="width:100%" name="network[]" id="networkTier" multiple="multiple" title="Select one or more Network" data-selected-text-format="count>3"></select>
+				</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
+					<select class="form-control" style="width:100%" name="affiliation[]" id="affiliation" multiple="multiple" title="Select one or more Affiliation" data-selected-text-format="count>3"></select>
+				</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="siteType"><?= $this->translate->_("Site Type"); ?></label>
+					<select class="form-control" style="width:100%" name="siteType[]" id="siteType" multiple="multiple" title="Select one or more Site Type" data-selected-text-format="count>3"></select>
+				</div>
+				<div class="col-lg-4 col-md-6 form-group">
+					<label for="enrolledPrograms"><?= $this->translate->_("Enrolled Programs"); ?></label>
+					<select class="form-control" style="width:100%" name="enrolledPrograms[]" id="enrolledPrograms" multiple="multiple" title="Select one or more Program" data-selected-text-format="count>3"></select>
 				</div>
 			</div>
-			<br>
 			<div class="row">
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="networkTier"><?= $this->translate->_("Network"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="network[]" id="networkTier" multiple="multiple" title="Select one or more Network" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="affiliation"><?= $this->translate->_("Affiliation"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="affiliation[]" id="affiliation" multiple="multiple" title="Select one or more Affiliation" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4" style="float:right;">
+				<div class="col-lg-12 text-right">
 					<input class="btn btn-danger btn-sm" type="button" onclick="fetchParticipants('filter')" value="<?= $this->translate->_("Filter"); ?>" />
 					<input class="btn btn-success btn-sm" type="reset" onclick="fetchParticipants('reset')" value="<?= $this->translate->_("Reset"); ?>" />
 				</div>
 			</div>
-			<br>
-			<div class="row">
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="siteType"><?= $this->translate->_("Site Type"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="siteType[]" id="siteType" multiple="multiple" title="Select one or more Site Type" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-4">
-					<div class="form-group">
-						<label class="col-lg-4 control-label" for="enrolledPrograms"><?= $this->translate->_("Enrolled Programs"); ?></label>
-						<div class="col-lg-8">
-							<select class="form-control" style="width:100%" name="enrolledPrograms[]" id="enrolledPrograms" multiple="multiple" title="Select one or more Program" data-selected-text-format="count>3">
-							</select>
-						</div>
-					</div>
-				</div>
-			</div>
-			<hr><br>
+			<hr>
 		</div>
 		<p><?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>
 		<div class="row">
@@ -353,61 +296,36 @@
 	}
 
 	function fetchParticipants($type) {
-
-		var shipId = $("#shipmentId").val();
-		var stateId = [$("#state").val()].join(',');
-		var cityId = [$("#city").val()].join(',');
-		var pId = [$("#labName").val()].join(',');
-		var countryId = [$("#country").val()].join(',');
-		var regionId = [$("#region").val()].join(',');
-		var districtId = [$("#district").val()].join(',');
-		var networkId = [$("#networkTier").val()].join(',');
-		var affiliationId = [$("#affiliation").val()].join(',');
-		var siteTypeId = [$("#siteType").val()].join(',');
-		var enrolledProgramsId = [$("#enrolledPrograms").val()].join(',');
 		$.blockUI();
+		var payload = {
+			sid: $("#shipmentId").val(),
+			format: "html"
+		};
 		if ($type == 'filter') {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-					sid: shipId,
-					selectedStates: stateId,
-					selectedCities: cityId,
-					choosenPid: pId,
-					selectedCountries: countryId,
-					selectedRegions: regionId,
-					selectedDistricts: districtId,
-					selectedNetworks: networkId,
-					selectedAffiliations: affiliationId,
-					selectedSiteTypes: siteTypeId,
-					selectedEnrolledPrograms: enrolledProgramsId,
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					$("#participants").html(data);
-					VirtualDualList.get('#participants').reload();
-				});
-		} else {
-			$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", {
-					sid: shipId,
-					selectedStates: '',
-					selectedCities: '',
-					selectedCountries: '',
-					selectedRegions: '',
-					selectedDistricts: '',
-					selectedNetworks: '',
-					selectedAffiliations: '',
-					selectedSiteTypes: '',
-					selectedEnrolledPrograms: '',
-					format: "html"
-				},
-				function(data) {
-					$.unblockUI();
-					$("#participants").html(data);
-					VirtualDualList.get('#participants').reload();
-				});
+			// JSON-encode all filter values into a single POST var to avoid
+			// PHP's max_input_vars truncating large multi-selects.
+			payload.filters = JSON.stringify({
+				choosenPid: $("#labName").val() || [],
+				selectedCountries: $("#country").val() || [],
+				selectedRegions: $("#region").val() || [],
+				selectedStates: $("#state").val() || [],
+				selectedDistricts: $("#district").val() || [],
+				selectedCities: $("#city").val() || [],
+				selectedNetworks: $("#networkTier").val() || [],
+				selectedAffiliations: $("#affiliation").val() || [],
+				selectedSiteTypes: $("#siteType").val() || [],
+				selectedEnrolledPrograms: $("#enrolledPrograms").val() || []
+			});
+		}
+		$.post("<?php echo $this->url(array('module' => 'admin', 'controller' => 'shipment', 'action' => 'get-participants'), 'default', true); ?>", payload,
+			function(data) {
+				$.unblockUI();
+				$("#participants").html(data);
+				VirtualDualList.get('#participants').reload();
+			});
+		if ($type != 'filter') {
 			clearFilters();
 		}
-
 	}
 
 	function getEnrollmentParticipantsList() {

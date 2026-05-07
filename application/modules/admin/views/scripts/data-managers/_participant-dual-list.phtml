@@ -347,9 +347,10 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
         var ids = ParticipantDualList.getSelectedIds();
         var $holder = $('#pdl-hidden-inputs');
         $holder.empty();
-        for (var i = 0; i < ids.length; i++) {
-            $holder.append('<input type="hidden" name="allparticipant[]" value="' + ids[i] + '" />');
-        }
+        // Single JSON-encoded hidden input avoids PHP max_input_vars
+        // truncating the list when many participants are selected.
+        $holder.append('<input type="hidden" name="allparticipant" value="' +
+            $('<div/>').text(JSON.stringify(ids)).html() + '" />');
         return ids.length;
     }
 

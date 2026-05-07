@@ -1,16 +1,15 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Recency
 {
-
     private $db = null;
     public $failureReason = [];
     public function __construct($db = null)
@@ -33,17 +32,15 @@ class Application_Model_Recency
             $possibleResults['result_code'] = $possibleResults['id'];
         }
 
-
         $recencyDocumentationScore = Pt_Commons_SchemeConfig::get('recency.documentationScore') ?? 10;
         $recencyPassPercentage = Pt_Commons_SchemeConfig::get('recency.passPercentage') ?? 100;
-
 
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
+            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTime($createdOnUser[0]);
             } else {
                 $createdOn = new DateTime('1970-01-01');
@@ -57,14 +54,13 @@ class Application_Model_Recency
                 $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
                 $results = $schemeService->getRecencySamples($shipmentId, $shipment['participant_id']);
 
-
                 $documentationScoreArray = $this->getDocumentationScore($results, $attributes, $shipmentAttributes);
                 $documentationScore = $documentationScoreArray['documentationScore'];
 
                 $totalScore = 0;
                 $maxScore = 0;
-                $mandatoryResult = "";
-                $scoreResult = "";
+                $mandatoryResult = '';
+                $scoreResult = '';
                 $this->failureReason = [];
 
                 foreach ($results as $result) {
@@ -77,23 +73,22 @@ class Application_Model_Recency
                     // matching reported and reference results
                     if (isset($result['reported_result']) && $result['reported_result'] != null) {
                         if ($result['reference_result'] == $result['reported_result']) {
-                            $score = "Pass";
+                            $score = 'Pass';
                         } else {
                             if ($result['sample_score'] > 0) {
-                                $this->failureReason[] = array(
-                                    'warning' => "Final interpretation for sample <strong>" . $result['sample_label'] . "</strong> reported wrongly",
-                                    'correctiveAction' => "Final interpretation not matching with the expected results. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately."
-                                );
+                                $this->failureReason[] = [
+                                    'warning' => 'Final interpretation for sample <strong>' . $result['sample_label'] . '</strong> reported wrongly',
+                                    'correctiveAction' => 'Final interpretation not matching with the expected results. Please review the RTRI SOP and/or job aide to ensure test procedures are followed and  interpretation of results are reported accurately.',
+                                ];
                             }
-                            $score = "Fail";
+                            $score = 'Fail';
                         }
                     } else {
-                        $score = "Fail";
+                        $score = 'Fail';
                     }
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
                     }
-
 
                     // CHECK 2: RTRI Algorithm Correctness
                     $isAlgoWrong = false;
@@ -131,27 +126,25 @@ class Application_Model_Recency
                         }
                     }
                     if ($isAlgoWrong) {
-                        $score = "Fail";
-                        $this->failureReason[] = array(
-                            'warning' => "Algorithm reported wrongly for sample <strong>" . $result['sample_label'] . "</strong>",
-                            'correctiveAction' => "Identification of the presence or absence of RTRI lines/bands do not match the Final Interpretation reported. Please follow the RTRI SOP and/or job aide to report the presence or absence of RTRI lines/bands correctly."
-                        );
+                        $score = 'Fail';
+                        $this->failureReason[] = [
+                            'warning' => 'Algorithm reported wrongly for sample <strong>' . $result['sample_label'] . '</strong>',
+                            'correctiveAction' => 'Identification of the presence or absence of RTRI lines/bands do not match the Final Interpretation reported. Please follow the RTRI SOP and/or job aide to report the presence or absence of RTRI lines/bands correctly.',
+                        ];
                     }
 
-                    if (0 == $result['control'] && $score == "Pass") {
+                    if (0 == $result['control'] && $score == 'Pass') {
                         $totalScore += $result['sample_score'];
                     }
 
-
-                    if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == "" || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
-                        $this->db->update('response_result_recency', array('calculated_score' => "Fail"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    if ($score == 'Fail' || (!isset($result['reported_result']) || $result['reported_result'] == '' || $result['reported_result'] == null) || ($result['reference_result'] != $result['reported_result'])) {
+                        $this->db->update('response_result_recency', ['calculated_score' => 'Fail'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
                     } else {
-                        $this->db->update('response_result_recency', array('calculated_score' => "Pass"), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        $this->db->update('response_result_recency', ['calculated_score' => 'Pass'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
                     }
                 }
 
-
-                $configuredDocScore = ((isset($recencyDocumentationScore) && $recencyDocumentationScore != "" && $recencyDocumentationScore != null) ? $recencyDocumentationScore : 10);
+                $configuredDocScore = ((isset($recencyDocumentationScore) && $recencyDocumentationScore != '' && $recencyDocumentationScore != null) ? $recencyDocumentationScore : 10);
 
                 // Response Score
                 if ($maxScore == 0 || $totalScore == 0) {
@@ -163,10 +156,10 @@ class Application_Model_Recency
                 $grandTotal = ($responseScore + $documentationScore);
                 if ($grandTotal < $recencyPassPercentage) {
                     $scoreResult = 'Fail';
-                    $this->failureReason[] = array(
-                        'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $recencyPassPercentage . "</strong>)",
-                        'correctiveAction' => "Participant did not meet the score criteria (Participant Score is <strong>" . $grandTotal . "</strong> and Required Score is <strong>" . $recencyPassPercentage . "</strong>)",
-                    );
+                    $this->failureReason[] = [
+                        'warning' => 'Participant did not meet the score criteria (Participant Score is <strong>' . $grandTotal . '</strong> and Required Score is <strong>' . $recencyPassPercentage . '</strong>)',
+                        'correctiveAction' => 'Participant did not meet the score criteria (Participant Score is <strong>' . $grandTotal . '</strong> and Required Score is <strong>' . $recencyPassPercentage . '</strong>)',
+                    ];
                     $correctiveActionList[] = 15;
                 } else {
                     $scoreResult = 'Pass';
@@ -175,7 +168,6 @@ class Application_Model_Recency
                 if (!empty($documentationScoreArray['failureReasons'])) {
                     $this->failureReason = array_merge($this->failureReason, $documentationScoreArray['failureReasons']);
                 }
-
 
                 // echo "<pre>";
                 // var_dump($this->failureReason);
@@ -190,9 +182,9 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['display_result'] = '';
                     //$shipmentResult[$counter]['is_followup'] = 'yes';
                     $shipmentResult[$counter]['is_excluded'] = 'yes';
-                    $this->failureReason[] = array(
-                        'warning' => "Excluded from Evaluation"
-                    );
+                    $this->failureReason[] = [
+                        'warning' => 'Excluded from Evaluation',
+                    ];
                     $finalResult = 3;
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 } else {
@@ -210,36 +202,35 @@ class Application_Model_Recency
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
-
-                    $fRes = $this->db->fetchCol($this->db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+                    $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $this->failureReason = json_encode($this->failureReason);
                 }
                 /* Manual result override changes */
                 if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                    $sql = $this->db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                    $sql = $this->db->select()->from('shipment_participant_map')->where('map_id = ?', $shipment['map_id']);
                     $shipmentOverall = $this->db->fetchRow($sql);
                     if (!empty($shipmentOverall)) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                         $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $this->db->fetchCol($this->db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $this->db->fetchCol($this->db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
-                        $nofOfRowsUpdated = $this->db->update('shipment_participant_map', array('shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']), "map_id = " . $shipment['map_id']);
+                        $nofOfRowsUpdated = $this->db->update('shipment_participant_map', ['shipment_score' => $shipmentOverall['shipment_score'], 'documentation_score' => $shipmentOverall['documentation_score'], 'final_result' => $shipmentOverall['final_result']], 'map_id = ' . $shipment['map_id']);
                     }
                 } else {
                     // let us update the total score in DB
-                    $this->db->update('shipment_participant_map', array('shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason), "map_id = " . $shipment['map_id']);
+                    $this->db->update('shipment_participant_map', ['shipment_score' => $responseScore, 'documentation_score' => $documentationScore, 'final_result' => $finalResult, 'failure_reason' => $this->failureReason], 'map_id = ' . $shipment['map_id']);
                 }
                 //$counter++;
             } else {
-                $failureReason = array(
-                    'warning' => "Response was submitted after the last response date."
-                );
-                $this->db->update('shipment_participant_map', array('failure_reason' => json_encode($failureReason)), "map_id = " . $shipment['map_id']);
+                $failureReason = [
+                    'warning' => 'Response was submitted after the last response date.',
+                ];
+                $this->db->update('shipment_participant_map', ['failure_reason' => json_encode($failureReason)], 'map_id = ' . $shipment['map_id']);
             }
             $counter++;
         }
@@ -250,12 +241,10 @@ class Application_Model_Recency
             $averageScore = 0;
         }
 
-
-        $this->db->update('shipment', array('max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
+        $this->db->update('shipment', ['max_score' => $maxScore, 'average_score' => $averageScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
 
         return $shipmentResult;
     }
-
 
     // public function getSampleScore()
     // {
@@ -274,11 +263,9 @@ class Application_Model_Recency
         $documentationScore = 0;
         $documentationPercentage = !empty($recencyDocumentationScore) ? $recencyDocumentationScore : 10;
 
-
         if (empty($shipmentAttributes['sampleType'])) {
             $shipmentAttributes['sampleType'] = 'dried'; // in case sampleType is not set, we will treat it as dried
         }
-
 
         if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
             // for Dried Samples, we will have rehydration as one of the documentation scores
@@ -293,33 +280,33 @@ class Application_Model_Recency
         if (isset($results[0]['shipment_receipt_date']) && strtolower($results[0]['shipment_receipt_date']) != '') {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $failureReasonsArray[] = array(
-                'warning' => "Panel Receipt date not provided",
-                'correctiveAction' => "Review and refer to SOP for testing. Panel Receipt Date needs to be provided."
-            );
+            $failureReasonsArray[] = [
+                'warning' => 'Panel Receipt date not provided',
+                'correctiveAction' => 'Review and refer to SOP for testing. Panel Receipt Date needs to be provided.',
+            ];
         }
 
         //D.3
         if (isset($shipmentAttributes['sampleType']) && $shipmentAttributes['sampleType'] == 'dried') {
             // Only for Dried Samples we will check Sample Rehydration
-            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != "") {
+            if (isset($attributes['sample_rehydration_date']) && trim($attributes['sample_rehydration_date']) != '') {
                 $documentationScore += $documentationScorePerItem;
             } else {
-                $failureReasonsArray[] = array(
-                    'warning' => "Specimen Rehydration date not provided",
-                    'correctiveAction' => "Review and refer to National SOP for testing.  Specimen Rehydration date needs to be provided."
-                );
+                $failureReasonsArray[] = [
+                    'warning' => 'Specimen Rehydration date not provided',
+                    'correctiveAction' => 'Review and refer to National SOP for testing.  Specimen Rehydration date needs to be provided.',
+                ];
             }
         }
 
         //D.5
-        if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != "") {
+        if (isset($results[0]['shipment_test_date']) && trim($results[0]['shipment_test_date']) != '') {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $failureReasonsArray[] = array(
-                'warning' => "Panel test date not provided",
-                'correctiveAction' => "Review and refer to National SOP for testing. Panel test date needs to be provided."
-            );
+            $failureReasonsArray[] = [
+                'warning' => 'Panel test date not provided',
+                'correctiveAction' => 'Review and refer to National SOP for testing. Panel test date needs to be provided.',
+            ];
         }
 
         //D.7
@@ -336,25 +323,25 @@ class Application_Model_Recency
 
             // we can allow testers to test upto sampleRehydrateDays or sampleRehydrateDays + 1
             if (empty($attributes['sample_rehydration_date']) || $interval->days < $recencySampleRehydrateDays || $interval->days > ($recencySampleRehydrateDays + 1)) {
-                $failureReason[] = array(
-                    'warning' => "Testing not done within specified time of rehydration as per SOP.",
-                    'correctiveAction' => "Review and refer to National SOP for testing. Testing should be done within specified time of rehydration."
-                );
+                $failureReason[] = [
+                    'warning' => 'Testing not done within specified time of rehydration as per SOP.',
+                    'correctiveAction' => 'Review and refer to National SOP for testing. Testing should be done within specified time of rehydration.',
+                ];
             } else {
                 $documentationScore += $documentationScorePerItem;
             }
         }
 
         //D.8
-        if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != "") {
+        if (isset($results[0]['supervisor_approval']) && strtolower($results[0]['supervisor_approval']) == 'yes' && trim($results[0]['participant_supervisor']) != '') {
             $documentationScore += $documentationScorePerItem;
         } else {
-            $failureReasonsArray[] = array(
-                'warning' => "Supervisor approval not recorded",
-                'correctiveAction' => "Review and refer to National SOP for testing. Supervisor approval is mandatory",
-            );
+            $failureReasonsArray[] = [
+                'warning' => 'Supervisor approval not recorded',
+                'correctiveAction' => 'Review and refer to National SOP for testing. Supervisor approval is mandatory',
+            ];
         }
-        return array('documentationScore' => $documentationScore, 'failureReasons' => $failureReasonsArray);
+        return ['documentationScore' => $documentationScore, 'failureReasons' => $failureReasonsArray];
     }
 
     public function generateRecencyExcelReport($shipmentId)
@@ -375,77 +362,75 @@ class Application_Model_Recency
                 'outline' => [
                     'style' => Border::BORDER_THIN,
                 ],
-            ]
+            ],
         ];
         $patientResponseColor = [
             'fill' => [
                 'type' => Fill::FILL_SOLID,
-                'color' => ['rgb' => '18bc9c']
-            ]
+                'color' => ['rgb' => '18bc9c'],
+            ],
         ];
         $referenceColor = [
             'fill' => [
                 'type' => Fill::FILL_SOLID,
-                'color' => ['rgb' => 'F0E68C']
-            ]
+                'color' => ['rgb' => 'F0E68C'],
+            ],
         ];
 
         $query = $db->select()->from('shipment')
-            ->where("shipment_id = ?", $shipmentId);
+            ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
-
-        $refQuery = $db->select()->from(array('refRes' => 'reference_result_recency'))
-            ->joinLeft(array('pr' => 'r_possibleresult'), "refRes.reference_result=pr.id")
-            ->where("refRes.shipment_id = ?", $shipmentId);
+        $refQuery = $db->select()->from(['refRes' => 'reference_result_recency'])
+            ->joinLeft(['pr' => 'r_possibleresult'], 'refRes.reference_result=pr.id')
+            ->where('refRes.shipment_id = ?', $shipmentId);
         $refResult = $db->fetchAll($refQuery);
-
 
         $firstSheet = new Worksheet($excel, 'Recency PT Results');
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
-        $firstSheet->getCell('A1')->setValue(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('A1')->setValue(html_entity_decode('Lab ID', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('A1:A2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('B1:B2');
-        $firstSheet->getCell('B1')->setValue(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('B1')->setValue(html_entity_decode('Lab Name', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('B1:B2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->getCell('C1')->setValue(html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('C1')->setValue(html_entity_decode('Institute', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('C1:C2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->getCell('D1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('D1')->setValue(html_entity_decode('Department', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('D1:D2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->getCell('E1')->setValue(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('E1')->setValue(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('E1:E2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('F1')->setValue(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('F1:F2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('G1')->setValue(html_entity_decode('Sample Rehydration Date', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('G1:G2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode("Recency Assay", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('H1')->setValue(html_entity_decode('Recency Assay', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('H1:H2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->getCell('I1')->setValue(html_entity_decode("Recency Assay Lot No", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('I1')->setValue(html_entity_decode('Recency Assay Lot No', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('I1:I2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->getCell('J1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('J1')->setValue(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('J1:J2')->applyFromArray($borderStyle, true);
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell('K1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle('K1:K2')->applyFromArray($borderStyle, true);
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
@@ -464,7 +449,7 @@ class Application_Model_Recency
         $cellName2 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount - 2) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode('PARTICIPANT RESPONSE', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '1')->applyFromArray($borderStyle, true);
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
@@ -480,22 +465,22 @@ class Application_Model_Recency
         $cellName4 = $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount - 2) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode('REFERENCE RESULTS', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '1')->applyFromArray($borderStyle, true);
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
 
         $firstSheet->setTitle('Recency PT Results', true);
 
-        $queryOverAll = $db->select()->from(array('s' => 'shipment'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
-            ->joinLeft(array('p' => 'participant'), "p.participant_id = spm.participant_id")
-            ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
-            ->where("s.shipment_id = ?", $shipmentId);
+        $queryOverAll = $db->select()->from(['s' => 'shipment'])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id')
+            ->joinLeft(['p' => 'participant'], 'p.participant_id = spm.participant_id')
+            ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
+            ->where('s.shipment_id = ?', $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $queryOverAll = $queryOverAll
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -508,25 +493,25 @@ class Application_Model_Recency
             //Zend_Debug::dump($rowOverAll);
             $row++;
 
-            $queryResponse = $db->select()->from(array('res' => 'response_result_recency'))
-                ->joinLeft(array('pr' => 'r_possibleresult'), "res.reported_result=pr.id")
-                ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+            $queryResponse = $db->select()->from(['res' => 'response_result_recency'])
+                ->joinLeft(['pr' => 'r_possibleresult'], 'res.reported_result=pr.id')
+                ->where('res.shipment_map_id = ?', $rowOverAll['map_id']);
             $resultResponse = $db->fetchAll($queryResponse);
 
-            $rqResponse = $db->select()->from(array('ref' => 'reference_result_recency'))
-                ->joinLeft(array('pr' => 'r_possibleresult'), "ref.reference_result=pr.id")
-                ->where("ref.shipment_id = ?", $shipmentId);
+            $rqResponse = $db->select()->from(['ref' => 'reference_result_recency'])
+                ->joinLeft(['pr' => 'r_possibleresult'], 'ref.reference_result=pr.id')
+                ->where('ref.shipment_id = ?', $shipmentId);
             $refResponse = $db->fetchAll($rqResponse);
 
             $attributes = json_decode($rowOverAll['attributes'], true);
-            $extraction = (array_key_exists($attributes['recency_assay'], $assayList)) ? $assayList[$attributes['recency_assay']] : "";
+            $extraction = (array_key_exists($attributes['recency_assay'], $assayList)) ? $assayList[$attributes['recency_assay']] : '';
             $assayLot = $attributes['recency_assay_lot_no'];
-            $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";
+            $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : '';
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(1) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(2) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . ' ' . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(3) . $row)
                 ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
@@ -545,8 +530,8 @@ class Application_Model_Recency
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($assayLot, ENT_QUOTES, 'UTF-8'));
 
-            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
-            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
+            $receiptDate = ($rowOverAll['shipment_receipt_date'] != '' && $rowOverAll['shipment_receipt_date'] != '0000-00-00' && $rowOverAll['shipment_receipt_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : '';
+            $testDate = ($rowOverAll['shipment_test_date'] != '' && $rowOverAll['shipment_test_date'] != '0000-00-00' && $rowOverAll['shipment_test_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : '';
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
@@ -564,27 +549,27 @@ class Application_Model_Recency
 
         //<------------ Participant List Details Start -----
 
-        $headings = array('Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email');
+        $headings = ['Participant Code', 'Participant Name', 'Institute Name', 'Department', 'Country', 'Address', 'Province', 'District', 'City', 'Facility Telephone', 'Email'];
 
         $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Participant List');
         $excel->addSheet($sheet, 1);
         $sheet->setTitle('Participant List', true);
 
-        $sql = $db->select()->from(array('s' => 'shipment'), array('s.shipment_id', 's.shipment_code', 's.number_of_samples'))
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-            ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
-            ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-            ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-            ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-            ->where("s.shipment_id = ?", $shipmentId)
-            ->group(array('sp.map_id'));
+        $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment'])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
+            ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
+            ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmp.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['iso_name'])
+            ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
+            ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
+            ->where('s.shipment_id = ?', $shipmentId)
+            ->group(['sp.map_id']);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sql = $sql
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         $shipmentResult = $db->fetchAll($sql);
         $colNo = 0;
@@ -606,12 +591,11 @@ class Application_Model_Recency
             $currentRow += 1;
             foreach ($shipmentResult as $key => $aRow) {
                 if ($result['scheme_type'] == 'recency') {
-                    $resQuery = $db->select()->from(array('rrr' => 'response_result_recency'))
-                        ->joinLeft(array('r' => 'r_possibleresult'), 'r.id=rrr.reported_result', array('finalResult' => 'r.response'))
-                        ->where("rrr.shipment_map_id = ?", $aRow['map_id']);
+                    $resQuery = $db->select()->from(['rrr' => 'response_result_recency'])
+                        ->joinLeft(['r' => 'r_possibleresult'], 'r.id=rrr.reported_result', ['finalResult' => 'r.response'])
+                        ->where('rrr.shipment_map_id = ?', $aRow['map_id']);
                     $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                 }
-
 
                 $sheet->getCell(Coordinate::stringFromColumnIndex(1) . $currentRow)
                     ->setValueExplicit(ucwords($aRow['unique_identifier']));
@@ -649,7 +633,7 @@ class Application_Model_Recency
 
         //------------- Participant List Details End ------>
         //<-------- Second sheet start
-        $reportHeadings = array('Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date');
+        $reportHeadings = ['Participant Code', 'Participant Name', 'Point of Contact', 'Region', 'Shipment Receipt Date', 'Sample Rehydration Date', 'Testing Date'];
 
         if ($result['scheme_type'] == 'recency') {
             foreach (range(0, $result['number_of_samples']) as $dummy) {
@@ -663,7 +647,6 @@ class Application_Model_Recency
         $sheet->setTitle('Results Reported', true);
         $sheet->getDefaultColumnDimension()->setWidth(24);
         $sheet->getDefaultRowDimension()->setRowHeight(18);
-
 
         $colNo = 0;
         $currentRow = 2;
@@ -686,7 +669,7 @@ class Application_Model_Recency
 
             $cellName = $sheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)
                 ->getColumn();
-            $sheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
+            $sheet->getStyle($cellName . '3')->applyFromArray($borderStyle, true);
 
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
@@ -697,10 +680,10 @@ class Application_Model_Recency
                         $secondCellName = $sheet->getCell(Coordinate::stringFromColumnIndex(($col + 3)) . 1)
                             ->getColumn();
 
-                        $sheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-                        $sheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-                        $sheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
-                        $sheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+                        $sheet->mergeCells($firstCellName . '1:' . $secondCellName . '1');
+                        $sheet->getStyle($firstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+                        $sheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
+                        $sheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
                         $sheet->getCell(Coordinate::stringFromColumnIndex($col + 1) . 1)
                             ->setValueExplicit(html_entity_decode($sample, ENT_QUOTES, 'UTF-8'));
 
@@ -736,10 +719,10 @@ class Application_Model_Recency
             $colNo++;
         }
 
-        $sheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $sheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle('A2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle('B2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle('C2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $sheet->getStyle('D2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //$sheet->getStyle("D2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
         //$sheet->getStyle("E2")->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setARGB('#A7A7A7');
@@ -756,7 +739,7 @@ class Application_Model_Recency
         $sheetThree->setTitle('Panel Score', true);
         $sheetThree->getDefaultColumnDimension()->setWidth(20);
         $sheetThree->getDefaultRowDimension()->setRowHeight(18);
-        $panelScoreHeadings = array('Participant Code', 'Participant Name');
+        $panelScoreHeadings = ['Participant Code', 'Participant Name'];
         $panelScoreHeadings = $this->addRecencySampleNameInArray($shipmentId);
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
         $sheetThreeColNo = 0;
@@ -794,7 +777,7 @@ class Application_Model_Recency
         //$docScoreSheet->getDefaultRowDimension()->setRowHeight(20);
         $docScoreSheet->getDefaultRowDimension()->setRowHeight(25);
 
-        $docScoreHeadings = array('Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %');
+        $docScoreHeadings = ['Participant Code', 'Participant Name', 'Supervisor signature', 'Panel Receipt Date', 'Rehydration Date', 'Tested Date', 'Rehydration Test In Specified Time', 'Documentation Score %'];
 
         $docScoreSheetCol = 0;
         $docScoreRow = 1;
@@ -811,7 +794,7 @@ class Application_Model_Recency
         }
         $docScoreRow = 2;
         $secondRowcellName = $docScoreSheet->getCell(Coordinate::stringFromColumnIndex(2) . $docScoreRow);
-        $secondRowcellName->setValueExplicit(html_entity_decode("Points Breakdown", ENT_QUOTES, 'UTF-8'));
+        $secondRowcellName->setValueExplicit(html_entity_decode('Points Breakdown', ENT_QUOTES, 'UTF-8'));
         $docScoreSheet->getStyle(Coordinate::stringFromColumnIndex(2) . $docScoreRow, null, null)->getFont()->setBold(true);
         $cellName = $secondRowcellName->getColumn();
         $docScoreSheet->getStyle($cellName . $docScoreRow)->applyFromArray($borderStyle, true);
@@ -829,13 +812,12 @@ class Application_Model_Recency
         //---------- Document Score Sheet Heading (Sheet Four)------->
         //<-------- Total Score Sheet Heading (Sheet Four)-------
 
-
         $totalScoreSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'Total Score');
         $excel->addSheet($totalScoreSheet, 5);
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
+        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -874,8 +856,8 @@ class Application_Model_Recency
             foreach ($shipmentResult as $aRow) {
                 $r = 0;
                 $k = 0;
-                $rehydrationDate = "";
-                $shipmentTestDate = "";
+                $rehydrationDate = '';
+                $shipmentTestDate = '';
                 $sheetThreeCol = 0;
                 $docScoreCol = 0;
                 $totScoreCol = 0;
@@ -889,26 +871,24 @@ class Application_Model_Recency
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
-                $shipmentReceiptDate = "";
-                if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
+                $shipmentReceiptDate = '';
+                if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != '') {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
 
-                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != '' && trim($aRow['shipment_test_date']) != '0000-00-00') {
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
-                if (trim($aRow['attributes']) != "") {
+                if (trim($aRow['attributes']) != '') {
                     $attributes = json_decode($aRow['attributes'], true);
                     $sampleRehydrationDate = new Zend_Date($attributes['sample_rehydration_date']);
-                    $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes["sample_rehydration_date"]);
+                    $rehydrationDate = Pt_Commons_General::excelDateFormat($attributes['sample_rehydration_date']);
                 }
 
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['shipment_receipt_date']);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($rehydrationDate);
                 $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($shipmentTestDate);
-
-
 
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $sheetThree->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
@@ -918,32 +898,31 @@ class Application_Model_Recency
                 $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
 
-                if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != "") {
+                if (isset($shipmentReceiptDate) && trim($shipmentReceiptDate) != '') {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($documentationScorePerItem);
                 } else {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                 }
 
-                if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != "") {
+                if (isset($aRow['supervisor_approval']) && strtolower($aRow['supervisor_approval']) == 'yes' && isset($aRow['participant_supervisor']) && trim($aRow['participant_supervisor']) != '') {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($documentationScorePerItem);
                 } else {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                 }
 
-                if (isset($rehydrationDate) && trim($rehydrationDate) != "") {
+                if (isset($rehydrationDate) && trim($rehydrationDate) != '') {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($documentationScorePerItem);
                 } else {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                 }
 
-                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != '' && trim($aRow['shipment_test_date']) != '0000-00-00') {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit($documentationScorePerItem);
                 } else {
                     $docScoreSheet->getCell(Coordinate::stringFromColumnIndex($docScoreCol++) . $docScoreRow)->setValueExplicit(0);
                 }
 
-                if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
-
+                if (isset($sampleRehydrationDate) && trim($aRow['shipment_test_date']) != '' && trim($aRow['shipment_test_date']) != '0000-00-00') {
 
                     $sampleRehydrationDate = new DateTime($attributes['sample_rehydration_date']);
                     $testedOnDate = new DateTime($aRow['shipment_test_date']);
@@ -1046,10 +1025,10 @@ class Application_Model_Recency
 
         $firstName = $authNameSpace->first_name;
         $lastName = $authNameSpace->last_name;
-        $name = $firstName . " " . $lastName;
+        $name = $firstName . ' ' . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Recency excel report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog('Downloaded Recency Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 
         $excel->setActiveSheetIndex(0);
 
@@ -1062,8 +1041,8 @@ class Application_Model_Recency
     public function addRecencySampleNameInArray($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from('reference_result_recency', array('sample_label'))
-            ->where("shipment_id = ?", $shipmentId)->order("sample_id");
+        $query = $db->select()->from('reference_result_recency', ['sample_label'])
+            ->where('shipment_id = ?', $shipmentId)->order('sample_id');
         $result = $db->fetchAll($query);
         $samples = [];
         foreach ($result as $row) {

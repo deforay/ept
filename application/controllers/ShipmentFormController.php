@@ -2,7 +2,6 @@
 
 class ShipmentFormController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -58,6 +57,6 @@ class ShipmentFormController extends Zend_Controller_Action
 
         $tbModel = new Application_Model_Tb();
         $fileName = $tbModel->generateFormPDF($sID, $pID, false, false);
-        $this->redirect("/temporary/" . $fileName);
+        $this->redirect('/temporary/' . $fileName);
     }
 }

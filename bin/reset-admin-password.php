@@ -1,12 +1,13 @@
 #!/usr/bin/env php
 <?php
+
 // bin/reset-admin-password.php
 
 declare(strict_types=1);
 
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 $cliMode = php_sapi_name() === 'cli';
 
@@ -14,7 +15,7 @@ $cliMode = php_sapi_name() === 'cli';
 if (function_exists('pcntl_signal') && function_exists('pcntl_async_signals')) {
     pcntl_async_signals(true);
     pcntl_signal(SIGINT, function () {
-        echo PHP_EOL . "Password reset cancelled by user." . PHP_EOL;
+        echo PHP_EOL . 'Password reset cancelled by user.' . PHP_EOL;
         exit(130);
     });
 }
@@ -25,7 +26,7 @@ try {
     set_time_limit(0);
 
     if (!$cliMode) {
-        echo "This script can only be run from the command line." . PHP_EOL;
+        echo 'This script can only be run from the command line.' . PHP_EOL;
         exit(1);
     }
 
@@ -93,7 +94,7 @@ try {
             $status = strtolower($admin['status']) === 'active' ? '✓' : '⚠';
 
             $io->text(sprintf(
-                "[%d] %s <info>%s</info> <%s> - Status: <comment>%s</comment>",
+                '[%d] %s <info>%s</info> <%s> - Status: <comment>%s</comment>',
                 $number,
                 $status,
                 $admin['admin_name'],
@@ -148,7 +149,7 @@ try {
             exit(1);
         }
 
-        $io->success("Admin found!");
+        $io->success('Admin found!');
     } else {
         // List all admins and let user pick
         $admins = getAllAdmins($db);
@@ -161,7 +162,7 @@ try {
         if (count($admins) === 1) {
             $selectedUser = $admins[0];
             $io->text(sprintf(
-                "Only one admin found: <info>%s</info> (%s)",
+                'Only one admin found: <info>%s</info> (%s)',
                 $selectedUser['admin_name'],
                 $selectedUser['primary_email']
             ));
@@ -308,10 +309,10 @@ try {
     exit(0);
 } catch (Throwable $e) {
     if (isset($io)) {
-        $io->error("Password reset failed: " . $e->getMessage());
-        $io->text("<info>Please check logs for details.</info>");
+        $io->error('Password reset failed: ' . $e->getMessage());
+        $io->text('<info>Please check logs for details.</info>');
     } else {
-        echo "Fatal error: " . $e->getMessage() . PHP_EOL;
+        echo 'Fatal error: ' . $e->getMessage() . PHP_EOL;
     }
 
     exit(1);

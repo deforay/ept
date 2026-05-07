@@ -2,7 +2,6 @@
 
 class Reports_CommonController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -98,8 +97,6 @@ class Reports_CommonController extends Zend_Controller_Action
         }
     }
 
-
-
     public function getAjaxDropDownsAction()
     {
         $this->_helper->layout()->disableLayout();
@@ -147,7 +144,7 @@ class Reports_CommonController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isGet()) {
             $commonService = new Application_Service_Common();
-            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam("q"));
+            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam('q'));
         }
     }
 }

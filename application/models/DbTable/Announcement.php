@@ -7,12 +7,12 @@ class Application_Model_DbTable_Announcement extends Zend_Db_Table_Abstract
     public function saveNewAnnouncement($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        return $this->insert(array(
+        return $this->insert([
             'subject'       => $params['subject'],
             'message'       => $params['message'],
-            'participants'  => implode(",", $params['participants']),
+            'participants'  => implode(',', $params['participants']),
             'created_on'    => new Zend_Db_Expr('now()'),
-            'created_by'    => $authNameSpace->admin_id
-        ));
+            'created_by'    => $authNameSpace->admin_id,
+        ]);
     }
 }

@@ -2,7 +2,6 @@
 
 class Admin_AnnouncementController extends Zend_Controller_Action
 {
-
     public function init()
     {
 
@@ -32,14 +31,20 @@ class Admin_AnnouncementController extends Zend_Controller_Action
             $params = $request->getPost();
             $service = new Application_Service_Announcement();
             $service->composeNewAnnouncement($params);
-            $this->redirect("/admin/announcement");
+
+            $subject = trim((string) ($params['subject'] ?? ''));
+            $detail = $subject !== '' ? " - \"{$subject}\"" : '';
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Composed announcement{$detail}", 'announcement');
+
+            $this->redirect('/admin/announcement');
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
         if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $this->view->schemeDetails = $scheme->getScheme($data["scheme_type"]);
+            $this->view->schemeDetails = $scheme->getScheme($data['scheme_type']);
         }
         $participantService = new Application_Service_Participants();
         $this->view->participantCity    = $participantService->getUniqueCity();

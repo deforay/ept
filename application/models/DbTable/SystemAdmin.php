@@ -2,10 +2,8 @@
 
 class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'system_admin';
     protected $_primary = 'admin_id';
-
 
     public function getAllAdmin($parameters)
     {
@@ -14,43 +12,39 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('first_name', 'last_name', 'primary_email', 'phone');
+        $aColumns = ['first_name', 'last_name', 'primary_email', 'phone'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -61,28 +55,25 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['a' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -98,7 +89,6 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -113,13 +103,12 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
-
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];
@@ -138,10 +127,10 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function addSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : NULL;
-        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : NULL;
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : null;
+        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : null;
         $password = Application_Service_Common::passwordHash($params['password']);
-        $data = array(
+        $data = [
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
             'primary_email' => $params['primaryEmail'],
@@ -151,17 +140,17 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'status' => $params['status'],
             'privileges' => (isset($params['privileges']) && count($params['privileges']) > 0) ? implode(',', $params['privileges']) : '',
             'force_password_reset' => 1,
-            'scheme' => implode(",", $params['schemeId']),
+            'scheme' => implode(',', $params['schemeId']),
             'created_by' => $authNameSpace->admin_id,
-            'created_on' => new Zend_Db_Expr('now()')
-        );
+            'created_on' => new Zend_Db_Expr('now()'),
+        ];
         $adminId = $this->insert($data);
 
         if ($adminId > 0) {
-            $name = $firstName . " " . $lastName;
+            $name = $firstName . ' ' . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new admin - " . $name, "admin");
+            $auditDb->addNewAuditLog('Added a new admin - ' . $name, 'admin');
         }
 
         return $adminId;
@@ -170,7 +159,7 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function getSystemAdminDetails($adminId)
     {
         if (isset($adminId) && !empty($adminId) && is_numeric($adminId)) {
-            return $this->fetchRow($this->select()->where("admin_id = ? ", $adminId));
+            return $this->fetchRow($this->select()->where('admin_id = ? ', $adminId));
         } else {
             return null;
         }
@@ -179,9 +168,9 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
     public function updateSystemAdmin($params)
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : NULL;
-        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : NULL;
-        $data = array(
+        $firstName = isset($params['firstName']) && $params['firstName'] != '' ? $params['firstName'] : null;
+        $lastName = isset($params['lastName']) && $params['lastName'] != '' ? $params['lastName'] : null;
+        $data = [
             'first_name' => $params['firstName'],
             'last_name' => $params['lastName'],
             'primary_email' => $params['primaryEmail'],
@@ -190,29 +179,37 @@ class Application_Model_DbTable_SystemAdmin extends Zend_Db_Table_Abstract
             'status' => $params['status'],
             'language' => $params['language'],
             'updated_by' => $authNameSpace->admin_id,
-            'updated_on' => new Zend_Db_Expr('now()')
-        );
-        if (isset($params['password']) && $params['password'] != "") {
+            'updated_on' => new Zend_Db_Expr('now()'),
+        ];
+        $sensitiveChanges = [];
+        if (isset($params['password']) && $params['password'] != '') {
             $password = Application_Service_Common::passwordHash($params['password']);
             $data['password'] = $password ?? null;
             $data['force_password_reset'] = 1;
+            $sensitiveChanges[] = 'password reset';
         }
-        if (isset($params['schemeId']) && $params['schemeId'] != "") {
+        if (isset($params['schemeId']) && $params['schemeId'] != '') {
             $data['scheme'] = implode(',', $params['schemeId'] ?? []);
         }
-        if (isset($params['privileges']) && $params['privileges'] != "") {
+        if (isset($params['privileges']) && $params['privileges'] != '') {
             $data['privileges'] = implode(',', $params['privileges'] ?? []);
+            $sensitiveChanges[] = 'privileges';
         }
-        if (isset($params['language']) && $params['language'] != "") {
+        if (isset($params['language']) && $params['language'] != '') {
             $authNameSpace->language = $params['language'];
         }
-        $adminId = $this->update($data, "admin_id=" . $params['adminId']);
+        $adminId = $this->update($data, 'admin_id=' . $params['adminId']);
 
         if ($adminId > 0) {
-            $name = $firstName . " " . $lastName;
-            $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
+            $name = trim(($firstName ?? '') . ' ' . ($lastName ?? ''));
+            if ($name === '') {
+                $name = $params['primaryEmail'];
+            }
+            $isSelf = (int) $params['adminId'] === (int) ($authNameSpace->admin_id ?? 0);
+            $verb = $isSelf ? 'Updated own profile' : 'Updated admin';
+            $detail = empty($sensitiveChanges) ? '' : ' (' . implode(', ', $sensitiveChanges) . ')';
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated admin - " . $name, "admin");
+            $auditDb->addNewAuditLog("{$verb} - {$name}{$detail}", 'admin');
         }
 
         return $adminId;

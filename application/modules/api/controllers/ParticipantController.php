@@ -1,4 +1,5 @@
 <?php
+
 class Api_ParticipantController extends Zend_Controller_Action
 {
     public function init()
@@ -55,36 +56,36 @@ class Api_ParticipantController extends Zend_Controller_Action
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($params = $this->getAllParams()) {
-            $defaultParams = array('module', 'controller', 'action');
+            $defaultParams = ['module', 'controller', 'action'];
             foreach ($params as $link => $mapId) {
                 if (!in_array($link, $defaultParams)) {
                     $downloadLink = $link;
                     $id = base64_decode($mapId);
                 }
             }
-            $result = $db->fetchRow($db->select()->from('data_manager')->where("download_link = ?", $downloadLink));
+            $result = $db->fetchRow($db->select()->from('data_manager')->where('download_link = ?', $downloadLink));
             if (!$result) {
-                $this->getResponse()->setBody(json_encode(array(
+                $this->getResponse()->setBody(json_encode([
                     'status'    => 'fail',
-                    'message'   => 'Your link was expired. Please contact admin'
-                ), JSON_PRETTY_PRINT));
+                    'message'   => 'Your link was expired. Please contact admin',
+                ], JSON_PRETTY_PRINT));
             }
             // die($id);
-            $this->view->result = $db->fetchRow($db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.scheme_type'))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-                ->where("spm.map_id = ?", $id));
+            $this->view->result = $db->fetchRow($db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id'])
+                ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.scheme_type'])
+                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.first_name', 'p.last_name'])
+                ->where('spm.map_id = ?', $id));
             if (!$this->view->result) {
-                $this->getResponse()->setBody(json_encode(array(
+                $this->getResponse()->setBody(json_encode([
                     'status'    => 'fail',
-                    'message'   => 'Report not ready'
-                ), JSON_PRETTY_PRINT));
+                    'message'   => 'Report not ready',
+                ], JSON_PRETTY_PRINT));
             }
         } else {
-            $this->getResponse()->setBody(json_encode(array(
+            $this->getResponse()->setBody(json_encode([
                 'status'    => 'fail',
-                'message'   => 'Something went wrong. Please contact admin'
-            ), JSON_PRETTY_PRINT));
+                'message'   => 'Something went wrong. Please contact admin',
+            ], JSON_PRETTY_PRINT));
         }
     }
 
@@ -92,36 +93,36 @@ class Api_ParticipantController extends Zend_Controller_Action
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         if ($params = $this->getAllParams()) {
-            $defaultParams = array('module', 'controller', 'action');
+            $defaultParams = ['module', 'controller', 'action'];
             foreach ($params as $link => $mapId) {
                 if (!in_array($link, $defaultParams)) {
                     $downloadLink = $link;
                     $id = base64_decode($mapId);
                 }
             }
-            $result = $db->fetchRow($db->select()->from('data_manager')->where("download_link = ?", $downloadLink));
+            $result = $db->fetchRow($db->select()->from('data_manager')->where('download_link = ?', $downloadLink));
             if (!$result) {
-                $this->getResponse()->setBody(json_encode(array(
+                $this->getResponse()->setBody(json_encode([
                     'status'    => 'fail',
-                    'message'   => 'Your link was expired. Please contact admin'
-                ), JSON_PRETTY_PRINT));
+                    'message'   => 'Your link was expired. Please contact admin',
+                ], JSON_PRETTY_PRINT));
             }
             // die($id);
-            $this->view->result = $db->fetchRow($db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code', 's.scheme_type'))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-                ->where("spm.map_id = ?", $id));
+            $this->view->result = $db->fetchRow($db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id'])
+                ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code', 's.scheme_type'])
+                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.first_name', 'p.last_name'])
+                ->where('spm.map_id = ?', $id));
             if (!$this->view->result) {
-                $this->getResponse()->setBody(json_encode(array(
+                $this->getResponse()->setBody(json_encode([
                     'status'    => 'fail',
-                    'message'   => 'Report not ready'
-                ), JSON_PRETTY_PRINT));
+                    'message'   => 'Report not ready',
+                ], JSON_PRETTY_PRINT));
             }
         } else {
-            $this->getResponse()->setBody(json_encode(array(
+            $this->getResponse()->setBody(json_encode([
                 'status'    => 'fail',
-                'message'   => 'Something went wrong. Please contact admin'
-            ), JSON_PRETTY_PRINT));
+                'message'   => 'Something went wrong. Please contact admin',
+            ], JSON_PRETTY_PRINT));
         }
     }
     public function resendAction()
@@ -134,9 +135,9 @@ class Api_ParticipantController extends Zend_Controller_Action
         $dmServices = new Application_Service_DataManagers();
         $result = $dmServices->resentDMVerifyMail($params);
         if ($result > 0) {
-            $response = array('status' => 'success', 'message' => 'Please check your email for the verification link.');
+            $response = ['status' => 'success', 'message' => 'Please check your email for the verification link.'];
         } else {
-            $response = array('status' => 'fail', 'message' => 'Something went wrong. Please try again.');
+            $response = ['status' => 'fail', 'message' => 'Something went wrong. Please try again.'];
         }
         $this->getResponse()->setBody(json_encode($response, JSON_PRETTY_PRINT));
     }
@@ -148,9 +149,9 @@ class Api_ParticipantController extends Zend_Controller_Action
         $params = $this->getAllParams();
         $result = $participantService->getParticipantsCertificates($params);
         if ($result > 0) {
-            $response = array('status' => 'success', 'message' => 'Please wait for download certificate link.', 'data' => $result);
+            $response = ['status' => 'success', 'message' => 'Please wait for download certificate link.', 'data' => $result];
         } else {
-            $response = array('status' => 'fail', 'message' => 'Something went wrong. Please try again.');
+            $response = ['status' => 'fail', 'message' => 'Something went wrong. Please try again.'];
         }
         $this->getResponse()->setBody(json_encode($response, JSON_PRETTY_PRINT));
     }

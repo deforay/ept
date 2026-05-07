@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'r_test_type_covid19';
     protected $_primary = 'test_type_id';
 
@@ -15,8 +14,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function getActiveTestTypesNamesForScheme($scheme, $countryAdapted = false)
     {
 
-
-        $sql = $this->getAdapter()->select()->from(array($this->_name), array('test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'))->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
@@ -35,8 +33,7 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted = false)
     {
 
-
-        $sql = $this->getAdapter()->select()->from(array($this->_name), array('test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'))->where("scheme_type = '$scheme'");
+        $sql = $this->getAdapter()->select()->from([$this->_name], ['test_type_id', 'test_type_name', 'test_type_1', 'test_type_2', 'test_type_3'])->where("scheme_type = '$scheme'");
 
         if ($countryAdapted) {
             $sql = $sql->where('country_adapted = 1');
@@ -48,10 +45,10 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function addTestTypeDetails($params)
     {
         $randomStr = Application_Service_Common::generateRandomString(13);
-        $testtypeId = "tt" . $randomStr;
+        $testtypeId = 'tt' . $randomStr;
         $tkId = $this->checkTestTypeId($testtypeId, $params['scheme']);
 
-        $data = array(
+        $data = [
             'test_type_id' => $tkId,
             'test_type_name' => $params['testPlatformName'],
             'test_type_short_name' => $params['shortTestTypeName'],
@@ -62,15 +59,15 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             'source_reference' => $params['sourceReference'],
             'country_adapted' => $params['countryAdapted'],
             'approval' => '1',
-            'created_on' => new Zend_Db_Expr('now()')
-        );
+            'created_on' => new Zend_Db_Expr('now()'),
+        ];
         return $this->insert($data);
     }
 
     public function updateTestTypeDetails($params)
     {
-        if (trim($params['testtypeId']) != "") {
-            $data = array(
+        if (trim($params['testtypeId']) != '') {
+            $data = [
                 'test_type_name' => $params['testPlatformName'],
                 'test_type_short_name' => $params['shortTestTypeName'],
                 'test_type_comments' => $params['comments'],
@@ -79,19 +76,19 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                 'test_type_approval_agency' => $params['approvalAgency'],
                 'source_reference' => $params['sourceReference'],
                 'country_adapted' => $params['countryAdapted'],
-                'approval' => $params['approved']
-            );
+                'approval' => $params['approved'],
+            ];
             return $this->update($data, "test_type_id='" . $params['testtypeId'] . "'");
         }
     }
 
     public function updateTestTypeStageDetails($params)
     {
-        if (trim($params['testPlatformStage']) != "") {
-            $this->update(array($params['testPlatformStage'] => '0'), array());
-            if (isset($params["testPlatformData"]) && $params["testPlatformData"] != '' && count($params["testPlatformData"]) > 0) {
-                foreach ($params["testPlatformData"] as $data) {
-                    $this->update(array($params['testPlatformStage'] => '1'), "test_type_id='" . $data . "'");
+        if (trim($params['testPlatformStage']) != '') {
+            $this->update([$params['testPlatformStage'] => '0'], []);
+            if (isset($params['testPlatformData']) && $params['testPlatformData'] != '' && count($params['testPlatformData']) > 0) {
+                foreach ($params['testPlatformData'] as $data) {
+                    $this->update([$params['testPlatformStage'] => '1'], "test_type_id='" . $data . "'");
                 }
             }
         }
@@ -100,9 +97,9 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function checkTestTypeId($testtypeId, $scheme)
     {
         $result = $this->fetchRow($this->select()->where("test_type_id='" . $testtypeId . "'"));
-        if ($result != "") {
+        if ($result != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
-            $testtypeId = "tt" . $randomStr;
+            $testtypeId = 'tt' . $randomStr;
             $this->checkTestTypeId($testtypeId, $scheme);
         } else {
             return $testtypeId;
@@ -116,43 +113,39 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('test_type_name', 'scheme_name', 'test_type_manufacturer', 'test_type_approval_agency', 'approval', 'DATE_FORMAT(created_on,"%d-%b-%Y %T")');
+        $aColumns = ['test_type_name', 'scheme_name', 'test_type_manufacturer', 'test_type_approval_agency', 'approval', 'DATE_FORMAT(created_on,"%d-%b-%Y %T")'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -163,33 +156,30 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['t' => $this->_name])
+            ->join(['s' => 'scheme_list'], 't.scheme_type=s.scheme_id', 'scheme_name');
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('t' => $this->_name))
-            ->join(array('s' => 'scheme_list'), "t.scheme_type=s.scheme_id", 'scheme_name');
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
-        if (isset($parameters['status']) && $parameters['status'] != "") {
-            $sQuery = $sQuery->where("approval = ? ", $parameters['status']);
+        if (isset($parameters['status']) && $parameters['status'] != '') {
+            $sQuery = $sQuery->where('approval = ? ', $parameters['status']);
         }
 
         if (!empty($sOrder)) {
@@ -203,7 +193,6 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         //echo $sQuery;
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -219,12 +208,12 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
@@ -233,13 +222,13 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
             if (trim($aRow['approval']) == 1) {
                 $approved = 'Yes';
             }
-            $createdDate = explode(" ", $aRow['created_on']);
+            $createdDate = explode(' ', $aRow['created_on']);
             $row[] = ucwords($aRow['test_type_name']);
             $row[] = $aRow['scheme_name'];
             $row[] = $aRow['test_type_manufacturer'];
             $row[] = $aRow['test_type_approval_agency'];
             $row[] = $approved;
-            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . " " . $createdDate[1];
+            $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($createdDate[0]) . ' ' . $createdDate[1];
             $row[] = '<a href="/admin/test-platform/edit/53s5k85_8d/' . base64_encode($aRow['test_type_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
 
             $output['aaData'][] = $row;
@@ -250,37 +239,37 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
 
     public function getCovid19TestTypeDetails($testtypeId)
     {
-        return $this->fetchRow($this->select()->where("test_type_id=?", $testtypeId));
+        return $this->fetchRow($this->select()->where('test_type_id=?', $testtypeId));
     }
 
-    public function addTestTypeInParticipant($oldName, $testtypeName, $scheme, $testtype = "")
+    public function addTestTypeInParticipant($oldName, $testtypeName, $scheme, $testtype = '')
     {
 
-        if (trim($testtypeName) != "") {
+        if (trim($testtypeName) != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
-            $testtypeId = "tt" . $randomStr;
+            $testtypeId = 'tt' . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
 
-            if ($result == "" && trim($oldName) == "") {
-                $data = array(
+            if ($result == '' && trim($oldName) == '') {
+                $data = [
                     'test_type_id' => $tkId,
                     'scheme_type' => $scheme,
                     'test_type_name' => trim($testtypeName),
                     'approval' => '0',
-                    'test_type_1' => ($testtype == 1 && $testtype != "") ? '1' : '0',
-                    'test_type_2' => ($testtype == 2 && $testtype != "") ? '1' : '0',
-                    'test_type_3' => ($testtype == 3 && $testtype != "") ? '1' : '0',
-                    'created_on' => new Zend_Db_Expr('now()')
-                );
+                    'test_type_1' => ($testtype == 1 && $testtype != '') ? '1' : '0',
+                    'test_type_2' => ($testtype == 2 && $testtype != '') ? '1' : '0',
+                    'test_type_3' => ($testtype == 3 && $testtype != '') ? '1' : '0',
+                    'created_on' => new Zend_Db_Expr('now()'),
+                ];
                 $saveId = $this->insert($data);
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
-                if ($result != "") {
-                    $data = array(
-                        'test_type_name' => trim($testtypeName)
-                    );
+                if ($result != '') {
+                    $data = [
+                        'test_type_name' => trim($testtypeName),
+                    ];
                     $saveId = $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
                     return $result['test_type_id'];
                 }
@@ -291,14 +280,14 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
     public function addTestTypeInParticipantByAPI($oldName, $testtypeName, $scheme, $type = 0)
     {
 
-        if (trim($testtypeName) != "") {
+        if (trim($testtypeName) != '') {
             $randomStr = Application_Service_Common::generateRandomString(13);
-            $testtypeId = "tt" . $randomStr;
+            $testtypeId = 'tt' . $randomStr;
             $tkId = $this->checkTestTypeId($testtypeId, $scheme);
             $result = $this->fetchRow($this->select()->where("test_type_name='" . $testtypeName . "'"));
 
-            if ($result == "" && trim($oldName) == "") {
-                $data = array(
+            if ($result == '' && trim($oldName) == '') {
+                $data = [
                     'test_type_id' => $tkId,
                     'scheme_type' => $scheme,
                     'test_type_name' => trim($testtypeName),
@@ -307,22 +296,22 @@ class Application_Model_DbTable_TestTypenameCovid19 extends Zend_Db_Table_Abstra
                     'test_type_1' => ($type == 1) ? '1' : '0',
                     'test_type_2' => ($type == 2) ? '1' : '0',
                     'test_type_3' => ($type == 3) ? '1' : '0',
-                    'created_on' => new Zend_Db_Expr('now()')
-                );
+                    'created_on' => new Zend_Db_Expr('now()'),
+                ];
                 $saveId = $this->insert($data);
                 return $tkId;
             } else {
                 $result = $this->fetchRow($this->select()->where("test_type_name='" . $oldName . "'"));
-                if ($result != "") {
-                    $data = array(
+                if ($result != '') {
+                    $data = [
                         'test_type_name' => trim($testtypeName),
                         'scheme_type' => $scheme,
                         'test_type_name' => trim($testtypeName),
                         'country_adapted' => '1',
                         'test_type_1' => ($type == 1) ? '1' : '0',
                         'test_type_2' => ($type == 2) ? '1' : '0',
-                        'test_type_3' => ($type == 3) ? '1' : '0'
-                    );
+                        'test_type_3' => ($type == 3) ? '1' : '0',
+                    ];
                     $saveId = $this->update($data, "test_type_id='" . $result['test_type_id'] . "'");
                     return $result['test_type_id'];
                 }

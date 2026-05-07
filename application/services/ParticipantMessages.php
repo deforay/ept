@@ -23,8 +23,8 @@ class Application_Service_ParticipantMessages
     public function getParticipantMessageById($pmId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pm' => 'participant_messages'))
-            ->where("id = ?", $pmId);
+        $sql = $db->select()->from(['pm' => 'participant_messages'])
+            ->where('id = ?', $pmId);
         $res = $db->fetchAll($sql);
         return $res[0];
     }

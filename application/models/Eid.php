@@ -6,7 +6,6 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 class Application_Model_Eid
 {
-
     private $common = null;
     public function __construct()
     {
@@ -30,8 +29,8 @@ class Application_Model_Eid
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
+            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTimeImmutable($createdOnUser[0]);
             } else {
                 $createdOn = new DateTimeImmutable('1970-01-01');
@@ -43,21 +42,21 @@ class Application_Model_Eid
             $totalScore = 0;
             $maxScore = 0;
             $failureReason = [];
-            $mandatoryResult = "";
-            $scoreResult = "";
+            $mandatoryResult = '';
+            $scoreResult = '';
 
             if ($createdOn > $lastDate) {
                 $shipment['is_response_late'] = 'yes';
-                $failureReason[] = array(
-                    'warning' => "Response was submitted after the last response date."
-                );
+                $failureReason[] = [
+                    'warning' => 'Response was submitted after the last response date.',
+                ];
                 $shipment['is_excluded'] = 'yes';
-                $failureReason = array('warning' => "Response was submitted after the last response date.");
-                $db->update('shipment_participant_map', array(
+                $failureReason = ['warning' => 'Response was submitted after the last response date.'];
+                $db->update('shipment_participant_map', [
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
-                    'response_status' => 'late'
-                ), "map_id = " . $shipment['map_id']);
+                    'response_status' => 'late',
+                ], 'map_id = ' . $shipment['map_id']);
             } else {
                 $shipment['is_response_late'] = 'no';
             }
@@ -71,7 +70,7 @@ class Application_Model_Eid
                         }
                     } else {
                         if ($result['sample_score'] > 0) {
-                            $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                            $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                         }
                     }
                 }
@@ -105,12 +104,11 @@ class Application_Model_Eid
                 $shipmentResult[$counter]['display_result'] = '';
                 $shipmentResult[$counter]['is_followup'] = 'yes';
                 $shipmentResult[$counter]['is_excluded'] = 'yes';
-                $failureReason[] = array('warning' => 'Excluded from Evaluation');
+                $failureReason[] = ['warning' => 'Excluded from Evaluation'];
                 $finalResult = 3;
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             } else {
                 $shipment['is_excluded'] = 'no';
-
 
                 // checking if total score >= passing score
                 if ($totalScore >= $passingScore) {
@@ -130,23 +128,22 @@ class Application_Model_Eid
                 $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                 $shipmentResult[$counter]['final_result'] = $finalResult;
 
-
-                $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+                $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
 
                 $shipmentResult[$counter]['display_result'] = $fRes[0];
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             }
             /* Manual result override changes */
             if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                $sql = $db->select()->from('shipment_participant_map')->where('map_id = ?', $shipment['map_id']);
                 $shipmentOverall = $db->fetchRow($sql);
                 if (!empty($shipmentOverall)) {
                     $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                     $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                         $shipmentOverall['final_result'] = 2;
                     }
-                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $overrideUpdateData = [
                         'shipment_score' => $shipmentOverall['shipment_score'],
@@ -156,7 +153,7 @@ class Application_Model_Eid
                     if ($shipment['is_response_late'] == 'yes') {
                         $overrideUpdateData['response_status'] = 'late';
                     }
-                    $nofOfRowsUpdated = $db->update('shipment_participant_map', $overrideUpdateData, "map_id = " . $shipment['map_id']);
+                    $nofOfRowsUpdated = $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
                 }
             } else {
                 // let us update the total score in DB
@@ -169,13 +166,12 @@ class Application_Model_Eid
                 if ($shipment['is_response_late'] == 'yes') {
                     $normalUpdateData['response_status'] = 'late';
                 }
-                $db->update('shipment_participant_map', $normalUpdateData, "map_id = " . $shipment['map_id']);
+                $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
             }
             //$counter++;
             $counter++;
         }
-        $db->update('shipment', array('max_score' => $maxScore, 'status' => 'evaluated'), "shipment_id = " . $shipmentId);
-
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
 
         return $shipmentResult;
     }
@@ -187,56 +183,47 @@ class Application_Model_Eid
 
         $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-
-
-        $patientResponseColor = array(
-            'fill' => array(
+        $patientResponseColor = [
+            'fill' => [
                 'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'color' => array('rgb' => '18bc9c')
-            )
-        );
-        $referenceColor = array(
-            'fill' => array(
+                'color' => ['rgb' => '18bc9c'],
+            ],
+        ];
+        $referenceColor = [
+            'fill' => [
                 'type' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'color' => array('rgb' => 'F0E68C')
-            )
-        );
+                'color' => ['rgb' => 'F0E68C'],
+            ],
+        ];
 
         $query = $db->select()->from('shipment')
-            ->where("shipment_id = ?", $shipmentId);
+            ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
-
-        $refQuery = $db->select()->from(array('refRes' => 'reference_result_eid'))
-            ->where("refRes.shipment_id = ?", $shipmentId);
+        $refQuery = $db->select()->from(['refRes' => 'reference_result_eid'])
+            ->where('refRes.shipment_id = ?', $shipmentId);
         $refResult = $db->fetchAll($refQuery);
 
         $firstSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($excel, 'EID PT Results');
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->mergeCells('A1:A2');
-        $firstSheet->getCell('A1')->setValue(html_entity_decode("Lab ID", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('A1')->setValue(html_entity_decode('Lab ID', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('B1:B2');
-        $firstSheet->getCell('B1')->setValue(html_entity_decode("Lab Name", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('B1')->setValue(html_entity_decode('Lab Name', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('C1:C2');
-        $firstSheet->getCell('C1')->setValue(html_entity_decode("Institute", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('C1')->setValue(html_entity_decode('Institute', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('D1:D2');
-        $firstSheet->getCell('D1')->setValue(html_entity_decode("Department", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('D1')->setValue(html_entity_decode('Department', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('E1:E2');
-        $firstSheet->getCell('E1')->setValue(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('E1')->setValue(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('F1:F2');
-        $firstSheet->getCell('F1')->setValue(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('F1')->setValue(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
 
         /* $firstSheet->mergeCells('G1:G2');
         $firstSheet->getCell('G1')->setValue(html_entity_decode("Sample Rehydration Date", ENT_QUOTES, 'UTF-8'));
@@ -247,24 +234,19 @@ class Application_Model_Eid
          */
 
         $firstSheet->mergeCells('G1:G2');
-        $firstSheet->getCell('G1')->setValue(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('G1')->setValue(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('H1:H2');
-        $firstSheet->getCell('H1')->setValue(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('H1')->setValue(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('I1:I2');
-        $firstSheet->getCell('I1')->setValue(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('I1')->setValue(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('J1:J2');
-        $firstSheet->getCell('J1')->setValue(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('J1')->setValue(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->mergeCells('K1:K2');
-        $firstSheet->getCell('K1')->setValue(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
-
+        $firstSheet->getCell('K1')->setValue(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->getDefaultRowDimension()->setRowHeight(15);
 
@@ -281,7 +263,7 @@ class Application_Model_Eid
         $cellName2 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName1 . '1:' . $cellName2 . '1');
-        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode("PARTICIPANT RESPONSE", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName1 . '1')->setValue(html_entity_decode('PARTICIPANT RESPONSE', ENT_QUOTES, 'UTF-8'));
 
         $firstSheet->getStyle($cellName1 . '1:' . $cellName2 . '2')->applyFromArray($patientResponseColor, true);
 
@@ -296,22 +278,21 @@ class Application_Model_Eid
         $cellName4 = $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colNameCount) . '1')
             ->getColumn();
         $firstSheet->mergeCells($cellName3 . '1:' . $cellName4 . '1');
-        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode("REFERENCE RESULTS", ENT_QUOTES, 'UTF-8'));
+        $firstSheet->getCell($cellName3 . '1')->setValue(html_entity_decode('REFERENCE RESULTS', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle($cellName3 . '1:' . $cellName4 . '2')->applyFromArray($referenceColor, true);
-
 
         $firstSheet->setTitle('EID PT Results', true);
 
-        $queryOverAll = $db->select()->from(array('s' => 'shipment'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
-            ->joinLeft(array('p' => 'participant'), "p.participant_id = spm.participant_id")
-            ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
-            ->where("s.shipment_id = ?", $shipmentId);
+        $queryOverAll = $db->select()->from(['s' => 'shipment'])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id')
+            ->joinLeft(['p' => 'participant'], 'p.participant_id = spm.participant_id')
+            ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
+            ->where('s.shipment_id = ?', $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $queryOverAll = $queryOverAll
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -325,21 +306,20 @@ class Application_Model_Eid
             //Zend_Debug::dump($rowOverAll);
             $row++;
 
-            $queryResponse = $db->select()->from(array('res' => 'response_result_eid'))
-                ->joinLeft(array('pr' => 'r_possibleresult'), "res.reported_result=pr.id")
-                ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+            $queryResponse = $db->select()->from(['res' => 'response_result_eid'])
+                ->joinLeft(['pr' => 'r_possibleresult'], 'res.reported_result=pr.id')
+                ->where('res.shipment_map_id = ?', $rowOverAll['map_id']);
             $resultResponse = $db->fetchAll($queryResponse);
 
             $attributes = json_decode($rowOverAll['attributes'], true);
-            $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : "";
+            $extraction = (array_key_exists($attributes['extraction_assay'], $extractionAssayList)) ? $extractionAssayList[$attributes['extraction_assay']] : '';
             // $detection = (array_key_exists($attributes['detection_assay'], $detectionAssayList)) ? $detectionAssayList[$attributes['detection_assay']] : "";
             // $sampleRehydrationDate = (isset($attributes['sample_rehydration_date'])) ? Pt_Commons_DateUtility::humanReadableDateFormat($attributes['sample_rehydration_date']) : "";
-
 
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(1) . $row)
                 ->setValueExplicit(html_entity_decode($rowOverAll['unique_identifier'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(2) . $row)
-                ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . " " . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
+                ->setValueExplicit(html_entity_decode($rowOverAll['first_name'] . ' ' . $rowOverAll['last_name'], ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(3) . $row)
                 ->setValueExplicit(html_entity_decode(ucwords($rowOverAll['institute_name']), ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(4) . $row)
@@ -358,21 +338,21 @@ class Application_Model_Eid
             // $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
             //->setValueExplicit(html_entity_decode($detection, ENT_QUOTES, 'UTF-8'));
 
-            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00" && $rowOverAll['shipment_receipt_date'] != "1970-01-01") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
-            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "1970-01-01") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
+            $receiptDate = ($rowOverAll['shipment_receipt_date'] != '' && $rowOverAll['shipment_receipt_date'] != '0000-00-00' && $rowOverAll['shipment_receipt_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : '';
+            $testDate = ($rowOverAll['shipment_test_date'] != '' && $rowOverAll['shipment_test_date'] != '0000-00-00' && $rowOverAll['shipment_test_date'] != '1970-01-01') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : '';
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($testDate, ENT_QUOTES, 'UTF-8'));
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
-                    ->setValueExplicit(html_entity_decode("PT Test Not Performed", ENT_QUOTES, 'UTF-8'));
-            } elseif ((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != "0000-00-00" && $rowOverAll['shipment_test_date'] != "")) {
+                    ->setValueExplicit(html_entity_decode('PT Test Not Performed', ENT_QUOTES, 'UTF-8'));
+            } elseif ((isset($rowOverAll['shipment_test_date']) && $rowOverAll['shipment_test_date'] != '0000-00-00' && $rowOverAll['shipment_test_date'] != '')) {
                 $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
-                    ->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode('Responded', ENT_QUOTES, 'UTF-8'));
             } else {
                 $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
-                    ->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode('Not Responded', ENT_QUOTES, 'UTF-8'));
             }
 
             $firstSheet->getCell(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col++) . $row)
@@ -384,9 +364,9 @@ class Application_Model_Eid
             }
         }
 
-        $queryReference = $db->select()->from(array('res' => 'reference_result_eid'))
-            ->joinLeft(array('pr' => 'r_possibleresult'), "res.reference_result=pr.id")
-            ->where("res.shipment_id = ?", $shipmentId);
+        $queryReference = $db->select()->from(['res' => 'reference_result_eid'])
+            ->joinLeft(['pr' => 'r_possibleresult'], 'res.reference_result=pr.id')
+            ->where('res.shipment_id = ?', $shipmentId);
         $referenceresult = $db->fetchAll($queryReference);
         $nRow = 3;
         for ($i = 3; $i < $row; $i++) {
@@ -404,10 +384,10 @@ class Application_Model_Eid
 
         $firstName = $authNameSpace->first_name;
         $lastName = $authNameSpace->last_name;
-        $name = $firstName . " " . $lastName;
+        $name = $firstName . ' ' . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("DTS EID excel report downloaded by $userName", "shipment");
+        $auditDb->addNewAuditLog('Downloaded DTS EID Excel report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 
         $excel->setActiveSheetIndex(0);
 
@@ -421,7 +401,7 @@ class Application_Model_Eid
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $totalSubquery = "SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = " . $db->quote($sid);
+        $totalSubquery = 'SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = ' . $db->quote($sid);
 
         // --- Query 1: detection_assay ---
         $detectionQuery = $db->select()
@@ -432,7 +412,7 @@ class Application_Model_Eid
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
                     'percentage'         => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
-                    )
+                    ),
                 ]
             )
             ->joinLeft(
@@ -455,7 +435,7 @@ class Application_Model_Eid
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
                     'percentage'         => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
-                    )
+                    ),
                 ]
             )
             ->joinLeft(

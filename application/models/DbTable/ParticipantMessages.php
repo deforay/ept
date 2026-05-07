@@ -15,7 +15,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         $fromMail = $loggedUser->primary_email;
         $fromName = $loggedUser->first_name . $loggedUser->last_name;
 
-        if (isset($params['subject']) && $params['subject'] != "") {
+        if (isset($params['subject']) && $params['subject'] != '') {
             $attachedFile = null;
             if (isset($_FILES['attachment']['name']) && !empty($_FILES['attachment']['name'][0])) {
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'mail-attachments';
@@ -25,7 +25,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
 
                 foreach ($_FILES['attachment']['name'] as $key => $fileName) {
                     $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $fileName);
-                    $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                    $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
                     $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
                     $uniqueFileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
 
@@ -37,12 +37,12 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             }
 
             $data = [
-                "participant_id" => $partcipant_id,
-                "subject" => $params['subject'],
-                "message" => $params['message'],
-                "status" => 'pending',
-                "attached_file" => (!empty($files)) ? json_encode($files) : null,
-                "created_at" => new Zend_Db_Expr('now()')
+                'participant_id' => $partcipant_id,
+                'subject' => $params['subject'],
+                'message' => $params['message'],
+                'status' => 'pending',
+                'attached_file' => (!empty($files)) ? json_encode($files) : null,
+                'created_at' => new Zend_Db_Expr('now()'),
             ];
 
             $db->insert('participant_messages', $data);
@@ -63,49 +63,45 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('participant_id', 'subject', 'attached_file', 'message', 'status', "DATE_FORMAT(created_at,'%d-%b-%Y')");
-        $orderColumns = array('participant_id', 'subject', 'attached_file', 'message', 'status', "DATE_FORMAT(created_at,'%d-%b-%Y')");
+        $aColumns = ['participant_id', 'subject', 'attached_file', 'message', 'status', "DATE_FORMAT(created_at,'%d-%b-%Y')"];
+        $orderColumns = ['participant_id', 'subject', 'attached_file', 'message', 'status', "DATE_FORMAT(created_at,'%d-%b-%Y')"];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
-                    if ($aColumns[$i] == "" || $aColumns[$i] == null) {
+                    if ($aColumns[$i] == '' || $aColumns[$i] == null) {
                         continue;
                     }
                     if ($i < $colSize - 1) {
@@ -114,35 +110,32 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
-
-
-
         $sQuery = $this->getAdapter()->select()
-            ->from(array('pm' => $this->_name)) // Main table
+            ->from(['pm' => $this->_name]) // Main table
             ->join(
-                array('dm' => 'data_manager'), // Alias for the data_manager table
+                ['dm' => 'data_manager'], // Alias for the data_manager table
                 'pm.id = dm.dm_id',          // ON condition for the LEFT JOIN
-                array('first_name', 'last_name')            // Columns to select from the joined table
+                ['first_name', 'last_name']            // Columns to select from the joined table
             );
         // ->joinLeft(array('sl' => 'scheme_list'), 's.scheme_type=sl.scheme_id', array('scheme_name'))
 
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -154,9 +147,7 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
 
-
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -172,12 +163,12 @@ class Application_Model_DbTable_ParticipantMessages extends Zend_Db_Table_Abstra
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             // Check if first_name or last_name is missing and set default if necessary

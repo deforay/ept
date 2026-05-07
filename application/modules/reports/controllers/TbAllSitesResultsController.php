@@ -18,7 +18,7 @@ class Reports_TbAllSitesResultsController extends Zend_Controller_Action
             $params = $this->getAllParams();
 
             $evalService = new Application_Service_Evaluation();
-            $evalService->getEvaluateReportsInPdf($params["shipmentId"], null, null);
+            $evalService->getEvaluateReportsInPdf($params['shipmentId'], null, null);
 
             $reportService = new Application_Service_Reports();
             $response = $reportService->getTbAllSitesResultsReport($params);

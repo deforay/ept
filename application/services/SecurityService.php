@@ -2,7 +2,6 @@
 
 class Application_Service_SecurityService
 {
-
     public static function generateCSRF(): void
     {
         $csrfNamespace = new Zend_Session_Namespace('csrf');

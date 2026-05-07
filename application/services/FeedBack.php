@@ -1,8 +1,8 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Application_Service_FeedBack
 {
@@ -59,7 +59,7 @@ class Application_Service_FeedBack
     public function checkExpiry($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchRow($db->select()->from('shipment')->where("shipment_id = ?", $sid)->where("DATE(feedback_expiry_date) >= ?", date('Y-m-d')));
+        return $db->fetchRow($db->select()->from('shipment')->where('shipment_id = ?', $sid)->where('DATE(feedback_expiry_date) >= ?', date('Y-m-d')));
     }
 
     public function getAllFeedBackResponses($parameters, $type)
@@ -86,13 +86,13 @@ class Application_Service_FeedBack
             }
 
             $dataArr = [
-                'shipment_id' => $params["shipmentId"],
+                'shipment_id' => $params['shipmentId'],
                 'question_id' => $q,
                 'participant_id' => $params['participantId'],
                 'map_id' => $params['mapId'],
                 'answer' => $answer,
                 'updated_datetime' => Pt_Commons_DateUtility::getCurrentDateTime(),
-                'modified_by' => $authNameSpace->admin_id
+                'modified_by' => $authNameSpace->admin_id,
             ];
 
             $db->insert(
@@ -101,7 +101,7 @@ class Application_Service_FeedBack
             );
         }
         $alertMsg = new Zend_Session_Namespace('alertSpace');
-        $alertMsg->message = "Your feedback response successfully submitted.";
+        $alertMsg->message = 'Your feedback response successfully submitted.';
     }
 
     public function exportFeedbackResponseReport($shipmentId)
@@ -147,7 +147,7 @@ class Application_Service_FeedBack
                         'name' => $participantName,
                         'unique_identifier' => $response['unique_identifier'],
                         'response_datetime' => $response['updated_datetime'],
-                        'answers' => []
+                        'answers' => [],
                     ];
                 }
 
@@ -300,9 +300,9 @@ class Application_Service_FeedBack
 
             return $filename;
         } catch (Exception $exc) {
-            error_log("GENERATE-FEEDBACK-RESPONSE-REPORT-EXCEL--" . $exc->getMessage());
+            error_log('GENERATE-FEEDBACK-RESPONSE-REPORT-EXCEL--' . $exc->getMessage());
             error_log($exc->getTraceAsString());
-            return "";
+            return '';
         }
     }
 }

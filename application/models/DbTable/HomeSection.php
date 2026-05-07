@@ -2,10 +2,8 @@
 
 class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'home_sections';
     protected $_primary = 'id';
-
 
     public function saveHomeSectionDetails($params)
     {
@@ -23,9 +21,9 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         if (isset($_FILES['section_file']['tmp_name']) && file_exists($_FILES['section_file']['tmp_name']) && is_uploaded_file($_FILES['section_file']['tmp_name'])) {
 
             $uploadDirectory = realpath(UPLOAD_PATH);
-            $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx', 'xls');
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'docx', 'doc', 'xlsx', 'xls'];
             $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['section_file']['name']);
-            $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+            $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
             $extension = strtolower(pathinfo($fileNameSanitized, PATHINFO_EXTENSION));
             $imageName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
 
@@ -33,12 +31,12 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 // Determine the section folder based on $params['section']
                 if ($params['section'] == 'section1') {
                     $section = 1;
-                } else if ($params['section'] == 'section2') {
+                } elseif ($params['section'] == 'section2') {
                     $section = 2;
                 } else {
                     $section = 3;
                 }
-                $sectionFolder = "home" . DIRECTORY_SEPARATOR . "section" . $section;
+                $sectionFolder = 'home' . DIRECTORY_SEPARATOR . 'section' . $section;
                 // Create the section directory if it doesn't exist
                 $targetDirectory = $uploadDirectory . DIRECTORY_SEPARATOR . $sectionFolder;
                 if (!file_exists($targetDirectory) && !is_dir($targetDirectory)) {
@@ -46,13 +44,13 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                 }
 
                 // Move the uploaded file to the target directory
-                if (move_uploaded_file($_FILES["section_file"]["tmp_name"], $targetDirectory . DIRECTORY_SEPARATOR . $imageName)) {
+                if (move_uploaded_file($_FILES['section_file']['tmp_name'], $targetDirectory . DIRECTORY_SEPARATOR . $imageName)) {
                     $sectionImage = $sectionFolder . '/' . $imageName;
                 }
             }
         }
 
-        $data = array(
+        $data = [
             'section' => $params['section'],
             'type' => $params['type'],
             'link' => $link,
@@ -62,8 +60,8 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
             'display_order' => $params['displayOrder'],
             'status' => $params['status'],
             'modified_by' => $authNameSpace->admin_id,
-            'modified_date_time' => new Zend_Db_Expr('now()')
-        );
+            'modified_date_time' => new Zend_Db_Expr('now()'),
+        ];
 
         if (isset($params['homeSectionId']) && !empty($params['homeSectionId'])) {
             return $this->update($data, "id = '" . $params['homeSectionId'] . "'");
@@ -87,43 +85,39 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('section', 'link', 'text', 'icon', 'display_order', 'status');
+        $aColumns = ['section', 'link', 'text', 'icon', 'display_order', 'status'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -134,28 +128,25 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['p' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('p' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -182,12 +173,12 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];
@@ -208,25 +199,25 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
     public function fetchHomeSectionById($id)
     {
         $sql = $this->select();
-        $sql = $sql->where("id= ? ", $id);
+        $sql = $sql->where('id= ? ', $id);
         return $this->fetchRow($sql);
     }
 
     public function fetchAllHomeSection()
     {
         $sql = $this->select();
-        $sql = $sql->where("status= ? ", 'active')
-            ->order("display_order ASC");
+        $sql = $sql->where('status= ? ', 'active')
+            ->order('display_order ASC');
         $row =  $this->fetchAll($sql);
-        $response = array();
+        $response = [];
         foreach ($row as $d) {
-            $response[$d['section']][] = array(
+            $response[$d['section']][] = [
                 'link' => $d['link'],
                 'icon' => $d['icon'],
                 'text' => $d['text'],
                 'type' => $d['type'],
-                'section_file' => $d['section_file']
-            );
+                'section_file' => $d['section_file'],
+            ];
         }
         return $response;
     }
@@ -237,7 +228,7 @@ class Application_Model_DbTable_HomeSection extends Zend_Db_Table_Abstract
         $status = 'active'; // Hardcoded or passed as a parameter
 
         // Updated SQL query with additional status condition
-        $sql = "SELECT MAX(display_order) AS max_display_order FROM home_sections WHERE section = :section AND status = :status";
+        $sql = 'SELECT MAX(display_order) AS max_display_order FROM home_sections WHERE section = :section AND status = :status';
 
         // Execute the query and fetch all rows as an array
         $results = $this->getAdapter()->query($sql, ['section' => $section, 'status' => $status])->fetchAll();

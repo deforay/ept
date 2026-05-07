@@ -2,7 +2,6 @@
 
 class Admin_TestkitController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -49,7 +48,12 @@ class Admin_TestkitController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->addTestkit($params);
-            $this->redirect("/admin/testkit");
+
+            $name = trim((string) ($params['testKitName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Added a new test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+
+            $this->redirect('/admin/testkit');
         }
     }
 
@@ -62,7 +66,12 @@ class Admin_TestkitController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->updateTestkit($params);
-            $this->redirect("/admin/testkit");
+
+            $name = trim((string) ($params['testKitName'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Updated test kit - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
+
+            $this->redirect('/admin/testkit');
         } elseif ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getDtsTestkit($id);
@@ -79,7 +88,11 @@ class Admin_TestkitController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->updateTestkitStage($params);
-            $this->redirect("/admin/testkit/standard-kit");
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Updated test kit stage settings', 'config');
+
+            $this->redirect('/admin/testkit/standard-kit');
         }
         $this->view->schemeList = $schemeService->getGenericSchemeLists();
     }
@@ -104,6 +117,10 @@ class Admin_TestkitController extends Zend_Controller_Action
             $dtsModel = new Application_Model_Dts();
             $this->view->testkitList = $dtsModel->updateTestKitStatus($params);
             $this->view->testkitStage = $stage;
+
+            $status = (string) ($params['status'] ?? '');
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Changed test kit status' . ($status !== '' ? " to '{$status}'" : ''), 'config');
         }
     }
 }

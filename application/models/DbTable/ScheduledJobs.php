@@ -17,7 +17,7 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         if (isset($params['shipmentId']) && !empty($params['shipmentId'])) {
             // Sanitize shipmentId array - ensure all values are integers
             $safeShipmentIds = array_map('intval', $params['shipmentId']);
-            $impShipmentId = implode(",", $safeShipmentIds);
+            $impShipmentId = implode(',', $safeShipmentIds);
             $query = $query->where("s.shipment_id IN ($impShipmentId)");
         }
         $shipmentResult = $db->fetchAll($query);
@@ -25,14 +25,13 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         $shipmentId = [];
         foreach ($shipmentResult as $shipment) {
             $shipmentId[] = intval($shipment['shipment_id']);
-            if (!file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $shipment['scheme_type'] . "-e.docx")) {
+            if (!file_exists(SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates' . DIRECTORY_SEPARATOR . $shipment['scheme_type'] . '-e.docx')) {
                 $directory[] = $shipment['scheme_type'];
                 $resp = 9999999;
             }
         }
 
-
-        if (!empty($shipmentId) && isset($params['certificateName']) && $params['certificateName'] != "") {
+        if (!empty($shipmentId) && isset($params['certificateName']) && $params['certificateName'] != '') {
             // Validate certificateName - only allow alphanumeric characters and hyphens
             if (!preg_match('/^[a-zA-Z0-9-]+$/', $params['certificateName'])) {
                 throw new Exception('Invalid certificate name: only alphanumeric characters and hyphens are allowed');
@@ -40,12 +39,12 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
 
             // Create a batch record first
             $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
-            $shipmentIdsStr = implode(",", $shipmentId);
+            $shipmentIdsStr = implode(',', $shipmentId);
             $batchId = $certificateBatchesDb->createBatch([
                 'batch_name' => $params['certificateName'],
                 'shipment_ids' => $shipmentIdsStr,
                 'created_by' => $authNameSpace->admin_id,
-                'status' => 'pending'
+                'status' => 'pending',
             ]);
 
             $safeCertName = escapeshellarg($params['certificateName']);
@@ -53,9 +52,9 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
             $safeBatchId = intval($batchId);
 
             $this->insert([
-                "job" => "generate-certificates.php -s $safeShipmentIdStr -c $safeCertName -b $safeBatchId",
-                "requested_on" => new Zend_Db_Expr('now()'),
-                "requested_by" => $authNameSpace->admin_id,
+                'job' => "generate-certificates.php -s $safeShipmentIdStr -c $safeCertName -b $safeBatchId",
+                'requested_on' => new Zend_Db_Expr('now()'),
+                'requested_by' => $authNameSpace->admin_id,
             ]);
 
             // Return batch_id instead of job_id for status polling
@@ -85,9 +84,9 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         );
 
         return $this->insert([
-            "job" => "evaluate-shipments.php -s " . escapeshellarg($safeShipmentId),
-            "requested_on" => new Zend_Db_Expr('now()'),
-            "requested_by" => $authNameSpace->admin_id,
+            'job' => 'evaluate-shipments.php -s ' . escapeshellarg($safeShipmentId),
+            'requested_on' => new Zend_Db_Expr('now()'),
+            'requested_by' => $authNameSpace->admin_id,
         ]);
     }
 
@@ -107,9 +106,9 @@ class Application_Model_DbTable_ScheduledJobs extends Zend_Db_Table_Abstract
         }
 
         return $this->insert([
-            "job" => "distribute-certificates.php -b " . escapeshellarg($safeBatchId),
-            "requested_on" => new Zend_Db_Expr('now()'),
-            "requested_by" => $authNameSpace->admin_id,
+            'job' => 'distribute-certificates.php -b ' . escapeshellarg($safeBatchId),
+            'requested_on' => new Zend_Db_Expr('now()'),
+            'requested_by' => $authNameSpace->admin_id,
         ]);
     }
 }

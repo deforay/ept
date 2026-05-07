@@ -2,7 +2,6 @@
 
 class Admin_HomeSectionLinksController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -46,7 +45,12 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
-            $this->redirect("/admin/home-section-links");
+
+            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Added a new home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config');
+
+            $this->redirect('/admin/home-section-links');
         }
 
         // Get resource section headings for dropdown labels
@@ -62,7 +66,12 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $homeSectionService->saveHomeSection($params);
-            $this->redirect("/admin/home-section-links");
+
+            $heading = trim((string) ($params['heading'] ?? $params['link'] ?? ''));
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Updated home section link' . ($heading !== '' ? " - {$heading}" : ''), 'config');
+
+            $this->redirect('/admin/home-section-links');
         }
         if ($this->hasParam('id')) {
             $id = (int) base64_decode($this->_getParam('id'));
@@ -83,7 +92,7 @@ class Admin_HomeSectionLinksController extends Zend_Controller_Action
             $maxSortOrder = $homeSectionService->getDisplayOrder($params);
             // Send the response as JSON
             $this->_helper->json([
-                'maxSortOrder' => $maxSortOrder
+                'maxSortOrder' => $maxSortOrder,
             ]);
         }
     }

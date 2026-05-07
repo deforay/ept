@@ -2,7 +2,6 @@
 
 class Admin_UsersController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -23,9 +22,15 @@ class Admin_UsersController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction() {}
+    public function indexAction()
+    {
+    }
 
-    public function addAction() {}
+    public function addAction()
+    {
+    }
 
-    public function editAction() {}
+    public function editAction()
+    {
+    }
 }

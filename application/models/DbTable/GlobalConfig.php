@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'global_config';
     protected $_primary = 'name';
 
@@ -44,81 +43,100 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
         return $arr;
     }
 
-
     public function updateConfigDetails($params)
     {
+        $changedSections = [];
+
         $logosDir = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
         if (!is_dir($logosDir)) {
             mkdir($logosDir, 0777, true);
         }
         if (isset($params['delete_home_left_logo']) && !empty($params['delete_home_left_logo'])) {
             unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_left_logo']);
-            $this->update(array("value" => NULL), "name = 'home_left_logo'");
+            $this->update(['value' => null], "name = 'home_left_logo'");
+            $changedSections[] = 'home left logo';
         }
         if (isset($params['delete_home_right_logo']) && !empty($params['delete_home_right_logo'])) {
             unlink($logosDir . DIRECTORY_SEPARATOR . $params['delete_home_right_logo']);
-            $this->update(array("value" => NULL), "name = 'home_right_logo'");
+            $this->update(['value' => null], "name = 'home_right_logo'");
+            $changedSections[] = 'home right logo';
         }
-        foreach (array("home_left_logo", "home_right_logo") as $field) {
+        foreach (['home_left_logo', 'home_right_logo'] as $field) {
             if (isset($_FILES[$field]) && !empty($_FILES[$field]['name'])) {
                 $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES[$field]['name']);
-                $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
                 $pathPrefix = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logos';
                 $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
                 $fileName = Pt_Commons_MiscUtility::generateRandomString(4) . '.' . $extension;
-                if (move_uploaded_file($_FILES[$field]["tmp_name"], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                    $this->update(["value" => $fileName], "name = '" . $field . "'");
+                if (move_uploaded_file($_FILES[$field]['tmp_name'], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
+                    $this->update(['value' => $fileName], "name = '" . $field . "'");
+                    $changedSections[] = str_replace('_', ' ', $field);
                 }
             }
         }
 
         if (isset($params['emailConfig']) && !empty($params['emailConfig'])) {
-            $this->update(["value" => json_encode($params['emailConfig'], true)], "name = 'mail'");
+            $this->update(['value' => json_encode($params['emailConfig'], true)], "name = 'mail'");
             unset($params['emailConfig']);
+            $changedSections[] = 'email config';
         }
         if (isset($params['covid19']) && !empty($params['covid19'])) {
-            $this->update(["value" => json_encode($params['covid19'], true)], "name = 'covid19'");
+            $this->update(['value' => json_encode($params['covid19'], true)], "name = 'covid19'");
             unset($params['covid19']);
+            $changedSections[] = 'COVID-19 config';
         }
         if (isset($params['vl']) && !empty($params['vl'])) {
-            $this->update(["value" => json_encode($params['vl'], true)], "name = 'vl'");
+            $this->update(['value' => json_encode($params['vl'], true)], "name = 'vl'");
             unset($params['vl']);
+            $changedSections[] = 'VL config';
         }
         if (isset($params['recency']) && !empty($params['recency'])) {
-            $this->update(["value" => json_encode($params['recency'], true)], "name = 'recency'");
+            $this->update(['value' => json_encode($params['recency'], true)], "name = 'recency'");
             unset($params['recency']);
+            $changedSections[] = 'Recency config';
         }
         if (isset($params['tb']) && !empty($params['tb'])) {
-            $this->update(["value" => json_encode($params['tb'], true)], "name = 'tb'");
+            $this->update(['value' => json_encode($params['tb'], true)], "name = 'tb'");
             unset($params['tb']);
+            $changedSections[] = 'TB config';
         }
         if (isset($params['home']) && !empty($params['home'])) {
-            $this->update(["value" => json_encode($params['home'], true)], "name = 'home'");
+            $this->update(['value' => json_encode($params['home'], true)], "name = 'home'");
             unset($params['home']);
+            $changedSections[] = 'home page';
         }
         if (isset($params['faqQuestions']) && !empty($params['faqQuestions'])) {
             $faqResponse = [];
             foreach ($params['faqQuestions'] as $key => $faq) {
                 $faqResponse[$faq] = $params['faqAnswers'][$key];
             }
-            $this->update(["value" => json_encode($faqResponse, true)], "name = 'faqs'");
+            $this->update(['value' => json_encode($faqResponse, true)], "name = 'faqs'");
             unset($params['faqQuestions']);
             unset($params['faqAnswers']);
+            $changedSections[] = 'FAQs';
         }
 
+        $individualFields = [];
         foreach ($params as $fieldName => $fieldValue) {
             if ($fieldName == 'schemeId') {
                 $schemeDb = new Application_Model_DbTable_SchemeList();
-                $schemeDb->update(array('status' => 'inactive'), "status='active'");
-                foreach ($params["schemeId"] as $schemeId) {
-                    $schemeDb->update(array('status' => 'active'), "scheme_id='" . $schemeId . "'");
+                $schemeDb->update(['status' => 'inactive'], "status='active'");
+                foreach ($params['schemeId'] as $schemeId) {
+                    $schemeDb->update(['status' => 'active'], "scheme_id='" . $schemeId . "'");
                 }
+                $changedSections[] = 'active schemes';
             } else {
                 $this->update(['value' => $fieldValue], "name='" . $fieldName . "'");
+                $individualFields[] = $fieldName;
             }
         }
+        if (!empty($individualFields)) {
+            $changedSections[] = count($individualFields) . ' field' . (count($individualFields) === 1 ? '' : 's') . ' (' . implode(', ', $individualFields) . ')';
+        }
+
+        $detail = empty($changedSections) ? '' : ' — ' . implode(', ', array_unique($changedSections));
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated global config ", "config");
+        $auditDb->addNewAuditLog('Updated global config' . $detail, 'config');
     }
 
     public function getPTProgramName()
@@ -135,8 +153,8 @@ class Application_Model_DbTable_GlobalConfig extends Zend_Db_Table_Abstract
     {
         $row = $this->fetchRow(['name = ?' => $name]);
         if ($row) {
-            return $this->update(["value" => $value], ['name = ?' => $name]);
+            return $this->update(['value' => $value], ['name = ?' => $name]);
         }
-        return $this->insert(["name" => $name, "value" => $value]);
+        return $this->insert(['name' => $name, 'value' => $value]);
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use Symfony\Component\Filesystem\Filesystem;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Hackzilla\PasswordGenerator\Generator\ComputerPasswordGenerator;
 use Hackzilla\PasswordGenerator\Generator\RequirementPasswordGenerator;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\Filesystem\Filesystem;
 
 class Application_Service_Common
 {
-    const MAIL_FAILURE_REASON_MAX = 1000;
+    public const MAIL_FAILURE_REASON_MAX = 1000;
 
     protected $db;
 
@@ -56,7 +56,7 @@ class Application_Service_Common
 
     // Returns the given date in d-M-Y format
     // (with or without time depending on the $includeTime parameter)
-    public static function humanReadableDateFormat($date, $includeTime = false, $format = "d-M-Y")
+    public static function humanReadableDateFormat($date, $includeTime = false, $format = 'd-M-Y')
     {
         return Pt_Commons_DateUtility::humanReadableDateFormat($date, $includeTime, $format);
     }
@@ -79,7 +79,7 @@ class Application_Service_Common
         return $result;
     }
 
-    public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = array())
+    public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = [])
     {
         // Normalize scalars/arrays to strings for parseRecipients()
         $toStr = is_array($to) ? implode(',', array_values($to)) : (string) $to;
@@ -90,12 +90,12 @@ class Application_Service_Common
         $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
 
         $fromMail = $fromMail ?: $conf->email->config->username;
-        $fromName = $fromName ?: "ePT System";
+        $fromName = $fromName ?: 'ePT System';
 
         $systemMail = new Zend_Mail();
 
         $originalMessage = html_entity_decode((string) $message, ENT_QUOTES, 'UTF-8');
-        $originalMessage = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $originalMessage);
+        $originalMessage = str_replace(['&nbsp;', '&amp;nbsp;'], '', $originalMessage);
 
         $systemMail->setSubject((string) $subject);
         $systemMail->setBodyHtml($originalMessage);
@@ -106,7 +106,7 @@ class Application_Service_Common
         $recips = self::parseRecipients(trim($toStr), trim($ccStr) ?: null, trim($bccStr) ?: null);
 
         if (!empty($recips['invalid'])) {
-            error_log("Invalid emails in sendMail(): " . implode(', ', $recips['invalid']));
+            error_log('Invalid emails in sendMail(): ' . implode(', ', $recips['invalid']));
         }
         if (empty($recips['to'])) {
             error_log("sendMail(): no valid 'To' recipients; aborting send.");
@@ -137,7 +137,7 @@ class Application_Service_Common
                         $fileName
                     );
                 } else {
-                    error_log("Attachment file does not exist: " . $filePath);
+                    error_log('Attachment file does not exist: ' . $filePath);
                 }
             }
         }
@@ -146,10 +146,10 @@ class Application_Service_Common
             $systemMail->send($smtpTransportObj);
             return true;
         } catch (Exception $exc) {
-            error_log("===== MAIL SENDING FAILED - START =====");
+            error_log('===== MAIL SENDING FAILED - START =====');
             error_log($exc->getMessage());
             error_log($exc->getTraceAsString());
-            error_log("===== MAIL SENDING FAILED - END =====");
+            error_log('===== MAIL SENDING FAILED - END =====');
             return false;
         }
     }
@@ -200,7 +200,7 @@ class Application_Service_Common
         $ns = new Zend_Session_Namespace($namespace);
         $used = is_array($ns->used ?? null) ? $ns->used : [];
         // Drop expired entries so this bucket can't grow unbounded.
-        $used = array_filter($used, static fn($ts) => $ts > time() - 3600);
+        $used = array_filter($used, static fn ($ts) => $ts > time() - 3600);
         if (isset($used[$hash])) {
             return false;
         }
@@ -242,13 +242,13 @@ class Application_Service_Common
         $subject = (isset($params['subject']) && !empty($params['subject'])) ? true : false;
         if ($name && $id && $subject) {
 
-            $message = "<h3>The following details were entered by " . $params['participantId'] . "</h3>";
-            $message .= "Name : " . $params['firstName'] . " " . $params['lastName'] . "<br/>";
-            $message .= "ID : " . $params['participantId'] . "<br/>";
-            $message .= "Email : " . $params['email'] . "<br/>";
-            $message .= "Subject : " . $params['subject'] . "<br/>";
-            $message .= "Country Name : " . $params['country'] . "<br/>";
-            $message .= "Message : " . $params['message'] . "<br/>";
+            $message = '<h3>The following details were entered by ' . $params['participantId'] . '</h3>';
+            $message .= 'Name : ' . $params['firstName'] . ' ' . $params['lastName'] . '<br/>';
+            $message .= 'ID : ' . $params['participantId'] . '<br/>';
+            $message .= 'Email : ' . $params['email'] . '<br/>';
+            $message .= 'Subject : ' . $params['subject'] . '<br/>';
+            $message .= 'Country Name : ' . $params['country'] . '<br/>';
+            $message .= 'Message : ' . $params['message'] . '<br/>';
 
             $db = new Application_Model_DbTable_ContactUs();
 
@@ -261,12 +261,12 @@ class Application_Service_Common
                 'message' => $params['message'],
                 'participant_id' => $params['participantId'],
                 'contacted_on' => new Zend_Db_Expr('now()'),
-                'ip_address' => $_SERVER['REMOTE_ADDR']
+                'ip_address' => $_SERVER['REMOTE_ADDR'],
             ];
             $db->addContact($data);
 
             $fromEmail = Application_Service_Common::getConfig('admin_email');
-            $fromName = "Online PT Team";
+            $fromName = 'Online PT Team';
 
             $toArray[] = Application_Service_Common::getConfig('admin_email');
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -274,7 +274,7 @@ class Application_Service_Common
                 $toArray[] = $authNameSpace->email;
             }
 
-            $mailSent = $this->insertTempMail(implode(",", $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, $params['email']);
+            $mailSent = $this->insertTempMail(implode(',', $toArray), null, null, $params['subject'], $message, $fromEmail, $fromName, null, $params['email']);
             if ($mailSent) {
                 return 1;
             } else {
@@ -303,7 +303,7 @@ class Application_Service_Common
                 $data = count($result);
             }
         } else {
-            $table = explode("##", $fnct);
+            $table = explode('##', $fnct);
             $sql = $db->select()->from($tableName)
                 ->where("$fieldName = ?", $value)
                 ->where("$table[0]!= '$table[1]'");
@@ -329,14 +329,14 @@ class Application_Service_Common
     public function getParticipantsProvinceList($cid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->distinct()->from(['p' => 'participant'], ["state"])->group(["state"])->order(["state"]);
+        $sql = $db->select()->distinct()->from(['p' => 'participant'], ['state'])->group(['state'])->order(['state']);
         if (isset($cid) && !empty($cid)) {
-            $sql = $sql->where("p.country IN (?)", $cid);
+            $sql = $sql->where('p.country IN (?)', $cid);
         }
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sql = $sql->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         $result = $db->fetchAll($sql);
         if (isset($list) && !empty($list) && $list == 'list') {
@@ -353,9 +353,9 @@ class Application_Service_Common
     public function getParticipantsDistrictList($sid = null, $list = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->distinct()->from('participant', ["district"])->group(["district"])->order(["district"]);
+        $sql = $db->select()->distinct()->from('participant', ['district'])->group(['district'])->order(['district']);
         if (isset($sid) && !empty($sid)) {
-            $sql = $sql->where("state IN (?)", $sid);
+            $sql = $sql->where('state IN (?)', $sid);
         }
         $result = $db->fetchAll($sql);
         if (isset($list) && !empty($list) && $list == 'list') {
@@ -383,12 +383,12 @@ class Application_Service_Common
     public function getAllInstitutes($pid = null, $did = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->distinct()->from('participant', ["institute_name"])->group(["institute_name"])->order(["institute_name"]);
+        $sql = $db->select()->distinct()->from('participant', ['institute_name'])->group(['institute_name'])->order(['institute_name']);
         if (isset($pid) && !empty($pid)) {
-            $sql = $sql->where("state like ?", $pid);
+            $sql = $sql->where('state like ?', $pid);
         }
         if (isset($did) && !empty($did)) {
-            $sql = $sql->where("district like ?", $did);
+            $sql = $sql->where('district like ?', $did);
         }
 
         return $db->fetchAll($sql);
@@ -423,7 +423,7 @@ class Application_Service_Common
     {
         $filterRules = [
             '*' => 'StripTags',
-            '*' => 'StringTrim'
+            '*' => 'StringTrim',
         ];
 
         $filter = new Zend_Filter_Input($filterRules, null, $params);
@@ -461,7 +461,7 @@ class Application_Service_Common
     {
         $filterRules = [
             '*' => 'StripTags',
-            '*' => 'StringTrim'
+            '*' => 'StringTrim',
         ];
 
         $filter = new Zend_Filter_Input($filterRules, [], $params);
@@ -503,7 +503,7 @@ class Application_Service_Common
 
         $limit = '10';
         $sQuery = $tempMailDb->getAdapter()->select()
-            ->from(array('tm' => 'temp_mail'))
+            ->from(['tm' => 'temp_mail'])
             ->where("status='pending'")
             ->limit($limit);
 
@@ -521,7 +521,7 @@ class Application_Service_Common
             $fromFullName = $result['from_full_name'];
             $subject = $result['subject'];
             $bodyHtml = html_entity_decode((string) $result['message'], ENT_QUOTES, 'UTF-8');
-            $bodyHtml = str_replace(array("&nbsp;", "&amp;nbsp;"), "", $bodyHtml);
+            $bodyHtml = str_replace(['&nbsp;', '&amp;nbsp;'], '', $bodyHtml);
 
             $mail = new Zend_Mail();
             $mail->setSubject((string) $subject);
@@ -567,7 +567,7 @@ class Application_Service_Common
                 error_log("===== MAIL SENDING FAILED (temp_id={$id}) - START =====");
                 error_log($exc->getMessage());
                 error_log($exc->getTraceAsString());
-                error_log("===== MAIL SENDING FAILED - END =====");
+                error_log('===== MAIL SENDING FAILED - END =====');
                 // mark not-sent and continue to next
                 self::markTempMailFailed(
                     (int) $id,
@@ -578,7 +578,6 @@ class Application_Service_Common
         }
     }
 
-
     public function fetchNotify()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -588,13 +587,13 @@ class Application_Service_Common
     public function saveNotifyStatus($id)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if ($id == "all") {
-            return $db->update('notify', array("status" => 'read'), "status = 'unread'");
+        if ($id == 'all') {
+            return $db->update('notify', ['status' => 'read'], "status = 'unread'");
         }
-        return $db->update('notify', array("status" => 'read'), $db->quoteInto("id = ?", $id));
+        return $db->update('notify', ['status' => 'read'], $db->quoteInto('id = ?', $id));
     }
 
-    public function generateSelectOptions($optionList, $selectedOptions = array(), $emptySelectText = false)
+    public function generateSelectOptions($optionList, $selectedOptions = [], $emptySelectText = false)
     {
 
         if (empty($optionList)) {
@@ -622,28 +621,29 @@ class Application_Service_Common
     public function getIPAddress()
     {
         $ipaddress = '';
-        if (getenv('HTTP_CLIENT_IP'))
+        if (getenv('HTTP_CLIENT_IP')) {
             $ipaddress = getenv('HTTP_CLIENT_IP');
-        elseif (getenv('HTTP_X_FORWARDED_FOR'))
+        } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
             $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-        elseif (getenv('HTTP_X_FORWARDED'))
+        } elseif (getenv('HTTP_X_FORWARDED')) {
             $ipaddress = getenv('HTTP_X_FORWARDED');
-        elseif (getenv('HTTP_FORWARDED_FOR'))
+        } elseif (getenv('HTTP_FORWARDED_FOR')) {
             $ipaddress = getenv('HTTP_FORWARDED_FOR');
-        elseif (getenv('HTTP_FORWARDED'))
+        } elseif (getenv('HTTP_FORWARDED')) {
             $ipaddress = getenv('HTTP_FORWARDED');
-        elseif (getenv('REMOTE_ADDR'))
+        } elseif (getenv('REMOTE_ADDR')) {
             $ipaddress = getenv('REMOTE_ADDR');
-        else
+        } else {
             $ipaddress = 'UNKNOWN';
+        }
         return $ipaddress;
     }
 
     public function getOperatingSystem($userAgent = null)
     {
-        $osPlatform = "Unknown OS - " . $userAgent;
+        $osPlatform = 'Unknown OS - ' . $userAgent;
 
-        $osArray = array(
+        $osArray = [
             '/windows nt 6.3/i' => 'Windows 8.1',
             '/windows nt 6.2/i' => 'Windows 8',
             '/windows nt 6.1/i' => 'Windows 7',
@@ -665,8 +665,8 @@ class Application_Service_Common
             '/ipad/i' => 'iPad',
             '/android/i' => 'Android',
             '/blackberry/i' => 'BlackBerry',
-            '/webos/i' => 'Mobile'
-        );
+            '/webos/i' => 'Mobile',
+        ];
 
         foreach ($osArray as $regex => $value) {
             if (preg_match($regex, $userAgent)) {
@@ -679,8 +679,8 @@ class Application_Service_Common
     public function getBrowser($userAgent = null)
     {
 
-        $browser = "Unknown Browser - " . $userAgent;
-        $browserArray = array(
+        $browser = 'Unknown Browser - ' . $userAgent;
+        $browserArray = [
             '/msie/i' => 'Internet Explorer',
             '/firefox/i' => 'Firefox',
             '/safari/i' => 'Safari',
@@ -689,8 +689,8 @@ class Application_Service_Common
             '/netscape/i' => 'Netscape',
             '/maxthon/i' => 'Maxthon',
             '/konqueror/i' => 'Konqueror',
-            '/mobile/i' => 'Handheld Browser'
-        );
+            '/mobile/i' => 'Handheld Browser',
+        ];
 
         foreach ($browserArray as $regex => $value) {
 
@@ -702,19 +702,13 @@ class Application_Service_Common
         return $browser;
     }
 
-    public function getAllAuditLogDetailsByGrid($params)
-    {
-        $auditLogDb = new Application_Model_DbTable_AuditLog();
-        return $auditLogDb->fetchAllAuditLogDetailsByGrid($params);
-    }
-
     public function insertMultiple($table, array $data, $addIgnore = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         // Ensure there is data to insert
         if (empty($data)) {
-            throw new Exception("No data provided for insertion");
+            throw new Exception('No data provided for insertion');
         }
 
         // Get a list of columns from the first row of data
@@ -727,7 +721,7 @@ class Application_Service_Common
 
         // Start building the SQL statement
         $ignoreString = $addIgnore ? ' IGNORE ' : '';
-        $sql = "INSERT" . $ignoreString . " INTO " . $db->quoteIdentifier($table) . " (" . implode(", ", $quotedCols) . ") VALUES ";
+        $sql = 'INSERT' . $ignoreString . ' INTO ' . $db->quoteIdentifier($table) . ' (' . implode(', ', $quotedCols) . ') VALUES ';
 
         // Build the VALUES part of the SQL statement
         $valuesList = [];
@@ -735,14 +729,13 @@ class Application_Service_Common
             $quotedValues = array_map(function ($value) use ($db) {
                 return $db->quote($value); // Assumes $db->quote() properly quotes strings; adjust as needed
             }, $row);
-            $valuesList[] = "(" . implode(", ", $quotedValues) . ")";
+            $valuesList[] = '(' . implode(', ', $quotedValues) . ')';
         }
-        $sql .= implode(", ", $valuesList);
+        $sql .= implode(', ', $valuesList);
 
         // Execute the query
         return $db->query($sql);
     }
-
 
     public function insertIgnore($table, array $data)
     {
@@ -762,7 +755,7 @@ class Application_Service_Common
 
         // Construct the SQL statement
         $sql = sprintf(
-            "INSERT IGNORE INTO %s (%s) VALUES (%s)",
+            'INSERT IGNORE INTO %s (%s) VALUES (%s)',
             $quotedTable,
             implode(', ', $columns),
             implode(', ', $values)
@@ -777,17 +770,15 @@ class Application_Service_Common
         }
     }
 
-
-
     public function getOptionsByValue($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from([$params['table']], [$params['returnfield']])
-            ->where($params['returnfield'] . " IS NOT NULL")
+            ->where($params['returnfield'] . ' IS NOT NULL')
             ->where($params['returnfield'] . " not like ''")
-            ->where($params['searchfield'] . " IS NOT NULL")
+            ->where($params['searchfield'] . ' IS NOT NULL')
             ->where($params['searchfield'] . " not like ''")
-            ->where($params['searchfield'] . " LIKE ?", $params['searchvalue'])
+            ->where($params['searchfield'] . ' LIKE ?', $params['searchvalue'])
             ->group($params['returnfield'])
             ->order($params['returnfield']);
         return $db->fetchAll($sql);
@@ -814,10 +805,10 @@ class Application_Service_Common
     public function checkAssayInvalid($sid = null, $pid = null, $status = false)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r' => 'r_vl_assay'))->where('r.allow_invalid = "yes"');
+        $sql = $db->select()->from(['r' => 'r_vl_assay'])->where('r.allow_invalid = "yes"');
         if ($status) {
-            $sql = $sql->join(array('rvl' => 'response_result_vl'), 'r.id=rvl.vl_assay', array('shipment_map_id'));
-            $sql = $sql->join(array('spm' => 'shipment_participant_map'), 'rvl.shipment_map_id=spm.map_id', array('shipment_id', 'participant_id'));
+            $sql = $sql->join(['rvl' => 'response_result_vl'], 'r.id=rvl.vl_assay', ['shipment_map_id']);
+            $sql = $sql->join(['spm' => 'shipment_participant_map'], 'rvl.shipment_map_id=spm.map_id', ['shipment_id', 'participant_id']);
             $sql = $sql->where('spm.shipment_id = ?', $sid)->where('spm.participant_id = ?', $pid);
             $sql = $sql->group('rvl.shipment_map_id');
         }
@@ -827,9 +818,9 @@ class Application_Service_Common
     public function ptccLocationMapByDmid($dmId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pcm' => 'ptcc_countries_map'))->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
+        $sql = $db->select()->from(['pcm' => 'ptcc_countries_map'])->where('ptcc_id = ?', $dmId)->group('district, state, country_id');
         $result = $db->fetchAll($sql);
-        $locations = array();
+        $locations = [];
         if (isset($result) && !empty($result)) {
             foreach ($result as $row) {
                 if (isset($row['district']) && !empty($row['district']) && $row['district'] != '' && !in_array($row['district'], $locations['district'])) {
@@ -919,7 +910,7 @@ class Application_Service_Common
             var_dump($object);
             $output = ob_get_clean();
             // Remove newline characters
-            $output = str_replace("\n", "", $output);
+            $output = str_replace("\n", '', $output);
         } else {
             print_r($object);
             $output = ob_get_clean();
@@ -935,28 +926,28 @@ class Application_Service_Common
     public function getAllTestKitBySearch($text)
     {
         $db = new Application_Model_DbTable_Testkitnames();
-        $sql = $db->select()->from(array('r_testkitnames'), array('TESTKITNAMEID' => 'TestKitName_ID', 'TESTKITNAME' => 'TestKit_Name'))->where("TESTKIT_NAME LIKE ?", "%" . $text . "%");
+        $sql = $db->select()->from(['r_testkitnames'], ['TESTKITNAMEID' => 'TestKitName_ID', 'TESTKITNAME' => 'TestKit_Name'])->where('TESTKIT_NAME LIKE ?', '%' . $text . '%');
         $cResult = $db->fetchAll($sql);
         $echoResult = [];
         if (count($cResult) > 0) {
             foreach ($cResult as $row) {
-                $echoResult[] = array("id" => $row['TESTKITNAMEID'], "text" => ucwords((string) $row['TESTKITNAME']));
+                $echoResult[] = ['id' => $row['TESTKITNAMEID'], 'text' => ucwords((string) $row['TESTKITNAME'])];
             }
         } else {
-            $echoResult[] = array("id" => $text, 'text' => ucwords((string) $text));
+            $echoResult[] = ['id' => $text, 'text' => ucwords((string) $text)];
         }
 
-        return array("result" => $echoResult);
+        return ['result' => $echoResult];
     }
 
-    public function getMappedTestKits($pid, $sid = "")
+    public function getMappedTestKits($pid, $sid = '')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from('participant_testkit_map', array('testkit_id'))
-            ->where("participant_id = ?", $pid)
+        $sql = $db->select()->from('participant_testkit_map', ['testkit_id'])
+            ->where('participant_id = ?', $pid)
             ->group('testkit_id');
         if (isset($sid) && !empty($sid)) {
-            $sql = $sql->where("shipment_id = ?", $sid);
+            $sql = $sql->where('shipment_id = ?', $sid);
         }
 
         return $db->fetchCol($sql);
@@ -966,15 +957,15 @@ class Application_Service_Common
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from(['pff' => 'r_participant_feedback_form_question_map'], ['pff.question_id'])
-            ->join(['fq' => 'r_feedback_questions'], "fq.question_id = pff.question_id", ['question_text'])
-            ->where("pff.shipment_id = ?", $shipmentId);
+            ->join(['fq' => 'r_feedback_questions'], 'fq.question_id = pff.question_id', ['question_text'])
+            ->where('pff.shipment_id = ?', $shipmentId);
         $result = $db->fetchAll($query);
         $questionId = [];
         foreach ($result as $res) {
             $questionId[$res['question_id']] = $res['question_id'];
             array_push($headings, $res['question_text']);
         }
-        return ["heading" => $headings, "question" => $questionId];
+        return ['heading' => $headings, 'question' => $questionId];
     }
 
     /**
@@ -1031,7 +1022,7 @@ class Application_Service_Common
     {
         if (is_array($array) && !empty($array)) {
             return array_filter($array, function ($value) {
-                return $value !== null && $value !== "";
+                return $value !== null && $value !== '';
             });
         } else {
             return $array;
@@ -1045,8 +1036,9 @@ class Application_Service_Common
         $seen = [];
 
         $split = static function (?string $list): array {
-            if ($list === null || trim($list) === '')
+            if ($list === null || trim($list) === '') {
                 return [];
+            }
             return preg_split('/[;,]+/', $list) ?: [];
         };
 
@@ -1119,7 +1111,6 @@ class Application_Service_Common
         return 'other';
     }
 
-
     /**
      * Mark a temp_mail row as failed with an optional failure reason.
      */
@@ -1145,10 +1136,10 @@ class Application_Service_Common
 
     /**
      * Validate and normalize an email address
-     * 
+     *
      * Requires a valid TLD (e.g., .com, .org, .net) in the domain
      * Rejects single-word domains without TLD (e.g., user@ept, user@localhost)
-     * 
+     *
      * @param string $email The email address to validate
      * @return string|null Normalized email on success, null on failure
      */
@@ -1264,7 +1255,6 @@ class Application_Service_Common
         }
     }
 
-
     public static function makeDirectory($path, $mode = 0755, $recursive = true): bool
     {
         $filesystem = new Filesystem();
@@ -1335,7 +1325,7 @@ class Application_Service_Common
 
         // Execute the command and capture the output and return code
         $output = shell_exec($command);
-        $returnCode = shell_exec("echo $?");
+        $returnCode = shell_exec('echo $?');
 
         // Check if the command was successful
         if (intval($returnCode) !== 0) {
@@ -1369,12 +1359,11 @@ class Application_Service_Common
         return preg_match('/^\$2[ayb]\$\d{2}\$.{53}$/', $string);
     }
 
-
     public function validatePassword($password, $name = null, $email = null, $minLength = 8, $requireSymbols = false)
     {
         // Validate input types
         if (!is_string($password)) {
-            return $this->translator->_("Password must be a string.");
+            return $this->translator->_('Password must be a string.');
         }
 
         // Check length - use mb_strlen for proper multibyte character support
@@ -1384,22 +1373,22 @@ class Application_Service_Common
 
         // Check maximum length to prevent DoS attacks
         if (mb_strlen($password, 'UTF-8') > 128) {
-            return $this->translator->_("Password must not exceed 128 characters.");
+            return $this->translator->_('Password must not exceed 128 characters.');
         }
 
         // Check for at least one letter
         if (!preg_match('/[a-zA-Z]/', $password)) {
-            return $this->translator->_("Password must contain at least one letter.");
+            return $this->translator->_('Password must contain at least one letter.');
         }
 
         // Check for at least one number
         if (!preg_match('/[0-9]/', $password)) {
-            return $this->translator->_("Password must contain at least one number.");
+            return $this->translator->_('Password must contain at least one number.');
         }
 
         // Check for symbols if required
         if ($requireSymbols && !preg_match('/[\W_]/', $password)) {
-            return $this->translator->_("Password must contain at least one symbol.");
+            return $this->translator->_('Password must contain at least one symbol.');
         }
 
         // Check against name parts (minimum 3 characters to avoid false positives)
@@ -1410,7 +1399,7 @@ class Application_Service_Common
                 // Only check parts that are 3+ characters
                 if (mb_strlen($part, 'UTF-8') >= 3) {
                     if (stripos($password, $part) !== false) {
-                        return $this->translator->_("Password must not contain parts of your name.");
+                        return $this->translator->_('Password must not contain parts of your name.');
                     }
                 }
             }
@@ -1430,7 +1419,7 @@ class Application_Service_Common
                     // Only check parts that are 3+ characters
                     if (mb_strlen($part, 'UTF-8') >= 3) {
                         if (stripos($password, $part) !== false) {
-                            return $this->translator->_("Password must not contain parts of your email address.");
+                            return $this->translator->_('Password must not contain parts of your email address.');
                         }
                     }
                 }
@@ -1447,7 +1436,7 @@ class Application_Service_Common
 
         foreach ($weakPatterns as $pattern) {
             if (preg_match($pattern, $password)) {
-                return $this->translator->_("Password is too weak. Please choose a more complex password.");
+                return $this->translator->_('Password is too weak. Please choose a more complex password.');
             }
         }
 
@@ -1500,7 +1489,7 @@ class Application_Service_Common
 
         // Check if file was uploaded without errors
         if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
-            $error = "No valid file uploaded.";
+            $error = 'No valid file uploaded.';
         }
 
         // Get the file extension
@@ -1518,10 +1507,10 @@ class Application_Service_Common
 
             // Check if the MIME type is allowed
             if (!in_array($mimeType, $mimeTypes)) {
-                $error = "File MIME type not allowed.";
+                $error = 'File MIME type not allowed.';
             }
         } elseif (!$error) {
-            $error = "File extension not allowed.";
+            $error = 'File extension not allowed.';
         }
 
         return $error ?: true;
@@ -1611,7 +1600,7 @@ class Application_Service_Common
             'rar' => 'application/x-rar-compressed',
             'html' => 'text/html',
             'xml' => 'application/xml',
-            'json' => 'application/json'
+            'json' => 'application/json',
         ];
 
         $mimeTypes = [];
@@ -1701,7 +1690,6 @@ class Application_Service_Common
         return $camelCaseString;
     }
 
-
     public function dataToZippedFile(string $stringData, string $fileName): bool
     {
         if (empty($stringData) || empty($fileName)) {
@@ -1755,7 +1743,7 @@ class Application_Service_Common
         // Build the SQL query
         $sql = $db->select()->from($params['tableName'], [
             $params['returnId'],
-            'concat' => new Zend_Db_Expr("CONCAT(" . implode(", ' ', ", $concat) . ")")
+            'concat' => new Zend_Db_Expr('CONCAT(' . implode(", ' ', ", $concat) . ')'),
         ]);
 
         // Handle search across multiple fields properly
@@ -1802,7 +1790,7 @@ class Application_Service_Common
         }
 
         // Extract domain
-        $domain = substr(strrchr($email, "@"), 1);
+        $domain = substr(strrchr($email, '@'), 1);
 
         // Check if the domain is in the excluded list
         if (in_array(strtolower($domain), array_map('strtolower', $excludedDomains), true)) {
@@ -1820,14 +1808,14 @@ class Application_Service_Common
     public function exportConfig($data)
     {
         if (isset($data['file']) && !empty($data['file']) && $data['file'] == 'config') {
-            $filePath = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+            $filePath = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR . 'config.ini';
 
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $eptDomain = rtrim($conf->domain, "/");
+            $eptDomain = rtrim($conf->domain, '/');
             $eptDomain = parse_url($eptDomain, PHP_URL_HOST);
 
             $gzdata = gzencode(file_get_contents($filePath));
-            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_DateUtility::getCurrentDateTime()) . ".ini.gz";
+            $gipPath = realpath(TEMP_UPLOAD_PATH) . DIRECTORY_SEPARATOR . 'config-' . $eptDomain . '-' . str_replace([':', ' ', '_'], '-', Pt_Commons_DateUtility::getCurrentDateTime()) . '.ini.gz';
             file_put_contents($gipPath, $gzdata);
 
             return $gipPath;
@@ -1837,7 +1825,7 @@ class Application_Service_Common
             unset($responseData['csrf_token']);
             $output = [
                 'timestamp' => time(),
-                'data' => $responseData
+                'data' => $responseData,
             ];
             $tempDirectory = realpath(TEMP_UPLOAD_PATH);
             if ($tempDirectory === false) {
@@ -1867,16 +1855,15 @@ class Application_Service_Common
     public function unserializeForm($str)
     {
         $returndata = [];
-        $strArray = explode("&", $str['formPost'] ?? '');
+        $strArray = explode('&', $str['formPost'] ?? '');
         foreach ($strArray as $item) {
-            $array = explode("=", $item, 2);
+            $array = explode('=', $item, 2);
             $key = str_replace('[]', '', urldecode($array[0] ?? ''));
             $val = urldecode($array[1] ?? '');
             $returndata[$key][] = $val;
         }
         return $returndata;
     }
-
 
     /**
      * Compute email sending health from temp_mail.
@@ -1916,7 +1903,7 @@ class Application_Service_Common
         }
 
         // Time window (DB-side)
-        $windowExpr = sprintf("NOW() - INTERVAL %d DAY", $days);
+        $windowExpr = sprintf('NOW() - INTERVAL %d DAY', $days);
 
         // Totals
         $sqlTotals = "
@@ -2067,7 +2054,7 @@ class Application_Service_Common
         $activeParticipants = (int) $db->fetchOne(
             $db->select()
                 ->from('participant', new Zend_Db_Expr('COUNT(*)'))
-                ->where("status = ?", 'active')
+                ->where('status = ?', 'active')
         );
 
         $shipmentTotals = $db->fetchRow(
@@ -2075,10 +2062,10 @@ class Application_Service_Common
                 ->from('shipment', [
                     'total' => new Zend_Db_Expr('COUNT(*)'),
                     'finalized' => new Zend_Db_Expr("SUM(status = 'finalized')"),
-                    'this_year' => new Zend_Db_Expr("SUM(YEAR(shipment_date) = YEAR(CURDATE()))"),
-                    'last_12_months' => new Zend_Db_Expr("SUM(shipment_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND shipment_date <= CURDATE())"),
+                    'this_year' => new Zend_Db_Expr('SUM(YEAR(shipment_date) = YEAR(CURDATE()))'),
+                    'last_12_months' => new Zend_Db_Expr('SUM(shipment_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND shipment_date <= CURDATE())'),
                 ])
-                ->where("status != ?", 'pending')
+                ->where('status != ?', 'pending')
         );
 
         $edgeShipmentCols = [
@@ -2089,8 +2076,8 @@ class Application_Service_Common
         $edgeSelect = $db->select()
             ->from(['s' => 'shipment'], $edgeShipmentCols)
             ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
-            ->where("s.status != ?", 'pending')
-            ->where("s.shipment_date IS NOT NULL")
+            ->where('s.status != ?', 'pending')
+            ->where('s.shipment_date IS NOT NULL')
             ->where("s.shipment_date != '0000-00-00'")
             ->limit(1);
 
@@ -2100,7 +2087,7 @@ class Application_Service_Common
         $activeSchemes = $db->fetchAll(
             $db->select()
                 ->from('scheme_list', ['scheme_id', 'scheme_name'])
-                ->where("status = ?", 'active')
+                ->where('status = ?', 'active')
                 ->order('scheme_name')
         );
 
@@ -2111,7 +2098,7 @@ class Application_Service_Common
                     'shipment_count' => new Zend_Db_Expr('COUNT(*)'),
                 ])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
-                ->where("s.status != ?", 'pending')
+                ->where('s.status != ?', 'pending')
                 ->group('s.scheme_type')
                 ->order('sl.scheme_name')
         );
@@ -2124,7 +2111,7 @@ class Application_Service_Common
                 ])
                 ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id = s.shipment_id', [])
                 ->joinLeft(['sl' => 'scheme_list'], 's.scheme_type = sl.scheme_id', ['scheme_name'])
-                ->where("s.status != ?", 'pending')
+                ->where('s.status != ?', 'pending')
                 ->group('s.scheme_type')
                 ->order('sl.scheme_name')
         );

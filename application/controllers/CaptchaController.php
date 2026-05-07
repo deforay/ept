@@ -2,7 +2,6 @@
 
 class CaptchaController extends Zend_Controller_Action
 {
-
     public function init()
     {
 
@@ -30,10 +29,10 @@ class CaptchaController extends Zend_Controller_Action
             // not humans. hash_equals avoids timing leaks on the code value.
             if ($submitted !== '' && $expected !== '' && hash_equals(strtolower($expected), strtolower($submitted))) {
                 $captchaSession->captchaStatus = 'success';
-                $this->view->result = "success";
+                $this->view->result = 'success';
             } else {
                 $captchaSession->captchaStatus = 'fail';
-                $this->view->result = "fail";
+                $this->view->result = 'fail';
             }
         }
     }

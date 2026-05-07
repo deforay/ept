@@ -2,7 +2,6 @@
 
 class Admin_CertificateBatchesController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -75,7 +74,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
             'participation_count' => 0,
             'skipped_count' => 0,
             'download_url' => null,
-            'error_message' => null
+            'error_message' => null,
         ];
 
         if ($batchId <= 0) {
@@ -120,7 +119,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         $response = [
             'success' => false,
-            'message' => null
+            'message' => null,
         ];
 
         if (!$request->isPost()) {
@@ -156,7 +155,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $certificateBatchesDb->updateStatus($batchId, 'approved', [
             'approved_by' => $adminSession->admin_id,
-            'approved_on' => new Zend_Db_Expr('NOW()')
+            'approved_on' => new Zend_Db_Expr('NOW()'),
         ]);
 
         // Schedule the distribution job
@@ -166,6 +165,15 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
         if ($jobId > 0) {
             $response['success'] = true;
             $response['message'] = 'Certificates approved and distribution scheduled';
+
+            $batchName = $batch['batch_name'] ?? "#$batchId";
+            $excellenceCount = (int) ($batch['excellence_count'] ?? 0);
+            $participationCount = (int) ($batch['participation_count'] ?? 0);
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog(
+                "Approved certificate batch - {$batchName} ({$excellenceCount} excellence, {$participationCount} participation)",
+                'certificate'
+            );
         } else {
             $response['message'] = 'Failed to schedule distribution job';
         }
@@ -188,7 +196,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         $response = [
             'success' => false,
-            'message' => null
+            'message' => null,
         ];
 
         if (!$request->isPost()) {
@@ -207,11 +215,16 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         $adminSession = new Zend_Session_Namespace('administrators');
         $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
+        $batch = $certificateBatchesDb->getBatch($batchId);
         $result = $certificateBatchesDb->cancelBatch($batchId, $adminSession->admin_id);
 
         if ($result) {
             $response['success'] = true;
             $response['message'] = 'Batch cancelled successfully';
+
+            $batchName = $batch['batch_name'] ?? "#$batchId";
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Cancelled certificate batch - {$batchName}", 'certificate');
         } else {
             $response['message'] = 'Failed to cancel batch. It may already be processed or does not exist.';
         }
@@ -234,7 +247,7 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         $response = [
             'success' => false,
-            'message' => null
+            'message' => null,
         ];
 
         if (!$request->isPost()) {
@@ -253,11 +266,16 @@ class Admin_CertificateBatchesController extends Zend_Controller_Action
 
         $adminSession = new Zend_Session_Namespace('administrators');
         $certificateBatchesDb = new Application_Model_DbTable_CertificateBatches();
+        $batch = $certificateBatchesDb->getBatch($batchId);
         $result = $certificateBatchesDb->rejectBatch($batchId, $adminSession->admin_id);
 
         if ($result) {
             $response['success'] = true;
             $response['message'] = 'Batch rejected successfully';
+
+            $batchName = $batch['batch_name'] ?? "#$batchId";
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog("Rejected certificate batch - {$batchName}", 'certificate');
         } else {
             $response['message'] = 'Failed to reject batch. It may not be in generated status or does not exist.';
         }

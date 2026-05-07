@@ -65,6 +65,15 @@
         (<?= (int)$this->pendingCount; ?>)</a>
 <?php } ?>
 <div style="display:inline-block;margin-left:15px;">
+    <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Status:"); ?></label>
+    <select id="statusFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
+        <option value="active"><?= $this->translate->_("Active"); ?></option>
+        <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+        <option value=""><?= $this->translate->_("All"); ?></option>
+    </select>
+</div>
+<?php if (!empty($this->unmappedParticipantCount)) { ?>
+<div style="display:inline-block;margin-left:15px;">
     <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Mapping:"); ?></label>
     <select id="mappingFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
         <option value=""><?= $this->translate->_("All"); ?></option>
@@ -72,6 +81,7 @@
         <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
     </select>
 </div>
+<?php } ?>
 <style>
     #participantsTable > tbody > tr > td { vertical-align: middle; }
     #participantsTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
@@ -86,30 +96,30 @@
             <th><?= $this->translate->_("Participant ID"); ?></th>
             <th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
             <th><?= $this->translate->_("Country"); ?></th>
-            <th><?= $this->translate->_("Cell/Mobile"); ?></th>
-            <th><?= $this->translate->_("Phone"); ?></th>
-            <th><?= $this->translate->_("Affiliation"); ?></th>
+            <th><?= $this->translate->_("State/Province"); ?></th>
+            <th><?= $this->translate->_("District/County"); ?></th>
             <th><?= $this->translate->_("Email"); ?></th>
             <th><?= $this->translate->_("Status"); ?></th>
             <th><?= $this->translate->_("Data Managers"); ?></th>
+            <th><?= $this->translate->_("Shipments"); ?></th>
             <th><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
             <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
             <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
             <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Phone'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Affiliation'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td colspan="11" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
+            <td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?></td>
         </tr>
     </tbody>
 </table>
@@ -144,13 +154,14 @@
                 "sClass": "center"
             },
             {
-                "sClass": "center"
-            },
-            {
                 "sClass": ""
             },
             {
                 "sClass": "center"
+            },
+            {
+                "sClass": "center",
+                "bSortable": false
             },
             {
                 "sClass": "center",
@@ -170,7 +181,6 @@
             "fnServerParams": function (aoData) {
                 labName = $("#labId").val();
                 country = $("#country").val();
-                pstatus = $("#pstatus").val();
                 aoData.push({
                     "name": "pid",
                     "value": labName
@@ -181,7 +191,7 @@
                 });
                 aoData.push({
                     "name": "pstatus",
-                    "value": pstatus
+                    "value": $("#statusFilter").val() || ""
                 });
                 aoData.push({
                     "name": "mappingFilter",
@@ -207,6 +217,10 @@
                 }
                 return nRow;
             }
+        });
+
+        $("#statusFilter").change(function () {
+            oTable.fnDraw();
         });
 
         $("#mappingFilter").change(function () {
@@ -267,6 +281,57 @@
             }
             $rows.each(function () {
                 var blob = $(this).attr('data-dm-search') || '';
+                $(this).toggle(blob.indexOf(q) !== -1);
+            });
+        });
+
+        // Shipments column — expand/collapse child row with on-demand AJAX fetch.
+        // DataTables allows only one child row per parent, so if the row already
+        // has a different child (e.g. data managers) we close it before opening
+        // ours. Toggling our own button collapses.
+        function loadShipmentsChildRow(tr, participantId) {
+            $.post(
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'participant-shipments', 'format' => 'html')); ?>",
+                { id: participantId },
+                function (html) {
+                    var $childTr = $(tr).next('tr');
+                    $childTr.find('td').first().html(html);
+                }
+            ).fail(function () {
+                var $childTr = $(tr).next('tr');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load shipments. Please try again."); ?></div>');
+            });
+        }
+
+        $('#participantsTable tbody').on('click', 'a.toggle-shipments-row', function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var participantId = $btn.data('participant-id');
+            var tr = $btn.closest('tr')[0];
+            var $childTr = $(tr).next('tr');
+            var mineOpen = oTable.fnIsOpen(tr) && $childTr.find('.shipments-child-row').length > 0;
+            if (mineOpen) {
+                oTable.fnClose(tr);
+                return;
+            }
+            if (oTable.fnIsOpen(tr)) {
+                oTable.fnClose(tr);
+            }
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading shipments…"); ?></div>';
+            oTable.fnOpen(tr, placeholder, 'shipments-child-container');
+            loadShipmentsChildRow(tr, participantId);
+        });
+
+        // Inline filter for the expanded shipments list (only present when > 5 shipments)
+        $('#participantsTable tbody').on('input', 'input.shipments-filter-input', function () {
+            var q = $(this).val().toLowerCase().trim();
+            var $rows = $(this).closest('.shipments-child-row').find('tr.shipment-row');
+            if (q === '') {
+                $rows.show();
+                return;
+            }
+            $rows.each(function () {
+                var blob = $(this).attr('data-shipment-search') || '';
                 $(this).toggle(blob.indexOf(q) !== -1);
             });
         });

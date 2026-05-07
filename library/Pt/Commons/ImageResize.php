@@ -18,14 +18,13 @@
 
 class Pt_Commons_ImageResize
 {
-
     // *** Class variables
     private $image;
     private $width;
     private $height;
     private $imageResized;
 
-    function __construct($fileName)
+    public function __construct($fileName)
     {
         // *** Open up the file
         $this->image = $this->openImage($fileName);
@@ -62,14 +61,13 @@ class Pt_Commons_ImageResize
 
     ## --------------------------------------------------------
 
-    public function resizeImage($newWidth, $newHeight, $option = "auto")
+    public function resizeImage($newWidth, $newHeight, $option = 'auto')
     {
         // *** Get optimal width and height - based on $option
         $optionArray = $this->getDimensions($newWidth, $newHeight, $option);
 
         $optimalWidth = $optionArray['optimalWidth'];
         $optimalHeight = $optionArray['optimalHeight'];
-
 
         // *** Resample - create image canvas of x, y size
         $this->imageResized = imagecreatetruecolor($optimalWidth, $optimalHeight);
@@ -78,7 +76,6 @@ class Pt_Commons_ImageResize
             imagealphablending($this->imageResized, false);
         }
         imagecopyresampled($this->imageResized, $this->image, 0, 0, 0, 0, $optimalWidth, $optimalHeight, $this->width, $this->height);
-
 
         // *** if option is 'crop', then crop too
         if ($option == 'crop') {
@@ -92,7 +89,7 @@ class Pt_Commons_ImageResize
     {
 
         if ($newHeight > $this->height && $newWidth > $this->width) {
-            return array('optimalWidth' => $this->width, 'optimalHeight' => $this->height);
+            return ['optimalWidth' => $this->width, 'optimalHeight' => $this->height];
         }
         switch ($option) {
             case 'exact':
@@ -118,7 +115,7 @@ class Pt_Commons_ImageResize
                 $optimalHeight = $optionArray['optimalHeight'];
                 break;
         }
-        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+        return ['optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight];
     }
 
     ## --------------------------------------------------------
@@ -162,7 +159,7 @@ class Pt_Commons_ImageResize
             }
         }
 
-        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+        return ['optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight];
     }
 
     ## --------------------------------------------------------
@@ -182,7 +179,7 @@ class Pt_Commons_ImageResize
         $optimalHeight = $this->height / $optimalRatio;
         $optimalWidth = $this->width / $optimalRatio;
 
-        return array('optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight);
+        return ['optimalWidth' => $optimalWidth, 'optimalHeight' => $optimalHeight];
     }
 
     ## --------------------------------------------------------
@@ -202,7 +199,7 @@ class Pt_Commons_ImageResize
 
     ## --------------------------------------------------------
 
-    public function saveImage($savePath, $imageQuality = "100")
+    public function saveImage($savePath, $imageQuality = '100')
     {
         // *** Get extension
         $extension = strrchr($savePath, '.');

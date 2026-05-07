@@ -2,7 +2,6 @@
 
 class Application_Service_Announcement
 {
-
     public function composeNewAnnouncement($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -15,14 +14,14 @@ class Application_Service_Announcement
             if ($lastId > 0) {
                 $commonServices = new Application_Service_Common();
                 $notParticipatedMailContent = $commonServices->getEmailTemplate('announcement');
-                $sQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
-                    ->joinLeft(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('s.shipment_code', 's.shipment_code'))
-                    ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-                    ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))))
-                    ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
+                $sQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'])
+                    ->joinLeft(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['s.shipment_code', 's.shipment_code'])
+                    ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+                    ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+                    ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                     ->where("(sp.shipment_test_date = '0000-00-00' OR sp.shipment_test_date IS NULL OR sp.shipment_test_date like '')")
-                    ->where("sp.participant_id IN(" . implode(",", $params['participants']) . ")")
-                    ->group("sp.participant_id");
+                    ->where('sp.participant_id IN(' . implode(',', $params['participants']) . ')')
+                    ->group('sp.participant_id');
                 $participantEmails = $db->fetchAll($sQuery);
                 foreach ($participantEmails as $participantDetails) {
                     if ($participantDetails['email'] != '') {
@@ -38,14 +37,14 @@ class Application_Service_Announcement
                 }
                 // Push notification section
                 $pushQuery = $db->select()
-                    ->from(array('s' => 'shipment'), array('s.shipment_code', 's.shipment_code'))
-                    ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.shipment_id', 'sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'))
-                    ->joinLeft(array('d' => 'distributions'), 'd.distribution_id = s.distribution_id', array('distribution_code', 'distribution_date'))
-                    ->joinLeft(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))))
-                    ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id=s.scheme_type', array('SCHEME' => 'sl.scheme_name'))
-                    ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=sp.participant_id', array('dm_id'))
-                    ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email', 'push_notify_token'))
-                    ->where("sp.participant_id IN(" . implode(",", $params['participants']) . ")")
+                    ->from(['s' => 'shipment'], ['s.shipment_code', 's.shipment_code'])
+                    ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.shipment_id', 'sp.participant_id', 'sp.map_id', 'sp.last_not_participated_mail_count', 'sp.final_result'])
+                    ->joinLeft(['d' => 'distributions'], 'd.distribution_id = s.distribution_id', ['distribution_code', 'distribution_date'])
+                    ->joinLeft(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.email', 'participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+                    ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
+                    ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['dm_id'])
+                    ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email', 'push_notify_token'])
+                    ->where('sp.participant_id IN(' . implode(',', $params['participants']) . ')')
                     ->group('dm.dm_id');
                 // die($pushQuery);
                 $dmDetails = $db->fetchAll($pushQuery);
@@ -58,10 +57,10 @@ class Application_Service_Announcement
                 $msgBody    = $params['message'];
                 if ($lastId > 0 && $tempId > 0) {
                     $db->commit();
-                    $alertMsg->message = "New announcement created successfully";
+                    $alertMsg->message = 'New announcement created successfully';
                 } else {
                     $db->rollBack();
-                    $alertMsg->message = "Something went wrong. Please try again later.";
+                    $alertMsg->message = 'Something went wrong. Please try again later.';
                 }
             }
             return $lastId;
@@ -73,7 +72,7 @@ class Application_Service_Announcement
             $db->rollBack();
             error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
             error_log($e->getTraceAsString());
-            $alertMsg->message = "Something went wrong. Please try again later.";
+            $alertMsg->message = 'Something went wrong. Please try again later.';
             return null;
         }
     }

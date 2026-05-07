@@ -2,7 +2,6 @@
 
 class Reports_TestkitController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -29,7 +28,7 @@ class Reports_TestkitController extends Zend_Controller_Action
     {
         $adminSession = new Zend_Session_Namespace('administrators');
         if (!in_array('dts', $adminSession->activeSchemes)) {
-            $this->redirect("/admin");
+            $this->redirect('/admin');
         }
     }
 

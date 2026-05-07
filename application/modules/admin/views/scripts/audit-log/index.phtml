@@ -1,91 +1,701 @@
-</style>
 <link rel="stylesheet" href="<?php echo $this->baseUrl('css/daterangepicker.css'); ?>" type="text/css" media="all">
-<link rel="stylesheet" href="<?php echo $this->baseUrl("css/jquery.dataTables.css"); ?>" type="text/css" media="all">
-<h4 style="width:100%;height:50px;border-bottom:1px solid #777;">
-    <div style="font-size:22.5px;line-height:36px;color:#333;float:left;"><?= $this->translate->_("Audit Log"); ?></div>
-</h4>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
-<table style="margin:20px 0;" class="table table-bordered">
-    <tr>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Pick a Date Range (Optional)"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select Context Type (Optional)"); ?>
-        </td>
-        <td style="width:200px;text-align: center;font-weight:bold;">
-            <?= $this->translate->_("Select User (Optional)"); ?>
-        </td>
-        <td style="width:40px;text-align: center;font-weight:bold;"></td>
-    </tr>
-    <tr>
-        <td>
-            <input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-                style="background: #fff" placeholder="Click here to pick a Date Range" />
-        </td>
-        <td>
-            <select id="type" name="type" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- <?= $this->translate->_("Select Context"); ?> --</option>
-                <option value="participants"><?= $this->translate->_("Participants"); ?></option>
-                <option value="Shipment"><?= $this->translate->_("Shipments"); ?></option>
+<style>
+    .audit-page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 8px 4px 48px;
+        font-size: 14px;
+        color: #2d3748;
+    }
+
+    .audit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .audit-header .audit-title {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .audit-header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .audit-header .audit-summary {
+        font-size: 13px;
+        color: #718096;
+    }
+
+    .audit-summary strong {
+        color: #2d3748;
+    }
+
+    .audit-search {
+        position: relative;
+        margin-bottom: 16px;
+    }
+
+    .audit-search i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .audit-search input {
+        width: 100%;
+        height: 40px;
+        padding: 0 38px 0 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        background: #f7fafc;
+        font-size: 14px;
+        color: #2d3748;
+        transition: all .15s;
+    }
+
+    .audit-search input::placeholder {
+        color: #a0aec0;
+    }
+
+    .audit-search input:focus {
+        outline: none;
+        background: #fff;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, .15);
+    }
+
+    .audit-search .clear-search {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: none;
+        background: #cbd5e0;
+        color: #fff;
+        font-size: 10px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .audit-search .clear-search:hover {
+        background: #a0aec0;
+    }
+
+    .audit-search.has-value .clear-search {
+        display: flex;
+    }
+
+    .audit-toolbar {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1.4fr auto;
+        gap: 10px;
+        align-items: end;
+        margin-bottom: 22px;
+    }
+
+    .audit-toolbar .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .audit-toolbar label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #718096;
+        margin: 0;
+    }
+
+    .audit-toolbar input,
+    .audit-toolbar select {
+        height: 34px;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        padding: 0 10px;
+        background: #fff;
+        font-size: 13px;
+        color: #2d3748;
+        transition: border-color .15s, box-shadow .15s;
+    }
+
+    .audit-toolbar input:focus,
+    .audit-toolbar select:focus {
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, .15);
+        outline: none;
+    }
+
+    .audit-toolbar .reset-btn {
+        height: 34px;
+        padding: 0 14px;
+        border: 1px solid #cbd5e0;
+        border-radius: 6px;
+        background: #fff;
+        color: #4a5568;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+    .audit-toolbar .reset-btn:hover {
+        background: #edf2f7;
+        color: #2d3748;
+    }
+
+    @media (max-width: 900px) {
+        .audit-toolbar {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .audit-toolbar .reset-btn {
+            grid-column: span 2;
+        }
+    }
+
+    .audit-feed {
+        position: relative;
+    }
+
+    .audit-feed .day-group {
+        margin-bottom: 28px;
+    }
+
+    .audit-feed .day-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(to bottom, #fff 75%, rgba(255, 255, 255, 0));
+        padding: 6px 0 10px;
+        z-index: 2;
+        font-size: 12px;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .audit-feed .day-header .count {
+        color: #a0aec0;
+        font-weight: 500;
+        margin-left: 6px;
+    }
+
+    .audit-item {
+        position: relative;
+        display: grid;
+        grid-template-columns: 36px 1fr auto;
+        gap: 14px;
+        padding: 12px 14px 12px 12px;
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
+        background: #fff;
+        margin-bottom: 8px;
+        align-items: center;
+        transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+
+    .audit-item:hover {
+        border-color: #cbd5e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .03);
+    }
+
+    .audit-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .audit-icon.create { background: #38a169; }
+    .audit-icon.delete { background: #e53e3e; }
+    .audit-icon.update { background: #d69e2e; }
+    .audit-icon.import { background: #3182ce; }
+    .audit-icon.download { background: #319795; }
+    .audit-icon.message { background: #805ad5; }
+    .audit-icon.other { background: #718096; }
+
+    .audit-body {
+        min-width: 0;
+    }
+
+    .audit-action {
+        font-size: 14px;
+        color: #1a202c;
+        font-weight: 500;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .audit-meta {
+        margin-top: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: #718096;
+    }
+
+    .audit-user {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .audit-avatar {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4299e1;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+    }
+
+    .audit-user-name {
+        color: #4a5568;
+        font-weight: 500;
+    }
+
+    .audit-context {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #edf2f7;
+        color: #4a5568;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .audit-role {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 1px solid transparent;
+    }
+
+    .audit-role.admin { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .audit-role.datamanager { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+    .audit-role.ptcc { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+    .audit-role.participant { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+    .audit-role.system { background: #e2e8f0; color: #475569; border-color: #cbd5e0; }
+
+    .audit-ip {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .audit-ua {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .audit-time {
+        color: #a0aec0;
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .audit-action mark,
+    .audit-meta mark {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 0 2px;
+        border-radius: 2px;
+    }
+
+    .audit-feed .empty-state,
+    .audit-feed .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #a0aec0;
+        font-size: 14px;
+    }
+
+    .audit-feed .empty-state i,
+    .audit-feed .loading-state i {
+        font-size: 32px;
+        color: #cbd5e0;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .audit-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #edf2f7;
+        font-size: 13px;
+        color: #718096;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .audit-pagination .page-controls {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .audit-pagination button {
+        height: 32px;
+        min-width: 32px;
+        padding: 0 10px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        border-radius: 6px;
+        color: #4a5568;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+    .audit-pagination button:hover:not(:disabled) {
+        background: #edf2f7;
+        border-color: #cbd5e0;
+    }
+
+    .audit-pagination button:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+
+    .audit-pagination select {
+        height: 32px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 0 8px;
+        background: #fff;
+        color: #4a5568;
+        font-size: 13px;
+    }
+</style>
+
+<div class="audit-page">
+    <div class="audit-header">
+        <div class="audit-title">
+            <h1><?= $this->translate->_("Audit Log"); ?></h1>
+            <div class="audit-summary" id="auditSummary"></div>
+        </div>
+    </div>
+
+    <div class="audit-toolbar">
+        <div class="field">
+            <label><?= $this->translate->_("Date Range"); ?></label>
+            <input type="text" id="dateRange" placeholder="<?= $this->translate->_("Any date"); ?>" readonly />
+        </div>
+        <div class="field">
+            <label><?= $this->translate->_("Context"); ?></label>
+            <select id="type">
+                <option value=""><?= $this->translate->_("All contexts"); ?></option>
+                <?php if (!empty($this->contextTypes)): ?>
+                    <?php foreach ($this->contextTypes as $ctx): ?>
+                        <option value="<?= htmlspecialchars($ctx); ?>">
+                            <?= ucwords(str_replace('-', ' ', htmlspecialchars($ctx))); ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </select>
-        </td>
-        <td>
-            <select id="createdBy" name="createdBy" onchange="drawTable();" class="form-control input-sm">
-                <option value=""> -- <?= $this->translate->_("Select a User"); ?> --</option>
-                <?php
-                foreach ($this->systemAdmin as $admin) {
-                    ?>
-                    <option value="<?php echo $admin['primary_email']; ?>">
-                        <?php echo $admin['first_name'] . " " . $admin['last_name']; ?>
+        </div>
+        <div class="field">
+            <label><?= $this->translate->_("User"); ?></label>
+            <select id="createdBy">
+                <option value=""><?= $this->translate->_("All users"); ?></option>
+                <?php foreach ($this->systemAdmin as $admin): ?>
+                    <option value="<?= htmlspecialchars($admin['primary_email']); ?>">
+                        <?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']); ?>
                     </option>
-                    <?php
-                }
-                ?>
+                <?php endforeach; ?>
             </select>
-        </td>
-        <td><button class="btn btn-danger btn-sm"
-                onclick="document.location.href=document.location"><span><?= $this->translate->_("Reset"); ?></span></button>
-        </td>
-    </tr>
-</table>
+        </div>
+        <button type="button" class="reset-btn" id="resetBtn"><?= $this->translate->_("Reset"); ?></button>
+    </div>
 
-<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered table-hover"
-    id="auditLogTable">
-    <thead>
-        <tr>
-            <th><?= $this->htmlTranslate("Action"); ?></th>
-            <th><?= $this->htmlTranslate("Action By"); ?></th>
-            <th><?= $this->htmlTranslate("Action On"); ?></th>
-            <th><?= $this->htmlTranslate("Context"); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td colspan="2" class="dataTables_empty"><?= $this->htmlTranslate("Loading data from server"); ?></td>
-        </tr>
-    </tbody>
-</table>
-<script type="text/javascript" src="<?php echo $this->baseUrl("js/moment.min.js"); ?>"></script>
+    <div class="audit-search" id="searchWrap">
+        <i class="fas fa-search"></i>
+        <input type="search" id="searchBox" placeholder="<?= $this->translate->_("Search actions — try a name, code, or keyword…"); ?>" autocomplete="off" />
+        <button type="button" class="clear-search" id="clearSearch" title="Clear search">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="audit-feed" id="auditFeed">
+        <div class="loading-state">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <?= $this->htmlTranslate("Loading audit log…"); ?>
+        </div>
+    </div>
+
+    <div class="audit-pagination" id="auditPagination" style="display:none;">
+        <div class="page-info" id="pageInfo"></div>
+        <div class="page-controls">
+            <span><?= $this->translate->_("Per page"); ?></span>
+            <select id="pageSize">
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <button type="button" id="prevBtn" title="Previous">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button type="button" id="nextBtn" title="Next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/moment.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo $this->baseUrl('js/daterangepicker.js'); ?>"></script>
-<script type="text/javascript" charset="utf-8">
-    var startDate = "";
-    var endDate = "";
-    $(document).ready(function () {
-        $.blockUI;
+<script type="text/javascript">
+(function() {
+    var feedUrl = "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'feed']); ?>";
 
+    var state = {
+        page: 1,
+        pageSize: 25,
+        startDate: '',
+        endDate: '',
+        type: '',
+        createdBy: '',
+        search: ''
+    };
+
+    var actionIcons = {
+        create:   'fa-plus',
+        delete:   'fa-trash-alt',
+        update:   'fa-pencil-alt',
+        import:   'fa-file-import',
+        download: 'fa-download',
+        message:  'fa-paper-plane',
+        other:    'fa-circle'
+    };
+
+    var $feed = $('#auditFeed');
+    var $summary = $('#auditSummary');
+    var $pagination = $('#auditPagination');
+    var $pageInfo = $('#pageInfo');
+    var $prev = $('#prevBtn');
+    var $next = $('#nextBtn');
+    var fetchSeq = 0;
+    var searchDebounce = null;
+
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function highlight(text, term) {
+        var safe = escapeHtml(text);
+        if (!term) return safe;
+        var trimmed = term.trim();
+        if (!trimmed) return safe;
+        var parts = trimmed.split(/\s+/).map(function(p) {
+            return p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }).filter(Boolean);
+        if (!parts.length) return safe;
+        var re = new RegExp('(' + parts.join('|') + ')', 'gi');
+        return safe.replace(re, '<mark>$1</mark>');
+    }
+
+    function parseUserAgent(ua) {
+        if (!ua) return '';
+        var browser = 'Unknown';
+        var os = '';
+        if (/Edg\//.test(ua)) browser = 'Edge';
+        else if (/OPR\/|Opera/.test(ua)) browser = 'Opera';
+        else if (/Chrome\//.test(ua)) browser = 'Chrome';
+        else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+        else if (/Firefox\//.test(ua)) browser = 'Firefox';
+        else if (/MSIE|Trident/.test(ua)) browser = 'IE';
+        if (/Windows NT 10/.test(ua)) os = 'Windows 10';
+        else if (/Windows NT 11/.test(ua)) os = 'Windows 11';
+        else if (/Windows/.test(ua)) os = 'Windows';
+        else if (/Mac OS X/.test(ua)) os = 'macOS';
+        else if (/Android/.test(ua)) os = 'Android';
+        else if (/iPhone|iPad|iOS/.test(ua)) os = 'iOS';
+        else if (/Linux/.test(ua)) os = 'Linux';
+        return os ? browser + ' on ' + os : browser;
+    }
+
+    function roleSlug(role) {
+        if (!role) return 'system';
+        var r = String(role).toLowerCase();
+        if (r === 'data manager') return 'datamanager';
+        return r;
+    }
+
+    function renderItem(item, term) {
+        var iconClass = actionIcons[item.actionType] || actionIcons.other;
+        var contextHtml = item.context
+            ? '<span class="audit-context">' + escapeHtml(item.context) + '</span>'
+            : '';
+        var roleHtml = item.userRole
+            ? '<span class="audit-role ' + roleSlug(item.userRole) + '">' + escapeHtml(item.userRole) + '</span>'
+            : '';
+        var ipHtml = item.ipAddress
+            ? '<span class="audit-ip" title="IP address">' + escapeHtml(item.ipAddress) + '</span>'
+            : '';
+        var uaShort = parseUserAgent(item.userAgent);
+        var uaHtml = uaShort
+            ? '<span class="audit-ua" title="' + escapeHtml(item.userAgent) + '">' + escapeHtml(uaShort) + '</span>'
+            : '';
+        return ''
+            + '<div class="audit-item">'
+            +   '<div class="audit-icon ' + escapeHtml(item.actionType) + '">'
+            +     '<i class="fas ' + iconClass + '"></i>'
+            +   '</div>'
+            +   '<div class="audit-body">'
+            +     '<div class="audit-action">' + highlight(item.action, term) + '</div>'
+            +     '<div class="audit-meta">'
+            +       '<span class="audit-user" title="' + escapeHtml(item.userEmail) + '">'
+            +         '<span class="audit-avatar">' + escapeHtml(item.userInitials) + '</span>'
+            +         '<span class="audit-user-name">' + highlight(item.userName, term) + '</span>'
+            +       '</span>'
+            +       roleHtml
+            +       contextHtml
+            +       ipHtml
+            +       uaHtml
+            +     '</div>'
+            +   '</div>'
+            +   '<div class="audit-time">' + escapeHtml(item.time) + '</div>'
+            + '</div>';
+    }
+
+    function renderFeed(payload) {
+        if (!payload.items || payload.items.length === 0) {
+            $feed.html(''
+                + '<div class="empty-state">'
+                +   '<i class="far fa-folder-open"></i>'
+                +   'No audit entries match the current filters.'
+                + '</div>');
+            $summary.html('<strong>0</strong> entries');
+            $pagination.hide();
+            return;
+        }
+
+        var groups = [];
+        var current = null;
+        payload.items.forEach(function(item) {
+            if (!current || current.key !== item.dateKey) {
+                current = { key: item.dateKey, label: item.dateLabel, items: [] };
+                groups.push(current);
+            }
+            current.items.push(item);
+        });
+
+        var term = state.search;
+        var html = '';
+        groups.forEach(function(g) {
+            html += '<div class="day-group">';
+            html +=   '<div class="day-header">' + escapeHtml(g.label) + ' <span class="count">' + g.items.length + '</span></div>';
+            g.items.forEach(function(it) { html += renderItem(it, term); });
+            html += '</div>';
+        });
+
+        $feed.html(html);
+
+        var start = (payload.page - 1) * payload.pageSize + 1;
+        var end = Math.min(start + payload.items.length - 1, payload.total);
+        $summary.html('<strong>' + payload.total.toLocaleString() + '</strong> entries');
+        $pageInfo.html('Showing <strong>' + start + '</strong>–<strong>' + end + '</strong> of <strong>' + payload.total.toLocaleString() + '</strong>');
+        $prev.prop('disabled', payload.page <= 1);
+        $next.prop('disabled', payload.page >= payload.totalPages);
+        $pagination.show();
+    }
+
+    function fetchFeed() {
+        var seq = ++fetchSeq;
+        $feed.html('<div class="loading-state"><i class="fas fa-circle-notch fa-spin"></i>Loading…</div>');
+        $.ajax({
+            url: feedUrl,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: state.page,
+                pageSize: state.pageSize,
+                startDate: state.startDate,
+                endDate: state.endDate,
+                type: state.type,
+                createdBy: state.createdBy,
+                search: state.search
+            }
+        }).done(function(payload) {
+            if (seq !== fetchSeq) return;
+            renderFeed(payload);
+        }).fail(function() {
+            if (seq !== fetchSeq) return;
+            $feed.html(''
+                + '<div class="empty-state">'
+                +   '<i class="fas fa-exclamation-triangle"></i>'
+                +   'Failed to load audit log. Please retry.'
+                + '</div>');
+            $pagination.hide();
+        });
+    }
+
+    $(document).ready(function() {
         $('#dateRange').daterangepicker({
-            locale: {
-                cancelLabel: 'Clear',
-                format: 'DD-MMM-YYYY',
-                separator: ' to ',
-            },
+            locale: { cancelLabel: 'Clear', format: 'DD-MMM-YYYY', separator: ' to ' },
             autoApply: true,
             showDropdowns: true,
             alwaysShowCalendars: true,
-            autoUpdateInput: true,
+            autoUpdateInput: false,
             ranges: {
-                //'Today': [moment(), moment()],
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                 'Last 30 Days': [moment().subtract(29, 'days'), moment()],
@@ -93,88 +703,84 @@
                 'Last 120 Days': [moment().subtract(119, 'days'), moment()],
                 'Last 180 Days': [moment().subtract(179, 'days'), moment()]
             }
-        },
-            function (start, end) {
-                startDate = start.format('DD-MMM-YYYY');
-                endDate = end.format('DD-MMM-YYYY');
-                oTable.fnDraw();
-            });
-        oTable = $('#auditLogTable').dataTable({
+        }, function(start, end) {
+            state.startDate = start.format('DD-MMM-YYYY');
+            state.endDate = end.format('DD-MMM-YYYY');
+            state.page = 1;
+            $('#dateRange').val(state.startDate + ' to ' + state.endDate);
+            fetchFeed();
+        });
 
-            "bJQueryUI": false,
-            "bAutoWidth": false,
-            "bInfo": true,
-            "bScrollCollapse": true,
-            "sPaginationType": "bootstrap",
-            "bRetrieve": true,
-            "aoColumns": [{
-                "sClass": "center"
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            },
-            {
-                "sClass": "center",
-            }
-            ],
-            "aaSorting": [
-                [2, "desc"]
-            ],
-            "bProcessing": true,
-            "bSortClasses": false,
-            "bServerSide": true,
-            "sAjaxSource": "<?php echo $this->url(['module' => 'admin', 'controller' => 'audit-log', 'action' => 'index', 'format' => 'html']); ?>",
-            "fnServerParams": function (aoData) {
-                type = $("#type").val();
-                dateRange = $("#dateRange").val();
-                createdBy = $("#createdBy").val();
-                aoData.push({
-                    "name": "dateRange",
-                    "value": dateRange
-                });
-                aoData.push({
-                    "name": "type",
-                    "value": type
-                });
-                aoData.push({
-                    "name": "startDate",
-                    "value": startDate
-                });
-                aoData.push({
-                    "name": "endDate",
-                    "value": endDate
-                });
-                aoData.push({
-                    "name": "createdBy",
-                    "value": createdBy
-                });
-            },
-            "fnServerData": function (sSource, aoData, fnCallback) {
-                $.ajax({
-                    "dataType": 'json',
-                    "type": "POST",
-                    "url": sSource,
-                    "data": aoData,
-                    "success": function (json) {
-                        fnCallback(json);
-                    }
-                });
+        $('#dateRange').on('cancel.daterangepicker', function() {
+            $(this).val('');
+            state.startDate = '';
+            state.endDate = '';
+            state.page = 1;
+            fetchFeed();
+        });
+
+        $('#type').on('change', function() {
+            state.type = $(this).val();
+            state.page = 1;
+            fetchFeed();
+        });
+
+        $('#createdBy').on('change', function() {
+            state.createdBy = $(this).val();
+            state.page = 1;
+            fetchFeed();
+        });
+
+        $('#searchBox').on('input', function() {
+            var val = $(this).val();
+            $('#searchWrap').toggleClass('has-value', val.length > 0);
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(function() {
+                state.search = val;
+                state.page = 1;
+                fetchFeed();
+            }, 250);
+        });
+
+        $('#clearSearch').on('click', function() {
+            $('#searchBox').val('').focus();
+            $('#searchWrap').removeClass('has-value');
+            state.search = '';
+            state.page = 1;
+            fetchFeed();
+        });
+
+        $('#pageSize').on('change', function() {
+            state.pageSize = parseInt($(this).val(), 10) || 25;
+            state.page = 1;
+            fetchFeed();
+        });
+
+        $prev.on('click', function() {
+            if (state.page > 1) {
+                state.page -= 1;
+                fetchFeed();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
-        $.unblockUI;
+
+        $next.on('click', function() {
+            state.page += 1;
+            fetchFeed();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        $('#resetBtn').on('click', function() {
+            $('#dateRange').val('');
+            $('#type').val('');
+            $('#createdBy').val('');
+            $('#searchBox').val('');
+            $('#searchWrap').removeClass('has-value');
+            state = { page: 1, pageSize: state.pageSize, startDate: '', endDate: '', type: '', createdBy: '', search: '' };
+            fetchFeed();
+        });
+
+        fetchFeed();
     });
-
-    function drawTable() {
-        var dateRange = $("#dateRange").val();
-        var _dateRange = dateRange.split(" to ");
-        startDate = _dateRange[0];
-        endDate = _dateRange[1];
-
-        $.blockUI;
-        oTable.fnDraw();
-        $.unblockUI;
-    }
+})();
 </script>

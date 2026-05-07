@@ -43,19 +43,23 @@ if ($dmlPassLen <= 0) {
 ?>
 <style>
     /* Self-contained dualbox section. Reset all inherited form-horizontal weirdness. */
-    .form-horizontal .dml-form-group { clear: both; float: none; width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; }
-    .dml-section { display: block; clear: both; width: 100%; margin: 20px 0 0 0; box-sizing: border-box; }
+    .form-horizontal .dml-form-group { clear: both; float: none; width: 100%; margin-left: 0; margin-right: 0; padding-left: 0; padding-right: 0; min-width: 0; }
+    /* overflow:hidden + min-width:0 on every level so a single very long row label
+       (e.g. a lab with a long institute name + email) cannot grow the panes past
+       50%, push the dualbox wider than its parent, and trigger horizontal page
+       overflow that visually shifts the form-groups above. */
+    .dml-section { display: block; clear: both; width: 100%; max-width: 100%; min-width: 0; margin: 20px 0 0 0; box-sizing: border-box; overflow: hidden; }
     .dml-section *, .dml-section *::before, .dml-section *::after { box-sizing: border-box; }
     .dml-section .dml-header { display: flex; align-items: center; justify-content: space-between; margin: 0 0 10px 0; }
     .dml-section .dml-header label { margin: 0; font-weight: bold; font-size: 14px; }
     .dml-section .dml-hint { text-align: center; color: #3a87ad; padding: 6px 0; font-size: 13px; }
     .dml-section .dml-actions { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; }
     .dml-section .dml-dual { display: flex; gap: 16px; align-items: stretch; width: 100%; min-width: 0; }
-    .dml-section .dml-pane { flex: 1 1 0; min-width: 0; max-width: 50%; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; }
-    .dml-section .dml-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
-    .dml-section .dml-pane-header input { width: 100%; }
-    .dml-section .dml-pane-scroll { position: relative; height: 280px; overflow-y: auto; overflow-x: hidden; background: #fff; }
-    .dml-section .dml-row { padding: 6px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dml-section .dml-pane { flex: 1 1 0; min-width: 0; max-width: 50%; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+    .dml-section .dml-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; min-width: 0; }
+    .dml-section .dml-pane-header input { width: 100%; max-width: 100%; }
+    .dml-section .dml-pane-scroll { position: relative; height: 280px; min-width: 0; overflow-y: auto; overflow-x: hidden; background: #fff; }
+    .dml-section .dml-row { display: block; max-width: 100%; padding: 6px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dml-section .dml-row:hover { background: #337ab7; color: #fff; }
     .dml-section .dml-pane-footer { padding: 8px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
     .dml-section .dml-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }

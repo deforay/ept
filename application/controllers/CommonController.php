@@ -2,7 +2,6 @@
 
 class CommonController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -38,7 +37,7 @@ class CommonController extends Zend_Controller_Action
     public function checkDuplicateAction()
     {
         if (!$this->hasParam('tableName')) {
-            $this->view->data = "";
+            $this->view->data = '';
         } else {
             $params = $this->getAllParams();
             $commonServices = new Application_Service_Common();
@@ -78,7 +77,7 @@ class CommonController extends Zend_Controller_Action
                 }
             }
         } else {
-            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+            $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
         }
     }
 
@@ -213,7 +212,7 @@ class CommonController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isGet()) {
             $commonService = new Application_Service_Common();
-            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam("q"));
+            $this->view->result = $commonService->getAllTestKitBySearch($this->_getParam('q'));
         }
     }
 

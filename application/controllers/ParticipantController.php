@@ -2,7 +2,6 @@
 
 class ParticipantController extends Zend_Controller_Action
 {
-
     private $noOfItems = 10;
 
     public function init()
@@ -61,7 +60,7 @@ class ParticipantController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $shipmentService->getShipmentOverview($params);
         } else {
-            $this->redirect("/participant/dashboard");
+            $this->redirect('/participant/dashboard');
         }
     }
 
@@ -120,18 +119,23 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $result = $userService->updateUser($params);
+
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $auditDb->addNewAuditLog('Updated own user info', 'participants');
+
             // To check the re-drection for participant after logged in
             $dbUsersProfile = new Application_Service_Participants();
             $shipmentService = new Application_Service_Shipments();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $checkPendingParticipants = $dbUsersProfile->getNotRespondedParticipantsByDmId($authNameSpace->dm_id);
             $checkPendingReports = $shipmentService->getFinalizedShipmentReportByDmId($authNameSpace->dm_id);
-            if ($checkPendingParticipants)
+            if ($checkPendingParticipants) {
                 $this->redirect('/participant/current-schemes');
-            else if ($checkPendingReports)
+            } elseif ($checkPendingReports) {
                 $this->redirect('/participant/report');
-            else
+            } else {
                 $this->redirect('/participant/dashboard');
+            }
         }
         // whether it is a GET or POST request, we always show the user info
         $this->view->rsUser = $userInfo = $userService->getUserInfo();
@@ -186,6 +190,8 @@ class ParticipantController extends Zend_Controller_Action
             $oldPassword = $request->getPost('oldpassword');
             $response = $user->changePassword($oldPassword, $newPassword);
             if ($response) {
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog('Changed password', 'auth');
                 $this->redirect('/participant/current-schemes');
             }
         }
@@ -207,6 +213,9 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $response = $user->confirmPrimaryMail($params, true);
             if ($response) {
+                $newEmail = trim((string) ($params['primaryEmail'] ?? ''));
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $auditDb->addNewAuditLog('Requested primary email change' . ($newEmail !== '' ? " to {$newEmail}" : ''), 'auth');
                 $this->redirect('/participant/current-schemes');
             }
         }
@@ -224,12 +233,12 @@ class ParticipantController extends Zend_Controller_Action
             $response = $pmService->addParticipantMessage($params);
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
             if ($response['status'] === 'success') {
-                $sessionAlert->message = "Mail set successfully";
-                $sessionAlert->status = "success";
+                $sessionAlert->message = 'Mail set successfully';
+                $sessionAlert->status = 'success';
                 return true;
             } else {
-                $sessionAlert->message = "Sorry, we could not process this message. Please try again";
-                $sessionAlert->status = "failure";
+                $sessionAlert->message = 'Sorry, we could not process this message. Please try again';
+                $sessionAlert->status = 'failure';
                 return false;
             }
         }
@@ -249,6 +258,9 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $data = $request->getPost();
             $participantService->updateParticipant($data);
+            $auditDb = new Application_Model_DbTable_AuditLog();
+            $uid = trim((string) ($data['uniqueIdentifier'] ?? ''));
+            $auditDb->addNewAuditLog('Updated tester profile' . ($uid !== '' ? " - {$uid}" : ''), 'participants');
             $this->redirect('/participant/testers');
         } else {
             $this->view->rsParticipant = $participantService->getParticipantDetails($this->_getParam('psid'));
@@ -358,19 +370,19 @@ class ParticipantController extends Zend_Controller_Action
         if ($this->hasParam('d92nl9d8d')) {
             $id = (int) base64_decode($this->_getParam('d92nl9d8d'));
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $sQuery = $db->select()->from(array('spm' => 'shipment_participant_map'), array('spm.map_id'))
-                ->join(array('s' => 'shipment'), 's.shipment_id=spm.shipment_id', array('s.shipment_code'))
-                ->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.first_name', 'p.last_name'))
-                ->where("spm.map_id = ?", $id);
+            $sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id'])
+                ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
+                ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.first_name', 'p.last_name'])
+                ->where('spm.map_id = ?', $id);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $sQuery = $sQuery
-                    ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                    ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
             }
             $this->view->result = $db->fetchRow($sQuery);
         } else {
-            $this->redirect("/participant/dashboard");
+            $this->redirect('/participant/dashboard');
         }
     }
 
@@ -458,7 +470,7 @@ class ParticipantController extends Zend_Controller_Action
             $shipmentService = new Application_Service_Shipments();
             $this->view->certificate = $shipmentService->getParticipantShipments($pId);
         } else {
-            $this->redirect("/participant/dashboard");
+            $this->redirect('/participant/dashboard');
         }
     }
     public function fileDownloadsAction()
@@ -480,7 +492,7 @@ class ParticipantController extends Zend_Controller_Action
             }
             $this->view->file = $params['file'];
         } else {
-            $this->redirect("/participant/current-scheme");
+            $this->redirect('/participant/current-scheme');
         }
     }
 
@@ -490,7 +502,7 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $this->view->parameters = $params;
         } else {
-            $this->redirect("/participant/file-download");
+            $this->redirect('/participant/file-download');
         }
     }
 
@@ -519,7 +531,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $participantService->addParticipant($params);
-            $this->redirect("/participant/view");
+            $this->redirect('/participant/view');
         }
 
         $this->view->affiliates = $participantService->getAffiliateList();
@@ -541,7 +553,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $participantService->updateParticipant($params);
-            $this->redirect("/participant/view");
+            $this->redirect('/participant/view');
         } else {
             if ($this->hasParam('id')) {
                 $partSysId = (int) $this->_getParam('id');
@@ -581,7 +593,7 @@ class ParticipantController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $participantService->addParticipantManagerMap($params, 'participant-side');
-            $this->redirect("/participant/participant-manager-map");
+            $this->redirect('/participant/participant-manager-map');
         }
         $this->view->participants = $participantService->getAllActiveParticipants();
         $this->view->dataManagers = $dataManagerService->getDataManagerList(false);
@@ -653,7 +665,7 @@ class ParticipantController extends Zend_Controller_Action
         if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $this->view->schemeDetails = $scheme->getScheme($data["scheme_type"]);
+            $this->view->schemeDetails = $scheme->getScheme($data['scheme_type']);
         }
     }
 
@@ -750,7 +762,6 @@ class ParticipantController extends Zend_Controller_Action
         $this->view->districts = $participants->getAllParticipantDistricts();
     }
 
-
     public function participantResponseAction()
     {
         $this->_helper->layout()->disableLayout();
@@ -817,7 +828,7 @@ class ParticipantController extends Zend_Controller_Action
             $this->view->shipmentDate = base64_decode($this->_getParam('shipmentDate'));
             $this->view->shipmentCode = base64_decode($this->_getParam('shipmentCode'));
         } else {
-            $this->redirect("/admin/index");
+            $this->redirect('/admin/index');
         }
     }
 
@@ -927,7 +938,7 @@ class ParticipantController extends Zend_Controller_Action
             $params = $this->getAllParams();
 
             $this->view->response = $feedbackService->saveFeedBackForms($params);
-            $this->redirect("/participant/report");
+            $this->redirect('/participant/report');
         } else {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             $this->view->sID = $sid = $request->getParam('sid');
@@ -936,12 +947,12 @@ class ParticipantController extends Zend_Controller_Action
             $checkExpiry = $feedbackService->checkExpiry($sid);
             if (!$checkExpiry) {
                 $alertMsg->message = 'Feedback form expired!';
-                $this->redirect("/participant/report");
+                $this->redirect('/participant/report');
             }
             $this->view->questions  = $result = $feedbackService->getFeedBackQuestions($sid);
             if (count($result['result']) == 0) {
                 $alertMsg->message = 'Question not available for now. Please try again later.';
-                $this->redirect("/participant/report");
+                $this->redirect('/participant/report');
             }
             $this->view->ans = $feedbackService->getFeedBackAnswers($sid, $pid, $mid);
         }

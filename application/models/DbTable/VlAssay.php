@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'r_vl_assay';
     protected $_primary = 'id';
 
@@ -10,11 +9,11 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
     {
         $id = 0;
         if (isset($params['name']) && trim($params['name']) != '') {
-            $data = array(
+            $data = [
                 'name' => $params['name'],
                 'short_name' => $params['shortName'],
-                'status' => !empty($params['status']) ? $params['status'] : 'active'
-            );
+                'status' => !empty($params['status']) ? $params['status'] : 'active',
+            ];
             $id = $this->insert($data);
         }
         return $id;
@@ -26,43 +25,39 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('name', 'short_name');
+        $aColumns = ['name', 'short_name'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -73,28 +68,25 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['vl_asay' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('vl_asay' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -110,7 +102,6 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -125,12 +116,12 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];
@@ -146,7 +137,7 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
 
     public function fetchVlAssay($id)
     {
-        return $this->fetchRow("id = " . $id . " AND `status` like 'active'");
+        return $this->fetchRow('id = ' . $id . " AND `status` like 'active'");
     }
 
     public function updateVlAssayDetails($params)
@@ -154,12 +145,12 @@ class Application_Model_DbTable_VlAssay extends Zend_Db_Table_Abstract
         $id = 0;
         if (isset($params['vlAssayId']) && trim($params['vlAssayId']) != '') {
             $id = $params['vlAssayId'];
-            $data = array(
+            $data = [
                 'name' => $params['name'],
                 'short_name' => $params['shortName'],
-                'status' => !empty($params['status']) ? $params['status'] : 'active'
-            );
-            $this->update($data, "id = " . $id);
+                'status' => !empty($params['status']) ? $params['status'] : 'active',
+            ];
+            $this->update($data, 'id = ' . $id);
         }
         return $id;
     }

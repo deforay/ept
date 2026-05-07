@@ -2,7 +2,6 @@
 
 class DataManagersController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -41,7 +40,7 @@ class DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $userService->addUser($params);
-            $this->redirect("/data-managers");
+            $this->redirect('/data-managers');
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
@@ -64,7 +63,7 @@ class DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $userService->updateUser($params);
-            $this->redirect("/data-managers");
+            $this->redirect('/data-managers');
         } else {
             if ($this->hasParam('id')) {
                 $userId = (int) $this->_getParam('id');
@@ -97,7 +96,7 @@ class DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->result = $userService->resetPasswordFromAdmin($params);
-        } else if ($this->hasParam('id')) {
+        } elseif ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }
@@ -113,7 +112,7 @@ class DataManagersController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $this->view->result = $userService->changePrimaryEmailFromAdmin($request->getPost());
-        } else if ($this->hasParam('id')) {
+        } elseif ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
         }

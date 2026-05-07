@@ -2,7 +2,6 @@
 
 class Admin_ReportConfigController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -28,7 +27,7 @@ class Admin_ReportConfigController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $reportService = new Application_Service_Reports();
             $reportService->updateReportConfigs($params);
-            $this->redirect("/admin/report-config/");
+            $this->redirect('/admin/report-config/');
         } else {
             $reportService = new Application_Service_Reports();
             $this->view->logo = $reportService->getReportConfigValue('logo');

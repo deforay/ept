@@ -2,7 +2,6 @@
 
 class TbController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -29,12 +28,12 @@ class TbController extends Zend_Controller_Action
             $data = $request->getPost();
             $shipmentService->updateTbResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-                $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+                $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
             } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
-                $this->redirect("/participant/current-schemes");
+                $this->redirect('/participant/current-schemes');
             } else {
-                $_SESSION['confirmForm'] = "yes";
-                $this->redirect("/tb/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
+                $_SESSION['confirmForm'] = 'yes';
+                $this->redirect('/tb/response/sid/' . $data['shipmentId'] . '/pid/' . $data['participantId'] . '/eid/' . $data['evId'] . '/uc/no');
             }
         } else {
             $sID = $request->getParam('sid');
@@ -52,7 +51,7 @@ class TbController extends Zend_Controller_Action
             $this->view->tbPossibleResults = $schemeService->getPossibleResults('tb', 'participant');
             $this->view->participant = $participantService->getParticipantDetails($pID);
             $shipment = $schemeService->getShipmentData($sID, $pID);
-            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
+            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('tb');
             $this->view->allSamples = $tbModel->getTbSamplesForParticipant($sID, $pID);
             $shipment['attributes'] = json_decode($shipment['attributes'], true);
             $this->view->instruments = $participantService->getTbInstruments($shipment['map_id']);

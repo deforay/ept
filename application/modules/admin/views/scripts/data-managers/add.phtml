@@ -246,11 +246,8 @@ if (!empty($this->ptcc) && $this->ptcc == 1) {
             <br>
             <div class="row">
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
-                    <?php if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) { ?>
-                        <input type="hidden" name="ptcc" id="ptcc" value="yes" />
-                    <?php } else { ?>
-                        <input type="hidden" name="ptcc" id="ptcc" value="no" />
-                    <?php } ?>
+                    <input type="hidden" name="ptcc" id="ptcc"
+                        value="<?= (!empty($this->ptcc) && $this->ptcc == 1) ? 'yes' : 'no'; ?>" />
                     <input type="hidden" name="btnName" id="btnName" value="">
                     <input name="submitbtn" class="btn btn-primary" type="button" tabindex="7"
                         value="<?= $this->translate->_("Add"); ?>" onclick="setActionAndSubmit('add');" />
