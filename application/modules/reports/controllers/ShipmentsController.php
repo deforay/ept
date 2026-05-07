@@ -2,7 +2,6 @@
 
 class Reports_ShipmentsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -66,7 +65,7 @@ class Reports_ShipmentsController extends Zend_Controller_Action
                 $this->view->resultDueDate = $shipmentArray['lastdate_response'] ?? null;
             }
         } else {
-            $this->redirect("/admin/index");
+            $this->redirect('/admin/index');
         }
     }
 

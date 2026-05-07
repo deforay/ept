@@ -1,0 +1,65 @@
+name: PHP Quality
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: php-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: PHPStan, CS-Fixer, Composer Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PHP_VERSION: '8.2'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: gd, zip, pdo, json, curl, gettext, openssl, fileinfo, sodium, zlib, intl, bcmath
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-dev-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-dev-
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: |
+          composer install \
+            --prefer-dist \
+            --no-progress \
+            --no-interaction
+
+      - name: PHPStan
+        run: composer phpstan
+
+      - name: PHP-CS-Fixer (dry-run)
+        run: composer cs-check
+
+      - name: Composer Audit
+        run: composer audit

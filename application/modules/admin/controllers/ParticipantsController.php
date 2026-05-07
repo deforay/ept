@@ -2,7 +2,6 @@
 
 class Admin_ParticipantsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -44,7 +43,15 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         }
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $this->view->pendingCount = (int)$db->fetchOne(
-            $db->select()->from('participant', new Zend_Db_Expr('COUNT(*)'))->where("status = ?", 'pending')
+            $db->select()->from('participant', new Zend_Db_Expr('COUNT(*)'))->where('status = ?', 'pending')
+        );
+        // Mapping filter is only useful when there's at least one active participant
+        // with no mapped data manager — hide it otherwise to keep the toolbar clean.
+        $this->view->unmappedParticipantCount = (int)$db->fetchOne(
+            $db->select()
+                ->from(['p' => 'participant'], new Zend_Db_Expr('COUNT(*)'))
+                ->where('p.status = ?', 'active')
+                ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm WHERE pmm.participant_id = p.participant_id)')
         );
     }
 
@@ -60,15 +67,15 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($participantId > 0) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $select = $db->select()
-                ->from(array('spm' => 'shipment_participant_map'), array(
+                ->from(['spm' => 'shipment_participant_map'], [
                     'map_id', 'response_status', 'final_result', 'is_excluded',
                     'shipment_test_date', 'shipment_test_report_date',
-                ))
-                ->join(array('s' => 'shipment'), 's.shipment_id = spm.shipment_id', array(
+                ])
+                ->join(['s' => 'shipment'], 's.shipment_id = spm.shipment_id', [
                     'shipment_id', 'shipment_code', 'shipment_date',
                     'shipment_status' => 's.status',
-                ))
-                ->joinLeft(array('sl' => 'scheme_list'), 'sl.scheme_id = s.scheme_type', array('scheme_name'))
+                ])
+                ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id = s.scheme_type', ['scheme_name'])
                 ->where('spm.participant_id = ?', $participantId)
                 ->order('s.shipment_date DESC')
                 ->order('s.shipment_id DESC');
@@ -87,10 +94,10 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($participantId > 0) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $select = $db->select()
-                ->from(array('pmm' => 'participant_manager_map'), array())
-                ->join(array('dm' => 'data_manager'), 'dm.dm_id = pmm.dm_id', array('dm_id', 'first_name', 'last_name', 'primary_email', 'data_manager_type', 'status', 'institute'))
+                ->from(['pmm' => 'participant_manager_map'], [])
+                ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['dm_id', 'first_name', 'last_name', 'primary_email', 'data_manager_type', 'status', 'institute'])
                 ->where('pmm.participant_id = ?', $participantId)
-                ->order(array('dm.first_name', 'dm.last_name'));
+                ->order(['dm.first_name', 'dm.last_name']);
             $this->view->mappedDms = $db->fetchAll($select);
         }
     }
@@ -105,7 +112,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $participantService->addParticipant($params);
-            $this->redirect("/admin/participants");
+            $this->redirect('/admin/participants');
         }
         $this->view->directParticipantLogin = $commonService->getConfig('direct_participant_login');
         $this->view->affiliates = $participantService->getAffiliateList();
@@ -145,14 +152,14 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             if (is_array($result) && !empty($result['validation_error'])) {
                 $bulkImportSession = new Zend_Session_Namespace('bulkImportFeedback');
                 $bulkImportSession->mismatches = $result['mismatches'];
-                $this->redirect("/admin/participants/bulk-import");
+                $this->redirect('/admin/participants/bulk-import');
             } elseif (!$result) {
-                $this->redirect("/admin/participants");
+                $this->redirect('/admin/participants');
             } else {
                 $this->view->response = $result;
             }
         } else {
-            $this->redirect("/admin/participants");
+            $this->redirect('/admin/participants');
         }
     }
 
@@ -166,7 +173,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $participantService->updateParticipant($params);
-            $this->redirect("/admin/participants");
+            $this->redirect('/admin/participants');
         } else {
             if ($this->hasParam('id')) {
                 $partSysId = (int) $this->_getParam('id');
@@ -218,7 +225,7 @@ class Admin_ParticipantsController extends Zend_Controller_Action
             if (!empty($params['isModal']) && !empty($params['datamanagerId'])) {
                 $this->redirect('/admin/participants/participant-manager-map/id/' . (int) $params['datamanagerId'] . '/modal/1');
             }
-            $this->redirect("/admin/participants/participant-manager-map");
+            $this->redirect('/admin/participants/participant-manager-map');
         }
         $this->view->countries = $participantService->getParticipantCountriesList();
         $this->view->province = $commonService->getParticipantsProvinceList();
@@ -298,6 +305,14 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $clientsServices = new Application_Service_Participants();
         if ($request->isPost()) {
             $params = $request->getPost();
+            // Filter values are JSON-encoded into a single 'filters' POST var
+            // to dodge PHP's max_input_vars truncating large multi-selects.
+            if (!empty($params['filters']) && is_string($params['filters'])) {
+                $decoded = json_decode($params['filters'], true);
+                if (is_array($decoded)) {
+                    $params = array_merge($params, $decoded);
+                }
+            }
             $this->view->participants = $clientsServices->getParticipantList($params);
             if (isset($params['schemeId']) && !empty($params['schemeId'])) {
                 $this->view->mappedParticipant = $clientsServices->getEnrolledBySchemeCode($params['schemeId']);

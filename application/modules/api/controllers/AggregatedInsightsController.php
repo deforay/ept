@@ -1,4 +1,5 @@
 <?php
+
 class Api_AggregatedInsightsController extends Zend_Controller_Action
 {
     public function init()

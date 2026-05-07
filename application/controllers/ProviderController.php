@@ -2,7 +2,6 @@
 
 class ProviderController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /* Initialize action controller here */
@@ -18,8 +17,4 @@ class ProviderController extends Zend_Controller_Action
         // action body
     }
 
-
 }
-
-
-

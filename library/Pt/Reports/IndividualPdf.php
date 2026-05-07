@@ -23,8 +23,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
     public $preHeaderText = '';
     public $formVersion = '';
 
-
-    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $effectiveDate = "", $config = "", $watermark = "", $dateFinalised = "", $instituteAddressPosition = "", $issuingAuthority = "", $dtsPanelType = "", $formVersion = "")
+    public function setSchemeName($header, $schemeName, $logo, $logoRight, $resultStatus, $schemeType, $layout, $effectiveDate = '', $config = '', $watermark = '', $dateFinalised = '', $instituteAddressPosition = '', $issuingAuthority = '', $dtsPanelType = '', $formVersion = '')
     {
         $this->generalModel = new Pt_Commons_General();
         $this->scheme_name = $schemeName;
@@ -57,7 +56,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
 
         //$image_file = K_PATH_IMAGES.'logo_example.jpg';
 
-        if (trim($this->logo) != "") {
+        if (trim($this->logo) != '') {
             if (file_exists(UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo)) {
                 $image_file = UPLOAD_PATH . DIRECTORY_SEPARATOR . 'logo' . DIRECTORY_SEPARATOR . $this->logo;
                 if (in_array($this->schemeType, ['recency', 'dts', 'vl', 'eid', 'tb', 'generic-test']) && $this->layout == 'zimbabwe') {
@@ -73,9 +72,9 @@ class Pt_Reports_IndividualPdf extends Fpdi
                 }
             }
         }
-        $screening = "";
+        $screening = '';
         if (isset($this->dtsPanelType) && !empty($this->dtsPanelType)) {
-            $screening = " - " . ucwords($this->dtsPanelType);
+            $screening = ' - ' . ucwords($this->dtsPanelType);
         }
         // Set font
 
@@ -84,23 +83,22 @@ class Pt_Reports_IndividualPdf extends Fpdi
 
         //$this->header = preg_replace('/<br>$/', "", $this->header);
 
-
-        if (isset($this->config->instituteAddress) && $this->config->instituteAddress != "") {
+        if (isset($this->config->instituteAddress) && $this->config->instituteAddress != '') {
             $instituteAddress = nl2br(stripcslashes(trim($this->config->instituteAddress)));
         } else {
             $instituteAddress = null;
         }
-        if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != "") {
+        if (isset($this->config->additionalInstituteDetails) && $this->config->additionalInstituteDetails != '') {
             $additionalInstituteDetails = nl2br(stripcslashes(trim($this->config->additionalInstituteDetails)));
         } else {
             $additionalInstituteDetails = null;
         }
         if ($this->schemeType == 'vl' && $this->layout != 'zimbabwe') {
-            if (isset($this->config) && $this->config != "") {
+            if (isset($this->config) && $this->config != '') {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
 
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
                 $html .= '<br/><br/><span style="font-weight: bold;text-align:center;font-size:12px;">Proficiency Testing Program for HIV-1 Viral Load using Dried Tube Specimen</span>';
@@ -112,11 +110,11 @@ class Pt_Reports_IndividualPdf extends Fpdi
         } elseif ($this->schemeType == 'eid' && $this->layout != 'zimbabwe') {
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span style="text-align:center;font-size:11;">' . $this->header . '</span><br/>';
-            if (isset($this->config) && $this->config != "") {
+            if (isset($this->config) && $this->config != '') {
                 $html = '<span style="font-weight: bold;text-align:center;font-size:18px;">' . $this->config->instituteName . '</span>
 
                 <br/><span style="font-weight: bold;text-align:center;font-size:11;">' . nl2br(stripcslashes(trim($this->header))) . '</span>';
-                if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+                if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
                     $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
                 }
             } else {
@@ -128,7 +126,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
         } elseif (($this->schemeType == 'recency' || $this->schemeType == 'dts') && $this->layout != 'zimbabwe' && $this->layout != 'myanmar' && $this->layout != 'jamaica') {
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
-            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+            if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
             $html .= '<br>Proficiency Testing Report - ' . $this->scheme_name . '</span><br><span style="font-weight: bold; font-size:11;text-align:center;">Individual Participant Results Report ' . $screening . '</span>';
@@ -136,7 +134,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             $this->SetFont('freesans', '', 10, '', true);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>';
             $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
-            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+            if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
             }
             $html .= '<br><br>Proficiency Testing Report - ' . $this->scheme_name . '</span>';
         } elseif ($this->schemeType == 'dts' && $this->layout == 'jamaica') {
@@ -179,13 +177,13 @@ class Pt_Reports_IndividualPdf extends Fpdi
         } elseif ($this->schemeType == 'generic-test') {
             $this->SetFont('freesans', '', 10);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  ' . $this->scheme_name . '</span>';
-            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+            if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
         } else {
             $this->SetFont('freesans', '', 11);
             $html = '<span style="font-weight: bold;text-align:center;"><span  style="text-align:center;">' . $this->header . '</span><br>Proficiency Testing Report -  ' . $this->scheme_name . '</span>';
-            if ($this->instituteAddressPosition == "header" && isset($instituteAddress) && $instituteAddress != "") {
+            if ($this->instituteAddressPosition == 'header' && isset($instituteAddress) && $instituteAddress != '') {
                 $html .= '<br/><span style="font-weight: normal;text-align:center;font-size:11;">' . $instituteAddress . '</span>';
             }
         }
@@ -238,7 +236,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             }
         }
 
-        if (isset($this->watermark) && $this->watermark != "") {
+        if (isset($this->watermark) && $this->watermark != '') {
             $this->SetAlpha(0.2); // Set transparency
 
             $this->SetFont('freesans', 'B', 120, '', false);
@@ -251,12 +249,15 @@ class Pt_Reports_IndividualPdf extends Fpdi
 
     public function Rotate($angle, $x = -1, $y = -1)
     {
-        if ($x == -1)
+        if ($x == -1) {
             $x = $this->x;
-        if ($y == -1)
+        }
+        if ($y == -1) {
             $y = $this->y;
-        if ($this->angle != 0)
+        }
+        if ($this->angle != 0) {
             $this->_out('Q');
+        }
         $this->angle = $angle;
         if ($angle != 0) {
             $angle *= M_PI / 180;
@@ -290,14 +291,14 @@ class Pt_Reports_IndividualPdf extends Fpdi
 
     public function Footer()
     {
-        $finalizeReport = "";
-        if (isset($this->resultStatus) && trim($this->resultStatus) == "finalized") {
+        $finalizeReport = '';
+        if (isset($this->resultStatus) && trim($this->resultStatus) == 'finalized') {
             $finalizeReport = ' | INDIVIDUAL PERFORMANCE REPORT | FINALIZED ';
         } else {
             $finalizeReport = ' | INDIVIDUAL PERFORMANCE REPORT ';
         }
 
-        $effectiveDateToShow = $this->effectiveDate ?? date("Y-m-d H:i:s");
+        $effectiveDateToShow = $this->effectiveDate ?? date('Y-m-d H:i:s');
         // Position from bottom - TB needs more space for additional footer content
         $footerPosition = ($this->schemeType == 'tb') ? -25 : -15;
         $this->SetY($footerPosition);
@@ -307,9 +308,9 @@ class Pt_Reports_IndividualPdf extends Fpdi
         // Page number
 
         if ($this->schemeType == 'eid' || $this->schemeType == 'vl' || $this->schemeType == 'tb') {
-            $this->writeHTML("<hr>", true, false, true, false, '');
-            if ($this->instituteAddressPosition == "footer" && isset($instituteAddress) && $instituteAddress != "") {
-                $this->writeHTML($instituteAddress, true, false, true, false, "L");
+            $this->writeHTML('<hr>', true, false, true, false, '');
+            if ($this->instituteAddressPosition == 'footer' && isset($instituteAddress) && $instituteAddress != '') {
+                $this->writeHTML($instituteAddress, true, false, true, false, 'L');
             }
         }
         $effectiveDate = (!empty($effectiveDateToShow) || $effectiveDateToShow != '') ? new DateTime($effectiveDateToShow) : null;
@@ -342,7 +343,7 @@ class Pt_Reports_IndividualPdf extends Fpdi
             if (isset($this->layout) && $this->layout == 'zimbabwe') {
                 $this->writeHTML("NATIONAL MICROBIOLOGY REFERENCE LABORATORY EXTERNAL QUALITY ASSURANCE SURVEY <br><span style='color:red;'>*** All the contents of this report are strictly confidential ***</span>", true, false, true, false, 'C');
             } else {
-                $this->writeHTML("Report generated on " . Pt_Commons_DateUtility::humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, true, false, true, false, 'C');
+                $this->writeHTML('Report generated on ' . Pt_Commons_DateUtility::humanReadableDateFormat($effectiveDateToShow) . $finalizeReport, true, false, true, false, 'C');
             }
         }
         if ($this->schemeType != 'tb') {

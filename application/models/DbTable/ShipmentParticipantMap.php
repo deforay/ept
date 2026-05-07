@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'shipment_participant_map';
     protected $_primary = 'map_id';
 
@@ -16,9 +15,9 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $authNameSpace = new Zend_Session_Namespace('administrators');
             // To fetch Already mapped participants
             $participantList = $this->fetchParticipantListByShipmentId($params['shipmentId']);
-            $alreadyMappedParticipant = explode(",", $participantList['participantId']);
+            $alreadyMappedParticipant = explode(',', $participantList['participantId']);
             $alreadyMappedParticipant = array_unique($alreadyMappedParticipant);
-            $alreadyMappedId = explode(",", $participantList['mapId']);
+            $alreadyMappedId = explode(',', $participantList['mapId']);
             $alreadyMappedId = array_unique($alreadyMappedId);
             // To fetch newly enrolment list
             $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
@@ -36,38 +35,37 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                     'participant_id' => $participant,
                     'evaluation_status' => '19901190',
                     'created_by_admin' => $authNameSpace->admin_id,
-                    "created_on_admin" => new Zend_Db_Expr('now()')
+                    'created_on_admin' => new Zend_Db_Expr('now()'),
                 ];
                 $commonServices->insertIgnore($this->_name, $data);
                 // $this->insert($data);
 
-                if (isset($params['listName']) && $params['listName'] != "" && (isset($params['showName']) && !empty($params['showName']) && $params['showName'] == 'yes')) {
+                if (isset($params['listName']) && $params['listName'] != '' && (isset($params['showName']) && !empty($params['showName']) && $params['showName'] == 'yes')) {
                     $db = Zend_Db_Table_Abstract::getAdapter();
-                    if (isset($params['participantList']) && $params['participantList'] != "") {
+                    if (isset($params['participantList']) && $params['participantList'] != '') {
                         $ids = [];
                         foreach ($params['participantList'] as $d) {
                             $ids[] = base64_decode($d);
                         }
-                        $exist = $db->fetchAll($db->select()->from(array('eln' => 'enrollments'))
+                        $exist = $db->fetchAll($db->select()->from(['eln' => 'enrollments'])
                             ->where('list_name IN ("' . implode('", "', $ids) . '") AND participant_id = ' . $participant));
                         if (isset($exist[0]['list_name']) && $exist[0]['list_name']) {
-                            $db->delete('enrollments', 'list_name IN ("' . implode('", "', $ids) . '") AND participant_id IN(' . implode(",", $params['selectedForEnrollment']) . ')');
+                            $db->delete('enrollments', 'list_name IN ("' . implode('", "', $ids) . '") AND participant_id IN(' . implode(',', $params['selectedForEnrollment']) . ')');
                         }
-                        $db->insert('enrollments', array(
+                        $db->insert('enrollments', [
                             'list_name' => $params['listName'],
                             'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
-                        ));
+                        ]);
                     } else {
-                        $db->insert('enrollments', array(
+                        $db->insert('enrollments', [
                             'list_name' => $params['listName'],
                             'scheme_id' => $params['schemeId'],
                             'participant_id' => $participant,
-                        ));
+                        ]);
                     }
                 }
             }
-
 
             $shipmentDb = new Application_Model_DbTable_Shipments();
             $shipmentDb->updateShipmentStatus($params['shipmentId'], 'ready');
@@ -83,17 +81,17 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             /* New shipment mail alert start */
             $notParticipatedMailContent = $commonServices->getEmailTemplate('new_shipment');
             $subQuery = $this->select()
-                ->from(array('s' => 'shipment'), array('shipment_code', 'scheme_type'))
-                ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('map_id'))
-                ->join(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=spm.participant_id', array('dm_id'))
-                ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))))
-                ->join(array('dm' => 'data_manager'), 'pmm.dm_id=dm.dm_id', array('primary_email'))
-                ->where("s.shipment_id=?", $shipmentRow['shipment_id'])
+                ->from(['s' => 'shipment'], ['shipment_code', 'scheme_type'])
+                ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['map_id'])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id=spm.participant_id', ['dm_id'])
+                ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['participantName' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p'))])
+                ->join(['dm' => 'data_manager'], 'pmm.dm_id=dm.dm_id', ['primary_email'])
+                ->where('s.shipment_id=?', $shipmentRow['shipment_id'])
                 ->group('dm.dm_id')->setIntegrityCheck(false);
             $subResult = $this->fetchAll($subQuery);
             foreach ($subResult as $dm) {
-                $search = array('##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',);
-                $replace = array($dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', '');
+                $search = ['##NAME##', '##SHIPCODE##', '##SHIPTYPE##', '##SURVEYCODE##', '##SURVEYDATE##',];
+                $replace = [$dm['participantName'], $dm['shipment_code'], $dm['scheme_type'], '', ''];
                 $content = $notParticipatedMailContent['mail_content'];
                 $message = str_replace($search, $replace, $content);
                 $subject = $notParticipatedMailContent['mail_subject'];
@@ -112,7 +110,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog(
                 "Shipped shipment - {$shipmentCode} ({$participantCount} participants)",
-                "shipment"
+                'shipment'
             );
 
             return true;
@@ -134,16 +132,16 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $operatingSystem = $commonService->getOperatingSystem($userAgent);
             $browser = $commonService->getBrowser($userAgent);
 
-            $params['user_client_info'] = json_encode(array(
+            $params['user_client_info'] = json_encode([
                 'ip' => $ipAddress,
                 'os' => $operatingSystem,
-                'browser' => $browser
-            ));
+                'browser' => $browser,
+            ]);
 
-            $row = $this->fetchRow("map_id = " . $shipmentMapId);
-            if ($row != "") {
-                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                    $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $shipmentMapId);
+            $row = $this->fetchRow('map_id = ' . $shipmentMapId);
+            if ($row != '') {
+                if (trim($row['created_on_user']) == '' || $row['created_on_user'] == null) {
+                    $this->update(['created_on_user' => new Zend_Db_Expr('now()')], 'map_id = ' . $shipmentMapId);
                 }
             }
 
@@ -168,7 +166,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
                 $params['evaluation_status'][3] = 1;
             }
             $params['mode_of_response'] = 'web';
-            return $this->update($params, "map_id = " . $shipmentMapId);
+            return $this->update($params, 'map_id = ' . $shipmentMapId);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing
@@ -181,10 +179,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function removeShipmentMapDetails($params, $mapId)
     {
-        $row = $this->fetchRow("map_id = " . $mapId);
-        if ($row != "") {
-            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $mapId);
+        $row = $this->fetchRow('map_id = ' . $mapId);
+        if ($row != '') {
+            if (trim($row['created_on_user']) == '' || $row['created_on_user'] == null) {
+                $this->update(['created_on_user' => new Zend_Db_Expr('now()')], 'map_id = ' . $mapId);
             }
         }
         $params['evaluation_status'] = $row['evaluation_status'];
@@ -197,15 +195,15 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         // changing evaluation status 4th character to 0 = no response
         $params['evaluation_status'][3] = 0;
 
-        return $this->update($params, "map_id = " . $mapId);
+        return $this->update($params, 'map_id = ' . $mapId);
     }
 
     public function isShipmentEditable($shipmentId, $participantId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $shipment = $db->fetchRow($db->select()->from(array('s' => 'shipment'))
-            ->where("s.shipment_id = ?", $shipmentId));
-        if ((isset($shipment["status"]) && $shipment["status"] == 'finalized') || (isset($shipment["response_switch"]) && $shipment["response_switch"] == 'off')) {
+        $shipment = $db->fetchRow($db->select()->from(['s' => 'shipment'])
+            ->where('s.shipment_id = ?', $shipmentId));
+        if ((isset($shipment['status']) && $shipment['status'] == 'finalized') || (isset($shipment['response_switch']) && $shipment['response_switch'] == 'off')) {
             return false;
         } else {
             return true;
@@ -219,18 +217,18 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $authNameSpace = new Zend_Session_Namespace('administrators');
             $size = count($params['participants']);
             for ($i = 0; $i < $size; $i++) {
-                $data = array(
+                $data = [
                     'shipment_id' => base64_decode($params['shipmentId']),
                     'participant_id' => base64_decode($params['participants'][$i]),
                     'evaluation_status' => '19901190',
                     'created_by_admin' => $authNameSpace->admin_id,
-                    "created_on_admin" => new Zend_Db_Expr('now()')
-                );
+                    'created_on_admin' => new Zend_Db_Expr('now()'),
+                ];
                 $this->insert($data);
             }
             $this->getAdapter()->commit();
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $alertMsg->message = "Participants added successfully";
+            $alertMsg->message = 'Participants added successfully';
         } catch (Exception $e) {
             $this->getAdapter()->rollBack();
             error_log($e->getMessage());
@@ -248,13 +246,13 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $participantId = explode(',', $participantId);
             $count = count($participantId);
             for ($i = 0; $i < $count; $i++) {
-                $data = array(
+                $data = [
                     'shipment_id' => $shipmentId,
                     'participant_id' => base64_decode($participantId[$i]),
                     'evaluation_status' => '19901190',
                     'created_by_admin' => $authNameSpace->admin_id,
-                    "created_on_admin" => new Zend_Db_Expr('now()')
-                );
+                    'created_on_admin' => new Zend_Db_Expr('now()'),
+                ];
                 $insertCount = $this->insert($data);
             }
             $this->getAdapter()->commit();
@@ -270,18 +268,18 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     public function addQcInfo($params)
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
-        if (isset($params['mapId']) && trim($params['mapId']) != "") {
+        if (isset($params['mapId']) && trim($params['mapId']) != '') {
             $participantMapId = explode(',', $params['mapId']);
             $count = count($participantMapId);
             $qcDate = Pt_Commons_DateUtility::isoDateFormat($params['qcDate']);
             for ($i = 0; $i < $count; $i++) {
-                if (trim($participantMapId[$i]) != "") {
-                    $data = array(
+                if (trim($participantMapId[$i]) != '') {
+                    $data = [
                         'qc_date' => $qcDate,
                         'qc_done_by' => $authNameSpace->dm_id,
-                        "qc_created_on" => new Zend_Db_Expr('now()')
-                    );
-                    $result = $this->update($data, "map_id = " . $participantMapId[$i]);
+                        'qc_created_on' => new Zend_Db_Expr('now()'),
+                    ];
+                    $result = $this->update($data, 'map_id = ' . $participantMapId[$i]);
                 }
             }
             return $result;
@@ -290,29 +288,29 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
     public function fetchParticipantShipments($pId)
     {
-        $query = $this->getAdapter()->select()->distinct()->from(array('sp' => 'shipment_participant_map'), array('shipment_id'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=sp.shipment_id', array('scheme_type', 'year' => "YEAR(shipment_date)"))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.participant_id'))
-            ->joinLeft(array('cb' => 'certificate_batches'), 'sp.shipment_id IN(cb.shipment_ids)', array('batch_name'))
-            ->where("sp.participant_id = ?", $pId)
+        $query = $this->getAdapter()->select()->distinct()->from(['sp' => 'shipment_participant_map'], ['shipment_id'])
+            ->join(['s' => 'shipment'], 's.shipment_id=sp.shipment_id', ['scheme_type', 'year' => 'YEAR(shipment_date)'])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.participant_id'])
+            ->joinLeft(['cb' => 'certificate_batches'], 'sp.shipment_id IN(cb.shipment_ids)', ['batch_name'])
+            ->where('sp.participant_id = ?', $pId)
             // ->where("s.scheme_type ='vl' OR s.scheme_type='eid'")
             ->where("sp.shipment_test_date!='0000-00-00'")
             ->group('year')
             ->group('s.scheme_type');
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
-            $query = $query->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array())
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+            $query = $query->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         return $this->getAdapter()->fetchAll($query);
     }
 
     public function updateShipmentByAPI($data, $dm, $params)
     {
-        $row = $this->fetchRow("map_id = " . $params['mapId']);
-        if ($row != "") {
-            if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
+        $row = $this->fetchRow('map_id = ' . $params['mapId']);
+        if ($row != '') {
+            if (trim($row['created_on_user']) == '' || $row['created_on_user'] == null) {
+                $this->update(['created_on_user' => new Zend_Db_Expr('now()')], 'map_id = ' . $params['mapId']);
             }
         }
         $data['shipment_id'] = $params['shipmentId'];
@@ -355,16 +353,16 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
         $data['synced_on'] = new Zend_Db_Expr('now()');
         $data['mode_of_response'] = 'app';
 
-        return $this->update($data, "map_id = " . $params['mapId']);
+        return $this->update($data, 'map_id = ' . $params['mapId']);
     }
 
     public function fetchParticipantListByShipmentId($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('spm' => $this->_name), array(
-            'mapId' => new Zend_Db_Expr("GROUP_CONCAT(spm.map_id)"),
-            'participantId' => new Zend_Db_Expr("GROUP_CONCAT(spm.participant_id)")
-        ))->where('spm.shipment_id = ' . $shipmentId)->group('spm.shipment_id');
+        $sql = $db->select()->from(['spm' => $this->_name], [
+            'mapId' => new Zend_Db_Expr('GROUP_CONCAT(spm.map_id)'),
+            'participantId' => new Zend_Db_Expr('GROUP_CONCAT(spm.participant_id)'),
+        ])->where('spm.shipment_id = ' . $shipmentId)->group('spm.shipment_id');
         return $db->fetchRow($sql);
     }
 
@@ -372,10 +370,10 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
     {
         try {
             $commonService = new Application_Service_Common();
-            $row = $this->fetchRow("map_id = " . $params['mapId']);
-            if ($row != "") {
-                if (trim($row['created_on_user']) == "" || $row['created_on_user'] == NULL) {
-                    $this->update(array('created_on_user' => new Zend_Db_Expr('now()')), "map_id = " . $params['mapId']);
+            $row = $this->fetchRow('map_id = ' . $params['mapId']);
+            if ($row != '') {
+                if (trim($row['created_on_user']) == '' || $row['created_on_user'] == null) {
+                    $this->update(['created_on_user' => new Zend_Db_Expr('now()')], 'map_id = ' . $params['mapId']);
                 }
             }
             $data['shipment_id'] = $params['shipmentId'];
@@ -402,7 +400,7 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $data['synced'] = 'yes';
             $data['synced_on'] = new Zend_Db_Expr('now()');
             $data['mode_of_response'] = 'app';
-            return $this->update($data, "map_id = " . $params['mapId']);
+            return $this->update($data, 'map_id = ' . $params['mapId']);
         } catch (Exception $e) {
             // If any of the queries failed and threw an exception,
             // we want to roll back the whole transaction, reversing

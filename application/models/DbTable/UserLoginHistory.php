@@ -1,10 +1,7 @@
 <?php
 
-use Application_Service_Common as Common;
-
 class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'user_login_history';
     protected $_primary = 'history_id';
 
@@ -61,7 +58,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             return $this->fetchAll($select)->toArray();
         } catch (Exception $e) {
             error_log('Error fetching login history: ' . $e->getMessage());
-            return array();
+            return [];
         }
     }
 
@@ -82,7 +79,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             return $this->fetchAll($select)->toArray();
         } catch (Exception $e) {
             error_log('Error fetching login history by login ID: ' . $e->getMessage());
-            return array();
+            return [];
         }
     }
 
@@ -94,7 +91,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
     public function getAllLoginHistory($parameters)
     {
         /* Array of database columns which should be read and sent back to DataTables */
-        $aColumns = array(
+        $aColumns = [
             'login_id',
             'login_attempted_datetime',
             'login_status',
@@ -102,44 +99,42 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             'browser',
             'operating_system',
             'first_name',
-            'primary_email'
-        );
+            'primary_email',
+        ];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-                     " . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+                     ' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
         /*
          * Filtering
          */
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -150,32 +145,32 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
         // Join with data_managers table to get user details
         $sQuery = $this->getAdapter()->select()
-            ->from(array('dlh' => $this->_name))
+            ->from(['dlh' => $this->_name])
             ->joinLeft(
-                array('dm' => 'data_managers'),
+                ['dm' => 'data_managers'],
                 'dlh.user_id = dm.dm_id',
-                array('first_name', 'last_name', 'primary_email')
+                ['first_name', 'last_name', 'primary_email']
             );
 
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -205,12 +200,12 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];
@@ -241,7 +236,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             $fromDate = date('Y-m-d H:i:s', strtotime("-{$days} days"));
 
             $select = $this->getAdapter()->select()
-                ->from($this->_name, array('ip_address', 'COUNT(*) as login_count'))
+                ->from($this->_name, ['ip_address', 'COUNT(*) as login_count'])
                 ->where('user_id = ?', $userId)
                 ->where('login_attempted_datetime >= ?', $fromDate)
                 ->group('ip_address')
@@ -250,7 +245,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             return $this->getAdapter()->fetchAll($select);
         } catch (Exception $e) {
             error_log('Error fetching unique IP addresses: ' . $e->getMessage());
-            return array();
+            return [];
         }
     }
 
@@ -265,13 +260,13 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             $fromDate = date('Y-m-d', strtotime("-{$days} days"));
 
             $select = $this->getAdapter()->select()
-                ->from($this->_name, array(
+                ->from($this->_name, [
                     'login_date' => 'DATE(login_attempted_datetime)',
                     'total_attempts' => 'COUNT(*)',
                     'successful_logins' => 'SUM(CASE WHEN login_status = "success" THEN 1 ELSE 0 END)',
                     'failed_logins' => 'SUM(CASE WHEN login_status = "failed" THEN 1 ELSE 0 END)',
-                    'unique_users' => 'COUNT(DISTINCT dm_id)'
-                ))
+                    'unique_users' => 'COUNT(DISTINCT dm_id)',
+                ])
                 ->where('DATE(login_attempted_datetime) >= ?', $fromDate)
                 ->group('DATE(login_attempted_datetime)')
                 ->order('login_date DESC');
@@ -279,7 +274,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             return $this->getAdapter()->fetchAll($select);
         } catch (Exception $e) {
             error_log('Error fetching daily login stats: ' . $e->getMessage());
-            return array();
+            return [];
         }
     }
 
@@ -306,7 +301,7 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
      */
     private function getClientIpAddress()
     {
-        $ipKeys = array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR');
+        $ipKeys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'];
 
         foreach ($ipKeys as $key) {
             if (array_key_exists($key, $_SERVER) === true) {
@@ -374,10 +369,10 @@ class Application_Model_DbTable_UserLoginHistory extends Zend_Db_Table_Abstract
             $os = 'iOS';
         }
 
-        return array(
+        return [
             'browser' => $browser,
-            'os' => $os
-        );
+            'os' => $os,
+        ];
     }
 
     /**

@@ -2,33 +2,31 @@
 
 class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'partners';
     protected $_primary = 'partner_id';
-
 
     public function addPartnerDetails($params)
     {
         $partnerId = 0;
         $authNameSpace = new Zend_Session_Namespace('administrators');
         if (isset($params['partnerName']) && trim($params['partnerName']) != '') {
-            $data = array(
+            $data = [
                 'partner_name' => $params['partnerName'],
                 'link' => $params['link'],
                 'added_by' => $authNameSpace->admin_id,
                 'added_on' => new Zend_Db_Expr('now()'),
-                'status' => 'active'
-            );
+                'status' => 'active',
+            ];
             $partnerId = $this->insert($data);
             if ($partnerId > 0) {
                 $sortOrder = 1;
-                $partnerQuery = $this->getAdapter()->select()->from(array('pt' => $this->_name), array('pt.sort_order'))
-                    ->order("pt.sort_order DESC");
+                $partnerQuery = $this->getAdapter()->select()->from(['pt' => $this->_name], ['pt.sort_order'])
+                    ->order('pt.sort_order DESC');
                 $partnerResult = $this->getAdapter()->fetchRow($partnerQuery);
                 if ($partnerResult) {
                     $sortOrder = $partnerResult['sort_order'] + 1;
                 }
-                $this->update(array('sort_order' => $sortOrder), "partner_id = " . $partnerId);
+                $this->update(['sort_order' => $sortOrder], 'partner_id = ' . $partnerId);
             }
         }
         return $partnerId;
@@ -40,44 +38,40 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('partner_name', 'link', 'sort_order', 'DATE_FORMAT(added_on,"%d-%b-%Y")', 'status');
-        $orderColumns = array('partner_name', 'link', 'sort_order', 'added_on', 'status');
+        $aColumns = ['partner_name', 'link', 'sort_order', 'DATE_FORMAT(added_on,"%d-%b-%Y")', 'status'];
+        $orderColumns = ['partner_name', 'link', 'sort_order', 'added_on', 'status'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -88,28 +82,25 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['pt' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('pt' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -125,7 +116,6 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -140,16 +130,16 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $link = '';
-            $addedDateTime = explode(" ", $aRow['added_on']);
+            $addedDateTime = explode(' ', $aRow['added_on']);
             if (isset($aRow['link']) && trim($aRow['link']) != '') {
                 $link = '<a href="' . $aRow['link'] . '" target="_blank">' . $aRow['link'] . '<a>';
             }
@@ -169,7 +159,7 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
 
     public function fetchPartner($partnerId)
     {
-        return $this->fetchRow("partner_id = " . $partnerId);
+        return $this->fetchRow('partner_id = ' . $partnerId);
     }
 
     public function updatePartnerDetails($params)
@@ -177,23 +167,23 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
         $partnerId = 0;
         if (isset($params['partnerId']) && trim($params['partnerId']) != '') {
             $sortOrderResult = $partnerId = $params['partnerId'];
-            $data = array(
+            $data = [
                 'partner_name' => $params['partnerName'],
                 'link' => $params['link'],
-                'status' => $params['status']
-            );
-            $this->update($data, "partner_id = " . $partnerId);
+                'status' => $params['status'],
+            ];
+            $this->update($data, 'partner_id = ' . $partnerId);
             if (isset($params['sortOrder']) && trim($params['sortOrder']) != '') {
-                $partnerOrderQuery = $this->getAdapter()->select()->from(array('pt' => $this->_name), array('pt.partner_id', 'pt.sort_order'))
-                    ->order("pt.sort_order ASC");
+                $partnerOrderQuery = $this->getAdapter()->select()->from(['pt' => $this->_name], ['pt.partner_id', 'pt.sort_order'])
+                    ->order('pt.sort_order ASC');
                 $partnerOrderResult = $this->getAdapter()->fetchAll($partnerOrderQuery);
                 //Get Min/Max partner order
-                $minMaxOrderQuery = $this->getAdapter()->select()->from(array('pt' => $this->_name), array(new Zend_Db_Expr('min(sort_order) as minSortOrder'), new Zend_Db_Expr('max(sort_order) as maxSortOrder')));
+                $minMaxOrderQuery = $this->getAdapter()->select()->from(['pt' => $this->_name], [new Zend_Db_Expr('min(sort_order) as minSortOrder'), new Zend_Db_Expr('max(sort_order) as maxSortOrder')]);
                 $minMaxOrderResult = $this->getAdapter()->fetchRow($minMaxOrderQuery);
                 if ($params['sortOrder'] > $minMaxOrderResult['maxSortOrder']) {
                     $sortOrderResult = -1;
                 } else {
-                    $sql = $this->select()->where("partner_id = ? ", $partnerId);
+                    $sql = $this->select()->where('partner_id = ? ', $partnerId);
                     $sqlResult = $this->fetchRow($sql);
                     if ($params['sortOrder'] == $sqlResult['sort_order']) {
                         $sortOrderResult = 1;
@@ -203,9 +193,9 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
                             $bSOrder = $b + 1;
                             if ($ptOrder['sort_order'] >= $params['sortOrder'] && $ptOrder['sort_order'] <= $sqlResult['sort_order']) {
                                 if ($ptOrder['partner_id'] == $partnerId) {
-                                    $sortOrderResult = $this->update(array('sort_order' => $params['sortOrder']), 'partner_id = ' . $partnerId);
+                                    $sortOrderResult = $this->update(['sort_order' => $params['sortOrder']], 'partner_id = ' . $partnerId);
                                 } else {
-                                    $sortOrderResult = $this->update(array('sort_order' => $bSOrder), 'partner_id = ' . $ptOrder['partner_id']);
+                                    $sortOrderResult = $this->update(['sort_order' => $bSOrder], 'partner_id = ' . $ptOrder['partner_id']);
                                 }
                             }
                             $b++;
@@ -216,9 +206,9 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
                             $bSOrder = $b - 1;
                             if ($ptOrder['sort_order'] >= $sqlResult['sort_order'] && $ptOrder['sort_order'] <= $params['sortOrder']) {
                                 if ($ptOrder['partner_id'] == $partnerId) {
-                                    $sortOrderResult = $this->update(array('sort_order' => $params['sortOrder']), 'partner_id = ' . $partnerId);
+                                    $sortOrderResult = $this->update(['sort_order' => $params['sortOrder']], 'partner_id = ' . $partnerId);
                                 } else {
-                                    $sortOrderResult = $this->update(array('sort_order' => $bSOrder), 'partner_id = ' . $ptOrder['partner_id']);
+                                    $sortOrderResult = $this->update(['sort_order' => $bSOrder], 'partner_id = ' . $ptOrder['partner_id']);
                                 }
                             }
                             $b++;
@@ -233,8 +223,8 @@ class Application_Model_DbTable_Partners extends Zend_Db_Table_Abstract
     public function fetchAllActivePartners()
     {
         $sql = $this->select()
-            ->where("status = ? ", "active")
-            ->order("sort_order ASC");
+            ->where('status = ? ', 'active')
+            ->order('sort_order ASC');
         return $this->fetchAll($sql);
     }
 }

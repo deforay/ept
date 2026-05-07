@@ -2,7 +2,6 @@
 
 class Reports_ParticipantTrendsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -47,7 +46,7 @@ class Reports_ParticipantTrendsController extends Zend_Controller_Action
         if (isset($_COOKIE['did']) && $_COOKIE['did'] != '' && $_COOKIE['did'] != null && $_COOKIE['did'] != 'NULL') {
             $shipmentService = new Application_Service_Shipments();
             $this->view->shipmentDetails = $data = $shipmentService->getShipment($_COOKIE['did']);
-            $schemeType = $data["scheme_type"] ?? null;
+            $schemeType = $data['scheme_type'] ?? null;
             $this->view->schemeDetails = $scheme->getScheme($schemeType);
         }
     }

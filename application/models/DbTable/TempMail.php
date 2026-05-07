@@ -7,7 +7,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
 
     /**
      * Insert temporary mail details into the database for queued email processing
-     * 
+     *
      * @param string $to Primary recipient email address(es)
      * @param string|null $cc Carbon copy recipient email address(es)
      * @param string|null $bcc Blind carbon copy recipient email address(es)
@@ -34,7 +34,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         try {
             // Validate message content - reject empty messages
             if (trim((string) $message) === '') {
-                error_log("TempMail insert rejected: empty message body");
+                error_log('TempMail insert rejected: empty message body');
                 return false;
             }
 
@@ -42,8 +42,8 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             try {
                 $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             } catch (Zend_Config_Exception $e) {
-                error_log("Failed to load application configuration: " . $e->getMessage());
-                throw new Exception("Configuration file could not be loaded");
+                error_log('Failed to load application configuration: ' . $e->getMessage());
+                throw new Exception('Configuration file could not be loaded');
             }
             // Load attachment size limits from configuration with fallback defaults
             // email.limits.perAttachmentMb = 15 (maximum size per individual attachment)
@@ -61,15 +61,15 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     $bcc !== null ? (string) $bcc : null
                 );
             } catch (Exception $e) {
-                error_log("Failed to parse recipients: " . $e->getMessage());
+                error_log('Failed to parse recipients: ' . $e->getMessage());
                 return false;
             }
             // Ensure at least one valid TO recipient exists
             if (empty($recips['to'])) {
                 if (!empty($recips['invalid'])) {
-                    error_log("TempMail insert rejected: no valid TO. Invalid: " . implode(', ', $recips['invalid']));
+                    error_log('TempMail insert rejected: no valid TO. Invalid: ' . implode(', ', $recips['invalid']));
                 } else {
-                    error_log("TempMail insert rejected: no TO recipients provided");
+                    error_log('TempMail insert rejected: no TO recipients provided');
                 }
                 return false;
             }
@@ -81,7 +81,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 $fromMail = Application_Service_Common::validateEmail($fromMail) ?: $conf->email->config->username;
                 $fromName = $fromName ?: 'ePT Support';
             } catch (Exception $e) {
-                error_log("Failed to set FROM address: " . $e->getMessage());
+                error_log('Failed to set FROM address: ' . $e->getMessage());
                 // Use configuration default as ultimate fallback
                 $fromMail = $conf->email->config->username;
                 $fromName = 'ePT Support';
@@ -96,7 +96,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     ? $replyToFirst
                     : $fromMail;
             } catch (Exception $e) {
-                error_log("Failed to set REPLY-TO address: " . $e->getMessage());
+                error_log('Failed to set REPLY-TO address: ' . $e->getMessage());
                 $replyToValid = $fromMail;
             }
 
@@ -112,14 +112,14 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                     try {
                         // Validate file path is a string and file exists
                         if (!is_string($path) || !file_exists($path)) {
-                            error_log("Attachment skipped (not found): " . (string) $path);
+                            error_log('Attachment skipped (not found): ' . (string) $path);
                             continue;
                         }
 
                         // Get file size with error suppression
                         $size = @filesize($path);
                         if ($size === false) {
-                            error_log("Attachment skipped (size unreadable): " . (string) $path);
+                            error_log('Attachment skipped (size unreadable): ' . (string) $path);
                             continue;
                         }
 
@@ -163,24 +163,23 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                 $insertId = $this->insert($row);
                 // Verify insert was successful
                 if (!$insertId) {
-                    error_log("Database insert failed for temp mail to: " . implode(',', $recips['to']));
+                    error_log('Database insert failed for temp mail to: ' . implode(',', $recips['to']));
                     return false;
                 }
 
                 return $insertId;
             } catch (Zend_Db_Exception $e) {
                 // Handle database-specific errors
-                error_log("Database error inserting temp mail: " . $e->getMessage());
+                error_log('Database error inserting temp mail: ' . $e->getMessage());
                 return false;
             }
         } catch (Exception $e) {
             // Catch any unexpected errors not handled above
-            error_log("Unexpected error in insertTempMailDetails: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            error_log('Unexpected error in insertTempMailDetails: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
             return false;
         }
     }
-
 
     public function updateTempMailStatus($id, $status = 'picked-to-process')
     {
@@ -202,43 +201,39 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('to_email', 'subject', 'message', 'status', 'failure_type', 'failure_reason', 'updated_at');
+        $aColumns = ['to_email', 'subject', 'message', 'status', 'failure_type', 'failure_reason', 'updated_at'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -249,28 +244,25 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['a' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
         if (!empty($sOrder)) {
@@ -281,7 +273,6 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -297,12 +288,12 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         $general = new Pt_Commons_General();
         foreach ($rResult as $aRow) {
@@ -311,7 +302,7 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
             $row[] = $aRow['subject'];
             $row[] = $aRow['message'];
             $row[] = ucwords($aRow['status']);
-            $row[] = ucwords(str_replace("-", " ", $aRow['failure_type']));
+            $row[] = ucwords(str_replace('-', ' ', $aRow['failure_type']));
             $row[] = $aRow['failure_reason'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['updated_at']);
             // $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';

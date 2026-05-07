@@ -1,10 +1,11 @@
 <?php
+
 class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 {
     protected function _initAppSetup()
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $timezone = !empty($conf->timezone) ? $conf->timezone : "UTC";
+        $timezone = !empty($conf->timezone) ? $conf->timezone : 'UTC';
         date_default_timezone_set($timezone);
 
         // Skip session handling in CLI mode
@@ -21,38 +22,38 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         /** @var Zend_Controller_Router_Rewrite $router */
         $router = Zend_Controller_Front::getInstance()->getRouter();
 
-        $router->addRoute("captchaRoute", new Zend_Controller_Router_Route('captcha/:r', array('controller' => 'captcha', 'action' => 'index', 'r' => '')));
-        $router->addRoute("downloadRoute", new Zend_Controller_Router_Route('d/:filepath', array('controller' => 'download', 'action' => 'index', 'filepath' => '')));
-        $router->addRoute("checkCaptchaRoute", new Zend_Controller_Router_Route_Static('captcha/check-captcha', array('controller' => 'captcha', 'action' => 'check-captcha')));
+        $router->addRoute('captchaRoute', new Zend_Controller_Router_Route('captcha/:r', ['controller' => 'captcha', 'action' => 'index', 'r' => '']));
+        $router->addRoute('downloadRoute', new Zend_Controller_Router_Route('d/:filepath', ['controller' => 'download', 'action' => 'index', 'filepath' => '']));
+        $router->addRoute('checkCaptchaRoute', new Zend_Controller_Router_Route_Static('captcha/check-captcha', ['controller' => 'captcha', 'action' => 'check-captcha']));
 
         //Database Cache
         $appDirectory = realpath(APPLICATION_PATH);
-        $directoryPath = $appDirectory . DIRECTORY_SEPARATOR . "cache";
+        $directoryPath = $appDirectory . DIRECTORY_SEPARATOR . 'cache';
         if (!file_exists($directoryPath) || !is_dir($directoryPath)) {
             mkdir($directoryPath, 0777, true);
         }
 
         $frontendOptions = ['lifetime' => 7200000000, 'automatic_serialization' => true];
-        $backendOptions  = ['cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR];
+        $backendOptions  = ['cache_dir' => APPLICATION_PATH . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR];
 
         if (php_sapi_name() !== 'cli') {
             $session = new Zend_Session_Namespace('cacheSpace');
             if (isset($session->defaultCache)) {
                 Zend_Db_Table_Abstract::setDefaultMetadataCache(unserialize($session->defaultCache));
             } else {
-                $cache = Zend_Cache::factory("Core", "File", $frontendOptions, $backendOptions);
+                $cache = Zend_Cache::factory('Core', 'File', $frontendOptions, $backendOptions);
                 $session->defaultCache = serialize($cache);
                 Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
             }
         } else {
-            $cache = Zend_Cache::factory("Core", "File", $frontendOptions, $backendOptions);
+            $cache = Zend_Cache::factory('Core', 'File', $frontendOptions, $backendOptions);
             Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
         }
     }
 
     protected function _initTranslate()
     {
-        $locale = "en_US"; // default fallback
+        $locale = 'en_US'; // default fallback
 
         if (php_sapi_name() !== 'cli') {
             // Priority 1: Admin module — check administrators session
@@ -91,7 +92,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $translate = new Zend_Translate([
             'adapter' => 'gettext',
             'content' => APPLICATION_PATH . DIRECTORY_SEPARATOR . "languages/$locale/$locale.mo",
-            'locale'  => $locale
+            'locale'  => $locale,
         ]);
 
         Zend_Registry::set('Zend_Locale', $locale);

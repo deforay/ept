@@ -2,7 +2,6 @@
 
 class Reports_AnnualController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $adminSession = new Zend_Session_Namespace('administrators');
@@ -74,7 +73,7 @@ class Reports_AnnualController extends Zend_Controller_Action
             'participation_count' => 0,
             'skipped_count' => 0,
             'download_url' => null,
-            'error_message' => null
+            'error_message' => null,
         ];
 
         if ($batchId <= 0) {
@@ -116,7 +115,7 @@ class Reports_AnnualController extends Zend_Controller_Action
 
         $response = [
             'success' => false,
-            'message' => null
+            'message' => null,
         ];
 
         if (!$request->isPost()) {
@@ -152,7 +151,7 @@ class Reports_AnnualController extends Zend_Controller_Action
         $adminSession = new Zend_Session_Namespace('administrators');
         $certificateBatchesDb->updateStatus($batchId, 'approved', [
             'approved_by' => $adminSession->admin_id,
-            'approved_on' => new Zend_Db_Expr('NOW()')
+            'approved_on' => new Zend_Db_Expr('NOW()'),
         ]);
 
         // Schedule the distribution job

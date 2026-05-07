@@ -2,7 +2,6 @@
 
 class Admin_AuditLogController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -31,7 +30,7 @@ class Admin_AuditLogController extends Zend_Controller_Action
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $contextRows = $db->fetchCol(
             $db->select()
-                ->from('audit_log', array('type'))
+                ->from('audit_log', ['type'])
                 ->where("type IS NOT NULL AND type != ''")
                 ->group('type')
                 ->order('type ASC')

@@ -2,120 +2,119 @@
 
 class VlController extends Zend_Controller_Action
 {
+    public function init()
+    {
+    }
 
-	public function init()
-	{
-	}
+    public function indexAction()
+    {
+        // action body
+    }
 
-	public function indexAction()
-	{
-		// action body
-	}
+    public function responseAction()
+    {
 
-	public function responseAction()
-	{
+        $vlModel = new Application_Model_Vl();
+        $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
 
-		$vlModel = new Application_Model_Vl();
-		$schemeService = new Application_Service_Schemes();
-		$shipmentService = new Application_Service_Shipments();
+        $this->view->vlAssay = $schemeService->getVlAssay(false);
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
 
-		$this->view->vlAssay = $schemeService->getVlAssay(false);
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
+        if ($request->isPost()) {
 
-		if ($request->isPost()) {
+            $data = $request->getPost();
+            $data['uploadedFilePath'] = '';
+            if (!empty($_FILES['uploadedFile'])) {
+                $schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
+                $participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
+                $data['uploadedFilePath'] = Application_Service_Common::storeParticipantResponseAttachment(
+                    $_FILES['uploadedFile'],
+                    'dts-viral-load',
+                    $schemeCode,
+                    $participantId
+                );
+            }
 
-			$data = $request->getPost();
-			$data['uploadedFilePath'] = "";
-			if (!empty($_FILES["uploadedFile"])) {
-				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
-				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
-				$data['uploadedFilePath'] = Application_Service_Common::storeParticipantResponseAttachment(
-					$_FILES['uploadedFile'],
-					'dts-viral-load',
-					$schemeCode,
-					$participantId
-				);
-			}
+            $shipmentService->updateVlResults($data);
 
-			$shipmentService->updateVlResults($data);
+            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+                $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
+            } elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
+                $this->redirect('/participant/' . $data['comingFrom']);
+            } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
+                $this->redirect('/participant/current-schemes');
+            } else {
+                $_SESSION['confirmForm'] = 'yes';
+                $this->redirect('/vl/response/sid/' . $data['shipmentId'] . '/pid/' . $data['participantId'] . '/eid/' . $data['evId'] . '/uc/no');
+            }
+        } else {
 
-			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
-				$this->redirect("/participant/" . $data['comingFrom']);
-			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
-				$this->redirect("/participant/current-schemes");
-			} else {
-				$_SESSION['confirmForm'] = "yes";
-				$this->redirect("/vl/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
-			}
-		} else {
+            $sID = $request->getParam('sid');
+            $pID = $request->getParam('pid');
+            $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
+            $reqFrom = $request->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+                $this->view->vlRange = $vlModel->getVlRange($sID);
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
+                $this->_helper->layout()->setLayout('admin');
+            }
+            $common = new Application_Service_Common();
+            $this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);
+            $this->view->comingFrom = $request->getParam('comingFrom');
+            $participantService = new Application_Service_Participants();
+            $this->view->participant = $participantService->getParticipantDetails($pID);
+            //Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
+            $this->view->allSamples = $schemeService->getVlSamples($sID, $pID);
+            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('vl');
+            $shipment = $schemeService->getShipmentData($sID, $pID);
+            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $this->view->shipment = $shipment;
+            $this->view->shipId = $sID;
+            $this->view->participantId = $pID;
+            $this->view->eID = $eID;
+            $this->view->reqFrom = $reqFrom;
 
-			$sID = $request->getParam('sid');
-			$pID = $request->getParam('pid');
-			$eID = $request->getParam('eid');
-			$uc = $request->getParam('uc');
-			$reqFrom = $request->getParam('from');
-			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
-				$evalService = new Application_Service_Evaluation();
-				$this->view->vlRange = $vlModel->getVlRange($sID);
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'vl', $uc);
-				$this->_helper->layout()->setLayout('admin');
-			}
-			$common = new Application_Service_Common();
-			$this->view->invalidVlResult = $common->checkAssayInvalid($sID, $pID, true);
-			$this->view->comingFrom = $request->getParam('comingFrom');
-			$participantService = new Application_Service_Participants();
-			$this->view->participant = $participantService->getParticipantDetails($pID);
-			//Zend_Debug::dump($schemeService->getVlSamples($sID,$pID));
-			$this->view->allSamples = $schemeService->getVlSamples($sID, $pID);
-			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("vl");
-			$shipment = $schemeService->getShipmentData($sID, $pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'], true);
-			$this->view->shipment = $shipment;
-			$this->view->shipId = $sID;
-			$this->view->participantId = $pID;
-			$this->view->eID = $eID;
-			$this->view->reqFrom = $reqFrom;
+            $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
-			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
+            $commonService = new Application_Service_Common();
+            $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
+            $this->view->globalQcAccess = $commonService->getConfig('qc_access');
 
-			$commonService = new Application_Service_Common();
-			$this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-			$this->view->globalQcAccess = $commonService->getConfig('qc_access');
+            $this->view->config = Pt_Commons_SchemeConfig::get('vl');
+        }
+    }
 
-			$this->view->config = Pt_Commons_SchemeConfig::get('vl');
-		}
-	}
+    public function downloadAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        $sID = $request->getParam('sid');
+        $pID = $request->getParam('pid');
 
-	public function downloadAction()
-	{
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
-		$this->_helper->layout()->disableLayout();
-		$sID = $request->getParam('sid');
-		$pID = $request->getParam('pid');
+        $reportService = new Application_Service_Reports();
+        $this->view->header = $reportService->getReportConfigValue('report-header');
+        $this->view->logo = $reportService->getReportConfigValue('logo');
+        $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-		$reportService = new Application_Service_Reports();
-		$this->view->header = $reportService->getReportConfigValue('report-header');
-		$this->view->logo = $reportService->getReportConfigValue('logo');
-		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
+        $participantService = new Application_Service_Participants();
+        $this->view->participant = $participantService->getParticipantDetails($pID);
+        $schemeService = new Application_Service_Schemes();
+        $this->view->referenceDetails = $schemeService->getVlReferenceData($sID);
+        $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('vl');
+        $shipment = $schemeService->getShipmentData($sID, $pID);
+        $common = new Application_Service_Common();
+        $this->view->invalidVlResult = $common->checkAssayInvalid();
+        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $this->view->shipment = $shipment;
+    }
 
-		$participantService = new Application_Service_Participants();
-		$this->view->participant = $participantService->getParticipantDetails($pID);
-		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getVlReferenceData($sID);
-		$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("vl");
-		$shipment = $schemeService->getShipmentData($sID, $pID);
-		$common = new Application_Service_Common();
-		$this->view->invalidVlResult = $common->checkAssayInvalid();
-		$shipment['attributes'] = json_decode($shipment['attributes'], true);
-		$this->view->shipment = $shipment;
-	}
-
-	public function deleteAction()
-	{
-		/** Need to do this function later */
-	}
+    public function deleteAction()
+    {
+        /** Need to do this function later */
+    }
 }

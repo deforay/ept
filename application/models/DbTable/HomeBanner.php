@@ -2,10 +2,8 @@
 
 class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'home_banner';
     protected $_primary = 'banner_id';
-
 
     public function updateHomeBannerDetails($params)
     {
@@ -16,24 +14,24 @@ class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
             if (isset($params['existImage']) && trim($params['existImage']) != '') {
                 if (file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $params['existImage'])) {
                     unlink($uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $params['existImage']);
-                    $this->update(array('image' => ''), "banner_id = 1");
+                    $this->update(['image' => ''], 'banner_id = 1');
                 }
             }
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['home_banner']['name']);
-            $fileName = str_replace(" ", "-", $fileName);
-            $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
+            $fileName = str_replace(' ', '-', $fileName);
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
             $extension = strtolower(pathinfo($uploadDirectory . DIRECTORY_SEPARATOR . $fileName, PATHINFO_EXTENSION));
-            $imageName = "home_banner." . $extension;
+            $imageName = 'home_banner.' . $extension;
             if (in_array($extension, $allowedExtensions)) {
                 $result = 1;
                 if (!file_exists($uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner') && !is_dir($uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner')) {
                     mkdir($uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner');
                 }
-                if (move_uploaded_file($_FILES["home_banner"]["tmp_name"], $uploadDirectory . DIRECTORY_SEPARATOR . "home-banner" . DIRECTORY_SEPARATOR . $imageName)) {
+                if (move_uploaded_file($_FILES['home_banner']['tmp_name'], $uploadDirectory . DIRECTORY_SEPARATOR . 'home-banner' . DIRECTORY_SEPARATOR . $imageName)) {
                     //$resizeObj = new Pt_Commons_ImageResize($uploadDirectory . DIRECTORY_SEPARATOR."home-banner". DIRECTORY_SEPARATOR . $imageName);
                     //$resizeObj->resizeImage(1301, 531, 'auto');
                     //$resizeObj->saveImage($uploadDirectory . DIRECTORY_SEPARATOR."home-banner". DIRECTORY_SEPARATOR . $imageName, 100);
-                    $this->update(array('image' => $imageName), "banner_id = 1");
+                    $this->update(['image' => $imageName], 'banner_id = 1');
                 }
             }
         }
@@ -43,11 +41,11 @@ class Application_Model_DbTable_HomeBanner extends Zend_Db_Table_Abstract
 
     public function fetchHomeBannerDetails()
     {
-        return $this->fetchRow($this->select()->where("banner_id = ? ", 1));
+        return $this->fetchRow($this->select()->where('banner_id = ? ', 1));
     }
 
     public function fetchHomeBanner()
     {
-        return $this->fetchRow($this->select()->where("banner_id = ? ", 1));
+        return $this->fetchRow($this->select()->where('banner_id = ? ', 1));
     }
 }

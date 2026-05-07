@@ -30,9 +30,6 @@ final class Pt_Commons_JsonUtility
         }
     }
 
-
-
-
     // Encode data to JSON with UTF-8 encoding
     public static function encodeUtf8Json(array|string|null $data): string|null
     {
@@ -74,12 +71,12 @@ final class Pt_Commons_JsonUtility
     {
         $decodedJson = is_array($json) ? $json : self::decodeJson($json);
         if ($decodedJson === null) {
-            return htmlspecialchars("Error in JSON decoding: " . json_last_error_msg(), ENT_QUOTES, 'UTF-8');
+            return htmlspecialchars('Error in JSON decoding: ' . json_last_error_msg(), ENT_QUOTES, 'UTF-8');
         }
 
         $encodedJson = json_encode($decodedJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return htmlspecialchars("Error in JSON encoding: " . json_last_error_msg(), ENT_QUOTES, 'UTF-8');
+            return htmlspecialchars('Error in JSON encoding: ' . json_last_error_msg(), ENT_QUOTES, 'UTF-8');
         }
 
         return $encodedJson;

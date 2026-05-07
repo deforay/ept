@@ -1,11 +1,9 @@
 <?php
 
-use Symfony\Component\Uid\Ulid;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'enrollments';
     protected $_primary = ['scheme_id', 'participant_id'];
 
@@ -19,37 +17,34 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
         $aColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 's.scheme_name', 'e.enrolled_on'];
         $aSortColumns = ['p.unique_identifier', 'p.first_name', 'iso_name', 'MIN(s.scheme_name)', 'MIN(e.enrolled_on)'];
 
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aSortColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aSortColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -60,37 +55,34 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
-
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('p' => 'participant'))
+        $sQuery = $this->getAdapter()->select()->from(['p' => 'participant'])
             ->join(['c' => 'countries'], 'c.id=p.country')
             ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id')
             ->joinLeft(['s' => 'scheme_list'], 'e.scheme_id = s.scheme_id', ['scheme_name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT s.scheme_name ORDER BY s.scheme_name SEPARATOR ', ')")])
             ->where("p.status='active'")
-            ->group("p.participant_id");
+            ->group('p.participant_id');
 
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
-        if (isset($parameters['scheme']) && $parameters['scheme'] != "") {
-            $sQuery = $sQuery->where("s.scheme_id = ? ", $parameters['scheme']);
+        if (isset($parameters['scheme']) && $parameters['scheme'] != '') {
+            $sQuery = $sQuery->where('s.scheme_id = ? ', $parameters['scheme']);
         }
 
         if (!empty($sOrder)) {
@@ -101,7 +93,6 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $sQuery = $sQuery->limit($sLimit, $sOffset);
         }
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -115,7 +106,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             ->joinLeft(['e' => 'enrollments'], 'p.participant_id = e.participant_id', [])
             ->joinLeft(['s' => 'scheme_list'], 'e.scheme_id = s.scheme_id', [])
             ->where("p.status='active'")
-            ->group("p.participant_id");
+            ->group('p.participant_id');
 
         $aResultTotal = $this->getAdapter()->fetchAll($sQuery);
         $iTotal = sizeof($aResultTotal);
@@ -124,24 +115,23 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
          * Output
          */
         $output = [
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => []
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
         ];
-
 
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = $aRow['unique_identifier'];
-            $row[] = $aRow['first_name'] . " " . $aRow['last_name'];
+            $row[] = $aRow['first_name'] . ' ' . $aRow['last_name'];
             $row[] = $aRow['iso_name'];
             $row[] = $aRow['scheme_name'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['enrolled_on']);
-            if (trim($aRow['scheme_name']) != "") {
+            if (trim($aRow['scheme_name']) != '') {
                 $row[] = '<a href="/admin/enrollments/view/pid/' . (int)$aRow['participant_id'] . '" class="btn btn-info btn-xs" style="margin-right: 2px;"><i class="icon-eye-open"></i> Know More</a>';
             } else {
-                $row[] = "--";
+                $row[] = '--';
             }
 
             $output['aaData'][] = $row;
@@ -173,7 +163,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                     'participant_id' => $participant,
                     'scheme_id' => $params['schemeId'],
                     'status' => 'enrolled',
-                    'enrolled_on' => new Zend_Db_Expr('now()')
+                    'enrolled_on' => new Zend_Db_Expr('now()'),
                 ];
                 $common->insertIgnore($this->_name, $data);
             }
@@ -182,7 +172,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog(
                 "Enrolled {$enrolledCount} participants in scheme {$params['schemeId']} (list: {$listName})",
-                "enrollment"
+                'enrollment'
             );
         }
     }
@@ -198,7 +188,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 'participant_id' => $participantId,
                 'scheme_id' => $scheme,
                 'status' => 'enrolled',
-                'enrolled_on' => new Zend_Db_Expr('now()')
+                'enrolled_on' => new Zend_Db_Expr('now()'),
             ];
             $this->insert($data);
         }
@@ -255,9 +245,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             $db->beginTransaction();
 
             // Clear existing enrollments
-            $whereClause = "list_name = " . $db->quote($listName);
+            $whereClause = 'list_name = ' . $db->quote($listName);
             if (!empty($schemeId)) {
-                $whereClause .= " AND scheme_id = " . $db->quote($schemeId);
+                $whereClause .= ' AND scheme_id = ' . $db->quote($schemeId);
             }
             $db->delete('enrollments', $whereClause);
 
@@ -296,7 +286,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                     'scheme_id' => $schemeId,
                     'participant_id' => $participantData['participant_id'],
                     'status' => 'enrolled',
-                    'enrolled_on' => new Zend_Db_Expr('NOW()')
+                    'enrolled_on' => new Zend_Db_Expr('NOW()'),
                 ];
 
                 // Remove null values
@@ -324,13 +314,13 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                         ->where('participant_id', $participantData['participant_id'])
                 );
                 if (!$exist) {
-                    $sql = "INSERT INTO enrollments (" . implode(', ', $columns) . ") 
-                        VALUES (" . implode(', ', $placeholders) . ")
+                    $sql = 'INSERT INTO enrollments (' . implode(', ', $columns) . ') 
+                        VALUES (' . implode(', ', $placeholders) . ')
                         ON DUPLICATE KEY UPDATE 
                             enrollment_id = VALUES(enrollment_id),
                             scheme_id = VALUES(scheme_id),
                             status = VALUES(status),
-                            enrolled_on = VALUES(enrolled_on)";
+                            enrolled_on = VALUES(enrolled_on)';
 
                     $db->query($sql, array_values($values));
                     $processedCount++;
@@ -340,9 +330,9 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             // Log audit trail
             try {
                 $auditDb = new Application_Model_DbTable_AuditLog();
-                $auditDb->addNewAuditLog("Bulk imported {$processedCount} enrollments", "enrollment");
+                $auditDb->addNewAuditLog("Bulk imported {$processedCount} enrollments", 'enrollment');
             } catch (Exception $e) {
-                error_log("Audit log failed: " . $e->getMessage());
+                error_log('Audit log failed: ' . $e->getMessage());
             }
 
             // Commit transaction
@@ -353,7 +343,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
             return [
                 'success' => true,
                 'message' => $alertMsg->message,
-                'processed_count' => $processedCount
+                'processed_count' => $processedCount,
             ];
         } catch (Exception $e) {
             // Rollback transaction
@@ -361,14 +351,14 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
                 $db->rollback();
             }
 
-            error_log("BULK ENROLLMENT ERROR: " . $e->getMessage());
+            error_log('BULK ENROLLMENT ERROR: ' . $e->getMessage());
 
             $alertMsg->message = 'Error during import: ' . $e->getMessage();
 
             return [
                 'success' => false,
                 'message' => $alertMsg->message,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         } finally {
             // Clean up uploaded file

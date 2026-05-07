@@ -37,7 +37,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
         return (int) $this->insert([
             'scheme_type' => $scheme,
             'created_by' => $authNameSpace->admin_id ?? 0,
-            'updated_on' => new Zend_Db_Expr('now()')
+            'updated_on' => new Zend_Db_Expr('now()'),
         ]);
     }
 
@@ -49,15 +49,15 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 foreach ($params['scheme'] as $key => $scheme) {
                     $id = base64_decode($params['ctId'][$key]);
                     if (isset($id) && $id > 0) {
-                        $this->update(array(
-                            "updated_on"                => new Zend_Db_Expr('now()')
-                        ), array("ct_id" => $id));
+                        $this->update([
+                            'updated_on'                => new Zend_Db_Expr('now()'),
+                        ], ['ct_id' => $id]);
                     } else {
-                        $id = $this->insert(array(
-                            "scheme_type"               => $scheme,
-                            "created_by"                => $authNameSpace->admin_id,
-                            "updated_on"                => new Zend_Db_Expr('now()')
-                        ));
+                        $id = $this->insert([
+                            'scheme_type'               => $scheme,
+                            'created_by'                => $authNameSpace->admin_id,
+                            'updated_on'                => new Zend_Db_Expr('now()'),
+                        ]);
                     }
                     $appDirectory = realpath(APPLICATION_PATH);
                     if (!file_exists($appDirectory . '/../scheduled-jobs')) {
@@ -69,22 +69,22 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
 
                     if (!empty($_FILES['pCertificate']['name'][$key])) {
                         $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['pCertificate']['name'][$key]);
-                        $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                        $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
                         $pathPrefix = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates';
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                        $fileName = $scheme . "-p." . $extension;
-                        if (move_uploaded_file($_FILES["pCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                            $this->update(array("participation_certificate" => $fileName), "ct_id = " . $id);
+                        $fileName = $scheme . '-p.' . $extension;
+                        if (move_uploaded_file($_FILES['pCertificate']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
+                            $this->update(['participation_certificate' => $fileName], 'ct_id = ' . $id);
                         }
                     }
                     if (!empty($_FILES['eCertificate']['name'][$key])) {
                         $fileNameSanitized = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['eCertificate']['name'][$key]);
-                        $fileNameSanitized = str_replace(" ", "-", $fileNameSanitized);
+                        $fileNameSanitized = str_replace(' ', '-', $fileNameSanitized);
                         $pathPrefix = SCHEDULED_JOBS_FOLDER . DIRECTORY_SEPARATOR . 'certificate-templates';
                         $extension = strtolower(pathinfo($pathPrefix . DIRECTORY_SEPARATOR . $fileNameSanitized, PATHINFO_EXTENSION));
-                        $fileName = $scheme . "-e." . $extension;
-                        if (move_uploaded_file($_FILES["eCertificate"]["tmp_name"][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
-                            $this->update(array("excellence_certificate" => $fileName), "ct_id = " . $id);
+                        $fileName = $scheme . '-e.' . $extension;
+                        if (move_uploaded_file($_FILES['eCertificate']['tmp_name'][$key], $pathPrefix . DIRECTORY_SEPARATOR . $fileName)) {
+                            $this->update(['excellence_certificate' => $fileName], 'ct_id = ' . $id);
                         }
                     }
                 }
@@ -100,14 +100,14 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
         $certificateTemplate = [];
         $result = $this->fetchAll();
         foreach ($result as $ct) {
-            $certificateTemplate[$ct['scheme_type']] = array(
-                "ct_id"                     => $ct["ct_id"],
-                "scheme_type"               => $ct["scheme_type"],
-                "participation_certificate" => $ct["participation_certificate"],
-                "excellence_certificate"    => $ct["excellence_certificate"],
-                "p_detected_fields"         => $ct["p_detected_fields"] ?? null,
-                "e_detected_fields"         => $ct["e_detected_fields"] ?? null
-            );
+            $certificateTemplate[$ct['scheme_type']] = [
+                'ct_id'                     => $ct['ct_id'],
+                'scheme_type'               => $ct['scheme_type'],
+                'participation_certificate' => $ct['participation_certificate'],
+                'excellence_certificate'    => $ct['excellence_certificate'],
+                'p_detected_fields'         => $ct['p_detected_fields'] ?? null,
+                'e_detected_fields'         => $ct['e_detected_fields'] ?? null,
+            ];
         }
         return $certificateTemplate;
     }
@@ -126,7 +126,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
         $result = [
             'success' => false,
             'message' => '',
-            'filename' => ''
+            'filename' => '',
         ];
 
         try {
@@ -161,7 +161,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
             $updateData = [
                 $fileColumn => $fileName,
                 $fieldsColumn => json_encode($detectedFields),
-                'updated_on' => new Zend_Db_Expr('now()')
+                'updated_on' => new Zend_Db_Expr('now()'),
             ];
 
             $this->update($updateData, ['ct_id = ?' => $id]);
@@ -209,7 +209,7 @@ class Application_Model_DbTable_CertificateTemplates extends Zend_Db_Table_Abstr
                 $this->update([
                     $fileColumn => null,
                     $fieldsColumn => null,
-                    'updated_on' => new Zend_Db_Expr('now()')
+                    'updated_on' => new Zend_Db_Expr('now()'),
                 ], ['ct_id = ?' => $row->ct_id]);
             }
 

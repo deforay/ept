@@ -41,6 +41,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             <option value=""><?= $this->translate->_("All"); ?></option>
         </select>
     </div>
+    <?php if (!empty($this->unmappedDmCount)) { ?>
     <div class="col-md-4">
         <label><?= $this->translate->_("Mapping"); ?></label>
         <select id="mappingFilter" class="form-control">
@@ -49,6 +50,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             <option value="unmapped"><?= $this->translate->_("Not mapped to any Participant"); ?></option>
         </select>
     </div>
+    <?php } ?>
 </div>
 <style>
     #usersTable > tbody > tr > td { vertical-align: middle; }

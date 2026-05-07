@@ -1,6 +1,5 @@
 <?php
 
-
 final class Pt_Commons_SchemeConfig
 {
     public static function get($name, bool $useCache = true)
@@ -15,7 +14,7 @@ final class Pt_Commons_SchemeConfig
         // If no result from database, check config.ini
         if ($result === null) {
             try {
-                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . "configs" . DIRECTORY_SEPARATOR . "config.ini";
+                $file = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'configs' . DIRECTORY_SEPARATOR . 'config.ini';
                 if (file_exists($file)) {
                     $config = new Zend_Config_Ini($file, APPLICATION_ENV);
                     // Handle nested config values (e.g., "evaluation.dts.passPercentage")
@@ -34,13 +33,14 @@ final class Pt_Commons_SchemeConfig
                     } else {
                         // Direct config key
                         $result = isset($config->$name) ? $config->$name : null;
-                        if (!$result)
+                        if (!$result) {
                             $result = isset($config->evaluation->$name) ? $config->evaluation->$name : null;
+                        }
                     }
                 }
             } catch (\Throwable $e) {
                 // Log error if needed
-                error_log("Error reading config.ini: " . $e->getMessage());
+                error_log('Error reading config.ini: ' . $e->getMessage());
             }
         }
 

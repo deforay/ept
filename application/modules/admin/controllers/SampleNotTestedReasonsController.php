@@ -2,7 +2,6 @@
 
 class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -51,9 +50,9 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $reasonText = trim((string) ($params['ntReason'] ?? ''));
             $label = $reasonCode !== '' ? $reasonCode : ($reasonText !== '' ? $reasonText : '(unlabeled)');
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new not-tested reason - {$label}", "config");
+            $auditDb->addNewAuditLog("Added a new not-tested reason - {$label}", 'config');
 
-            $this->redirect("/admin/sample-not-tested-reasons");
+            $this->redirect('/admin/sample-not-tested-reasons');
         }
     }
 
@@ -72,9 +71,9 @@ class Admin_SampleNotTestedReasonsController extends Zend_Controller_Action
             $reasonText = trim((string) ($params['ntReason'] ?? ''));
             $label = $reasonCode !== '' ? $reasonCode : ($reasonText !== '' ? $reasonText : '(unlabeled)');
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated not-tested reason - {$label}", "config");
+            $auditDb->addNewAuditLog("Updated not-tested reason - {$label}", 'config');
 
-            $this->redirect("/admin/sample-not-tested-reasons");
+            $this->redirect('/admin/sample-not-tested-reasons');
         } elseif ($this->hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getNotTestedReasonById($id);

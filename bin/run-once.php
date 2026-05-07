@@ -22,7 +22,7 @@ if (!is_dir($runOnceDir)) {
 $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
 try {
-    $db->query("SELECT 1 FROM `run_once_scripts` LIMIT 1");
+    $db->query('SELECT 1 FROM `run_once_scripts` LIMIT 1');
 } catch (Exception $e) {
     // Table doesn't exist - log warning and exit gracefully (don't block upgrade)
     $io->warning('Missing table run_once_scripts. Run-once scripts will be skipped. Run migrations (7.3.3+) to enable.');
@@ -43,7 +43,7 @@ $hadFailures = false;
 foreach ($scripts as $scriptPath) {
     $scriptName = basename($scriptPath);
     $alreadyRan = (bool) $db->fetchOne(
-        "SELECT 1 FROM `run_once_scripts` WHERE script_name = ? LIMIT 1",
+        'SELECT 1 FROM `run_once_scripts` WHERE script_name = ? LIMIT 1',
         [$scriptName]
     );
 
@@ -68,7 +68,7 @@ foreach ($scripts as $scriptPath) {
 
     try {
         $db->query(
-            "INSERT INTO `run_once_scripts` (script_name, executed_at) VALUES (?, NOW())",
+            'INSERT INTO `run_once_scripts` (script_name, executed_at) VALUES (?, NOW())',
             [$scriptName]
         );
         $io->success("Completed run-once script: {$scriptName}");

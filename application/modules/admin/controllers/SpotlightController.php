@@ -56,12 +56,12 @@ class Admin_SpotlightController extends Zend_Controller_Action
                     $actions[] = [
                         'label' => $this->view->translate->_('Edit'),
                         'url' => '/admin/shipment/edit/sid/' . $sid . '/userConfig/' . base64_encode('no'),
-                        'icon' => 'icon-edit'
+                        'icon' => 'icon-edit',
                     ];
                     $actions[] = [
                         'label' => $this->view->translate->_('Manage Enrollment'),
                         'url' => '/admin/shipment/manage-enroll/sid/' . $sid . '/sctype/' . base64_encode($shipment->scheme_type),
-                        'icon' => 'icon-group'
+                        'icon' => 'icon-group',
                     ];
                 }
 
@@ -71,17 +71,17 @@ class Admin_SpotlightController extends Zend_Controller_Action
                     $actions[] = [
                         'label' => $this->view->translate->_('Evaluate'),
                         'url' => '/admin/evaluate/shipment/sid/' . $sid,
-                        'icon' => 'icon-check-sign'
+                        'icon' => 'icon-check-sign',
                     ];
                     $actions[] = [
                         'label' => $this->view->translate->_('Generate Reports'),
                         'url' => '/reports/distribution/shipment/sid/' . $sid,
-                        'icon' => 'icon-file-text'
+                        'icon' => 'icon-file-text',
                     ];
                     $actions[] = [
                         'label' => $this->view->translate->_('Finalize'),
                         'url' => '/reports/distribution/finalize/sid/' . $sid,
-                        'icon' => 'icon-ok-sign'
+                        'icon' => 'icon-ok-sign',
                     ];
                 }
 
@@ -94,14 +94,14 @@ class Admin_SpotlightController extends Zend_Controller_Action
                         $actions[] = [
                             'label' => $this->view->translate->_('Download Summary'),
                             'url' => '/d/' . base64_encode($summaryPath),
-                            'icon' => 'icon-download'
+                            'icon' => 'icon-download',
                         ];
                     }
                     if (file_exists($zipPath)) {
                         $actions[] = [
                             'label' => $this->view->translate->_('Download All'),
                             'url' => '/d/' . base64_encode($zipPath),
-                            'icon' => 'icon-download-alt'
+                            'icon' => 'icon-download-alt',
                         ];
                     }
                 }
@@ -114,7 +114,7 @@ class Admin_SpotlightController extends Zend_Controller_Action
                         'title' => $code,
                         'subtitle' => $schemeName . ' - ' . ucfirst($status),
                         'icon' => 'icon-truck',
-                        'actions' => $actions
+                        'actions' => $actions,
                     ];
                 }
             }

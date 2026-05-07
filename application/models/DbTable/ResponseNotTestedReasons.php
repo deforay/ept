@@ -1,7 +1,5 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Number;
-
 class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_Abstract
 {
     protected $_name = 'r_response_not_tested_reasons';
@@ -14,43 +12,39 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-        $aColumns = array('ntr_reason', 'reason_code', 'ntr_test_type', 'collect_panel_receipt_date', 'ntr_status');
+        $aColumns = ['ntr_reason', 'reason_code', 'ntr_test_type', 'collect_panel_receipt_date', 'ntr_status'];
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -61,28 +55,25 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
+        $sQuery = $this->getAdapter()->select()->from(['a' => $this->_name]);
 
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('a' => $this->_name));
-
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
         if (!empty($sOrder)) {
@@ -94,7 +85,6 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         }
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
-
 
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
@@ -110,12 +100,12 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         $general = new Pt_Commons_General();
         $schemeDb = new Application_Model_DbTable_SchemeList();
@@ -129,7 +119,7 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             }
             $row[] = ucwords($aRow['ntr_reason']);
             $row[] = $aRow['reason_code'];
-            $row[] = implode(",", $schemeData);
+            $row[] = implode(',', $schemeData);
             $row[] = ucwords($aRow['collect_panel_receipt_date']);
             $row[] = ucwords($aRow['ntr_status']);
             $row[] = '<a href="/admin/sample-not-tested-reasons/edit/53s5k85_8d/' . base64_encode($aRow['ntr_id']) . '" class="btn btn-warning btn-xs" style="margin-right: 2px;"><i class="icon-pencil"></i> Edit</a>';
@@ -147,13 +137,13 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
             return false;
         }
 
-        $data = array(
+        $data = [
             'ntr_reason'                    => $params['ntReason'] ?? null,
             'ntr_test_type'                 => (isset($params['testType']) && !empty($params['testType'])) ? json_encode($params['testType'], true) : null,
             'collect_panel_receipt_date'    => $params['collectPanelReceiptDate'] ?? 'yes',
             'reason_code'                   => $params['ntReasonCode'] ?? null,
-            'ntr_status'                    => $params['status'] ?? null
-        );
+            'ntr_status'                    => $params['status'] ?? null,
+        ];
 
         if (isset($params['ntrId']) && !empty($params['ntrId'])) {
             return  $this->update($data, 'ntr_id = ' . base64_decode($params['ntrId']));
@@ -163,6 +153,6 @@ class Application_Model_DbTable_ResponseNotTestedReasons extends Zend_Db_Table_A
 
     public function fetchNotTestedReasonById($id)
     {
-        return $this->fetchRow($this->select()->where("ntr_id=?", $id));
+        return $this->fetchRow($this->select()->where('ntr_id=?', $id));
     }
 }

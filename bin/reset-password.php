@@ -1,12 +1,13 @@
 #!/usr/bin/env php
 <?php
+
 // bin/reset-password.php
 
 declare(strict_types=1);
 
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 $cliMode = php_sapi_name() === 'cli';
 
@@ -14,7 +15,7 @@ $cliMode = php_sapi_name() === 'cli';
 if (function_exists('pcntl_signal') && function_exists('pcntl_async_signals')) {
     pcntl_async_signals(true);
     pcntl_signal(SIGINT, function () {
-        echo PHP_EOL . "⚠️  Password reset cancelled by user." . PHP_EOL;
+        echo PHP_EOL . '⚠️  Password reset cancelled by user.' . PHP_EOL;
         exit(130);
     });
 }
@@ -25,7 +26,7 @@ try {
     set_time_limit(0);
 
     if (!$cliMode) {
-        echo "❌ This script can only be run from the command line." . PHP_EOL;
+        echo '❌ This script can only be run from the command line.' . PHP_EOL;
         exit(1);
     }
 
@@ -114,7 +115,7 @@ try {
             $number = $index + 1;
             $status = strtolower($dm['status']) === 'active' ? '✓' : '⚠';
             $choices[$number] = sprintf(
-                "%s %s (%s) - %s",
+                '%s %s (%s) - %s',
                 $status,
                 $dm['dm_name'],
                 $dm['primary_email'],
@@ -122,7 +123,7 @@ try {
             );
 
             $io->text(sprintf(
-                "[%d] %s <info>%s</info> <%s> - Status: <comment>%s</comment>",
+                '[%d] %s <info>%s</info> <%s> - Status: <comment>%s</comment>',
                 $number,
                 $status,
                 $dm['dm_name'],
@@ -205,7 +206,7 @@ try {
             exit(1);
         }
 
-        $io->success("Data manager found!");
+        $io->success('Data manager found!');
     } else {
         // OPTION 2: Participant code lookup
         $io->text('Not an email address, searching for participant code...');
@@ -220,13 +221,13 @@ try {
         // Show participant info
         $participantInfo = $dataManagers[0];
         $io->success(sprintf(
-            "Found participant: %s (%s)",
+            'Found participant: %s (%s)',
             $participantInfo['participant_name'],
             $participantInfo['unique_identifier']
         ));
 
         $io->text(sprintf(
-            "This participant is mapped to <comment>%d</comment> data manager(s):",
+            'This participant is mapped to <comment>%d</comment> data manager(s):',
             count($dataManagers)
         ));
         $io->newLine();
@@ -390,10 +391,10 @@ try {
     exit(0);
 } catch (Throwable $e) {
     if (isset($io)) {
-        $io->error("❌ Password reset failed: " . $e->getMessage());
-        $io->text("<info>Please check logs for details.</info>");
+        $io->error('❌ Password reset failed: ' . $e->getMessage());
+        $io->text('<info>Please check logs for details.</info>');
     } else {
-        echo "❌ Fatal error: " . $e->getMessage() . PHP_EOL;
+        echo '❌ Fatal error: ' . $e->getMessage() . PHP_EOL;
     }
 
     /* Pt_Commons_LoggerUtility::log("Password reset script failure: " . $e->getMessage(), [

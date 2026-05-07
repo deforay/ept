@@ -24,7 +24,7 @@ class Application_Service_ApiServices
     public function getApiReferences($params)
     {
         if (!isset($params['authToken'])) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+            return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
         }
         /* Check the app versions */
         /* if (!isset($params['appVersion'])) {
@@ -38,14 +38,14 @@ class Application_Service_ApiServices
         $aResult = $this->dataManagerDb->fetchAuthToken($params);
         /* Validate new auth token and app-version */
         if (!$aResult) {
-            return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+            return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
         }
         $response = [];
 
-        $sql = $this->db->select()->from(array('dm' => 'data_manager'), array(''))
-            ->join(array('pmm' => 'participant_manager_map'), 'pmm.dm_id=dm.dm_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array('*'))
-            ->where("dm.auth_token=?", $params['authToken']);
+        $sql = $this->db->select()->from(['dm' => 'data_manager'], [''])
+            ->join(['pmm' => 'participant_manager_map'], 'pmm.dm_id=dm.dm_id')
+            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', ['*'])
+            ->where('dm.auth_token=?', $params['authToken']);
         $response['participants'] = $this->db->fetchAll($sql);
         /* To get mode of receipt results */
         $modeOfReceipt = $this->common->getAllModeOfReceipt();
@@ -82,7 +82,7 @@ class Application_Service_ApiServices
             $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $dtsResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
-                'name' => strtoupper($pr['response'])
+                'name' => strtoupper($pr['response']),
             ];
         }
         $response['dts']['possibleResults'] = $dtsResults;
@@ -93,12 +93,12 @@ class Application_Service_ApiServices
             $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $recencyResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
-                'name' => strtoupper($pr['response'])
+                'name' => strtoupper($pr['response']),
             ];
         }
         $response['dts']['recencyPossibleResults'] = $recencyResults;
         // To load not tested reason for DTS shipment
-        $response['dts']['notTestedReason'] = $this->schemeService->getNotTestedReasons("dts");
+        $response['dts']['notTestedReason'] = $this->schemeService->getNotTestedReasons('dts');
         /* END DTS (HIV Serology) References */
 
         /* Started HIV Viral Load References */
@@ -112,7 +112,7 @@ class Application_Service_ApiServices
             $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
             $eidResults[$pr['scheme_sub_group']][] = [
                 'id' => $pr['id'],
-                'name' => strtoupper($pr['response'])
+                'name' => strtoupper($pr['response']),
             ];
         }
         $response['eid']['possibleResults'] = $eidResults;
@@ -128,14 +128,14 @@ class Application_Service_ApiServices
                     $pr['scheme_sub_group'] = (isset($pr['scheme_sub_group']) && !empty($pr['scheme_sub_group']) && trim($pr['scheme_sub_group']) != '') ? $pr['scheme_sub_group'] : 'DEFAULT';
                     $customResults[$pr['scheme_sub_group']][] = [
                         'id' => $pr['id'],
-                        'name' => strtoupper($pr['response'])
+                        'name' => strtoupper($pr['response']),
                     ];
                 }
                 $response[$list['scheme_id']]['possibleResults'] = $customResults;
             }
         }
         /* End Custom Test References */
-        $payload = array('status' => 'success', 'data' => $response);
+        $payload = ['status' => 'success', 'data' => $response];
         $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
         self::addApiTracking($transactionId, $aResult['dm_id'], count($response), 'save-shipments', 'common', $_SERVER['REQUEST_URI'], $params, $payload, 'json');
         return $payload;
@@ -152,33 +152,33 @@ class Application_Service_ApiServices
         $response['instance_id'] = $systemMetaDataDb->getValue('instance-id')['metadata_value'];
 
         // To get the list of active participants list
-        $participantSql = $this->db->select()->from(array('p' => 'participant'), array(
+        $participantSql = $this->db->select()->from(['p' => 'participant'], [
             'no_of_active_participants' => new Zend_Db_Expr("SUM(CASE WHEN (status = 'active') THEN 1 ELSE 0 END)"),
-        ));
+        ]);
         $response['active_participants'] = $this->db->fetchRow($participantSql)['no_of_active_participants'];
 
         // To get the list of active and finalized shipment list scheme wise
-        $schemeSql = $this->db->select()->from(array('sl' => 'scheme_list'), array('name' => 'sl.scheme_name'))
+        $schemeSql = $this->db->select()->from(['sl' => 'scheme_list'], ['name' => 'sl.scheme_name'])
             ->join(
-                array('s' => 'shipment'),
+                ['s' => 'shipment'],
                 'sl.scheme_id=s.scheme_type',
-                array(
+                [
                     's.shipment_id',
                     'type' => 's.scheme_type',
                     'active' => new Zend_Db_Expr("SUM(CASE WHEN ((s.status IN ('shipped', 'evaluated') AND s.status != 'finalized') AND (IFNULL(s.response_switch, 'off') = 'on')) THEN 1 ELSE 0 END)"),
-                    'finalized' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'finalized') THEN 1 ELSE 0 END)")
-                ),
+                    'finalized' => new Zend_Db_Expr("SUM(CASE WHEN (s.status = 'finalized') THEN 1 ELSE 0 END)"),
+                ],
             )->group('s.scheme_type');
         $shipments = $this->db->fetchAll($schemeSql);
         $response['schemes'] = [];
         if (isset($shipments) && !empty($shipments)) {
             foreach ($shipments as $key => $list) {
                 $response['schemes'][$key] = [
-                    "name" => $list['name'],
-                    "type" => $list['type'],
-                    "active" => $list['active'],
-                    "finalized" => $list['finalized'],
-                    "shipments" => $this->fetchShipmentDetails($list['type'])
+                    'name' => $list['name'],
+                    'type' => $list['type'],
+                    'active' => $list['active'],
+                    'finalized' => $list['finalized'],
+                    'shipments' => $this->fetchShipmentDetails($list['type']),
                 ];
             }
         }
@@ -187,17 +187,17 @@ class Application_Service_ApiServices
 
     public function fetchShipmentDetails($schemeId)
     {
-        $sql = $this->db->select()->from(array('s' => 'shipment'), array('s.shipment_code', 's.shipment_date', 's.number_of_samples', 'shipment_status' => 's.status'))
+        $sql = $this->db->select()->from(['s' => 'shipment'], ['s.shipment_code', 's.shipment_date', 's.number_of_samples', 'shipment_status' => 's.status'])
             ->joinLeft(
-                array('spm' => 'shipment_participant_map'),
+                ['spm' => 'shipment_participant_map'],
                 's.shipment_id=spm.shipment_id',
-                array(
-                    'enrolled_participants' => new Zend_Db_Expr("count(spm.participant_id)"),
+                [
+                    'enrolled_participants' => new Zend_Db_Expr('count(spm.participant_id)'),
                     'responded_participants' => new Zend_Db_Expr("SUM(spm.response_status is not null AND spm.response_status like 'responded')"),
-                    'passed_participants' => new Zend_Db_Expr("SUM(spm.final_result = 1)"),
-                    'failed_participants' => new Zend_Db_Expr("SUM(spm.final_result != 1)"),
+                    'passed_participants' => new Zend_Db_Expr('SUM(spm.final_result = 1)'),
+                    'failed_participants' => new Zend_Db_Expr('SUM(spm.final_result != 1)'),
                     'excluded_participants' => new Zend_Db_Expr("SUM(spm.is_excluded = 'yes')"),
-                ),
+                ],
             )->where("s.scheme_type = '" . $schemeId . "'")
             ->group('spm.shipment_id');
         return $this->db->fetchAll($sql);
@@ -207,7 +207,7 @@ class Application_Service_ApiServices
     {
         try {
             if (!isset($parameters['authToken'])) {
-                return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+                return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
             }
             /* Check the app versions */
             /* if (!isset($parameters['appVersion'])) {
@@ -221,79 +221,79 @@ class Application_Service_ApiServices
             $aResult = $this->dataManagerDb->fetchAuthToken($parameters);
             /* Validate new auth token and app-version */
             if (!$aResult) {
-                return array('status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again');
+                return ['status' => 'auth-fail', 'message' => 'Please check your credentials and try to log in again'];
             }
             $response = [];
-            $schemeType = "";
+            $schemeType = '';
             foreach ($parameters['data'] as $key => $param) {
                 $param = (array) $param;
                 $schemeType = $param['schemeType'];
                 if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
-                    return array('status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..');
+                    return ['status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..'];
                 }
-                $mandatoryFields = array('shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm');
+                $mandatoryFields = ['shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm'];
 
                 $mandatoryCheckErrors = $this->shipmentService->mandatoryFieldsCheck($param, $mandatoryFields);
                 if (count($mandatoryCheckErrors) > 0) {
-                    return array('status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data');
+                    return ['status' => 'fail', 'message' => 'Please send the required Fields and sync the shipment data'];
                 }
-                $attributes["sample_rehydration_date"] = Pt_Commons_DateUtility::isoDateFormat($param['sampleRehydrationDate'] ?? '');
+                $attributes['sample_rehydration_date'] = Pt_Commons_DateUtility::isoDateFormat($param['sampleRehydrationDate'] ?? '');
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'dts') {
-                    $attributes["algorithm"] = $param['algorithm'];
+                    $attributes['algorithm'] = $param['algorithm'];
                     if (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) {
-                        $attributes["condition_pt_samples"] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
-                        $attributes["room_temperature"] = (isset($param['roomTemperature']) && !empty($param['roomTemperature'])) ? $param['roomTemperature'] : '';
-                        $attributes["stop_watch"] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
+                        $attributes['condition_pt_samples'] = (isset($param['conditionPtSamples']) && !empty($param['conditionPtSamples'])) ? $param['conditionPtSamples'] : '';
+                        $attributes['room_temperature'] = (isset($param['roomTemperature']) && !empty($param['roomTemperature'])) ? $param['roomTemperature'] : '';
+                        $attributes['stop_watch'] = (isset($param['stopWatch']) && !empty($param['stopWatch'])) ? $param['stopWatch'] : '';
                     }
-                    $attributes["dts_test_panel_type"] = $param['dtsTestPanelType'] ?? null;
+                    $attributes['dts_test_panel_type'] = $param['dtsTestPanelType'] ?? null;
                 }
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'vl') {
-                    $attributes["vl_assay"] = $param['vlAssay'] ?? null;
-                    $attributes["assay_lot_number"] = $param['assayLotNumber'] ?? null;
-                    $attributes["assay_expiration_date"] = Pt_Commons_DateUtility::isoDateFormat($param['assayExpirationDate'] ?? null);
-                    $attributes["specimen_volume"] = $param['specimenVolume'] ?? null;
-                    $attributes["date_of_xpert_instrument_calibration"] = $param['geneXpertInstrument'] ?? null;
-                    $attributes["instrument_sn"] = $param['instrumentSn'] ?? null;
-                    $attributes["uploaded_file"] = $param['uploadedFilePath'] ?? null;
-                    $attributes["extraction"] = (isset($param['extraction']) && $param['extraction'] != "" && $param['platformType'] == 'htp') ? $param['extraction'] : null;
-                    $attributes["amplification"] = (isset($param['amplification']) && $param['amplification'] != "" && $param['platformType'] == 'htp') ? $param['amplification'] : null;
+                    $attributes['vl_assay'] = $param['vlAssay'] ?? null;
+                    $attributes['assay_lot_number'] = $param['assayLotNumber'] ?? null;
+                    $attributes['assay_expiration_date'] = Pt_Commons_DateUtility::isoDateFormat($param['assayExpirationDate'] ?? null);
+                    $attributes['specimen_volume'] = $param['specimenVolume'] ?? null;
+                    $attributes['date_of_xpert_instrument_calibration'] = $param['geneXpertInstrument'] ?? null;
+                    $attributes['instrument_sn'] = $param['instrumentSn'] ?? null;
+                    $attributes['uploaded_file'] = $param['uploadedFilePath'] ?? null;
+                    $attributes['extraction'] = (isset($param['extraction']) && $param['extraction'] != '' && $param['platformType'] == 'htp') ? $param['extraction'] : null;
+                    $attributes['amplification'] = (isset($param['amplification']) && $param['amplification'] != '' && $param['platformType'] == 'htp') ? $param['amplification'] : null;
                 }
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'eid') {
-                    $attributes["extraction_assay"] = $param['extractionAssay'] ?? null;
-                    $attributes["extraction_assay_lot_no"] = $param['extractionAssayLotNo'] ?? null;
-                    $attributes["extraction_assay_expiry_date"] = Pt_Commons_DateUtility::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
-                    $attributes["detection_assay"] = $param['detectionAssay'] ?? null;
-                    $attributes["detection_assay_lot_no"] = $param['detectionAssayLotNo'] ?? null;
-                    $attributes["detection_assay_expiry_date"] = Pt_Commons_DateUtility::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
+                    $attributes['extraction_assay'] = $param['extractionAssay'] ?? null;
+                    $attributes['extraction_assay_lot_no'] = $param['extractionAssayLotNo'] ?? null;
+                    $attributes['extraction_assay_expiry_date'] = Pt_Commons_DateUtility::isoDateFormat($param['extractionAssayExpiryDate'] ?? null);
+                    $attributes['detection_assay'] = $param['detectionAssay'] ?? null;
+                    $attributes['detection_assay_lot_no'] = $param['detectionAssayLotNo'] ?? null;
+                    $attributes['detection_assay_expiry_date'] = Pt_Commons_DateUtility::isoDateFormat($param['detectionAssayExpiryDate'] ?? null);
                 }
                 if (isset($param['schemeType']) && !empty($param['schemeType']) && $param['schemeType'] == 'custom-tests') {
-                    $attributes = array(
-                        "analyst_name" => $param['analystName'] ?? null,
-                        "kit_name" => $param['kitName'] ?? null,
-                        "kit_lot_number" => $param['kitLot'] ?? null,
-                        "kit_expiry_date" => Pt_Commons_DateUtility::isoDateFormat($param['expiryDate'] ?? null),
-                    );
+                    $attributes = [
+                        'analyst_name' => $param['analystName'] ?? null,
+                        'kit_name' => $param['kitName'] ?? null,
+                        'kit_lot_number' => $param['kitLot'] ?? null,
+                        'kit_expiry_date' => Pt_Commons_DateUtility::isoDateFormat($param['expiryDate'] ?? null),
+                    ];
                 }
                 $attributes = json_encode($attributes);
-                $responseStatus = "responded";
-                if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == "yes") {
-                    $responseStatus = "nottested";
+                $responseStatus = 'responded';
+                if (isset($param['isPtTestNotPerformed']) && $param['isPtTestNotPerformed'] == 'yes') {
+                    $responseStatus = 'nottested';
                 }
                 $data = [
-                    "shipment_receipt_date" => Pt_Commons_DateUtility::isoDateFormat($param['shipmentReceiptDate']),
-                    "shipment_test_date" => Pt_Commons_DateUtility::isoDateFormat($param['testingDate']),
-                    "attributes" => $attributes,
-                    "received_pt_panel" => $param['receivedPtPanel'],
-                    "supervisor_approval" => $param['supervisorReview'],
-                    "participant_supervisor" => $param['supervisorName'],
-                    "user_comment" => $param['comments'],
-                    "mode_id" => $param['modeOfReceipt'] ?? null,
-                    "response_status" => $responseStatus,
+                    'shipment_receipt_date' => Pt_Commons_DateUtility::isoDateFormat($param['shipmentReceiptDate']),
+                    'shipment_test_date' => Pt_Commons_DateUtility::isoDateFormat($param['testingDate']),
+                    'attributes' => $attributes,
+                    'received_pt_panel' => $param['receivedPtPanel'],
+                    'supervisor_approval' => $param['supervisorReview'],
+                    'participant_supervisor' => $param['supervisorName'],
+                    'user_comment' => $param['comments'],
+                    'mode_id' => $param['modeOfReceipt'] ?? null,
+                    'response_status' => $responseStatus,
                 ];
 
                 if (!empty($aResult['dm_id'])) {
-                    $data["updated_by_user"] = $aResult['dm_id'] ?? null;
-                    $data["updated_on_user"] = new Zend_Db_Expr('now()');
+                    $data['updated_by_user'] = $aResult['dm_id'] ?? null;
+                    $data['updated_on_user'] = new Zend_Db_Expr('now()');
                 }
 
                 if (isset($param['responseDate']) && trim($param['responseDate']) != '') {
@@ -304,7 +304,7 @@ class Application_Service_ApiServices
 
                 if (isset($aResult['qc_access']) && $aResult['qc_access'] == 'yes') {
                     $data['qc_done'] = $param['qcDone'];
-                    if (isset($param['qcDone']) && trim($param['qcDone']) == "yes") {
+                    if (isset($param['qcDone']) && trim($param['qcDone']) == 'yes') {
                         $data['qc_date'] = Pt_Commons_DateUtility::isoDateFormat($param['qcDate']);
                         $data['qc_done_by'] = trim($param['qcDoneBy']);
                         $data['qc_created_on'] = new Zend_Db_Expr('now()');
@@ -329,7 +329,6 @@ class Application_Service_ApiServices
                     $data['pt_support_comments'] = $param['ptSupportComment'] ?? null;
                 }
 
-
                 if (isset($param['custom_field_1']) && !empty(trim($param['custom_field_1']))) {
                     $data['custom_field_1'] = trim($param['custom_field_1']);
                 }
@@ -338,30 +337,30 @@ class Application_Service_ApiServices
                     $data['custom_field_2'] = trim($param['custom_field_2']);
                 }
 
-                if (isset($param['labDirectorName']) && $param['labDirectorName'] != "") {
+                if (isset($param['labDirectorName']) && $param['labDirectorName'] != '') {
                     $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
                     /* Shipment Participant table updation */
                     $dbAdapter->update(
                         'shipment_participant_map',
-                        array(
+                        [
                             'lab_director_name' => $param['labDirectorName'],
                             'lab_director_email' => $param['labDirectorEmail'],
                             'contact_person_name' => $param['contactPersonName'],
                             'contact_person_email' => $param['contactPersonEmail'],
-                            'contact_person_telephone' => $param['contactPersonTelephone']
-                        ),
+                            'contact_person_telephone' => $param['contactPersonTelephone'],
+                        ],
                         'map_id = ' . $param['mapId']
                     );
                     /* Participant table updation */
                     $dbAdapter->update(
                         'participant',
-                        array(
+                        [
                             'lab_director_name' => $param['labDirectorName'],
                             'lab_director_email' => $param['labDirectorEmail'],
                             'contact_person_name' => $param['contactPersonName'],
                             'contact_person_email' => $param['contactPersonEmail'],
-                            'contact_person_telephone' => $param['contactPersonTelephone']
-                        ),
+                            'contact_person_telephone' => $param['contactPersonTelephone'],
+                        ],
                         'participant_id = ' . $param['participantId']
                     );
                 }
@@ -374,22 +373,22 @@ class Application_Service_ApiServices
                 }
             }
             if (isset($response) && !empty($response)) {
-                $payload = array(
+                $payload = [
                     'status' => 'success',
                     'data' => $response,
-                    'message' => 'Shipment form saved successfully.'
-                );
+                    'message' => 'Shipment form saved successfully.',
+                ];
             } else {
-                $payload = array(
+                $payload = [
                     'status' => 'fail',
-                    'message' => 'Shipment form not saved. Please re-sync again'
-                );
+                    'message' => 'Shipment form not saved. Please re-sync again',
+                ];
             }
             $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
             self::addApiTracking($transactionId, $aResult['dm_id'], count($parameters['data']), 'save-shipments', $schemeType, $_SERVER['REQUEST_URI'], $parameters, $payload, 'json');
             return $payload;
         } catch (Throwable $exc) {
-            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ':' . $exc->getLine() . ' - ' . $exc->getMessage());
             return 0;
         }
     }
@@ -442,11 +441,11 @@ class Application_Service_ApiServices
                 'request_type' => $requestType ?? null,
                 'test_type' => $testType ?? null,
                 'api_url' => $url ?? null,
-                'data_format' => $format ?? null
+                'data_format' => $format ?? null,
             ];
-            return $db->insert("track_api_requests", $data);
+            return $db->insert('track_api_requests', $data);
         } catch (Throwable $exc) {
-            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ":" . $exc->getLine() . " - " . $exc->getMessage());
+            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ':' . $exc->getLine() . ' - ' . $exc->getMessage());
             return 0;
         }
     }
@@ -466,40 +465,37 @@ class Application_Service_ApiServices
          * you want to insert a non-database field (for example a counter or static image)
          */
 
-
-        $aColumns = ['transaction_id', 'number_of_records', 'request_type', 'test_type', "api_url", "DATE_FORMAT(requested_on,'%d-%b-%Y')"];
+        $aColumns = ['transaction_id', 'number_of_records', 'request_type', 'test_type', 'api_url', "DATE_FORMAT(requested_on,'%d-%b-%Y')"];
         $orderColumns = ['transaction_id', 'number_of_records', 'request_type', 'test_type', 'api_url', 'requested_on'];
 
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -510,46 +506,45 @@ class Application_Service_ApiServices
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sQuery = $db->select()->from(array('tar' => 'track_api_requests'))
+        $sQuery = $db->select()->from(['tar' => 'track_api_requests'])
             ->joinLeft(['dm' => 'data_manager'], 'tar.requested_by = dm.dm_id', ['name' => new Zend_Db_Expr("CONCAT( COALESCE(dm.first_name,''),' ', COALESCE(dm.last_name,''), '(', COALESCE(dm.primary_email,''), ')' )")]);
 
-        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("tar.requested_by = ? ", $parameters['createdBy']);
+        if (isset($parameters['createdBy']) && $parameters['createdBy'] != '') {
+            $sQuery = $sQuery->where('tar.requested_by = ? ', $parameters['createdBy']);
         }
 
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
             $this->common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where('DATE(tar.requested_on) >= ?', $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where('DATE(tar.requested_on) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
 
-        if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
-            $sQuery = $sQuery->where("tar.request_type = ? ", $parameters['syncType']);
+        if (isset($parameters['syncType']) && $parameters['syncType'] != '') {
+            $sQuery = $sQuery->where('tar.request_type = ? ', $parameters['syncType']);
         }
 
-        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
-            $sQuery = $sQuery->where("tar.test_type = ? ", $parameters['schemeType']);
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != '') {
+            $sQuery = $sQuery->where('tar.test_type = ? ', $parameters['schemeType']);
         }
 
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
 
@@ -570,24 +565,24 @@ class Application_Service_ApiServices
         $iFilteredTotal = count($aResultFilterTotal);
 
         /* Total data set length */
-        $sQuery = $db->select()->from(array("tar" => "track_api_requests"), new Zend_Db_Expr("COUNT('api_track_id')"));
+        $sQuery = $db->select()->from(['tar' => 'track_api_requests'], new Zend_Db_Expr("COUNT('api_track_id')"));
 
-        if (isset($parameters['createdBy']) && $parameters['createdBy'] != "") {
-            $sQuery = $sQuery->where("tar.requested_by = ? ", $parameters['createdBy']);
+        if (isset($parameters['createdBy']) && $parameters['createdBy'] != '') {
+            $sQuery = $sQuery->where('tar.requested_by = ? ', $parameters['createdBy']);
         }
 
-        if (isset($parameters['startDate']) && $parameters['startDate'] != "" && isset($parameters['endDate']) && $parameters['endDate'] != "") {
+        if (isset($parameters['startDate']) && $parameters['startDate'] != '' && isset($parameters['endDate']) && $parameters['endDate'] != '') {
             $this->common = new Application_Service_Common();
-            $sQuery = $sQuery->where("DATE(tar.requested_on) >= ?", $this->common->isoDateFormat($parameters['startDate']));
-            $sQuery = $sQuery->where("DATE(tar.requested_on) <= ?", $this->common->isoDateFormat($parameters['endDate']));
+            $sQuery = $sQuery->where('DATE(tar.requested_on) >= ?', $this->common->isoDateFormat($parameters['startDate']));
+            $sQuery = $sQuery->where('DATE(tar.requested_on) <= ?', $this->common->isoDateFormat($parameters['endDate']));
         }
 
-        if (isset($parameters['syncType']) && $parameters['syncType'] != "") {
-            $sQuery = $sQuery->where("tar.request_type = ? ", $parameters['syncType']);
+        if (isset($parameters['syncType']) && $parameters['syncType'] != '') {
+            $sQuery = $sQuery->where('tar.request_type = ? ', $parameters['syncType']);
         }
 
-        if (isset($parameters['schemeType']) && $parameters['schemeType'] != "") {
-            $sQuery = $sQuery->where("tar.test_type = ? ", $parameters['schemeType']);
+        if (isset($parameters['schemeType']) && $parameters['schemeType'] != '') {
+            $sQuery = $sQuery->where('tar.test_type = ? ', $parameters['schemeType']);
         }
         $aResultTotal = $db->fetchCol($sQuery);
         $iTotal = $aResultTotal[0];
@@ -595,17 +590,17 @@ class Application_Service_ApiServices
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
         foreach ($rResult as $aRow) {
             $row = [];
             $row[] = $aRow['transaction_id'];
             $row[] = $aRow['number_of_records'];
-            $row[] = strtoupper(str_replace("-", " ", (string) $aRow['request_type']));
+            $row[] = strtoupper(str_replace('-', ' ', (string) $aRow['request_type']));
             $row[] = strtoupper((string) $aRow['test_type']);
             $row[] = $aRow['api_url'];
             $row[] = Pt_Commons_DateUtility::humanReadableDateFormat($aRow['requested_on'], true);

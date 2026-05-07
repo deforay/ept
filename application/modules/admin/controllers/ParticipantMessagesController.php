@@ -2,7 +2,6 @@
 
 class Admin_ParticipantMessagesController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $adminSession = new Zend_Session_Namespace('administrators');
@@ -50,9 +49,9 @@ class Admin_ParticipantMessagesController extends Zend_Controller_Action
             $params = $this->getAllParams();
             $distributionId = $distributionService->addDistribution($params);
             if (isset($params['shipmentPage']) && $params['shipmentPage'] == 'true' && $distributionId > 0) {
-                $this->redirect("/admin/shipment/index/did/" . base64_encode($distributionId));
+                $this->redirect('/admin/shipment/index/did/' . base64_encode($distributionId));
             } else {
-                $this->redirect("/admin/distributions");
+                $this->redirect('/admin/distributions');
             }
         }
         // For accessing the common service methods

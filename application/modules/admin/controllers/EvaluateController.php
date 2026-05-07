@@ -2,7 +2,6 @@
 
 class Admin_EvaluateController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -81,7 +80,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $request = $this->getRequest();
 
         if (!$this->hasParam('sid')) {
-            $this->redirect("/admin/evaluate/");
+            $this->redirect('/admin/evaluate/');
             return;
         }
 
@@ -134,12 +133,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $scheme = base64_encode($params['scheme']);
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             if ($response === false) {
-                $alertMsg->message = "Shipment Results NOT UPDATED for this participant";
+                $alertMsg->message = 'Shipment Results NOT UPDATED for this participant';
             } else {
-                $alertMsg->message = "Shipment Results for this participant updated successfully";
+                $alertMsg->message = 'Shipment Results for this participant updated successfully';
             }
 
-            if (isset($params['whereToGo']) && $params['whereToGo'] != "") {
+            if (isset($params['whereToGo']) && $params['whereToGo'] != '') {
                 $this->redirect($params['whereToGo']);
             } else {
                 $this->redirect("/admin/evaluate/shipment/sid/$shipmentId");
@@ -147,7 +146,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         } else {
             if ($this->hasParam('sid') && $this->hasParam('pid')  && $this->hasParam('scheme')) {
 
-                $this->view->currentUrl = "/admin/evaluate/edit/sid/" . $this->_getParam('sid') . "/pid/" . $this->_getParam('pid') . "/scheme/" . $this->_getParam('scheme');
+                $this->view->currentUrl = '/admin/evaluate/edit/sid/' . $this->_getParam('sid') . '/pid/' . $this->_getParam('pid') . '/scheme/' . $this->_getParam('scheme');
 
                 $sid = (int)base64_decode($this->_getParam('sid'));
                 $pid = (int)base64_decode($this->_getParam('pid'));
@@ -185,7 +184,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $tbModel = new Application_Model_Tb();
                     $shipmentService = new Application_Service_Shipments();
                     $shipment = $schemeService->getShipmentData($sid, $pid);
-                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("tb");
+                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('tb');
                     $shipment['attributes'] = json_decode($shipment['attributes'], true);
                     $this->view->shipment = $shipment;
                     $this->view->shipId = $sid;
@@ -193,15 +192,15 @@ class Admin_EvaluateController extends Zend_Controller_Action
                     $this->view->scheme = $scheme;
                     $this->view->assay = $tbModel->getAllTbAssays();
                     $this->view->isEditable = $shipmentService->isShipmentEditable($sid, $pid);
-                } elseif ($scheme == "generic-test") {
-                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons("generic-test");
+                } elseif ($scheme == 'generic-test') {
+                    $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('generic-test');
                 }
                 $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
                 $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
                 $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
                 $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
             } else {
-                $this->redirect("/admin/evaluate/");
+                $this->redirect('/admin/evaluate/');
             }
         }
     }
@@ -217,12 +216,12 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $result = $evalService->updateShipmentComment($params);
             if (isset($params['from']) && !empty($params['from']) && $params['from'] == 'evaluate') {
                 $alertMsg->message = $result;
-                $this->redirect("/admin/evaluate/shipment/sid/" . $params['sid']);
+                $this->redirect('/admin/evaluate/shipment/sid/' . $params['sid']);
             } else {
                 $this->view->message = $result;
             }
         } else {
-            $this->view->message = "Unable to update shipment status. Please try again later.";
+            $this->view->message = 'Unable to update shipment status. Please try again later.';
         }
         /* if ($this->hasParam('sid')) {
             $sid = (int)base64_decode($this->_getParam('sid'));
@@ -242,7 +241,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $evalService = new Application_Service_Evaluation();
             $this->view->message = $evalService->updateShipmentStatus($sid, $status);
         } else {
-            $this->view->message = "Unable to update shipment status. Please try again later.";
+            $this->view->message = 'Unable to update shipment status. Please try again later.';
         }
     }
 
@@ -271,11 +270,11 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 } elseif ($schemeType == 'tb') {
                     $this->view->result = $shipmentService->removeTbResults($mapId);
                 } else {
-                    $this->view->result = "Failed to delete";
+                    $this->view->result = 'Failed to delete';
                 }
             }
         } else {
-            $this->view->message = "Unable to delete. Please try again later or contact system admin for help";
+            $this->view->message = 'Unable to delete. Please try again later or contact system admin for help';
         }
     }
 
@@ -289,7 +288,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $schemeService = new Application_Service_Schemes();
             $vlModel->updateVlInformation($params);
             $shipmentId = (int)base64_decode($this->_getParam('sid'));
-            $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
+            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
         }
         if ($this->hasParam('sid')) {
             if ($request->isPost()) {
@@ -299,7 +298,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 $this->view->shipmentId = $shipmentId;
             }
         } else {
-            $this->view->message = "Unable to fetch Viral Load Range for this Shipment.";
+            $this->view->message = 'Unable to fetch Viral Load Range for this Shipment.';
         } // action body
 
     }
@@ -311,9 +310,9 @@ class Admin_EvaluateController extends Zend_Controller_Action
             $methodOfEvaluation = ($this->_getParam('method'));
             $vlModel = new Application_Model_Vl();
             $this->view->result = $vlModel->setVlRange($shipmentId);
-            $this->redirect("/admin/evaluate/index/scheme/vl/showcalc/" . base64_encode($shipmentId));
+            $this->redirect('/admin/evaluate/index/scheme/vl/showcalc/' . base64_encode($shipmentId));
         } else {
-            $this->redirect("/admin/evaluate/");
+            $this->redirect('/admin/evaluate/');
         }
     }
 
@@ -339,7 +338,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
         $schemeService = new Application_Service_Schemes();
         if ($this->hasParam('id')) {
             $combineId = base64_decode($this->_getParam('id'));
-            $expStr = explode("#", $combineId);
+            $expStr = explode('#', $combineId);
             $shipmentId = (int)$expStr[0];
             $sampleId = (int)$expStr[1];
             $vlAssay = (int)$expStr[2];
@@ -405,7 +404,7 @@ class Admin_EvaluateController extends Zend_Controller_Action
                 'sEcho' => 0,
                 'iTotalRecords' => 0,
                 'iTotalDisplayRecords' => 0,
-                'aaData' => []
+                'aaData' => [],
             ]);
         }
     }

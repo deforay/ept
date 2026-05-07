@@ -2,7 +2,6 @@
 
 class Reports_DetailedController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */

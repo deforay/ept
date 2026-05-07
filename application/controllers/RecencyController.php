@@ -2,105 +2,108 @@
 
 class RecencyController extends Zend_Controller_Action
 {
+    public function init()
+    {
+    }
 
-	public function init() {}
+    public function indexAction()
+    {
+        // action body
+    }
 
-	public function indexAction()
-	{
-		// action body
-	}
+    public function responseAction()
+    {
 
-	public function responseAction()
-	{
+        $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
 
-		$schemeService = new Application_Service_Schemes();
-		$shipmentService = new Application_Service_Shipments();
+        $this->view->recencyAssay = $schemeService->getRecencyAssay();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
 
-		$this->view->recencyAssay = $schemeService->getRecencyAssay();
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
-		if ($request->isPost()) {
+            $data = $request->getPost();
+            $data['uploadedFilePath'] = '';
 
-			$data = $request->getPost();
-			$data['uploadedFilePath'] = "";
+            if (!empty($_FILES['uploadedFile'])) {
+                $schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
+                $participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
+                $data['uploadedFilePath'] = Application_Service_Common::storeParticipantResponseAttachment(
+                    $_FILES['uploadedFile'],
+                    'recency',
+                    $schemeCode,
+                    $participantId
+                );
+            }
 
-			if (!empty($_FILES["uploadedFile"])) {
-				$schemeCode = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['schemeCode']);
-				$participantId = preg_replace('/[^a-zA-Z0-9-_]/', '', $data['participantId']);
-				$data['uploadedFilePath'] = Application_Service_Common::storeParticipantResponseAttachment(
-					$_FILES['uploadedFile'],
-					'recency',
-					$schemeCode,
-					$participantId
-				);
-			}
+            $shipmentService->updateRecencyResults($data);
+            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+                $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
+            } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
+                $this->redirect('/participant/current-schemes');
+            } else {
+                $_SESSION['confirmForm'] = 'yes';
+                $this->redirect('/recency/response/sid/' . $data['shipmentId'] . '/pid/' . $data['participantId'] . '/eid/' . $data['evId'] . '/uc/no');
+            }
+        } else {
+            $sID = $request->getParam('sid');
+            $pID = $request->getParam('pid');
+            $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
+            $reqFrom = $request->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'recency', $uc);
+                $this->_helper->layout()->setLayout('admin');
+            }
+            $participantService = new Application_Service_Participants();
+            $this->view->participant = $participantService->getParticipantDetails($pID);
 
-			$shipmentService->updateRecencyResults($data);
-			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
-				$this->redirect("/participant/current-schemes");
-			} else {
-				$_SESSION['confirmForm'] = "yes";
-				$this->redirect("/recency/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
-			}
-		} else {
-			$sID = $request->getParam('sid');
-			$pID = $request->getParam('pid');
-			$eID = $request->getParam('eid');
-			$uc = $request->getParam('uc');
-			$reqFrom = $request->getParam('from');
-			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
-				$evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'recency', $uc);
-				$this->_helper->layout()->setLayout('admin');
-			}
-			$participantService = new Application_Service_Participants();
-			$this->view->participant = $participantService->getParticipantDetails($pID);
+            $this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'participant');
 
-			$this->view->recencyPossibleResults = $schemeService->getPossibleResults('recency', 'participant');
+            $this->view->allSamples = $schemeService->getRecencySamples($sID, $pID);
+            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('recency');
+            $shipment = $schemeService->getShipmentData($sID, $pID);
+            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $this->view->shipment = $shipment;
+            $this->view->shipId = $sID;
+            $this->view->participantId = $pID;
+            $this->view->eID = $eID;
+            $this->view->reqFrom = $reqFrom;
 
-			$this->view->allSamples = $schemeService->getRecencySamples($sID, $pID);
-			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons("recency");
-			$shipment = $schemeService->getShipmentData($sID, $pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'], true);
-			$this->view->shipment = $shipment;
-			$this->view->shipId = $sID;
-			$this->view->participantId = $pID;
-			$this->view->eID = $eID;
-			$this->view->reqFrom = $reqFrom;
+            $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
-			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
+            $commonService = new Application_Service_Common();
+            $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
+            $this->view->globalQcAccess = $commonService->getConfig('qc_access');
+        }
+    }
 
-			$commonService = new Application_Service_Common();
-			$this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-			$this->view->globalQcAccess = $commonService->getConfig('qc_access');
-		}
-	}
+    public function downloadAction()
+    {
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $this->_helper->layout()->disableLayout();
+        $sID = $request->getParam('sid');
+        $pID = $request->getParam('pid');
+        $eID = $request->getParam('eid');
 
-	public function downloadAction()
-	{
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
-		$this->_helper->layout()->disableLayout();
-		$sID = $request->getParam('sid');
-		$pID = $request->getParam('pid');
-		$eID = $request->getParam('eid');
+        $reportService = new Application_Service_Reports();
+        $this->view->header = $reportService->getReportConfigValue('report-header');
+        $this->view->logo = $reportService->getReportConfigValue('logo');
+        $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-		$reportService = new Application_Service_Reports();
-		$this->view->header = $reportService->getReportConfigValue('report-header');
-		$this->view->logo = $reportService->getReportConfigValue('logo');
-		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
+        $participantService = new Application_Service_Participants();
+        $this->view->participant = $participantService->getParticipantDetails($pID);
+        $schemeService = new Application_Service_Schemes();
+        $this->view->referenceDetails = $schemeService->getRecencyReferenceData($sID);
 
-		$participantService = new Application_Service_Participants();
-		$this->view->participant = $participantService->getParticipantDetails($pID);
-		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getRecencyReferenceData($sID);
+        $shipment = $schemeService->getShipmentData($sID, $pID);
+        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $this->view->shipment = $shipment;
+    }
 
-		$shipment = $schemeService->getShipmentData($sID, $pID);
-		$shipment['attributes'] = json_decode($shipment['attributes'], true);
-		$this->view->shipment = $shipment;
-	}
-
-	public function deleteAction() {}
+    public function deleteAction()
+    {
+    }
 }

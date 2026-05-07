@@ -2,7 +2,6 @@
 
 class Admin_SystemAdminsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -34,7 +33,6 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
         }
     }
 
-
     public function addAction()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -44,7 +42,7 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $adminService->addSystemAdmin($params);
-            $this->redirect("/admin/system-admins");
+            $this->redirect('/admin/system-admins');
         }
         $this->view->allSchemes = $commonServices->getFullSchemesDetails();
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
@@ -59,7 +57,7 @@ class Admin_SystemAdminsController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $adminService->updateSystemAdmin($params);
-            $this->redirect("/admin/system-admins");
+            $this->redirect('/admin/system-admins');
         } else {
             if ($this->hasParam('id')) {
                 $commonServices = new Application_Service_Common();

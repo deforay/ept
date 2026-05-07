@@ -1,7 +1,5 @@
 <?php
 
-use setasign\Fpdi\Tcpdf\Fpdi;
-
 class Pt_Reports_Watermark extends Pt_Reports_PdfRotate
 {
     private $waterMarkText = null;
@@ -16,7 +14,7 @@ class Pt_Reports_Watermark extends Pt_Reports_PdfRotate
     public function Header()
     {
         global $fullPathToFile;
-        if (isset($this->waterMarkText) && $this->waterMarkText != "") {
+        if (isset($this->waterMarkText) && $this->waterMarkText != '') {
             //Put the watermark
 
             $this->SetFont('freesans', 'B', 120, '', false);

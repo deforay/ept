@@ -1,11 +1,11 @@
 <?php
 
-use Symfony\Component\Uid\Ulid;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Uid\Uuid;
 
 final class Pt_Commons_MiscUtility
 {
@@ -52,7 +52,6 @@ final class Pt_Commons_MiscUtility
         return $input;
     }
 
-
     public static function cleanString($string)
     {
         if ($string === null || $string === '') {
@@ -96,13 +95,12 @@ final class Pt_Commons_MiscUtility
     public static function slugify(string $input): string
     {
         // Replace non-alphanumeric (excluding hyphen) with hyphen
-        $slug = preg_replace("/[^a-zA-Z0-9-]/", "-", trim($input));
+        $slug = preg_replace('/[^a-zA-Z0-9-]/', '-', trim($input));
         // Collapse multiple hyphens into one
-        $slug = preg_replace("/-+/", "-", $slug);
+        $slug = preg_replace('/-+/', '-', $slug);
         // Trim leading and trailing hyphens
-        return trim($slug, "-");
+        return trim($slug, '-');
     }
-
 
     public static function generateRandomString(int $length = 32): string
     {
@@ -124,7 +122,6 @@ final class Pt_Commons_MiscUtility
             throw new Exception('Failed to generate random string: ' . $e->getMessage());
         }
     }
-
 
     public static function generateRandomNumber(int $length = 8): string
     {
@@ -159,7 +156,7 @@ final class Pt_Commons_MiscUtility
     public static function generateFakeEmailId($uniqueId, $participantName)
     {
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, "/") : 'ept';
+        $eptDomain = !empty($conf->domain) ? rtrim($conf->domain, '/') : 'ept';
         $host = parse_url($eptDomain, PHP_URL_HOST) ?: 'ept';
 
         $sanitizedUniqueId = self::sanitizeInput(self::cleanString($uniqueId));
@@ -176,7 +173,7 @@ final class Pt_Commons_MiscUtility
 
     public static function randomHexColor(): string
     {
-        $hexColorPart = fn() => str_pad(dechex(random_int(0, 255)), 2, '0', STR_PAD_LEFT);
+        $hexColorPart = fn () => str_pad(dechex(random_int(0, 255)), 2, '0', STR_PAD_LEFT);
 
         return strtoupper($hexColorPart() . $hexColorPart() . $hexColorPart());
     }
@@ -196,7 +193,6 @@ final class Pt_Commons_MiscUtility
             return false; // Directory creation failed
         }
     }
-
 
     public static function removeDirectory($dirname): bool
     {
@@ -223,7 +219,7 @@ final class Pt_Commons_MiscUtility
             var_dump($object);
             $output = ob_get_clean();
             // Remove newline characters
-            $output = str_replace("\n", "", $output);
+            $output = str_replace("\n", '', $output);
         } else {
             print_r($object);
             $output = ob_get_clean();
@@ -245,7 +241,7 @@ final class Pt_Commons_MiscUtility
     public static function hasEmpty(array $array): bool
     {
         foreach ($array as $value) {
-            if ($value === null || trim((string) $value) === "") {
+            if ($value === null || trim((string) $value) === '') {
                 return true;
             }
         }
@@ -350,7 +346,6 @@ final class Pt_Commons_MiscUtility
         return array_merge($targetArray, array_intersect_key($sourceArray, $targetArray));
     }
 
-
     public static function getMimeTypeStrings(array $extensions): array
     {
         $mimeTypesMap = [
@@ -374,7 +369,7 @@ final class Pt_Commons_MiscUtility
             'rar' => 'application/x-rar-compressed',
             'html' => 'text/html',
             'xml' => 'application/xml',
-            'json' => 'application/json'
+            'json' => 'application/json',
         ];
 
         $mappedMimeTypes = [];
@@ -418,7 +413,6 @@ final class Pt_Commons_MiscUtility
         return $array;
     }
 
-
     // Generate a UUIDv4 with an optional extra string
     public static function generateUUID($attachExtraString = true): string
     {
@@ -439,7 +433,6 @@ final class Pt_Commons_MiscUtility
         }
         return Uuid::v5($namespace, $name)->toRfc4122();
     }
-
 
     // Generate a ULID
     public static function generateULID($attachExtraString = true): string
@@ -487,16 +480,16 @@ final class Pt_Commons_MiscUtility
     public static function getDataFromZippedFile(string $zipFile, string $fileName): string
     {
         if (!file_exists($zipFile)) {
-            return "{}";
+            return '{}';
         }
-        $zip = new ZipArchive;
+        $zip = new ZipArchive();
         if ($zip->open($zipFile) === true) {
             $json = $zip->getFromName($fileName);
             $zip->close();
 
-            return $json !== false ? $json : "{}";
+            return $json !== false ? $json : '{}';
         } else {
-            return "{}";
+            return '{}';
         }
     }
 
@@ -509,7 +502,6 @@ final class Pt_Commons_MiscUtility
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         return strtolower($extension);
     }
-
 
     public static function isFileType(string $filePath, string $expectedMimeType): bool
     {
@@ -613,7 +605,7 @@ final class Pt_Commons_MiscUtility
         if (file_exists($fileName) || str_contains($fileName, DIRECTORY_SEPARATOR)) {
             $fullPath = realpath($fileName);
             if ($fullPath === false) {
-                throw new InvalidArgumentException("Invalid file path provided.");
+                throw new InvalidArgumentException('Invalid file path provided.');
             }
         } else {
             $fullPath = $fileName;
@@ -632,7 +624,6 @@ final class Pt_Commons_MiscUtility
         $fileAge = time() - filemtime($lockFile);
         return $fileAge > $maxAgeInSeconds;
     }
-
 
     public static function deleteLockFile($fileName, $lockFileLocation = TEMP_UPLOAD_PATH): bool
     {
@@ -782,7 +773,6 @@ final class Pt_Commons_MiscUtility
         return substr($clean, 0, $length);
     }
 
-
     /** Lazily-created global console output */
     public static function console(): ConsoleOutput
     {
@@ -821,14 +811,16 @@ final class Pt_Commons_MiscUtility
         $bar->setEmptyBarCharacter($emptyChar);
         $bar->setProgressCharacter($progressChar);
 
-        if (method_exists($bar, 'setRedrawFrequency'))
+        if (method_exists($bar, 'setRedrawFrequency')) {
             $bar->setRedrawFrequency(1);
+        }
         if (method_exists($bar, 'minSecondsBetweenRedraws')) {
             $bar->minSecondsBetweenRedraws(0.0);
             $bar->maxSecondsBetweenRedraws(0.25);
         }
-        if (method_exists($bar, 'setOverwrite'))
+        if (method_exists($bar, 'setOverwrite')) {
             $bar->setOverwrite(true);
+        }
 
         $bar->setMessage($message);
         $bar->start();
@@ -836,22 +828,19 @@ final class Pt_Commons_MiscUtility
         return $bar;
     }
 
-
-
     /** Update the message (table/column, etc.) without moving progress */
     public static function spinnerUpdate(ProgressBar $bar, string $table, ?string $column = null, ?int $idx = null, ?int $total = null): void
     {
         $t = strlen($table) > 40 ? substr($table, 0, 37) . '…' : $table;
         if ($column !== null) {
             $c = strlen($column) > 36 ? substr($column, 0, 33) . '…' : $column;
-            $suffix = ($idx !== null && $total !== null) ? " ($idx/$total)" : "";
+            $suffix = ($idx !== null && $total !== null) ? " ($idx/$total)" : '';
             $bar->setMessage("Converting {$t}  →  {$c}{$suffix}");
         } else {
             $bar->setMessage("Converting {$t} …");
         }
         $bar->display(); // <-- force repaint now
     }
-
 
     /** Advance the bar by a number of steps (default 1) */
     public static function spinnerAdvance(ProgressBar $bar, int $steps = 1): void
@@ -874,7 +863,7 @@ final class Pt_Commons_MiscUtility
     public static function spinnerFinish(ProgressBar $bar): void
     {
         $bar->finish();
-        self::console()->writeln(""); // newline after the bar
+        self::console()->writeln(''); // newline after the bar
     }
 
     public static function getCpuCount(): int
@@ -959,7 +948,7 @@ final class Pt_Commons_MiscUtility
         if (self::$heartbeatCounter[$key] >= $everyNIterations) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $db->update($table, [
-                'last_heartbeat' => new Zend_Db_Expr('NOW()')
+                'last_heartbeat' => new Zend_Db_Expr('NOW()'),
             ], "$idColumn = " . (int) $id);
             self::$heartbeatCounter[$key] = 0;
         }

@@ -60,9 +60,13 @@ final class Pt_Commons_HelpCatalog
         $out = [];
         foreach ($slugs as $slug) {
             $file = $this->resolveFile($slug);
-            if ($file === null) continue;
+            if ($file === null) {
+                continue;
+            }
             $meta = $this->parseFrontmatter($file);
-            if ($meta === null) continue;
+            if ($meta === null) {
+                continue;
+            }
             $out[] = [
                 'slug' => $slug,
                 'title' => Pt_Commons_TranslateUtility::safeTranslate((string) ($meta['title'] ?? $slug)),
@@ -82,13 +86,19 @@ final class Pt_Commons_HelpCatalog
     public function find(string $slug): ?array
     {
         $slug = $this->sanitizeSlug($slug);
-        if ($slug === '') return null;
+        if ($slug === '') {
+            return null;
+        }
 
         $file = $this->resolveFile($slug);
-        if ($file === null) return null;
+        if ($file === null) {
+            return null;
+        }
 
         $meta = $this->parseFrontmatter($file);
-        if ($meta === null) return null;
+        if ($meta === null) {
+            return null;
+        }
 
         $body = $this->stripFrontmatter((string) file_get_contents($file));
         $html = (string) $this->md->convert($body);
@@ -121,7 +131,9 @@ final class Pt_Commons_HelpCatalog
     private function slugsIn(string $locale): array
     {
         $dir = $this->rootDir . '/' . $this->audience . '/' . $locale;
-        if (!is_dir($dir)) return [];
+        if (!is_dir($dir)) {
+            return [];
+        }
         $out = [];
         foreach (glob($dir . '/*.md') ?: [] as $file) {
             $out[] = pathinfo($file, PATHINFO_FILENAME);
@@ -132,13 +144,19 @@ final class Pt_Commons_HelpCatalog
     private function resolveFile(string $slug): ?string
     {
         $slug = $this->sanitizeSlug($slug);
-        if ($slug === '') return null;
+        if ($slug === '') {
+            return null;
+        }
 
         $primary = $this->rootDir . '/' . $this->audience . '/' . $this->locale . '/' . $slug . '.md';
-        if (is_file($primary)) return $primary;
+        if (is_file($primary)) {
+            return $primary;
+        }
 
         $fallback = $this->rootDir . '/' . $this->audience . '/' . self::FALLBACK_LOCALE . '/' . $slug . '.md';
-        if (is_file($fallback)) return $fallback;
+        if (is_file($fallback)) {
+            return $fallback;
+        }
 
         return null;
     }
@@ -152,14 +170,18 @@ final class Pt_Commons_HelpCatalog
     private function parseFrontmatter(string $file): ?array
     {
         $raw = (string) file_get_contents($file);
-        if ($raw === '') return null;
+        if ($raw === '') {
+            return null;
+        }
 
         if (!str_starts_with($raw, "---\n")) {
             return ['title' => pathinfo($file, PATHINFO_FILENAME)];
         }
 
         $end = strpos($raw, "\n---", 4);
-        if ($end === false) return null;
+        if ($end === false) {
+            return null;
+        }
 
         $block = substr($raw, 4, $end - 4);
         return $this->parseYamlLike($block);
@@ -167,9 +189,13 @@ final class Pt_Commons_HelpCatalog
 
     private function stripFrontmatter(string $raw): string
     {
-        if (!str_starts_with($raw, "---\n")) return $raw;
+        if (!str_starts_with($raw, "---\n")) {
+            return $raw;
+        }
         $end = strpos($raw, "\n---", 4);
-        if ($end === false) return $raw;
+        if ($end === false) {
+            return $raw;
+        }
         return ltrim(substr($raw, $end + 4));
     }
 
@@ -184,10 +210,15 @@ final class Pt_Commons_HelpCatalog
     {
         $out = [];
         foreach (explode("\n", $block) as $line) {
-            if (!preg_match('/^([a-z_]+)\s*:\s*(.*)$/i', trim($line), $m)) continue;
+            if (!preg_match('/^([a-z_]+)\s*:\s*(.*)$/i', trim($line), $m)) {
+                continue;
+            }
             $key = $m[1];
             $val = trim($m[2]);
-            if ($val === '') { $out[$key] = ''; continue; }
+            if ($val === '') {
+                $out[$key] = '';
+                continue;
+            }
             if (str_starts_with($val, '[') && str_ends_with($val, ']')) {
                 $items = substr($val, 1, -1);
                 $parts = array_filter(array_map('trim', explode(',', $items)), fn ($s) => $s !== '');

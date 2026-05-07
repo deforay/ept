@@ -26,8 +26,8 @@
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Pt_Commons_Mail extends Zend_Mail {
-
+class Pt_Commons_Mail extends Zend_Mail
+{
     /**
      * Sets the HTML body for the message
      *
@@ -36,7 +36,8 @@ class Pt_Commons_Mail extends Zend_Mail {
      * @param  string    $encoding
      * @return Zend_Mail Provides fluent interface
      */
-    public function setBodyHtml($html, $charset = null, $encoding = Zend_Mime::ENCODING_QUOTEDPRINTABLE, $preload_images = true) {
+    public function setBodyHtml($html, $charset = null, $encoding = Zend_Mime::ENCODING_QUOTEDPRINTABLE, $preload_images = true)
+    {
         if ($preload_images) {
             $this->setType(Zend_Mime::MULTIPART_RELATED);
 

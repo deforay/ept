@@ -835,6 +835,10 @@ configure_php_ini() {
     local desired_log_errors="log_errors = On"
     local desired_post_max_size="post_max_size = 1G"
     local desired_upload_max_filesize="upload_max_filesize = 1G"
+    local desired_max_input_vars="max_input_vars = 10000"
+    local desired_max_input_time="max_input_time = 300"
+    local desired_max_execution_time="max_execution_time = 300"
+    local desired_memory_limit="memory_limit = 512M"
     local desired_session_auto_start="session.auto_start = 0"
     local desired_strict_mode="session.use_strict_mode = 1"
     local desired_sid_length="session.sid_length = 48"
@@ -862,7 +866,7 @@ configure_php_ini() {
         print info "Checking PHP settings in $ini_file..."
 
         # Check which settings are already correctly set
-        local er_set de_set le_set pms_set umf_set auto_start_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set expose_set
+        local er_set de_set le_set pms_set umf_set miv_set mit_set met_set ml_set auto_start_set sm_set sid_len_set sid_bits_set gc_maxlifetime_set expose_set
         local opcache_enable_set opcache_enable_cli_set opcache_memory_set opcache_max_files_set
         local opcache_validate_set opcache_save_comments_set opcache_jit_set opcache_interned_set opcache_override_set
 
@@ -871,6 +875,10 @@ configure_php_ini() {
         le_set=$(grep -q "^${desired_log_errors}$" "$ini_file" && echo true || echo false)
         pms_set=$(grep -q "^${desired_post_max_size}$" "$ini_file" && echo true || echo false)
         umf_set=$(grep -q "^${desired_upload_max_filesize}$" "$ini_file" && echo true || echo false)
+        miv_set=$(grep -q "^${desired_max_input_vars}$" "$ini_file" && echo true || echo false)
+        mit_set=$(grep -q "^${desired_max_input_time}$" "$ini_file" && echo true || echo false)
+        met_set=$(grep -q "^${desired_max_execution_time}$" "$ini_file" && echo true || echo false)
+        ml_set=$(grep -q "^${desired_memory_limit}$" "$ini_file" && echo true || echo false)
         auto_start_set=$(grep -q "^${desired_session_auto_start}$" "$ini_file" && echo true || echo false)
         sm_set=$(grep -q "^${desired_strict_mode}$" "$ini_file" && echo true || echo false)
         sid_len_set=$(grep -q "^${desired_sid_length}$" "$ini_file" && echo true || echo false)
@@ -889,6 +897,7 @@ configure_php_ini() {
 
         # If ANY are missing, we need to rewrite
         if [ "$er_set" = false ] || [ "$de_set" = false ] || [ "$le_set" = false ] || [ "$pms_set" = false ] || [ "$umf_set" = false ] \
+            || [ "$miv_set" = false ] || [ "$mit_set" = false ] || [ "$met_set" = false ] || [ "$ml_set" = false ] \
             || [ "$auto_start_set" = false ] || [ "$sm_set" = false ] || [ "$sid_len_set" = false ] || [ "$sid_bits_set" = false ] || [ "$gc_maxlifetime_set" = false ] \
             || [ "$expose_set" = false ] \
             || [ "$opcache_enable_set" = false ] || [ "$opcache_enable_cli_set" = false ] || [ "$opcache_memory_set" = false ] \
@@ -915,6 +924,14 @@ configure_php_ini() {
                     echo ";$line" >>"$temp_file"; echo "$desired_post_max_size" >>"$temp_file"; pms_set=true
                 elif [[ "$line" =~ ^[[:space:]]*upload_max_filesize[[:space:]]*= ]] && [ "$umf_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_upload_max_filesize" >>"$temp_file"; umf_set=true
+                elif [[ "$line" =~ ^[[:space:]]*max_input_vars[[:space:]]*= ]] && [ "$miv_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_max_input_vars" >>"$temp_file"; miv_set=true
+                elif [[ "$line" =~ ^[[:space:]]*max_input_time[[:space:]]*= ]] && [ "$mit_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_max_input_time" >>"$temp_file"; mit_set=true
+                elif [[ "$line" =~ ^[[:space:]]*max_execution_time[[:space:]]*= ]] && [ "$met_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_max_execution_time" >>"$temp_file"; met_set=true
+                elif [[ "$line" =~ ^[[:space:]]*memory_limit[[:space:]]*= ]] && [ "$ml_set" = false ]; then
+                    echo ";$line" >>"$temp_file"; echo "$desired_memory_limit" >>"$temp_file"; ml_set=true
                 elif [[ "$line" =~ ^[[:space:]]*session\.auto_start[[:space:]]*= ]] && [ "$auto_start_set" = false ]; then
                     echo ";$line" >>"$temp_file"; echo "$desired_session_auto_start" >>"$temp_file"; auto_start_set=true
                 elif [[ "$line" =~ ^[[:space:]]*session\.use_strict_mode[[:space:]]*= ]] && [ "$sm_set" = false ]; then
@@ -956,6 +973,10 @@ configure_php_ini() {
             [ "$le_set" = true ] || echo "$desired_log_errors" >>"$temp_file"
             [ "$pms_set" = true ] || echo "$desired_post_max_size" >>"$temp_file"
             [ "$umf_set" = true ] || echo "$desired_upload_max_filesize" >>"$temp_file"
+            [ "$miv_set" = true ] || echo "$desired_max_input_vars" >>"$temp_file"
+            [ "$mit_set" = true ] || echo "$desired_max_input_time" >>"$temp_file"
+            [ "$met_set" = true ] || echo "$desired_max_execution_time" >>"$temp_file"
+            [ "$ml_set" = true ] || echo "$desired_memory_limit" >>"$temp_file"
             [ "$auto_start_set" = true ] || echo "$desired_session_auto_start" >>"$temp_file"
             [ "$sm_set" = true ] || echo "$desired_strict_mode" >>"$temp_file"
             [ "$sid_len_set" = true ] || echo "$desired_sid_length" >>"$temp_file"

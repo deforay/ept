@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'r_feedback_questions';
 
     protected $_primary = 'question_id';
@@ -10,12 +9,12 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     public function fetchFeedBackQuestions($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'))
-            ->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('is_response_mandatory', 'sort_order'))
-            ->joinLeft(array('sl' => 'scheme_list'), 'rpfq.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->joinLeft(array('s' => 'shipment'), 'rpfq.shipment_id=s.shipment_id', array('shipment_code'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=s.shipment_id', array('spm.map_id', 'final_result'))
-            ->where("rpfq.shipment_id =?", $sid)
+        $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['*'])
+            ->join(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['is_response_mandatory', 'sort_order'])
+            ->joinLeft(['sl' => 'scheme_list'], 'rpfq.scheme_type=sl.scheme_id', ['scheme_name'])
+            ->joinLeft(['s' => 'shipment'], 'rpfq.shipment_id=s.shipment_id', ['shipment_code'])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id=s.shipment_id', ['spm.map_id', 'final_result'])
+            ->where('rpfq.shipment_id =?', $sid)
             ->where("(
                     rfq.question_show_to IS NULL
                     OR rfq.question_show_to = 'all-participants' 
@@ -29,8 +28,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form results
         $feedbackFormSql = $db->select()
             ->from(['rpf' => 'r_participant_feedback_form'], ['*'])
-            ->joinLeft(array('sl' => 'scheme_list'), 'rpf.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->joinLeft(array('s' => 'shipment'), 'rpf.shipment_id=s.shipment_id', array('shipment_code'))
+            ->joinLeft(['sl' => 'scheme_list'], 'rpf.scheme_type=sl.scheme_id', ['scheme_name'])
+            ->joinLeft(['s' => 'shipment'], 'rpf.shipment_id=s.shipment_id', ['shipment_code'])
             ->where('rpf.shipment_id = ?', $sid);
         $result['feedback_form_results'] = $db->fetchRow($feedbackFormSql);
 
@@ -38,7 +37,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
             ->where('rpff.shipment_id = ?', $sid)
-            ->joinLeft(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
+            ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id=rpff.shipment_id', ['spm.map_id', 'final_result'])
             ->where("(
                     rpff.files_show_to IS NULL
                     OR rpff.files_show_to = 'all-participants' 
@@ -54,14 +53,14 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     public function fetchFeedBackQuestionsById($id, $type)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('*'));
+        $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['*']);
         if ($type == 'mapped') {
-            $sql = $sql->join(array('rpfq' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpfq.question_id', array('*'));
+            $sql = $sql->join(['rpfq' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpfq.question_id', ['*']);
             $sql = $sql->join(['rpff' => 'r_participant_feedback_form_files_map'], 'rpfq.rpff_id=rpff.rpff_id', ['*']);
-            $sql = $sql->where("rpfq.shipment_id =?", $id);
+            $sql = $sql->where('rpfq.shipment_id =?', $id);
             return $db->fetchAll($sql);
         } else {
-            $sql = $sql->where("rfq.question_id =?", $id);
+            $sql = $sql->where('rfq.question_id =?', $id);
             return $db->fetchRow($sql);
         }
     }
@@ -93,9 +92,9 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 ['questionId' => 'question_id', '*']
             )
             ->joinLeft(
-                array('spm' => 'shipment_participant_map'),
+                ['spm' => 'shipment_participant_map'],
                 'spm.shipment_id=rpfq.shipment_id',
-                array('spm.map_id', 'final_result')
+                ['spm.map_id', 'final_result']
             )
             ->where("(
                     rfq.question_show_to IS NULL
@@ -110,7 +109,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch feedback form files mapping results
         $filesMapSql = $db->select()
             ->from(['rpff' => 'r_participant_feedback_form_files_map'], ['*'])
-            ->join(array('spm' => 'shipment_participant_map'), 'spm.shipment_id=rpff.shipment_id', array('spm.map_id', 'final_result'))
+            ->join(['spm' => 'shipment_participant_map'], 'spm.shipment_id=rpff.shipment_id', ['spm.map_id', 'final_result'])
             ->where("(
                     rpff.files_show_to IS NULL
                     OR rpff.files_show_to = 'all-participants' 
@@ -126,30 +125,30 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
     public function fetchAllIrelaventActiveQuestions($sid)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('rfq' => 'r_feedback_questions'), array('question_id', 'question_text', 'question_code'))
-            ->joinLeft(array('rpff' => 'r_participant_feedback_form_question_map'), 'rfq.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
+        $sql = $db->select()->from(['rfq' => 'r_feedback_questions'], ['question_id', 'question_text', 'question_code'])
+            ->joinLeft(['rpff' => 'r_participant_feedback_form_question_map'], 'rfq.question_id=rpff.question_id', ['is_response_mandatory', 'sort_order'])
             ->where("rfq.question_status ='active'")
-            ->where("(rpff.shipment_id != " . $sid . " OR rpff.shipment_id IS null OR rpff.shipment_id like '')")
+            ->where('(rpff.shipment_id != ' . $sid . " OR rpff.shipment_id IS null OR rpff.shipment_id like '')")
             ->group('question_id');
         return $db->fetchAll($sql);
     }
 
-    public function fetchFeedBackAnswers($sid, $pid, $mid, $type = "options")
+    public function fetchFeedBackAnswers($sid, $pid, $mid, $type = 'options')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pfa' => 'participant_feedback_answer'), array('*'))
-            ->join(array('rpff' => 'r_participant_feedback_form_question_map'), 'pfa.question_id=rpff.question_id', array('is_response_mandatory', 'sort_order'))
-            ->join(array('rfq' => 'r_feedback_questions'), 'pfa.question_id=rfq.question_id', array('question_text', 'question_code'))
-            ->join(array('sl' => 'scheme_list'), 'rpff.scheme_type=sl.scheme_id', array('scheme_name'))
-            ->join(array('s' => 'shipment'), 'pfa.shipment_id=s.shipment_id', array('shipment_code'))
+        $sql = $db->select()->from(['pfa' => 'participant_feedback_answer'], ['*'])
+            ->join(['rpff' => 'r_participant_feedback_form_question_map'], 'pfa.question_id=rpff.question_id', ['is_response_mandatory', 'sort_order'])
+            ->join(['rfq' => 'r_feedback_questions'], 'pfa.question_id=rfq.question_id', ['question_text', 'question_code'])
+            ->join(['sl' => 'scheme_list'], 'rpff.scheme_type=sl.scheme_id', ['scheme_name'])
+            ->join(['s' => 'shipment'], 'pfa.shipment_id=s.shipment_id', ['shipment_code'])
             ->where("rfq.question_status ='active'")
-            ->where("pfa.shipment_id =?", $sid)
-            ->where("pfa.participant_id =?", $pid)
-            ->where("pfa.map_id =?", $mid)
+            ->where('pfa.shipment_id =?', $sid)
+            ->where('pfa.participant_id =?', $pid)
+            ->where('pfa.map_id =?', $mid)
             ->order('sort_order asc');
         $result = $db->fetchAll($sql);
         $response = [];
-        if ($type == "options") {
+        if ($type == 'options') {
             foreach ($result as $key => $q) {
                 $response[$q['question_id']] = $q['answer'];
             }
@@ -164,7 +163,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $data = [];
         if (isset($params['question']) && !empty($params['question'])) {
             $authNameSpace = new Zend_Session_Namespace('administrators');
-            $data = array(
+            $data = [
                 'question_text' => $params['question'],
                 'question_type' => $params['questionType'],
                 'response_attributes' => ($params['questionType'] == 'dropdown') ? json_encode($params['options'], true) : null,
@@ -172,20 +171,20 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                 'question_status' => $params['questionStatus'],
                 'question_show_to' => $params['questionTo'],
                 'updated_datetime' => new Zend_Db_Expr('now()'),
-                'modified_by' => $authNameSpace->admin_id
-            );
+                'modified_by' => $authNameSpace->admin_id,
+            ];
 
             $auditDb = new Application_Model_DbTable_AuditLog();
             $code = $params['questionCode'] ?: '(no code)';
 
             if (isset($params['questionID']) && !empty($params['questionID']) && $params['formType'] != 'clone') {
-                $result = $this->update($data, $this->_primary . " = " . base64_decode($params['questionID']));
-                $auditDb->addNewAuditLog("Updated feedback question - {$code}", "feedback");
+                $result = $this->update($data, $this->_primary . ' = ' . base64_decode($params['questionID']));
+                $auditDb->addNewAuditLog("Updated feedback question - {$code}", 'feedback');
                 return $result;
             } else {
                 $result = $this->insert($data);
                 $verb = (isset($params['formType']) && $params['formType'] === 'clone') ? 'Cloned' : 'Added a new';
-                $auditDb->addNewAuditLog("{$verb} feedback question - {$code}", "feedback");
+                $auditDb->addNewAuditLog("{$verb} feedback question - {$code}", 'feedback');
                 return $result;
             }
         }
@@ -209,7 +208,7 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         // Fetch shipment details
         $shipmentResult = $db->fetchRow(
             $db->select()
-                ->from('shipment', array('scheme_type'))
+                ->from('shipment', ['scheme_type'])
                 ->where('shipment_id = ?', $params['shipmentId'])
         );
 
@@ -319,8 +318,8 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         $questionCount = count((array) $params['question']);
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog(
-            "Mapped feedback form for shipment - " . ($shipmentCode ?: "#{$params['shipmentId']}") . " ({$questionCount} questions)",
-            "feedback"
+            'Mapped feedback form for shipment - ' . ($shipmentCode ?: "#{$params['shipmentId']}") . " ({$questionCount} questions)",
+            'feedback'
         );
     }
 
@@ -330,46 +329,42 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
          * you want to insert a non-database field (for example a counter or static image)
          */
         if ($type == 'mapped') {
-            $aColumns = array('shipment_code', 'scheme_name', 'numberofquestion');
+            $aColumns = ['shipment_code', 'scheme_name', 'numberofquestion'];
         } else {
-            $aColumns = array('question_text', 'question_code', 'question_type', 'question_status');
+            $aColumns = ['question_text', 'question_code', 'question_type', 'question_status'];
         }
 
         /* Indexed column (used for fast and accurate table cardinality) */
         $sIndexColumn = $this->_primary;
 
-
-
-        $sLimit = "";
+        $sLimit = '';
         if (isset($parameters['iDisplayStart']) && $parameters['iDisplayLength'] != '-1') {
             $sOffset = $parameters['iDisplayStart'];
             $sLimit = $parameters['iDisplayLength'];
         }
 
-
-        $sOrder = "";
+        $sOrder = '';
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . "
-				 	" . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $aColumns[intval($parameters['iSortCol_' . $i])] . '
+				 	' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
 
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
         }
 
-
-        $sWhere = "";
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        $sWhere = '';
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
 
@@ -380,33 +375,30 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
                         $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sWhere .= $sWhereSub;
         }
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
-            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == "true" && $parameters['sSearch_' . $i] != '') {
-                if ($sWhere == "") {
+            if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
+                if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 } else {
-                    $sWhere .= " AND " . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
+                    $sWhere .= ' AND ' . $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
                 }
             }
         }
 
-
-
-
-        $sQuery = $this->getAdapter()->select()->from(array('pfa' => $this->_name));
+        $sQuery = $this->getAdapter()->select()->from(['pfa' => $this->_name]);
 
         if ($type == 'mapped') {
-            $sQuery = $sQuery->join(['rpff' => 'r_participant_feedback_form_question_map'], 'pfa.question_id=rpff.question_id', ['shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr("COUNT(*)")]);
+            $sQuery = $sQuery->join(['rpff' => 'r_participant_feedback_form_question_map'], 'pfa.question_id=rpff.question_id', ['shipment_id', 'is_response_mandatory', 'sort_order', 'numberofquestion' => new Zend_Db_Expr('COUNT(*)')]);
             $sQuery = $sQuery->join(['s' => 'shipment'], 'rpff.shipment_id=s.shipment_id', ['shipment_code']);
             $sQuery = $sQuery->joinLeft(['sl' => 'scheme_list'], 'rpff.scheme_type=sl.scheme_id', ['scheme_name']);
         }
-        if (isset($sWhere) && $sWhere != "") {
+        if (isset($sWhere) && $sWhere != '') {
             $sQuery = $sQuery->where($sWhere);
         }
         if ($type == 'mapped') {
@@ -423,7 +415,6 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
 
         $rResult = $this->getAdapter()->fetchAll($sQuery);
 
-
         /* Data set length after filtering */
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_COUNT);
         $sQuery = $sQuery->reset(Zend_Db_Select::LIMIT_OFFSET);
@@ -438,12 +429,12 @@ class Application_Model_DbTable_FeedBackTable extends Zend_Db_Table_Abstract
         /*
          * Output
          */
-        $output = array(
-            "sEcho" => intval($parameters['sEcho']),
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => array()
-        );
+        $output = [
+            'sEcho' => intval($parameters['sEcho']),
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => [],
+        ];
 
         foreach ($rResult as $aRow) {
             $row = [];

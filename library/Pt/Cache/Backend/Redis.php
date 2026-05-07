@@ -14,22 +14,22 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
     /**
      * Default Values
      */
-    const DEFAULT_HOST = '127.0.0.1';
-    const DEFAULT_PORT =  6379;
-    const DEFAULT_PERSISTENT = true;
-    const DEFAULT_DBINDEX = 0;
+    public const DEFAULT_HOST = '127.0.0.1';
+    public const DEFAULT_PORT =  6379;
+    public const DEFAULT_PERSISTENT = true;
+    public const DEFAULT_DBINDEX = 0;
 
-    protected $_options = array(
-        'servers' => array(
-            array(
+    protected $_options = [
+        'servers' => [
+            [
                 'host' => self::DEFAULT_HOST,
                 'port' => self::DEFAULT_PORT,
                 'persistent' => self::DEFAULT_PERSISTENT,
                 'dbindex' => self::DEFAULT_DBINDEX,
-            ),
-        ),
+            ],
+        ],
         'key_prefix' => '',
-    );
+    ];
 
     /**
      * Redis object
@@ -45,13 +45,13 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @throws Zend_Cache_Exception
      * @return void
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         if (!extension_loaded('redis')) {
             Zend_Cache::throwException('The redis extension must be loaded for using this backend !');
         }
         parent::__construct($options);
-        $this->_redis = new Redis;
+        $this->_redis = new Redis();
 
         foreach ($this->_options['servers'] as $server) {
             if (!array_key_exists('port', $server)) {
@@ -72,10 +72,11 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
                 $result = $this->_redis->connect($server['host'], $server['port']);
             }
 
-            if ($result)
+            if ($result) {
                 $this->_redis->select($server['dbindex']);
-            else
+            } else {
                 $this->_redis = null;
+            }
         }
     }
 
@@ -86,11 +87,11 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function isConnected()
     {
-        if ($this->_redis)
+        if ($this->_redis) {
             return true;
+        }
         return false;
     }
-
 
     /**
      * Test if a cache is available for the given id and (if yes) return it (false else)
@@ -154,17 +155,20 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @param  int    $specificLifetime If != false, set a specific lifetime for this cache record (null => infinite lifetime)
      * @return boolean true if no problem
      */
-    public function save($data, $id, $tags = array(), $specificLifetime = false)
+    public function save($data, $id, $tags = [], $specificLifetime = false)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         $lifetime = $this->getLifetime($specificLifetime);
 
-        if (!$tags || !count($tags))
-            $tags = array('');
-        if (is_string($tags))
-            $tags = array($tags);
+        if (!$tags || !count($tags)) {
+            $tags = [''];
+        }
+        if (is_string($tags)) {
+            $tags = [$tags];
+        }
 
         if (!count($tags)) {
             $this->_redis->delete($this->_keyFromItemTags($id));
@@ -174,10 +178,11 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
                 $return = $this->_redis->setex($this->_keyFromId($id), $lifetime, $data);
             }
             $this->_redis->sAdd($this->_keyFromItemTags($id), '');
-            if ($lifetime !== null)
+            if ($lifetime !== null) {
                 $this->_redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
-            else
+            } else {
                 $redis = $this->_redis->persist($this->_keyFromItemTags($id));
+            }
 
             return $return;
         }
@@ -185,65 +190,75 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         $tagsTTL = [];
         foreach ($tags as $tag) {
             if ($tag) {
-                if (!$this->_redis->exists($this->_keyFromTag($tag)))
+                if (!$this->_redis->exists($this->_keyFromTag($tag))) {
                     $tagsTTL[$tag] = false;
-                else
+                } else {
                     $tagsTTL[$tag] = $this->_redis->ttl($this->_keyFromTag($tag));
+                }
             }
         }
 
         $redis = $this->_redis->multi();
         $return = [];
-        if (!$redis)
+        if (!$redis) {
             $return[] = $this->_redis->delete($this->_keyFromItemTags($id));
-        else
-            $redis = $redis->delete($this->_keyFromItemTags($id));
-
-        if ($lifetime === null) {
-            if (!$redis)
-                $return[] = $this->_redis->set($this->_keyFromId($id), $data);
-            else
-                $redis = $redis->set($this->_keyFromId($id), $data);
         } else {
-            if (!$redis)
-                $return[] = $this->_redis->setex($this->_keyFromId($id), $lifetime, $data);
-            else
-                $redis = $redis->setex($this->_keyFromId($id), $lifetime, $data);
+            $redis = $redis->delete($this->_keyFromItemTags($id));
         }
 
-        $itemTags = array($this->_keyFromItemTags($id));
+        if ($lifetime === null) {
+            if (!$redis) {
+                $return[] = $this->_redis->set($this->_keyFromId($id), $data);
+            } else {
+                $redis = $redis->set($this->_keyFromId($id), $data);
+            }
+        } else {
+            if (!$redis) {
+                $return[] = $this->_redis->setex($this->_keyFromId($id), $lifetime, $data);
+            } else {
+                $redis = $redis->setex($this->_keyFromId($id), $lifetime, $data);
+            }
+        }
+
+        $itemTags = [$this->_keyFromItemTags($id)];
         foreach ($tags as $tag) {
             $itemTags[] = $tag;
             if ($tag) {
-                if (!$redis)
+                if (!$redis) {
                     $return[] = $this->_redis->sAdd($this->_keyFromTag($tag), $id);
-                else
+                } else {
                     $redis = $redis->sAdd($this->_keyFromTag($tag), $id);
+                }
             }
         }
         if (count($itemTags) > 1) {
-            if (!$redis)
-                $return[] = call_user_func_array(array($this->_redis, 'sAdd'), $itemTags);
-            else
-                $redis = call_user_func_array(array($redis, 'sAdd'), $itemTags);
+            if (!$redis) {
+                $return[] = call_user_func_array([$this->_redis, 'sAdd'], $itemTags);
+            } else {
+                $redis = call_user_func_array([$redis, 'sAdd'], $itemTags);
+            }
         }
 
         if ($lifetime !== null) {
-            if (!$redis)
+            if (!$redis) {
                 $return[] = $this->_redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
-            else
+            } else {
                 $redis = $redis->setTimeout($this->_keyFromItemTags($id), $lifetime);
+            }
         } else {
-            if (!$redis)
+            if (!$redis) {
                 $return[] = $this->_redis->persist($this->_keyFromItemTags($id));
-            else
+            } else {
                 $redis = $redis->persist($this->_keyFromItemTags($id));
+            }
         }
 
-        if ($redis)
+        if ($redis) {
             $return = $redis->exec();
-        if (!count($return))
+        }
+        if (!count($return)) {
             return false;
+        }
 
         foreach ($tags as $tag) {
             if ($tag) {
@@ -257,8 +272,9 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
         }
 
         foreach ($return as $value) {
-            if ($value === false)
+            if ($value === false) {
                 return false;
+            }
         }
         return true;
     }
@@ -277,8 +293,9 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     protected function _storeKey($data, $id, $specificLifetime = false)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         $lifetime = $this->getLifetime($specificLifetime);
 
@@ -330,26 +347,30 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function remove($id, $hardReset = false)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
-        if (!$id)
+        if (!$id) {
             return false;
-        if (is_string($id))
-            $id = array($id);
-        if (!count($id))
+        }
+        if (is_string($id)) {
+            $id = [$id];
+        }
+        if (!count($id)) {
             return false;
+        }
         $deleteIds = [];
         foreach ($id as $i) {
             $deleteIds[] = $this->_keyFromItemTags($i);
-            if ($hardReset)
+            if ($hardReset) {
                 $deleteIds[] = $this->_keyFromId($i);
+            }
         }
         $this->_redis->delete($deleteIds);
 
         return true;
     }
-
 
     /**
      * Remove a cache tag record
@@ -359,21 +380,26 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function removeTag($tag)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
-        if (!$tag)
+        if (!$tag) {
             return false;
-        if (is_string($tag))
-            $id = array($tag);
-        if (!count($tag))
+        }
+        if (is_string($tag)) {
+            $id = [$tag];
+        }
+        if (!count($tag)) {
             return false;
+        }
         $deleteTags = [];
         foreach ($tag as $t) {
             $deleteTags[] = $this->_keyFromTag($t);
         }
-        if ($deleteTags && count($deleteTags))
+        if ($deleteTags && count($deleteTags)) {
             $this->_redis->delete($deleteTags);
+        }
 
         return true;
     }
@@ -387,11 +413,13 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function existsInSet($member, $set)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return null;
+        }
 
-        if (!$this->_redis->sIsMember($this->_keyFromId($set), $member))
+        if (!$this->_redis->sIsMember($this->_keyFromId($set), $member)) {
             return false;
+        }
         return true;
     }
 
@@ -405,19 +433,21 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function addToSet($member, $set, $specificLifetime = false)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return null;
+        }
 
         $lifetime = $this->getLifetime($specificLifetime);
 
         if (is_array($member)) {
             $redis = $this->_redis;
-            $return = call_user_func_array(array($redis, 'sAdd'), array_merge(array($this->_keyFromId($set)), $member));
+            $return = call_user_func_array([$redis, 'sAdd'], array_merge([$this->_keyFromId($set)], $member));
         } else {
             $return = $this->_redis->sAdd($this->_keyFromId($set), $member);
         }
-        if ($lifetime !== null)
+        if ($lifetime !== null) {
             $this->_redis->setTimeout($this->_keyFromId($set), $lifetime);
+        }
 
         return $return;
     }
@@ -431,14 +461,16 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function removeFromSet($member, $set)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return null;
+        }
 
         if (is_array($member)) {
-            if (!count($member))
+            if (!count($member)) {
                 return true;
+            }
             $redis = $this->_redis;
-            $return = call_user_func_array(array($redis, 'sRem'), array_merge(array($this->_keyFromId($set)), $member));
+            $return = call_user_func_array([$redis, 'sRem'], array_merge([$this->_keyFromId($set)], $member));
         } else {
             $return = $this->_redis->sRem($this->_keyFromId($set), $member);
         }
@@ -453,8 +485,9 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function membersInSet($set)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return null;
+        }
 
         return $this->_redis->sMembers($this->_keyFromId($set));
     }
@@ -477,7 +510,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @param tags array $tags array of tags
      * @return boolean true if no problem
      */
-    public function clean($mode = Zend_Cache::CLEANING_MODE_ALL, $tags = array())
+    public function clean($mode = Zend_Cache::CLEANING_MODE_ALL, $tags = [])
     {
         return $this->_clean($mode, $tags);
     }
@@ -501,31 +534,38 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @throws Zend_Cache_Exception
      * @return boolean True if no problem
      */
-    protected function _clean($mode = Zend_Cache::CLEANING_MODE_ALL, $tags = array())
+    protected function _clean($mode = Zend_Cache::CLEANING_MODE_ALL, $tags = [])
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         $result = true;
         $all = [];
 
-        if ($mode == Zend_Cache::CLEANING_MODE_ALL)
+        if ($mode == Zend_Cache::CLEANING_MODE_ALL) {
             return $this->_redis->flushDb();
+        }
 
-        if ($mode == Zend_Cache::CLEANING_MODE_OLD)
-            return true; /* Redis takes care of expire */
+        if ($mode == Zend_Cache::CLEANING_MODE_OLD) {
+            return true;
+        } /* Redis takes care of expire */
 
-        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG && $tags && (is_string($tags) || count($tags)))
+        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG && $tags && (is_string($tags) || count($tags))) {
             return $this->removeTag($tags);
+        }
 
-        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_TAG && $tags && (is_string($tags) || count($tags) == 1))
+        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_TAG && $tags && (is_string($tags) || count($tags) == 1)) {
             return $this->removeTag($tags);
+        }
 
-        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_TAG && $tags && count($tags))
+        if ($mode == Zend_Cache::CLEANING_MODE_MATCHING_TAG && $tags && count($tags)) {
             return $this->remove($this->getIdsMatchingTags($tags));
+        }
 
-        if ($mode == Zend_Cache::CLEANING_MODE_NOT_MATCHING_TAG)
+        if ($mode == Zend_Cache::CLEANING_MODE_NOT_MATCHING_TAG) {
             Zend_Cache::throwException('CLEANING_MODE_NOT_MATCHING_TAG not implemented for Redis cache');
+        }
 
         Zend_Cache::throwException('Invalid mode for clean() method');
     }
@@ -539,18 +579,21 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     protected function _test($id, $doNotTestCacheValidity)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         if ($doNotTestCacheValidity) {
             return true;
         }
         $tags = $this->_redis->sMembers($this->_keyFromItemTags($id));
-        if (!$tags || !count($tags))
+        if (!$tags || !count($tags)) {
             return false;
+        }
         foreach ($tags as $tag) {
-            if ($tag && !$this->_redis->sIsMember($this->_keyFromTag($tag), $id))
+            if ($tag && !$this->_redis->sIsMember($this->_keyFromTag($tag), $id)) {
                 return false;
+            }
         }
 
         return true;
@@ -564,8 +607,9 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     protected function _load($id)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         return $this->_redis->get($this->_keyFromId($id));
     }
@@ -579,7 +623,6 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
     {
         Zend_Cache::throwException('Not possible to get available IDs on Redis cache');
     }
-
 
     /**
      * Return an array of stored tags. Not implemented for Redis cache
@@ -599,22 +642,26 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @param array $tags array of tags
      * @return array array of matching cache ids (string)
      */
-    public function getIdsMatchingTags($tags = array())
+    public function getIdsMatchingTags($tags = [])
     {
-        if (!$this->_redis)
-            return array();
+        if (!$this->_redis) {
+            return [];
+        }
 
-        if (!$tags)
-            return array();
-        if ($tags && is_string($tags))
-            $tags = array($tags);
+        if (!$tags) {
+            return [];
+        }
+        if ($tags && is_string($tags)) {
+            $tags = [$tags];
+        }
 
         $matchTags = [];
         foreach ($tags as $tag) {
             $matchTags[] = $this->_keyFromTag($tag);
         }
-        if (count($matchTags) == 1)
+        if (count($matchTags) == 1) {
             return $this->_redis->sMembers($matchTags[0]);
+        }
 
         return $this->_redis->sInter($matchTags);
     }
@@ -627,7 +674,7 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @param array $tags array of tags
      * @throws Zend_Cache_Exception
      */
-    public function getIdsNotMatchingTags($tags = array())
+    public function getIdsNotMatchingTags($tags = [])
     {
         Zend_Cache::throwException('Not possible to get IDs not matching tags on Redis cache');
     }
@@ -640,15 +687,18 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      * @param array $tags array of tags
      * @return array array of any matching cache ids (string)
      */
-    public function getIdsMatchingAnyTags($tags = array())
+    public function getIdsMatchingAnyTags($tags = [])
     {
-        if (!$this->_redis)
-            return array();
+        if (!$this->_redis) {
+            return [];
+        }
 
-        if (!$tags)
-            return array();
-        if ($tags && is_string($tags))
-            $tags = array($tags);
+        if (!$tags) {
+            return [];
+        }
+        if ($tags && is_string($tags)) {
+            $tags = [$tags];
+        }
 
         $return = [];
         foreach ($tags as $tag) {
@@ -689,8 +739,9 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function touch($id, $extraLifetime)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         $tags = $this->_redis->sMembers($this->_keyFromItemTags($id));
 
@@ -708,10 +759,11 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
             foreach ($tags as $tag) {
                 if ($tag) {
                     $ttl = $this->_redis->ttl($this->_keyFromTag($tag));
-                    if ($ttl !== false && $ttl !== -1 && $ttl < $lifetime && $lifetime !== null)
+                    if ($ttl !== false && $ttl !== -1 && $ttl < $lifetime && $lifetime !== null) {
                         $this->_redis->setTimeout($this->_keyFromTag($tag), $lifetime);
-                    elseif ($ttl !== false && $ttl !== -1 && $lifetime === null)
+                    } elseif ($ttl !== false && $ttl !== -1 && $lifetime === null) {
                         $this->_redis->persist($this->_keyFromTag($tag));
+                    }
                 }
             }
         }
@@ -728,12 +780,14 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     protected function _touchKey($id, $extraLifetime)
     {
-        if (!$this->_redis)
+        if (!$this->_redis) {
             return false;
+        }
 
         $data = $this->load($id, true);
-        if ($data === false)
+        if ($data === false) {
             return false;
+        }
         return $this->storeKey($data, $id, $extraLifetime);
     }
 
@@ -753,13 +807,13 @@ class Deforay_Cache_Backend_Redis extends Zend_Cache_Backend implements Zend_Cac
      */
     public function getCapabilities()
     {
-        return array(
+        return [
             'automatic_cleaning' => true,
             'tags' => true,
             'expired_read' => false,
             'priority' => false,
             'infinite_lifetime' => true,
-            'get_list' => false
-        );
+            'get_list' => false,
+        ];
     }
 }

@@ -1,7 +1,8 @@
 <?php
+
 class Pt_Helper_View_DropdownSelectedText extends Zend_View_Helper_Abstract
 {
-    public function dropdownSelectedText($allRecord, $selection = "")
+    public function dropdownSelectedText($allRecord, $selection = '')
     {
         $translator = $this->view->translate ?? Zend_Registry::get('translate');
 

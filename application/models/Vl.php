@@ -1,17 +1,17 @@
 <?php
 
-
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
+
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Application_Model_Vl
 {
-
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function evaluate($shipmentResult, $shipmentId, $reEvaluate)
     {
@@ -21,7 +21,6 @@ class Application_Model_Vl
         $finalResult = null;
         $schemeService = new Application_Service_Schemes();
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
 
         $db->update('shipment_participant_map', ['is_excluded' => 'no'], "shipment_id = $shipmentId");
         $db->update('shipment_participant_map', ['is_excluded' => 'yes'], "shipment_id = $shipmentId and IFNULL(is_pt_test_not_performed, 'no') = 'yes'");
@@ -42,7 +41,6 @@ class Application_Model_Vl
             $quantRange = $this->getVlRange($shipmentId);
         }
 
-
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
@@ -51,8 +49,8 @@ class Application_Model_Vl
 
             $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
+            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTimeImmutable($createdOnUser[0]);
             } else {
                 $createdOn = null;
@@ -68,17 +66,17 @@ class Application_Model_Vl
                 $totalScore = 0;
                 $maxScore = 0;
                 $zScore = null;
-                $mandatoryResult = "";
-                $scoreResult = "";
+                $mandatoryResult = '';
+                $scoreResult = '';
                 $failureReason = [];
 
                 foreach ($results as $result) {
                     if ($result['control'] == 1) {
                         continue;
                     }
-                    $calcResult = "";
+                    $calcResult = '';
                     $responseAssay = json_decode($result['attributes'], true);
-                    $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : "";
+                    $responseAssay = isset($responseAssay['vl_assay']) ? $responseAssay['vl_assay'] : '';
                     // if (!in_array($result['unique_identifier'], $meganda[$responseAssay]) && $shipment['is_pt_test_not_performed'] != 'yes') {
                     //     $meganda[$responseAssay][] = $result['unique_identifier'];
                     //     sort($meganda[$responseAssay]);
@@ -90,21 +88,21 @@ class Application_Model_Vl
                             if (isset($result['reported_viral_load']) && $result['reported_viral_load'] != null) {
                                 if (isset($quantRange[$responseAssay][$result['sample_id']]) && $quantRange[$responseAssay][$result['sample_id']]['low'] <= $result['reported_viral_load'] && $quantRange[$responseAssay][$result['sample_id']]['high'] >= $result['reported_viral_load']) {
                                     $totalScore += $result['sample_score'];
-                                    $calcResult = "pass";
+                                    $calcResult = 'pass';
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     }
-                                    $calcResult = "fail";
+                                    $calcResult = 'fail';
                                 }
                             }
                         } elseif ($methodOfEvaluation == 'iso17043') {
                             // matching reported and low/high limits
                             if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                 }
-                                $calcResult = "fail";
+                                $calcResult = 'fail';
                                 $zScore = null;
                             } elseif (!empty($result['reported_viral_load'])) {
                                 if (isset($quantRange[$responseAssay][$result['sample_id']])) {
@@ -119,50 +117,50 @@ class Application_Model_Vl
                                         // If SD is 0 and there is a detectable result reported, then it is treated as fail
                                         if (0 == $result['reported_viral_load']) {
                                             $totalScore += $result['sample_score'];
-                                            $calcResult = "pass";
+                                            $calcResult = 'pass';
                                         } elseif ($result['reported_viral_load'] > 0) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                             }
-                                            $calcResult = "fail";
+                                            $calcResult = 'fail';
                                         }
                                     } else {
                                         $absZScore = abs($zScore);
                                         if ($absZScore <= 2) {
                                             //passed
                                             $totalScore += $result['sample_score'];
-                                            $calcResult = "pass";
+                                            $calcResult = 'pass';
                                         } elseif ($absZScore > 2 && $absZScore <= 3) {
                                             //passed but with a warning
                                             $totalScore += $result['sample_score'];
-                                            $calcResult = "warn";
+                                            $calcResult = 'warn';
                                         } elseif ($absZScore > 3) {
                                             //failed
                                             if ($result['sample_score'] > 0) {
-                                                $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                             }
-                                            $calcResult = "fail";
+                                            $calcResult = 'fail';
                                         }
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     }
-                                    $calcResult = "fail";
+                                    $calcResult = 'fail';
                                 }
                             }
                         }
                     } else {
-                        $totalScore = "N.A.";
-                        $calcResult = "excluded";
+                        $totalScore = 'N.A.';
+                        $calcResult = 'excluded';
                         $shipment['is_excluded'] = 'yes';
-                        $failureReason[]['warning'] = "Excluded from Shipment.";
+                        $failureReason[]['warning'] = 'Excluded from Shipment.';
                     }
 
                     $maxScore += $result['sample_score'];
 
-                    $db->update('response_result_vl', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                    $db->update('response_result_vl', ['z_score' => $zScore, 'calculated_score' => $calcResult], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
 
                     //// checking if mandatory fields were entered and were entered right
                     //if ($result['mandatory'] == 1) {
@@ -176,8 +174,6 @@ class Application_Model_Vl
                     //	//}
                     //}
                 }
-
-
 
                 // if we are excluding this result, then let us not give pass/fail
                 if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
@@ -197,7 +193,7 @@ class Application_Model_Vl
                     // checking if total score and maximum scores are the same
                     if ($totalScore == 'N.A.') {
                         $failureReason[] = [
-                            'warning' => "Could not determine score. Not enough responses found in the chosen VL Assay."
+                            'warning' => 'Could not determine score. Not enough responses found in the chosen VL Assay.',
                         ];
                         $scoreResult = 'Not Evaluated';
                         $shipment['is_excluded'] = 'yes';
@@ -214,7 +210,6 @@ class Application_Model_Vl
                         $scoreResult = 'Pass';
                     }
 
-
                     // if $finalResult == 3 , then  excluded
 
                     if ($scoreResult == 'Not Evaluated') {
@@ -228,9 +223,7 @@ class Application_Model_Vl
                     $shipmentResult[$counter]['shipment_score'] = $totalScore;
                     $shipmentResult[$counter]['max_score'] = $passPercentage; //$maxScore;
 
-
-
-                    $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $finalResult));
+                    $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $finalResult));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
                     $shipmentResult[$counter]['failure_reason'] = $failureReason;
@@ -242,14 +235,14 @@ class Application_Model_Vl
                 }
                 /* Manual result override changes */
                 if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                    $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                    $sql = $db->select()->from('shipment_participant_map')->where('map_id = ?', $shipment['map_id']);
                     $shipmentOverall = $db->fetchRow($sql);
                     if (!empty($shipmentOverall)) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
-                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         $overrideUpdateData = [
                             'shipment_score' => $shipmentOverall['shipment_score'],
@@ -258,7 +251,7 @@ class Application_Model_Vl
                         if ($shipment['is_response_late'] == 'yes') {
                             $overrideUpdateData['response_status'] = 'late';
                         }
-                        $db->update('shipment_participant_map', $overrideUpdateData, "map_id = " . $shipment['map_id']);
+                        $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
                     }
                 } else {
                     $normalUpdateData = [
@@ -271,24 +264,23 @@ class Application_Model_Vl
                     if ($shipment['is_response_late'] == 'yes') {
                         $normalUpdateData['response_status'] = 'late';
                     }
-                    $db->update('shipment_participant_map', $normalUpdateData, "map_id = " . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
                 }
             } else {
                 $shipment['is_response_late'] = 'yes';
-                $failureReason[] = ['warning' => "Response was submitted after the last response date."];
+                $failureReason[] = ['warning' => 'Response was submitted after the last response date.'];
                 $shipment['is_excluded'] = 'yes';
 
                 $db->update('shipment_participant_map', [
                     'is_excluded' => 'yes',
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
-                    'response_status' => 'late'
-                ], "map_id = " . $shipment['map_id']);
+                    'response_status' => 'late',
+                ], 'map_id = ' . $shipment['map_id']);
             }
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
-
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
 
         return $shipmentResult;
     }
@@ -299,7 +291,6 @@ class Application_Model_Vl
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         $excel = new Spreadsheet();
-
 
         $styleArray = [
             'font' => [
@@ -313,7 +304,7 @@ class Application_Model_Vl
                 'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ],
-            ]
+            ],
         ];
 
         $boldStyleArray = [
@@ -323,7 +314,7 @@ class Application_Model_Vl
             'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-            ]
+            ],
         ];
 
         $borderStyle = [
@@ -338,32 +329,31 @@ class Application_Model_Vl
                 'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ],
-            ]
+            ],
         ];
-        $vlBorderStyle = array(
-            'alignment' => array(
+        $vlBorderStyle = [
+            'alignment' => [
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-            ),
-            'borders' => array(
-                'outline' => array(
+            ],
+            'borders' => [
+                'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                ),
-            )
-        );
-
+                ],
+            ],
+        ];
 
         $query = $db->select()->from('shipment')
-            ->where("shipment_id = ?", $shipmentId);
+            ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
         $shipmentAttributes = json_decode($result['shipment_attributes'], true);
         $methodOfEvaluation = isset($shipmentAttributes['methodOfEvaluation']) ? $shipmentAttributes['methodOfEvaluation'] : 'standard';
 
-        $refQuery = $db->select()->from(array('refRes' => 'reference_result_vl'))->where("refRes.shipment_id = ?", $shipmentId)->where("refRes.control!=1");
+        $refQuery = $db->select()->from(['refRes' => 'reference_result_vl'])->where('refRes.shipment_id = ?', $shipmentId)->where('refRes.control!=1');
         $refResult = $db->fetchAll($refQuery);
 
         $colNamesArray = [];
-        $colNamesArray[] = "Participant ID";
+        $colNamesArray[] = 'Participant ID';
         //$colNamesArray[] = "Lab Name";
         //$colNamesArray[] = "Department Name";
         //$colNamesArray[] = "Region";
@@ -377,13 +367,13 @@ class Application_Model_Vl
         $excel->addSheet($firstSheet, 0);
 
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(1) . 1)
-            ->setValueExplicit(html_entity_decode("Participant ID", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Participant ID', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(2) . 1)
-            ->setValueExplicit(html_entity_decode("Participant Name", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Participant Name', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(3) . 1)
-            ->setValueExplicit(html_entity_decode("Country", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Country', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . 1)
-            ->setValueExplicit(html_entity_decode("Response Status", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Response Status', ENT_QUOTES, 'UTF-8'));
         //$firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . 1)
         //->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'), PHPExcel_Cell_DataType::TYPE_STRING);
         //$firstSheet->getCell(Coordinate::stringFromColumnIndex(5) . 1)
@@ -411,9 +401,9 @@ class Application_Model_Vl
         foreach ($refResult as $refRow) {
             $colNamesArray[] = $refRow['sample_label'];
             if ($methodOfEvaluation == 'iso17043') {
-                $colNamesArray[] = "z Score for " . $refRow['sample_label'];
+                $colNamesArray[] = 'z Score for ' . $refRow['sample_label'];
 
-                $colNamesArray[] = "Grade for " . $refRow['sample_label'];
+                $colNamesArray[] = 'Grade for ' . $refRow['sample_label'];
             }
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
                 ->setValueExplicit(html_entity_decode($refRow['sample_label'], ENT_QUOTES, 'UTF-8'));
@@ -422,95 +412,95 @@ class Application_Model_Vl
         }
 
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Final Score", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Final Score', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Final Score";
+        $colNamesArray[] = 'Final Score';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Date Received", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Date Received', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Date Received";
+        $colNamesArray[] = 'Date Received';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Date Tested", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Date Tested', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Date Tested";
+        $colNamesArray[] = 'Date Tested';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Assay", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Assay', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Assay";
+        $colNamesArray[] = 'Assay';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Institute Name", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Institute Name', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Institute Name";
+        $colNamesArray[] = 'Institute Name';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Department Name", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Department Name', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Department Name";
+        $colNamesArray[] = 'Department Name';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Region", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Region', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Region";
+        $colNamesArray[] = 'Region';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Site Type", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Site Type', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Site Type";
+        $colNamesArray[] = 'Site Type';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Assay Expiration Date", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Assay Expiration Date', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Assay Expiration Date";
+        $colNamesArray[] = 'Assay Expiration Date';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Assay Lot Number", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Assay Lot Number', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Assay Lot Number";
+        $colNamesArray[] = 'Assay Lot Number';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Specimen Volume", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Specimen Volume', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Specimen Volume";
+        $colNamesArray[] = 'Specimen Volume';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Supervisor Name", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Supervisor Name', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         $colNameCount++;
 
-        $colNamesArray[] = "Supervisor Name";
+        $colNamesArray[] = 'Supervisor Name';
         $firstSheet->getCell(Coordinate::stringFromColumnIndex($colNameCount) . 1)
-            ->setValueExplicit(html_entity_decode("Participant Comment", ENT_QUOTES, 'UTF-8'));
+            ->setValueExplicit(html_entity_decode('Participant Comment', ENT_QUOTES, 'UTF-8'));
         $firstSheet->getStyle(Coordinate::stringFromColumnIndex($colNameCount) . 1)->applyFromArray($borderStyle, true);
         // $colNameCount++;
 
         $firstSheet->setTitle('OVERALL', true);
 
-        $queryOverAll = $db->select()->from(array('s' => 'shipment'))
-            ->joinLeft(array('spm' => 'shipment_participant_map'), "spm.shipment_id = s.shipment_id")
-            ->joinLeft(array('p' => 'participant'), "p.participant_id = spm.participant_id")
-            ->joinLeft(array('c' => 'countries'), "c.id = p.country", array('country_name' => 'iso_name'))
-            ->joinLeft(array('st' => 'r_site_type'), "st.r_stid=p.site_type")
-            ->where("s.shipment_id = ?", $shipmentId);
+        $queryOverAll = $db->select()->from(['s' => 'shipment'])
+            ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.shipment_id = s.shipment_id')
+            ->joinLeft(['p' => 'participant'], 'p.participant_id = spm.participant_id')
+            ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['country_name' => 'iso_name'])
+            ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type')
+            ->where('s.shipment_id = ?', $shipmentId);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $queryOverAll = $queryOverAll
-                ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array('pmm.dm_id'))
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
         $resultOverAll = $db->fetchAll($queryOverAll);
 
@@ -524,34 +514,34 @@ class Application_Model_Vl
             $row++;
 
             $queryResponse = $db->select()
-                ->from(array('res' => 'response_result_vl'))
-                ->joinLeft(array('refRes' => 'reference_result_vl'), "refRes.sample_id = res.sample_id")
-                ->where("refRes.control!=1")
-                ->where("refRes.shipment_id = ?", $shipmentId)
-                ->where("res.shipment_map_id = ?", $rowOverAll['map_id']);
+                ->from(['res' => 'response_result_vl'])
+                ->joinLeft(['refRes' => 'reference_result_vl'], 'refRes.sample_id = res.sample_id')
+                ->where('refRes.control!=1')
+                ->where('refRes.shipment_id = ?', $shipmentId)
+                ->where('res.shipment_map_id = ?', $rowOverAll['map_id']);
             //echo $queryResponse;
             $resultResponse = $db->fetchAll($queryResponse);
 
             $attributes = json_decode($rowOverAll['attributes'], true);
 
-            if (isset($attributes['other_assay']) && $attributes['other_assay'] != "") {
-                $assayName = "Other - " . $attributes['other_assay'];
+            if (isset($attributes['other_assay']) && $attributes['other_assay'] != '') {
+                $assayName = 'Other - ' . $attributes['other_assay'];
             } else {
-                $assayName = (array_key_exists($attributes['vl_assay'], $assayList)) ? $assayList[$attributes['vl_assay']] : "";
+                $assayName = (array_key_exists($attributes['vl_assay'], $assayList)) ? $assayList[$attributes['vl_assay']] : '';
             }
 
-            $assayExpirationDate = "";
-            if (isset($attributes['assay_expiration_date']) && $attributes['assay_expiration_date'] != "") {
+            $assayExpirationDate = '';
+            if (isset($attributes['assay_expiration_date']) && $attributes['assay_expiration_date'] != '') {
                 $assayExpirationDate = Pt_Commons_DateUtility::humanReadableDateFormat($attributes['assay_expiration_date']);
             }
 
-            $assayLotNumber = "";
-            if (isset($attributes['assay_lot_number']) && $attributes['assay_lot_number'] != "") {
+            $assayLotNumber = '';
+            if (isset($attributes['assay_lot_number']) && $attributes['assay_lot_number'] != '') {
                 $assayLotNumber = ($attributes['assay_lot_number']);
             }
 
-            $specimenVolume = "";
-            if (isset($attributes['specimen_volume']) && $attributes['specimen_volume'] != "") {
+            $specimenVolume = '';
+            if (isset($attributes['specimen_volume']) && $attributes['specimen_volume'] != '') {
                 $specimenVolume = ($attributes['specimen_volume']);
             }
             // we are also building the data required for other Assay Sheets
@@ -589,11 +579,11 @@ class Application_Model_Vl
             $col = 4;
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
-                    ->setValueExplicit(html_entity_decode("PT TEST NOT PERFORMED", ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode('PT TEST NOT PERFORMED', ENT_QUOTES, 'UTF-8'));
                 $col = 4 + count($refResult);
             } elseif (count($resultResponse) > 0) {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
-                    ->setValueExplicit(html_entity_decode("Responded", ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode('Responded', ENT_QUOTES, 'UTF-8'));
                 $col = 5;
                 foreach ($resultResponse as $responseRow) {
                     $yrResult = '';
@@ -624,16 +614,15 @@ class Application_Model_Vl
                 }
             } else {
                 $firstSheet->getCell(Coordinate::stringFromColumnIndex(4) . $row)
-                    ->setValueExplicit(html_entity_decode("Not Responded", ENT_QUOTES, 'UTF-8'));
+                    ->setValueExplicit(html_entity_decode('Not Responded', ENT_QUOTES, 'UTF-8'));
                 $col = 4 + count($refResult);
             }
-
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit($rowOverAll['shipment_score']);
 
-            $receiptDate = ($rowOverAll['shipment_receipt_date'] != "" && $rowOverAll['shipment_receipt_date'] != "0000-00-00") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : "";
-            $testDate = ($rowOverAll['shipment_test_date'] != "" && $rowOverAll['shipment_test_date'] != "0000-00-00") ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : "";
+            $receiptDate = ($rowOverAll['shipment_receipt_date'] != '' && $rowOverAll['shipment_receipt_date'] != '0000-00-00') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_receipt_date']) : '';
+            $testDate = ($rowOverAll['shipment_test_date'] != '' && $rowOverAll['shipment_test_date'] != '0000-00-00') ? Pt_Commons_DateUtility::humanReadableDateFormat($rowOverAll['shipment_test_date']) : '';
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($receiptDate, ENT_QUOTES, 'UTF-8'));
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
@@ -645,7 +634,6 @@ class Application_Model_Vl
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $receiptDate;
                 $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $testDate;
             }
-
 
             $firstSheet->getCell(Coordinate::stringFromColumnIndex($col++) . $row)
                 ->setValueExplicit(html_entity_decode($assayName, ENT_QUOTES, 'UTF-8'));
@@ -679,12 +667,10 @@ class Application_Model_Vl
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['participant_supervisor'];
             $assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']][] = $rowOverAll['user_comment'];
 
-
             if ($rowOverAll['is_pt_test_not_performed'] == 'yes') {
                 unset($assayWiseData[$attributes['vl_assay']][$rowOverAll['unique_identifier']]);
             }
         }
-
 
         foreach (range('A', 'Z') as $columnID) {
             $firstSheet->getColumnDimension($columnID, true)
@@ -710,18 +696,18 @@ class Application_Model_Vl
                     'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
                 ])
 
-                ->where("vlCal.shipment_id = ?", $shipmentId)
-                ->where("vlCal.vl_assay = ?", $assayRow['id'])
-                ->where("refVl.control != 1")
+                ->where('vlCal.shipment_id = ?', $shipmentId)
+                ->where('vlCal.vl_assay = ?', $assayRow['id'])
+                ->where('refVl.control != 1')
                 ->where('sp.attributes->>"$.vl_assay" = ' . $assayRow['id'])
                 ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
-                ->where("sp.final_result = 1 OR sp.final_result = 2")
+                ->where('sp.final_result = 1 OR sp.final_result = 2')
                 ->group('refVl.sample_id');
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $vlQuery = $vlQuery
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
-                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
             }
             $vlCalRes = $db->fetchAll($vlQuery);
             if ($assayRow['id'] == 6) {
@@ -734,7 +720,7 @@ class Application_Model_Vl
                 if (!empty($authNameSpace->dm_id)) {
                     $vlQuery = $vlQuery
                         ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=sp.participant_id', ['pmm.dm_id'])
-                        ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                        ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
                 }
                 $cResult = $db->fetchAll($cQuery);
 
@@ -761,10 +747,10 @@ class Application_Model_Vl
                 }
             }
             $sample = [];
-            $assayNameTxt = "";
+            $assayNameTxt = '';
             foreach ($vlCalculation as $vlCal) {
                 $row = 10;
-                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == "Other") {
+                if (isset($vlCal['participant_response_count']) && $vlCal['participant_response_count'] < 18 || $vlCal['vlAssay'] == 'Other') {
                     $t = 0;
 
                     foreach ($vlCal as $k => $val) {
@@ -782,7 +768,7 @@ class Application_Model_Vl
                         }
                     }
                     // $responseTxt = $val['no_of_responses'];
-                    if ($vlCal['vlAssay'] == "Other") {
+                    if ($vlCal['vlAssay'] == 'Other') {
                         foreach ($vlCal['otherAssayName'] as $otherAssayName => $otherAssayCount) {
                             $assayNameTxt .= "Other - $otherAssayName(n=$otherAssayCount), ";
                         }
@@ -952,7 +938,6 @@ class Application_Model_Vl
                 // $assayName[] = 'VL platforms with < 18 participants';
             }
 
-
             foreach (range('A', 'Z') as $columnID) {
                 $newsheet->getColumnDimension($columnID, true)->setAutoSize(true);
             }
@@ -966,14 +951,13 @@ class Application_Model_Vl
                 $i++;
             }
             //get vl_assay wise low high limit
-            $refVlCalci = $db->fetchAll($db->select()->from(array('rvc' => 'reference_vl_calculation'))
-                ->join(array('rrv' => 'reference_result_vl'), 'rrv.sample_id=rvc.sample_id AND rrv.shipment_id=' . $result['shipment_id'], array('sample_label'))
+            $refVlCalci = $db->fetchAll($db->select()->from(['rvc' => 'reference_vl_calculation'])
+                ->join(['rrv' => 'reference_result_vl'], 'rrv.sample_id=rvc.sample_id AND rrv.shipment_id=' . $result['shipment_id'], ['sample_label'])
                 ->where('rvc.shipment_id=' . $result['shipment_id'])->where('rvc.vl_assay=' . $assayRow['id'])
                 ->where('rrv.control!=1'));
             if (count($refVlCalci) > 0) {
 
                 if ($methodOfEvaluation == 'standard') {
-
 
                     //write in excel low and high limit title
                     $newsheet->mergeCells('A1:F1');
@@ -1187,7 +1171,6 @@ class Application_Model_Vl
                         $newsheet->getCell(Coordinate::stringFromColumnIndex($k + 1) . 8)
                             ->setValueExplicit(html_entity_decode($calculation['is_uncertainty_acceptable'], ENT_QUOTES, 'UTF-8'));
 
-
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 2)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 3)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 4)->applyFromArray($vlBorderStyle, true);
@@ -1196,14 +1179,13 @@ class Application_Model_Vl
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 7)->applyFromArray($vlBorderStyle, true);
                         $newsheet->getStyle(Coordinate::stringFromColumnIndex($k + 1) . 8)->applyFromArray($vlBorderStyle, true);
 
-
                         $k++;
                     }
                 }
             }
             //
 
-            $assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : array();
+            $assayData = isset($assayWiseData[$assayRow['id']]) ? $assayWiseData[$assayRow['id']] : [];
             $newsheet->setTitle(strtoupper($assayRow['short_name']), true);
             $row = $startAt; // $row 1-$startAt already occupied
 
@@ -1222,10 +1204,10 @@ class Application_Model_Vl
 
         $firstName = $authNameSpace->first_name;
         $lastName = $authNameSpace->last_name;
-        $name = $firstName . " " . $lastName;
+        $name = $firstName . ' ' . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Downloaded DTS Viral Load report - " . ($result['shipment_code'] ?? '?'), "shipment");
+        $auditDb->addNewAuditLog('Downloaded DTS Viral Load report - ' . ($result['shipment_code'] ?? '?'), 'shipment');
 
         $excel->setActiveSheetIndex(0);
 
@@ -1259,7 +1241,7 @@ class Application_Model_Vl
         $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
 
         // Ensure vlRange is populated
-        if ($vlRange == null || $vlRange == "" || count($vlRange) == 0) {
+        if ($vlRange == null || $vlRange == '' || count($vlRange) == 0) {
             $this->setVlRange($shipmentId);
             $vlRange = $this->getVlRange($shipmentId);
         }
@@ -1375,7 +1357,6 @@ class Application_Model_Vl
         return $result;
     }
 
-
     public function getVlAssay($option = true)
     {
 
@@ -1396,7 +1377,7 @@ class Application_Model_Vl
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
-        $totalSubquery = "SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = " . $db->quote($sid);
+        $totalSubquery = 'SELECT COUNT(*) FROM shipment_participant_map WHERE shipment_id = ' . $db->quote($sid);
 
         $query = $db->select()
             ->from(
@@ -1406,7 +1387,7 @@ class Application_Model_Vl
                     'total_participated' => new Zend_Db_Expr('COUNT(spm.map_id)'),
                     'percentage'         => new Zend_Db_Expr(
                         "ROUND((COUNT(spm.map_id) * 100.0) / NULLIF(($totalSubquery), 0), 2)"
-                    )
+                    ),
                 ]
             )
             ->joinLeft(
@@ -1431,14 +1412,12 @@ class Application_Model_Vl
             ->where('shipment_id = ? ', $shipmentId);
         $shipment = $db->fetchRow($sql);
 
-
         $beforeSetVlRangeData = $db->fetchAll($db->select()->from('reference_vl_calculation', ['*'])
-            ->where("shipment_id = ?", $shipmentId));
+            ->where('shipment_id = ?', $shipmentId));
         $oldQuantRange = [];
         foreach ($beforeSetVlRangeData as $beforeSetVlRangeRow) {
             $oldQuantRange[$beforeSetVlRangeRow['vl_assay']][$beforeSetVlRangeRow['sample_id']] = $beforeSetVlRangeRow;
         }
-
 
         $shipmentAttributes = json_decode($shipment['shipment_attributes'], true);
 
@@ -1468,7 +1447,6 @@ class Application_Model_Vl
             $sampleWise[$row['assay']][$row['sample_id']][] = $row['reported_viral_load'];
         }
 
-
         $vlAssayArray = $this->getVlAssay();
 
         $skippedAssays = [];
@@ -1483,7 +1461,6 @@ class Application_Model_Vl
         }
 
         foreach ($vlAssayArray as $vlAssayId => $vlAssayName) {
-
 
             if (!isset($sampleWise[$vlAssayId])) {
                 continue;
@@ -1569,7 +1546,6 @@ class Application_Model_Vl
                         }
                     }
 
-
                     $data = [
                         'shipment_id' => $shipmentId,
                         'vl_assay' => $vlAssayId,
@@ -1635,7 +1611,7 @@ class Application_Model_Vl
             // ->where('rvc.vl_assay = ?', $maxAssay)
             ->where('rvc.shipment_id = ?', $shipmentId);
 
-        if (isset($maxResponsesAssay) && $maxResponsesAssay != "") {
+        if (isset($maxResponsesAssay) && $maxResponsesAssay != '') {
             $sql->where('rvc.vl_assay = ?', $maxResponsesAssay);
         }
         $res = $db->fetchAll($sql);
@@ -1672,12 +1648,11 @@ class Application_Model_Vl
                     $row['use_range'] = $oldQuantRange[$vlAssayId][$sample]['use_range'] ?? 'calculated';
                 }
 
-                $db->delete('reference_vl_calculation', "vl_assay = " . $row['vl_assay'] . " AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
+                $db->delete('reference_vl_calculation', 'vl_assay = ' . $row['vl_assay'] . ' AND sample_id= ' . $row['sample_id'] . ' AND shipment_id=  ' . $row['shipment_id']);
                 $db->insert('reference_vl_calculation', $row);
             }
         }
     }
-
 
     public function getVlRange($sId, $sampleId = null)
     {
@@ -1734,7 +1709,6 @@ class Application_Model_Vl
         return $response;
     }
 
-
     public function getVlRangeInformation($sId, $sampleId = null)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1764,7 +1738,6 @@ class Application_Model_Vl
 
         $shipmentAttributes = !empty($res[0]['shipment_attributes']) ? json_decode($res[0]['shipment_attributes'], true) : null;
         $methodOfEvaluation = $shipmentAttributes['methodOfEvaluation'] ?? 'standard';
-
 
         $response = [];
 
@@ -1803,7 +1776,6 @@ class Application_Model_Vl
         return $response;
     }
 
-
     public function updateVlInformation($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
@@ -1814,11 +1786,10 @@ class Application_Model_Vl
                 $data['use_range'] = $params['useRange'][$assayId][$sampid];
                 $data['updated_on'] = new Zend_Db_Expr('now()');
                 //echo "shipment_id = ".base64_decode($params['sid'])." and sample_id = " . $sampid . " and "." vl_assay = " . $assayId ;
-                $db->update('reference_vl_calculation', $data, "shipment_id = " . base64_decode($params['sid']) . " and sample_id = " . $sampid . " and " . " vl_assay = " . $assayId);
+                $db->update('reference_vl_calculation', $data, 'shipment_id = ' . base64_decode($params['sid']) . ' and sample_id = ' . $sampid . ' and ' . ' vl_assay = ' . $assayId);
             }
         }
     }
-
 
     public function updateVlManualValue($params)
     {
@@ -1828,7 +1799,7 @@ class Application_Model_Vl
             $shipmentId = base64_decode($params['shipmentId']);
             $sampleId = base64_decode($params['sampleId']);
             $vlAssay = base64_decode($params['vlAssay']);
-            if (trim($shipmentId) != "" && trim($sampleId) != "" && trim($vlAssay) != "") {
+            if (trim($shipmentId) != '' && trim($sampleId) != '' && trim($vlAssay) != '') {
                 $data['manual_q1'] = !empty($params['manualQ1']) ? $params['manualQ1'] : null;
                 $data['manual_q3'] = !empty($params['manualQ3']) ? $params['manualQ3'] : null;
                 $data['manual_iqr'] = !empty($params['manualIqr']) ? $params['manualIqr'] : null;
@@ -1844,7 +1815,7 @@ class Application_Model_Vl
                 $data['manual_cv'] = !empty($params['manualCv']) ? $params['manualCv'] : null;
                 $data['manual_low_limit'] = !empty($params['manualLowLimit']) ? $params['manualLowLimit'] : null;
                 $data['manual_high_limit'] = !empty($params['manualHighLimit']) ? $params['manualHighLimit'] : null;
-                $db->update('reference_vl_calculation', $data, "shipment_id = " . $shipmentId . " and sample_id = " . $sampleId . " and " . " vl_assay = " . $vlAssay);
+                $db->update('reference_vl_calculation', $data, 'shipment_id = ' . $shipmentId . ' and sample_id = ' . $sampleId . ' and ' . ' vl_assay = ' . $vlAssay);
                 $db->commit();
                 return $params['shipmentId'];
             }
@@ -1855,10 +1826,9 @@ class Application_Model_Vl
         }
     }
 
-
     public function getVlManualValue($shipmentId, $sampleId, $vlAssay)
     {
-        if (trim($shipmentId) != "" && trim($sampleId) != "" && trim($vlAssay) != "") {
+        if (trim($shipmentId) != '' && trim($sampleId) != '' && trim($vlAssay) != '') {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $sql = $db->select()->from(['rvc' => 'reference_vl_calculation'], ['shipment_id', 'sample_id', 'low_limit', 'high_limit', 'vl_assay', 'manual_q1', 'manual_q3', 'manual_iqr', 'manual_quartile_low', 'manual_quartile_high', 'manual_mean', 'manual_sd', 'manual_cv', 'manual_high_limit', 'manual_low_limit', 'manual_standard_uncertainty', 'manual_is_uncertainty_acceptable', 'manual_median', 'use_range'])
                 ->join(['ref' => 'reference_result_vl'], 'rvc.sample_id = ref.sample_id AND ref.shipment_id=' . $shipmentId, ['sample_label'])

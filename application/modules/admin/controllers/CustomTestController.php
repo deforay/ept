@@ -2,7 +2,6 @@
 
 class Admin_CustomTestController extends Zend_Controller_Action
 {
-
     public function init()
     {
 
@@ -64,9 +63,9 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $schemeService->setRecommededCustomTestTypes($params);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new generic test - {$schemeCode}", "config");
+            $auditDb->addNewAuditLog("Added a new generic test - {$schemeCode}", 'config');
 
-            $this->redirect("/admin/custom-test");
+            $this->redirect('/admin/custom-test');
         }
     }
 
@@ -100,7 +99,7 @@ class Admin_CustomTestController extends Zend_Controller_Action
             $schemeService->setRecommededCustomTestTypes($params);
 
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated generic test - {$schemeCode}", "config");
+            $auditDb->addNewAuditLog("Updated generic test - {$schemeCode}", 'config');
 
             $this->redirect('/admin/custom-test');
         } elseif ($this->hasParam('id')) {

@@ -18,8 +18,8 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
         try {
             $rows = $this->getAdapter()->fetchCol(
-                "SELECT COLUMN_NAME FROM information_schema.COLUMNS "
-                . "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?",
+                'SELECT COLUMN_NAME FROM information_schema.COLUMNS '
+                . 'WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
                 [$this->_name]
             );
             self::$columnsCache = array_flip(array_map('strtolower', $rows));
@@ -42,10 +42,10 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         }
         [$email, $role] = $this->resolveActor();
         $data = [
-            "statement" => $stateMent,
-            "created_by" => $email,
-            "created_on" => new Zend_Db_Expr('now()'),
-            "type" => $type,
+            'statement' => $stateMent,
+            'created_by' => $email,
+            'created_on' => new Zend_Db_Expr('now()'),
+            'type' => $type,
         ];
         if ($this->hasColumn('created_by_role')) {
             $data['created_by_role'] = $role;
@@ -159,33 +159,33 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             $alCols[] = 'user_agent';
         }
         $select = $db->select()
-            ->from(array('al' => $this->_name), $alCols)
+            ->from(['al' => $this->_name], $alCols)
             ->joinLeft(
-                array('sa' => 'system_admin'),
+                ['sa' => 'system_admin'],
                 'al.created_by = sa.primary_email',
-                array(
+                [
                     'sa_first_name' => 'sa.first_name',
-                    'sa_last_name' => 'sa.last_name'
-                )
+                    'sa_last_name' => 'sa.last_name',
+                ]
             )
             ->joinLeft(
-                array('dm' => 'data_manager'),
+                ['dm' => 'data_manager'],
                 'al.created_by = dm.primary_email',
-                array(
+                [
                     'dm_first_name' => 'dm.first_name',
                     'dm_last_name' => 'dm.last_name',
-                    'dm_type' => 'dm.data_manager_type'
-                )
+                    'dm_type' => 'dm.data_manager_type',
+                ]
             )
             ->joinLeft(
-                array('p' => 'participant'),
+                ['p' => 'participant'],
                 'al.created_by = p.email',
-                array(
+                [
                     'p_first_name' => 'p.first_name',
                     'p_last_name' => 'p.last_name',
                     'p_lab_name' => 'p.lab_name',
-                    'p_unique_id' => 'p.unique_identifier'
-                )
+                    'p_unique_id' => 'p.unique_identifier',
+                ]
             );
 
         if ($createdBy !== '') {
@@ -224,7 +224,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         $select->order('al.created_on DESC')->limit($pageSize, $offset);
         $rows = $db->fetchAll($select);
 
-        $items = array();
+        $items = [];
         foreach ($rows as $row) {
             $role = 'Unknown';
             $name = '';
@@ -247,7 +247,7 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 $name = $row['created_by'] ?? 'System';
             }
             $ts = strtotime($row['created_on']);
-            $items[] = array(
+            $items[] = [
                 'action' => $row['statement'],
                 'actionType' => $this->classifyAction($row['statement']),
                 'userName' => $name,
@@ -261,17 +261,17 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
                 'timestamp' => $row['created_on'],
                 'time' => $ts ? date('g:i a', $ts) : '',
                 'dateKey' => $ts ? date('Y-m-d', $ts) : '',
-                'dateLabel' => $ts ? date('D, d M Y', $ts) : ''
-            );
+                'dateLabel' => $ts ? date('D, d M Y', $ts) : '',
+            ];
         }
 
-        return array(
+        return [
             'page' => $page,
             'pageSize' => $pageSize,
             'total' => $total,
             'totalPages' => $pageSize > 0 ? (int)ceil($total / $pageSize) : 1,
-            'items' => $items
-        );
+            'items' => $items,
+        ];
     }
 
     private function initials($name)

@@ -2,7 +2,6 @@
 
 class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'scheme_config';
 
     public function getSchemeConfig(?string $name = null)
@@ -19,21 +18,20 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 
             $select = $this->select()
                 ->from($this->_name, ['value' => new Zend_Db_Expr($jsonExpr)])
-                ->where("scheme_config_name = ?", $configName);
+                ->where('scheme_config_name = ?', $configName);
             $res = $this->getAdapter()->fetchCol($select);
             $result = !empty($res[0]) ? $res[0] : null;
         } else {
             $res = $this->getAdapter()->fetchCol(
                 $this->select()
                     ->from($this->_name, ['scheme_config_value'])
-                    ->where("scheme_config_name = ?", $name)
+                    ->where('scheme_config_name = ?', $name)
             );
             $result = !empty($res[0]) ? $res[0] : null;
         }
 
         return $result;
     }
-
 
     public function updateConfigDetails($params)
     {
@@ -77,7 +75,7 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
 
         $detail = empty($changedSchemes) ? '' : ' — ' . implode(', ', $changedSchemes);
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Updated scheme config" . $detail, "config");
+        $auditDb->addNewAuditLog('Updated scheme config' . $detail, 'config');
     }
 
     public function saveSchemeConfigByName($value, $name)
@@ -100,10 +98,10 @@ class Application_Model_DbTable_SchemeConfig extends Zend_Db_Table_Abstract
             );
         } else {
             // Insert new
-            $this->insert(array(
+            $this->insert([
                 'scheme_config_name' => $configName,
-                'scheme_config_value' => $configValue
-            ));
+                'scheme_config_value' => $configValue,
+            ]);
         }
     }
 }

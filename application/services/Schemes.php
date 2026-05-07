@@ -2,7 +2,6 @@
 
 class Application_Service_Schemes
 {
-
     public function getAllSchemes()
     {
         $schemeListDb = new Application_Model_DbTable_SchemeList();
@@ -35,12 +34,11 @@ class Application_Service_Schemes
         return $testPlatformsDb->getActiveTestTypesNamesForSchemeResponseWise($scheme, $countryAdapted);
     }
 
-
     public function getAllCovid19TestTypeList($countryAdapted = false)
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_test_type_covid19'))
+        $sql = $db->select()->from(['r_test_type_covid19'])
             ->where("scheme_type = 'covid19'");
 
         if ($countryAdapted) {
@@ -54,7 +52,7 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('covid19_recommended_test_types'));
+        $sql = $db->select()->from(['covid19_recommended_test_types']);
 
         if ($testPlatforms != null && (int) $testPlatforms > 0 && (int) $testPlatforms <= 3) {
             $sql = $sql->where('test_no = ' . (int) $testPlatforms);
@@ -76,11 +74,11 @@ class Application_Service_Schemes
         foreach ($recommended as $testNo => $kits) {
             if (!empty($kits)) {
                 foreach ($kits as $kit) {
-                    $data = array(
+                    $data = [
                         'test_no' => $testNo,
                         'testkit' => $kit,
                         'dts_test_mode' => $testMode,
-                    );
+                    ];
                     $db->insert('dts_recommended_testkits', $data);
                 }
             }
@@ -92,12 +90,12 @@ class Application_Service_Schemes
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $db->delete('covid19_recommended_test_types');
         foreach ($recommended as $testNo => $types) {
-            if (isset($types) && $types != NULL) {
+            if (isset($types) && $types != null) {
                 foreach ($types as $type) {
-                    $data = array(
+                    $data = [
                         'test_no' => $testNo,
                         'test_type' => $type,
-                    );
+                    ];
                     $db->insert('covid19_recommended_test_types', $data);
                 }
             }
@@ -110,10 +108,10 @@ class Application_Service_Schemes
         $db->delete('generic_recommended_test_types', 'scheme_id = "' . $params['schemeCode'] . '"');
         if (isset($params['customTestkit']) && !empty($params['customTestkit'])) {
             foreach ($params['customTestkit'] as $kit) {
-                $data = array(
+                $data = [
                     'scheme_id' => $params['schemeCode'],
                     'testkit' => $kit,
-                );
+                ];
                 $db->insert('generic_recommended_test_types', $data);
             }
         }
@@ -210,10 +208,10 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_covid19'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_covid19'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+        $sql = $db->select()->from(['ref' => 'reference_result_covid19'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_covid19'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
                 'test_type_1',
                 'name_of_pcr_reagent_1',
                 'pcr_reagent_lot_no_1',
@@ -236,7 +234,7 @@ class Application_Service_Schemes
                 'exp_date_3',
                 'test_result_3',
                 'reported_result',
-            ))
+            ])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
@@ -246,7 +244,7 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_generic_test'))
+        $sql = $db->select()->from(['ref' => 'reference_result_generic_test'])
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
             ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
             ->joinLeft(['res' => 'response_result_generic_test'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
@@ -257,7 +255,7 @@ class Application_Service_Schemes
                 'reported_result',
                 'additional_detail',
                 'comments',
-                'calculated_score'
+                'calculated_score',
             ])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
@@ -268,7 +266,7 @@ class Application_Service_Schemes
     public function getDtsReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_dts'))
+        $sql = $db->select()->from(['reference_result_dts'])
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }
@@ -276,14 +274,14 @@ class Application_Service_Schemes
     public function getCovid19ReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_covid19'))
+        $sql = $db->select()->from(['reference_result_covid19'])
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }
     public function getEidReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_eid'))
+        $sql = $db->select()->from(['reference_result_eid'])
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }
@@ -291,7 +289,7 @@ class Application_Service_Schemes
     public function getVlReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_vl'))
+        $sql = $db->select()->from(['reference_result_vl'])
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }
@@ -299,7 +297,7 @@ class Application_Service_Schemes
     public function getRecencyReferenceData($shipmentId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('reference_result_recency'))
+        $sql = $db->select()->from(['reference_result_recency'])
             ->where('shipment_id = ? ', $shipmentId);
         return $db->fetchAll($sql);
     }
@@ -308,10 +306,10 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_dbs'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_dbs'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array(
+        $sql = $db->select()->from(['ref' => 'reference_result_dbs'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_dbs'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', [
                 'eia_1',
                 'lot_no_1',
                 'exp_date_1',
@@ -340,7 +338,7 @@ class Application_Service_Schemes
                 'wb_24',
                 'wb_17',
                 'reported_result',
-            ))
+            ])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
 
@@ -351,10 +349,10 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_eid'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_eid'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_result', 'hiv_ct_od', 'ic_qs'))
+        $sql = $db->select()->from(['ref' => 'reference_result_eid'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_eid'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'hiv_ct_od', 'ic_qs'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
@@ -364,10 +362,10 @@ class Application_Service_Schemes
     {
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_recency'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->joinLeft(array('res' => 'response_result_recency'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_result', 'control_line', 'diagnosis_line', 'longterm_line'))
+        $sql = $db->select()->from(['ref' => 'reference_result_recency'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->joinLeft(['res' => 'response_result_recency'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_result', 'control_line', 'diagnosis_line', 'longterm_line'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         return $db->fetchAll($sql);
@@ -376,15 +374,15 @@ class Application_Service_Schemes
     public function getVlSamples($sId, $pId, $withoutControls = true)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'))
+        $sql = $db->select()->from(['ref' => 'reference_result_vl'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['unique_identifier'])
+            ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         if ($withoutControls) {
-            $sql = $sql->where("ref.control = 0");
+            $sql = $sql->where('ref.control = 0');
         }
         return $db->fetchAll($sql);
     }
@@ -406,16 +404,16 @@ class Application_Service_Schemes
         }
 
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('ref' => 'reference_result_vl'))
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment', 'sp.shipment_score'])
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
-            ->joinLeft(array('res' => 'response_result_vl'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'))
+        $sql = $db->select()->from(['ref' => 'reference_result_vl'])
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_receipt_date', 'sp.shipment_test_date', 'sp.is_pt_test_not_performed', 'sp.is_excluded', 'sp.shipment_test_report_date', 'sp.user_comment', 'sp.shipment_score'])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['unique_identifier'])
+            ->joinLeft(['res' => 'response_result_vl'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['reported_viral_load', 'is_tnd', 'responseDate' => 'res.created_on', 'is_result_invalid', 'error_code', 'module_number', 'comment', 'z_score', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $shipmentId)
             ->where('sp.map_id IN (?)', $mapIds);
 
         if ($withoutControls) {
-            $sql = $sql->where("ref.control = 0");
+            $sql = $sql->where('ref.control = 0');
         }
 
         $rows = $db->fetchAll($sql);
@@ -461,22 +459,20 @@ class Application_Service_Schemes
                             END"),
                 'control',
                 'mandatory',
-                'sample_score'
+                'sample_score',
             ]
         )
-            ->join(array('s' => 'shipment'), 's.shipment_id=ref.shipment_id')
-            ->join(array('sp' => 'shipment_participant_map'), 's.shipment_id=sp.shipment_id')
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('unique_identifier'))
-            ->joinLeft(array('res' => 'response_result_tb'), 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', array('resMtb' => 'mtb_detected', 'resRif' => 'rif_resistance', 'responseDate' => 'res.created_on', 'calculated_score'))
+            ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
+            ->join(['sp' => 'shipment_participant_map'], 's.shipment_id=sp.shipment_id')
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['unique_identifier'])
+            ->joinLeft(['res' => 'response_result_tb'], 'res.shipment_map_id = sp.map_id and res.sample_id = ref.sample_id', ['resMtb' => 'mtb_detected', 'resRif' => 'rif_resistance', 'responseDate' => 'res.created_on', 'calculated_score'])
             ->where('sp.shipment_id = ? ', $sId)
             ->where('sp.participant_id = ? ', $pId);
         if ($withoutControls) {
-            $sql = $sql->where("ref.control = 0");
+            $sql = $sql->where('ref.control = 0');
         }
         return $db->fetchAll($sql);
     }
-
-
 
     public function getShipmentData($sId, $pId)
     {
@@ -526,7 +522,7 @@ class Application_Service_Schemes
     {
         if ($sid != null) {
             $schemeListDb = new Application_Model_DbTable_SchemeList();
-            return $schemeListDb->fetchRow($schemeListDb->select()->where("scheme_id = ?", $sid));
+            return $schemeListDb->fetchRow($schemeListDb->select()->where('scheme_id = ?', $sid));
         } else {
             return null;
         }
@@ -599,8 +595,8 @@ class Application_Service_Schemes
         try {
             $testkitsDb = new Application_Model_DbTable_Testkitnames();
             $testkitsDb->updateTestkitStageDetails($params);
-            $sessionAlert->message = "Mapped Successfully";
-            $sessionAlert->status = "success";
+            $sessionAlert->message = 'Mapped Successfully';
+            $sessionAlert->status = 'success';
             $db->commit();
         } catch (Exception $e) {
             $db->rollBack();
@@ -672,12 +668,12 @@ class Application_Service_Schemes
         return $testPlatformsDb->getCovid19TestTypeDetails($testtypeId);
     }
 
-    public function getNotTestedReasons($testType = "")
+    public function getNotTestedReasons($testType = '')
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['r_response_not_tested_reasons'])
             ->where('ntr_status = ? ', 'active');
-        if (isset($testType) && $testType != "") {
+        if (isset($testType) && $testType != '') {
             $sql = $sql->where("JSON_SEARCH(`ntr_test_type`, 'all', '$testType') IS NOT NULL");
         }
         return $db->fetchAll($sql);
@@ -686,7 +682,7 @@ class Application_Service_Schemes
     public function getVlNotTestedReasons()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_response_vl_not_tested_reason'))
+        $sql = $db->select()->from(['r_response_vl_not_tested_reason'])
             ->where('status = ? ', 'active');
         return $db->fetchAll($sql);
     }
@@ -756,7 +752,7 @@ class Application_Service_Schemes
     public function getAllCovid19GeneTypeList()
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('r_covid19_gene_types'), array('gene_id', 'gene_name'))
+        $sql = $db->select()->from(['r_covid19_gene_types'], ['gene_id', 'gene_name'])
             ->where("scheme_type = 'covid19'")
             ->order('gene_name');
         return $db->fetchAll($sql);
@@ -789,12 +785,12 @@ class Application_Service_Schemes
             $ntrDb = new Application_Model_DbTable_ResponseNotTestedReasons();
             $status = $ntrDb->saveNotTestedReasonsDetails($params);
             if ($status) {
-                $sessionAlert->message = "Saved Successfully";
-                $sessionAlert->status = "success";
+                $sessionAlert->message = 'Saved Successfully';
+                $sessionAlert->status = 'success';
                 $db->commit();
             } else {
-                $sessionAlert->message = "Something went wrong. Please try again later.";
-                $sessionAlert->status = "failure";
+                $sessionAlert->message = 'Something went wrong. Please try again later.';
+                $sessionAlert->status = 'failure';
                 $db->rollBack();
             }
         } catch (Exception $e) {

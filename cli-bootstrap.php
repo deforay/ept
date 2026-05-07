@@ -1,9 +1,9 @@
 <?php
+
 require_once 'constants.php';
 require_once 'env-loader.php';
 
 loadRootEnvFile(ROOT_PATH . DIRECTORY_SEPARATOR . '.env');
-
 
 set_include_path(implode(PATH_SEPARATOR, [
     realpath(ROOT_PATH . '/vendor'),

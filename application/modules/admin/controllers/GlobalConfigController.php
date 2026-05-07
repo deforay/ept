@@ -1,9 +1,7 @@
 <?php
 
-
 class Admin_GlobalConfigController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $adminSession = new Zend_Session_Namespace('administrators');

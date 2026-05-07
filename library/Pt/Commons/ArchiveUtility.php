@@ -249,7 +249,7 @@ final class Pt_Commons_ArchiveUtility
 
         $message = "Archive not found: {$directory}/{$filename}";
         if ($lastException instanceof RuntimeException) {
-            $message .= " (last error: " . $lastException->getMessage() . ")";
+            $message .= ' (last error: ' . $lastException->getMessage() . ')';
         }
 
         throw new RuntimeException($message);
@@ -362,7 +362,7 @@ final class Pt_Commons_ArchiveUtility
         }
 
         if (!class_exists(ZipArchive::class)) {
-            throw new RuntimeException("ZipArchive extension not available");
+            throw new RuntimeException('ZipArchive extension not available');
         }
 
         if (!is_dir($dstDir) && !@mkdir($dstDir, self::$dirPermissions, true)) {
@@ -378,12 +378,12 @@ final class Pt_Commons_ArchiveUtility
 
         if (!$zip->setPassword($password)) {
             $zip->close();
-            throw new RuntimeException("Failed to set password for archive. Password may be incorrect.");
+            throw new RuntimeException('Failed to set password for archive. Password may be incorrect.');
         }
 
         if ($zip->numFiles < 1) {
             $zip->close();
-            throw new RuntimeException("ZIP archive is empty");
+            throw new RuntimeException('ZIP archive is empty');
         }
 
         $sqlEntryName = null;
@@ -397,7 +397,7 @@ final class Pt_Commons_ArchiveUtility
 
         if ($sqlEntryName === null) {
             $zip->close();
-            throw new RuntimeException("No SQL file found in ZIP archive");
+            throw new RuntimeException('No SQL file found in ZIP archive');
         }
 
         $dstDir = rtrim($dstDir, DIRECTORY_SEPARATOR);
@@ -410,7 +410,7 @@ final class Pt_Commons_ArchiveUtility
 
         if (!$zip->extractTo($dstDir, [$sqlEntryName])) {
             $zip->close();
-            throw new RuntimeException("Failed to extract ZIP archive. Password may be incorrect.");
+            throw new RuntimeException('Failed to extract ZIP archive. Password may be incorrect.');
         }
 
         $zip->close();
@@ -559,7 +559,7 @@ final class Pt_Commons_ArchiveUtility
             if ($size > self::$maxFileSize) {
                 throw new RuntimeException(
                     sprintf(
-                        "File size (%d bytes) exceeds maximum allowed (%d bytes): %s",
+                        'File size (%d bytes) exceeds maximum allowed (%d bytes): %s',
                         $size,
                         self::$maxFileSize,
                         $src
@@ -750,7 +750,7 @@ final class Pt_Commons_ArchiveUtility
             '-f',
             '-o',
             $dst,
-            $src
+            $src,
         ];
 
         self::runCommand($args);
@@ -788,7 +788,7 @@ final class Pt_Commons_ArchiveUtility
     private static function compressWithZip(string $src, string $dst): void
     {
         if (!class_exists(ZipArchive::class)) {
-            throw new RuntimeException("ZipArchive extension not available");
+            throw new RuntimeException('ZipArchive extension not available');
         }
 
         $zip = new ZipArchive();
@@ -905,7 +905,7 @@ final class Pt_Commons_ArchiveUtility
     private static function decompressZip(string $src, string $dstDir): string
     {
         if (!class_exists(ZipArchive::class)) {
-            throw new RuntimeException("ZipArchive extension not available");
+            throw new RuntimeException('ZipArchive extension not available');
         }
 
         $zip = new ZipArchive();
@@ -958,7 +958,7 @@ final class Pt_Commons_ArchiveUtility
     private static function decompressZipToString(string $src): string
     {
         if (!class_exists(ZipArchive::class)) {
-            throw new RuntimeException("ZipArchive extension not available");
+            throw new RuntimeException('ZipArchive extension not available');
         }
 
         $zip = new ZipArchive();

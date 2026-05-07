@@ -65,6 +65,15 @@
         (<?= (int)$this->pendingCount; ?>)</a>
 <?php } ?>
 <div style="display:inline-block;margin-left:15px;">
+    <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Status:"); ?></label>
+    <select id="statusFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
+        <option value="active"><?= $this->translate->_("Active"); ?></option>
+        <option value="inactive"><?= $this->translate->_("Inactive"); ?></option>
+        <option value=""><?= $this->translate->_("All"); ?></option>
+    </select>
+</div>
+<?php if (!empty($this->unmappedParticipantCount)) { ?>
+<div style="display:inline-block;margin-left:15px;">
     <label style="margin:0 6px 0 0;font-weight:bold;"><?= $this->translate->_("Mapping:"); ?></label>
     <select id="mappingFilter" class="form-control input-sm" style="display:inline-block;width:auto;vertical-align:middle;">
         <option value=""><?= $this->translate->_("All"); ?></option>
@@ -72,6 +81,7 @@
         <option value="unmapped"><?= $this->translate->_("Not mapped to any Data Manager"); ?></option>
     </select>
 </div>
+<?php } ?>
 <style>
     #participantsTable > tbody > tr > td { vertical-align: middle; }
     #participantsTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
@@ -171,7 +181,6 @@
             "fnServerParams": function (aoData) {
                 labName = $("#labId").val();
                 country = $("#country").val();
-                pstatus = $("#pstatus").val();
                 aoData.push({
                     "name": "pid",
                     "value": labName
@@ -182,7 +191,7 @@
                 });
                 aoData.push({
                     "name": "pstatus",
-                    "value": pstatus
+                    "value": $("#statusFilter").val() || ""
                 });
                 aoData.push({
                     "name": "mappingFilter",
@@ -208,6 +217,10 @@
                 }
                 return nRow;
             }
+        });
+
+        $("#statusFilter").change(function () {
+            oTable.fnDraw();
         });
 
         $("#mappingFilter").change(function () {
