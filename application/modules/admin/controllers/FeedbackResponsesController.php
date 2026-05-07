@@ -2,7 +2,6 @@
 
 class Admin_FeedbackResponsesController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -33,7 +32,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         $request = $this->getRequest();
         if ($request->isPost()) {
             $parameters = $this->getAllParams();
-            $feedbackService->getAllFeedBackResponses($parameters, "");
+            $feedbackService->getAllFeedBackResponses($parameters, '');
         }
         $this->view->pendingCount = 1;
     }
@@ -46,7 +45,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
             $params = $request->getPost();
             $feedbackService = new Application_Service_FeedBack();
             $feedbackService->saveFeedbackQuestions($params);
-            $this->redirect("/admin/feedback-responses/questions");
+            $this->redirect('/admin/feedback-responses/questions');
         }
     }
 
@@ -58,14 +57,14 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $feedbackService->saveFeedbackQuestions($params);
-            $this->redirect("/admin/feedback-responses/questions");
+            $this->redirect('/admin/feedback-responses/questions');
         }
         if ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));
             $this->view->questions = $feedbackService->getFeedBackQuestionsById($id);
             $this->view->type = $this->_getParam('type') ?? null;
         } else {
-            $this->redirect("/admin/feedback-responses/questions");
+            $this->redirect('/admin/feedback-responses/questions');
         }
     }
 
@@ -88,7 +87,7 @@ class Admin_FeedbackResponsesController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $this->getAllParams();
             $feedbackService->saveShipmentQuestionMap($params);
-            $this->redirect("/admin/feedback-responses/shipment-questions");
+            $this->redirect('/admin/feedback-responses/shipment-questions');
         }
         if ($this->hasParam('id')) {
             $id = (int)base64_decode($this->_getParam('id'));

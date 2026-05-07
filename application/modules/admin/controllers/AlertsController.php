@@ -2,7 +2,6 @@
 
 class Admin_AlertsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -12,7 +11,9 @@ class Admin_AlertsController extends Zend_Controller_Action
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
-    public function indexAction() {}
+    public function indexAction()
+    {
+    }
 
     public function emailAction()
     {

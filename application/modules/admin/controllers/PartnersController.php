@@ -2,7 +2,6 @@
 
 class Admin_PartnersController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -45,9 +44,9 @@ class Admin_PartnersController extends Zend_Controller_Action
 
             $name = trim((string) ($params['partnerName'] ?? ''));
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Added a new partner - " . ($name !== '' ? $name : '(unnamed)'), "config");
+            $auditDb->addNewAuditLog('Added a new partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
 
-            $this->redirect("/admin/partners");
+            $this->redirect('/admin/partners');
         }
     }
 
@@ -62,15 +61,15 @@ class Admin_PartnersController extends Zend_Controller_Action
 
             $name = trim((string) ($params['partnerName'] ?? ''));
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated partner - " . ($name !== '' ? $name : '(unnamed)'), "config");
+            $auditDb->addNewAuditLog('Updated partner - ' . ($name !== '' ? $name : '(unnamed)'), 'config');
 
-            $this->redirect("/admin/partners");
+            $this->redirect('/admin/partners');
         }
         if ($this->hasParam('id')) {
             $partnerId = (int)$this->_getParam('id');
             $this->view->partner = $partnerService->getPartner($partnerId);
         } else {
-            $this->redirect("/admin/partners");
+            $this->redirect('/admin/partners');
         }
     }
 }

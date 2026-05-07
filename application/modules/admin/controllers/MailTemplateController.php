@@ -2,7 +2,6 @@
 
 class Admin_MailTemplateController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */

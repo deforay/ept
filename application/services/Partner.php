@@ -2,7 +2,6 @@
 
 class Application_Service_Partner
 {
-
     public function addPartner($params)
     {
         $partnersDb = new Application_Model_DbTable_Partners();

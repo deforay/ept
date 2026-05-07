@@ -2,7 +2,6 @@
 
 class Admin_ErrorController extends Zend_Controller_Action
 {
-
     public function errorAction()
     {
         $errors = $this->_getParam('error_handler');
@@ -39,7 +38,7 @@ class Admin_ErrorController extends Zend_Controller_Action
 
             $response = [
                 'status' => 'error',
-                'message' => $this->view->message
+                'message' => $this->view->message,
             ];
 
             if ($this->getInvokeArg('displayExceptions') == true && isset($errors->exception)) {
@@ -47,7 +46,7 @@ class Admin_ErrorController extends Zend_Controller_Action
                     'message' => $errors->exception->getMessage(),
                     'file' => $errors->exception->getFile(),
                     'line' => $errors->exception->getLine(),
-                    'trace' => $errors->exception->getTraceAsString()
+                    'trace' => $errors->exception->getTraceAsString(),
                 ];
             }
 

@@ -1,8 +1,8 @@
 <?php
 
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 final class Pt_Commons_LoggerUtility
 {
@@ -34,7 +34,7 @@ final class Pt_Commons_LoggerUtility
 
         $callerInfo = [
             'file' => '',
-            'line' => 0
+            'line' => 0,
         ];
 
         if (isset($backtrace[$index])) {

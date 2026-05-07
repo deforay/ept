@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 // bin/console.php - TUI launcher for all bin/ scripts
 
 declare(strict_types=1);
@@ -9,7 +10,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 if (php_sapi_name() !== 'cli') {
-    echo "This script can only be run from the command line." . PHP_EOL;
+    echo 'This script can only be run from the command line.' . PHP_EOL;
     exit(1);
 }
 
@@ -18,7 +19,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 if (function_exists('pcntl_signal') && function_exists('pcntl_async_signals')) {
     pcntl_async_signals(true);
     pcntl_signal(SIGINT, function () {
-        echo PHP_EOL . "Cancelled." . PHP_EOL;
+        echo PHP_EOL . 'Cancelled.' . PHP_EOL;
         exit(130);
     });
 }
@@ -194,7 +195,7 @@ function extractUsage(string $contents, string $type): ?string
 
             $lines = preg_split('/\r?\n/', trim($body));
             // Strip decorative "===" lines
-            $filtered = array_filter($lines, fn($l) => !preg_match('/^\s*={3,}\s*$/', $l));
+            $filtered = array_filter($lines, fn ($l) => !preg_match('/^\s*={3,}\s*$/', $l));
             $result = trim(implode("\n", $filtered));
             return $result !== '' ? $result : null;
         }

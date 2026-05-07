@@ -17,7 +17,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
             'batch_name' => $data['batch_name'],
             'shipment_ids' => $data['shipment_ids'],
             'created_by' => $data['created_by'],
-            'created_on' => new Zend_Db_Expr('NOW()')
+            'created_on' => new Zend_Db_Expr('NOW()'),
         ];
 
         if (isset($data['status'])) {
@@ -102,7 +102,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
                 'created_by',
                 'created_on',
                 'approved_by',
-                'approved_on'
+                'approved_on',
             ])
             ->joinLeft(
                 ['a' => 'system_admin'],
@@ -116,27 +116,27 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
             );
 
         // Global search
-        if (isset($parameters['sSearch']) && $parameters['sSearch'] != "") {
-            $searchArray = explode(" ", $parameters['sSearch']);
-            $sWhereSub = "";
+        if (isset($parameters['sSearch']) && $parameters['sSearch'] != '') {
+            $searchArray = explode(' ', $parameters['sSearch']);
+            $sWhereSub = '';
             foreach ($searchArray as $search) {
-                if ($sWhereSub == "") {
-                    $sWhereSub .= "(";
+                if ($sWhereSub == '') {
+                    $sWhereSub .= '(';
                 } else {
-                    $sWhereSub .= " AND (";
+                    $sWhereSub .= ' AND (';
                 }
                 $colSize = count($aColumns);
                 for ($i = 0; $i < $colSize; $i++) {
-                    if ($aColumns[$i] == "" || $aColumns[$i] == null) {
+                    if ($aColumns[$i] == '' || $aColumns[$i] == null) {
                         continue;
                     }
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE " . $dbAdapter->quote('%' . $search . '%') . " OR ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . $dbAdapter->quote('%' . $search . '%') . ' OR ';
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE " . $dbAdapter->quote('%' . $search . '%') . " ";
+                        $sWhereSub .= $aColumns[$i] . ' LIKE ' . $dbAdapter->quote('%' . $search . '%') . ' ';
                     }
                 }
-                $sWhereSub .= ")";
+                $sWhereSub .= ')';
             }
             $sQuery = $sQuery->where($sWhereSub);
         }
@@ -165,13 +165,13 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
 
         // Sorting
         if (isset($parameters['iSortCol_0'])) {
-            $sOrder = "";
+            $sOrder = '';
             for ($i = 0; $i < intval($parameters['iSortingCols']); $i++) {
-                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == "true") {
-                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . " " . ($parameters['sSortDir_' . $i]) . ", ";
+                if ($parameters['bSortable_' . intval($parameters['iSortCol_' . $i])] == 'true') {
+                    $sOrder .= $orderColumns[intval($parameters['iSortCol_' . $i])] . ' ' . ($parameters['sSortDir_' . $i]) . ', ';
                 }
             }
-            $sOrder = substr_replace($sOrder, "", -2);
+            $sOrder = substr_replace($sOrder, '', -2);
             if (!empty($sOrder)) {
                 $sQuery = $sQuery->order($sOrder);
             }
@@ -208,10 +208,10 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
 
         // Build output
         $output = [
-            "sEcho" => isset($parameters['sEcho']) ? intval($parameters['sEcho']) : 0,
-            "iTotalRecords" => $iTotal,
-            "iTotalDisplayRecords" => $iFilteredTotal,
-            "aaData" => $rResult
+            'sEcho' => isset($parameters['sEcho']) ? intval($parameters['sEcho']) : 0,
+            'iTotalRecords' => $iTotal,
+            'iTotalDisplayRecords' => $iFilteredTotal,
+            'aaData' => $rResult,
         ];
 
         return $output;
@@ -239,7 +239,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
         }
 
         $updateData = [
-            'status' => 'cancelled'
+            'status' => 'cancelled',
         ];
 
         if ($cancelledBy) {
@@ -271,7 +271,7 @@ class Application_Model_DbTable_CertificateBatches extends Zend_Db_Table_Abstrac
         }
 
         $updateData = [
-            'status' => 'rejected'
+            'status' => 'rejected',
         ];
 
         if ($rejectedBy) {

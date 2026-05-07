@@ -1,9 +1,7 @@
 <?php
 
-use Pt_Commons_DateUtility as DateUtility;
 class Pt_Commons_General
 {
-
     // returns true if $needle is a substring of $haystack
     public static function stringContains($needle, $haystack)
     {
@@ -20,10 +18,11 @@ class Pt_Commons_General
             mkdir($destination, 01777); // NOSONAR
             umask($oldumask);
         }
-        $dir_handle = @opendir($source) or die("Unable to open");
+        $dir_handle = @opendir($source) or die('Unable to open');
         while ($file = readdir($dir_handle)) {
-            if ($file != "." && $file != ".." && !is_dir("$source/$file"))
+            if ($file != '.' && $file != '..' && !is_dir("$source/$file")) {
                 copy("$source/$file", "$destination/$file");
+            }
         }
         closedir($dir_handle);
     }
@@ -66,28 +65,28 @@ class Pt_Commons_General
     public static function excelDateFormat($date)
     {
 
-        if (empty($date) || $date == "" || $date == "0000-00-00") {
-            return "";
+        if (empty($date) || $date == '' || $date == '0000-00-00') {
+            return '';
         } else {
             $dateTimeArray = explode(' ', $date);
-            $time = isset($dateTimeArray[1]) ? " " . $dateTimeArray[1] : '';
+            $time = isset($dateTimeArray[1]) ? ' ' . $dateTimeArray[1] : '';
             $dateArray = explode('-', $dateTimeArray[0]);
-            $newDate = $dateArray[2] . "/";
-            return $newDate .= $dateArray[1] . "/" . $dateArray[0] . $time;
+            $newDate = $dateArray[2] . '/';
+            return $newDate .= $dateArray[1] . '/' . $dateArray[0] . $time;
         }
     }
 
-    public function getMonthsInRange($startDate, $endDate, $type = "")
+    public function getMonthsInRange($startDate, $endDate, $type = '')
     {
         $months = [];
         while (strtotime($startDate) <= strtotime($endDate)) {
             //$monthYear=array('year' => date('Y', strtotime($startDate)),'month' => date('M', strtotime($startDate)),);
-            $monthYear = date('M', strtotime($startDate)) . "-" . date('Y', strtotime($startDate));
+            $monthYear = date('M', strtotime($startDate)) . '-' . date('Y', strtotime($startDate));
             $months[$monthYear] = $monthYear;
             $startDate = date('d M Y', strtotime($startDate . '+ 1 month'));
         }
-        if ($type == "dashboard") {
-            $monthYear = date('M', strtotime($endDate)) . "-" . date('Y', strtotime($endDate));
+        if ($type == 'dashboard') {
+            $monthYear = date('M', strtotime($endDate)) . '-' . date('Y', strtotime($endDate));
             $months[$monthYear] = $monthYear;
         }
         return $months;
@@ -113,7 +112,7 @@ class Pt_Commons_General
                 $file = str_replace('\\', '/', $file);
 
                 // Ignore "." and ".." folders
-                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
+                if (in_array(substr($file, strrpos($file, '/') + 1), ['.', '..'])) {
                     continue;
                 }
 
@@ -134,8 +133,9 @@ class Pt_Commons_General
     public static function rmdirRecursive($dir)
     {
         foreach (scandir($dir) as $file) {
-            if ('.' === $file || '..' === $file)
+            if ('.' === $file || '..' === $file) {
                 continue;
+            }
             if (is_dir("$dir/$file")) {
                 self::rmdirRecursive("$dir/$file");
             } else {
@@ -169,7 +169,6 @@ class Pt_Commons_General
         return $files;
     }
 
-
     public static function recuriveSearch($base, $pattern, $flags = 0)
     {
         $glob_nocheck = $flags & GLOB_NOCHECK;
@@ -183,7 +182,6 @@ class Pt_Commons_General
 
         return $files;
     }
-
 
     // Generate a ULID
     public static function generateULID($attachExtraString = true): string

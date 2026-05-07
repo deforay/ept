@@ -2,7 +2,6 @@
 
 class ResourcesController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /* Initialize action controller here */
@@ -13,6 +12,4 @@ class ResourcesController extends Zend_Controller_Action
         // action body
     }
 
-
 }
-

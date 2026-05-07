@@ -69,12 +69,16 @@ class Application_Service_DataManagers
         }
 
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Quick-created data manager - {$email}", "participants");
+        $auditDb->addNewAuditLog("Quick-created data manager - {$email}", 'participants');
 
         $labelParts = [];
         $name = trim($firstName . ' ' . $lastName);
-        if ($name !== '') $labelParts[] = $name;
-        if ($institute !== '') $labelParts[] = $institute;
+        if ($name !== '') {
+            $labelParts[] = $name;
+        }
+        if ($institute !== '') {
+            $labelParts[] = $institute;
+        }
         $labelParts[] = $email;
 
         return [
@@ -91,21 +95,21 @@ class Application_Service_DataManagers
         $authNameSpace->language = $params['language'];
         if (isset($params['oldpemail']) && !empty($params['oldpemail']) && isset($params['pemail']) && !empty($params['pemail']) && ($params['oldpemail'] != $params['pemail'])) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-            $eptDomain = rtrim($conf->domain, "/");
+            $eptDomain = rtrim($conf->domain, '/');
             $common = new Application_Service_Common();
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from " . $params['oldpemail'] . " to " . $params['pemail'] . ". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $eptDomain . "/auth/verify/email/" . base64_encode($params['pemail']) . "'>" . $eptDomain . "/auth/verify/email/" . base64_encode($params['pemail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldpemail'] . ' to ' . $params['pemail'] . ". <br/><br/> Please confirm your new primary email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['pemail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['pemail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['pemail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Please check your email “" . $params['pemail'] . "”. Once you verify, you can use “" . $params['pemail'] . "” to login to ePT.";
-            $sessionAlert->status = "success";
+            $common->insertTempMail($params['pemail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $sessionAlert->message = 'Please check your email “' . $params['pemail'] . '”. Once you verify, you can use “' . $params['pemail'] . '” to login to ePT.';
+            $sessionAlert->status = 'success';
             // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldpemail']);
         } else {
             if ($authNameSpace->force_profile_check_primary == 'yes') {
-                $sessionAlert->status = "failure";
+                $sessionAlert->status = 'failure';
                 $this->datamanagersDb->updateForceProfileCheckByEmail(base64_encode($params['oldpemail']));
             } else {
-                $sessionAlert->status = "failure";
+                $sessionAlert->status = 'failure';
             }
         }
         return $this->datamanagersDb->updateUser($params);
@@ -117,24 +121,24 @@ class Application_Service_DataManagers
         if ($params['oldEmail'] != $params['registeredEmail']) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $eptDomain = rtrim($conf->domain, "/");
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from " . $params['oldEmail'] . " to " . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $eptDomain = rtrim($conf->domain, '/');
+            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldEmail'] . ' to ' . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
-            $sessionAlert->message = "Please check your email “" . $params['registeredEmail'] . "”. Once you verify, you can use “" . $params['registeredEmail'] . "” to login to ePT.";
-            $sessionAlert->status = "success";
+            $common->insertTempMail($params['registeredEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
+            $sessionAlert->message = 'Please check your email “' . $params['registeredEmail'] . '”. Once you verify, you can use “' . $params['registeredEmail'] . '” to login to ePT.';
+            $sessionAlert->status = 'success';
             // $this->datamanagersDb->setStatusByEmail('inactive',$params['oldEmail']);
         }
         $status = $this->datamanagersDb->changeForceProfileCheckByEmail($params);
         if ($showAlert) {
             $sessionAlert = new Zend_Session_Namespace('alertSpace');
             if ($status) {
-                $sessionAlert->message = "You mail address has been changed. Please check your registered email id for the instructions.";
-                $sessionAlert->status = "success";
+                $sessionAlert->message = 'You mail address has been changed. Please check your registered email id for the instructions.';
+                $sessionAlert->status = 'success';
             } else {
-                $sessionAlert->message = "Yor are already used this address. Please try different mail!";
-                $sessionAlert->status = "failure";
+                $sessionAlert->message = 'Yor are already used this address. Please try different mail!';
+                $sessionAlert->status = 'failure';
             }
         }
         return $status;
@@ -146,11 +150,11 @@ class Application_Service_DataManagers
         if ($row) {
             $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
             $common = new Application_Service_Common();
-            $eptDomain = rtrim($conf->domain, "/");
-            $message = "Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from " . $params['oldEmail'] . " to " . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . "/auth/verify/email/" . base64_encode($params['registeredEmail']) . "</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>";
+            $eptDomain = rtrim($conf->domain, '/');
+            $message = 'Dear Participant,<br/><br/> You or someone using your email requested to change your ePT login email address from ' . $params['oldEmail'] . ' to ' . $params['registeredEmail'] . ". <br/><br/> Please confirm your new login email by clicking on the following link: <br/><br/><a href='" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . "'>" . $eptDomain . '/auth/verify/email/' . base64_encode($params['registeredEmail']) . '</a> <br/><br/> If you are not able to click the link, you can copy and paste it in a browser address bar.<br/><br/> If you did not request for this update, you can safely ignore this email.<br/><br/><small>Thanks,<br/> Online PT Team<br/> <i>Please note: This is a system generated email.</i></small>';
             $fromMail = Application_Service_Common::getConfig('admin_email');
             $fromName = Application_Service_Common::getConfig('admin-name');
-            $send = $common->insertTempMail($params['registeredEmail'], null, null, "ePT | Change of login email id", $message, $fromMail, $fromName);
+            $send = $common->insertTempMail($params['registeredEmail'], null, null, 'ePT | Change of login email id', $message, $fromMail, $fromName);
             if (isset($send) && $send > 0) {
                 return $send;
             }
@@ -207,7 +211,7 @@ class Application_Service_DataManagers
     {
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $eptDomain = rtrim((string) $conf->domain, "/");
+        $eptDomain = rtrim((string) $conf->domain, '/');
 
         // Normalize/quick-validate the incoming email first
         $normalizedInput = Application_Service_Common::validateEmail((string) $email);
@@ -216,12 +220,12 @@ class Application_Service_DataManagers
         $participant = $this->datamanagersDb->resetPasswordForEmail($normalizedInput);
 
         // (Optional) prevent enumeration: always show a generic message
-        $genericOkMsg = $this->translator->_("If the entered email is registered, you will receive a password reset link. If not, please contact your PT provider for assistance.");
+        $genericOkMsg = $this->translator->_('If the entered email is registered, you will receive a password reset link. If not, please contact your PT provider for assistance.');
 
         if ($participant === false) {
             // Avoid revealing whether the email exists
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status = "success";
+            $sessionAlert->status = 'success';
             return;
         }
 
@@ -247,25 +251,25 @@ class Application_Service_DataManagers
             //     "Record has invalid email for participant <b>{$participantName}</b> (input: " . htmlspecialchars((string)$email, ENT_QUOTES, 'UTF-8') . ")."
             // );
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status = "success";
+            $sessionAlert->status = 'success';
             return;
         }
 
         // Heavier validation: syntax + excluded domains + MX
         $excludedDomains = [
-            "spam.com",
-            "example.org",
-            "example.com",
-            "10minutemail.com",
-            "guerrillamail.com",
-            "tempmail.com",
-            "mailinator.com",
-            "yopmail.com",
-            "throwawaymail.com",
-            "fakeinbox.com",
-            "test.com",
-            "invalid.com",
-            "noreply.com"
+            'spam.com',
+            'example.org',
+            'example.com',
+            '10minutemail.com',
+            'guerrillamail.com',
+            'tempmail.com',
+            'mailinator.com',
+            'yopmail.com',
+            'throwawaymail.com',
+            'fakeinbox.com',
+            'test.com',
+            'invalid.com',
+            'noreply.com',
         ];
         $validMail = Application_Service_Common::isValidEmail($participantMail, $excludedDomains);
 
@@ -275,19 +279,19 @@ class Application_Service_DataManagers
             $resetUrl = "$eptDomain/auth/new-password/email/$emailToken";
 
             $message = "Dear {$participantName},<br/><br/>"
-                . "You (or someone else) requested a password reset for your ePT account (<b>"
+                . 'You (or someone else) requested a password reset for your ePT account (<b>'
                 . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
-                . "</b>).<br/><br/>"
-                . "If you requested this, click the link below or paste it into your browser:<br/>"
+                . '</b>).<br/><br/>'
+                . 'If you requested this, click the link below or paste it into your browser:<br/>'
                 . "<a href='{$resetUrl}'>{$resetUrl}</a><br/><br/>"
-                . "If you did not request a password reset, you can safely ignore this email.<br/><br/>"
-                . "<small>Thanks,<br/>ePT Support</small>";
+                . 'If you did not request a password reset, you can safely ignore this email.<br/><br/>'
+                . '<small>Thanks,<br/>ePT Support</small>';
 
             $common->insertTempMail(
                 $participantMail,
                 null,
                 null,
-                "Password Reset - ePT",
+                'Password Reset - ePT',
                 $message,
                 $adminMail,
                 $adminName
@@ -295,22 +299,21 @@ class Application_Service_DataManagers
 
             // Generic response to the user/browser
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status = "success";
+            $sessionAlert->status = 'success';
         } else {
             // Bad/temporary domain or no MX: notify admin, keep user message generic
             $adminMsg = "Participant <b>{$participantName}</b> requested a password reset, "
-                . "but their email appears invalid or undeliverable: <b>"
+                . 'but their email appears invalid or undeliverable: <b>'
                 . htmlspecialchars($participantMail, ENT_QUOTES, 'UTF-8')
-                . "</b> (input: "
-                . htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8') . ").";
+                . '</b> (input: '
+                . htmlspecialchars((string) $email, ENT_QUOTES, 'UTF-8') . ').';
 
-            $common->insertTempMail($adminMail, null, null, "Password Reset - ePT", $adminMsg);
+            $common->insertTempMail($adminMail, null, null, 'Password Reset - ePT', $adminMsg);
 
             $sessionAlert->message = $genericOkMsg;
-            $sessionAlert->status = "success";
+            $sessionAlert->status = 'success';
         }
     }
-
 
     /**
      * Admin-driven primary email change. The admin has already confirmed the
@@ -330,7 +333,6 @@ class Application_Service_DataManagers
         }
         return $this->datamanagersDb->changePrimaryEmailById($dmId, $newEmail);
     }
-
 
     public function resetPasswordFromAdmin($params, $forcePasswordReset = false)
     {
@@ -379,13 +381,13 @@ class Application_Service_DataManagers
         $password = (string) ($params['password'] ?? '');
 
         $subject = 'Your ePT Login Credentials';
-        $message = "Dear Participant,<br/><br/>"
-            . "Please use the following to log in to ePT:<br/><br/>"
-            . "URL: <a href=\"" . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . "\">"
-            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . "</a><br/>"
-            . "Login ID: " . htmlspecialchars($loginId, ENT_QUOTES, 'UTF-8') . "<br/>"
-            . "Password: " . htmlspecialchars($password, ENT_QUOTES, 'UTF-8') . "<br/><br/>"
-            . "Thanks,<br/>ePT Support";
+        $message = 'Dear Participant,<br/><br/>'
+            . 'Please use the following to log in to ePT:<br/><br/>'
+            . 'URL: <a href="' . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '">'
+            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '</a><br/>'
+            . 'Login ID: ' . htmlspecialchars($loginId, ENT_QUOTES, 'UTF-8') . '<br/>'
+            . 'Password: ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8') . '<br/><br/>'
+            . 'Thanks,<br/>ePT Support';
 
         $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
         $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
@@ -394,7 +396,7 @@ class Application_Service_DataManagers
         $common = new Application_Service_Common();
         $common->insertTempMail(
             implode(',', $to),
-            !empty($cc)  ? implode(',', $cc)  : null,
+            !empty($cc) ? implode(',', $cc) : null,
             !empty($bcc) ? implode(',', $bcc) : null,
             $subject,
             $message,
@@ -406,7 +408,6 @@ class Application_Service_DataManagers
         $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
-
     public function getDataManagerList($ptcc = false)
     {
         return $this->datamanagersDb->getAllDataManagers($ptcc);
@@ -415,49 +416,49 @@ class Application_Service_DataManagers
     public function getParticipantDatamanagerListByPid($participantId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        return $db->fetchAll($db->select()->from('participant_manager_map')->where("participant_id= ?", $participantId));
+        return $db->fetchAll($db->select()->from('participant_manager_map')->where('participant_id= ?', $participantId));
     }
 
     public function getDatamanagerParticipantListByDid($datamanagerId)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         return $db->fetchAll($db->select()->from('participant_manager_map')
-            ->where("dm_id= ?", $datamanagerId));
+            ->where('dm_id= ?', $datamanagerId));
     }
 
-    public function getParticipantDatamanagerList($params = array())
+    public function getParticipantDatamanagerList($params = [])
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('p' => 'participant'), array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
+        $sql = $db->select()->from(['p' => 'participant'], ['participant_id', 'unique_identifier', 'first_name', 'last_name'])
             // ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
             // ->where("pmm.dm_id like ?", $params['datamanagerId'])
-            ->where("p.status= ?", 'active');
-        if (isset($params['country']) && $params['country'] != "") {
-            $sql = $sql->where("country like ?", $params['country']);
+            ->where('p.status= ?', 'active');
+        if (isset($params['country']) && $params['country'] != '') {
+            $sql = $sql->where('country like ?', $params['country']);
         }
-        if (isset($params['province']) && $params['province'] != "") {
-            $sql = $sql->where("state like ?", $params['province']);
+        if (isset($params['province']) && $params['province'] != '') {
+            $sql = $sql->where('state like ?', $params['province']);
         }
-        if (isset($params['district']) && $params['district'] != "") {
-            $sql = $sql->where("district like ?", $params['district']);
+        if (isset($params['district']) && $params['district'] != '') {
+            $sql = $sql->where('district like ?', $params['district']);
         }
-        if (isset($params['network']) && $params['network'] != "") {
-            $sql = $sql->where("network_tier like ?", $params['network']);
+        if (isset($params['network']) && $params['network'] != '') {
+            $sql = $sql->where('network_tier like ?', $params['network']);
         }
-        if (isset($params['affiliation']) && $params['affiliation'] != "") {
-            $sql = $sql->where("affiliation like ?", $params['affiliation']);
+        if (isset($params['affiliation']) && $params['affiliation'] != '') {
+            $sql = $sql->where('affiliation like ?', $params['affiliation']);
         }
-        if (isset($params['institute']) && $params['institute'] != "") {
-            $sql = $sql->where("institute_name like ?", $params['institute']);
+        if (isset($params['institute']) && $params['institute'] != '') {
+            $sql = $sql->where('institute_name like ?', $params['institute']);
         }
 
-        $sql2 = $db->select()->from(array('p' => 'participant'), array('participant_id', 'unique_identifier', 'first_name', 'last_name'))
-            ->joinLeft(array('pmm' => 'participant_manager_map'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("pmm.dm_id like ?", $params['datamanagerId'])
-            ->where("p.status= ?", 'active');
+        $sql2 = $db->select()->from(['p' => 'participant'], ['participant_id', 'unique_identifier', 'first_name', 'last_name'])
+            ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [''])
+            ->where('pmm.dm_id like ?', $params['datamanagerId'])
+            ->where('p.status= ?', 'active');
 
         $select = $db->select()
-            ->union(array($sql, $sql2));
+            ->union([$sql, $sql2]);
 
         return $db->fetchAll($select);
     }
@@ -465,9 +466,9 @@ class Application_Service_DataManagers
     public function getDatamanagerParticipantList($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pmm' => 'participant_manager_map'), array('participant_id'))
-            ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array(''))
-            ->where("dm_id like ?", $params['datamanagerId'])->group('p.participant_id');
+        $sql = $db->select()->from(['pmm' => 'participant_manager_map'], ['participant_id'])
+            ->join(['p' => 'participant'], 'pmm.participant_id=p.participant_id', [''])
+            ->where('dm_id like ?', $params['datamanagerId'])->group('p.participant_id');
 
         return $db->fetchAll($sql);
     }
@@ -476,9 +477,9 @@ class Application_Service_DataManagers
     {
         $dmNameSpace = new Zend_Session_Namespace('datamanagers');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pmm' => 'participant_manager_map'))
-            ->join(array('p' => 'participant'), 'pmm.participant_id=p.participant_id', array('*'))
-            ->where("dm_id= ?", $dmNameSpace->dm_id)
+        $sql = $db->select()->from(['pmm' => 'participant_manager_map'])
+            ->join(['p' => 'participant'], 'pmm.participant_id=p.participant_id', ['*'])
+            ->where('dm_id= ?', $dmNameSpace->dm_id)
             ->group('p.participant_id');
         return $db->fetchAll($sql);
     }
@@ -488,13 +489,13 @@ class Application_Service_DataManagers
         $newPassword = $this->datamanagersDb->updatePassword($oldPassword, $newPassword);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         if ($newPassword != false) {
-            $sessionAlert->message = "Your password has been updated.";
-            $sessionAlert->status = "success";
+            $sessionAlert->message = 'Your password has been updated.';
+            $sessionAlert->status = 'success';
             return true;
         } else {
             if ($_SESSION['profile_confirmed']) {
-                $sessionAlert->message = "Sorry, we could not update your password(check you enter correct old password). Please try again";
-                $sessionAlert->status = "failure";
+                $sessionAlert->message = 'Sorry, we could not update your password(check you enter correct old password). Please try again';
+                $sessionAlert->status = 'failure';
             }
             return false;
         }
@@ -504,10 +505,10 @@ class Application_Service_DataManagers
     {
         $response = '';
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $sql = $db->select()->from(array('pmm' => 'participant_manager_map', array()))
-            ->join(array('p' => 'participant'), 'p.participant_id=pmm.participant_id', array())
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.participant_id=p.participant_id', array('show_announcement_count' => new Zend_Db_Expr("SUM(show_announcement ='yes')")))
-            ->where("pmm.dm_id = ?", $dmId)
+        $sql = $db->select()->from(['pmm' => 'participant_manager_map', []])
+            ->join(['p' => 'participant'], 'p.participant_id=pmm.participant_id', [])
+            ->join(['sp' => 'shipment_participant_map'], 'sp.participant_id=p.participant_id', ['show_announcement_count' => new Zend_Db_Expr("SUM(show_announcement ='yes')")])
+            ->where('pmm.dm_id = ?', $dmId)
             ->group('sp.participant_id');
         $result = $db->fetchRow($sql);
         if (isset($result['show_announcement_count']) && $result['show_announcement_count'] > 0) {
@@ -529,12 +530,12 @@ class Application_Service_DataManagers
         $newPassword = $this->datamanagersDb->saveNewPassword($params);
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
         if ($newPassword != false) {
-            $sessionAlert->message = "Your password has been updated.";
-            $sessionAlert->status = "success";
+            $sessionAlert->message = 'Your password has been updated.';
+            $sessionAlert->status = 'success';
             return '/auth/login';
         } else {
-            $sessionAlert->message = "Sorry, we could not update your password. Please try again";
-            $sessionAlert->status = "failure";
+            $sessionAlert->message = 'Sorry, we could not update your password. Please try again';
+            $sessionAlert->status = 'failure';
             return '/auth/new-password';
         }
     }
@@ -554,7 +555,7 @@ class Application_Service_DataManagers
         return $this->datamanagersDb->fetchForceProfileEmail($link);
     }
 
-    public function updateForceProfileCheck($email, $result = "")
+    public function updateForceProfileCheck($email, $result = '')
     {
         return $this->datamanagersDb->updateForceProfileCheckByEmail($email, $result);
     }
@@ -588,7 +589,7 @@ class Application_Service_DataManagers
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sql = $db->select()->from(['dm' => 'data_manager'], ['dm_id', 'data_manager_type'])
-            ->where("dm.primary_email = ?", strtolower($params["value"]));
+            ->where('dm.primary_email = ?', strtolower($params['value']));
         $result = $db->fetchRow($sql);
         if (isset($result['dm_id']) && !empty($result['dm_id'])) {
             if (isset($result['data_manager_type']) && $result['data_manager_type'] != 'ptcc') {
@@ -606,12 +607,12 @@ class Application_Service_DataManagers
         ini_set('max_execution_time', -1);
         try {
             $alertMsg = new Zend_Session_Namespace('alertSpace');
-            $allowedExtensions = array('xls', 'xlsx', 'csv');
+            $allowedExtensions = ['xls', 'xlsx', 'csv'];
             $fileName = preg_replace('/[^A-Za-z0-9.]/', '-', $_FILES['fileName']['name']);
-            $fileName = str_replace(" ", "-", $fileName);
+            $fileName = str_replace(' ', '-', $fileName);
             $random = Pt_Commons_MiscUtility::generateRandomString(6);
             $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $fileName = $random . "-" . $fileName;
+            $fileName = $random . '-' . $fileName;
             $response = [];
             if (in_array($extension, $allowedExtensions)) {
                 $tempUploadDirectory = realpath(TEMP_UPLOAD_PATH);
@@ -631,7 +632,7 @@ class Application_Service_DataManagers
                 return false;
             }
         } catch (Exception $exc) {
-            error_log("IMPORT-PARTICIPANTS-DATA-EXCEL--" . $exc->getMessage());
+            error_log('IMPORT-PARTICIPANTS-DATA-EXCEL--' . $exc->getMessage());
             error_log($exc->getTraceAsString());
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
             return false;
@@ -648,13 +649,13 @@ class Application_Service_DataManagers
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $sQuery = $db->select()
-            ->from(array('u' => 'data_manager'), array(''))
-            ->joinLeft(array('pcm' => 'ptcc_countries_map'), 'pcm.ptcc_id=u.dm_id', array(
+            ->from(['u' => 'data_manager'], [''])
+            ->joinLeft(['pcm' => 'ptcc_countries_map'], 'pcm.ptcc_id=u.dm_id', [
                 'state',
                 'district',
-                'country' => 'country_id'
-            ))
-            ->joinLeft(array('c' => 'countries'), 'c.id=pcm.country_id', array('c.iso_name'))
+                'country' => 'country_id',
+            ])
+            ->joinLeft(['c' => 'countries'], 'c.id=pcm.country_id', ['c.iso_name'])
             ->where('dm_id = ?', $id)
             ->group('u.dm_id');
         $result = $db->fetchRow($sQuery);

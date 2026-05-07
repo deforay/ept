@@ -2,7 +2,6 @@
 
 class CapaController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */

@@ -1,1 +1,3 @@
-<?php echo $this->result;
+<?php
+
+echo $this->result;

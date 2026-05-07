@@ -2,9 +2,8 @@
 
 class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
 {
-
     protected $_name = 'response_result_dbs';
-    protected $_primary = array('shipment_map_id', 'sample_id');
+    protected $_primary = ['shipment_map_id', 'sample_id'];
 
     public function updateResults($params)
     {
@@ -12,11 +11,11 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
 
         foreach ($sampleIds as $key => $sampleId) {
             //die("shipment_map_id = ".$params['smid'] . " and sample_id = ".$sampleId);
-            $res = $this->fetchRow("shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+            $res = $this->fetchRow('shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
 
             if ($res == null || !empty($res)) {
-                $this->insert(array(
+                $this->insert([
                     'shipment_map_id' => $params['smid'],
                     'sample_id' => $sampleId,
                     'eia_1' => $params['eia_1'],
@@ -48,10 +47,10 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
                     'wb_17' => $params['wb_17'][$key],
                     'reported_result' => $params['reported_result'][$key],
                     'created_by' => $authNameSpace->dm_id,
-                    'created_on' => new Zend_Db_Expr('now()')
-                ));
+                    'created_on' => new Zend_Db_Expr('now()'),
+                ]);
             } else {
-                $this->update(array(
+                $this->update([
                     'eia_1' => $params['eia_1'],
                     'lot_no_1' => $params['lot_no_1'],
                     'exp_date_1' => Pt_Commons_DateUtility::isoDateFormat($params['exp_date_1']),
@@ -81,8 +80,8 @@ class Application_Model_DbTable_ResponseDbs extends Zend_Db_Table_Abstract
                     'wb_17' => $params['wb_17'][$key],
                     'reported_result' => $params['reported_result'][$key],
                     'updated_by' => $authNameSpace->dm_id,
-                    'updated_on' => new Zend_Db_Expr('now()')
-                ), "shipment_map_id = " . $params['smid'] . " and sample_id = " . $sampleId);
+                    'updated_on' => new Zend_Db_Expr('now()'),
+                ], 'shipment_map_id = ' . $params['smid'] . ' and sample_id = ' . $sampleId);
             }
         }
     }

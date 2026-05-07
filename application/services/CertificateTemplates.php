@@ -2,7 +2,6 @@
 
 class Application_Service_CertificateTemplates
 {
-
     /**
      * Required field names that must be present in PDF templates
      * At least one of these must be present for participant name
@@ -11,7 +10,7 @@ class Application_Service_CertificateTemplates
         'participant_name',
         'participantname',
         'labname',
-        'participant'
+        'participant',
     ];
 
     public function getAllCertificateTemplates()
@@ -56,7 +55,7 @@ class Application_Service_CertificateTemplates
         $result = [
             'valid' => false,
             'fields' => [],
-            'error' => ''
+            'error' => '',
         ];
 
         // Check if file exists
@@ -191,7 +190,7 @@ class Application_Service_CertificateTemplates
         $result = [
             'success' => false,
             'message' => '',
-            'fields' => []
+            'fields' => [],
         ];
 
         // Check for upload errors
@@ -203,7 +202,7 @@ class Application_Service_CertificateTemplates
                 UPLOAD_ERR_NO_FILE => 'No file was uploaded',
                 UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
                 UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-                UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
+                UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload',
             ];
             $result['message'] = $errorMessages[$file['error']] ?? 'Unknown upload error';
             return $result;

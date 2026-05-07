@@ -2,7 +2,6 @@
 
 class Admin_DataManagersController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $adminSession = new Zend_Session_Namespace('administrators');
@@ -48,9 +47,9 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $this->view->unmappedDmCount = (int)$db->fetchOne(
             $db->select()
-                ->from(array('u' => 'data_manager'), new Zend_Db_Expr('COUNT(*)'))
-                ->where("u.status = ?", 'active')
-                ->where("u.data_manager_type = ?", $dmType)
+                ->from(['u' => 'data_manager'], new Zend_Db_Expr('COUNT(*)'))
+                ->where('u.status = ?', 'active')
+                ->where('u.data_manager_type = ?', $dmType)
                 ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm WHERE pmm.dm_id = u.dm_id)')
         );
     }
@@ -66,11 +65,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($dmId > 0) {
             $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             $select = $db->select()
-                ->from(array('pmm' => 'participant_manager_map'), array())
-                ->join(array('p' => 'participant'), 'p.participant_id = pmm.participant_id', array('participant_id', 'unique_identifier', 'first_name', 'last_name', 'institute_name', 'email', 'status'))
-                ->joinLeft(array('c' => 'countries'), 'c.id = p.country', array('iso_name'))
+                ->from(['pmm' => 'participant_manager_map'], [])
+                ->join(['p' => 'participant'], 'p.participant_id = pmm.participant_id', ['participant_id', 'unique_identifier', 'first_name', 'last_name', 'institute_name', 'email', 'status'])
+                ->joinLeft(['c' => 'countries'], 'c.id = p.country', ['iso_name'])
                 ->where('pmm.dm_id = ?', $dmId)
-                ->order(array('p.institute_name', 'p.unique_identifier'));
+                ->order(['p.institute_name', 'p.unique_identifier']);
             $this->view->mappedParticipants = $db->fetchAll($select);
         }
     }
@@ -117,11 +116,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $params = $request->getPost();
             $result = $userService->addUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
-                $this->redirect("/admin/data-managers/index/ptcc/1");
-            } else if (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
-                $this->redirect("/admin/participants/participant-manager-map");
+                $this->redirect('/admin/data-managers/index/ptcc/1');
+            } elseif (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
+                $this->redirect('/admin/participants/participant-manager-map');
             }
-            $this->redirect("/admin/data-managers");
+            $this->redirect('/admin/data-managers');
         } else {
             $this->view->participants = $participantService->getAllActiveParticipants();
         }
@@ -156,11 +155,11 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $params = $request->getPost();
             $userService->updateUser($params);
             if (isset($params['ptcc']) && $params['ptcc'] == 'yes') {
-                $this->redirect("/admin/data-managers/index/ptcc/1");
-            } else if (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
-                $this->redirect("/admin/participants/participant-manager-map");
+                $this->redirect('/admin/data-managers/index/ptcc/1');
+            } elseif (isset($params['btnName']) && $params['btnName'] == 'save_and_map') {
+                $this->redirect('/admin/participants/participant-manager-map');
             } else {
-                $this->redirect("/admin/data-managers");
+                $this->redirect('/admin/data-managers');
             }
         } else {
             if ($this->hasParam('id')) {
@@ -208,7 +207,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $loginUrl = rtrim((string) $conf->domain, "/") . '/auth/login';
+        $loginUrl = rtrim((string) $conf->domain, '/') . '/auth/login';
         if ($request->isPost()) {
             $params = $request->getPost();
             if (empty($params['loginUrl'])) {
@@ -281,7 +280,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $this->view->response = $userService->uploadBulkDatamanager($params);
-            $this->redirect("/admin/data-managers/index/ptcc/1");
+            $this->redirect('/admin/data-managers/index/ptcc/1');
         }
     }
 }

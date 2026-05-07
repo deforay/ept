@@ -2,7 +2,6 @@
 
 class Admin_Covid19GeneTypeController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -44,7 +43,7 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->addGeneType($params);
-            $this->redirect("/admin/covid19-gene-type");
+            $this->redirect('/admin/covid19-gene-type');
         }
     }
 
@@ -57,7 +56,7 @@ class Admin_Covid19GeneTypeController extends Zend_Controller_Action
         if ($request->isPost()) {
             $params = $request->getPost();
             $schemeService->updateCovid19GeneType($params);
-            $this->redirect("/admin/covid19-gene-type");
+            $this->redirect('/admin/covid19-gene-type');
         } elseif ($this->_hasParam('53s5k85_8d')) {
             $id = base64_decode($this->_getParam('53s5k85_8d'));
             $this->view->result = $schemeService->getCovid19GeneType($id);

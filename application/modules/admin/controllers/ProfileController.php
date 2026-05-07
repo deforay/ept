@@ -2,7 +2,6 @@
 
 class Admin_ProfileController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $this->_helper->layout()->pageName = 'dashboard';
@@ -22,10 +21,10 @@ class Admin_ProfileController extends Zend_Controller_Action
             $alertMsg = new Zend_Session_Namespace('alertSpace');
             if ($adminService->updateSystemAdmin($params)) {
                 $alertMsg->message = 'Profile updated successfully.';
-                $this->redirect("/admin");
+                $this->redirect('/admin');
             } else {
                 $alertMsg->message = 'Profile not updated!';
-                $this->redirect("/admin/profile");
+                $this->redirect('/admin/profile');
             }
         }
         $this->view->result = $adminService->getSystemAdminDetails($authNameSpace->admin_id);

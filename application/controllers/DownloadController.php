@@ -2,7 +2,6 @@
 
 class DownloadController extends Zend_Controller_Action
 {
-
     public function init()
     {
     }
@@ -53,6 +52,6 @@ class DownloadController extends Zend_Controller_Action
         //$this->_helper->viewRenderer->setNoRender(true);
 
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Downloaded file - " . basename($realPath), "download");
+        $auditDb->addNewAuditLog('Downloaded file - ' . basename($realPath), 'download');
     }
 }

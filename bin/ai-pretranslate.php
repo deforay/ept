@@ -113,8 +113,8 @@ function normalizeLocaleFilter($localeOption): array
     }
 
     $locales = is_array($localeOption) ? $localeOption : [$localeOption];
-    $locales = array_map(static fn($locale): string => trim((string)$locale), $locales);
-    $locales = array_values(array_filter($locales, static fn(string $locale): bool => $locale !== ''));
+    $locales = array_map(static fn ($locale): string => trim((string)$locale), $locales);
+    $locales = array_values(array_filter($locales, static fn (string $locale): bool => $locale !== ''));
 
     foreach ($locales as $locale) {
         if (!preg_match('/^[A-Za-z_@.]+$/', $locale)) {

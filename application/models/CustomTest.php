@@ -1,11 +1,10 @@
 <?php
 
+use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Application_Service_QuantitativeCalculations as QuantitativeCalculations;
-
 
 class Application_Model_CustomTest
 {
@@ -29,9 +28,9 @@ class Application_Model_CustomTest
 
         // Step 2: Get all mandatory = 1 samples
         $mandatorySamples = $db->fetchAll(
-            "SELECT sample_id FROM reference_result_generic_test
+            'SELECT sample_id FROM reference_result_generic_test
                     WHERE shipment_id = ? AND mandatory = 1
-                    ORDER BY sample_id ASC", // predictable order for adjustment
+                    ORDER BY sample_id ASC', // predictable order for adjustment
             [$shipmentId]
         );
 
@@ -60,8 +59,6 @@ class Application_Model_CustomTest
             );
         }
     }
-
-
 
     /**
      * TODO: Sub-scheme (Multiple Sub-Tests) Evaluation Support
@@ -116,8 +113,8 @@ class Application_Model_CustomTest
 
             $shipment['is_excluded'] = 'no'; // setting it as no by default. It will become 'yes' if some condition matches.
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
+            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTimeImmutable($createdOnUser[0]);
             } else {
                 $createdOn = new DateTimeImmutable('1970-01-01');
@@ -129,8 +126,8 @@ class Application_Model_CustomTest
             $calculatedScore = 0;
             $maxScore = 0;
             $failureReason = [];
-            $mandatoryResult = "";
-            $scoreResult = "";
+            $mandatoryResult = '';
+            $scoreResult = '';
             $jsonConfig['minNumberOfResponses'] = $jsonConfig['minNumberOfResponses'] ?? 5;
             if (!empty($createdOn) && $createdOn <= $lastDate) {
                 $shipment['is_response_late'] = 'no';
@@ -153,14 +150,14 @@ class Application_Model_CustomTest
                         } else {
                             $testkitId = '';
                         }
-                        $calcResult = "";
+                        $calcResult = '';
 
                         // matching reported and low/high limits
                         if (!empty($result['is_result_invalid']) && in_array($result['is_result_invalid'], ['invalid', 'error'])) {
                             if ($result['sample_score'] > 0) {
-                                $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                             }
-                            $calcResult = "fail";
+                            $calcResult = 'fail';
                             $zScore = null;
                         } elseif (!empty($result['reported_result'])) {
                             if (!isset($quantRange[$testkitId][$result['sample_id']])) {
@@ -178,43 +175,43 @@ class Application_Model_CustomTest
                                     // If SD is 0 and there is a detectable result reported, then it is treated as fail
                                     if (0 == $result['reported_result']) {
                                         $totalScore += $result['sample_score'];
-                                        $calcResult = "pass";
+                                        $calcResult = 'pass';
                                     } elseif ($result['reported_result'] > 0) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                            $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                         }
-                                        $calcResult = "fail";
+                                        $calcResult = 'fail';
                                     }
                                 } else {
                                     $absZScore = abs($zScore);
                                     if ($absZScore <= 2) {
                                         //passed
                                         $totalScore += $result['sample_score'];
-                                        $calcResult = "pass";
+                                        $calcResult = 'pass';
                                     } elseif ($absZScore > 2 && $absZScore <= 3) {
                                         //passed but with a warning
                                         $totalScore += $result['sample_score'];
-                                        $calcResult = "warn";
+                                        $calcResult = 'warn';
                                     } elseif ($absZScore > 3) {
                                         //failed
                                         if ($result['sample_score'] > 0) {
-                                            $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                            $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                         }
-                                        $calcResult = "fail";
+                                        $calcResult = 'fail';
                                     }
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    $failureReason[]['warning'] = 'Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                 }
-                                $calcResult = "fail";
+                                $calcResult = 'fail';
                             }
                         }
 
                         $maxScore += $result['sample_score'];
 
-                        $db->update('response_result_generic_test', array('z_score' => $zScore, 'calculated_score' => $calcResult), "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        $db->update('response_result_generic_test', ['z_score' => $zScore, 'calculated_score' => $calcResult], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
                     }
                 } else {
                     foreach ($results as $result) {
@@ -228,8 +225,8 @@ class Application_Model_CustomTest
                             } else {
                                 if ($result['sample_score'] > 0) {
                                     $failureReason[] = [
-                                        'warning' => "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly",
-                                        'correctiveAction' => "Review and refer to Hepatitis-B HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result."
+                                        'warning' => 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly',
+                                        'correctiveAction' => 'Review and refer to Hepatitis-B HIV Testing Algorithms for result interpretation as final result interpretation does not match the expected result.',
                                     ];
                                 }
                             }
@@ -237,15 +234,15 @@ class Application_Model_CustomTest
                         if (0 == $result['control']) {
                             $maxScore += $result['sample_score'];
                         }
-                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        $db->update('response_result_generic_test', ['calculated_score' => $calculatedScore], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
                     }
                 }
                 if (isset($updatedTestKitId) && !empty($updatedTestKitId['TestKitName_ID']) && isset($recommendedTestkits) && !empty($recommendedTestkits)) {
                     if (!in_array($updatedTestKitId['TestKitName_ID'], $recommendedTestkits)) {
                         $totalScore = 0;
                         $failureReason[] = [
-                            'warning' => "Testing is not performed with country approved test kit.",
-                            'correctiveAction' => "Please test " . $shipment['scheme_type'] . " sample as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing"
+                            'warning' => 'Testing is not performed with country approved test kit.',
+                            'correctiveAction' => 'Please test ' . $shipment['scheme_type'] . ' sample as per Hepatitis-B Testing algorithm. Review and refer to SOP for testing',
                         ];
                     }
                 }
@@ -285,8 +282,8 @@ class Application_Model_CustomTest
                     } else {
                         $scoreResult = 'Fail';
                         $failureReason[] = [
-                            'warning' => "Participant did not meet the score criteria (Participant Score is <strong>" . round($totalScore) . "</strong> and Required Score is <strong>" . round($passingScore) . "</strong>)",
-                            'correctiveAction' => "Review all testing procedures prior to performing client testing and contact your supervisor for improvement"
+                            'warning' => 'Participant did not meet the score criteria (Participant Score is <strong>' . round($totalScore) . '</strong> and Required Score is <strong>' . round($passingScore) . '</strong>)',
+                            'correctiveAction' => 'Review all testing procedures prior to performing client testing and contact your supervisor for improvement',
                         ];
                     }
 
@@ -300,7 +297,6 @@ class Application_Model_CustomTest
                     $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                     $shipmentResult[$counter]['final_result'] = $finalResult;
 
-
                     $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where("result_id = $finalResult"));
 
                     $shipmentResult[$counter]['display_result'] = $fRes[0];
@@ -308,15 +304,15 @@ class Application_Model_CustomTest
                 }
                 /* Manual result override changes */
                 if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
-                    $sql = $db->select()->from('shipment_participant_map')->where("map_id = ?", $shipment['map_id']);
+                    $sql = $db->select()->from('shipment_participant_map')->where('map_id = ?', $shipment['map_id']);
                     $shipmentOverall = $db->fetchRow($sql);
                     if (!empty($shipmentOverall)) {
                         $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                         $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                        if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                             $shipmentOverall['final_result'] = 2;
                         }
-                        $fRes = $db->fetchCol($db->select()->from('r_results', array('result_name'))->where('result_id = ' . $shipmentOverall['final_result']));
+                        $fRes = $db->fetchCol($db->select()->from('r_results', ['result_name'])->where('result_id = ' . $shipmentOverall['final_result']));
                         $shipmentResult[$counter]['display_result'] = $fRes[0];
                         $overrideUpdateData = [
                             'shipment_score' => $shipmentOverall['shipment_score'],
@@ -326,7 +322,7 @@ class Application_Model_CustomTest
                         if ($shipment['is_response_late'] == 'yes') {
                             $overrideUpdateData['response_status'] = 'late';
                         }
-                        $db->update('shipment_participant_map', $overrideUpdateData, "map_id = " . $shipment['map_id']);
+                        $db->update('shipment_participant_map', $overrideUpdateData, 'map_id = ' . $shipment['map_id']);
                     }
                 } else {
                     // let us update the total score in DB
@@ -339,24 +335,24 @@ class Application_Model_CustomTest
                     if ($shipment['is_response_late'] == 'yes') {
                         $normalUpdateData['response_status'] = 'late';
                     }
-                    $db->update('shipment_participant_map', $normalUpdateData, "map_id = " . $shipment['map_id']);
+                    $db->update('shipment_participant_map', $normalUpdateData, 'map_id = ' . $shipment['map_id']);
                 }
             } else {
                 $shipment['is_response_late'] = 'yes';
                 $failureReason[] = [
-                    'warning' => "Response was submitted after the last response date."
+                    'warning' => 'Response was submitted after the last response date.',
                 ];
                 $shipment['is_excluded'] = 'yes';
-                $failureReason = ['warning' => "Response was submitted after the last response date."];
+                $failureReason = ['warning' => 'Response was submitted after the last response date.'];
                 $db->update('shipment_participant_map', [
                     'failure_reason' => json_encode($failureReason),
                     'is_response_late' => 'yes',
-                    'response_status' => 'late'
-                ], "map_id = " . $shipment['map_id']);
+                    'response_status' => 'late',
+                ], 'map_id = ' . $shipment['map_id']);
             }
             $counter++;
         }
-        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], "shipment_id = " . $shipmentId);
+        $db->update('shipment', ['max_score' => $maxScore, 'status' => 'evaluated'], 'shipment_id = ' . $shipmentId);
         return $shipmentResult;
     }
 
@@ -396,38 +392,36 @@ class Application_Model_CustomTest
                 'outline' => [
                     'style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
                 ],
-            ]
+            ],
         ];
 
         $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples', 'shipment_attributes'])
-            ->where("shipment_id = ?", $shipmentId);
+            ->where('shipment_id = ?', $shipmentId);
         $result = $db->fetchRow($query);
 
-        $refQuery = $db->select()->from(array('reference_result_generic_test'), array('sample_label', 'sample_id', 'sample_score', 'reference_result'))
-            ->where("shipment_id = ?", $shipmentId);
+        $refQuery = $db->select()->from(['reference_result_generic_test'], ['sample_label', 'sample_id', 'sample_score', 'reference_result'])
+            ->where('shipment_id = ?', $shipmentId);
         $refResult = $db->fetchAll($refQuery);
-
 
         $sql = $db->select()->from(['s' => 'shipment'], ['s.shipment_id', 's.shipment_code', 's.number_of_samples'])
             ->join(['sl' => 'scheme_list'], 's.scheme_type=sl.scheme_id', ['sl.user_test_config'])
-            ->join(array('sp' => 'shipment_participant_map'), 'sp.shipment_id=s.shipment_id', array('sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'))
-            ->join(array('p' => 'participant'), 'p.participant_id=sp.participant_id', array('p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'))
-            ->joinLeft(array('pmp' => 'participant_manager_map'), 'pmp.participant_id=p.participant_id', array('pmp.dm_id'))
-            ->joinLeft(array('dm' => 'data_manager'), 'dm.dm_id=pmp.dm_id', array('dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'))
-            ->joinLeft(array('c' => 'countries'), 'c.id=p.country', array('iso_name'))
-            ->joinLeft(array('st' => 'r_site_type'), 'st.r_stid=p.site_type', array('st.site_type'))
-            ->joinLeft(array('en' => 'enrollments'), 'en.participant_id=p.participant_id', array('en.enrolled_on'))
-            ->where("s.shipment_id = ?", $shipmentId)
+            ->join(['sp' => 'shipment_participant_map'], 'sp.shipment_id=s.shipment_id', ['sp.map_id', 'sp.participant_id', 'sp.attributes', 'sp.shipment_test_date', 'sp.shipment_receipt_date', 'sp.shipment_test_report_date', 'sp.supervisor_approval', 'sp.participant_supervisor', 'sp.shipment_score', 'sp.documentation_score', 'sp.user_comment', 'sp.final_result'])
+            ->join(['p' => 'participant'], 'p.participant_id=sp.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
+            ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
+            ->joinLeft(['dm' => 'data_manager'], 'dm.dm_id=pmp.dm_id', ['dm.institute', 'dataManagerFirstName' => 'dm.first_name', 'dataManagerLastName' => 'dm.last_name'])
+            ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['iso_name'])
+            ->joinLeft(['st' => 'r_site_type'], 'st.r_stid=p.site_type', ['st.site_type'])
+            ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
+            ->where('s.shipment_id = ?', $shipmentId)
             ->group(['sp.map_id']);
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (!empty($authNameSpace->dm_id)) {
             $sql = $sql
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', [])
-                ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
         }
 
         $shipmentResult = $db->fetchAll($sql);
-
 
         //<------------ Participant List Details Start -----
 
@@ -445,7 +439,7 @@ class Application_Model_CustomTest
 
             foreach ($shipmentResult as $key => $aRow) {
                 $resQuery = $db->select()->from('response_result_generic_test')
-                    ->where("shipment_map_id = ?", $aRow['map_id']);
+                    ->where('shipment_map_id = ?', $aRow['map_id']);
                 $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
 
                 $participantRow = [];
@@ -468,7 +462,7 @@ class Application_Model_CustomTest
             }
         }
 
-        $participantListSheet->fromArray($participantListHeadings, null, "A1");
+        $participantListSheet->fromArray($participantListHeadings, null, 'A1');
         $participantListSheet->getStyle('A1:' . $participantListSheet->getHighestColumn() . '1')->applyFromArray($borderStyle);
         $participantListSheet->fromArray($participantListSheetData, null, 'A2');
 
@@ -498,7 +492,6 @@ class Application_Model_CustomTest
         $resultReportSheet->getDefaultColumnDimension()->setWidth(24);
         $resultReportSheet->getDefaultRowDimension()->setRowHeight(18);
 
-
         $colNo = 0;
         $currentRow = 2;
         $n = count($reportHeadings);
@@ -525,16 +518,16 @@ class Application_Model_CustomTest
             $additionalSecondCellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($endAdditionalMergeCell + 1) . 1)->getColumn();
         }
         /* Merge the final result lable cell */
-        $resultReportSheet->mergeCells($firstCellName . "1:" . $secondCellName . "1");
-        $resultReportSheet->getStyle($firstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $resultReportSheet->getStyle($firstCellName . "1")->applyFromArray($borderStyle, true);
-        $resultReportSheet->getStyle($secondCellName . "1")->applyFromArray($borderStyle, true);
+        $resultReportSheet->mergeCells($firstCellName . '1:' . $secondCellName . '1');
+        $resultReportSheet->getStyle($firstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle($firstCellName . '1')->applyFromArray($borderStyle, true);
+        $resultReportSheet->getStyle($secondCellName . '1')->applyFromArray($borderStyle, true);
         if ($additionalDetails) {
             /* Merge the Additional lable cell */
-            $resultReportSheet->mergeCells($additionalFirstCellName . "1:" . $additionalSecondCellName . "1");
-            $resultReportSheet->getStyle($additionalFirstCellName . "1")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-            $resultReportSheet->getStyle($additionalFirstCellName . "1")->applyFromArray($borderStyle, true);
-            $resultReportSheet->getStyle($additionalSecondCellName . "1")->applyFromArray($borderStyle, true);
+            $resultReportSheet->mergeCells($additionalFirstCellName . '1:' . $additionalSecondCellName . '1');
+            $resultReportSheet->getStyle($additionalFirstCellName . '1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+            $resultReportSheet->getStyle($additionalFirstCellName . '1')->applyFromArray($borderStyle, true);
+            $resultReportSheet->getStyle($additionalSecondCellName . '1')->applyFromArray($borderStyle, true);
         }
 
         foreach ($reportHeadings as $field => $value) {
@@ -545,7 +538,7 @@ class Application_Model_CustomTest
             $resultReportSheet->getStyle($cellName . $currentRow)->applyFromArray($borderStyle, true);
 
             $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->getColumn();
-            $resultReportSheet->getStyle($cellName . "3")->applyFromArray($borderStyle, true);
+            $resultReportSheet->getStyle($cellName . '3')->applyFromArray($borderStyle, true);
             if ($additionalDetails) {
                 if ($colNo >= $additionalColoumn) {
                     if ($additionRow <= $result['number_of_samples']) {
@@ -560,12 +553,12 @@ class Application_Model_CustomTest
             if ($colNo >= $finalResColoumn) {
                 if ($c <= $result['number_of_samples']) {
 
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode("Final Results", ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->setValueExplicit(html_entity_decode('Final Results', ENT_QUOTES, 'UTF-8'));
                     $resultReportSheet->getStyle(Coordinate::stringFromColumnIndex($colNo + 1) . 1)->getFont()->setBold(true);
                     $cellName = $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . $currentRow)->getColumn();
                     $resultReportSheet->getStyle($cellName . $currentRow)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
                     $l = $c - 1;
-                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->setValueExplicit(html_entity_decode(str_replace("-", " ", ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
+                    $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($colNo + 1) . 3)->setValueExplicit(html_entity_decode(str_replace('-', ' ', ucwords($otherTestPossibleResults[$refResult[$l]['reference_result']])), ENT_QUOTES, 'UTF-8'));
                 }
                 $c++;
             }
@@ -575,12 +568,11 @@ class Application_Model_CustomTest
             $colNo++;
         }
 
-        $resultReportSheet->getStyle("A2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $resultReportSheet->getStyle("B2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $resultReportSheet->getStyle("C2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $resultReportSheet->getStyle("D2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-        $resultReportSheet->getStyle("E2")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
+        $resultReportSheet->getStyle('A2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle('B2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle('C2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle('D2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+        $resultReportSheet->getStyle('E2')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
         //<-------- Sheet three heading -------
         $panelScoreSheet = new Worksheet($excel, 'Panel Score');
@@ -588,7 +580,7 @@ class Application_Model_CustomTest
         $panelScoreSheet->setTitle('Panel Score', true);
         $panelScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $panelScoreSheet->getDefaultRowDimension()->setRowHeight(18);
-        $panelScoreHeadings = array('Participant Code', 'Participant Name');
+        $panelScoreHeadings = ['Participant Code', 'Participant Name'];
         $panelScoreHeadings = $this->addGenericTestSampleNameInArray($shipmentId, $panelScoreHeadings);
         array_push($panelScoreHeadings, 'Test# Correct', '% Correct');
         $sheetThreeColNo = 0;
@@ -615,7 +607,7 @@ class Application_Model_CustomTest
         $totalScoreSheet->setTitle('Total Score', true);
         $totalScoreSheet->getDefaultColumnDimension()->setWidth(20);
         $totalScoreSheet->getDefaultRowDimension()->setRowHeight(30);
-        $totalScoreHeadings = array('Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance');
+        $totalScoreHeadings = ['Participant Code', 'Participant Name', 'No. of Panels Correct (N=' . $result['number_of_samples'] . ')', 'Panel Score(100% Conv.)', 'Panel Score(90% Conv.)', 'Documentation Score(100% Conv.)', 'Documentation Score(10% Conv.)', 'Total Score', 'Overall Performance'];
 
         $totScoreSheetCol = 0;
         $totScoreRow = 1;
@@ -641,7 +633,7 @@ class Application_Model_CustomTest
             foreach ($shipmentResult as $aRow) {
                 $r = 1;
                 $k = 0;
-                $shipmentTestDate = "";
+                $shipmentTestDate = '';
                 $sheetThreeCol = 1;
                 $totScoreCol = 1;
                 $countCorrectResult = 0;
@@ -652,16 +644,16 @@ class Application_Model_CustomTest
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
                 // $sheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['dataManagerFirstName'] . ' ' . $aRow['dataManagerLastName']);
                 $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit($aRow['region']);
-                $kitExpiryDate = $shipmentReceiptDate = "";
-                if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != "") {
+                $kitExpiryDate = $shipmentReceiptDate = '';
+                if (isset($aRow['shipment_receipt_date']) && trim($aRow['shipment_receipt_date']) != '') {
                     $shipmentReceiptDate = $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                 }
 
-                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != "" && trim($aRow['shipment_test_date']) != "0000-00-00") {
+                if (isset($aRow['shipment_test_date']) && trim($aRow['shipment_test_date']) != '' && trim($aRow['shipment_test_date']) != '0000-00-00') {
                     $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                 }
 
-                if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != "" && trim($attributes['kit_expiry_date']) != "0000-00-00") {
+                if (isset($attributes['kit_expiry_date']) && trim($attributes['kit_expiry_date']) != '' && trim($attributes['kit_expiry_date']) != '0000-00-00') {
                     $kitExpiryDate = Pt_Commons_General::excelDateFormat($attributes['kit_expiry_date']);
                 }
                 $testKits = $kitDb->getTestKitNameById($attributes['kit_name'])[0];
@@ -679,7 +671,6 @@ class Application_Model_CustomTest
                     $documentScore = (($aRow['documentation_score'] / $documentationScore) * 100);
                 }
 
-
                 //<------------ Total score sheet ------------
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(ucwords($aRow['unique_identifier']));
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['first_name'] . ' ' . $aRow['last_name']);
@@ -687,15 +678,15 @@ class Application_Model_CustomTest
                 //Zend_Debug::dump($aRow['response']);
                 if (count($aRow['response']) > 0) {
                     for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['result']])));
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['result']])));
                     }
                     if (isset($shipmentAttributes['noOfTest']) && $shipmentAttributes['noOfTest'] == 2) {
                         for ($k = 0; $k < $aRow['number_of_samples']; $k++) {
-                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
+                            $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$k]['repeat_result']])));
                         }
                     }
                     for ($f = 0; $f < $aRow['number_of_samples']; $f++) {
-                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace("-", " ", ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
+                        $resultReportSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)->setValueExplicit(str_replace('-', ' ', ucwords($otherTestPossibleResults[$aRow['response'][$f]['reported_result']])));
 
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($sheetThreeCol++) . $sheetThreeRow)->setValueExplicit($aRow['response'][$f]['calculated_score']);
                         if (isset($aRow['response'][$f]['calculated_score']) && $aRow['response'][$f]['calculated_score'] == 20 && $aRow['response'][$f]['sample_id'] == $refResult[$f]['sample_id']) {
@@ -725,9 +716,8 @@ class Application_Model_CustomTest
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($documentScore);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($aRow['documentation_score']);
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']));
-                $finalResultCell = ($aRow['final_result'] == 1) ? "Pass" : "Fail";
+                $finalResultCell = ($aRow['final_result'] == 1) ? 'Pass' : 'Fail';
                 $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)->setValueExplicit($finalResultCell);
-
 
                 $panelScoreSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
                 $resultReportSheet->getStyle('A1:' . $totalScoreSheet->getHighestColumn() . '1')->applyFromArray($borderStyle, true);
@@ -745,10 +735,10 @@ class Application_Model_CustomTest
 
         $firstName = $authNameSpace->first_name;
         $lastName = $authNameSpace->last_name;
-        $name = $firstName . " " . $lastName;
+        $name = $firstName . ' ' . $lastName;
         $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
         $auditDb = new Application_Model_DbTable_AuditLog();
-        $auditDb->addNewAuditLog("Downloaded Generic Test Excel report - " . ($shipmentCode ?? '?'), "shipment");
+        $auditDb->addNewAuditLog('Downloaded Generic Test Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
 
         $excel->setActiveSheetIndex(0);
 
@@ -761,8 +751,8 @@ class Application_Model_CustomTest
     public function addGenericTestSampleNameInArray($shipmentId, $headings)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $query = $db->select()->from('reference_result_generic_test', array('sample_label'))
-            ->where("shipment_id = ?", $shipmentId)->order("sample_id");
+        $query = $db->select()->from('reference_result_generic_test', ['sample_label'])
+            ->where('shipment_id = ?', $shipmentId)->order('sample_id');
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
             array_push($headings, $res['sample_label']);
@@ -780,15 +770,15 @@ class Application_Model_CustomTest
                 'participant_count' => new Zend_Db_Expr('COUNT(spm.participant_id)'),
                 'reported_count' => new Zend_Db_Expr(
                     "SUM(CASE WHEN spm.response_status IS NOT NULL AND spm.response_status LIKE 'responded' THEN 1 ELSE 0 END)"
-                )
+                ),
             ]
         )
             ->join(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['shipment_code', 'shipment_date', 'scheme_type'])
             ->join(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['sl.user_test_config'])
 
-            ->where("spm.shipment_id = ?", $shipmentId);
+            ->where('spm.shipment_id = ?', $shipmentId);
         $metadataResult = $db->fetchRow($shipmentQuery);
-        if ($metadataResult != "") {
+        if ($metadataResult != '') {
             $shipmentResult['participant_count'] = $metadataResult['participant_count'];
             $shipmentResult['reported_count'] = $metadataResult['reported_count'];
         }
@@ -801,7 +791,7 @@ class Application_Model_CustomTest
         $sQuery = $db->select()->from(['spm' => 'shipment_participant_map'], ['spm.map_id', 'spm.shipment_id', 'spm.shipment_score', 'spm.documentation_score', 'spm.attributes'])
             //->join(array('p' => 'participant'), 'p.participant_id=spm.participant_id', array('p.unique_identifier', 'p.first_name', 'p.last_name', 'p.status'))
             ->joinLeft(['res' => 'r_results'], 'res.result_id=spm.final_result', ['result_name'])
-            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where('spm.shipment_id = ?', $shipmentId)
             //->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00'")
             //->where("IFNULL(spm.is_pt_test_not_performed, 'no') not like 'yes'")
@@ -820,7 +810,7 @@ class Application_Model_CustomTest
             ->where('spm.shipment_id = ? ', $shipmentId)
             ->where("spm.shipment_test_date IS NOT NULL AND spm.shipment_test_date not like '' AND spm.shipment_test_date not like '0000-00-00' OR IFNULL(spm.is_pt_test_not_performed, 'no') ='yes'")
             ->where("spm.is_excluded!='yes'")
-            ->where("refGenTest.control = 0");
+            ->where('refGenTest.control = 0');
         $cResult = $db->fetchAll($cQuery);
         $correctResult = [];
         foreach ($cResult as $cVal) {
@@ -839,14 +829,13 @@ class Application_Model_CustomTest
             }
         }
 
-
         $shipmentResult['correctRes'] = $correctResult;
 
         foreach ($sQueryRes as $sVal) {
             $cQuery = $db->select()->from(['refGenTest' => 'reference_result_generic_test'], ['refGenTest.sample_id', 'refGenTest.sample_label', 'refGenTest.reference_result', 'refGenTest.mandatory'])
                 ->joinLeft(['resGenTest' => 'response_result_generic_test'], 'resGenTest.sample_id = refGenTest.sample_id', ['reported_result'])
                 ->where('refGenTest.shipment_id = ? ', $shipmentId)
-                ->where("refGenTest.control = 0")
+                ->where('refGenTest.control = 0')
                 ->where('resGenTest.shipment_map_id = ? ', $sVal['map_id']);
 
             $cResult = $db->fetchAll($cQuery);
@@ -882,7 +871,7 @@ class Application_Model_CustomTest
                 ->where("`attributes` NOT LIKE  $regexp ")
                 ->where("(spm.is_excluded LIKE 'yes') IS NOT TRUE")
                 ->where("(spm.is_pt_test_not_performed LIKE 'yes') IS NOT TRUE")
-                ->where("spm.shipment_id = ?", $shipmentId);
+                ->where('spm.shipment_id = ?', $shipmentId);
             $pendingResult = $db->fetchAll($vlQuery);
 
             $kitDb = new Application_Model_DbTable_Testkitnames();
@@ -919,22 +908,21 @@ class Application_Model_CustomTest
                             'NumberPassed' => new Zend_Db_Expr("SUM(CASE WHEN calculated_score = 'pass' OR calculated_score = 'warn' THEN 1 ELSE 0 END)"),
                         ]
                     )
-                    ->where("vlCal.shipment_id=?", $shipmentId)
-                    ->where("vlCal.testkit_id=?", $vlAssayRow['TESTKITNAMEID'])
-                    ->where("refVl.control!=1")
+                    ->where('vlCal.shipment_id=?', $shipmentId)
+                    ->where('vlCal.testkit_id=?', $vlAssayRow['TESTKITNAMEID'])
+                    ->where('refVl.control!=1')
                     ->where('sp.attributes->>"$.kit_name" = "' . $vlAssayRow['TESTKITNAMEID'] . '"')
                     ->where("sp.is_excluded not like 'yes' OR sp.is_excluded like '' OR sp.is_excluded is null")
-                    ->where("sp.final_result = 1 OR sp.final_result = 2")
+                    ->where('sp.final_result = 1 OR sp.final_result = 2')
                     ->group('refVl.sample_id');
                 $vlCalRes = $db->fetchAll($vlQuery);
 
                 if ($vlAssayRow['id'] == 6) {
-                    $cQuery = $db->select()->from(array('sp' => 'shipment_participant_map'), array('sp.map_id', 'sp.attributes'))
+                    $cQuery = $db->select()->from(['sp' => 'shipment_participant_map'], ['sp.map_id', 'sp.attributes'])
                         ->where("sp.is_excluded not like 'yes'")
                         ->where('sp.attributes->>"$.kit_name" = 6')
                         ->where('sp.shipment_id = ? ', $shipmentId);
                     $cResult = $db->fetchAll($cQuery);
-
 
                     foreach ($cResult as $val) {
                         $valAttributes = json_decode($val['attributes'], true);
@@ -958,7 +946,7 @@ class Application_Model_CustomTest
                 }
             }
             array_multisort(array_column($vlCalculation, 'participant_response_count'), SORT_DESC, $vlCalculation);
-            $shipmentResult["quantCalculation"] = $vlCalculation;
+            $shipmentResult['quantCalculation'] = $vlCalculation;
         }
 
         return $shipmentResult;
@@ -982,7 +970,6 @@ class Application_Model_CustomTest
     public function setQuantRange($shipmentId, $sdScalingFactor = 0.7413, $uncertaintyScalingFactor = 1.25, $uncertaintyThreshold = 0.3, $minimumRequiredResponses = 4)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
 
         $beforeSetQuantRangeData = $db->fetchAll($db->select()->from('reference_generic_test_calculations', ['*'])
             ->where("shipment_id = $shipmentId"));
@@ -1059,7 +1046,6 @@ class Application_Model_CustomTest
                 } else {
                     $isUncertaintyAcceptable = 'no';
                 }
-
 
                 $data = [
                     'shipment_id' => $shipmentId,
@@ -1240,7 +1226,6 @@ class Application_Model_CustomTest
                         }
                     );
 
-
                     sort($inputArray);
                     $median = QuantitativeCalculations::calculateMedian($inputArray);
                     $finalLow = $quartileLowLimit = $q1 = QuantitativeCalculations::calculateQuantile($inputArray, 0.25);
@@ -1257,8 +1242,6 @@ class Application_Model_CustomTest
                     } else {
                         $isUncertaintyAcceptable = 'no';
                     }
-
-
 
                     $data = [
                         'shipment_id' => $shipmentId,
@@ -1324,7 +1307,7 @@ class Application_Model_CustomTest
             // ->where('calc.testkit_id = ?', $maxAssay)
             ->where('calc.shipment_id = ?', $shipmentId);
 
-        if (isset($maxResponsesTestKit) && $maxResponsesTestKit != "") {
+        if (isset($maxResponsesTestKit) && $maxResponsesTestKit != '') {
             $sql->where('calc.testkit_id = ?', $maxResponsesTestKit);
         }
         $res = $db->fetchAll($sql);
@@ -1336,7 +1319,7 @@ class Application_Model_CustomTest
                 $row['testkit_id'] = $testKitId;
                 $row['no_of_responses'] = $skippedResponseCounter[$testKitId];
 
-                $db->delete('reference_generic_test_calculations', "testkit_id = '" . $row['testkit_id'] . "' AND sample_id= " . $row['sample_id'] . " AND shipment_id=  " . $row['shipment_id']);
+                $db->delete('reference_generic_test_calculations', "testkit_id = '" . $row['testkit_id'] . "' AND sample_id= " . $row['sample_id'] . ' AND shipment_id=  ' . $row['shipment_id']);
 
                 // if there are no responses then continue
                 if (empty($row['no_of_responses'])) {

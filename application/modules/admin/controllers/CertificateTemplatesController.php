@@ -2,7 +2,6 @@
 
 class Admin_CertificateTemplatesController extends Zend_Controller_Action
 {
-
     public function init()
     {
         $adminSession = new Zend_Session_Namespace('administrators');
@@ -34,9 +33,9 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
 
             $schemeCount = isset($params['scheme']) && is_array($params['scheme']) ? count($params['scheme']) : 0;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Updated certificate template config ({$schemeCount} schemes)", "certificate");
+            $auditDb->addNewAuditLog("Updated certificate template config ({$schemeCount} schemes)", 'certificate');
 
-            $this->redirect("/admin/certificate-templates");
+            $this->redirect('/admin/certificate-templates');
         }
         $scheme = new Application_Service_Schemes();
         $this->view->schemes = $scheme->getAllSchemes();
@@ -106,7 +105,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'valid' => false,
                 'fields' => [],
-                'error' => 'Invalid request method'
+                'error' => 'Invalid request method',
             ]);
             return;
         }
@@ -116,7 +115,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'valid' => false,
                 'fields' => [],
-                'error' => 'No file uploaded'
+                'error' => 'No file uploaded',
             ]);
             return;
         }
@@ -131,12 +130,12 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
                 UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
                 UPLOAD_ERR_NO_TMP_DIR => 'Server configuration error',
                 UPLOAD_ERR_CANT_WRITE => 'Failed to write file',
-                UPLOAD_ERR_EXTENSION => 'Upload blocked by extension'
+                UPLOAD_ERR_EXTENSION => 'Upload blocked by extension',
             ];
             $this->_helper->json([
                 'valid' => false,
                 'fields' => [],
-                'error' => $errorMessages[$file['error']] ?? 'Unknown upload error'
+                'error' => $errorMessages[$file['error']] ?? 'Unknown upload error',
             ]);
             return;
         }
@@ -164,7 +163,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'success' => false,
                 'message' => 'Invalid request method',
-                'fields' => []
+                'fields' => [],
             ]);
             return;
         }
@@ -176,7 +175,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'success' => false,
                 'message' => 'Missing scheme or type parameter',
-                'fields' => []
+                'fields' => [],
             ]);
             return;
         }
@@ -186,7 +185,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'success' => false,
                 'message' => 'Invalid type parameter. Must be participation or excellence',
-                'fields' => []
+                'fields' => [],
             ]);
             return;
         }
@@ -196,7 +195,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
             $this->_helper->json([
                 'success' => false,
                 'message' => 'No file uploaded',
-                'fields' => []
+                'fields' => [],
             ]);
             return;
         }
@@ -206,7 +205,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
 
         if (!empty($result['success'])) {
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Uploaded {$type} certificate template for scheme {$scheme}", "certificate");
+            $auditDb->addNewAuditLog("Uploaded {$type} certificate template for scheme {$scheme}", 'certificate');
         }
 
         $this->_helper->json($result);
@@ -228,7 +227,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         if (!$request->isPost()) {
             $this->_helper->json([
                 'success' => false,
-                'message' => 'Invalid request method'
+                'message' => 'Invalid request method',
             ]);
             return;
         }
@@ -239,7 +238,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         if (empty($scheme) || empty($type)) {
             $this->_helper->json([
                 'success' => false,
-                'message' => 'Missing scheme or type parameter'
+                'message' => 'Missing scheme or type parameter',
             ]);
             return;
         }
@@ -248,7 +247,7 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
         if (!in_array($type, ['participation', 'excellence'])) {
             $this->_helper->json([
                 'success' => false,
-                'message' => 'Invalid type parameter. Must be participation or excellence'
+                'message' => 'Invalid type parameter. Must be participation or excellence',
             ]);
             return;
         }
@@ -258,12 +257,12 @@ class Admin_CertificateTemplatesController extends Zend_Controller_Action
 
         if ($success) {
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Removed {$type} certificate template for scheme {$scheme}", "certificate");
+            $auditDb->addNewAuditLog("Removed {$type} certificate template for scheme {$scheme}", 'certificate');
         }
 
         $this->_helper->json([
             'success' => $success,
-            'message' => $success ? 'Template removed successfully' : 'Failed to remove template'
+            'message' => $success ? 'Template removed successfully' : 'Failed to remove template',
         ]);
     }
 }

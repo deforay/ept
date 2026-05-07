@@ -3,8 +3,6 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Console\Style\SymfonyStyle;
-
 if (php_sapi_name() !== 'cli') {
     exit(0);
 }
@@ -58,16 +56,16 @@ $tablesToTranslate = [
     'r_possibleresult' => [
         [
             'column' => 'response',
-            'variants' => ['default', 'upper', 'lower']
-        ]
+            'variants' => ['default', 'upper', 'lower'],
+        ],
     ],
     'r_response_not_tested_reasons' => ['ntr_reason'],
     'r_response_vl_not_tested_reason' => ['vl_not_tested_reason'],
     'r_results' => [
         [
             'column' => 'result_name',
-            'variants' => ['default', 'upper', 'lower']
-        ]
+            'variants' => ['default', 'upper', 'lower'],
+        ],
     ],
     'r_site_type' => ['site_type'],
     'scheme_list' => ['scheme_name'],
@@ -124,8 +122,8 @@ function normalizeTableFilter($tableOption): array
     }
 
     $tables = is_array($tableOption) ? $tableOption : [$tableOption];
-    $tables = array_map(static fn($table): string => trim((string) $table), $tables);
-    $tables = array_values(array_filter($tables, static fn(string $table): bool => $table !== ''));
+    $tables = array_map(static fn ($table): string => trim((string) $table), $tables);
+    $tables = array_values(array_filter($tables, static fn (string $table): bool => $table !== ''));
 
     foreach ($tables as $table) {
         if (!preg_match('/^r_[A-Za-z0-9_]+$/', $table)) {

@@ -2,7 +2,6 @@
 
 class Reports_CorrectivePreventiveActionsController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */

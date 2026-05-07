@@ -2,122 +2,116 @@
 
 class Covid19Controller extends Zend_Controller_Action
 {
+    public function init()
+    {
+    }
 
-	public function init()
-	{
-	}
+    public function indexAction()
+    {
+        // action body
+    }
 
-	public function indexAction()
-	{
-		// action body
-	}
+    public function responseAction()
+    {
 
-	public function responseAction()
-	{
+        $schemeService = new Application_Service_Schemes();
+        $shipmentService = new Application_Service_Shipments();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $data = $request->getPost();
+            $shipmentService->updateCovid19Results($data);
+            if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
+                $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
+            } elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
+                $this->redirect('/participant/' . $data['comingFrom']);
+            } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
+                $this->redirect('/participant/current-schemes');
+            } else {
+                $_SESSION['confirmForm'] = 'yes';
+                $this->redirect('/covid19/response/sid/' . $data['shipmentId'] . '/pid/' . $data['participantId'] . '/eid/' . $data['evId'] . '/uc/no');
+            }
+        } else {
+            $sID = $request->getParam('sid');
+            $pID = $request->getParam('pid');
+            $eID = $request->getParam('eid');
+            $uc = $request->getParam('uc');
+            $this->view->comingFrom = $request->getParam('comingFrom');
+            $access = $shipmentService->checkParticipantAccess($pID);
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
 
-		$schemeService = new Application_Service_Schemes();
-		$shipmentService = new Application_Service_Shipments();
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
-		if ($request->isPost()) {
-			$data = $request->getPost();
-			$shipmentService->updateCovid19Results($data);
-			if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-				$this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
-			} elseif (isset($data['comingFrom']) && trim($data['comingFrom']) != '') {
-				$this->redirect("/participant/" . $data['comingFrom']);
-			} elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
-				$this->redirect("/participant/current-schemes");
-			} else {
-				$_SESSION['confirmForm'] = "yes";
-				$this->redirect("/covid19/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/no");
-			}
-		} else {
-			$sID = $request->getParam('sid');
-			$pID = $request->getParam('pid');
-			$eID = $request->getParam('eid');
-			$uc = $request->getParam('uc');
-			$this->view->comingFrom = $request->getParam('comingFrom');
-			$access = $shipmentService->checkParticipantAccess($pID);
-			$globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $reqFrom = $request->getParam('from');
+            if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
+                $evalService = new Application_Service_Evaluation();
+                $this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
+                $this->_helper->layout()->setLayout('admin');
+            } elseif (!$access) {
+                $this->redirect('/participant/current-schemes');
+            }
 
-			$reqFrom = $request->getParam('from');
-			if (isset($reqFrom) && !empty($reqFrom) && $reqFrom == 'admin') {
-				$evalService = new Application_Service_Evaluation();
-				$this->view->evaluateData = $evalService->editEvaluation($sID, $pID, 'covid19', $uc);
-				$this->_helper->layout()->setLayout('admin');
-			} elseif (!$access) {
-				$this->redirect("/participant/current-schemes");
-			}
+            $this->view->covid19AllowedAlgorithms = Pt_Commons_SchemeConfig::get('covid19.allowedAlgorithms');
+            $this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
 
+            $participantService = new Application_Service_Participants();
+            $this->view->participant = $participantService->getParticipantDetails($pID);
+            $response = $schemeService->getCovid19Samples($sID, $pID);
+            $this->view->allSamples = $response;
 
+            $shipment = $schemeService->getShipmentData($sID, $pID);
+            $shipment['attributes'] = json_decode($shipment['attributes'], true);
+            $this->view->shipment = $shipment;
 
-			$this->view->covid19AllowedAlgorithms = Pt_Commons_SchemeConfig::get('covid19.allowedAlgorithms');
-			$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
+            $this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise('covid19');
+            $this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
+            $this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($shipment['map_id']);
+            $this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'participant');
+            $this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
+            $this->view->shipId = $sID;
+            $this->view->participantId = $pID;
+            $this->view->eID = $eID;
+            $this->view->reqFrom = $reqFrom;
+            $this->view->allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
+            //
+            $this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
 
-			$participantService = new Application_Service_Participants();
-			$this->view->participant = $participantService->getParticipantDetails($pID);
-			$response = $schemeService->getCovid19Samples($sID, $pID);
-			$this->view->allSamples = $response;
+            $this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
+            $this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
+            $this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
 
-			$shipment = $schemeService->getShipmentData($sID, $pID);
-			$shipment['attributes'] = json_decode($shipment['attributes'], true);
-			$this->view->shipment = $shipment;
+            $commonService = new Application_Service_Common();
+            $this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
+            $this->view->globalQcAccess = $commonService->getConfig('qc_access');
+        }
+    }
 
-			$this->view->allTestTypes = $schemeService->getAllCovid19TestTypeResponseWise('covid19');
-			$this->view->allGeneTypes = $schemeService->getAllCovid19GeneTypeResponseWise();
-			$this->view->geneIdentifiedTypes = $schemeService->getAllCovid19IdentifiedGeneTypeResponseWise($shipment['map_id']);
-			$this->view->covid19PossibleResults = $schemeService->getPossibleResults('covid19', 'participant');
-			$this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
-			$this->view->shipId = $sID;
-			$this->view->participantId = $pID;
-			$this->view->eID = $eID;
-			$this->view->reqFrom = $reqFrom;
-			$this->view->allNotTestedReason = $schemeService->getNotTestedReasons('covid19');
-			//
-			$this->view->isEditable = $shipmentService->isShipmentEditable($sID, $pID);
+    public function deleteAction()
+    {
+        /** Yet to do function for deleting record */
+    }
 
+    public function downloadAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
 
-			$this->view->customField1 = $globalConfigDb->getValue('custom_field_1');
-			$this->view->customField2 = $globalConfigDb->getValue('custom_field_2');
-			$this->view->haveCustom = $globalConfigDb->getValue('custom_field_needed');
+        $sID = $request->getParam('sid');
+        $pID = $request->getParam('pid');
 
-			$commonService = new Application_Service_Common();
-			$this->view->modeOfReceipt = $commonService->getAllModeOfReceipt();
-			$this->view->globalQcAccess = $commonService->getConfig('qc_access');
-		}
-	}
+        $reportService = new Application_Service_Reports();
+        $this->view->header = $reportService->getReportConfigValue('report-header');
+        $this->view->logo = $reportService->getReportConfigValue('logo');
+        $this->view->logoRight = $reportService->getReportConfigValue('logo-right');
 
-	public function deleteAction()
-	{
-		/** Yet to do function for deleting record */
-	}
+        $this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
 
-	public function downloadAction()
-	{
-		$this->_helper->layout()->disableLayout();
-		/** @var Zend_Controller_Request_Http $request */
-		$request = $this->getRequest();
+        $participantService = new Application_Service_Participants();
+        $this->view->participant = $participantService->getParticipantDetails($pID);
+        $schemeService = new Application_Service_Schemes();
+        $this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
 
-		$sID = $request->getParam('sid');
-		$pID = $request->getParam('pid');
-
-		$reportService = new Application_Service_Reports();
-		$this->view->header = $reportService->getReportConfigValue('report-header');
-		$this->view->logo = $reportService->getReportConfigValue('logo');
-		$this->view->logoRight = $reportService->getReportConfigValue('logo-right');
-
-
-
-		$this->view->covid19MaximumTestAllowed = Pt_Commons_SchemeConfig::get('covid19.covid19MaximumTestAllowed');
-
-		$participantService = new Application_Service_Participants();
-		$this->view->participant = $participantService->getParticipantDetails($pID);
-		$schemeService = new Application_Service_Schemes();
-		$this->view->referenceDetails = $schemeService->getCovid19ReferenceData($sID);
-
-		$shipment = $schemeService->getShipmentData($sID, $pID);
-		$shipment['attributes'] = json_decode($shipment['attributes'], true);
-		$this->view->shipment = $shipment;
-	}
+        $shipment = $schemeService->getShipmentData($sID, $pID);
+        $shipment['attributes'] = json_decode($shipment['attributes'], true);
+        $this->view->shipment = $shipment;
+    }
 }

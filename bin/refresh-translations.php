@@ -112,7 +112,7 @@ try {
         foreach ($locales as $locale => $poFile) {
             $io->section("Locale {$locale}");
             if (normalizePoFileBeforeMerge($poFile)) {
-                $io->note("Normalized malformed duplicate header entries before merge.");
+                $io->note('Normalized malformed duplicate header entries before merge.');
             }
 
             $io->text('Merging catalog updates');
@@ -157,8 +157,8 @@ function normalizeLocaleFilter($localeOption): array
     }
 
     $locales = is_array($localeOption) ? $localeOption : [$localeOption];
-    $locales = array_map(static fn($locale): string => trim((string)$locale), $locales);
-    $locales = array_values(array_filter($locales, static fn(string $locale): bool => $locale !== ''));
+    $locales = array_map(static fn ($locale): string => trim((string)$locale), $locales);
+    $locales = array_values(array_filter($locales, static fn (string $locale): bool => $locale !== ''));
 
     foreach ($locales as $locale) {
         if (!preg_match('/^[A-Za-z_@.]+$/', $locale)) {
@@ -180,8 +180,8 @@ function normalizeTableFilter($tableOption): array
     }
 
     $tables = is_array($tableOption) ? $tableOption : [$tableOption];
-    $tables = array_map(static fn($table): string => trim((string)$table), $tables);
-    $tables = array_values(array_filter($tables, static fn(string $table): bool => $table !== ''));
+    $tables = array_map(static fn ($table): string => trim((string)$table), $tables);
+    $tables = array_values(array_filter($tables, static fn (string $table): bool => $table !== ''));
 
     foreach ($tables as $table) {
         if (!preg_match('/^r_[A-Za-z0-9_]+$/', $table)) {
@@ -483,7 +483,7 @@ function isMalformedDuplicateHeaderBlock(string $block, bool $hasSeenHeader): bo
 
     $lines = array_values(array_filter(
         array_map('trim', explode("\n", $block)),
-        static fn(string $line): bool => $line !== ''
+        static fn (string $line): bool => $line !== ''
     ));
 
     return $lines === ['msgid ""', 'msgstr ""'];

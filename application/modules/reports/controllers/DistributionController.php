@@ -2,7 +2,6 @@
 
 class Reports_DistributionController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Request_Http $request */
@@ -59,7 +58,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         $evalService = new Application_Service_Evaluation();
 
         if (!$this->hasParam('sid')) {
-            $this->redirect("/reports/distribution/");
+            $this->redirect('/reports/distribution/');
             return;
         }
 
@@ -77,7 +76,7 @@ class Reports_DistributionController extends Zend_Controller_Action
         $shipmentService = new Application_Service_Shipments();
         $header = $evalService->getFinalizedShipmentHeader($id);
         if (empty($header)) {
-            $this->redirect("/reports/distribution/");
+            $this->redirect('/reports/distribution/');
             return;
         }
         $this->view->shipment = [$header];
@@ -92,8 +91,6 @@ class Reports_DistributionController extends Zend_Controller_Action
         $evSession->viewUrlList = $navUrls['viewUrlList'];
     }
 
-
-
     public function finalizeAction()
     {
         $shipmentService = new Application_Service_Shipments();
@@ -106,7 +103,7 @@ class Reports_DistributionController extends Zend_Controller_Action
             $this->view->shipmentsUnderDistro = $shipmentService->getShipmentInReports($shipment[0]['distribution_id']);
             $this->view->responseCount = $evalService->getResponseCount($id, $shipment[0]['distribution_id']);
         } else {
-            $this->redirect("/reports/finalize/");
+            $this->redirect('/reports/finalize/');
         }
     }
 
@@ -188,7 +185,7 @@ class Reports_DistributionController extends Zend_Controller_Action
                 'sEcho' => 0,
                 'iTotalRecords' => 0,
                 'iTotalDisplayRecords' => 0,
-                'aaData' => []
+                'aaData' => [],
             ]);
         }
     }

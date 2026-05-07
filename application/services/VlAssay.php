@@ -2,7 +2,6 @@
 
 class Application_Service_VlAssay
 {
-
     public function addVlAssay($params)
     {
         $vlAssayDb = new Application_Model_DbTable_VlAssay();

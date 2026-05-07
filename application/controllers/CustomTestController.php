@@ -2,7 +2,6 @@
 
 class CustomTestController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -30,12 +29,12 @@ class CustomTestController extends Zend_Controller_Action
             $data = $request->getPost();
             $shipmentService->updateGenericTestResults($data);
             if (isset($data['reqAccessFrom']) && !empty($data['reqAccessFrom']) && $data['reqAccessFrom'] == 'admin') {
-                $this->redirect("/admin/evaluate/shipment/sid/" . base64_encode($data['shipmentId']));
+                $this->redirect('/admin/evaluate/shipment/sid/' . base64_encode($data['shipmentId']));
             } elseif (isset($data['confirmForm']) && trim($data['confirmForm']) == 'yes') {
-                $this->redirect("/participant/current-schemes");
+                $this->redirect('/participant/current-schemes');
             } else {
-                $_SESSION['confirmForm'] = "yes";
-                $this->redirect("/custom-test/response/sid/" . $data['shipmentId'] . "/pid/" . $data['participantId'] . "/eid/" . $data['evId'] . "/uc/yes");
+                $_SESSION['confirmForm'] = 'yes';
+                $this->redirect('/custom-test/response/sid/' . $data['shipmentId'] . '/pid/' . $data['participantId'] . '/eid/' . $data['evId'] . '/uc/yes');
             }
         } else {
             $sID = $request->getParam('sid');
@@ -68,7 +67,6 @@ class CustomTestController extends Zend_Controller_Action
             $this->view->globalQcAccess = $commonService->getConfig('qc_access');
             $kitDb = new Application_Model_DbTable_Testkitnames();
             $this->view->allTestKits = $kitDb->getAllTestKitList($shipment['scheme_type']);
-
 
             $disableOtherTestkit = Pt_Commons_SchemeConfig::get('custom.disableOtherTestkit');
 

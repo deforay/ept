@@ -2,7 +2,6 @@
 
 class IndexController extends Zend_Controller_Action
 {
-
     public function init()
     {
         /** @var Zend_Controller_Action_Helper_AjaxContext $ajaxContext */
@@ -15,7 +14,7 @@ class IndexController extends Zend_Controller_Action
     {
         $authNameSpace = new Zend_Session_Namespace('datamanagers');
         if (isset($authNameSpace->forcePasswordReset) && ($authNameSpace->forcePasswordReset == 1 || $authNameSpace->forcePasswordReset == '1')) {
-            $this->redirect("/participant/password");
+            $this->redirect('/participant/password');
         }
     }
 
@@ -70,7 +69,7 @@ class IndexController extends Zend_Controller_Action
                 $this->_helper->layout()->disableLayout();
                 $this->view->htmlHomePage = $htmlHomePage;
             } else {
-                $this->view->htmlHomePage = "";
+                $this->view->htmlHomePage = '';
             }
 
             $this->view->formToken = Application_Service_Common::generateFormToken();

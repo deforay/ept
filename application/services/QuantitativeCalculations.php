@@ -40,7 +40,7 @@ class Application_Service_QuantitativeCalculations
         }
 
         $mean ??= self::calculateMean($dataSet);
-        $sumOfSquares = array_reduce($dataSet, fn($carry, $item) => $carry + pow($item - $mean, 2), 0.0);
+        $sumOfSquares = array_reduce($dataSet, fn ($carry, $item) => $carry + pow($item - $mean, 2), 0.0);
         return sqrt($sumOfSquares / count($dataSet));
     }
 

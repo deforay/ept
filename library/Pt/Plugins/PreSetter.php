@@ -4,12 +4,10 @@ use Application_Service_SecurityService as SecurityService;
 
 class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
 {
-
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
 
         $layout = Zend_Layout::getMvcInstance();
-
 
         /** @var Zend_Controller_Request_Http $request */
         if ($request->getControllerName() == 'error') {
@@ -87,7 +85,7 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
                 if ($request->getControllerName() == 'participant' && $request->getActionName() == 'password') {
                     $sessionAlert = new Zend_Session_Namespace('alertSpace');
                     if ($_SESSION['profile_confirmed']) {
-                        $sessionAlert->message = "Please change your password to proceed.";
+                        $sessionAlert->message = 'Please change your password to proceed.';
                     }
                 } else {
                     $request->setModuleName('default')->setControllerName('participant')->setActionName('password');

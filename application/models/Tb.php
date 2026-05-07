@@ -1,17 +1,16 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Pdf\Mpdf;
 
 class Application_Model_Tb
 {
-
     private $db = null;
     public $common;
     private $consensusCache = [];
@@ -42,11 +41,10 @@ class Application_Model_Tb
                 'shipment_score' => 0,
                 'documentation_score' => 0,
                 'final_result' => 3,
-                'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']])
+                'failure_reason' => json_encode([['warning' => 'Excluded from Evaluation']]),
             ],
             "shipment_id = $shipmentId AND ((IFNULL(is_pt_test_not_performed, 'no') = 'yes') OR (response_status is not null AND response_status = 'draft'))"
         );
-
 
         foreach ($shipmentResult as $shipment) {
             Pt_Commons_MiscUtility::updateHeartbeat('shipment', 'shipment_id', $shipmentId);
@@ -59,11 +57,11 @@ class Application_Model_Tb
             $shipment['is_followup'] = 'no';
 
             $totalScore = $calculatedScore = $maxScore = 0;
-            $scoreResult = "";
+            $scoreResult = '';
             $failureReason = $results = [];
 
-            $createdOnUser = explode(" ", $shipment['shipment_test_report_date'] ?? '');
-            if (trim($createdOnUser[0]) != "" && $createdOnUser[0] != null && trim($createdOnUser[0]) != "0000-00-00") {
+            $createdOnUser = explode(' ', $shipment['shipment_test_report_date'] ?? '');
+            if (trim($createdOnUser[0]) != '' && $createdOnUser[0] != null && trim($createdOnUser[0]) != '0000-00-00') {
                 $createdOn = new DateTimeImmutable($createdOnUser[0]);
             } else {
                 $createdOn = new DateTimeImmutable('1970-01-01');
@@ -75,7 +73,7 @@ class Application_Model_Tb
 
             if ($createdOn > $lastDate) {
                 $failureReason[] = [
-                    'warning' => "Response was submitted after the last response date."
+                    'warning' => 'Response was submitted after the last response date.',
                 ];
                 $shipment['is_excluded'] = 'yes';
                 $shipment['is_response_late'] = 'yes';
@@ -83,9 +81,9 @@ class Application_Model_Tb
                     'shipment_participant_map',
                     [
                         'failure_reason' => json_encode($failureReason),
-                        'response_status' => 'late'
+                        'response_status' => 'late',
                     ],
-                    "map_id = " . $shipment['map_id']
+                    'map_id = ' . $shipment['map_id']
                 );
             } else {
                 $shipment['is_response_late'] = 'no';
@@ -95,12 +93,11 @@ class Application_Model_Tb
 
                     //if Sample is not mandatory, we will skip the evaluation
                     if (0 == $result['mandatory']) {
-                        $this->db->update('response_result_tb', ['calculated_score' => "N.A."], "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']);
+                        $this->db->update('response_result_tb', ['calculated_score' => 'N.A.'], 'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']);
                         continue;
                     }
 
-
-                    $assayShortName = "";
+                    $assayShortName = '';
                     $attributes = isset($result['attributes']) ? json_decode($result['attributes'], true) : [];
                     if (isset($attributes['assay_name'])) {
                         $assayShortName = $this->getTbAssayShortName($attributes['assay_name']);
@@ -122,7 +119,7 @@ class Application_Model_Tb
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
                                         $totalScore += $calculatedScore;
-                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     }
                                 }
                             } else {
@@ -135,7 +132,7 @@ class Application_Model_Tb
                                     $awardedScore = 0.5;
                                     if (!in_array($result['reference_mtb_detected'], $positiveResults)) {
                                         $calculatedScore = 0;
-                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     } elseif ($result['mtb_detected'] == $result['reference_mtb_detected']) {
                                         // if they report the same result as the reference, then they should be awarded 1
                                         $awardedScore = 1;
@@ -155,11 +152,11 @@ class Application_Model_Tb
                                     if (0 == $result['control']) {
                                         $calculatedScore = $awardedScore * $result['sample_score'];
                                     }
-                                    error_log("Reference Result: " . $result['reference_mtb_detected'] . " - Reported Result: " . $result['mtb_detected'] . " - Awarded Score: " . $calculatedScore);
+                                    error_log('Reference Result: ' . $result['reference_mtb_detected'] . ' - Reported Result: ' . $result['mtb_detected'] . ' - Awarded Score: ' . $calculatedScore);
                                 } else {
                                     if ($result['sample_score'] > 0) {
                                         $calculatedScore = 0;
-                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     }
                                 }
                                 $totalScore += $calculatedScore;
@@ -168,7 +165,7 @@ class Application_Model_Tb
                             if ($result['sample_score'] > 0) {
                                 $calculatedScore = 0;
                                 $totalScore += $calculatedScore;
-                                $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                             }
                         }
                     } else {
@@ -177,9 +174,8 @@ class Application_Model_Tb
                         $result['mtb_detected'] = self::normalizeMTBDetection($result['mtb_detected']);
                         $result['reference_mtb_detected'] = self::normalizeMTBDetection($result['reference_mtb_detected']);
 
-
                         $notAControl = $result['control'] == 0;
-                        if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != "yes") {
+                        if (isset($result['drug_resistance_test']) && !empty($result['drug_resistance_test']) && $result['drug_resistance_test'] != 'yes') {
 
                             // matching reported and reference results without Rif
                             if (isset($result['mtb_detected']) && !empty($result['mtb_detected'])) {
@@ -191,12 +187,12 @@ class Application_Model_Tb
                                     }
                                 } else {
                                     if ($result['sample_score'] > 0) {
-                                        $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                        $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                     }
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                 }
                             }
                         } else {
@@ -231,14 +227,12 @@ class Application_Model_Tb
                                 if ($notAControl) {
                                     $calculatedScore = 0;
 
-
                                     // Check for invalid, error, or no-result in mtb_detected
                                     if (in_array($result['mtb_detected'], ['invalid', 'error', 'no-result'])) {
                                         $calculatedScore = $result['sample_score'] * 0.25;
                                     }
                                     // mtb detected matches but rif resistance does not match
                                     elseif ($mtbDetectedMatches && !$rifResistanceMatches) {
-
 
                                         if (
                                             $result['mtb_detected'] == 'detected' &&
@@ -254,8 +248,6 @@ class Application_Model_Tb
                                     elseif ($mtbDetectedMatches && $rifResistanceMatches) {
                                         $calculatedScore = $result['sample_score'];
                                     }
-
-
 
                                     // elseif ($mtbDetectedMatches && (in_array($result['reference_rif_resistance'], ['indeterminate', 'na']))) {
                                     //     if ($mtbDetectedMatches && $rifResistanceMatches) {
@@ -277,13 +269,11 @@ class Application_Model_Tb
                                 }
                             } else {
                                 if ($result['sample_score'] > 0) {
-                                    $failureReason[]['warning'] = "Control/Sample <strong>" . $result['sample_label'] . "</strong> was reported wrongly";
+                                    $failureReason[]['warning'] = 'Control/Sample <strong>' . $result['sample_label'] . '</strong> was reported wrongly';
                                 }
                             }
                         }
                     }
-
-
 
                     if (0 == $result['control']) {
                         $maxScore += $result['sample_score'];
@@ -292,7 +282,7 @@ class Application_Model_Tb
                     $db->update(
                         'response_result_tb',
                         ['calculated_score' => $calculatedScore],
-                        "shipment_map_id = " . $result['map_id'] . " and sample_id = " . $result['sample_id']
+                        'shipment_map_id = ' . $result['map_id'] . ' and sample_id = ' . $result['sample_id']
                     );
                 }
                 if ($maxScore > 0 && $totalScore > 0) {
@@ -301,8 +291,6 @@ class Application_Model_Tb
             } else {
                 $shipment['is_excluded'] = 'yes';
             }
-
-
 
             // if we are excluding this result, then let us not give pass/fail
             if ($shipment['is_excluded'] == 'yes' || $shipment['is_pt_test_not_performed'] == 'yes') {
@@ -319,7 +307,6 @@ class Application_Model_Tb
                 $shipmentResult[$counter]['failure_reason'] = $failureReason = json_encode($failureReason);
             } else {
                 $shipment['is_excluded'] = 'no';
-
 
                 // checking if total score >= passing score
                 if ($totalScore >= $passingScore) {
@@ -339,7 +326,6 @@ class Application_Model_Tb
                 $shipmentResult[$counter]['max_score'] = 100; //$maxScore;
                 $shipmentResult[$counter]['final_result'] = $finalResult;
 
-
                 $fRes = $db->fetchCol($db->select()
                     ->from('r_results', ['result_name'])
                     ->where("result_id = $finalResult"));
@@ -351,12 +337,12 @@ class Application_Model_Tb
             if (isset($shipment['manual_override']) && $shipment['manual_override'] == 'yes') {
                 $sql = $db->select()
                     ->from('shipment_participant_map')
-                    ->where("map_id = ?", $shipment['map_id']);
+                    ->where('map_id = ?', $shipment['map_id']);
                 $shipmentOverall = $db->fetchRow($sql);
                 if (!empty($shipmentOverall)) {
                     $shipmentResult[$counter]['shipment_score'] = $shipmentOverall['shipment_score'];
                     $shipmentResult[$counter]['documentation_score'] = $shipmentOverall['documentation_score'];
-                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == "") {
+                    if (!isset($shipmentOverall['final_result']) || $shipmentOverall['final_result'] == '') {
                         $shipmentOverall['final_result'] = 2;
                     }
                     $fRes = $db->fetchCol($db->select()
@@ -368,9 +354,9 @@ class Application_Model_Tb
                         [
                             'shipment_score' => $shipmentOverall['shipment_score'],
                             'documentation_score' => $shipmentOverall['documentation_score'],
-                            'final_result' => $shipmentOverall['final_result']
+                            'final_result' => $shipmentOverall['final_result'],
                         ],
-                        "map_id = " . $shipment['map_id']
+                        'map_id = ' . $shipment['map_id']
                     );
                 }
             } else {
@@ -380,9 +366,9 @@ class Application_Model_Tb
                     [
                         'shipment_score' => $totalScore,
                         'final_result' => $finalResult,
-                        'failure_reason' => $failureReason
+                        'failure_reason' => $failureReason,
                     ],
-                    "map_id = " . $shipment['map_id']
+                    'map_id = ' . $shipment['map_id']
                 );
             }
             $counter++;
@@ -390,7 +376,7 @@ class Application_Model_Tb
 
         $db->update('shipment', [
             'max_score' => $maxScore,
-            'status' => 'evaluated'
+            'status' => 'evaluated',
         ], "shipment_id = $shipmentId");
         return $shipmentResult;
     }
@@ -416,7 +402,7 @@ class Application_Model_Tb
                     'control',
                     'mandatory',
                     'sample_score',
-                    'request_attributes'
+                    'request_attributes',
                 ]
             )
             ->join(['s' => 'shipment'], 's.shipment_id=ref.shipment_id')
@@ -446,18 +432,18 @@ class Application_Model_Tb
                     'tester_name',
                     'error_code',
                     'responseDate' => 'res.created_on',
-                    'response_attributes'
+                    'response_attributes',
                 ]
             )
             ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id')
-            ->where("spm.shipment_id = ?", $sId)
+            ->where('spm.shipment_id = ?', $sId)
             ->order('ref.sample_id ASC');
         // ->where("spm.participant_id = ?", $pId)
         if (!empty($pId)) {
-            $sql = $sql->where("spm.participant_id = ?", $pId);
+            $sql = $sql->where('spm.participant_id = ?', $pId);
         }
-        if (isset($type) && $type == "shipment") {
-            $sql = $sql->group("ref.sample_id");
+        if (isset($type) && $type == 'shipment') {
+            $sql = $sql->group('ref.sample_id');
         }
         $rows = $db->fetchAll($sql);
 
@@ -498,16 +484,15 @@ class Application_Model_Tb
             $excel = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
             $query = $db->select()->from('shipment', ['shipment_id', 'shipment_code', 'scheme_type', 'number_of_samples'])
-                ->where("shipment_id = ?", $shipmentId);
+                ->where('shipment_id = ?', $shipmentId);
             $result = $db->fetchRow($query);
 
             if ($result['scheme_type'] == 'tb') {
 
                 $refQuery = $db->select()->from(['refRes' => 'reference_result_tb'])
-                    ->where("refRes.shipment_id = ?", $shipmentId);
+                    ->where('refRes.shipment_id = ?', $shipmentId);
                 $refResult = $db->fetchAll($refQuery);
             }
-
 
             //<------------ Participant List Details Start -----
 
@@ -524,7 +509,7 @@ class Application_Model_Tb
                 'Facility Telephone',
                 'Email',
                 'Report PDF Downloaded On',
-                'Summary PDF Downloaded On'
+                'Summary PDF Downloaded On',
             ];
 
             $participantSheet = new Worksheet($excel, 'Participant List');
@@ -557,7 +542,7 @@ class Application_Model_Tb
                         IF((response_status like 'noresponse'), 'No Response' ,  IF((is_pt_test_not_performed like 'yes'), 'Not Tested' ,'No Response'))
                     END
                     "),
-                    'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END")
+                    'response_status' => new Zend_Db_Expr("CASE WHEN (response_status = 'noresponse') THEN 'No Response' ELSE response_status END"),
                 ])
                 ->join(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['p.unique_identifier', 'p.institute_name', 'p.department_name', 'p.lab_name', 'p.region', 'p.first_name', 'p.last_name', 'p.address', 'p.city', 'p.mobile', 'p.email', 'p.status', 'province' => 'p.state', 'p.district'])
                 ->joinLeft(['pmp' => 'participant_manager_map'], 'pmp.participant_id=p.participant_id', ['pmp.dm_id'])
@@ -567,17 +552,16 @@ class Application_Model_Tb
                 ->joinLeft(['en' => 'enrollments'], 'en.participant_id=p.participant_id', ['en.enrolled_on'])
                 ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" =rtb.id', ['short_name', 'assayName' => 'name'])
                 ->joinLeft(['ntr' => 'r_response_not_tested_reasons'], 'spm.vl_not_tested_reason = ntr.ntr_id', ['ntTestedReason' => 'ntr_reason'])
-                ->where("s.shipment_id = ?", $shipmentId)
+                ->where('s.shipment_id = ?', $shipmentId)
                 ->group(['spm.map_id']);
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             if (!empty($authNameSpace->dm_id)) {
                 $sql = $sql
                     ->joinLeft(['pmm' => 'participant_manager_map'], 'pmm.participant_id=p.participant_id', ['pmm.dm_id'])
-                    ->where("pmm.dm_id = ?", $authNameSpace->dm_id);
+                    ->where('pmm.dm_id = ?', $authNameSpace->dm_id);
             }
             $shipmentResult = $db->fetchAll($sql);
             $currentRow = 1;
-
 
             $participantListSheetData = [];
 
@@ -611,10 +595,10 @@ class Application_Model_Tb
                                 'tester_name',
                                 'error_code' => new Zend_Db_Expr("IF((error_code like 'na' AND error_code like 'NA'), 'N/A', error_code)"),
                                 'error_code',
-                                'calculated_score'
+                                'calculated_score',
                             ]
                         )
-                            ->where("rrtb.shipment_map_id = ?", $aRow['map_id']);
+                            ->where('rrtb.shipment_map_id = ?', $aRow['map_id']);
                         $shipmentResult[$key]['response'] = $db->fetchAll($resQuery);
                     }
                     $participantRow = [];
@@ -634,7 +618,6 @@ class Application_Model_Tb
                     $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_individual_report_on']);
                     $participantRow[] = Pt_Commons_General::excelDateFormat($reportTime['latest_summary_report_on']);
 
-
                     $currentRow++;
                     $shipmentCode = $aRow['shipment_code'];
 
@@ -643,9 +626,8 @@ class Application_Model_Tb
                 }
             }
 
-
-            $participantSheet->fromArray($headings, null, "A1");
-            $this->common->centerAndBoldRowInSheet($participantSheet, "A1");
+            $participantSheet->fromArray($headings, null, 'A1');
+            $this->common->centerAndBoldRowInSheet($participantSheet, 'A1');
 
             $participantSheet->fromArray($participantListSheetData, null, 'A2');
 
@@ -663,7 +645,7 @@ class Application_Model_Tb
                 'Assay Expiration',
                 'Response Status',
                 'Is PT Panel Not Tested?',
-                'Reason for Not Testing'
+                'Reason for Not Testing',
             ];
 
             $reportHeadings = $this->addTbSampleNameInArray($shipmentId, $reportHeadings, true);
@@ -687,9 +669,8 @@ class Application_Model_Tb
 
             $currentRow = 1;
 
-            $resultReportedSheet->fromArray($reportHeadings, null, "A1");
-            $this->common->centerAndBoldRowInSheet($resultReportedSheet, "A1");
-
+            $resultReportedSheet->fromArray($reportHeadings, null, 'A1');
+            $this->common->centerAndBoldRowInSheet($resultReportedSheet, 'A1');
 
             //<-------- Sheet three heading -------
             $panelScoreSheet = new Worksheet($excel, 'Panel Score');
@@ -700,8 +681,8 @@ class Application_Model_Tb
             array_push($panelScoreHeadings, 'Test# Correct', '% Correct', 'Reason for Failure');
             $sheetThreeRow = 1;
 
-            $panelScoreSheet->fromArray($panelScoreHeadings, null, "A1");
-            $this->common->centerAndBoldRowInSheet($panelScoreSheet, "A1");
+            $panelScoreSheet->fromArray($panelScoreHeadings, null, 'A1');
+            $this->common->centerAndBoldRowInSheet($panelScoreSheet, 'A1');
             //---------- Sheet Three heading ------->
 
             $totalScoreSheet = new Worksheet($excel, 'Total Score');
@@ -716,15 +697,14 @@ class Application_Model_Tb
                 'Documentation Score(100% Conv.)',
                 'Documentation Score(10% Conv.)',
                 'Total Score',
-                'Overall Performance'
+                'Overall Performance',
             ];
-
 
             $totScoreRow = 1;
             //$totScoreHeadingsCount = count($totalScoreHeadings);
 
-            $totalScoreSheet->fromArray($totalScoreHeadings, null, "A1");
-            $this->common->centerAndBoldRowInSheet($totalScoreSheet, "A1");
+            $totalScoreSheet->fromArray($totalScoreHeadings, null, 'A1');
+            $this->common->centerAndBoldRowInSheet($totalScoreSheet, 'A1');
 
             //---------- Document Score Sheet Heading (Sheet Four)------->
             $currentRow = 2;
@@ -735,14 +715,14 @@ class Application_Model_Tb
             if (isset($shipmentResult) && !empty($shipmentResult)) {
 
                 foreach ($shipmentResult as $aRow) {
-                    $txtColor = "000000";
+                    $txtColor = '000000';
                     if ($aRow['final_result'] != 1 || ($aRow['shipment_score'] + $aRow['documentation_score']) == 0) {
-                        $txtColor = "F66257";
+                        $txtColor = 'F66257';
                     }
 
                     $r = 1;
                     $k = 1;
-                    $shipmentTestDate = "";
+                    $shipmentTestDate = '';
                     $panelScoreColumn = 1;
                     $totScoreCol = 1;
 
@@ -756,20 +736,20 @@ class Application_Model_Tb
                         ->setValueExplicit($aRow['region'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
                     if (
                         isset($aRow['shipment_receipt_date']) &&
-                        trim($aRow['shipment_receipt_date']) != ""
+                        trim($aRow['shipment_receipt_date']) != ''
                     ) {
                         $aRow['shipment_receipt_date'] = Pt_Commons_General::excelDateFormat($aRow['shipment_receipt_date']);
                     }
 
                     if (
                         isset($aRow['shipment_test_date']) &&
-                        trim($aRow['shipment_test_date']) != "" &&
-                        trim($aRow['shipment_test_date']) != "0000-00-00"
+                        trim($aRow['shipment_test_date']) != '' &&
+                        trim($aRow['shipment_test_date']) != '0000-00-00'
                     ) {
                         $shipmentTestDate = Pt_Commons_General::excelDateFormat($aRow['shipment_test_date']);
                     }
                     $expiryDate = '';
-                    if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != "" && trim($attributes['expiry_date']) != "0000-00-00") {
+                    if (isset($attributes['expiry_date']) && trim($attributes['expiry_date']) != '' && trim($attributes['expiry_date']) != '0000-00-00') {
                         $expiryDate = Pt_Commons_General::excelDateFormat($attributes['expiry_date']);
                     }
                     $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
@@ -861,7 +841,6 @@ class Application_Model_Tb
                         $totPer = round((($countCorrectResult / $aRow['number_of_samples']) * 100), 2);
                         $panelScoreSheet->getCell(Coordinate::stringFromColumnIndex($panelScoreColumn) . $sheetThreeRow)->setValueExplicit($totPer, DataType::TYPE_NUMERIC);
 
-
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit($aRow['user_comment'])->getStyle()->getFont()->getColor()->setARGB($txtColor);
 
@@ -873,11 +852,11 @@ class Application_Model_Tb
 
                         $resultReportedSheet->getCell(Coordinate::stringFromColumnIndex($r++) . $currentRow)
                             ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC)->getStyle()->getFont()->getColor()->setARGB($txtColor);
-                        $finalResult = "Not Tested";
+                        $finalResult = 'Not Tested';
                         if ($aRow['final_result'] == 1) {
-                            $finalResult = "Pass";
+                            $finalResult = 'Pass';
                         } elseif ($aRow['final_result'] == 2) {
-                            $finalResult = "Fail";
+                            $finalResult = 'Fail';
                         }
                         $finalCellColumn = ($r + 1);
                         $finalCellRow = $currentRow;
@@ -903,11 +882,11 @@ class Application_Model_Tb
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit(($aRow['shipment_score'] + $aRow['documentation_score']), DataType::TYPE_NUMERIC);
                     if ($aRow['final_result'] == 1) {
-                        $finalResultCell = "Pass";
+                        $finalResultCell = 'Pass';
                     } elseif ($aRow['final_result'] == 3) {
-                        $finalResultCell = "Not Tested";
+                        $finalResultCell = 'Not Tested';
                     } else {
-                        $finalResultCell = "Fail";
+                        $finalResultCell = 'Fail';
                     }
                     $totalScoreSheet->getCell(Coordinate::stringFromColumnIndex($totScoreCol++) . $totScoreRow)
                         ->setValueExplicit($finalResultCell);
@@ -924,13 +903,12 @@ class Application_Model_Tb
             $this->common->setAllColumnWidthsInSheet($panelScoreSheet, 20);
             $this->common->setAllColumnWidthsInSheet($totalScoreSheet, 20);
 
-
             $firstName = $authNameSpace->first_name;
             $lastName = $authNameSpace->last_name;
-            $name = $firstName . " " . $lastName;
+            $name = $firstName . ' ' . $lastName;
             $userName = isset($name) != '' ? $name : $authNameSpace->primary_email;
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog("Downloaded TB Excel report - " . ($shipmentCode ?? '?'), "shipment");
+            $auditDb->addNewAuditLog('Downloaded TB Excel report - ' . ($shipmentCode ?? '?'), 'shipment');
 
             $excel->setActiveSheetIndex(0);
 
@@ -939,12 +917,11 @@ class Application_Model_Tb
             $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
             return $filename;
         } catch (Exception $exc) {
-            error_log("GENERATE-PARTICIPANT-SHIPMENT-REPORT-EXCEL--" . $exc->getMessage());
+            error_log('GENERATE-PARTICIPANT-SHIPMENT-REPORT-EXCEL--' . $exc->getMessage());
             error_log($exc->getTraceAsString());
-            return "";
+            return '';
         }
     }
-
 
     private function calculateConsensus($shipmentId)
     {
@@ -963,7 +940,7 @@ class Application_Model_Tb
                 ->from(['res' => 'response_result_tb'], [
                     'sample_id',
                     'assay_id',
-                    'total_responses' => new Zend_Db_Expr('COUNT(*)')
+                    'total_responses' => new Zend_Db_Expr('COUNT(*)'),
                 ])
                 ->join(['spm' => 'shipment_participant_map'], 'spm.map_id = res.shipment_map_id', [])
                 ->where('spm.shipment_id = ?', $shipmentId)
@@ -995,7 +972,7 @@ class Application_Model_Tb
             END"),
                 'mtb_occurrences' => new Zend_Db_Expr('COUNT(*)'),
             ])
-            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where('spm.shipment_id = ?', $shipmentId)
             ->where("spm.is_excluded = 'no'")
             ->where("spm.response_status = 'responded'")
             ->group(['res.sample_id', 'res.assay_id', 'mtb_detection_consensus_raw'])
@@ -1004,7 +981,6 @@ class Application_Model_Tb
         // error_log($consensusResultsQueryMtb);
 
         $mtbResults = $db->fetchAll($consensusResultsQueryMtb);
-
 
         foreach ($mtbResults as $mtb) {
             $mtbTotalResponses = $totalResponsesBySampleAssay[$mtb['sample_id']][$mtb['assay_id']] ?? 0;
@@ -1016,11 +992,10 @@ class Application_Model_Tb
                     'mtb_detection_consensus_raw' => $mtb['mtb_detection_consensus_raw'],
                     'mtb_occurrences' => $mtb['mtb_occurrences'],
                     'mtb_total_responses' => $mtbTotalResponses,
-                    'mtb_consensus_percentage' => ($mtbTotalResponses != 0) ? ($mtb['mtb_occurrences'] / $mtbTotalResponses) * 100 : 0
+                    'mtb_consensus_percentage' => ($mtbTotalResponses != 0) ? ($mtb['mtb_occurrences'] / $mtbTotalResponses) * 100 : 0,
                 ];
             }
         }
-
 
         // Query for RIF Resistance Consensus
         $consensusResultsQueryRif = $db->select()
@@ -1038,7 +1013,7 @@ class Application_Model_Tb
             END"),
                 'rif_occurrences' => new Zend_Db_Expr('COUNT(*)'),
             ])
-            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where('spm.shipment_id = ?', $shipmentId)
             ->where("spm.is_excluded = 'no'")
             ->where("spm.response_status = 'responded'")
             ->group(['res.sample_id', 'res.assay_id', 'res.rif_resistance'])
@@ -1057,11 +1032,10 @@ class Application_Model_Tb
                     'rif_resistance_consensus_raw' => $rif['rif_resistance_consensus_raw'],
                     'rif_occurrences' => $rif['rif_occurrences'],
                     'rif_total_responses' => $rifTotalResponses,
-                    'rif_consensus_percentage' => ($rifTotalResponses != 0) ? ($rif['rif_occurrences'] / $rifTotalResponses) * 100 : 0
+                    'rif_consensus_percentage' => ($rifTotalResponses != 0) ? ($rif['rif_occurrences'] / $rifTotalResponses) * 100 : 0,
                 ];
             }
         }
-
 
         // merge $mtbConsensusResults and $rifConsensusResults into $consolidatedConsensusResults
 
@@ -1070,7 +1044,6 @@ class Application_Model_Tb
                 $consolidatedConsensusResults[$sampleId][$assayId] = $mtbData;
             }
         }
-
 
         foreach ($rifConsensusResults as $sampleId => $assays) {
             foreach ($assays as $assayId => $rifData) {
@@ -1084,7 +1057,6 @@ class Application_Model_Tb
             }
         }
 
-
         $this->consensusCache[$shipmentId] = $consolidatedConsensusResults;
         return $this->consensusCache[$shipmentId];
     }
@@ -1096,7 +1068,6 @@ class Application_Model_Tb
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
 
         foreach ($calculatedConsensus as $sampleId => $sampleConsensus) {
-
 
             $select = $db->select()
                 ->from('reference_result_tb', ['mtb_detected', 'rif_resistance'])
@@ -1134,10 +1105,10 @@ class Application_Model_Tb
                     'mtb_detection_consensus' => $mtbMatch,
                     'mtb_ultra_detection_consensus' => $mtbUltraMatch,
                     'rif_resistance_consensus' => $rifMatch,
-                    'rif_ultra_resistance_consensus' => $rifUltraMatch
+                    'rif_ultra_resistance_consensus' => $rifUltraMatch,
                 ],
                 [
-                    'sample_id = ?' => $sampleId
+                    'sample_id = ?' => $sampleId,
                 ]
             );
         }
@@ -1167,7 +1138,7 @@ class Application_Model_Tb
                 'reference_rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
                 'ref.control',
                 'ref.mandatory',
-                'ref.sample_score'
+                'ref.sample_score',
             ]
         )
             ->joinLeft(
@@ -1190,7 +1161,7 @@ class Application_Model_Tb
                     'spm.final_result',
                     'spm.user_comment',
                     'spm.custom_field_1',
-                    'spm.custom_field_2'
+                    'spm.custom_field_2',
                 ]
             )
             ->joinLeft(
@@ -1218,14 +1189,14 @@ class Application_Model_Tb
                     'res.error_code',
                     'responseDate' => 'res.created_on',
                     'res.response_attributes',
-                    'res.calculated_score'
+                    'res.calculated_score',
                 ]
             )
-            ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['labName' => new Zend_Db_Expr("p.lab_name"), 'institute_name', 'department_name', 'phone', 'mobile', 'email', 'region', 'state', 'city', 'district', 'unique_identifier', 'first_name', 'last_name'])
+            ->joinLeft(['p' => 'participant'], 'p.participant_id=spm.participant_id', ['labName' => new Zend_Db_Expr('p.lab_name'), 'institute_name', 'department_name', 'phone', 'mobile', 'email', 'region', 'state', 'city', 'district', 'unique_identifier', 'first_name', 'last_name'])
             ->joinLeft(['rtb' => 'r_tb_assay'], 'spm.attributes->>"$.assay_name" = rtb.id', ['assayShortName' => 'rtb.short_name', 'assayName' => 'rtb.name', 'drug_resistance_test' => 'rtb.drug_resistance_test'])
             ->joinLeft(['resR' => 'r_results'], 'resR.result_id = spm.final_result', ['result_name'])
             ->where('spm.map_id IN (?)', $mapIds)
-            ->where("ref.control = 0")
+            ->where('ref.control = 0')
             ->where(new Zend_Db_Expr("IFNULL(spm.is_excluded, 'no') = 'no'"))
             ->order(['spm.map_id', 'ref.sample_id']);
 
@@ -1259,7 +1230,6 @@ class Application_Model_Tb
         return $grouped;
     }
 
-
     public function getDataForSummaryPDF($shipmentId)
     {
         $summaryPDFData = [];
@@ -1273,7 +1243,7 @@ class Application_Model_Tb
                     'rif_resistance' => new Zend_Db_Expr("CASE WHEN ref.rif_resistance = 'na' THEN 'N/A' else ref.rif_resistance END"),
                 ]
             )
-            ->where("ref.shipment_id = ?", $shipmentId)
+            ->where('ref.shipment_id = ?', $shipmentId)
             ->group('ref.sample_label');
         $sqlRes = $this->db->fetchAll($sql);
 
@@ -1302,7 +1272,6 @@ class Application_Model_Tb
                 WHERE `spm`.shipment_id = $shipmentId";
         $sQueryRes = $this->db->fetchRow($sQuery);
         $summaryPDFData['summaryResult'] = $sQueryRes;
-
 
         $tQuery = "SELECT `ref`.sample_label, `s`.shipment_id,
         SUM(CASE WHEN (`spm`.attributes->>'$.assay_name' = `rta`.id) THEN 1 ELSE 0 END) AS `numberOfSites`,
@@ -1355,7 +1324,6 @@ class Application_Model_Tb
         // error_log($tQuery);
         $summaryPDFData['aggregateCounts'] = $this->db->fetchAll($tQuery);
 
-
         $mtbRifSummaryQuery = $this->db->select()
             ->from(['spm' => 'shipment_participant_map'], [])
             ->join(
@@ -1364,24 +1332,23 @@ class Application_Model_Tb
                 [
                     'sample_label' => 'ref.sample_label',
                     'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.probe_a ELSE 0 END"),
-                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbrif_probe_a_mean_stability_ct ELSE 0 END")
+                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbrif_probe_a_mean_stability_ct ELSE 0 END"),
                 ]
             )
             ->joinLeft(
                 ['res' => 'response_result_tb'],
                 'res.shipment_map_id = spm.map_id AND res.sample_id = ref.sample_id',
                 [
-                    'average_ct' => new Zend_Db_Expr('AVG(CASE WHEN res.calculated_score IN (10, 20) THEN NULLIF(res.probe_a, 0) ELSE NULL END)')
+                    'average_ct' => new Zend_Db_Expr('AVG(CASE WHEN res.calculated_score IN (10, 20) THEN NULLIF(res.probe_a, 0) ELSE NULL END)'),
                 ]
             )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
-            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where('spm.shipment_id = ?', $shipmentId)
             ->where("spm.response_status = 'responded'")
             ->where("IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes'")
-            ->where("rta.id = 1")
-            ->group("ref.sample_id")
-            ->order("ref.sample_id");
+            ->where('rta.id = 1')
+            ->group('ref.sample_id')
+            ->order('ref.sample_id');
         $summaryPDFData['mtbRifReportSummary'] = $this->db->fetchAll($mtbRifSummaryQuery);
-
 
         $mtbRifUltraSummaryQuery = $this->db->select()->from(['spm' => 'shipment_participant_map'], [])
             ->join(
@@ -1390,7 +1357,7 @@ class Application_Model_Tb
                 [
                     'sample_label' => 'ref.sample_label',
                     'ref_expected_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN LEAST(ref.rpo_b1, ref.rpo_b2, ref.rpo_b3, ref.rpo_b4) ELSE 0 END"),
-                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbultra_lowest_rpo_b_probe_mean_stability_ct ELSE 0 END")
+                    'ref_stability_ct' => new Zend_Db_Expr("CASE WHEN ref.mtb_detected IN ('detected', 'high', 'medium', 'low', 'very-low', 'trace') THEN ref.mtbultra_lowest_rpo_b_probe_mean_stability_ct ELSE 0 END"),
                 ]
             )
             ->joinLeft(
@@ -1416,15 +1383,15 @@ class Application_Model_Tb
                         ELSE NULL
                     END
                 )
-            ')
+            '),
                 ]
             )->joinLeft(['rta' => 'r_tb_assay'], 'rta.id=`spm`.attributes->>"$.assay_name"', ['assayName' => 'name', 'assayShortName' => 'short_name'])
-            ->where("spm.shipment_id = ?", $shipmentId)
+            ->where('spm.shipment_id = ?', $shipmentId)
             ->where("spm.response_status = 'responded'")
             ->where("IFNULL(spm.is_pt_test_not_performed, 'no') != 'yes'")
-            ->where("rta.id = 2")
-            ->group("ref.sample_id")
-            ->order("ref.sample_id");
+            ->where('rta.id = 2')
+            ->group('ref.sample_id')
+            ->order('ref.sample_id');
         $summaryPDFData['mtbRifUltraReportSummary'] = $this->db->fetchAll($mtbRifUltraSummaryQuery);
 
         return $summaryPDFData;
@@ -1434,8 +1401,8 @@ class Application_Model_Tb
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
         $query = $db->select()->from('reference_result_tb', ['sample_label'])
-            ->where("shipment_id = ?", $shipmentId)
-            ->order("sample_id");
+            ->where('shipment_id = ?', $shipmentId)
+            ->order('sample_id');
         $result = $db->fetchAll($query);
         foreach ($result as $res) {
             if ($heading) {
@@ -1458,7 +1425,7 @@ class Application_Model_Tb
                     '(' . $res['sample_label'] . ') - Xpert Module No',
                     '(' . $res['sample_label'] . ') - Test Date',
                     '(' . $res['sample_label'] . ') - Tester Name',
-                    '(' . $res['sample_label'] . ') - Error Code'
+                    '(' . $res['sample_label'] . ') - Error Code',
                 ];
                 $headings = array_merge($headings, $loop);
             } else {
@@ -1548,7 +1515,7 @@ class Application_Model_Tb
     public function generateFormPDF($shipmentId, $participantId = null, $showCredentials = false, $bulkGeneration = false)
     {
 
-        ini_set("memory_limit", -1);
+        ini_set('memory_limit', -1);
         // ini_set('display_errors', 0);
         // ini_set('display_startup_errors', 0);
         //$applicationConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
@@ -1557,7 +1524,7 @@ class Application_Model_Tb
         $query = $this->db->select()
             ->from(['s' => 'shipment'])
             ->join(['ref' => 'reference_result_tb'], 's.shipment_id=ref.shipment_id')
-            ->where("s.shipment_id = ?", $shipmentId);
+            ->where('s.shipment_id = ?', $shipmentId);
         if (!empty($participantId)) {
             $query = $query
                 ->join(['spm' => 'shipment_participant_map'], 's.shipment_id=spm.shipment_id')
@@ -1565,17 +1532,17 @@ class Application_Model_Tb
                 ->joinLeft(['c' => 'countries'], 'c.id=p.country', ['id', 'iso_name'])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'p.participant_id=pmm.participant_id', [''])
                 ->joinLeft(['d' => 'data_manager'], 'pmm.dm_id=d.dm_id', ['primary_email', 'password'])
-                ->where("p.participant_id = ?", $participantId)
+                ->where('p.participant_id = ?', $participantId)
                 ->group('ref.sample_id');
         }
         $result = $this->db->fetchAll($query);
 
-        $fileName = "TB-FORM-" . $result[0]['shipment_code'];
+        $fileName = 'TB-FORM-' . $result[0]['shipment_code'];
         $configDb = new Application_Model_DbTable_GlobalConfig();
         $prefix = $configDb->getValue('participant_login_prefix');
 
         // now we will use this result to create an Excel file and then generate the PDF
-        $reader = IOFactory::load(WEB_ROOT . "/files/tb/tb-excel-form.xlsx");
+        $reader = IOFactory::load(WEB_ROOT . '/files/tb/tb-excel-form.xlsx');
         $sheet = $reader->getSheet(0);
         $sheet->getPageSetup()
             ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
@@ -1598,12 +1565,10 @@ class Application_Model_Tb
             $sheet->setCellValue('H2', $result[0]['iso_name']);
         }
 
-
-
         if (!empty($participantId)) {
-            $sheet->setCellValue('C6', " " . $result[0]['first_name'] . " " . $result[0]['last_name']);
-            $sheet->setCellValue('C8', " " . $result[0]['unique_identifier']);
-            $fileName .= "-" . $result[0]['unique_identifier'];
+            $sheet->setCellValue('C6', ' ' . $result[0]['first_name'] . ' ' . $result[0]['last_name']);
+            $sheet->setCellValue('C8', ' ' . $result[0]['unique_identifier']);
+            $fileName .= '-' . $result[0]['unique_identifier'];
             if ($showCredentials === true) {
                 $sheet->setCellValue('C10', $prefix . $result[0]['unique_identifier']);
                 $tempPassword = Pt_Commons_MiscUtility::generateTempPassword($prefix . $result[0]['unique_identifier']);
@@ -1628,7 +1593,7 @@ class Application_Model_Tb
         $richText1->createText("If you are experiencing challenges testing the panel or submitting results please contact your country's PT Coordinator. Please direct ePT systems questions and support requests related to participant log-in and credentialing to our web management team at ");
         $bold1 = $richText1->createTextRun($adminEmail);
         $bold1->getFont()->setBold(true);
-        $richText1->createText(" for review.");
+        $richText1->createText(' for review.');
         $sheet->setCellValue('A33', $richText1);
         // $sheet->getStyle('C14:P14')->getAlignment()->setTextRotation(90);
 
@@ -1651,8 +1616,7 @@ class Application_Model_Tb
             $GLOBALS['formTitle'] = $shipmentAttribute['form_title'] ?? '';
         }
 
-
-        $fileName .= ".pdf";
+        $fileName .= '.pdf';
 
         $maxRow = 50;
         if ($sheet->getHighestRow() > $maxRow) {
@@ -1693,14 +1657,14 @@ class Application_Model_Tb
                 SUM(CASE WHEN spm.shipment_score = 100 THEN 1 ELSE 0 END) AS scored_100
                 FROM shipment_participant_map AS spm";
             if (!empty($authNameSpace->dm_id)) {
-                $panelStatisticsQuery .= " JOIN participant_manager_map AS pmm ON pmm.participant_id = pmm.participant_id ";
+                $panelStatisticsQuery .= ' JOIN participant_manager_map AS pmm ON pmm.participant_id = pmm.participant_id ';
             }
-            $panelStatisticsQuery .= " JOIN participant AS p ON p.participant_id = spm.participant_id
-                WHERE spm.shipment_id = " . $params['shipmentId'];
+            $panelStatisticsQuery .= ' JOIN participant AS p ON p.participant_id = spm.participant_id
+                WHERE spm.shipment_id = ' . $params['shipmentId'];
             if (!empty($authNameSpace->dm_id)) {
                 $panelStatisticsQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
-            $panelStatisticsQuery .= ";";
+            $panelStatisticsQuery .= ';';
             $panelStatistics = $db->fetchRow($panelStatisticsQuery);
             $sheetIndex = 0;
             $panelStatisticsSheet = new Worksheet($excel, 'Panel Statistics');
@@ -1714,38 +1678,37 @@ class Application_Model_Tb
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participating Sites', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["participating_sites"], ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['participating_sites'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Received', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["response_received"], ENT_QUOTES, 'UTF-8'));
-
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['response_received'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Responses Excluded', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["excluded"], ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['excluded'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Able to Submit', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["able_to_submit"], ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['able_to_submit'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 80% or Higher', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_higher_than_80"], ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['scored_higher_than_80'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex++;
             $columnIndex = 1;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Number of Participants Scoring 100%', ENT_QUOTES, 'UTF-8'));
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics["scored_100"], ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($panelStatistics['scored_100'], ENT_QUOTES, 'UTF-8'));
 
             $rowIndex = ($rowIndex + 2);
             $columnIndex = 1;
@@ -1760,14 +1723,14 @@ class Application_Model_Tb
                 JOIN participant AS p ON p.participant_id = spm.participant_id
                 JOIN countries ON countries.id = p.country ";
             if (!empty($authNameSpace->dm_id)) {
-                $nonParticipatingCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+                $nonParticipatingCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
-            $nonParticipatingCountriesQuery .= " LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
-                WHERE spm.shipment_id = ?";
+            $nonParticipatingCountriesQuery .= ' LEFT JOIN r_response_not_tested_reasons AS rntr ON rntr.ntr_id = spm.vl_not_tested_reason
+                WHERE spm.shipment_id = ?';
             if (!empty($authNameSpace->dm_id)) {
                 $nonParticipatingCountriesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
-            $nonParticipatingCountriesQuery .= " GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;";
+            $nonParticipatingCountriesQuery .= ' GROUP BY countries.iso_name, rntr.ntr_reason ORDER BY countries.iso_name, rntr.ntr_reason ASC;';
             $nonParticipantingCountries = $db->query($nonParticipatingCountriesQuery, [$params['shipmentId']])->fetchAll();
             $nonParticipatingCountriesExist = false;
             $nonParticipationReasons = [];
@@ -1784,7 +1747,7 @@ class Application_Model_Tb
                     if (!array_key_exists($nonParticipantingCountry['country_name'], $nonParticipatingCountriesMap)) {
                         $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']] = [
                             'not_participated' => 0,
-                            'total_participants' => 0
+                            'total_participants' => 0,
                         ];
                         foreach ($nonParticipationReasons as $nonParticipationReason) {
                             $nonParticipatingCountriesMap[$nonParticipantingCountry['country_name']][$nonParticipationReason] = 0;
@@ -1833,19 +1796,19 @@ class Application_Model_Tb
             }
             /* Error code */
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
-            $errorCodesQuery = "SELECT res.error_code, COUNT(*) AS number_of_occurrences
+            $errorCodesQuery = 'SELECT res.error_code, COUNT(*) AS number_of_occurrences
                 FROM shipment_participant_map AS spm
                 JOIN response_result_tb AS res ON res.shipment_map_id = spm.map_id
-                JOIN participant AS p ON p.participant_id = spm.participant_id ";
+                JOIN participant AS p ON p.participant_id = spm.participant_id ';
             if (!empty($authNameSpace->dm_id)) {
-                $errorCodesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+                $errorCodesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $errorCodesQuery .= " WHERE spm.shipment_id = ?
                 AND res.error_code <> ''";
             if (!empty($authNameSpace->dm_id)) {
                 $errorCodesQuery .= " AND pmm.dm_id IN({$authNameSpace->dm_id}) ";
             }
-            $errorCodesQuery .= " GROUP BY res.error_code ORDER BY error_code ASC;";
+            $errorCodesQuery .= ' GROUP BY res.error_code ORDER BY error_code ASC;';
             $errorCodes = $db->query($errorCodesQuery, [$params['shipmentId']])->fetchAll();
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Error Codes Encountered', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
@@ -1887,16 +1850,16 @@ class Application_Model_Tb
                                                     AND ref.sample_id = res.sample_id
                     LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
             if (!empty($authNameSpace->dm_id)) {
-                $discordantResultsInnerQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+                $discordantResultsInnerQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $discordantResultsInnerQuery .= " WHERE spm.shipment_id = ?
                     AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                     AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
 
             if (!empty($authNameSpace->dm_id)) {
-                $discordantResultsInnerQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
+                $discordantResultsInnerQuery .= ' AND pmm.dm_id IN(' . $authNameSpace->dm_id . ') ';
             }
-            $discordantResultsInnerQuery .= " ) AS rifDetect";
+            $discordantResultsInnerQuery .= ' ) AS rifDetect';
             $discordantResultsQuery = "SELECT rifDetect.sample_label,
                 SUM(CASE WHEN rifDetect.res_mtb_detected = 1 AND rifDetect.ref_mtb_not_detected = 1 THEN 1 ELSE 0 END) AS false_positives,
                 SUM(CASE WHEN rifDetect.res_mtb_not_detected = 1 AND rifDetect.ref_mtb_detected = 1 THEN 1 ELSE 0 END) AS false_negatives,
@@ -1906,18 +1869,18 @@ class Application_Model_Tb
                 ORDER BY rifDetect.sample_id ASC;";
             $discordantResults = $db->query($discordantResultsQuery, [$params['shipmentId']])->fetchAll();
             $rowIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Discordant Results", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Discordant Results', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($discordantResultAggregate['sample_label'], ENT_QUOTES, 'UTF-8'));
                 $columnIndex++;
             }
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Total", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Total', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False positives", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('False positives', ENT_QUOTES, 'UTF-8'));
             $falsePositivesTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
@@ -1928,7 +1891,7 @@ class Application_Model_Tb
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falsePositivesTotal, ENT_QUOTES, 'UTF-8'));
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False negatives", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('False negatives', ENT_QUOTES, 'UTF-8'));
             $falseNegativesTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
@@ -1939,7 +1902,7 @@ class Application_Model_Tb
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falseNegativesTotal, ENT_QUOTES, 'UTF-8'));
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("False resistance", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('False resistance', ENT_QUOTES, 'UTF-8'));
             $falseResistanceTotal = 0;
             foreach ($discordantResults as $discordantResultAggregate) {
                 $columnIndex++;
@@ -1948,7 +1911,6 @@ class Application_Model_Tb
             }
             $columnIndex++;
             $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode($falseResistanceTotal, ENT_QUOTES, 'UTF-8'));
-
 
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
             $discordantCountriesQuery = "SELECT rifDetect.country_name,
@@ -1972,15 +1934,15 @@ class Application_Model_Tb
                 JOIN reference_result_tb AS ref ON ref.shipment_id = spm.shipment_id AND ref.sample_id = res.sample_id
                 LEFT JOIN r_tb_assay AS a ON a.id = JSON_UNQUOTE(JSON_EXTRACT(spm.attributes, \"$.assay_name\")) ";
             if (!empty($authNameSpace->dm_id)) {
-                $discordantCountriesQuery .= " JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ";
+                $discordantCountriesQuery .= ' JOIN participant_manager_map AS pmm ON p.participant_id = pmm.participant_id ';
             }
             $discordantCountriesQuery .= " WHERE spm.shipment_id = 23
                 AND SUBSTR(spm.evaluation_status, 3, 1) = '1'
                 AND IFNULL(spm.is_pt_test_not_performed, 'no') <> 'yes'";
             if (!empty($authNameSpace->dm_id)) {
-                $discordantCountriesQuery .= " AND pmm.dm_id IN(" . $authNameSpace->dm_id . ") ";
+                $discordantCountriesQuery .= ' AND pmm.dm_id IN(' . $authNameSpace->dm_id . ') ';
             }
-            $discordantCountriesQuery .= " ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;";
+            $discordantCountriesQuery .= ' ) AS rifDetect GROUP BY rifDetect.country_id ORDER BY rifDetect.country_name ASC;';
             $discordantCountries = $db->query($discordantCountriesQuery, [$params['shipmentId']])->fetchAll();
             $rowIndex++;
             $rowIndex++;
@@ -2078,32 +2040,32 @@ class Application_Model_Tb
             $rowIndex++;
             $rowIndex++;
             $columnIndex = 1;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("List the participants reporting discordant results", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('List the participants reporting discordant results', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $panelStatisticsSheet->mergeCells("A$rowIndex:H$rowIndex");
             $rowIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("PT ID", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('PT ID', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Participant", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Participant', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Sample", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Sample', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("MTB Detected", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('MTB Detected', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Expected MTB Detected", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Expected MTB Detected', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Rif Resistance", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Rif Resistance', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Expected Rif Resistance", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Expected Rif Resistance', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             $columnIndex++;
-            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode("Reason for Discordance", ENT_QUOTES, 'UTF-8'));
+            $panelStatisticsSheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->setValueExplicit(html_entity_decode('Reason for Discordance', ENT_QUOTES, 'UTF-8'));
             $panelStatisticsSheet->getStyle(Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex)->getFont()->setBold(true);
             foreach ($discordantParticipants as $discordantParticipant) {
                 $rowIndex++;
@@ -2129,8 +2091,8 @@ class Application_Model_Tb
             }
             $this->fetchTbAllSitesResultsSheet($db, $params['shipmentId'], $excel, $sheetIndex);
             $tempUploadFolder = realpath(TEMP_UPLOAD_PATH);
-            if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . "generated-tb-reports")) {
-                mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . "generated-tb-reports", 0777, true);
+            if (!file_exists($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports')) {
+                mkdir($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports', 0777, true);
             }
             $fileSafeShipmentCode = str_replace(' ', '-', str_replace(array_merge(
                 array_map('chr', range(0, 31)),
@@ -2142,13 +2104,13 @@ class Application_Model_Tb
             $filename = $fileSafeShipmentCode . '-xtpt-indicators-' . date('d-M-Y-H-i-s') . '.xlsx';
             $writer->save($tempUploadFolder . DIRECTORY_SEPARATOR . 'generated-tb-reports' . DIRECTORY_SEPARATOR . $filename);
             return [
-                "report-name" => $filename
+                'report-name' => $filename,
             ];
         } catch (Exception $exc) {
-            error_log("GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--" . $exc->getFile() . ":" . $exc->getLine() . ":" . $exc->getMessage());
+            error_log('GENERATE-PARTICIPANT-PERFORMANCE-REPORT-EXCEL--' . $exc->getFile() . ':' . $exc->getLine() . ':' . $exc->getMessage());
             error_log($exc->getTraceAsString());
 
-            return "";
+            return '';
         }
     }
 
@@ -2157,12 +2119,12 @@ class Application_Model_Tb
         $queryString = file_get_contents(sprintf('%s/Reports/getTbAllSitesResultsSheet.sql', __DIR__));
 
         $authNameSpace = new Zend_Session_Namespace('administrators');
-        $userCondition = "";
+        $userCondition = '';
         if (isset($authNameSpace->ptcc) && $authNameSpace->ptcc == 1) {
-            $queryString = str_replace("{USER_CONDITION}", $userCondition, $queryString);
+            $queryString = str_replace('{USER_CONDITION}', $userCondition, $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         } else {
-            $queryString = str_replace("{USER_CONDITION}", $userCondition, $queryString);
+            $queryString = str_replace('{USER_CONDITION}', $userCondition, $queryString);
             $query = $db->query($queryString, [$shipmentId]);
         }
 
