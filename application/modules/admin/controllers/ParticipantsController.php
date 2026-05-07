@@ -46,6 +46,14 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         $this->view->pendingCount = (int)$db->fetchOne(
             $db->select()->from('participant', new Zend_Db_Expr('COUNT(*)'))->where("status = ?", 'pending')
         );
+        // Mapping filter is only useful when there's at least one active participant
+        // with no mapped data manager — hide it otherwise to keep the toolbar clean.
+        $this->view->unmappedParticipantCount = (int)$db->fetchOne(
+            $db->select()
+                ->from(array('p' => 'participant'), new Zend_Db_Expr('COUNT(*)'))
+                ->where("p.status = ?", 'active')
+                ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm WHERE pmm.participant_id = p.participant_id)')
+        );
     }
 
     /* Returns the list of shipments a participant is part of, rendered as a fragment

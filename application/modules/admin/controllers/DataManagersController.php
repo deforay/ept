@@ -42,6 +42,17 @@ class Admin_DataManagersController extends Zend_Controller_Action
         if ($this->hasParam('ptcc')) {
             $this->view->ptcc = $this->_getParam('ptcc');
         }
+        // Mapping filter is only useful when there's at least one active DM/PTCC
+        // with no mapped participant — hide it otherwise to keep the toolbar clean.
+        $dmType = (!empty($this->view->ptcc) && $this->view->ptcc == 1) ? 'ptcc' : 'manager';
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $this->view->unmappedDmCount = (int)$db->fetchOne(
+            $db->select()
+                ->from(array('u' => 'data_manager'), new Zend_Db_Expr('COUNT(*)'))
+                ->where("u.status = ?", 'active')
+                ->where("u.data_manager_type = ?", $dmType)
+                ->where('NOT EXISTS (SELECT 1 FROM participant_manager_map pmm WHERE pmm.dm_id = u.dm_id)')
+        );
     }
 
     /* Returns the list of participants mapped to a data manager, rendered as a fragment
