@@ -33,10 +33,10 @@ jobs:
       PACKAGE_NAME: 'vendor.tar.gz'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f  # v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: gd, zip, pdo, json, curl, gettext, openssl, fileinfo, sodium, zlib, intl, bcmath
@@ -48,7 +48,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830  # v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -120,7 +120,7 @@ jobs:
           echo "PACKAGE_SIZE=$(du -h ${{ env.PACKAGE_NAME }} | cut -f1)" >> $GITHUB_ENV
 
       - name: Upload vendor package as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: vendor-package
           path: |
@@ -170,7 +170,7 @@ jobs:
           EOF
 
       - name: Create or update release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd  # v1
         with:
           tag: vendor-latest
           name: Latest Vendor Package

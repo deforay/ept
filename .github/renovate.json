@@ -1,0 +1,67 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":pinAllExceptPeerDependencies"
+  ],
+  "timezone": "Asia/Kolkata",
+  "schedule": [
+    "before 4am on monday"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 10,
+  "rangeStrategy": "auto",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "pinDigests": true,
+      "groupName": "github actions",
+      "schedule": [
+        "before 4am on monday"
+      ]
+    },
+    {
+      "matchManagers": [
+        "composer"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "composer non-major"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "npm non-major"
+    },
+    {
+      "matchManagers": [
+        "composer",
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "schedule": [
+      "at any time"
+    ]
+  }
+}
