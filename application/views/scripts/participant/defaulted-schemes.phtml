@@ -21,6 +21,18 @@
 							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
 						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
 					</tr>
+				<tr class="column-search-row">
+					<th></th>
+					<th></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+					<th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
 				</thead>
 				<tbody>
 					<tr>
@@ -90,7 +102,17 @@
 					"data": aoData,
 					"success": fnCallback
 				});
-			}
+			},
+			"fnRowCallback": function (nRow, aData) {
+                // Highlight rows with no mapped data managers (the DM column emits
+                // <em class="unmapped-tag">…</em> when the count is 0)
+                if ($(nRow).find('.unmapped-tag').length > 0) {
+                    $(nRow).addClass('row-unmapped');
+                } else {
+                    $(nRow).removeClass('row-unmapped');
+                }
+                return nRow;
+            }
 		});
 	}
 
@@ -98,6 +120,57 @@
 
 	$(document).ready(function() {
 		defaultSchemes();
+			 $("#mappingFilter").change(function () {
+        dsTable.fnDraw();
+    });
+
+    bindColSearch('#defaultedSchemeTable', function (value, colIdx) {
+        dsTable.fnFilter(value, colIdx);
+    });
+
+     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
+        $('#defaultedSchemeTable tbody').on('click', 'a.toggle-dm-row', function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var participantId = $btn.data('participant-id');
+            var tr = $btn.closest('tr')[0];
+            if (dsTable.fnIsOpen(tr)) {
+                dsTable.fnClose(tr);
+                $btn.removeClass('btn-success').addClass('btn-primary');
+                return;
+            }
+            // Inject a placeholder child row, then populate via AJAX
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            dsTable.fnOpen(tr, placeholder, 'dm-child-container');
+            $btn.removeClass('btn-primary').addClass('btn-success');
+            $.post(
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'defaulted-schemes', 'format' => 'html')); ?>",
+                { id: participantId },
+                function (html) {
+                    // fnOpen wraps our content in a td inside a tr — replace that td's content
+                    var $childTr = $(tr).next('tr');
+                    $childTr.find('td').first().html(html);
+                }
+            ).fail(function () {
+                var $childTr = $(tr).next('tr');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+            });
+        });
+
+        // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
+        $('#defaultedSchemeTable tbody').on('input', 'input.dm-filter-input', function () {
+            var q = $(this).val().toLowerCase().trim();
+            var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
+            if (q === '') {
+                $rows.show();
+                return;
+            }
+            $rows.each(function () {
+                var blob = $(this).attr('data-dm-search') || '';
+                $(this).toggle(blob.indexOf(q) !== -1);
+            });
+        });
+
 	});
 
 

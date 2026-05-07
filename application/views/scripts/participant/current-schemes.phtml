@@ -1,6 +1,11 @@
 <?php
 $authNameSpace = new Zend_Session_Namespace('datamanagers');
 ?>
+<style>
+    #currentSchemeTable > tbody > tr > td { vertical-align: middle; }
+    #currentSchemeTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
+    #currentSchemeTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
+</style>
 <section class="content-header">
 	<h1><?= $this->translate->_("Report PT Data"); ?> </h1>
 </section>
@@ -50,22 +55,34 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 				<thead>
 					<tr>
-						<th style="width:100px;">
+						<th>
 							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("PT Survey Code"); ?></th>
+						<th><?= $this->translate->_("Scheme"); ?></th>
+						<th><?= $this->translate->_("Shipment Code"); ?></th>
+						<th><?= $this->translate->_("PT Survey Code"); ?></th>
 						<th><?= $this->translate->_("Participant ID"); ?></th>
 						<th><?= $this->translate->_("Participant"); ?></th>
 						<th><?= $this->translate->_("Institute Name"); ?></th>
-						<th style="width:110px;"><?= $this->translate->_("Result Due Date"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Response<br />Date"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th><?= $this->translate->_("Result Due Date"); ?></th>
+						<th><?= $this->translate->_("Response<br />Date"); ?></th>
+						<th><?= $this->translate->_("Action"); ?></th>
+					</tr>
+					<tr class="column-search-row">
+						<th></th>
+						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
+						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
+						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+						<th><input style="width:100px;" type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td colspan="9" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
+						<td colspan="10" class="dataTables_empty"><?= $this->translate->_("Loading data from server"); ?>
 						</td>
 					</tr>
 				</tbody>
@@ -87,31 +104,39 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			"bRetrieve": false,
 			"bDestroy": true,
 			"aoColumns": [{
-					"sClass": "center"
+					"sClass": "center",
 				},
 				{
-					"sClass": "center"
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": "center"
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": "center"
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": ""
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": ""
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": ""
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": "center"
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
-					"sClass": "center"
+					"sClass": "center",
+					"bSortable": false
 				},
 				{
 					"sClass": "center",
@@ -149,7 +174,17 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 					"data": aoData,
 					"success": fnCallback
 				});
-			}
+			},
+			"fnRowCallback": function (nRow, aData) {
+                // Highlight rows with no mapped data managers (the DM column emits
+                // <em class="unmapped-tag">…</em> when the count is 0)
+                if ($(nRow).find('.unmapped-tag').length > 0) {
+                    $(nRow).addClass('row-unmapped');
+                } else {
+                    $(nRow).removeClass('row-unmapped');
+                }
+                return nRow;
+            }
 		});
 	}
 
@@ -192,6 +227,57 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 			} ?>
 			currentSchemes();
 		});
+
+		 $("#mappingFilter").change(function () {
+        csTable.fnDraw();
+    });
+
+    bindColSearch('#currentSchemeTable', function (value, colIdx) {
+        csTable.fnFilter(value, colIdx);
+    });
+
+     // Data Managers column — expand/collapse child row with on-demand AJAX fetch
+        $('#currentSchemeTable tbody').on('click', 'a.toggle-dm-row', function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            var participantId = $btn.data('participant-id');
+            var tr = $btn.closest('tr')[0];
+            if (csTable.fnIsOpen(tr)) {
+                csTable.fnClose(tr);
+                $btn.removeClass('btn-success').addClass('btn-primary');
+                return;
+            }
+            // Inject a placeholder child row, then populate via AJAX
+            var placeholder = '<div style="padding:12px;color:#888;"><i class="icon-refresh"></i> <?= $this->translate->_("Loading data managers…"); ?></div>';
+            csTable.fnOpen(tr, placeholder, 'dm-child-container');
+            $btn.removeClass('btn-primary').addClass('btn-success');
+            $.post(
+                "<?php echo $this->url(array('module' => 'admin', 'controller' => 'participants', 'action' => 'mapped-data-managers', 'format' => 'html')); ?>",
+                { id: participantId },
+                function (html) {
+                    // fnOpen wraps our content in a td inside a tr — replace that td's content
+                    var $childTr = $(tr).next('tr');
+                    $childTr.find('td').first().html(html);
+                }
+            ).fail(function () {
+                var $childTr = $(tr).next('tr');
+                $childTr.find('td').first().html('<div style="padding:12px;color:#a94442;"><?= $this->translate->_("Failed to load data managers. Please try again."); ?></div>');
+            });
+        });
+
+        // Inline filter for the expanded DM list (only present when > 5 mapped DMs)
+        $('#currentSchemeTable tbody').on('input', 'input.dm-filter-input', function () {
+            var q = $(this).val().toLowerCase().trim();
+            var $rows = $(this).closest('.dm-child-row').find('tr.dm-row');
+            if (q === '') {
+                $rows.show();
+                return;
+            }
+            $rows.each(function () {
+                var blob = $(this).attr('data-dm-search') || '';
+                $(this).toggle(blob.indexOf(q) !== -1);
+            });
+        });
 	});
 
 
