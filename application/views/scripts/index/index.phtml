@@ -382,7 +382,7 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                     <label class="form-label mb-1 text-muted small"><?= $this->translate->_("Security Check"); ?></label>
                                     <div class="rounded p-2 text-center" style="background:#f8f9fa; border:1px solid #e9ecef;">
                                         <div class="mb-2">
-                                            <img id="capChaw" src="/captcha/<?php echo rand(); ?>" class="rounded" style="height:70px;" />
+                                            <img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" class="rounded" style="height:70px;" alt="<?= $this->translate->_("Security check"); ?>" />
                                             <a href="#" onclick="getCaptcha('capChaw');return false;" class="ms-2 text-muted small" style="text-decoration:none;" title="<?= $this->translate->_("Get New Image"); ?>"><i class="bi bi-arrow-clockwise"></i></a>
                                         </div>
                                         <input type="text" id="challengeResponse" class="form-control form-control-sm text-center" placeholder="<?= $this->translate->_("Enter text above"); ?>" title="Please enter the text from the image." maxlength="40">
