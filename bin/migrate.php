@@ -188,13 +188,16 @@ function run_sql(Zend_Db_Adapter_Abstract $db, string $sql): void
         echo "[DRY-RUN] $sql\n";
         return;
     }
+    mig_trace('run_sql', substr($sql, 0, 200));
     $db->query($sql);
 }
 
 /** Add column only if missing */
 function add_column_if_missing(Zend_Db_Adapter_Abstract $db, string $table, string $column, string $ddl): int
 {
-    if (!column_exists($db, $table, $column)) {
+    $exists = column_exists($db, $table, $column);
+    mig_trace('add_column_if_missing', "{$table}.{$column} exists=" . ($exists ? 'true' : 'false'));
+    if (!$exists) {
         run_sql($db, $ddl);
         return MIG_EXECUTED;
     }
@@ -204,7 +207,9 @@ function add_column_if_missing(Zend_Db_Adapter_Abstract $db, string $table, stri
 /** Create index only if missing */
 function add_index_if_missing(Zend_Db_Adapter_Abstract $db, string $table, string $index, string $ddl): int
 {
-    if (!index_exists($db, $table, $index)) {
+    $exists = index_exists($db, $table, $index);
+    mig_trace('add_index_if_missing', "{$table}.{$index} exists=" . ($exists ? 'true' : 'false'));
+    if (!$exists) {
         run_sql($db, $ddl);
         return MIG_EXECUTED;
     }
@@ -287,6 +292,14 @@ function _apply_add_primary_key(Zend_Db_Adapter_Abstract $db, string $table, str
     return MIG_SKIPPED;
 }
 
+/** Verbose trace helper. Set MIG_VERBOSE=1 to enable. */
+function mig_trace(string $tag, string $detail = ''): void
+{
+    if (getenv('MIG_VERBOSE')) {
+        echo "[trace] {$tag}" . ($detail !== '' ? " :: {$detail}" : '') . PHP_EOL;
+    }
+}
+
 /**
  * Route known DDL patterns through idempotent helpers.
  * Returns MIG_* status (handled and executed/skipped) or MIG_NOT_HANDLED to execute raw.
@@ -296,6 +309,7 @@ function handle_idempotent_ddl(Zend_Db_Adapter_Abstract $db, string $query): int
     $q = trim($query);
     // Normalize occasional parser artifacts
     $q = preg_replace('/NULL\s*AFTER/i', 'NULL AFTER', $q);
+    mig_trace('handle_idempotent_ddl', substr($q, 0, 160));
 
     // CREATE TABLE [IF NOT EXISTS] `table` (...)
     if (preg_match('/^create\s+table\s+(?:if\s+not\s+exists\s+)?`?([^`]+)`?\s*\(/i', $q, $m)) {
