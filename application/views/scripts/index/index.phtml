@@ -421,6 +421,12 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
         });
 
         function validateContactUs() {
+            var countryEl = document.getElementById('country');
+            if (countryEl && (countryEl.value === '' || countryEl.value == null)) {
+                alert("<?= $this->jsTranslate("Please select your country"); ?>");
+                countryEl.focus();
+                return false;
+            }
             flag = deforayValidator.init({
                 formId: 'contactForm'
             });

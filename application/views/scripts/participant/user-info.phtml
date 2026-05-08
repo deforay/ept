@@ -43,47 +43,49 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span></td>
-                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="fname" type="text"
+                        <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> type="text"
                                 id="fname" name="fname" size="50" maxlength="45"
                                 value="<?php echo $this->rsUser['first_name']; ?>" class="isRequired form-control"
-                                title="Please enter your first name here"
-                                placeholder="Please enter your first name here" /></td>
+                                title="<?= $this->htmlTranslate("Please enter your first name"); ?>"
+                                placeholder="<?= $this->htmlTranslate("First name"); ?>" /></td>
                     </tr>
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Last Name"); ?></td>
 
                                
-                                                       <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> id="lname" type="text"
-                                id="lname" name="lname" size="50" maxlength="45" class=" form-control"
+                                                       <td><input <?php echo (isset($this->participantEditName) && !empty($this->participantEditName) && $this->participantEditName == 'no') ? 'readonly' : ''; ?> type="text"
+                                id="lname" name="lname" size="50" maxlength="45" class="form-control"
                                 value="<?php echo $this->rsUser['last_name']; ?>"
-                                title="Please enter your last name here"
-                                placeholder="Please enter your last name here" /></td>
+                                title="<?= $this->htmlTranslate("Please enter your last name"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Last name"); ?>" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("Secondary e-mail address"); ?>
                         </td>
-                        <td><input id="semail" type="text" id="semail" name="semail" size="50" maxlength="45"
+                        <td><input type="email" id="semail" name="semail" size="50" maxlength="45"
                                 value="<?php echo $this->rsUser['secondary_email']; ?>" class="form-control"
-                                title="Please enter a secondary email id here"
-                                placeholder="Please enter a secondary email id here" /></td>
+                                title="<?= $this->htmlTranslate("Please enter a secondary email address"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Secondary email address"); ?>" /></td>
                     </tr>
                     <tr align="left" class="dark">
                         <td><?= $this->translate->_("Cell Phone Number"); ?> </td>
-                        <td><input id="phone1" type="text" id="phone1" name="phone1" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['mobile']; ?>" class=" isNumeric form-control"
-                                title="Please enter your contact number here"
-                                placeholder="Please enter your contact number here" /></td>
+                        <td><input type="text" id="phone1" name="phone1" size="50" maxlength="45"
+                                value="<?php echo $this->rsUser['mobile']; ?>" class="isNumeric form-control"
+                                title="<?= $this->htmlTranslate("Please enter your contact number"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Cell phone number"); ?>" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("Phone Number"); ?></td>
-                        <td><input id="phone2" type="text" id="phone2" name="phone2" size="50" maxlength="45"
-                                value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control" /></td>
+                        <td><input type="text" id="phone2" name="phone2" size="50" maxlength="45"
+                                value="<?php echo $this->rsUser['phone']; ?>" class="isNumeric form-control"
+                                title="<?= $this->htmlTranslate("Please enter your phone number"); ?>"
+                                placeholder="<?= $this->htmlTranslate("Phone number"); ?>" /></td>
                     </tr>
                     <tr align="left" class="light">
                         <td><?= $this->translate->_("Language"); ?></td>
                         <td>
-                            <select id="language" name="language" value="<?php echo $this->rsUser['phone']; ?>"
-                                class="form-control" title="Please select the language">
+                            <select id="language" name="language"
+                                class="form-control" title="<?= $this->htmlTranslate("Please select a language"); ?>">
                                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
             
                                                        <option value="en_US" <?php echo (isset($this->rsUser['language']) && $this->rsUser['language'] == "en_US") ? "selected='selected'" : ""; ?>>
@@ -117,10 +119,10 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
                 <br>
                 <div id="respond" style="margin: 0px auto 0px auto; text-align: center;" align="center">
                     <input name="submitbtn" class="btn btn-primary" type="button" onclick="validateNow();return false;"
-                        tabindex="7" value="<?= $this->translate->_("Submit"); ?>" />
+                        value="<?= $this->htmlTranslate("Submit"); ?>" />
                     <input name="reset" class="btn btn-danger" type="button"
-                        onclick="document.location.href='/participant/dashboard'" tabindex="8"
-                        value="<?= $this->translate->_("Cancel"); ?>" />
+                        onclick="document.location.href='/participant/dashboard'"
+                        value="<?= $this->htmlTranslate("Cancel"); ?>" />
                 </div>
 
             </form>
@@ -150,7 +152,7 @@ $blockedDomains = (isset($conf->blocked->email->domains) && $conf->blocked->emai
         // Otherwise the form validator should handle the malformed email input.
         if (domains.length > 0 && maildomain.length > 1 && maildomain[1] !== '') {
             if (jQuery.inArray(maildomain[1], domains) !== -1) {
-                alert("<?= $this->translate->_("Please enter the valid mail address, We send the mail confirm information to this address."); ?>");
+                alert("<?= $this->jsTranslate("Please enter a valid email address. We will send the verification information to this address."); ?>");
                 return false;
             }
         }
