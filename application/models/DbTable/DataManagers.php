@@ -107,7 +107,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $searchableColumns = array_values(array_filter($aColumns, fn($c) => $c !== ''));
+                $searchableColumns = array_values(array_filter($aColumns, fn ($c) => $c !== ''));
                 $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {

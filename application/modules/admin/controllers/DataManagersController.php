@@ -318,7 +318,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
 
         if ($step === 'queue' && !empty($resolved['matched'])) {
             // Reuse the existing queue path: write payload + insert scheduled_jobs.
-            $dmIds = array_map(fn($r) => (int) $r['dm_id'], $resolved['matched']);
+            $dmIds = array_map(fn ($r) => (int) $r['dm_id'], $resolved['matched']);
 
             $payload = [
                 'dmIds'              => $dmIds,

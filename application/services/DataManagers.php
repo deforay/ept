@@ -508,7 +508,7 @@ class Application_Service_DataManagers
             }
         }
 
-        usort($matched, fn($a, $b) => strcasecmp(($a['first_name'] ?? '') . ($a['last_name'] ?? ''), ($b['first_name'] ?? '') . ($b['last_name'] ?? '')));
+        usort($matched, fn ($a, $b) => strcasecmp(($a['first_name'] ?? '') . ($a['last_name'] ?? ''), ($b['first_name'] ?? '') . ($b['last_name'] ?? '')));
 
         return ['matched' => $matched, 'unresolved' => $unresolved];
     }
