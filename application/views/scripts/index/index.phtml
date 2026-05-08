@@ -333,11 +333,11 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="firstName" class="form-label mb-1 text-muted small"><?= $this->translate->_("First Name"); ?></label>
-                                    <input type="text" name="firstName" class="form-control" id="firstName" placeholder="<?= $this->translate->_("First Name"); ?>" title="Please enter the first name">
+                                    <input type="text" name="firstName" class="form-control" id="firstName" placeholder="<?= $this->htmlTranslate("First Name"); ?>" title="<?= $this->htmlTranslate("Please enter your first name"); ?>">
                                 </div>
                                 <div class="col form-group">
                                     <label for="lastName" class="form-label mb-1 text-muted small"><?= $this->translate->_("Last Name"); ?></label>
-                                    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="<?= $this->translate->_("Last Name"); ?>" title="Please enter the last name">
+                                    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="<?= $this->htmlTranslate("Last Name"); ?>" title="<?= $this->htmlTranslate("Please enter your last name"); ?>">
                                 </div>
                             </div>
                             <div class="row">
@@ -347,13 +347,13 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                 </div>
                                 <div class="col form-group">
                                     <label for="email" class="form-label mb-1 text-muted small"><?= $this->translate->_("Your Email"); ?> <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control isRequired" name="email" id="email" placeholder="<?= $this->translate->_("Your Email"); ?>" value="<?php echo $email; ?>" title="Please enter the email">
+                                    <input type="email" class="form-control isRequired" name="email" id="email" placeholder="<?= $this->htmlTranslate("Your Email"); ?>" value="<?php echo $email; ?>" title="<?= $this->htmlTranslate("Please enter your email address"); ?>">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col form-group">
                                     <label for="subject" class="form-label mb-1 text-muted small"><?= $this->translate->_("Subject"); ?> <span class="text-danger">*</span></label>
-                                    <select class="form-select isRequired" name="subject" id="subject" title="Please select the subject">
+                                    <select class="form-select isRequired" name="subject" id="subject" title="<?= $this->htmlTranslate("Please select a subject"); ?>">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option value="Need support with Login Credentials"><?= $this->translate->_("Need support with Login Credentials"); ?></option>
                                         <option value="Need support with PT Result Submission"><?= $this->translate->_("Need support with PT Result Submission"); ?></option>
@@ -365,7 +365,7 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                 </div>
                                 <div class="col form-group">
                                     <label for="country" class="form-label mb-1 text-muted small"><?= $this->translate->_("Country"); ?> <span class="text-danger">*</span></label>
-                                    <select class="form-select isRequired" name="country" id="country" title="Please select the country">
+                                    <select class="form-select isRequired" name="country" id="country" title="<?= $this->htmlTranslate("Please select your country"); ?>">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php foreach ($this->countriesList as $cou) { ?>
                                             <option value="<?php echo $cou['iso_name']; ?>"><?php echo $cou['iso_name']; ?></option>
@@ -376,23 +376,18 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                             <div class="row">
                                 <div class="col-12 form-group">
                                     <label for="message" class="form-label mb-1 text-muted small"><?= $this->translate->_("Message"); ?> <span class="text-danger">*</span></label>
-                                    <textarea class="form-control isRequired" name="message" id="message" rows="3" placeholder="<?= $this->translate->_("Message"); ?>" title="Please enter the message to send"></textarea>
+                                    <textarea class="form-control isRequired" name="message" id="message" rows="3" placeholder="<?= $this->htmlTranslate("Your message"); ?>" title="<?= $this->htmlTranslate("Please enter your message"); ?>"></textarea>
                                 </div>
                             </div>
-                            <div class="row align-items-end">
-                                <div class="col-md-6 form-group">
-                                    <label for="challengeResponse" class="form-label mb-1 text-muted small"><?= $this->translate->_("Security Check"); ?></label>
-                                    <div class="d-flex align-items-start" style="gap:10px;">
-                                        <div class="d-flex flex-column align-items-center" style="flex-shrink:0;">
-                                            <img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" class="rounded" style="height:58px;width:auto;" alt="<?= $this->translate->_("Security check"); ?>" />
-                                            <button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-sm text-muted p-0" style="font-size:12px;margin-top:2px;"><i class="bi bi-arrow-clockwise"></i> <?= $this->translate->_("Get New Image"); ?></button>
-                                        </div>
-                                        <input type="text" id="challengeResponse" class="form-control isRequired" placeholder="<?= $this->translate->_("Enter text from image"); ?>" title="Please enter the text from the image." maxlength="40">
+                            <div class="d-flex flex-column align-items-center my-3" style="gap:14px;">
+                                <div class="d-flex align-items-center" style="gap:10px;">
+                                    <div class="d-flex flex-column align-items-center" style="flex-shrink:0;">
+                                        <img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" class="rounded" style="height:58px;width:auto;" alt="<?= $this->htmlTranslate("Security check"); ?>" />
+                                        <button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-sm text-muted p-0" style="font-size:12px;margin-top:2px;"><i class="bi bi-arrow-clockwise"></i> <?= $this->translate->_("Get New Image"); ?></button>
                                     </div>
+                                    <input type="text" id="challengeResponse" class="form-control isRequired" placeholder="<?= $this->htmlTranslate("Enter text from image"); ?>" title="<?= $this->htmlTranslate("Please enter the text from the image"); ?>" maxlength="40" style="width:240px;flex:none;">
                                 </div>
-                                <div class="col-md-6 form-group text-md-end">
-                                    <button type="button" class="btn-get-started" id="submitbtn" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message"); ?></button>
-                                </div>
+                                <button type="button" class="btn-get-started" id="submitbtn" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message"); ?></button>
                             </div>
                             <div class="my-3">
                                 <div class="loading"><?= $this->translate->_("Loading"); ?></div>
@@ -438,7 +433,7 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                         },
                         function(data) {
                             if (data == 'fail') {
-                                alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
+                                alert("<?= $this->jsTranslate("The text you entered from the image is incorrect. Please try again."); ?>");
                                 getCaptcha('capChaw');
                                 document.getElementById("challengeResponse").value = "";
                                 return false;
@@ -459,17 +454,17 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                     .done(function(data) {
                                         $.unblockUI();
                                         if (data == 1 || data == '1') {
-                                            alert('<?= $this->translate->_("Thank you for showing interest in this Program. We will contact you shortly"); ?>');
+                                            alert('<?= $this->jsTranslate("Thank you for your interest in this program. We will contact you shortly."); ?>');
                                             $("#submitbtn").remove();
                                         } else {
-                                            alert("<?= $this->translate->_("Sorry, unable to send your message now. Please try again later"); ?>");
+                                            alert("<?= $this->jsTranslate("Sorry, we could not send your message right now. Please try again later."); ?>");
                                         }
 
                                     });
                             }
                         });
                 } else {
-                    alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
+                    alert("<?= $this->jsTranslate("Please enter the text from the image to proceed."); ?>");
                 }
             }
         }

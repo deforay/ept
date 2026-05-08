@@ -1,7 +1,7 @@
 <section class="content-header">
 	<h1>
 		<?= $this->translate->_("Contact Us"); ?>
-		<small><?= $this->translate->_("Request for PT Enrollment or Contact us for feedback or questions"); ?></small>
+		<small><?= $this->translate->_("Request for PT enrollment, or contact us with feedback or questions"); ?></small>
 	</h1>
 </section>
 <section class="content">
@@ -12,99 +12,70 @@
 			<div class="box-body">
 
 				<div class="form-group">
-
 					<label for="first_name" class="first_name col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("First Name"); ?> <span class="mandatory">*</span> </label>
-
 					<div class="col-sm-10">
-						<input id="first_name" name="first_name" class="isRequired form-control" title="Please enter your first name" type="text" placeholder="Please enter your first name" />
+						<input id="first_name" name="first_name" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your first name"); ?>" type="text" placeholder="<?= $this->htmlTranslate("First name"); ?>" />
 					</div>
 				</div>
 				<div class="form-group">
-
 					<label for="last_name" class="last_name col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("Last Name"); ?> <span class="mandatory">*</span> </label>
-
 					<div class="col-sm-10">
-						<input id="last_name" name="last_name" class="isRequired form-control" title="Please enter your last name" type="text" placeholder="Please enter your last name" />
+						<input id="last_name" name="last_name" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your last name"); ?>" type="text" placeholder="<?= $this->htmlTranslate("Last name"); ?>" />
 					</div>
 				</div>
 				<div class="form-group">
-
 					<label for="email" class="email col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("Your Email"); ?> <span class="mandatory">*</span> </label>
-
 					<div class="col-sm-10">
-						<input id="email" name="email" class="isRequired form-control isEmail" title="Please enter your email" type="text" placeholder="Please enter your email" />
+						<input id="email" name="email" class="isRequired form-control isEmail" title="<?= $this->htmlTranslate("Please enter your email address"); ?>" type="email" placeholder="<?= $this->htmlTranslate("you@example.com"); ?>" />
 					</div>
 				</div>
 				<div class="form-group">
-
 					<label for="phone" class="phone col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("Your Phone/Mobile"); ?> <span class="mandatory">*</span></label>
-
 					<div class="col-sm-10">
-						<input id="phone" name="phone" class="isRequired form-control" title="Please enter your contact number" type="text" placeholder="Please enter your contact number" />
+						<input id="phone" name="phone" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your contact number"); ?>" type="tel" placeholder="<?= $this->htmlTranslate("Phone or mobile number"); ?>" />
 					</div>
 				</div>
 				<div class="form-group">
-
-					<label for="agency" class="agency col-sm-2 control-label" data-icon="u"><?= $this->translate->_("How can we help you?"); ?> <span class="mandatory">*</span></label>
-
+					<label for="reasonId" class="agency col-sm-2 control-label" data-icon="u"><?= $this->translate->_("How can we help you?"); ?> <span class="mandatory">*</span></label>
 					<div class="col-sm-10">
-						<select name="reasonId" id="reasonId" onchange='fillreason()' class="form-control" title="Please choose an option">
-							<option>-- <?= $this->translate->_("Select"); ?> --</toption>
-							<option value="1" <?php echo (isset($this->from) && trim($this->from) == 'register') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Request to participate in PT program"); ?></option>
-							<option value="2"><?= $this->translate->_("Add New tester to Current PT Program"); ?></option>
+						<select name="reasonId" id="reasonId" onchange='fillreason()' class="form-control isRequired" title="<?= $this->htmlTranslate("Please choose an option"); ?>">
+							<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
+							<option value="1" <?php echo (isset($this->from) && trim($this->from) == 'register') ? 'selected="selected"' : ''; ?>><?= $this->translate->_("Request to participate in the PT program"); ?></option>
+							<option value="2"><?= $this->translate->_("Add a new tester to the current PT program"); ?></option>
 							<option value="3"><?= $this->translate->_("Other"); ?></option>
 						</select>
 						<input type="hidden" name="reason" id="reason" />
 					</div>
 				</div>
 				<div class="form-group">
-
 					<label for="agency" class="agency col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("Lab/Agency Name"); ?> </label>
-
 					<div class="col-sm-10">
-						<input id="agency" name="agency" class="form-control" title="Please enter your lab/agency name" type="text" placeholder="Please enter your lab/agency name" />
+						<input id="agency" name="agency" class="form-control" title="<?= $this->htmlTranslate("Please enter your lab or agency name"); ?>" type="text" placeholder="<?= $this->htmlTranslate("Lab or agency name"); ?>" />
 					</div>
 				</div>
 				<div class="form-group">
-
 					<label for="additionalInfo" class="additionalInfo col-sm-2 control-label" data-icon="u"> <?= $this->translate->_("Additional Info"); ?> </label>
-
 					<div class="col-sm-10">
-						<textarea id="additionalInfo" name="additionalInfo" class="form-control" title="Please enter some more information" type="text" placeholder="Please add any additional information here"></textarea>
+						<textarea id="additionalInfo" name="additionalInfo" class="form-control" title="<?= $this->htmlTranslate("Please enter additional information"); ?>" placeholder="<?= $this->htmlTranslate("Add any additional information"); ?>"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
-
-					<table border="0" style="width:35%;margin-top: 10px;margin:0 auto;border:1px solid #eee;">
-						<tbody>
-							<tr>
-								<td>
-									<div style="float:left;margin:5px;">
-										<img id="capChaw" src="/captcha/<?php echo rand(); ?>" />
-									</div>
-								</td>
-								<td style="padding-top:3px;" align="center">
-									<input type="text" style="margin:0;width:200px;padding:3px;margin-top:8px" id="challengeResponse" class="form-control" placeholder="Enter text from image on left" class="isRequired" title="Please enter the text from the image." maxlength="40">
-
-									<button onclick="getCaptcha('capChaw');return false;" class="btn btn-small btn-info" style="font-size:12px;margin-top:5px;"><i class="icon-refresh icon-white"></i> <?= $this->translate->_("Get New Image"); ?></button>
-								</td>
-
-							</tr>
-						</tbody>
-					</table>
+					<div class="col-sm-offset-2 col-sm-10">
+						<div class="d-flex align-items-start" style="gap:10px;">
+							<div class="d-flex flex-column align-items-center" style="flex-shrink:0;">
+								<img id="capChaw" src="/captcha/<?php echo rand(); ?>" style="height:58px;width:auto;border-radius:4px;" alt="<?= $this->htmlTranslate("Security check"); ?>" />
+								<button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-sm text-muted p-0" style="font-size:12px;margin-top:2px;"><i class="icon-refresh"></i> <?= $this->translate->_("Get New Image"); ?></button>
+							</div>
+							<input type="text" id="challengeResponse" class="form-control isRequired" placeholder="<?= $this->htmlTranslate("Enter text from image"); ?>" title="<?= $this->htmlTranslate("Please enter the text from the image"); ?>" maxlength="40" style="width:240px;flex:none;">
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="box-footer" style="text-align: center">
-
-				<button class="btn btn-primary" onclick="validateContactUs();return false;"><?= $this->translate->_("Contact Us"); ?></button>
-
-
+				<button type="button" class="btn btn-primary" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message"); ?></button>
 			</div>
 
-
-
 		</form>
-	</div>
 	</div>
 </section>
 <script type="text/javascript" src="<?php echo $this->baseUrl("js/jquery.blockUI.js"); ?>"></script>
@@ -118,7 +89,6 @@
 		} else {
 			$("#reason").val('');
 		}
-
 	}
 
 	function validateContactUs() {
@@ -134,7 +104,7 @@
 					},
 					function(data) {
 						if (data == 'fail') {
-							alert("<?= $this->translate->_("Text you entered from the image is incorrect. Please try again"); ?>");
+							alert("<?= $this->jsTranslate("The text you entered from the image is incorrect. Please try again."); ?>");
 							getCaptcha('capChaw');
 							document.getElementById("challengeResponse").value = "";
 							return false;
@@ -154,17 +124,16 @@
 								.done(function(data) {
 									$.unblockUI();
 									if (data == 1 || data == '1') {
-										alert('<?= $this->translate->_("Thank you for showing interest in this Program. We will contact you shortly"); ?>');
+										alert('<?= $this->jsTranslate("Thank you for your interest in this program. We will contact you shortly."); ?>');
 										document.location.href = document.location;
 									} else {
-										alert("<?= $this->translate->_("Sorry, unable to send your message now. Please try again later"); ?>");
+										alert("<?= $this->jsTranslate("Sorry, we could not send your message right now. Please try again later."); ?>");
 									}
-
 								});
 						}
 					});
 			} else {
-				alert("<?= $this->translate->_("Please enter the text from the image to proceed."); ?>");
+				alert("<?= $this->jsTranslate("Please enter the text from the image to proceed."); ?>");
 			}
 		}
 	}
