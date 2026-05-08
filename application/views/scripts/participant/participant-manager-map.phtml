@@ -8,7 +8,7 @@
                 <label class="col-lg-4 control-label"><?= $this->translate->_("Choose a Participant"); ?></label>
 
                 <div class="col-lg-8">
-                    <select class="form-control isRequired" name="allparticipant" id="allparticipant" title="Please choose a Participant" onchange="getDataManager(this.value)">
+                    <select class="form-control isRequired" name="allparticipant" id="allparticipant" title="<?= $this->htmlTranslate("Please choose a Participant"); ?>" onchange="getDataManager(this.value)">
                         <option value=""></option>
                         <?php foreach ($this->participants as $participant) { ?>
                             <option value="<?php echo $participant['participant_id']; ?>"><?php echo $participant['lab_name']; ?>(<?php echo $participant['unique_identifier']; ?>)</option>
@@ -20,7 +20,7 @@
                 <label class="col-lg-4 control-label"><?= $this->translate->_("test"); ?>Choose a Data Manager (Participant Login)</label>
 
                 <div class="col-lg-8">
-                    <select class="form-control isRequired" name="alldatamangers" id="alldatamangers" title="Please choose a PT Login" onchange="getParticipants(this.value)">
+                    <select class="form-control isRequired" name="alldatamangers" id="alldatamangers" title="<?= $this->htmlTranslate("Please choose a PT Login"); ?>" onchange="getParticipants(this.value)">
                         <option value=""></option>
                         <?php
                         foreach ($this->dataManagers as $dataManagers) {

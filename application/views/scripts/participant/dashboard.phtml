@@ -298,7 +298,7 @@ foreach ($this->participants as $row) {
 						<input type="text" id="dateRange" name="dateRange"
 							value="<?php echo date('d-M-Y', strtotime('- 2 YEARS')) . ' ' . date('d-M-Y') ?>"
 							class="form-control" readonly="readonly" style="background: #fff"
-							placeholder="Click here to pick a Date Range" />
+							placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
 					</div>
 				</div>
 				<?php if (count($this->participants) > 1) { ?>
@@ -307,7 +307,7 @@ foreach ($this->participants as $row) {
 							style=" top: 5px; "><?= $this->translate->_("Pariticipants"); ?></label>
 						<div class="col-lg-8" style=" text-align: left; ">
 							<select id="participant" name="participant[]" class="form-control multipleSelect"
-								multiple="multiple" title="Select one or more participants">
+								multiple="multiple" title="<?= $this->htmlTranslate("Select one or more participants"); ?>">
 
 								<?php foreach ($this->participants as $row) {
 									echo '<option value="' . $row['participant_id'] . '">' . ucwords($row['first_name'] . " " . $row['last_name'] . "(" . $row['unique_identifier'] . ")") . '</option>';

@@ -27,7 +27,7 @@
 	<tr>
 		<td style="width:20%">
 			<input type="text" id="dateRange" name="dateRange" class="form-control input-sm" readonly="readonly"
-				style="background: #fff" placeholder="Click here to pick a Date Range" />
+				style="background: #fff" placeholder="<?= $this->htmlTranslate("Click here to pick a Date Range"); ?>" />
 		</td>
 		<td style="width:20%">
 			<select id="scheme" name="scheme" class="input-sm" multiple="multiple" onchange="getShipmentCodes()"
@@ -45,7 +45,7 @@
 		</td>
 		<?php if (isset($this->countries) && !empty($this->countries)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="country" name="country" title="Please select the country to filter"
+				<select class="form-control select2" id="country" name="country" title="<?= $this->htmlTranslate("Please select the country to filter"); ?>"
 					onchange="getOptions('participant', 'country', 'region', this.value, 'region');">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<?php foreach ($this->countries as $country) { ?>
@@ -72,7 +72,7 @@
 		<?php
 		if (isset($this->regions) && !empty($this->regions)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="region" name="region" title="Please select the region to filter"
+				<select class="form-control select2" id="region" name="region" title="<?= $this->htmlTranslate("Please select the region to filter"); ?>"
 					onchange="getOptions('participant', 'region', 'state', this.value, 'state');">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->regions as $region) { ?>
@@ -83,7 +83,7 @@
 		<?php }
 		if (isset($this->states) && !empty($this->states)) { ?>
 			<td style="width:20%">
-				<select class="form-control select2" id="state" name="state" title="Please select the province to filter"
+				<select class="form-control select2" id="state" name="state" title="<?= $this->htmlTranslate("Please select the province to filter"); ?>"
 					onchange="getOptions('participant', 'state', 'district', this.value, 'district');">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->states as $state) { ?>
@@ -95,7 +95,7 @@
 		if (isset($this->districts) && !empty($this->districts)) { ?>
 			<td style="width:20%">
 				<select class="form-control select2" id="district" name="district"
-					title="Please select the district to filter">
+					title="<?= $this->htmlTranslate("Please select the district to filter"); ?>">
 					<option value="">-- <?= $this->translate->_("Select"); ?> --</option>
 					<!-- <?php foreach ($this->districts as $district) { ?>
 						<option value="<?php echo $district['district']; ?>"><?php echo ucwords($district['district']); ?></option>

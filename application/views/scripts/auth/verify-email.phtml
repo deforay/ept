@@ -53,20 +53,20 @@
                         <div class="col-lg-3 col-md-6 col-sm-6 padding-div">
                             <input type="hidden" value="<?php echo (isset($this->result['email']) && $this->result['email'] != "") ? $this->result['email'] : ""; ?>" id="oldEmail" name="oldEmail" />
                             <input type="hidden" value="<?php echo (isset($this->result['id']) && $this->result['id'] != "") ? base64_encode($this->result['id']) : ""; ?>" id="dmId" name="dmId" />
-                            <input type="email" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="Please enter your valid email" placeholder="mymail@mail.com" onchange="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->result['email']; ?>', 'Sorry. This email id already exists for another login. Please try some other email id.')" />
+                            <input type="email" id="registeredEmail" name="registeredEmail" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your valid email"); ?>" placeholder="mymail@mail.com" onchange="checkDuplicate('data_manager', 'primary_email', this, '<?php echo "primary_email##" . $this->result['email']; ?>', 'Sorry. This email id already exists for another login. Please try some other email id.')" />
                         </div>
                     </div>
 
                     <div class="form-group text-right">
                         <label class="col-lg-3 control-label"><?= $this->translate->_("Confirm your email id"); ?><span class="mandatory">*</span><br><small class="text-danger"><?= $this->translate->_("(Type same email id again)"); ?></small></label>
                         <div class="col-lg-3 col-md-6 col-sm-6">
-                            <input type="email" id="confirmMail" name="confirmMail" class="isRequired form-control" title="Please enter your confirm email" placeholder="mymail@mail.com" />
+                            <input type="email" id="confirmMail" name="confirmMail" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your confirm email"); ?>" placeholder="mymail@mail.com" />
                         </div>
                     </div>
                     <div class="form-group text-center">
                         <img class="col-lg-3 captcha" id="capChaw" src="/captcha/<?php echo rand(); ?>" style="margin-top: -50px;height: 85px;" />
                         <div class="col-lg-3 col-md-6 col-sm-6 captcha" style="margin-top: -30px;">
-                            <input type="text" style="margin:0;width:100%;padding:3px;margin-top:8px" id="challengeResponse" placeholder="Enter text from image on left" class="isRequired form-control" title="Please enter the text from the image." maxlength="40">
+                            <input type="text" style="margin:0;width:100%;padding:3px;margin-top:8px" id="challengeResponse" placeholder="<?= $this->htmlTranslate("Enter text from image on left"); ?>" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the text from the image."); ?>" maxlength="40">
                             <a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i><?= $this->translate->_("Get New Image"); ?></a>
                         </div>
                     </div>

@@ -91,10 +91,10 @@ if ($this->reqFrom == "admin") {
                                     style="width:180px;float:left;"
                                     value="<?php echo $this->dateFormat($this->shipment["shipment_receipt_date"]); ?>"
                                     class="form-control isRequired datepicker" readonly="readonly"
-                                    title="Please enter Test Receipt Date" />
+                                    title="<?= $this->htmlTranslate("Please enter Test Receipt Date"); ?>" />
                                 <i class="icon-remove-sign"
-                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date"
-                                    title="Clear Date" onclick="clearDate('receiptDate')">
+                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
+                                    title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('receiptDate')">
                                     <?= $this->translate->_("Clear"); ?></i>
                             </td>
                             <td style="width:20%;">
@@ -104,10 +104,10 @@ if ($this->reqFrom == "admin") {
                                     maxlength="11" style="width:180px;float:left;"
                                     value="<?php echo $this->dateFormat($this->shipment['attributes']["sample_rehydration_date"]); ?>"
                                     class="form-control isRequired datepicker" readonly="readonly"
-                                    title="Please enter Sample Rehydration Date" />
+                                    title="<?= $this->htmlTranslate("Please enter Sample Rehydration Date"); ?>" />
                                 <i class="icon-remove-sign"
-                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date"
-                                    title="Clear Date" onclick="clearDate('sampleRehydrationDate')">
+                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
+                                    title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('sampleRehydrationDate')">
                                     <?= $this->translate->_("Clear"); ?></i>
                             </td>
                         </tr>
@@ -119,10 +119,10 @@ if ($this->reqFrom == "admin") {
                                     style="width:180px;float:left;"
                                     value="<?php echo $this->dateFormat($this->shipment["shipment_test_date"]); ?>"
                                     class="form-control isRequired datepicker" readonly="readonly"
-                                    title="Please enter Shipment Test Date" />
+                                    title="<?= $this->htmlTranslate("Please enter Shipment Test Date"); ?>" />
                                 <i class="icon-remove-sign"
-                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date"
-                                    title="Clear Date" onclick="clearDate('testDate')">
+                                    style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
+                                    title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('testDate')">
                                     <?= $this->translate->_("Clear"); ?></i>
                             </td>
                             <?php
@@ -131,7 +131,7 @@ if ($this->reqFrom == "admin") {
                                 <td><label><?= $this->translate->_("Mode of Receipt"); ?></label></td>
                                 <td>
                                     <select class="form-control" name="modeOfReceipt" id="modeOfReceipt"
-                                        title="Please choose the mode of receipt">
+                                        title="<?= $this->htmlTranslate("Please choose the mode of receipt"); ?>">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <?php
                                         foreach ($this->modeOfReceipt as $receipt) {
@@ -155,10 +155,10 @@ if ($this->reqFrom == "admin") {
                                     <input type="text" id="testReceiptDate" name="testReceiptDate" size="11" maxlength="11"
                                         style="width:180px;float:left;" value="<?php echo $testReceiptDate; ?>"
                                         class="form-control datepicker" readonly="readonly"
-                                        title="Please enter Shipment Test Response Date " />
+                                        title="<?= $this->htmlTranslate("Please enter Shipment Test Response Date "); ?>" />
                                     <i class="icon-remove-sign"
-                                        style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date"
-                                        title="Clear Date" onclick="clearDate('testReceiptDate')">
+                                        style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
+                                        title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('testReceiptDate')">
                                         <?= $this->translate->_("Clear"); ?></i>
                                 </td>
                                 <td colspan="2"></td>
@@ -173,7 +173,7 @@ if ($this->reqFrom == "admin") {
                                 <td><input type="radio" id="qcDoneYes" name="qcDone" value="yes" <?php echo ($this->shipment['qc_done'] == "yes") ? " checked='checked' " : ""; ?>
                                         onclick="checkQcStatus();" />
                                     <strong><?= $this->translate->_("Yes"); ?></strong>&nbsp;&nbsp;<input type="radio"
-                                        class="isRequired" id="qcDoneNo" name="qcDone" title="Please select QC done status"
+                                        class="isRequired" id="qcDoneNo" name="qcDone" title="<?= $this->htmlTranslate("Please select QC done status"); ?>"
                                         <?php echo ($this->shipment['qc_done'] == null || $this->shipment['qc_done'] == "" || $this->shipment['qc_done'] == "no") ? " checked='checked' " : ""; ?> value="no"
                                         onclick="checkQcStatus();" /> <strong><?= $this->translate->_("No"); ?></strong>
                                 </td>
@@ -194,10 +194,10 @@ if ($this->reqFrom == "admin") {
                                         style="width:180px;float:left;"
                                         value="<?php echo $this->dateFormat($this->shipment["qc_date"]); ?>"
                                         class="form-control datepicker <?php echo $isRquired; ?>" readonly="readonly"
-                                        title="Please enter QC Date" />
+                                        title="<?= $this->htmlTranslate("Please enter QC Date"); ?>" />
                                     <i class="icon-remove-sign"
-                                        style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="Clear Date"
-                                        title="Clear Date" onclick="clearDate('qcDate')">
+                                        style="cursor:pointer;margin-top:10px;margin-left:10px;float:left;" alt="<?= $this->htmlTranslate("Clear Date"); ?>"
+                                        title="<?= $this->htmlTranslate("Clear Date"); ?>" onclick="clearDate('qcDate')">
                                         <?= $this->translate->_("Clear"); ?></i>
                                 </td>
                                 <td>
@@ -205,7 +205,7 @@ if ($this->reqFrom == "admin") {
                                 </td>
                                 <td>
                                     <input type="text" id="qcDoneBy" name="qcDoneBy"
-                                        class="form-control <?php echo $isRquired; ?>" title="Please enter QC done by name"
+                                        class="form-control <?php echo $isRquired; ?>" title="<?= $this->htmlTranslate("Please enter QC done by name"); ?>"
                                         value="<?php echo $this->shipment["qc_done_by"]; ?>" />
                                 </td>
                             </tr>
@@ -237,25 +237,25 @@ if ($this->reqFrom == "admin") {
                                 <th><?= $this->translate->_("Test Method Code"); ?></th>
                                 <td colspan="2" class="dark">
                                     <select name="eia_1" id="eia_1" class="form-control" style="width: 200px"
-                                        class="isRequired" title="Please Choose EIA 1">
+                                        class="isRequired" title="<?= $this->htmlTranslate("Please Choose EIA 1"); ?>">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_1"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="2">
                                     <select name="eia_2" id="eia_2" class="form-control" style="width: 200px"
-                                        title="Please Choose EIA 2">
+                                        title="<?= $this->htmlTranslate("Please Choose EIA 2"); ?>">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_2"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="2">
                                     <select name="eia_3" id="eia_3" class="form-control" style="width: 200px"
-                                        title="Please Choose EIA 3">
+                                        title="<?= $this->htmlTranslate("Please Choose EIA 3"); ?>">
                                         <?php $this->dropdownSelection($this->eia, $this->allSamples[0]["eia_3"], true); ?>
                                     </select>
                                 </td>
                                 <td colspan="10">
                                     <select name="wb" id="wb" class="form-control" style="width: 200px"
-                                        title="Please Choose Western Blot">
+                                        title="<?= $this->htmlTranslate("Please Choose Western Blot"); ?>">
                                         <?php $this->dropdownSelection($this->wb, $this->allSamples[0]["wb"], true); ?>
                                     </select>
                                 </td>
@@ -265,21 +265,21 @@ if ($this->reqFrom == "admin") {
                                 <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40"
                                         name="lot_no_1" id="lot_no_1"
                                         value="<?php echo ($this->allSamples[0]["lot_no_1"]); ?>" style="width: 90%"
-                                        class="isRequired" title="Please enter Lot No. 1"
-                                        placeholder="Please enter Lot No. 1" /></td>
+                                        class="isRequired" title="<?= $this->htmlTranslate("Please enter Lot No. 1"); ?>"
+                                        placeholder="<?= $this->htmlTranslate("Please enter Lot No. 1"); ?>" /></td>
                                 <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40"
                                         name="lot_no_2" id="lot_no_2"
                                         value="<?php echo ($this->allSamples[0]["lot_no_2"]); ?>" style="width: 90%"
-                                        title="Please enter Lot No. 2" placeholder="Please enter Lot No. 2" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter Lot No. 2"); ?>" placeholder="<?= $this->htmlTranslate("Please enter Lot No. 2"); ?>" /></td>
                                 <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40"
                                         name="lot_no_3" id="lot_no_3"
                                         value="<?php echo ($this->allSamples[0]["lot_no_3"]); ?>" style="width: 90%"
-                                        title="Please enter Lot No. 3" placeholder="Please enter Lot No. 3" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter Lot No. 3"); ?>" placeholder="<?= $this->htmlTranslate("Please enter Lot No. 3"); ?>" /></td>
                                 <td colspan="10"><input type="text" class="form-control" size="40" maxlength="40"
                                         name="wb_lot" id="wb_lot"
                                         value="<?php echo ($this->allSamples[0]["wb_lot"]); ?>" style="width:40%"
-                                        title="Please enter Western Blot Lot"
-                                        placeholder="Please enter Western Blot Lot" /></td>
+                                        title="<?= $this->htmlTranslate("Please enter Western Blot Lot"); ?>"
+                                        placeholder="<?= $this->htmlTranslate("Please enter Western Blot Lot"); ?>" /></td>
                             </tr>
 
                             <tr align="CENTER" class="light">
@@ -288,22 +288,22 @@ if ($this->reqFrom == "admin") {
                                         name="exp_date_1"
                                         value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>"
                                         style="width: 90%" class="expDatepicker" readonly="readonly"
-                                        placeholder="Select a date" /></td>
+                                        placeholder="<?= $this->htmlTranslate("Select a date"); ?>" /></td>
                                 <td colspan="2"><input id="exp_date2" class="form-control" type="text" id="exp_date2"
                                         name="exp_date_2"
                                         value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_2"]); ?>"
                                         style="width: 90%" class="expDatepicker" readonly="readonly"
-                                        placeholder="Select a date" /></td>
+                                        placeholder="<?= $this->htmlTranslate("Select a date"); ?>" /></td>
                                 <td colspan="2"><input id="exp_date3" class="form-control" type="text" id="exp_date3"
                                         name="exp_date_3"
                                         value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_3"]); ?>"
                                         style="width: 90%" class="expDatepicker" readonly="readonly"
-                                        placeholder="Select a date" /></td>
+                                        placeholder="<?= $this->htmlTranslate("Select a date"); ?>" /></td>
                                 <td colspan="10"><input id="wb_exp_date" class="form-control" type="text"
                                         id="wb_exp_date" name="wb_exp_date"
                                         value="<?php echo $this->dateFormat($this->allSamples[0]["wb_exp_date"]); ?>"
                                         style="width:30%" class="expDatepicker" readonly="readonly"
-                                        placeholder="Select a date" /></td>
+                                        placeholder="<?= $this->htmlTranslate("Select a date"); ?>" /></td>
                             </tr>
                             <thead>
                                 <tr align="CENTER" class="dark">
@@ -431,7 +431,7 @@ if ($this->reqFrom == "admin") {
                                     <td>
                                         <select class="form-control" name="reported_result[]"
                                             id="<?php echo "testresultf_" . $count; ?>" style="width: 150px" <?php echo ($sample['mandatory'] == 1) ? "class='isRequired'" : ""; ?>
-                                            title="Please enter the result">
+                                            title="<?= $this->htmlTranslate("Please enter the result"); ?>">
                                             <?php $this->dropdownSelection($possibleFinalResults, $sample['reported_result'], true); ?>
                                         </select>
                                     </td>
@@ -450,7 +450,7 @@ if ($this->reqFrom == "admin") {
                             <th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?></th>
                             <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval"
                                     class="form-control isRequired"
-                                    title="Please select if Supervisor Approval was conducted or not">
+                                    title="<?= $this->htmlTranslate("Please select if Supervisor Approval was conducted or not"); ?>">
                                     <option value=""> -- <?= $this->translate->_("Select"); ?> -- </option>
                                     <option value="yes" <?php if ($this->shipment['supervisor_approval'] == 'yes')
                                         echo " selected "; ?>><?= $this->translate->_("YES"); ?></option>
@@ -492,7 +492,7 @@ if ($this->reqFrom == "admin") {
                                 </td>
                                 <td style="vertical-align: middle">
                                     <select name="manualOverride" id="manualOverride" class="form-control"
-                                        title="Please choose manual override yes or no"
+                                        title="<?= $this->htmlTranslate("Please choose manual override yes or no"); ?>"
                                         onchange="manualOverrideChange(this.value)">
                                         <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                                         <option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?>
@@ -509,7 +509,7 @@ if ($this->reqFrom == "admin") {
                                 <td style="vertical-align: middle">
                                     <input type="text" value="<?php echo $this->shipment['shipment_score']; ?>"
                                         name="shipmentScore" id="shipmentScore" class="form-control"
-                                        placeholder="Enter the shipment score" title="Please enter the shipment score">
+                                        placeholder="<?= $this->htmlTranslate("Enter the shipment score"); ?>" title="<?= $this->htmlTranslate("Please enter the shipment score"); ?>">
                                 </td>
                             </tr>
                             <tr class="manualOverrideRow" style="<?php echo $show; ?>">
@@ -520,8 +520,8 @@ if ($this->reqFrom == "admin") {
                                 <td style="vertical-align: middle">
                                     <input type="text" value="<?php echo $this->shipment['documentation_score']; ?>"
                                         name="documentationScore" id="documentationScore" class="form-control"
-                                        placeholder="Enter the documentation score"
-                                        title="Please enter the documentation score">
+                                        placeholder="<?= $this->htmlTranslate("Enter the documentation score"); ?>"
+                                        title="<?= $this->htmlTranslate("Please enter the documentation score"); ?>">
                                 </td>
                             </tr>
                         </table>
@@ -582,7 +582,7 @@ if ($this->reqFrom == "admin") {
                                 <td style="vertical-align: middle;" colspan="2">
                                     <label>Is the above a follow up comment for corrective action? </label>
                                     <input type="radio" name="isFollowUp" id="followUpYes" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "yes") ? "checked='checked'" : ""; ?> value="yes"
-                                        title="Please choose whether this is a follow up comment or not" /> Yes <input
+                                        title="<?= $this->htmlTranslate("Please choose whether this is a follow up comment or not"); ?>" /> Yes <input
                                         type="radio" name="isFollowUp" id="followUpNo" value="no" <?php echo (isset($this->shipment['is_followup']) && $this->shipment['is_followup'] == "no") ? "checked='checked'" : ""; ?> /> No
                                 </td>
                             </tr>
@@ -593,7 +593,7 @@ if ($this->reqFrom == "admin") {
                                     </label>
                                     <div style="float:left;margin-left:10px;">
                                         <select name="isExcluded" id="isExcluded" class="form-control isRequired"
-                                            title="Please choose whether this response is excluded from evaluation or not">
+                                            title="<?= $this->htmlTranslate("Please choose whether this response is excluded from evaluation or not"); ?>">
                                             <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?>
                                                 value="no"><?= $this->translate->_("No"); ?></option>
                                             <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?>

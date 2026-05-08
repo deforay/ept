@@ -17,7 +17,7 @@
                         <tr align="left" class="light">
                             <td><?= $this->translate->_("Subject"); ?></td>
                             <td>
-                                <select id="subject" name="subject" class="form-control input-sm isRequired" title="Please Select Subject">
+                                <select id="subject" name="subject" class="form-control input-sm isRequired" title="<?= $this->htmlTranslate("Please Select Subject"); ?>">
                                     <option value=""> -- <?= $this->translate->_("Select Subject"); ?> --</option>
                                     <option value="Report an issue on Panels"><?= $this->translate->_("Report an issue on Panels"); ?></option>
                                     <option value="Question on using ePT"><?= $this->translate->_("Question on using ePT"); ?></option>
@@ -30,7 +30,7 @@
 
                         <tr align="left" class="light">
                             <td><?= $this->translate->_("Message"); ?></td>
-                            <td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="Please enter message" placeholder="Please enter message"></textarea></td>
+                            <td><textarea name="message" id="message" rows="3" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter message"); ?>" placeholder="<?= $this->htmlTranslate("Please enter message"); ?>"></textarea></td>
                         </tr>
 
                         <tr align="left" class="light">

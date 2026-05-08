@@ -12,19 +12,19 @@
 					<table class="table table-striped">
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Old Primary Email"); ?></td>
-							<td><input id="oldEmail" type="text" id="oldEmail" name="oldEmail" size="50" maxlength="45" class="isRequired form-control" title="Please enter your current mail address" placeholder="Please enter your current mail address" /></td>
+							<td><input id="oldEmail" type="text" id="oldEmail" name="oldEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your current mail address"); ?>" /></td>
 
 						</tr>
 
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("New Primary Email"); ?></td>
-							<td><input id="registeredEmail" type="text" name="registeredEmail" size="50" maxlength="45" class="isRequired form-control" title="Please enter your new mail address" placeholder="Please enter your new mail address" /></td>
+							<td><input id="registeredEmail" type="text" name="registeredEmail" size="50" maxlength="45" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please enter your new mail address"); ?>" /></td>
 
 						</tr>
 
 						<tr align="left" class="light">
 							<td><?= $this->translate->_("Confirm New Primary Email"); ?></td>
-							<td><input id="newMail2" type="text" id="newMail2" name="registeredEmail" size="50" maxlength="45" class="isRequired confirmMailAddress form-control" title="Please repeat the same mail address" placeholder="Please repeat the same mail address	" /></td>
+							<td><input id="newMail2" type="text" id="newMail2" name="registeredEmail" size="50" maxlength="45" class="isRequired confirmMailAddress form-control" title="<?= $this->htmlTranslate("Please repeat the same mail address"); ?>" placeholder="<?= $this->htmlTranslate("Please repeat the same mail address	"); ?>" /></td>
 
 						</tr>
 					</table>

@@ -6,7 +6,7 @@
             </label>
             <div style="float:left;margin-left:10px;">
                 <select name="isExcluded" id="isExcluded" class="form-control isRequired"
-                    title="Please choose whether this response is excluded from evaluation or not">
+                    title="<?= $this->htmlTranslate("Please choose whether this response is excluded from evaluation or not"); ?>">
                     <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "no") ? " selected='selected' " : ""; ?> value="no"><?= $this->translate->_("No"); ?></option>
                     <option <?php echo (isset($this->shipment['is_excluded']) && $this->shipment['is_excluded'] == "yes") ? " selected='selected' " : ""; ?> value="yes"><?= $this->translate->_("Yes"); ?></option>
                 </select>
@@ -15,7 +15,7 @@
         <td style="width:50%;vertical-align: middle"><label style="color: #ff6163;" class="form-label"
                 for="manualOverride"><?= $this->translate->_("Manually Override Results"); ?></label>
             <select name="manualOverride" id="manualOverride" class="form-control"
-                title="Please choose manual override yes or no" onchange="manualOverrideChange(this.value)">
+                title="<?= $this->htmlTranslate("Please choose manual override yes or no"); ?>" onchange="manualOverrideChange(this.value)">
                 <option value="">-- <?= $this->translate->_("Select"); ?> --</option>
                 <option <?php echo (isset($this->shipment['manual_override']) && $this->shipment['manual_override'] == "no") ? " selected='selected' " : ""; ?> value="no">
                     <?= $this->translate->_("No"); ?></option>
@@ -35,8 +35,8 @@
                     class="mandatory">*</span></label></td>
         <td style="vertical-align: middle">
             <input type="text" value="<?php echo $this->shipment['shipment_score']; ?>" name="shipmentScore"
-                id="shipmentScore" class="form-control" placeholder="Enter the shipment score"
-                title="Please enter the shipment score">
+                id="shipmentScore" class="form-control" placeholder="<?= $this->htmlTranslate("Enter the shipment score"); ?>"
+                title="<?= $this->htmlTranslate("Please enter the shipment score"); ?>">
         </td>
     </tr>
     <tr>
