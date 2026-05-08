@@ -415,6 +415,16 @@ class AuthController extends Zend_Controller_Action
         /** @var Zend_Controller_Request_Http $request */
         $request = $this->getRequest();
         $userService = new Application_Service_DataManagers();
+        $sessionAlert = new Zend_Session_Namespace('alertSpace');
+        $emailToken = $this->hasParam('email') ? (string) $this->_getParam('email') : '';
+        $resolved = $emailToken !== '' ? $userService->checkEmail($emailToken) : null;
+        if (empty($resolved) || empty($resolved['primary_email'])) {
+            $sessionAlert->message = 'This password reset link is invalid or has expired.';
+            $sessionAlert->status = 'failure';
+            $this->redirect($this->loginUri);
+            return;
+        }
+        $verifiedEmail = $resolved['primary_email'];
         if ($request->isPost()) {
             $params = $request->getPost();
             if (
@@ -425,29 +435,21 @@ class AuthController extends Zend_Controller_Action
                 return;
             }
             if (!Application_Service_Common::consumeCaptcha()) {
-                $sessionAlert = new Zend_Session_Namespace('alertSpace');
                 $sessionAlert->message = 'Please enter the correct text from the image.';
                 $sessionAlert->status = 'failure';
                 $this->redirect($request->getRequestUri());
                 return;
             }
+            $params['registeredEmail'] = $verifiedEmail;
             $redirectTo = $userService->newPassword($params);
             $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog('Set new password via reset link', 'auth');
+            $auditDb->addNewAuditLog('Set new password via reset link - ' . $verifiedEmail, 'auth');
             $this->redirect($redirectTo);
         } else {
-            if ($this->hasParam('email')) {
-                $email = $this->_getParam('email');
-                $result = $userService->checkEmail($email);
-                if ($result) {
-                    $this->view->email = $result;
-                } else {
-                    $this->view->email = '';
-                }
-                $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
-                $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
-                $this->view->formToken = Application_Service_Common::generateFormToken();
-            }
+            $this->view->email = $resolved;
+            $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
+            $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
+            $this->view->formToken = Application_Service_Common::generateFormToken();
         }
     }
 }
