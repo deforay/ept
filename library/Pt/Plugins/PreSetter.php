@@ -66,6 +66,61 @@ class Pt_Plugins_PreSetter extends Zend_Controller_Plugin_Abstract
             }
         }
 
+        // Idle timeout: 30 minutes of inactivity ends an authenticated session.
+        // Sliding window — every authenticated request refreshes lastActivity.
+        $idleLimitSec = 1800;
+        $now = time();
+        $expiredKind = null;
+
+        if ($loggedInAsAdmin) {
+            $last = $adminAuthNameSpace->lastActivity ?? null;
+            if ($last !== null && ($now - (int)$last) > $idleLimitSec) {
+                $expiredKind = 'admin';
+            } else {
+                $adminAuthNameSpace->lastActivity = $now;
+            }
+        }
+        if ($expiredKind === null && $loggedInAsParticipant) {
+            $last = $authNameSpace->lastActivity ?? null;
+            if ($last !== null && ($now - (int)$last) > $idleLimitSec) {
+                $expiredKind = 'participant';
+            } else {
+                $authNameSpace->lastActivity = $now;
+            }
+        }
+
+        if ($expiredKind !== null) {
+            $loginUrl = $expiredKind === 'admin' ? '/admin' : '/auth/login';
+
+            $authNameSpace->unsetAll();
+            $adminAuthNameSpace->unsetAll();
+            Zend_Auth::getInstance()->clearIdentity();
+
+            if ($request->isXmlHttpRequest()) {
+                $response = $this->getResponse();
+                $response->setHttpResponseCode(401)
+                    ->setHeader('Content-Type', 'application/json; charset=utf-8', true)
+                    ->setBody(json_encode([
+                        'status' => 'session_expired',
+                        'loginUrl' => $loginUrl,
+                    ]));
+                $response->sendResponse();
+                exit;
+            }
+
+            $translate = Zend_Registry::get('translate');
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = $translate->_('Your session has expired due to inactivity. Please sign in again.');
+
+            if ($expiredKind === 'admin') {
+                $request->setModuleName('admin')->setControllerName('login')->setActionName('index');
+            } else {
+                $request->setModuleName('default')->setControllerName('auth')->setActionName('login');
+            }
+            $request->setDispatched(false);
+            return;
+        }
+
         if (
             $request->getModuleName() == 'default' &&
             $request->getControllerName() != 'shipment-form'  &&

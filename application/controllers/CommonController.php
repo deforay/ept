@@ -28,6 +28,32 @@ class CommonController extends Zend_Controller_Action
         // action body
     }
 
+    public function heartbeatAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $dmNs = new Zend_Session_Namespace('datamanagers');
+        $admNs = new Zend_Session_Namespace('administrators');
+        $isAdmin = !empty($admNs->admin_id);
+        $isParticipant = !empty($dmNs->dm_id);
+
+        if (!$isAdmin && !$isParticipant) {
+            $this->getResponse()
+                ->setHttpResponseCode(401)
+                ->setHeader('Content-Type', 'application/json; charset=utf-8', true)
+                ->setBody(json_encode([
+                    'status' => 'session_expired',
+                    'loginUrl' => '/auth/login',
+                ]));
+            return;
+        }
+
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json; charset=utf-8', true)
+            ->setBody(json_encode(['status' => 'ok']));
+    }
+
     public function sendMailAction()
     {
         $commonServices = new Application_Service_Common();

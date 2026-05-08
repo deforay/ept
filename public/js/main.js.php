@@ -1,8 +1,12 @@
 <script type="text/javascript">
     <?php
     $csrfNamespace = new Zend_Session_Namespace('csrf');
+    $heartbeatDmNs = new Zend_Session_Namespace('datamanagers');
+    $heartbeatAdmNs = new Zend_Session_Namespace('administrators');
+    $heartbeatSessionActive = !empty($heartbeatDmNs->dm_id) || !empty($heartbeatAdmNs->admin_id);
     ?>
     window.csrf_token = "<?= $csrfNamespace->token; ?>";
+    window.eptSessionActive = <?= $heartbeatSessionActive ? 'true' : 'false'; ?>;
 
     function addCsrfTokenToForm(form) {
         if (form.find('input[name="csrf_token"]').length === 0) {
@@ -19,6 +23,45 @@
                 xhr.setRequestHeader('X-CSRF-Token', window.csrf_token);
             }
         }
+    });
+
+    // Idle-timeout coordination with PreSetter.php (server enforces 30 min).
+    // Heartbeat fires only when the user has actually interacted since the last
+    // ping, so a walked-away tab still expires server-side.
+    (function () {
+        if (!window.eptSessionActive) {
+            return;
+        }
+        var heartbeatMs = 5 * 60 * 1000;
+        var sawActivity = false;
+        var activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        activityEvents.forEach(function (evt) {
+            document.addEventListener(evt, function () { sawActivity = true; }, { passive: true });
+        });
+        setInterval(function () {
+            if (!sawActivity) return;
+            sawActivity = false;
+            $.ajax({ url: '/common/heartbeat', type: 'POST', dataType: 'json' });
+        }, heartbeatMs);
+    })();
+
+    // Catch session-expired responses from any XHR (heartbeat, form submits,
+    // datatables, etc.) so the user lands on login instead of staring at a
+    // silently-failed call.
+    $(document).ajaxComplete(function (event, xhr) {
+        if (xhr.status !== 401) return;
+        var loginUrl = '/auth/login';
+        try {
+            var data = JSON.parse(xhr.responseText);
+            if (data && data.status === 'session_expired') {
+                if (data.loginUrl) loginUrl = data.loginUrl;
+            } else {
+                return;
+            }
+        } catch (e) {
+            return;
+        }
+        window.location.href = loginUrl;
     });
 
     $(document).ready(function () {
