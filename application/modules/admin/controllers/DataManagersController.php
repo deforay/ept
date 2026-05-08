@@ -21,6 +21,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             ->addActionContext('get-participants-names', 'html')
             ->addActionContext('reset-password', 'html')
             ->addActionContext('bulk-reset-password', 'html')
+            ->addActionContext('bulk-reset-by-list', 'html')
             ->addActionContext('change-primary-email', 'html')
             ->addActionContext('save-password', 'html')
             ->addActionContext('check-dm-duplicate', 'html')
@@ -284,6 +285,75 @@ class Admin_DataManagersController extends Zend_Controller_Action
             $this->view->dms = $ids ? $userService->getUsersByIds($ids) : [];
         }
         $this->view->loginUrl = $loginUrl;
+    }
+
+    public function bulkResetByListAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $userService = new Application_Service_DataManagers();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $loginUrl = rtrim((string) $conf->domain, '/') . '/auth/login';
+
+        $this->view->loginUrl = $loginUrl;
+        $this->view->step = 'paste';
+        $this->view->pastedText = '';
+        $this->view->matched = [];
+        $this->view->unresolved = [];
+
+        if (!$request->isPost()) {
+            return;
+        }
+
+        $params = $request->getPost();
+        $step = (string) ($params['step'] ?? 'resolve');
+        $pasted = (string) ($params['identifiers'] ?? '');
+        $this->view->pastedText = $pasted;
+
+        $lines = preg_split('/[\r\n,;\t]+/', $pasted) ?: [];
+        $resolved = $userService->resolveDmIdentifiers($lines);
+        $this->view->matched = $resolved['matched'];
+        $this->view->unresolved = $resolved['unresolved'];
+
+        if ($step === 'queue' && !empty($resolved['matched'])) {
+            // Reuse the existing queue path: write payload + insert scheduled_jobs.
+            $dmIds = array_map(fn($r) => (int) $r['dm_id'], $resolved['matched']);
+
+            $payload = [
+                'dmIds'              => $dmIds,
+                'sendEmail'          => !empty($params['sendEmail']),
+                'forcePasswordReset' => !empty($params['forcePasswordReset']),
+                'emailCc'            => (string) ($params['emailCc'] ?? ''),
+                'emailBcc'           => (string) ($params['emailBcc'] ?? ''),
+                'loginUrl'           => $loginUrl,
+            ];
+
+            $fileName = 'bulk-reset-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json';
+            $payloadPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName;
+            if (!is_dir(TEMP_UPLOAD_PATH)) {
+                @mkdir(TEMP_UPLOAD_PATH, 0775, true);
+            }
+            file_put_contents($payloadPath, json_encode($payload));
+
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
+            $scheduledDb->insert([
+                'job'          => "bulk-reset-passwords.php -f '$fileName'",
+                'requested_on' => Pt_Commons_DateUtility::getCurrentDateTime(),
+                'requested_by' => $authNameSpace->admin_id ?? null,
+                'status'       => 'pending',
+            ]);
+
+            $this->view->result = [
+                'queued'  => count($dmIds),
+                'emailed' => !empty($params['sendEmail']),
+            ];
+            $this->view->step = 'queued';
+            return;
+        }
+
+        $this->view->step = 'resolved';
     }
 
     public function changePrimaryEmailAction()

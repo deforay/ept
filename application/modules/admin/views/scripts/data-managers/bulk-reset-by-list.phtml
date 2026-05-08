@@ -1,0 +1,206 @@
+<?php
+
+$csrfNamespace = new Zend_Session_Namespace('csrf');
+$adminEmail = trim((string) Application_Service_Common::getConfig('admin_email'));
+$step = $this->step ?? 'paste';
+$matched = $this->matched ?? [];
+$unresolved = $this->unresolved ?? [];
+$pastedText = $this->pastedText ?? '';
+$loginUrl = $this->loginUrl ?? '';
+$result = $this->result ?? null;
+
+$formAction = $this->url(['module' => 'admin', 'controller' => 'data-managers', 'action' => 'bulk-reset-by-list'], null, true);
+?>
+<style>
+    #listForm textarea#identifiers { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+    #listForm .panel-list { max-height: 220px; overflow-y: auto; border: 1px solid #e5e9ee; border-radius: 3px; padding: 6px 8px; background: #fff; font-size: 12px; }
+    #listForm .panel-list .row-line { padding: 3px 0; border-bottom: 1px dotted #eee; }
+    #listForm .panel-list .row-line:last-child { border-bottom: none; }
+    #listForm .panel-list .row-line.inactive { color: #c09853; }
+    #listForm .recipients-line { background: #f7f9fb; border: 1px solid #e5e9ee; border-radius: 3px; padding: 8px 10px; margin-top: 10px; font-size: 13px; }
+    #listForm .recipients-line label { font-weight: normal; color: #555; font-size: 12px; margin-bottom: 2px; }
+    #listForm .recipients-line .form-group { margin-bottom: 8px; }
+    #listForm .actions { margin-top: 16px; }
+    #listForm .help-line { color:#777; font-size:12px; margin-top:4px; }
+</style>
+<br>
+
+<?php if ($step === 'queued' && !empty($result)) { ?>
+    <div style="padding: 12px 4px;">
+        <h4 class="modal-title" style="margin-bottom: 14px;">
+            <?= $this->translate->_('Bulk Reset Queued'); ?>
+        </h4>
+        <div class="alert alert-info" style="margin-bottom: 12px;">
+            <i class="icon-time"></i>
+            <strong><?= (int) $result['queued']; ?></strong>
+            <?= $this->translate->_('data manager(s) queued for password reset.'); ?>
+            <?php if (!empty($result['emailed'])) { ?>
+                <?= $this->translate->_('Each user will be emailed their new credentials.'); ?>
+            <?php } ?>
+        </div>
+        <div class="help-block" style="color:#666;">
+            <?= $this->translate->_('The job runs in the background and typically starts within a minute.'); ?>
+        </div>
+        <div style="margin-top: 14px;">
+            <button type="button" class="btn btn-primary" onclick="window.parent.afterDmActionSuccess && window.parent.afterDmActionSuccess(); window.parent.closeLayoutModal();">
+                <?= $this->translate->_('Close'); ?>
+            </button>
+        </div>
+    </div>
+    <?php return; } ?>
+
+<form name="listForm" id="listForm" method="post" action="<?= $formAction; ?>">
+    <h4 class="modal-title" style="margin-bottom: 14px;">
+        <?= $this->translate->_('Bulk Reset by Pasted List'); ?>
+    </h4>
+
+    <div class="form-group">
+        <label for="identifiers"><?= $this->translate->_('Paste emails or Lab IDs'); ?></label>
+        <textarea id="identifiers" name="identifiers" rows="6" class="form-control"
+            placeholder="<?= $this->translate->_('One per line, or comma/semicolon-separated. Examples:'); ?>&#10;5121&#10;5452&#10;user@example.com"><?= htmlspecialchars($pastedText, ENT_QUOTES, 'UTF-8'); ?></textarea>
+        <div class="help-line">
+            <?= $this->translate->_('Each Lab ID resolves to all DMs mapped to that participant. Each email resolves to one DM.'); ?>
+        </div>
+    </div>
+
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfNamespace->token ?? '', ENT_QUOTES, 'UTF-8'); ?>" />
+
+    <?php if ($step === 'paste' || ($step === 'resolved' && empty($matched) && empty($unresolved))) { ?>
+        <div class="actions">
+            <button type="submit" name="step" value="resolve" class="btn btn-primary">
+                <i class="icon-search"></i> <?= $this->translate->_('Resolve'); ?>
+            </button>
+            <button type="button" class="btn btn-link" onclick="window.parent.closeLayoutModal();">
+                <?= $this->translate->_('Cancel'); ?>
+            </button>
+        </div>
+    <?php } ?>
+
+    <?php if ($step === 'resolved') { ?>
+        <hr>
+        <?php if (!empty($matched)) { ?>
+            <div class="form-group">
+                <label>
+                    <?= $this->translate->_('Matched data managers'); ?>
+                    <span class="badge" style="background:#5cb85c;"><?= count($matched); ?></span>
+                </label>
+                <div class="panel-list">
+                    <?php foreach ($matched as $dm) {
+                        $isActive = strtolower((string) $dm['status']) === 'active';
+                        $name = trim(($dm['first_name'] ?? '') . ' ' . ($dm['last_name'] ?? ''));
+                        ?>
+                        <div class="row-line <?= $isActive ? '' : 'inactive'; ?>">
+                            <strong><?= htmlspecialchars($name ?: '—', ENT_QUOTES, 'UTF-8'); ?></strong>
+                            <span style="color:#666;">&lt;<?= htmlspecialchars((string) $dm['primary_email'], ENT_QUOTES, 'UTF-8'); ?>&gt;</span>
+                            <?php if (!$isActive) { ?>
+                                <span style="float:right;font-size:11px;"><?= htmlspecialchars(ucfirst((string) $dm['status']), ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        <?php } else { ?>
+            <div class="alert alert-warning">
+                <?= $this->translate->_('Nothing matched. Check the list and try again.'); ?>
+            </div>
+        <?php } ?>
+
+        <?php if (!empty($unresolved)) { ?>
+            <div class="form-group">
+                <label style="color:#a94442;">
+                    <?= $this->translate->_('Unresolved'); ?>
+                    <span class="badge" style="background:#d9534f;"><?= count($unresolved); ?></span>
+                </label>
+                <div class="panel-list" style="border-color:#ebccd1;background:#fcf2f2;">
+                    <?php foreach ($unresolved as $u) { ?>
+                        <div class="row-line"><?= htmlspecialchars((string) $u, ENT_QUOTES, 'UTF-8'); ?></div>
+                    <?php } ?>
+                </div>
+                <div class="help-line">
+                    <?= $this->translate->_('These will be skipped — no DM was found for them.'); ?>
+                </div>
+            </div>
+        <?php } ?>
+
+        <?php if (!empty($matched)) { ?>
+            <div class="form-group" style="margin-top: 14px;">
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="sendEmail" name="sendEmail" value="1" checked>
+                    <?= $this->translate->_('Email each user their new credentials'); ?>
+                </label>
+                <br>
+                <label class="checkbox-inline" style="margin-top:6px;">
+                    <input type="checkbox" id="forcePasswordReset" name="forcePasswordReset" value="1" checked>
+                    <?= $this->translate->_('Force password change on next login'); ?>
+                </label>
+            </div>
+
+            <div id="recipientsBlock" class="recipients-line">
+                <div class="form-group">
+                    <label for="emailCc"><?= $this->translate->_('Cc'); ?> <span style="color:#999;font-size:11px;"><?= $this->translate->_('(optional, comma-separated, applied to every email)'); ?></span></label>
+                    <input type="text" id="emailCc" name="emailCc" class="form-control input-sm" value="" placeholder="" />
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="emailBcc"><?= $this->translate->_('Bcc'); ?> <span style="color:#999;font-size:11px;"><?= $this->translate->_('(optional, comma-separated)'); ?></span></label>
+                    <input type="text" id="emailBcc" name="emailBcc" class="form-control input-sm"
+                        value="<?= htmlspecialchars($adminEmail, ENT_QUOTES, 'UTF-8'); ?>" placeholder="" />
+                </div>
+            </div>
+
+            <div class="actions">
+                <div class="help-block" style="color:#666;font-size:12px;margin-bottom:8px;">
+                    <i class="icon-time"></i>
+                    <?= $this->translate->_('Submitting will queue the reset to run in the background.'); ?>
+                </div>
+                <button type="submit" name="step" value="queue" id="listSubmitBtn" class="btn btn-primary" onclick="return confirmListSubmit();">
+                    <i class="icon-envelope"></i>
+                    <span id="listSubmitLabel"><?= $this->translate->_('Queue Reset & Email'); ?></span>
+                </button>
+                <button type="submit" name="step" value="resolve" class="btn btn-default" formnovalidate>
+                    <i class="icon-refresh"></i> <?= $this->translate->_('Re-resolve'); ?>
+                </button>
+                <button type="button" class="btn btn-link" onclick="window.parent.closeLayoutModal();">
+                    <?= $this->translate->_('Cancel'); ?>
+                </button>
+            </div>
+        <?php } ?>
+    <?php } ?>
+</form>
+
+<script type="text/javascript">
+    function updateListButton() {
+        var send = document.getElementById('sendEmail');
+        if (!send) { return; }
+        var $btn = $('#listSubmitBtn');
+        var $label = $('#listSubmitLabel');
+        $('#recipientsBlock').toggle(send.checked);
+        if (send.checked) {
+            $btn.removeClass('btn-info').addClass('btn-primary')
+                .find('i').attr('class', 'icon-envelope');
+            $label.text(<?= json_encode($this->translate->_('Queue Reset & Email')); ?>);
+        } else {
+            $btn.removeClass('btn-primary').addClass('btn-info')
+                .find('i').attr('class', 'icon-key');
+            $label.text(<?= json_encode($this->translate->_('Queue Reset (no email)')); ?>);
+        }
+    }
+
+    function confirmListSubmit() {
+        var n = <?= count($matched); ?>;
+        var send = document.getElementById('sendEmail').checked;
+        var msg = send
+            ? <?= json_encode($this->translate->_('Queue password reset and credentials email for %d data manager(s)?')); ?>
+            : <?= json_encode($this->translate->_('Queue password reset for %d data manager(s) without sending email?')); ?>;
+        msg = msg.replace('%d', n);
+        if (!confirm(msg)) {
+            return false;
+        }
+        $.blockUI({ message: <?= json_encode('<h4>' . $this->translate->_('Queueing…') . '</h4>'); ?> });
+        return true;
+    }
+
+    $(function () {
+        $('#sendEmail').on('change', updateListButton);
+        updateListButton();
+    });
+</script>

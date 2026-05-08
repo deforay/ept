@@ -51,14 +51,19 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </select>
     </div>
     <?php } ?>
-    <div class="col-md-5" id="bulkActionBar" style="margin-top: 22px;display:none;">
-        <button type="button" id="bulkResetBtn" class="btn btn-info">
-            <i class="icon-key"></i>&nbsp;<?= $this->translate->_("Queue Reset &amp; Email"); ?>
-            <span id="bulkResetCount" class="badge" style="background:#fff;color:#3a87ad;margin-left:6px;">0</span>
+    <div class="col-md-5" style="margin-top: 22px;">
+        <span id="bulkActionBar" style="display:none;">
+            <button type="button" id="bulkResetBtn" class="btn btn-info">
+                <i class="icon-key"></i>&nbsp;<?= $this->translate->_("Queue Reset &amp; Email"); ?>
+                <span id="bulkResetCount" class="badge" style="background:#fff;color:#3a87ad;margin-left:6px;">0</span>
+            </button>
+            <a href="javascript:void(0);" id="bulkClearBtn" style="margin-left:8px;">
+                <?= $this->translate->_("Clear selection"); ?>
+            </a>
+        </span>
+        <button type="button" id="bulkByListBtn" class="btn btn-default">
+            <i class="icon-paste"></i>&nbsp;<?= $this->translate->_("Reset by Pasted List"); ?>
         </button>
-        <a href="javascript:void(0);" id="bulkClearBtn" style="margin-left:8px;">
-            <?= $this->translate->_("Clear selection"); ?>
-        </a>
     </div>
 </div>
 <style>
@@ -334,6 +339,10 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             var ids = Array.from(selectedDmIds).join(',');
             // URL stays well under typical limits for the realistic batch sizes here.
             layoutModal('/admin/data-managers/bulk-reset-password/ids/' + encodeURIComponent(ids), '720', '600');
+        });
+
+        $('#bulkByListBtn').on('click', function () {
+            layoutModal('/admin/data-managers/bulk-reset-by-list', '720', '640');
         });
 
         // Inline filter for the expanded participants list (only present when > 5 mapped)

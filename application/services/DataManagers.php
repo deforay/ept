@@ -408,6 +408,106 @@ class Application_Service_DataManagers
         $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
+    /* Resolves a list of pasted identifiers (emails OR participant unique_identifier
+       a.k.a. "Lab ID") into the set of DMs to reset. A single Lab ID can map to
+       multiple DMs via participant_manager_map; emails resolve to one DM.
+       Returns ['matched' => [dm rows], 'unresolved' => [original input lines]]. */
+    public function resolveDmIdentifiers(array $lines): array
+    {
+        $cleaned = [];
+        foreach ($lines as $line) {
+            $line = trim((string) $line);
+            if ($line === '') {
+                continue;
+            }
+            $cleaned[] = $line;
+        }
+        $cleaned = array_values(array_unique($cleaned));
+        if (empty($cleaned)) {
+            return ['matched' => [], 'unresolved' => []];
+        }
+
+        $emails = [];
+        $labIds = [];
+        foreach ($cleaned as $entry) {
+            if (strpos($entry, '@') !== false) {
+                $valid = Application_Service_Common::validateEmail($entry);
+                if ($valid !== null) {
+                    $emails[strtolower($valid)] = $valid;
+                }
+            } else {
+                $labIds[$entry] = $entry;
+            }
+        }
+
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $matched = [];
+        $matchedDmIds = [];
+        $matchedInputs = [];
+
+        if (!empty($emails)) {
+            $rows = $db->fetchAll(
+                $db->select()
+                    ->from('data_manager', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
+                    ->where('LOWER(primary_email) IN (?)', array_keys($emails))
+            );
+            foreach ($rows as $row) {
+                $key = (int) $row['dm_id'];
+                if (!isset($matchedDmIds[$key])) {
+                    $matched[] = $row;
+                    $matchedDmIds[$key] = true;
+                }
+                $matchedInputs[strtolower((string) $row['primary_email'])] = true;
+            }
+        }
+
+        if (!empty($labIds)) {
+            $select = $db->select()
+                ->from(['p' => 'participant'], ['p_uid' => 'p.unique_identifier'])
+                ->join(['pmm' => 'participant_manager_map'], 'pmm.participant_id = p.participant_id', [])
+                ->join(['dm' => 'data_manager'], 'dm.dm_id = pmm.dm_id', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
+                ->where('p.unique_identifier IN (?)', array_values($labIds));
+            $rows = $db->fetchAll($select);
+            foreach ($rows as $row) {
+                $key = (int) $row['dm_id'];
+                if (!isset($matchedDmIds[$key])) {
+                    $matched[] = [
+                        'dm_id' => $row['dm_id'],
+                        'first_name' => $row['first_name'],
+                        'last_name' => $row['last_name'],
+                        'institute' => $row['institute'],
+                        'primary_email' => $row['primary_email'],
+                        'status' => $row['status'],
+                    ];
+                    $matchedDmIds[$key] = true;
+                }
+                $matchedInputs[(string) $row['p_uid']] = true;
+            }
+        }
+
+        $unresolved = [];
+        foreach ($cleaned as $entry) {
+            if (strpos($entry, '@') !== false) {
+                $valid = Application_Service_Common::validateEmail($entry);
+                if ($valid === null) {
+                    $unresolved[] = $entry;
+                    continue;
+                }
+                if (empty($matchedInputs[strtolower($valid)])) {
+                    $unresolved[] = $entry;
+                }
+            } else {
+                if (empty($matchedInputs[$entry])) {
+                    $unresolved[] = $entry;
+                }
+            }
+        }
+
+        usort($matched, fn($a, $b) => strcasecmp(($a['first_name'] ?? '') . ($a['last_name'] ?? ''), ($b['first_name'] ?? '') . ($b['last_name'] ?? '')));
+
+        return ['matched' => $matched, 'unresolved' => $unresolved];
+    }
+
     /* Returns minimal info for the bulk-reset modal: dm_id, name, email, status. */
     public function getUsersByIds(array $dmIds): array
     {
