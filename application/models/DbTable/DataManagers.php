@@ -70,10 +70,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         /* Array of database columns which should be read and sent back to DataTables. Use a space where
          * you want to insert a non-database field (for example a counter or static image)
          */
+        // Index 0 is the bulk-select checkbox column — not searchable/sortable,
+        // empty placeholder keeps DataTables column index in sync with $aColumns.
         if (isset($parameters['ptcc']) && $parameters['ptcc'] == 1) {
-            $aColumns = ['u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district'];
+            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.mobile', 'u.primary_email', 'u.status', 'c.iso_name', 'state', 'district'];
         } else {
-            $aColumns = ['u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status'];
+            $aColumns = ['', 'u.first_name', 'u.last_name', 'u.institute', 'u.mobile', 'u.primary_email', 'u.status'];
         }
 
         $sLimit = '';
@@ -105,13 +107,14 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 } else {
                     $sWhereSub .= ' AND (';
                 }
-                $colSize = count($aColumns);
+                $searchableColumns = array_values(array_filter($aColumns, fn($c) => $c !== ''));
+                $colSize = count($searchableColumns);
 
                 for ($i = 0; $i < $colSize; $i++) {
                     if ($i < $colSize - 1) {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
+                        $sWhereSub .= $searchableColumns[$i] . " LIKE '%" . ($search) . "%' OR ";
                     } else {
-                        $sWhereSub .= $aColumns[$i] . " LIKE '%" . ($search) . "%' ";
+                        $sWhereSub .= $searchableColumns[$i] . " LIKE '%" . ($search) . "%' ";
                     }
                 }
                 $sWhereSub .= ')';
@@ -121,6 +124,9 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         /* Individual column filtering */
         for ($i = 0; $i < count($aColumns); $i++) {
+            if ($aColumns[$i] === '') {
+                continue;
+            }
             if (isset($parameters['bSearchable_' . $i]) && $parameters['bSearchable_' . $i] == 'true' && $parameters['sSearch_' . $i] != '') {
                 if ($sWhere == '') {
                     $sWhere .= $aColumns[$i] . " LIKE '%" . ($parameters['sSearch_' . $i]) . "%' ";
@@ -213,6 +219,8 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             //}else{
             //$participantDetails='';
             //}
+            $row[] = '<input type="checkbox" class="dm-select" value="' . (int)$aRow['dm_id']
+                . '" data-email="' . htmlspecialchars((string)$aRow['primary_email'], ENT_QUOTES, 'UTF-8') . '" />';
             $row[] = $aRow['first_name'];
             $row[] = $aRow['last_name'];
             if (!isset($parameters['ptcc']) || $parameters['ptcc'] != 1) {

@@ -20,6 +20,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
         $ajaxContext->addActionContext('index', 'html')
             ->addActionContext('get-participants-names', 'html')
             ->addActionContext('reset-password', 'html')
+            ->addActionContext('bulk-reset-password', 'html')
             ->addActionContext('change-primary-email', 'html')
             ->addActionContext('save-password', 'html')
             ->addActionContext('check-dm-duplicate', 'html')
@@ -220,6 +221,68 @@ class Admin_DataManagersController extends Zend_Controller_Action
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
+        $this->view->loginUrl = $loginUrl;
+    }
+
+    public function bulkResetPasswordAction()
+    {
+        $this->_helper->layout()->setLayout('modal');
+        $userService = new Application_Service_DataManagers();
+        /** @var Zend_Controller_Request_Http $request */
+        $request = $this->getRequest();
+        $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+        $loginUrl = rtrim((string) $conf->domain, '/') . '/auth/login';
+
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            if (empty($params['loginUrl'])) {
+                $params['loginUrl'] = $loginUrl;
+            }
+
+            // Normalise and persist a payload file for the background worker.
+            $rawIds = $params['dmIds'] ?? '';
+            $dmIds = array_values(array_unique(array_filter(array_map('intval', is_array($rawIds) ? $rawIds : explode(',', (string) $rawIds)))));
+
+            if (empty($dmIds)) {
+                $this->view->result = ['queued' => 0, 'error' => 'No data managers selected.'];
+                $this->view->loginUrl = $loginUrl;
+                return;
+            }
+
+            $payload = [
+                'dmIds'              => $dmIds,
+                'sendEmail'          => !empty($params['sendEmail']),
+                'forcePasswordReset' => !empty($params['forcePasswordReset']),
+                'emailCc'            => (string) ($params['emailCc'] ?? ''),
+                'emailBcc'           => (string) ($params['emailBcc'] ?? ''),
+                'loginUrl'           => $params['loginUrl'],
+            ];
+
+            $fileName = 'bulk-reset-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json';
+            $payloadPath = TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fileName;
+            if (!is_dir(TEMP_UPLOAD_PATH)) {
+                @mkdir(TEMP_UPLOAD_PATH, 0775, true);
+            }
+            file_put_contents($payloadPath, json_encode($payload));
+
+            $authNameSpace = new Zend_Session_Namespace('administrators');
+            $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
+            $scheduledDb->insert([
+                'job'          => "bulk-reset-passwords.php -f '$fileName'",
+                'requested_on' => Pt_Commons_DateUtility::getCurrentDateTime(),
+                'requested_by' => $authNameSpace->admin_id ?? null,
+                'status'       => 'pending',
+            ]);
+
+            $this->view->result = [
+                'queued'  => count($dmIds),
+                'emailed' => !empty($params['sendEmail']),
+            ];
+        } else {
+            $idsParam = (string) $this->_getParam('ids', '');
+            $ids = array_values(array_unique(array_filter(array_map('intval', explode(',', $idsParam)))));
+            $this->view->dms = $ids ? $userService->getUsersByIds($ids) : [];
+        }
         $this->view->loginUrl = $loginUrl;
     }
 

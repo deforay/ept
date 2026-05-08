@@ -51,6 +51,15 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         </select>
     </div>
     <?php } ?>
+    <div class="col-md-5" id="bulkActionBar" style="margin-top: 22px;display:none;">
+        <button type="button" id="bulkResetBtn" class="btn btn-info">
+            <i class="icon-key"></i>&nbsp;<?= $this->translate->_("Queue Reset &amp; Email"); ?>
+            <span id="bulkResetCount" class="badge" style="background:#fff;color:#3a87ad;margin-left:6px;">0</span>
+        </button>
+        <a href="javascript:void(0);" id="bulkClearBtn" style="margin-left:8px;">
+            <?= $this->translate->_("Clear selection"); ?>
+        </a>
+    </div>
 </div>
 <style>
     #usersTable > tbody > tr > td { vertical-align: middle; }
@@ -61,6 +70,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     id="usersTable">
     <thead>
         <tr>
+            <th style="width:32px;"><input type="checkbox" id="dmSelectAll" title="<?= $this->translate->_('Select all on this page'); ?>" /></th>
             <th><?= $this->translate->_("First Name"); ?></th>
             <th><?= $this->translate->_("Last Name"); ?></th>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
@@ -78,20 +88,21 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             <th><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
-            <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search First Name'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Last Name'); ?>" /></th>
+            <th></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search First Name'); ?>" /></th>
+            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Last Name'); ?>" /></th>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Institute'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Institute'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+            <?php } else { ?>
                 <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
                 <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
                 <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
-            <?php } else { ?>
-                <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
+                <th><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
             <?php } ?>
             <th></th>
             <th></th>
@@ -125,6 +136,11 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
             "bRetrieve": true,
             "bSortCellsTop": true,
             "aoColumns": [
+                {
+                    "sClass": "center",
+                    "bSortable": false,
+                    "bSearchable": false
+                },
                 {
                     "sClass": ""
                 },
@@ -162,7 +178,7 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
                 }
             ],
             "aaSorting": [
-                [0, "asc"]
+                [1, "asc"]
             ],
             "bProcessing": true,
             "bServerSide": true,
@@ -248,8 +264,77 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
         // Redraw the data-managers table in place so the updated email/status shows
         // without reloading the whole page.
         window.afterDmActionSuccess = function () {
+            // Bulk modal also calls this after completion — clear selection too.
+            selectedDmIds.clear();
+            updateBulkUi();
             oTable.fnDraw(false);
         };
+
+        /* Bulk selection: track dm_ids across paging since rows get re-rendered. */
+        var selectedDmIds = new Set();
+
+        function updateBulkUi() {
+            var count = selectedDmIds.size;
+            $('#bulkResetCount').text(count);
+            // Show the bulk action bar only when at least one row is selected.
+            $('#bulkActionBar').toggle(count > 0);
+            // Sync the header "select all" checkbox state with this page.
+            var $pageBoxes = $('#usersTable tbody input.dm-select');
+            var visible = $pageBoxes.length;
+            var checkedHere = $pageBoxes.filter(':checked').length;
+            var $all = $('#dmSelectAll');
+            $all.prop('checked', visible > 0 && checkedHere === visible);
+            // indeterminate when partial
+            $all.prop('indeterminate', checkedHere > 0 && checkedHere < visible);
+        }
+
+        // Restore checkbox state after each redraw (paging, filter, search).
+        $('#usersTable').on('draw.dt', function () {
+            $('#usersTable tbody input.dm-select').each(function () {
+                this.checked = selectedDmIds.has(parseInt(this.value, 10));
+            });
+            updateBulkUi();
+        });
+
+        // Header "select all on this page" toggles every visible row's checkbox.
+        $('#dmSelectAll').on('change', function () {
+            var checked = this.checked;
+            $('#usersTable tbody input.dm-select').each(function () {
+                var id = parseInt(this.value, 10);
+                this.checked = checked;
+                if (checked) {
+                    selectedDmIds.add(id);
+                } else {
+                    selectedDmIds.delete(id);
+                }
+            });
+            updateBulkUi();
+        });
+
+        $('#usersTable tbody').on('change', 'input.dm-select', function () {
+            var id = parseInt(this.value, 10);
+            if (this.checked) {
+                selectedDmIds.add(id);
+            } else {
+                selectedDmIds.delete(id);
+            }
+            updateBulkUi();
+        });
+
+        $('#bulkClearBtn').on('click', function () {
+            selectedDmIds.clear();
+            $('#usersTable tbody input.dm-select').prop('checked', false);
+            updateBulkUi();
+        });
+
+        $('#bulkResetBtn').on('click', function () {
+            if (selectedDmIds.size === 0) {
+                return;
+            }
+            var ids = Array.from(selectedDmIds).join(',');
+            // URL stays well under typical limits for the realistic batch sizes here.
+            layoutModal('/admin/data-managers/bulk-reset-password/ids/' + encodeURIComponent(ids), '720', '600');
+        });
 
         // Inline filter for the expanded participants list (only present when > 5 mapped)
         $('#usersTable tbody').on('input', 'input.participant-filter-input', function () {

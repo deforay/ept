@@ -408,6 +408,132 @@ class Application_Service_DataManagers
         $alert->message = 'Password reset and login email queued for ' . $to[0];
     }
 
+    /* Returns minimal info for the bulk-reset modal: dm_id, name, email, status. */
+    public function getUsersByIds(array $dmIds): array
+    {
+        $dmIds = array_values(array_unique(array_filter(array_map('intval', $dmIds))));
+        if (empty($dmIds)) {
+            return [];
+        }
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $select = $db->select()
+            ->from('data_manager', ['dm_id', 'first_name', 'last_name', 'institute', 'primary_email', 'status'])
+            ->where('dm_id IN (?)', $dmIds)
+            ->order(['first_name', 'last_name']);
+        return $db->fetchAll($select);
+    }
+
+    /* Resets passwords for a list of DMs and (optionally) emails each user their
+       new credentials. Each DM gets a unique generated password. Returns a summary
+       array with counts and per-row outcomes. */
+    public function bulkResetPasswordsFromAdmin(array $params): array
+    {
+        $dmIds = [];
+        if (!empty($params['dmIds'])) {
+            $raw = is_array($params['dmIds']) ? $params['dmIds'] : explode(',', (string)$params['dmIds']);
+            $dmIds = array_values(array_unique(array_filter(array_map('intval', $raw))));
+        }
+        $sendEmail = !empty($params['sendEmail']);
+        $forceReset = !empty($params['forcePasswordReset']);
+        $loginUrl = trim((string) ($params['loginUrl'] ?? ''));
+
+        $cleanList = function ($raw) {
+            $out = [];
+            foreach (preg_split('/[\s,;]+/', (string) $raw) ?: [] as $addr) {
+                $addr = trim($addr);
+                if ($addr === '') {
+                    continue;
+                }
+                $valid = Application_Service_Common::validateEmail($addr);
+                if ($valid !== null) {
+                    $out[strtolower($valid)] = $valid;
+                }
+            }
+            return array_values($out);
+        };
+        $cc  = $cleanList($params['emailCc']  ?? '');
+        $bcc = $cleanList($params['emailBcc'] ?? '');
+
+        $summary = [
+            'total'    => count($dmIds),
+            'updated'  => 0,
+            'emailed'  => 0,
+            'skipped'  => [],
+            'success'  => [],
+        ];
+
+        if (empty($dmIds)) {
+            return $summary;
+        }
+
+        $common = new Application_Service_Common();
+        $passGen = new Application_Service_Common();
+        $rows = $this->getUsersByIds($dmIds);
+
+        foreach ($rows as $row) {
+            $email = trim((string)($row['primary_email'] ?? ''));
+            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            if ($email === '' || Application_Service_Common::validateEmail($email) === null) {
+                $summary['skipped'][] = ['dm_id' => (int)$row['dm_id'], 'email' => $email, 'reason' => 'invalid email'];
+                continue;
+            }
+            $newPassword = $passGen->generatePassword();
+            // One-time credential: user is force-reset on next login and the
+            // password is delivered in plaintext via email anyway, so use a
+            // lower bcrypt cost to keep bulk runs from blowing the request
+            // budget. updatePasswordFromAdmin() detects an existing bcrypt
+            // hash and passes it through without re-hashing.
+            $hashed = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 10]);
+            $ok = $this->datamanagersDb->updatePasswordFromAdmin($email, $hashed, $forceReset);
+            if (!$ok) {
+                $summary['skipped'][] = ['dm_id' => (int)$row['dm_id'], 'email' => $email, 'reason' => 'update failed'];
+                continue;
+            }
+            $summary['updated']++;
+            $summary['success'][] = ['dm_id' => (int)$row['dm_id'], 'name' => $name, 'email' => $email];
+
+            if ($sendEmail) {
+                $this->queueBulkCredentialsEmail($common, $email, $name, $newPassword, $loginUrl, $cc, $bcc);
+                $summary['emailed']++;
+            }
+        }
+
+        $alert = new Zend_Session_Namespace('alertSpace');
+        if ($sendEmail) {
+            $alert->message = sprintf('Reset %d password(s); queued %d credentials email(s).', $summary['updated'], $summary['emailed']);
+        } else {
+            $alert->message = sprintf('Reset %d password(s).', $summary['updated']);
+        }
+        return $summary;
+    }
+
+    private function queueBulkCredentialsEmail(Application_Service_Common $common, string $toEmail, string $name, string $password, string $loginUrl, array $cc, array $bcc): void
+    {
+        $greetingName = $name !== '' ? $name : 'Participant';
+        $subject = 'Your ePT Login Credentials';
+        $message = 'Dear ' . htmlspecialchars($greetingName, ENT_QUOTES, 'UTF-8') . ',<br/><br/>'
+            . 'Please use the following to log in to ePT:<br/><br/>'
+            . 'URL: <a href="' . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '">'
+            . htmlspecialchars($loginUrl, ENT_QUOTES, 'UTF-8') . '</a><br/>'
+            . 'Login ID: ' . htmlspecialchars($toEmail, ENT_QUOTES, 'UTF-8') . '<br/>'
+            . 'Password: ' . htmlspecialchars($password, ENT_QUOTES, 'UTF-8') . '<br/><br/>'
+            . 'Thanks,<br/>ePT Support';
+
+        $mailCfg = json_decode((string) Application_Service_Common::getConfig('mail'));
+        $fromEmail = $mailCfg->fromEmail ?? Application_Service_Common::getConfig('admin_email');
+        $fromName  = $mailCfg->fromName  ?? (Application_Service_Common::getConfig('admin_name') ?: 'ePT Support');
+
+        $common->insertTempMail(
+            $toEmail,
+            !empty($cc) ? implode(',', $cc) : null,
+            !empty($bcc) ? implode(',', $bcc) : null,
+            $subject,
+            $message,
+            $fromEmail,
+            $fromName
+        );
+    }
+
     public function getDataManagerList($ptcc = false)
     {
         return $this->datamanagersDb->getAllDataManagers($ptcc);

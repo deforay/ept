@@ -7,6 +7,7 @@ const ALLOWED_JOB_SCRIPTS = [
     'generate-certificates.php',
     'evaluate-shipments.php',
     'distribute-certificates.php',
+    'bulk-reset-passwords.php',
 ];
 
 /**
