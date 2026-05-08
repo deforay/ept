@@ -259,6 +259,12 @@ parameters:
 			path: application/controllers/CaptchaController.php
 
 		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/controllers/CommonController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$countries\.$#'
 			identifier: property.notFound
 			count: 1
@@ -321,7 +327,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method Zend_Controller_Action_HelperBroker\:\:layout\(\)\.$#'
 			identifier: method.notFound
-			count: 9
+			count: 10
 			path: application/controllers/CommonController.php
 
 		-
@@ -4089,7 +4095,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$domain\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
@@ -4153,6 +4159,12 @@ parameters:
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$dms\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$institutes\.$#'
 			identifier: property.notFound
 			count: 2
@@ -4161,11 +4173,17 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$loginUrl\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 4
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$mappedParticipants\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$matched\.$#'
 			identifier: property.notFound
 			count: 1
 			path: application/modules/admin/controllers/DataManagersController.php
@@ -4192,6 +4210,12 @@ parameters:
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$passLength\.$#'
 			identifier: property.notFound
 			count: 3
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$pastedText\.$#'
+			identifier: property.notFound
+			count: 1
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
@@ -4227,7 +4251,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$result\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 7
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
@@ -4237,7 +4261,19 @@ parameters:
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$step\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$unmappedDmCount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$unresolved\.$#'
 			identifier: property.notFound
 			count: 1
 			path: application/modules/admin/controllers/DataManagersController.php
@@ -4251,7 +4287,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method Zend_Controller_Action_HelperBroker\:\:layout\(\)\.$#'
 			identifier: method.notFound
-			count: 8
+			count: 10
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
@@ -7527,7 +7563,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 16
+			count: 18
 			path: application/services/DataManagers.php
 
 		-
@@ -8737,9 +8773,15 @@ parameters:
 			path: library/Pt/Plugins/PreSetter.php
 
 		-
-			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$lastActivity\.$#'
 			identifier: property.notFound
 			count: 2
+			path: library/Pt/Plugins/PreSetter.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 3
 			path: library/Pt/Plugins/PreSetter.php
 
 		-
