@@ -217,7 +217,7 @@ class Application_Service_DataManagers
         $normalizedInput = Application_Service_Common::validateEmail((string) $email);
         // (We’ll still prefer the DB email below, but this prevents weird inputs early.)
 
-        $participant = $this->datamanagersDb->resetPasswordForEmail($normalizedInput);
+        $participant = $this->datamanagersDb->issuePasswordResetToken($normalizedInput);
 
         // (Optional) prevent enumeration: always show a generic message
         $genericOkMsg = $this->translator->_('If the entered email is registered, you will receive a password reset link. If not, please contact your PT provider for assistance.');
@@ -274,9 +274,7 @@ class Application_Service_DataManagers
         $validMail = Application_Service_Common::isValidEmail($participantMail, $excludedDomains);
 
         if ($validMail === true) {
-            // Build reset link using the **normalized DB email**
-            $emailToken = base64_encode($participantMail);
-            $resetUrl = "$eptDomain/auth/new-password/email/$emailToken";
+            $resetUrl = "$eptDomain/auth/new-password/token/{$participant->password_reset_token}";
 
             $message = "Dear {$participantName},<br/><br/>"
                 . 'You (or someone else) requested a password reset for your ePT account (<b>'
@@ -284,6 +282,7 @@ class Application_Service_DataManagers
                 . '</b>).<br/><br/>'
                 . 'If you requested this, click the link below or paste it into your browser:<br/>'
                 . "<a href='{$resetUrl}'>{$resetUrl}</a><br/><br/>"
+                . 'This link will expire in 24 hours and can only be used once.<br/><br/>'
                 . 'If you did not request a password reset, you can safely ignore this email.<br/><br/>'
                 . '<small>Thanks,<br/>ePT Support</small>';
 
@@ -771,9 +770,9 @@ class Application_Service_DataManagers
         }
     }
 
-    public function checkEmail($email)
+    public function resolveResetToken($token)
     {
-        return $this->datamanagersDb->fetchEmailById($email);
+        return $this->datamanagersDb->fetchByPasswordResetToken($token);
     }
 
     public function verifyEmailById($email)

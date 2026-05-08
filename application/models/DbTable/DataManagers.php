@@ -547,17 +547,50 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
     public function saveNewPassword($params)
     {
         $password = Common::passwordHash($params['password']);
-        $noOfRows = $this->update(
-            ['password' => $password],
-            ['primary_email = ?' => $params['registeredEmail']]
-        );
+        $data = [
+            'password' => $password,
+            'password_reset_token' => null,
+            'password_reset_expires_at' => null,
+        ];
+        if (!empty($params['dm_id'])) {
+            $where = ['dm_id = ?' => (int) $params['dm_id']];
+        } else {
+            $where = ['primary_email = ?' => $params['registeredEmail']];
+        }
+        $noOfRows = $this->update($data, $where);
         return $noOfRows === 1;
     }
 
-    public function fetchEmailById($email)
+    public function issuePasswordResetToken($email)
     {
-        $sql = $this->select()->from('data_manager')->where('primary_email = ?', base64_decode($email));
-        return $this->fetchRow($sql);
+        $row = $this->fetchRow(
+            $this->select()->from('data_manager')->where('primary_email = ?', $email)
+        );
+        if (!$row) {
+            return false;
+        }
+        $token = bin2hex(random_bytes(32));
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
+        $this->update(
+            ['password_reset_token' => $token, 'password_reset_expires_at' => $expiresAt],
+            ['dm_id = ?' => (int) $row->dm_id]
+        );
+        $row->password_reset_token = $token;
+        $row->password_reset_expires_at = $expiresAt;
+        return $row;
+    }
+
+    public function fetchByPasswordResetToken($token)
+    {
+        if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+            return null;
+        }
+        $sql = $this->select()
+            ->from('data_manager')
+            ->where('password_reset_token = ?', $token)
+            ->where('password_reset_expires_at > ?', date('Y-m-d H:i:s'));
+        $row = $this->fetchRow($sql);
+        return $row ?: null;
     }
 
     public function fetchVerifyEmailById($email)
@@ -918,7 +951,12 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
         if ($row) {
             $common = new Application_Service_Common();
-            $message = 'Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ' . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $eptDomain . '/auth/new-password/email/' . base64_encode($email) . "'>" . $eptDomain . 'auth/new-password/email/' . base64_encode($email) . '</a> or copy and paste it in a browser address bar.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>';
+            $issued = $this->issuePasswordResetToken($email);
+            if (!$issued) {
+                return ['status' => 'fail', 'message' => 'Something went wrong please try again later.'];
+            }
+            $resetUrl = $eptDomain . '/auth/new-password/token/' . $issued->password_reset_token;
+            $message = 'Dear Participant,<br/><br/> You have requested a password reset for the PT account for email ' . $email . ". <br/><br/>If you requested for the password reset, please click on the following link <a href='" . $resetUrl . "'>" . $resetUrl . '</a> or copy and paste it in a browser address bar.<br/><br/>This link will expire in 24 hours and can only be used once.<br/><br/> If you did not request for password reset, you can safely ignore this email.<br/><br/><small>Thanks,<br/> ePT Support</small>';
             $fromMail = Common::getConfig('admin_email');
             $fromName = Common::getConfig('admin-name');
             $check = $common->insertTempMail($email, null, null, 'Password Reset - ePT', $message, $fromMail, $fromName);

@@ -416,15 +416,16 @@ class AuthController extends Zend_Controller_Action
         $request = $this->getRequest();
         $userService = new Application_Service_DataManagers();
         $sessionAlert = new Zend_Session_Namespace('alertSpace');
-        $emailToken = $this->hasParam('email') ? (string) $this->_getParam('email') : '';
-        $resolved = $emailToken !== '' ? $userService->checkEmail($emailToken) : null;
-        if (empty($resolved) || empty($resolved['primary_email'])) {
+        $token = $this->hasParam('token') ? (string) $this->_getParam('token') : '';
+        $resolved = $token !== '' ? $userService->resolveResetToken($token) : null;
+        if (empty($resolved) || empty($resolved['primary_email']) || empty($resolved['dm_id'])) {
             $sessionAlert->message = 'This password reset link is invalid or has expired.';
             $sessionAlert->status = 'failure';
             $this->redirect($this->loginUri);
             return;
         }
         $verifiedEmail = $resolved['primary_email'];
+        $verifiedDmId = (int) $resolved['dm_id'];
         if ($request->isPost()) {
             $params = $request->getPost();
             if (
@@ -441,6 +442,7 @@ class AuthController extends Zend_Controller_Action
                 return;
             }
             $params['registeredEmail'] = $verifiedEmail;
+            $params['dm_id'] = $verifiedDmId;
             $redirectTo = $userService->newPassword($params);
             $auditDb = new Application_Model_DbTable_AuditLog();
             $auditDb->addNewAuditLog('Set new password via reset link - ' . $verifiedEmail, 'auth');
