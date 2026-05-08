@@ -374,19 +374,24 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6 form-group">
+                                <div class="col-12 form-group">
                                     <label for="message" class="form-label mb-1 text-muted small"><?= $this->translate->_("Message"); ?> <span class="text-danger">*</span></label>
                                     <textarea class="form-control isRequired" name="message" id="message" rows="5" placeholder="<?= $this->translate->_("Message"); ?>" title="Please enter the message to send"></textarea>
                                 </div>
+                            </div>
+                            <div class="row align-items-end">
                                 <div class="col-md-6 form-group">
-                                    <label class="form-label mb-1 text-muted small"><?= $this->translate->_("Security Check"); ?></label>
-                                    <div class="rounded p-2 text-center" style="background:#f8f9fa; border:1px solid #e9ecef;">
-                                        <div class="mb-2">
-                                            <img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" class="rounded" style="height:70px;" alt="<?= $this->translate->_("Security check"); ?>" />
-                                            <a href="#" onclick="getCaptcha('capChaw');return false;" class="ms-2 text-muted small" style="text-decoration:none;" title="<?= $this->translate->_("Get New Image"); ?>"><i class="bi bi-arrow-clockwise"></i></a>
+                                    <label for="challengeResponse" class="form-label mb-1 text-muted small"><?= $this->translate->_("Security Check"); ?></label>
+                                    <div class="d-flex align-items-start" style="gap:10px;">
+                                        <div class="d-flex flex-column align-items-center" style="flex-shrink:0;">
+                                            <img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" class="rounded" style="height:58px;width:auto;" alt="<?= $this->translate->_("Security check"); ?>" />
+                                            <button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-sm text-muted p-0" style="font-size:12px;margin-top:2px;"><i class="bi bi-arrow-clockwise"></i> <?= $this->translate->_("Get New Image"); ?></button>
                                         </div>
-                                        <input type="text" id="challengeResponse" class="form-control form-control-sm text-center" placeholder="<?= $this->translate->_("Enter text above"); ?>" title="Please enter the text from the image." maxlength="40">
+                                        <input type="text" id="challengeResponse" class="form-control isRequired" placeholder="<?= $this->translate->_("Enter text from image"); ?>" title="Please enter the text from the image." maxlength="40">
                                     </div>
+                                </div>
+                                <div class="col-md-6 form-group text-md-end">
+                                    <button type="button" class="btn-get-started" id="submitbtn" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message"); ?></button>
                                 </div>
                             </div>
                             <div class="my-3">
@@ -394,7 +399,6 @@ if (isset($this->htmlHomePage) && !empty($this->htmlHomePage) && isset($this->ho
                                 <div class="error-message"></div>
                                 <div class="sent-message"><?= $this->translate->_("Your message has been sent. Thank you!"); ?></div>
                             </div>
-                            <div class="text-center"><a class="btn-get-started" id="submitbtn" href="javascript:void(0);" onclick="validateContactUs();return false;"><?= $this->translate->_("Send Message"); ?></a></div>
                         </form>
                     </div>
 
