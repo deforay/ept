@@ -414,10 +414,15 @@ class Application_Service_DataManagers
        Returns ['matched' => [dm rows], 'unresolved' => [original input lines]]. */
     public function resolveDmIdentifiers(array $lines): array
     {
+        // Strip ALL internal whitespace + zero-width / BOM / control chars.
+        // Excel pastes often include NBSP (U+00A0), ZWSP (U+200B), BOM (U+FEFF),
+        // and stray spaces inside emails like "yonidany @yahoo.fr".
+        $stripPattern = '/[\pZ\s\p{Cc}\x{200B}\x{200C}\x{200D}\x{FEFF}]+/u';
         $cleaned = [];
         foreach ($lines as $line) {
-            $line = trim((string) $line);
-            if ($line === '') {
+            $line = (string) $line;
+            $line = preg_replace($stripPattern, '', $line);
+            if ($line === '' || $line === null) {
                 continue;
             }
             $cleaned[] = $line;
