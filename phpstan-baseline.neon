@@ -99,7 +99,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 17
+			count: 18
 			path: application/controllers/AuthController.php
 
 		-
@@ -141,7 +141,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$status\.$#'
 			identifier: property.notFound
-			count: 17
+			count: 18
 			path: application/controllers/AuthController.php
 
 		-

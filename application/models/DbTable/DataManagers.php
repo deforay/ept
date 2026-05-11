@@ -573,10 +573,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
         $expiresAt = date('Y-m-d H:i:s', strtotime('+24 hours'));
         $this->update(
             ['password_reset_token' => $token, 'password_reset_expires_at' => $expiresAt],
-            ['dm_id = ?' => (int) $row->dm_id]
+            ['dm_id = ?' => (int) $row['dm_id']]
         );
-        $row->password_reset_token = $token;
-        $row->password_reset_expires_at = $expiresAt;
+        $row['password_reset_token'] = $token;
+        $row['password_reset_expires_at'] = $expiresAt;
         return $row;
     }
 
