@@ -79,6 +79,53 @@ class Application_Service_Common
         return $result;
     }
 
+    /**
+     * Build the SMTP transport, with a non-production safety net.
+     *
+     * On non-production environments, routes through a local mail trap
+     * (Mailpit/Mailhog via the MAIL_DEV_DSN env var). If no dev DSN is set,
+     * returns null so callers can short-circuit and skip the send — this
+     * defends against a cloned prod DB or stale application.ini delivering
+     * to real recipients from a dev box.
+     */
+    private static function buildSmtpTransport(Zend_Config_Ini $conf): ?Zend_Mail_Transport_Smtp
+    {
+        if (strtolower((string) APPLICATION_ENV) === 'production') {
+            return new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+        }
+
+        $devDsn = getenv('MAIL_DEV_DSN') ?: ($_ENV['MAIL_DEV_DSN'] ?? '');
+        if ($devDsn === '') {
+            error_log('Common::buildSmtpTransport(): mail blocked on APPLICATION_ENV=' . APPLICATION_ENV . ' (set MAIL_DEV_DSN to a local mail trap, e.g. smtp://127.0.0.1:1025, to enable delivery).');
+            return null;
+        }
+
+        $parts = parse_url($devDsn);
+        if (!$parts || empty($parts['host'])) {
+            error_log("Common::buildSmtpTransport(): invalid MAIL_DEV_DSN '{$devDsn}'");
+            return null;
+        }
+
+        $smtpCfg = [];
+        if (!empty($parts['port'])) {
+            $smtpCfg['port'] = (int) $parts['port'];
+        }
+        if (!empty($parts['user'])) {
+            $smtpCfg['auth'] = 'login';
+            $smtpCfg['username'] = urldecode($parts['user']);
+            if (!empty($parts['pass'])) {
+                $smtpCfg['password'] = urldecode($parts['pass']);
+            }
+        }
+        if (!empty($parts['query'])) {
+            parse_str($parts['query'], $qs);
+            if (!empty($qs['encryption']) && in_array($qs['encryption'], ['ssl', 'tls'], true)) {
+                $smtpCfg['ssl'] = $qs['encryption'];
+            }
+        }
+        return new Zend_Mail_Transport_Smtp($parts['host'], $smtpCfg);
+    }
+
     public function sendMail($to, $cc, $bcc, $subject, $message, $fromMail = null, $fromName = null, $attachments = [])
     {
         // Normalize scalars/arrays to strings for parseRecipients()
@@ -87,7 +134,10 @@ class Application_Service_Common
         $bccStr = is_array($bcc) ? implode(',', array_values($bcc)) : (string) $bcc;
 
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+        $smtpTransportObj = self::buildSmtpTransport($conf);
+        if ($smtpTransportObj === null) {
+            return false;
+        }
 
         $fromMail = $fromMail ?: $conf->email->config->username;
         $fromName = $fromName ?: 'ePT System';
@@ -499,7 +549,10 @@ class Application_Service_Common
     {
         $tempMailDb = new Application_Model_DbTable_TempMail();
         $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
-        $smtpTransportObj = new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
+        $smtpTransportObj = self::buildSmtpTransport($conf);
+        if ($smtpTransportObj === null) {
+            return;
+        }
 
         $limit = '10';
         $sQuery = $tempMailDb->getAdapter()->select()

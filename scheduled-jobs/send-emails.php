@@ -111,6 +111,9 @@ try {
     // === App setup ===
     $conf = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
 
+    $db = Zend_Db::factory($conf->resources->db);
+    Zend_Db_Table::setDefaultAdapter($db);
+
     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
     $smtpJson = $globalConfigDb->getValue('mail');
     if ($smtpJson === null || trim($smtpJson) === '') {
@@ -118,23 +121,47 @@ try {
     }
     $smtpMailDetails = json_decode($smtpJson);
 
-    $db = Zend_Db::factory($conf->resources->db);
-    Zend_Db_Table::setDefaultAdapter($db);
+    // Non-production safety net: even if a cloned prod DB ships live SMTP creds,
+    // never deliver from a dev box. Either route to a local mail trap (Mailpit/Mailhog
+    // via MAIL_DEV_DSN), or short-circuit the queue.
+    $isProd = (strtolower((string) APPLICATION_ENV) === 'production');
+    $devDsn = getenv('MAIL_DEV_DSN') ?: ($_ENV['MAIL_DEV_DSN'] ?? '');
+
+    if (!$isProd && $devDsn === '') {
+        $skipped = $db->update(
+            'temp_mail',
+            [
+                'status' => 'skipped',
+                'failure_type' => 'env_guard',
+                'failure_reason' => 'Non-production env: set MAIL_DEV_DSN (e.g. smtp://127.0.0.1:1025) to deliver to a local mail trap.',
+                'updated_at' => new Zend_Db_Expr('NOW()'),
+            ],
+            ["status = ?" => 'pending']
+        );
+        if ($skipped > 0) {
+            error_log("send-emails: APPLICATION_ENV=" . APPLICATION_ENV . ", skipped {$skipped} pending mail(s). Set MAIL_DEV_DSN to route to Mailpit.");
+        }
+        return;
+    }
 
     // === Create Symfony Mailer Transport ===
-    $dsn = sprintf(
-        'smtp://%s:%s@%s:%d',
-        urlencode($smtpMailDetails->username ?? ''),
-        urlencode($smtpMailDetails->password ?? ''),
-        $smtpMailDetails->host ?? 'localhost',
-        $smtpMailDetails->port ?? 587
-    );
+    if (!$isProd && $devDsn !== '') {
+        $dsn = $devDsn;
+        error_log("send-emails: APPLICATION_ENV=" . APPLICATION_ENV . ", routing via MAIL_DEV_DSN (DB SMTP creds ignored)");
+    } else {
+        $dsn = sprintf(
+            'smtp://%s:%s@%s:%d',
+            urlencode($smtpMailDetails->username ?? ''),
+            urlencode($smtpMailDetails->password ?? ''),
+            $smtpMailDetails->host ?? 'localhost',
+            $smtpMailDetails->port ?? 587
+        );
 
-    // Add SSL/TLS if configured
-    if (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'ssl') {
-        $dsn .= '?encryption=ssl';
-    } elseif (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'tls') {
-        $dsn .= '?encryption=tls';
+        if (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'ssl') {
+            $dsn .= '?encryption=ssl';
+        } elseif (isset($smtpMailDetails->ssl) && $smtpMailDetails->ssl === 'tls') {
+            $dsn .= '?encryption=tls';
+        }
     }
 
     $transport = Transport::fromDsn($dsn);
