@@ -4243,6 +4243,12 @@ parameters:
 			path: application/modules/admin/controllers/DataManagersController.php
 
 		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$recentResets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/DataManagersController.php
+
+		-
 			message: '#^Access to an undefined property Zend_View_Interface\:\:\$response\.$#'
 			identifier: property.notFound
 			count: 1
