@@ -80,29 +80,25 @@ class Application_Service_Common
     }
 
     /**
-     * Build the SMTP transport, with a non-production safety net.
+     * Build the SMTP transport, with an opt-in dev mail trap.
      *
-     * On non-production environments, routes through a local mail trap
-     * (Mailpit/Mailhog via the MAIL_DEV_DSN env var). If no dev DSN is set,
-     * returns null so callers can short-circuit and skip the send — this
-     * defends against a cloned prod DB or stale application.ini delivering
-     * to real recipients from a dev box.
+     * If application.ini sets `email.devTrapDsn` to a parseable smtp:// DSN,
+     * outgoing mail is routed there (Mailpit/Mailhog) instead of the real
+     * SMTP host — this defends against a cloned prod DB or stale config
+     * delivering to real recipients from a dev box. Any other non-empty
+     * value for the key blocks sending (returns null). Empty/unset means
+     * normal delivery.
      */
     private static function buildSmtpTransport(Zend_Config_Ini $conf): ?Zend_Mail_Transport_Smtp
     {
-        if (strtolower((string) APPLICATION_ENV) === 'production') {
+        $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
+        if ($devTrapDsn === '') {
             return new Zend_Mail_Transport_Smtp($conf->email->host, $conf->email->config->toArray());
         }
 
-        $devDsn = getenv('MAIL_DEV_DSN') ?: ($_ENV['MAIL_DEV_DSN'] ?? '');
-        if ($devDsn === '') {
-            error_log('Common::buildSmtpTransport(): mail blocked on APPLICATION_ENV=' . APPLICATION_ENV . ' (set MAIL_DEV_DSN to a local mail trap, e.g. smtp://127.0.0.1:1025, to enable delivery).');
-            return null;
-        }
-
-        $parts = parse_url($devDsn);
-        if (!$parts || empty($parts['host'])) {
-            error_log("Common::buildSmtpTransport(): invalid MAIL_DEV_DSN '{$devDsn}'");
+        $parts = parse_url($devTrapDsn);
+        if (!$parts || ($parts['scheme'] ?? '') !== 'smtp' || empty($parts['host'])) {
+            error_log("Common::buildSmtpTransport(): email.devTrapDsn='{$devTrapDsn}' is not a valid smtp:// DSN; blocking mail.");
             return null;
         }
 

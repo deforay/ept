@@ -121,33 +121,35 @@ try {
     }
     $smtpMailDetails = json_decode($smtpJson);
 
-    // Non-production safety net: even if a cloned prod DB ships live SMTP creds,
-    // never deliver from a dev box. Either route to a local mail trap (Mailpit/Mailhog
-    // via MAIL_DEV_DSN), or short-circuit the queue.
-    $isProd = (strtolower((string) APPLICATION_ENV) === 'production');
-    $devDsn = getenv('MAIL_DEV_DSN') ?: ($_ENV['MAIL_DEV_DSN'] ?? '');
+    // Dev mail trap safety net. If application.ini sets email.devTrapDsn, ignore
+    // the DB SMTP creds and route there (Mailpit/Mailhog) — this defends against a
+    // cloned prod DB shipping live SMTP credentials. A non-empty value that isn't
+    // a parseable smtp:// DSN blocks the queue entirely.
+    $devTrapDsn = trim((string) ($conf->email->devTrapDsn ?? ''));
 
-    if (!$isProd && $devDsn === '') {
-        $skipped = $db->update(
-            'temp_mail',
-            [
-                'status' => 'skipped',
-                'failure_type' => 'env_guard',
-                'failure_reason' => 'Non-production env: set MAIL_DEV_DSN (e.g. smtp://127.0.0.1:1025) to deliver to a local mail trap.',
-                'updated_at' => new Zend_Db_Expr('NOW()'),
-            ],
-            ["status = ?" => 'pending']
-        );
-        if ($skipped > 0) {
-            error_log("send-emails: APPLICATION_ENV=" . APPLICATION_ENV . ", skipped {$skipped} pending mail(s). Set MAIL_DEV_DSN to route to Mailpit.");
+    if ($devTrapDsn !== '') {
+        $trapParts = parse_url($devTrapDsn);
+        $trapValid = $trapParts && ($trapParts['scheme'] ?? '') === 'smtp' && !empty($trapParts['host']);
+
+        if (!$trapValid) {
+            $skipped = $db->update(
+                'temp_mail',
+                [
+                    'status' => 'skipped',
+                    'failure_type' => 'dev_trap_block',
+                    'failure_reason' => "email.devTrapDsn is set ('{$devTrapDsn}') but not a valid smtp:// DSN; mail delivery is blocked.",
+                    'updated_at' => new Zend_Db_Expr('NOW()'),
+                ],
+                ["status = ?" => 'pending']
+            );
+            if ($skipped > 0) {
+                error_log("send-emails: email.devTrapDsn is not a valid smtp:// DSN; skipped {$skipped} pending mail(s).");
+            }
+            return;
         }
-        return;
-    }
 
-    // === Create Symfony Mailer Transport ===
-    if (!$isProd && $devDsn !== '') {
-        $dsn = $devDsn;
-        error_log("send-emails: APPLICATION_ENV=" . APPLICATION_ENV . ", routing via MAIL_DEV_DSN (DB SMTP creds ignored)");
+        $dsn = $devTrapDsn;
+        error_log("send-emails: routing via email.devTrapDsn (DB SMTP creds ignored)");
     } else {
         $dsn = sprintf(
             'smtp://%s:%s@%s:%d',
