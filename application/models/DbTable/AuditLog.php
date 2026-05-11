@@ -35,12 +35,17 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
         return isset($cols[strtolower($name)]);
     }
 
-    public function addNewAuditLog($stateMent, $type = null)
+    public function addNewAuditLog($stateMent, $type = null, $actor = null)
     {
         if (!isset($stateMent) || $stateMent === '') {
             return null;
         }
-        [$email, $role] = $this->resolveActor();
+        if (is_array($actor) && !empty($actor['email'])) {
+            $email = $actor['email'];
+            $role = $actor['role'] ?? 'system';
+        } else {
+            [$email, $role] = $this->resolveActor();
+        }
         $data = [
             'statement' => $stateMent,
             'created_by' => $email,
@@ -127,6 +132,65 @@ class Application_Model_DbTable_AuditLog extends Zend_Db_Table_Abstract
             return 'message';
         }
         return 'other';
+    }
+
+    /**
+     * Last N password-reset events targeting a given primary email.
+     * Returns rows enriched with the actor's display name and role.
+     */
+    public function getRecentPasswordResetsForEmail($targetEmail, $limit = 3)
+    {
+        $targetEmail = trim((string) $targetEmail);
+        if ($targetEmail === '') {
+            return [];
+        }
+        $limit = max(1, (int) $limit);
+        $db = $this->getAdapter();
+        $needle = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $targetEmail) . '%';
+        $cols = ['statement', 'created_by', 'created_on'];
+        if ($this->hasColumn('ip_address')) {
+            $cols[] = 'ip_address';
+        }
+        $select = $db->select()
+            ->from(['al' => $this->_name], $cols)
+            ->joinLeft(['sa' => 'system_admin'], 'al.created_by = sa.primary_email', [
+                'sa_first_name' => 'sa.first_name',
+                'sa_last_name'  => 'sa.last_name',
+            ])
+            ->joinLeft(['dm' => 'data_manager'], 'al.created_by = dm.primary_email', [
+                'dm_first_name' => 'dm.first_name',
+                'dm_last_name'  => 'dm.last_name',
+            ])
+            ->where('al.type = ?', 'password-reset')
+            ->where('al.statement LIKE ?', $needle)
+            ->order('al.created_on DESC')
+            ->limit($limit);
+
+        $rows = $db->fetchAll($select);
+        $out = [];
+        foreach ($rows as $row) {
+            $name = '';
+            $role = '';
+            if (!empty($row['sa_first_name']) || !empty($row['sa_last_name'])) {
+                $name = trim(($row['sa_first_name'] ?? '') . ' ' . ($row['sa_last_name'] ?? ''));
+                $role = 'Admin';
+            } elseif (!empty($row['dm_first_name']) || !empty($row['dm_last_name'])) {
+                $name = trim(($row['dm_first_name'] ?? '') . ' ' . ($row['dm_last_name'] ?? ''));
+                $role = 'Data Manager';
+            }
+            if ($name === '') {
+                $name = $row['created_by'] ?: 'System';
+            }
+            $out[] = [
+                'when'       => $row['created_on'],
+                'actorName'  => $name,
+                'actorRole'  => $role,
+                'actorEmail' => $row['created_by'],
+                'statement'  => $row['statement'],
+                'source'     => 'audit_log',
+            ];
+        }
+        return $out;
     }
 
     public function fetchAuditLogFeed($parameters)

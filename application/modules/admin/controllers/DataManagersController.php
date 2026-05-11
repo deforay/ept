@@ -219,6 +219,44 @@ class Admin_DataManagersController extends Zend_Controller_Action
         } elseif ($this->hasParam('id')) {
             $userId = (int) $this->_getParam('id');
             $this->view->user = $userService->getUserInfoBySystemId($userId);
+            $targetEmail = $this->view->user['primary_email'] ?? '';
+            if ($targetEmail !== '') {
+                $auditDb = new Application_Model_DbTable_AuditLog();
+                $tempMailDb = new Application_Model_DbTable_TempMail();
+                $confirmed = $auditDb->getRecentPasswordResetsForEmail($targetEmail, 5);
+                $likely    = $tempMailDb->getCredentialMailsForEmail($targetEmail, 5);
+                foreach ($confirmed as &$c) {
+                    $c['confirmed'] = true;
+                }
+                unset($c);
+                foreach ($likely as &$l) {
+                    $l['confirmed'] = false;
+                }
+                unset($l);
+                // Merge, then drop a temp_mail entry if an audit_log entry sits
+                // within 5 min of it (same event — admin used Reset & Email).
+                $merged = array_merge($confirmed, $likely);
+                usort($merged, function ($a, $b) {
+                    return strtotime((string) $b['when']) <=> strtotime((string) $a['when']);
+                });
+                $deduped = [];
+                foreach ($merged as $entry) {
+                    $ts = strtotime((string) $entry['when']);
+                    $isDup = false;
+                    if (!$entry['confirmed']) {
+                        foreach ($deduped as $kept) {
+                            if ($kept['confirmed'] && abs(strtotime((string) $kept['when']) - $ts) <= 300) {
+                                $isDup = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!$isDup) {
+                        $deduped[] = $entry;
+                    }
+                }
+                $this->view->recentResets = array_slice($deduped, 0, 3);
+            }
         }
         $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
         $this->view->passLength = $globalConfigDb->getValue('participant_login_password_length');
@@ -250,6 +288,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 return;
             }
 
+            $authNameSpace = new Zend_Session_Namespace('administrators');
             $payload = [
                 'dmIds'              => $dmIds,
                 'sendEmail'          => !empty($params['sendEmail']),
@@ -257,6 +296,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 'emailCc'            => (string) ($params['emailCc'] ?? ''),
                 'emailBcc'           => (string) ($params['emailBcc'] ?? ''),
                 'loginUrl'           => $params['loginUrl'],
+                'actorEmail'         => (string) ($authNameSpace->primary_email ?? ''),
+                'actorRole'          => 'admin',
             ];
 
             $fileName = 'bulk-reset-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json';
@@ -266,7 +307,6 @@ class Admin_DataManagersController extends Zend_Controller_Action
             }
             file_put_contents($payloadPath, json_encode($payload));
 
-            $authNameSpace = new Zend_Session_Namespace('administrators');
             $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
             $scheduledDb->insert([
                 'job'          => "bulk-reset-passwords.php -f '$fileName'",
@@ -320,6 +360,7 @@ class Admin_DataManagersController extends Zend_Controller_Action
             // Reuse the existing queue path: write payload + insert scheduled_jobs.
             $dmIds = array_map(fn ($r) => (int) $r['dm_id'], $resolved['matched']);
 
+            $authNameSpace = new Zend_Session_Namespace('administrators');
             $payload = [
                 'dmIds'              => $dmIds,
                 'sendEmail'          => !empty($params['sendEmail']),
@@ -327,6 +368,8 @@ class Admin_DataManagersController extends Zend_Controller_Action
                 'emailCc'            => (string) ($params['emailCc'] ?? ''),
                 'emailBcc'           => (string) ($params['emailBcc'] ?? ''),
                 'loginUrl'           => $loginUrl,
+                'actorEmail'         => (string) ($authNameSpace->primary_email ?? ''),
+                'actorRole'          => 'admin',
             ];
 
             $fileName = 'bulk-reset-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.json';
@@ -336,7 +379,6 @@ class Admin_DataManagersController extends Zend_Controller_Action
             }
             file_put_contents($payloadPath, json_encode($payload));
 
-            $authNameSpace = new Zend_Session_Namespace('administrators');
             $scheduledDb = new Application_Model_DbTable_ScheduledJobs();
             $scheduledDb->insert([
                 'job'          => "bulk-reset-passwords.php -f '$fileName'",

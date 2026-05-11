@@ -340,6 +340,9 @@ class Application_Service_DataManagers
             return false;
         }
 
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog("Reset password for {$params['primaryMail']}", 'password-reset');
+
         // If admin chose "Reset & Email", queue a credentials email via temp_mail.
         if (isset($params['mode']) && $params['mode'] === 'email') {
             $this->queueCredentialsEmail($params);
@@ -574,6 +577,12 @@ class Application_Service_DataManagers
         $passGen = new Application_Service_Common();
         $rows = $this->getUsersByIds($dmIds);
 
+        $actor = null;
+        if (!empty($params['actorEmail'])) {
+            $actor = ['email' => (string) $params['actorEmail'], 'role' => (string) ($params['actorRole'] ?? 'admin')];
+        }
+        $auditDb = new Application_Model_DbTable_AuditLog();
+
         foreach ($rows as $row) {
             $email = trim((string)($row['primary_email'] ?? ''));
             $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
@@ -595,6 +604,7 @@ class Application_Service_DataManagers
             }
             $summary['updated']++;
             $summary['success'][] = ['dm_id' => (int)$row['dm_id'], 'name' => $name, 'email' => $email];
+            $auditDb->addNewAuditLog("Reset password for {$email} (bulk)", 'password-reset', $actor);
 
             if ($sendEmail) {
                 $this->queueBulkCredentialsEmail($common, $email, $name, $newPassword, $loginUrl, $cc, $bcc);

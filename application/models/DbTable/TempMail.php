@@ -194,6 +194,41 @@ class Application_Model_DbTable_TempMail extends Zend_Db_Table_Abstract
         return $this->delete($this->getAdapter()->quoteInto('temp_id = ?', (int) $id));
     }
 
+    /**
+     * Retroactively reconstruct admin-triggered password resets for a given
+     * primary email by looking up the credentials emails we queued from
+     * Application_Service_DataManagers. Only catches resets where the admin
+     * chose "Reset & Email"; "copy password" / "copy email content" resets
+     * left no trace before audit_log logging was added.
+     */
+    public function getCredentialMailsForEmail($email, $limit = 5)
+    {
+        $email = trim((string) $email);
+        if ($email === '') {
+            return [];
+        }
+        $limit = max(1, (int) $limit);
+        $select = $this->select()
+            ->from($this->_name, ['queued_on', 'created_at', 'sent_at', 'cc', 'bcc', 'status'])
+            ->where('to_email = ?', $email)
+            ->where('subject = ?', 'Your ePT Login Credentials')
+            ->order('queued_on DESC')
+            ->limit($limit);
+        $rows = $this->fetchAll($select)->toArray();
+        $out = [];
+        foreach ($rows as $r) {
+            $out[] = [
+                'when'       => $r['queued_on'] ?? $r['created_at'],
+                'actorName'  => '',
+                'actorRole'  => '',
+                'actorEmail' => '',
+                'source'     => 'temp_mail',
+                'sentStatus' => $r['status'] ?? '',
+            ];
+        }
+        return $out;
+    }
+
     public function fetchEmailFailureInGrid($parameters)
     {
 
