@@ -933,8 +933,8 @@ class Application_Service_Participants
 
         $applySkip = function (Zend_Db_Select $sql) use ($skipEmail, $host) {
             if ($skipEmail && $host !== '') {
-                $sql->having("LOWER(email) NOT LIKE ?", '%@' . $host)
-                    ->having("LOWER(email) NOT LIKE ?", '%@%.' . $host);
+                $sql->having('LOWER(email) NOT LIKE ?', '%@' . $host)
+                    ->having('LOWER(email) NOT LIKE ?', '%@%.' . $host);
             }
             return $sql;
         };

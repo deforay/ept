@@ -206,7 +206,7 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
         $auditDb = new Application_Model_DbTable_AuditLog();
         $auditDb->addNewAuditLog(
-            "Enrolled " . count($ids) . " participants in scheme {$params['schemeId']} (list: {$listName})",
+            'Enrolled ' . count($ids) . " participants in scheme {$params['schemeId']} (list: {$listName})",
             'enrollment'
         );
         $alertMsg->message = 'Participants enrolled successfully';

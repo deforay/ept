@@ -64,9 +64,9 @@ if (isset($this->autogeneratePtCode) && !empty($this->autogeneratePtCode) && $th
                     return;
                 }
                 if (data > 0) {
-                    alert(msg, "err");
                     duplicated = true;
-                    obj.focus();
+                    obj.value = "";
+                    alert(msg, "err");
                 } else {
                     duplicated = false;
                 }

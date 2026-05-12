@@ -1027,7 +1027,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                         return $result;
                     }
 
-                    $mappedCount = is_array($result) && isset($result['count']) ? (int) $result['count'] : count($decoded);
+                    $mappedCount = (int) ($result['count'] ?? count($decoded));
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog(
                         "Mapped {$mappedCount} participants to data manager #{$params['datamanagerId']}",

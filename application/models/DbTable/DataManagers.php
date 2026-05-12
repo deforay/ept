@@ -1624,7 +1624,7 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
                 $db->commit();
                 $inTx = false;
-                return ['ok' => true, 'count' => isset($ids) ? count($ids) : 0];
+                return ['ok' => true, 'count' => count($ids)];
             } elseif ($isPtcc) {
                 $params['district'] = isset($params['district']) ? $common->removeEmpty((array) $params['district']) : [];
                 $params['province'] = isset($params['province']) ? $common->removeEmpty((array) $params['province']) : [];
@@ -1678,7 +1678,10 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             }
         } catch (Exception $e) {
             if ($inTx) {
-                try { $db->rollBack(); } catch (Exception $ignored) {}
+                try {
+                    $db->rollBack();
+                } catch (Exception $ignored) {
+                }
             }
             $traceId = 'pmm-' . bin2hex(random_bytes(4));
             Pt_Commons_LoggerUtility::logError('dmParticipantMap failed', [

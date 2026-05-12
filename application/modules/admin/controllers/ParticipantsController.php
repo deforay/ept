@@ -289,8 +289,9 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
         // Only expose the technical error code outside production. End users
         // see the friendly translated message + trace id; developers get
-        // detail via Monolog or in dev environments.
-        if (APPLICATION_ENV !== 'production') {
+        // detail via Monolog or in dev environments. constant() defeats
+        // PHPStan's constant-folding so it doesn't flatten this comparison.
+        if (constant('APPLICATION_ENV') !== 'production') {
             $payload['error'] = $err;
         }
 

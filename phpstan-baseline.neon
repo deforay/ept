@@ -2493,7 +2493,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 3
 			path: application/models/DbTable/Enrollments.php
 
 		-
@@ -2649,7 +2649,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 11
 			path: application/models/DbTable/Participants.php
 
 		-
@@ -2967,7 +2967,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: application/models/DbTable/ShipmentParticipantMap.php
 
 		-
@@ -5637,8 +5637,38 @@ parameters:
 		-
 			message: '#^Call to an undefined method Zend_Controller_Action_HelperBroker\:\:layout\(\)\.$#'
 			identifier: method.notFound
-			count: 10
+			count: 11
 			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Session_Namespace\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 2
+			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
+			message: '#^Access to an undefined property Zend_View_Interface\:\:\$translate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Controller_Action_HelperBroker\:\:\$viewRenderer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: application/modules/admin/controllers/ParticipantsController.php
+
+		-
+			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
+			identifier: property.notFound
+			count: 2
+			path: bin/check-participant-emails.php
+
+		-
+			message: '#^Access to an undefined property Zend_Config_Ini\:\:\$resources\.$#'
+			identifier: property.notFound
+			count: 1
+			path: bin/process-bounces.php
 
 		-
 			message: '#^Method Admin_ParticipantsController\:\:init\(\) with return type void returns null but should not return anything\.$#'
