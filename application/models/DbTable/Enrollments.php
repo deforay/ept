@@ -142,39 +142,75 @@ class Application_Model_DbTable_Enrollments extends Zend_Db_Table_Abstract
 
     public function enrollParticipants($params)
     {
-
-        if (!empty($params['schemeId'])) {
-            $common = new Application_Service_Common();
-            $enrollmentListId = Pt_Commons_General::generateULID();
-            $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
-            $where = [];
-            $where[] = " list_name='$listName' ";
-
-            if (!empty($params['schemeId'])) {
-                $where[] = " scheme_id = '{$params['schemeId']}'";
-            }
-
-            // $this->delete(implode(' AND ', $where));
-            $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
-            foreach ($params['selectedForEnrollment'] as $participant) {
-                $data = [
-                    'enrollment_id' => $enrollmentListId,
-                    'list_name' => $listName,
-                    'participant_id' => $participant,
-                    'scheme_id' => $params['schemeId'],
-                    'status' => 'enrolled',
-                    'enrolled_on' => new Zend_Db_Expr('now()'),
-                ];
-                $common->insertIgnore($this->_name, $data);
-            }
-
-            $enrolledCount = is_array($params['selectedForEnrollment']) ? count($params['selectedForEnrollment']) : 0;
-            $auditDb = new Application_Model_DbTable_AuditLog();
-            $auditDb->addNewAuditLog(
-                "Enrolled {$enrolledCount} participants in scheme {$params['schemeId']} (list: {$listName})",
-                'enrollment'
-            );
+        if (empty($params['schemeId'])) {
+            return ['ok' => false, 'count' => 0, 'error' => 'missing_scheme'];
         }
+
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        try {
+            return $this->doEnrollParticipants($params, $alertMsg);
+        } catch (Exception $e) {
+            $traceId = 'enr-' . bin2hex(random_bytes(4));
+            Pt_Commons_LoggerUtility::logError('enrollParticipants failed', [
+                'trace_id' => $traceId,
+                'scheme'   => $params['schemeId'] ?? null,
+                'file'     => $e->getFile(),
+                'line'     => $e->getLine(),
+                'message'  => $e->getMessage(),
+                'trace'    => $e->getTraceAsString(),
+            ]);
+            $alertMsg->message = 'Enrolment failed. Please try again.';
+            return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
+        }
+    }
+
+    private function doEnrollParticipants($params, $alertMsg)
+    {
+        $decoded = json_decode((string) ($params['selectedForEnrollment'] ?? ''), true);
+        if (!is_array($decoded)) {
+            $alertMsg->message = 'Invalid enrolment payload. Please reload the page and try again.';
+            return ['ok' => false, 'count' => 0, 'error' => 'invalid_payload'];
+        }
+        $ids = array_values(array_unique(array_filter(array_map('intval', $decoded))));
+        if (empty($ids)) {
+            $alertMsg->message = 'No participants selected for enrolment.';
+            return ['ok' => false, 'count' => 0, 'error' => 'empty_selection'];
+        }
+
+        $common = new Application_Service_Common();
+        $enrollmentListId = Pt_Commons_General::generateULID();
+        $listName = (isset($params['listName']) && $params['listName'] !== '') ? $params['listName'] : 'default';
+        $db = $this->getAdapter();
+
+        $db->beginTransaction();
+        try {
+            foreach ($ids as $participant) {
+                $common->insertIgnore($this->_name, [
+                    'enrollment_id'  => $enrollmentListId,
+                    'list_name'      => $listName,
+                    'participant_id' => $participant,
+                    'scheme_id'      => $params['schemeId'],
+                    'status'         => 'enrolled',
+                    'enrolled_on'    => new Zend_Db_Expr('now()'),
+                ]);
+            }
+            $db->commit();
+        } catch (Exception $e) {
+            try {
+                $db->rollBack();
+            } catch (Exception $ignored) {
+                // best-effort rollback
+            }
+            throw $e;
+        }
+
+        $auditDb = new Application_Model_DbTable_AuditLog();
+        $auditDb->addNewAuditLog(
+            "Enrolled " . count($ids) . " participants in scheme {$params['schemeId']} (list: {$listName})",
+            'enrollment'
+        );
+        $alertMsg->message = 'Participants enrolled successfully';
+        return ['ok' => true, 'count' => count($ids)];
     }
 
     public function enrollParticipantToSchemes($participantId, $schemes, $listName = 'default')

@@ -20,8 +20,14 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
             $alreadyMappedId = explode(',', $participantList['mapId']);
             $alreadyMappedId = array_unique($alreadyMappedId);
             // To fetch newly enrolment list
-            $params['selectedForEnrollment'] = json_decode($params['selectedForEnrollment'], true);
-            $params['selectedForEnrollment'] = array_unique($params['selectedForEnrollment']);
+            $decoded = json_decode((string) ($params['selectedForEnrollment'] ?? ''), true);
+            if (!is_array($decoded)) {
+                $this->getAdapter()->rollBack();
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $alertMsg->message = 'Invalid shipment payload. Please reload the page and try again.';
+                return false;
+            }
+            $params['selectedForEnrollment'] = array_values(array_unique(array_filter(array_map('intval', $decoded))));
             // To get the unmapped participants list
             $deleteParticipant = array_diff($alreadyMappedParticipant, $params['selectedForEnrollment']);
             if (isset($deleteParticipant) && !empty($deleteParticipant)) {
@@ -115,9 +121,22 @@ class Application_Model_DbTable_ShipmentParticipantMap extends Zend_Db_Table_Abs
 
             return true;
         } catch (Exception $e) {
-            $this->getAdapter()->rollBack();
-            error_log($e->getMessage());
-            error_log($e->getTraceAsString());
+            try {
+                $this->getAdapter()->rollBack();
+            } catch (Exception $ignored) {
+                // best-effort rollback
+            }
+            $traceId = 'ship-' . bin2hex(random_bytes(4));
+            Pt_Commons_LoggerUtility::logError('shipItNow failed', [
+                'trace_id'    => $traceId,
+                'shipment_id' => $params['shipmentId'] ?? null,
+                'file'        => $e->getFile(),
+                'line'        => $e->getLine(),
+                'message'     => $e->getMessage(),
+                'trace'       => $e->getTraceAsString(),
+            ]);
+            $alertMsg = new Zend_Session_Namespace('alertSpace');
+            $alertMsg->message = 'Shipping failed. Please try again.';
             return false;
         }
     }

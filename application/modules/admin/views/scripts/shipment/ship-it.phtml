@@ -187,9 +187,14 @@
 
 		VirtualDualList.bind('#participants', {
 			container: '#participantsWidget',
-			unselectedLabel: '<?= $this->translate->_("Participants not yet enrolled for this scheme"); ?>',
-			selectedLabel: '<?= $this->translate->_("Enrolled/Selected Participants"); ?>',
-			filterPlaceholder: '<?= $this->translate->_("Type Participant Name or Code To Filter"); ?>'
+			unselectedLabel: "<?= $this->jsTranslate('Participants not yet enrolled for this scheme'); ?>",
+			selectedLabel: "<?= $this->jsTranslate('Enrolled/Selected Participants'); ?>",
+			filterPlaceholder: "<?= $this->jsTranslate('Type Participant Name or Code To Filter'); ?>",
+			pendingAddLabel: "<?= $this->jsTranslate('pending ship'); ?>",
+			pendingRemoveLabel: "<?= $this->jsTranslate('pending skip'); ?>",
+			legendSaved: "<?= $this->jsTranslate('Already on this shipment'); ?>",
+			legendAdded: "<?= $this->jsTranslate('Pending ship (save to apply)'); ?>",
+			legendRemoved: "<?= $this->jsTranslate('Pending skip (save to apply)'); ?>"
 		});
 
 		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>

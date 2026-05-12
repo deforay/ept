@@ -59,9 +59,21 @@ if ($dmlPassLen <= 0) {
     .dml-section .dml-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; min-width: 0; }
     .dml-section .dml-pane-header input { width: 100%; max-width: 100%; }
     .dml-section .dml-pane-scroll { position: relative; height: 280px; min-width: 0; overflow-y: auto; overflow-x: hidden; background: #fff; }
-    .dml-section .dml-row { display: block; max-width: 100%; padding: 6px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dml-section .dml-row { display: block; position: relative; max-width: 100%; padding: 6px 12px 6px 28px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dml-section .dml-row:hover { background: #337ab7; color: #fff; }
+    .dml-section .dml-row::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 11px; font-weight: 700; border-radius: 50%; color: #fff; }
+    .dml-section .dml-row.dml-row-added { background: #e8f5e9; border-left: 3px solid #2e7d32; padding-left: 26px; }
+    .dml-section .dml-row.dml-row-added::before { content: '+'; background: #2e7d32; }
+    .dml-section .dml-row.dml-row-removed { background: #fff3e0; border-left: 3px solid #ef6c00; padding-left: 26px; }
+    .dml-section .dml-row.dml-row-removed::before { content: '\2212'; background: #ef6c00; }
+    .dml-section .dml-row.dml-row-saved::before { content: '\2713'; background: #607d8b; }
     .dml-section .dml-pane-footer { padding: 8px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .dml-section .dml-pane-footer .dml-diff { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .dml-section .dml-pane-footer .dml-diff-added { background: #2e7d32; }
+    .dml-section .dml-pane-footer .dml-diff-removed { background: #ef6c00; }
+    .dml-section .dml-legend { margin: 0 0 8px 0; font-size: 12px; color: #555; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .dml-section .dml-legend .dml-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .dml-section .dml-legend .dml-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
     .dml-section .dml-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
     .dml-section .dml-pane.dml-error { border-color: #d9534f; box-shadow: 0 0 0 2px rgba(217,83,79,0.35); }
     .dml-section .dml-pane.dml-error .dml-pane-footer { background: #d9534f; }
@@ -83,22 +95,27 @@ if ($dmlPassLen <= 0) {
             <i class="icon-plus icon-white"></i>&nbsp;<?= $this->translate->_("Create New Data Manager"); ?>
         </a>
     </div>
-    <div class="dml-hint"><?= $this->translate->_("Click on a Data Manager to move them between the two sections"); ?></div>
+    <div class="dml-hint"><?= $this->htmlTranslate("Click on a Data Manager to move them between the two sections"); ?></div>
     <div class="dml-actions">
-        <a href="#" id="dml-select-all" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
-        <a href="#" id="dml-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+        <a href="#" id="dml-select-all" class="btn btn-info btn-xs"><?= $this->htmlTranslate("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
+        <a href="#" id="dml-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;<?= $this->htmlTranslate("Deselect All"); ?></a>
+    </div>
+    <div class="dml-legend">
+        <span class="dml-legend-item"><span class="dml-legend-swatch" style="background:#607d8b;"></span><?= $this->htmlTranslate("Saved (already mapped)"); ?></span>
+        <span class="dml-legend-item"><span class="dml-legend-swatch" style="background:#2e7d32;"></span><?= $this->htmlTranslate("Pending add (save to apply)"); ?></span>
+        <span class="dml-legend-item"><span class="dml-legend-swatch" style="background:#ef6c00;"></span><?= $this->htmlTranslate("Pending remove (save to apply)"); ?></span>
     </div>
     <div class="dml-dual">
         <div class="dml-pane" data-side="left">
             <div class="dml-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Filter Data Managers'); ?>"></div>
             <div class="dml-pane-scroll"></div>
-            <div class="dml-pane-footer"><?= $this->translate->_('Available Data Managers'); ?> (<span class="dml-count">0</span>)</div>
+            <div class="dml-pane-footer"><?= $this->htmlTranslate('Available Data Managers'); ?> (<span class="dml-count">0</span>)<span class="dml-diff dml-diff-removed" style="display:none;">&minus; <span class="dml-diff-count">0</span> <?= $this->htmlTranslate("pending remove"); ?></span></div>
         </div>
         <div class="dml-arrows">&#8646;</div>
         <div class="dml-pane" data-side="right">
             <div class="dml-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Filter Selected'); ?>"></div>
             <div class="dml-pane-scroll"></div>
-            <div class="dml-pane-footer"><?= $this->translate->_('Selected Data Managers'); ?> (<span class="dml-count">0</span>)</div>
+            <div class="dml-pane-footer"><?= $this->htmlTranslate('Selected Data Managers'); ?> (<span class="dml-count">0</span>)<span class="dml-diff dml-diff-added" style="display:none;">+ <span class="dml-diff-count">0</span> <?= $this->htmlTranslate("pending add"); ?></span></div>
         </div>
     </div>
     <div id="dml-hidden-inputs"></div>
@@ -165,11 +182,33 @@ if ($dmlPassLen <= 0) {
                 $scroll: $pane.find('.dml-pane-scroll'),
                 $search: $pane.find('.dml-pane-header input'),
                 $count: $pane.find('.dml-count'),
+                $diff: $pane.find('.dml-diff'),
+                $diffCount: $pane.find('.dml-diff-count'),
                 filter: ''
             };
             pane.$search.on('input', function () { pane.filter = pane.$search.val().toLowerCase(); render(pane); });
             pane.$scroll.on('click', '.dml-row', function () { moveItem(pane.sideKey, $(this).attr('data-id')); });
             panes[sideKey] = pane;
+        }
+
+        function updateDiffBadge(pane) {
+            if (!pane.$diff || pane.$diff.length === 0) return;
+            var src = state[pane.sideKey];
+            var diffCount = 0;
+            if (pane.sideKey === 'right') {
+                for (var i = 0; i < src.length; i++) if (!src[i].savedRight) diffCount++;
+            } else {
+                for (var j = 0; j < src.length; j++) if (src[j].savedRight) diffCount++;
+            }
+            pane.$diffCount.text(diffCount);
+            pane.$diff.toggle(diffCount > 0);
+        }
+
+        function rowClass(it, sideKey) {
+            if (sideKey === 'right') {
+                return it.savedRight ? 'dml-row-saved' : 'dml-row-added';
+            }
+            return it.savedRight ? 'dml-row-removed' : '';
         }
 
         function filteredItems(pane) {
@@ -183,10 +222,12 @@ if ($dmlPassLen <= 0) {
             var items = filteredItems(pane);
             var html = '';
             for (var i = 0; i < items.length; i++) {
-                html += '<div class="dml-row" data-id="' + escapeHtml(items[i].id) + '">' + escapeHtml(items[i].label) + '</div>';
+                var cls = rowClass(items[i], pane.sideKey);
+                html += '<div class="dml-row' + (cls ? ' ' + cls : '') + '" data-id="' + escapeHtml(items[i].id) + '">' + escapeHtml(items[i].label) + '</div>';
             }
             pane.$scroll.html(html);
             pane.$count.text(items.length);
+            updateDiffBadge(pane);
         }
 
         function moveItem(fromSide, id) {
@@ -204,6 +245,7 @@ if ($dmlPassLen <= 0) {
             state.left = []; state.right = [];
             items.forEach(function (it) {
                 it._lc = String(it.label).toLowerCase();
+                it.savedRight = !!it.selected;
                 if (it.selected) state.right.push(it); else state.left.push(it);
             });
             renderAll();
@@ -211,6 +253,8 @@ if ($dmlPassLen <= 0) {
 
         function addAndSelect(item) {
             item._lc = String(item.label).toLowerCase();
+            // Newly created DMs are pending add — not part of the saved baseline.
+            item.savedRight = false;
             state.right.push(item);
             renderAll();
         }
