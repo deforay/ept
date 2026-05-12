@@ -56,7 +56,7 @@ $this->distributionDates = array_diff($this->distributionDates, array($ptEveDate
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
-                    obj.focus();
+                    $(obj).val('');
                 } else {
                     duplicated = false;
                 }

@@ -199,7 +199,7 @@ if (isset($this->result['feedback_form_question_results']) && !empty($this->resu
                 if (data > 0) {
                     alert(msg, "err");
                     duplicated = true;
-                    obj.focus();
+                    $(obj).val('');
                 } else {
                     duplicated = false;
                 }
