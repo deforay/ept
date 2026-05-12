@@ -198,11 +198,11 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                                 if ($authNameSpace->force_profile_updation == 1) {
                                 ?>
                                     &nbsp;&nbsp;&nbsp;
-                                    <input name="reset" class="btn btn-danger" type="button" id="reset" value="<?= $this->htmlTranslate("Cancel"); ?>" onclick="javascript:goto_dashboard()" />
+                                    <input name="reset" class="btn btn-danger" type="button" value="<?= $this->htmlTranslate("Cancel"); ?>" onclick="javascript:goto_dashboard()" />
                                 <?php
                                 } else { ?>
                                     &nbsp;&nbsp;&nbsp;
-                                    <input name="reset" class="btn btn-danger" type="button" id="reset" value="<?= $this->htmlTranslate("Cancel"); ?>" onclick="javascript:goto_testers()" />
+                                    <input name="reset" class="btn btn-danger" type="button" value="<?= $this->htmlTranslate("Cancel"); ?>" onclick="javascript:goto_testers()" />
                                 <?php } ?>
                             </p>
                         </div>
@@ -210,7 +210,7 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
                     <?php if (!$this->isEditable) {
                     ?>
                         <div id="respond" style="margin: 0px auto 0px auto; text-align: center;">
-                            <a href="javascript:void(0)" id="reset" class="btn btn-info" onclick="javascript:goto_testers()"><?= $this->translate->_("Back"); ?></a>
+                            <button type="button" class="btn btn-info" onclick="goto_testers()"><?= $this->translate->_("Back"); ?></button>
                         </div>
                     <?php
                     }
