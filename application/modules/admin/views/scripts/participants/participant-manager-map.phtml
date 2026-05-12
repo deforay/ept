@@ -369,10 +369,47 @@
 
         var flag = deforayValidator.init({ formId: 'submitParticipantMap' });
         if (flag) {
-            $.blockUI();
             $("#selectedForMapping").val(JSON.stringify(DualList.getSelectedIds()));
-            document.getElementById('submitParticipantMap').submit();
+            saveMappingAjax();
         }
+    }
+
+    function saveMappingAjax() {
+        var form = document.getElementById('submitParticipantMap');
+        var fd = new FormData(form);
+        $.blockUI();
+        $.ajax({
+            url: form.action,
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).done(function(resp) {
+            if (resp && resp.success) {
+                showMappingFlash(resp.message || 'Saved', 'success');
+                loadParticipants();
+            } else {
+                showMappingFlash((resp && resp.message) || 'Save failed', 'danger');
+                $.unblockUI();
+            }
+        }).fail(function() {
+            showMappingFlash('Save failed. Please try again.', 'danger');
+            $.unblockUI();
+        });
+    }
+
+    function showMappingFlash(msg, level) {
+        var cls = level === 'danger' ? 'alert-danger' : 'alert-success';
+        var $flash = $('#mappingFlash');
+        if ($flash.length === 0) {
+            $flash = $('<div id="mappingFlash" class="alert" style="margin:10px auto;max-width:1100px;"></div>')
+                .insertBefore('#mapForm');
+        }
+        $flash.removeClass('alert-success alert-danger').addClass(cls).text(msg).show();
+        clearTimeout(showMappingFlash._t);
+        showMappingFlash._t = setTimeout(function() { $flash.fadeOut(300); }, 3500);
     }
 
     function loadParticipants() {

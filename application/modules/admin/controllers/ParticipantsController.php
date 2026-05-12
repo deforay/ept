@@ -222,6 +222,19 @@ class Admin_ParticipantsController extends Zend_Controller_Action
 
             $params = $request->getPost();
             $participantService->addParticipantManagerMap($params);
+
+            if ($request->isXmlHttpRequest()) {
+                $this->_helper->layout()->disableLayout();
+                $this->_helper->viewRenderer->setNoRender(true);
+                $alertMsg = new Zend_Session_Namespace('alertSpace');
+                $message = !empty($alertMsg->message) ? $alertMsg->message : 'Participants mapped successfully';
+                $alertMsg->message = null;
+                $this->getResponse()
+                    ->setHeader('Content-Type', 'application/json')
+                    ->setBody(json_encode(['success' => true, 'message' => $message]));
+                return;
+            }
+
             if (!empty($params['isModal']) && !empty($params['datamanagerId'])) {
                 $this->redirect('/admin/participants/participant-manager-map/id/' . (int) $params['datamanagerId'] . '/modal/1');
             }
