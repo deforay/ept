@@ -1011,10 +1011,23 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
             } else {
                 if (isset($params['datamanagerId']) && $params['datamanagerId'] != '') {
                     $dm = new Application_Model_DbTable_DataManagers();
-                    $params['participantsList'] = json_decode($params['selectedForMapping'], true);
-                    $dm->dmParticipantMap($params, $params['datamanagerId'], false);
+                    $decoded = json_decode((string) ($params['selectedForMapping'] ?? ''), true);
+                    if (!is_array($decoded)) {
+                        $alertMsg->message = 'Invalid selection payload. Please try again.';
+                        return ['ok' => false, 'count' => 0, 'error' => 'invalid_payload'];
+                    }
+                    $params['participantsList'] = $decoded;
+                    $result = $dm->dmParticipantMap($params, $params['datamanagerId'], false);
 
-                    $mappedCount = is_array($params['participantsList']) ? count($params['participantsList']) : 0;
+                    if (is_array($result) && empty($result['ok'])) {
+                        $err = $result['error'] ?? 'save_failed';
+                        $alertMsg->message = $err === 'empty_selection'
+                            ? 'No participants selected — nothing was changed.'
+                            : 'Save failed. Please try again.';
+                        return $result;
+                    }
+
+                    $mappedCount = is_array($result) && isset($result['count']) ? (int) $result['count'] : count($decoded);
                     $auditDb = new Application_Model_DbTable_AuditLog();
                     $auditDb->addNewAuditLog(
                         "Mapped {$mappedCount} participants to data manager #{$params['datamanagerId']}",
@@ -1022,6 +1035,7 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                     );
 
                     $alertMsg->message = 'Participants mapped successfully';
+                    return ['ok' => true, 'count' => $mappedCount];
                 }
 
                 if (isset($params['participantId']) && $params['participantId'] != '') {
@@ -1039,10 +1053,16 @@ class Application_Model_DbTable_Participants extends Zend_Db_Table_Abstract
                 }
             }
         } catch (Exception $exc) {
-            error_log('IMPORT-PARTICIPANTS-MAP-EXCEL--' . $exc->getMessage());
-            error_log($exc->getTraceAsString());
+            $traceId = 'pmm-' . bin2hex(random_bytes(4));
+            Pt_Commons_LoggerUtility::logError('addParticipantManager failed', [
+                'trace_id' => $traceId,
+                'file'     => $exc->getFile(),
+                'line'     => $exc->getLine(),
+                'message'  => $exc->getMessage(),
+                'trace'    => $exc->getTraceAsString(),
+            ]);
             $alertMsg->message = 'File not uploaded. Something went wrong please try again later!';
-            return false;
+            return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
         }
     }
 

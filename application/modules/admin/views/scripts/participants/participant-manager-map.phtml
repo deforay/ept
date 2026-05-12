@@ -12,10 +12,22 @@
     .virt-dual-list .virt-pane-header input { width: 100%; }
     .virt-dual-list .virt-pane-scroll { position: relative; height: 400px; overflow-y: auto; background: #fff; }
     .virt-dual-list .virt-pane-inner { position: relative; width: 100%; }
-    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px 0 28px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
     .virt-dual-list .virt-row:hover { background: #337ab7; color: #fff; }
+    .virt-dual-list .virt-row::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 11px; font-weight: 700; border-radius: 50%; color: #fff; }
+    .virt-dual-list .virt-row.virt-row-added { background: #e8f5e9; border-left: 3px solid #2e7d32; padding-left: 26px; }
+    .virt-dual-list .virt-row.virt-row-added::before { content: '+'; background: #2e7d32; }
+    .virt-dual-list .virt-row.virt-row-removed { background: #fff3e0; border-left: 3px solid #ef6c00; padding-left: 26px; }
+    .virt-dual-list .virt-row.virt-row-removed::before { content: '\2212'; background: #ef6c00; }
+    .virt-dual-list .virt-row.virt-row-saved::before { content: '\2713'; background: #607d8b; }
     .virt-dual-list .virt-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .virt-dual-list .virt-pane-footer .virt-diff { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .virt-dual-list .virt-pane-footer .virt-diff-added { background: #2e7d32; }
+    .virt-dual-list .virt-pane-footer .virt-diff-removed { background: #ef6c00; }
     .virt-dual-list .virt-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; }
+    .virt-legend { max-width: 1100px; margin: 0 auto 8px auto; font-size: 12px; color: #555; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: center; }
+    .virt-legend .virt-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .virt-legend .virt-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
 </style>
 <div class="well">
     <fieldset>
@@ -144,17 +156,22 @@
             </div>
         </div>
         <br />
+        <div class="virt-legend">
+            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#607d8b;"></span><?= $this->htmlTranslate("Saved (already mapped)"); ?></span>
+            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#2e7d32;"></span><?= $this->htmlTranslate("Pending add (save to apply)"); ?></span>
+            <span class="virt-legend-item"><span class="virt-legend-swatch" style="background:#ef6c00;"></span><?= $this->htmlTranslate("Pending remove (save to apply)"); ?></span>
+        </div>
         <div class="virt-dual-list">
             <div class="virt-pane" data-side="left">
-                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="Type PT Login Name To Filter"></div>
+                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate("Type PT Login Name To Filter"); ?>"></div>
                 <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-                <div class="virt-pane-footer">Unselected PT Logins (<span class="virt-count">0</span>)</div>
+                <div class="virt-pane-footer"><?= $this->htmlTranslate("Unselected PT Logins"); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-removed" style="display:none;">&minus; <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending remove"); ?></span></div>
             </div>
             <div class="virt-arrows">&#8646;</div>
             <div class="virt-pane" data-side="right">
-                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="Type PT Login Name To Filter"></div>
+                <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate("Type PT Login Name To Filter"); ?>"></div>
                 <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-                <div class="virt-pane-footer">Selected PT Logins (<span class="virt-count">0</span>)</div>
+                <div class="virt-pane-footer"><?= $this->htmlTranslate("Selected PT Logins"); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-added" style="display:none;">+ <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending add"); ?></span></div>
             </div>
         </div>
         <br />
@@ -204,6 +221,8 @@
                 $inner: $pane.find('.virt-pane-inner'),
                 $search: $pane.find('.virt-pane-header input'),
                 $count: $pane.find('.virt-count'),
+                $diff: $pane.find('.virt-diff'),
+                $diffCount: $pane.find('.virt-diff-count'),
                 filter: '',
                 filtered: []
             };
@@ -233,6 +252,27 @@
             }
             pane.$count.text(pane.filtered.length);
             pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+            updateDiffBadge(pane);
+        }
+
+        function updateDiffBadge(pane) {
+            if (!pane.$diff || pane.$diff.length === 0) return;
+            var src = state[pane.sideKey];
+            var diffCount = 0;
+            if (pane.sideKey === 'right') {
+                for (var i = 0; i < src.length; i++) if (!src[i].savedRight) diffCount++;
+            } else {
+                for (var j = 0; j < src.length; j++) if (src[j].savedRight) diffCount++;
+            }
+            pane.$diffCount.text(diffCount);
+            pane.$diff.toggle(diffCount > 0);
+        }
+
+        function rowClass(it, sideKey) {
+            if (sideKey === 'right') {
+                return it.savedRight ? 'virt-row-saved' : 'virt-row-added';
+            }
+            return it.savedRight ? 'virt-row-removed' : '';
         }
 
         function render(pane) {
@@ -243,8 +283,9 @@
             var parts = [];
             for (var i = first; i < last; i++) {
                 var it = pane.filtered[i];
+                var cls = rowClass(it, pane.sideKey);
                 parts.push(
-                    '<div class="virt-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' +
+                    '<div class="virt-row' + (cls ? ' ' + cls : '') + '" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' +
                     escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>'
                 );
             }
@@ -277,6 +318,7 @@
             for (var i = 0; i < items.length; i++) {
                 var it = items[i];
                 it._lc = String(it.label).toLowerCase();
+                it.savedRight = !!it.selected;
                 if (it.selected) state.right.push(it);
                 else state.left.push(it);
             }
@@ -352,24 +394,44 @@
             });
     }
 
+    var MAP_I18N = {
+        uploadFileRequired: "<?= $this->jsTranslate("Please upload the file to process."); ?>",
+        selectDmRequired: "<?= $this->jsTranslate("Please select PT Login to map the participants"); ?>",
+        confirmEmpty: "<?= $this->jsTranslate("No participants are selected. Saving now will remove ALL participant mappings for this PT Login. Continue?"); ?>",
+        saved: "<?= $this->jsTranslate("Mapping saved"); ?>",
+        saveFailed: "<?= $this->jsTranslate("Save failed. Please try again, or contact support if it keeps happening."); ?>",
+        networkError: "<?= $this->jsTranslate("Could not reach the server. Check your connection and try again."); ?>",
+        sessionExpired: "<?= $this->jsTranslate("Your session has expired. Please log in again and retry."); ?>",
+        serverError: "<?= $this->jsTranslate("The server reported an error while saving."); ?>",
+        traceIdLabel: "<?= $this->jsTranslate("Reference"); ?>"
+    };
+
     function validateNow() {
         if ($('#bulkForm').is(":visible") == true) {
             if ($('#bulkMap').val() != "") {
                 document.getElementById('submitParticipantMap').submit();
                 return false;
             } else {
-                alert("Please upload the file to process.");
+                alert(MAP_I18N.uploadFileRequired);
                 return false;
             }
         }
         if ($('#alldatamangers').val() == "" || $('#alldatamangers').val() == null) {
-            alert("Please select PT Login to map the participants");
+            alert(MAP_I18N.selectDmRequired);
             return false;
         }
 
         var flag = deforayValidator.init({ formId: 'submitParticipantMap' });
         if (flag) {
-            $("#selectedForMapping").val(JSON.stringify(DualList.getSelectedIds()));
+            var selectedIds = DualList.getSelectedIds();
+            if (selectedIds.length === 0) {
+                if (!confirm(MAP_I18N.confirmEmpty)) {
+                    return;
+                }
+                $('#submitParticipantMap').find('input[name="allowEmptyMapping"]').remove();
+                $('<input>').attr({ type: 'hidden', name: 'allowEmptyMapping', value: '1' }).appendTo('#submitParticipantMap');
+            }
+            $("#selectedForMapping").val(JSON.stringify(selectedIds));
             saveMappingAjax();
         }
     }
@@ -387,17 +449,35 @@
             dataType: 'json',
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         }).done(function(resp) {
+            $.unblockUI();
             if (resp && resp.success) {
-                showMappingFlash(resp.message || 'Saved', 'success');
+                showMappingFlash(resp.message || MAP_I18N.saved, 'success');
                 loadParticipants();
             } else {
-                showMappingFlash((resp && resp.message) || 'Save failed', 'danger');
-                $.unblockUI();
+                var msg = (resp && resp.message) ? resp.message : MAP_I18N.saveFailed;
+                if (resp && resp.trace_id) {
+                    msg += ' (' + MAP_I18N.traceIdLabel + ': ' + resp.trace_id + ')';
+                }
+                showMappingFlash(msg, 'danger');
             }
-        }).fail(function() {
-            showMappingFlash('Save failed. Please try again.', 'danger');
+        }).fail(function(xhr) {
             $.unblockUI();
+            showMappingFlash(humanizeAjaxFailure(xhr), 'danger');
         });
+    }
+
+    function humanizeAjaxFailure(xhr) {
+        if (!xhr || xhr.status === 0) return MAP_I18N.networkError;
+        if (xhr.status === 401 || xhr.status === 403) return MAP_I18N.sessionExpired;
+        // Server returned a JSON payload with a friendly message
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            var msg = xhr.responseJSON.message;
+            if (xhr.responseJSON.trace_id) {
+                msg += ' (' + MAP_I18N.traceIdLabel + ': ' + xhr.responseJSON.trace_id + ')';
+            }
+            return msg;
+        }
+        return MAP_I18N.serverError + ' (HTTP ' + xhr.status + ')';
     }
 
     function showMappingFlash(msg, level) {
@@ -409,7 +489,9 @@
         }
         $flash.removeClass('alert-success alert-danger').addClass(cls).text(msg).show();
         clearTimeout(showMappingFlash._t);
-        showMappingFlash._t = setTimeout(function() { $flash.fadeOut(300); }, 3500);
+        // Errors stay visible longer so the user can read the trace id
+        var ttl = level === 'danger' ? 10000 : 3500;
+        showMappingFlash._t = setTimeout(function() { $flash.fadeOut(300); }, ttl);
     }
 
     function loadParticipants() {

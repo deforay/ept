@@ -17,18 +17,34 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
     .pdl-wrapper .pdl-hint { text-align: center; color: #3a87ad; padding: 8px 0; font-size: 13px; }
     .pdl-wrapper .pdl-actions { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px 0; }
     .pdl-wrapper .advFilter { display: none; padding: 15px; border: 1px solid #80808069; margin: 10px 0 15px 0; background: #fafafa; }
+    .pdl-wrapper .pdl-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 18px; }
+    .pdl-wrapper .pdl-filters .pdl-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .pdl-wrapper .pdl-filters .pdl-field > label { margin: 0; font-weight: 600; font-size: 13px; color: #333; }
+    .pdl-wrapper .pdl-filters .pdl-field > .select2-container { width: 100% !important; }
     .virt-dual-list { display: flex; gap: 20px; align-items: stretch; width: 100%; }
     .virt-dual-list .virt-pane { flex: 1 1 0; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
     .virt-dual-list .virt-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
     .virt-dual-list .virt-pane-header input { width: 100%; box-sizing: border-box; }
     .virt-dual-list .virt-pane-scroll { position: relative; height: 360px; overflow-y: auto; background: #fff; }
     .virt-dual-list .virt-pane-inner { position: relative; width: 100%; }
-    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .virt-dual-list .virt-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px 0 28px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
     .virt-dual-list .virt-row:hover { background: #337ab7; color: #fff; }
+    .virt-dual-list .virt-row::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 11px; font-weight: 700; border-radius: 50%; color: #fff; }
+    .virt-dual-list .virt-row.virt-row-added { background: #e8f5e9; border-left: 3px solid #2e7d32; padding-left: 26px; }
+    .virt-dual-list .virt-row.virt-row-added::before { content: '+'; background: #2e7d32; }
+    .virt-dual-list .virt-row.virt-row-removed { background: #fff3e0; border-left: 3px solid #ef6c00; padding-left: 26px; }
+    .virt-dual-list .virt-row.virt-row-removed::before { content: '\2212'; background: #ef6c00; }
+    .virt-dual-list .virt-row.virt-row-saved::before { content: '\2713'; background: #607d8b; }
     .virt-dual-list .virt-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .virt-dual-list .virt-pane-footer .virt-diff { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .virt-dual-list .virt-pane-footer .virt-diff-added { background: #2e7d32; }
+    .virt-dual-list .virt-pane-footer .virt-diff-removed { background: #ef6c00; }
     .virt-dual-list .virt-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
     .virt-dual-list .virt-pane.pdl-error { border-color: #d9534f; box-shadow: 0 0 0 2px rgba(217,83,79,0.35); }
     .virt-dual-list .virt-pane.pdl-error .virt-pane-footer { background: #d9534f; }
+    .pdl-wrapper .pdl-legend { margin: 0 0 8px 0; font-size: 12px; color: #555; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .pdl-wrapper .pdl-legend .pdl-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .pdl-wrapper .pdl-legend .pdl-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
 </style>
 <div class="pdl-wrapper">
     <div class="pdl-header">
@@ -38,96 +54,94 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
         <a href="javascript:void(0);" onclick="pdlAdvFilter();" class="btn btn-xs btn-primary pdl-filter-btn"><?= $this->translate->_("Show advanced filters"); ?></a>
     </div>
     <div class="advFilter">
-            <div class="row">
-                <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Country"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_country" id="pdl_country" onchange="pdlLoad();pdlGetStates(this.value);">
-                            <option value=""></option>
-                            <?php foreach ($this->countries as $c) { ?>
-                                <option value="<?php echo $c['id']; ?>"><?php echo $c['iso_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
-                <?php if (isset($this->province) && count($this->province) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Province"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_province" id="pdl_province" onchange="pdlLoad();pdlGetDistricts(this.value);">
-                            <option value=""></option>
-                            <?php foreach ($this->province as $p) { ?>
-                                <option value="<?php echo $p['state']; ?>"><?php echo $p['state']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
+        <div class="pdl-filters">
+            <?php if (isset($this->countries) && count($this->countries) > 0) { ?>
+                <div class="pdl-field">
+                    <label for="pdl_country"><?= $this->htmlTranslate("Country"); ?></label>
+                    <select class="pdl-select2" name="pdl_country" id="pdl_country" onchange="pdlLoad();pdlGetStates(this.value);">
+                        <option value=""></option>
+                        <?php foreach ($this->countries as $c) { ?>
+                            <option value="<?php echo $c['id']; ?>"><?php echo $c['iso_name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <div class="pdl-field">
+                <label for="pdl_province"><?= $this->htmlTranslate("Province"); ?></label>
+                <select class="pdl-select2" name="pdl_province" id="pdl_province" onchange="pdlLoad();pdlGetDistricts(this.value);">
+                    <option value=""></option>
+                    <?php if (isset($this->province)) { foreach ($this->province as $p) { ?>
+                        <option value="<?php echo $p['state']; ?>"><?php echo $p['state']; ?></option>
+                    <?php }
+                    } ?>
+                </select>
             </div>
-            <div class="row">
-                <?php if (isset($this->district) && count($this->district) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("District"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_district" id="pdl_district" onchange="pdlLoad();pdlGetInstitutes();">
-                            <option value=""></option>
-                            <?php foreach ($this->district as $d) { ?>
-                                <option value="<?php echo $d['district']; ?>"><?php echo $d['district']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
-                <?php if (isset($this->institutes) && count($this->institutes) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Institute"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_institute" id="pdl_institute" onchange="pdlLoad();">
-                            <option value=""></option>
-                            <?php foreach ($this->institutes as $i) { ?>
-                                <option value="<?php echo $i['institute_name']; ?>"><?php echo $i['institute_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
+            <div class="pdl-field">
+                <label for="pdl_district"><?= $this->htmlTranslate("District"); ?></label>
+                <select class="pdl-select2" name="pdl_district" id="pdl_district" onchange="pdlLoad();pdlGetInstitutes();">
+                    <option value=""></option>
+                    <?php if (isset($this->district)) { foreach ($this->district as $d) { ?>
+                        <option value="<?php echo $d['district']; ?>"><?php echo $d['district']; ?></option>
+                    <?php }
+                    } ?>
+                </select>
             </div>
-            <div class="row">
-                <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Network Tier"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_networkTier" id="pdl_networkTier" onchange="pdlLoad();">
-                            <option value=""></option>
-                            <?php foreach ($this->networksTier as $n) { ?>
-                                <option value="<?php echo $n['network_id']; ?>"><?php echo $n['network_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
-                <?php if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
-                    <label class="col-lg-2 control-label" style="height: 40px;"><?= $this->translate->_("Affiliation"); ?></label>
-                    <div class="col-lg-4">
-                        <select class="pdl-select2" style="width:100%;" name="pdl_affiliation" id="pdl_affiliation" onchange="pdlLoad();">
-                            <option value=""></option>
-                            <?php foreach ($this->affiliation as $a) { ?>
-                                <option value="<?php echo $a['affiliate']; ?>"><?php echo $a['affiliate']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                <?php } ?>
+            <div class="pdl-field">
+                <label for="pdl_institute"><?= $this->htmlTranslate("Institute"); ?></label>
+                <select class="pdl-select2" name="pdl_institute" id="pdl_institute" onchange="pdlLoad();">
+                    <option value=""></option>
+                    <?php if (isset($this->institutes)) { foreach ($this->institutes as $i) { ?>
+                        <option value="<?php echo $i['institute_name']; ?>"><?php echo $i['institute_name']; ?></option>
+                    <?php }
+                    } ?>
+                </select>
             </div>
+            <?php if (isset($this->networksTier) && count($this->networksTier) > 0) { ?>
+                <div class="pdl-field">
+                    <label for="pdl_networkTier"><?= $this->htmlTranslate("Network Tier"); ?></label>
+                    <select class="pdl-select2" name="pdl_networkTier" id="pdl_networkTier" onchange="pdlLoad();">
+                        <option value=""></option>
+                        <?php foreach ($this->networksTier as $n) { ?>
+                            <option value="<?php echo $n['network_id']; ?>"><?php echo $n['network_name']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+            <?php if (isset($this->affiliation) && count($this->affiliation) > 0) { ?>
+                <div class="pdl-field">
+                    <label for="pdl_affiliation"><?= $this->htmlTranslate("Affiliation"); ?></label>
+                    <select class="pdl-select2" name="pdl_affiliation" id="pdl_affiliation" onchange="pdlLoad();">
+                        <option value=""></option>
+                        <?php foreach ($this->affiliation as $a) { ?>
+                            <option value="<?php echo $a['affiliate']; ?>"><?php echo $a['affiliate']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            <?php } ?>
+        </div>
     </div>
 
-    <div class="pdl-hint"><?= $this->translate->_("Click on the Participant Name to move them between the two sections"); ?></div>
+    <div class="pdl-hint"><?= $this->htmlTranslate("Click on the Participant Name to move them between the two sections"); ?></div>
     <div class="pdl-actions">
-        <a href="#" id="pdl-select-all" class="btn btn-info btn-xs"><?= $this->translate->_("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
-        <a href="#" id="pdl-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->translate->_("Deselect All"); ?></a>
+        <a href="#" id="pdl-select-all" class="btn btn-info btn-xs"><?= $this->htmlTranslate("Select All"); ?>&nbsp;&nbsp;<i class="icon-chevron-right"></i></a>
+        <a href="#" id="pdl-deselect-all" class="btn btn-danger btn-xs"><i class="icon-chevron-left"></i>&nbsp;&nbsp;&nbsp;<?= $this->htmlTranslate("Deselect All"); ?></a>
+    </div>
+    <div class="pdl-legend">
+        <span class="pdl-legend-item"><span class="pdl-legend-swatch" style="background:#607d8b;"></span><?= $this->htmlTranslate("Saved (already mapped)"); ?></span>
+        <span class="pdl-legend-item"><span class="pdl-legend-swatch" style="background:#2e7d32;"></span><?= $this->htmlTranslate("Pending add (save to apply)"); ?></span>
+        <span class="pdl-legend-item"><span class="pdl-legend-swatch" style="background:#ef6c00;"></span><?= $this->htmlTranslate("Pending remove (save to apply)"); ?></span>
     </div>
     <div class="virt-dual-list">
         <div class="virt-pane" data-side="left">
-            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->translate->_('Type Participant Name To Filter'); ?>"></div>
+            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Type Participant Name To Filter'); ?>"></div>
             <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-            <div class="virt-pane-footer"><?= $this->translate->_('Unselected Participants'); ?> (<span class="virt-count">0</span>)</div>
+            <div class="virt-pane-footer"><?= $this->htmlTranslate('Unselected Participants'); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-removed" style="display:none;">&minus; <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending remove"); ?></span></div>
         </div>
         <div class="virt-arrows">&#8646;</div>
         <div class="virt-pane" data-side="right">
-            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->translate->_('Type Participant Name To Filter'); ?>"></div>
+            <div class="virt-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="<?= $this->htmlTranslate('Type Participant Name To Filter'); ?>"></div>
             <div class="virt-pane-scroll"><div class="virt-pane-inner"></div></div>
-            <div class="virt-pane-footer"><?= $this->translate->_('Selected Participants'); ?> (<span class="virt-count">0</span>)</div>
+            <div class="virt-pane-footer"><?= $this->htmlTranslate('Selected Participants'); ?> (<span class="virt-count">0</span>)<span class="virt-diff virt-diff-added" style="display:none;">+ <span class="virt-diff-count">0</span> <?= $this->htmlTranslate("pending add"); ?></span></div>
         </div>
     </div>
     <div id="pdl-hidden-inputs"></div>
@@ -158,6 +172,8 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
                 $inner: $pane.find('.virt-pane-inner'),
                 $search: $pane.find('.virt-pane-header input'),
                 $count: $pane.find('.virt-count'),
+                $diff: $pane.find('.virt-diff'),
+                $diffCount: $pane.find('.virt-diff-count'),
                 filter: '',
                 filtered: []
             };
@@ -187,6 +203,27 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
             }
             pane.$count.text(pane.filtered.length);
             pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+            updateDiffBadge(pane);
+        }
+
+        function updateDiffBadge(pane) {
+            if (!pane.$diff || pane.$diff.length === 0) return;
+            var src = state[pane.sideKey];
+            var diffCount = 0;
+            if (pane.sideKey === 'right') {
+                for (var i = 0; i < src.length; i++) if (!src[i].savedRight) diffCount++;
+            } else {
+                for (var j = 0; j < src.length; j++) if (src[j].savedRight) diffCount++;
+            }
+            pane.$diffCount.text(diffCount);
+            pane.$diff.toggle(diffCount > 0);
+        }
+
+        function rowClass(it, sideKey) {
+            if (sideKey === 'right') {
+                return it.savedRight ? 'virt-row-saved' : 'virt-row-added';
+            }
+            return it.savedRight ? 'virt-row-removed' : '';
         }
 
         function render(pane) {
@@ -197,7 +234,8 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
             var parts = [];
             for (var i = first; i < last; i++) {
                 var it = pane.filtered[i];
-                parts.push('<div class="virt-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
+                var cls = rowClass(it, pane.sideKey);
+                parts.push('<div class="virt-row' + (cls ? ' ' + cls : '') + '" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
             }
             pane.$inner.html(parts.join(''));
         }
@@ -228,6 +266,7 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
             for (var i = 0; i < items.length; i++) {
                 var it = items[i];
                 it._lc = String(it.label).toLowerCase();
+                it.savedRight = !!it.selected;
                 if (it.selected) state.right.push(it);
                 else state.left.push(it);
             }
@@ -275,10 +314,17 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
         };
     })();
 
+    var PDL_I18N = {
+        showFilters: "<?= $this->jsTranslate('Show advanced filters'); ?>",
+        hideFilters: "<?= $this->jsTranslate('Hide advanced filters'); ?>",
+        confirmMulti: "<?= $this->jsTranslate('You have selected {COUNT} participants. This Data Manager will be able to access the data of ALL {COUNT} selected participants. Are you sure you want to continue?'); ?>"
+    };
+
     function pdlAdvFilter() {
-        $('.pdl-wrapper .advFilter').toggle();
+        var $box = $('.pdl-wrapper .advFilter');
+        $box.toggle();
         var $btn = $('.pdl-filter-btn');
-        $btn.text($btn.text().indexOf('Show') === 0 ? 'Hide advanced filters' : 'Show advanced filters');
+        $btn.text($box.is(':visible') ? PDL_I18N.hideFilters : PDL_I18N.showFilters);
     }
 
     function pdlGetStates(cid) {
@@ -364,16 +410,12 @@ $preSelected = isset($this->preSelectedParticipants) ? (array)$this->preSelected
     function pdlConfirmMulti() {
         var count = ParticipantDualList.getSelectedIds().length;
         if (count <= 1) return true;
-        return confirm(
-            "You have selected " + count + " participants.\n\n" +
-            "This Data Manager will be able to access the data of ALL " + count +
-            " selected participants.\n\nAre you sure you want to continue?"
-        );
+        return confirm(PDL_I18N.confirmMulti.replace(/\{COUNT\}/g, count));
     }
 
     $(document).ready(function() {
         if ($.fn.select2) {
-            $('.pdl-select2').select2({ allowClear: true, placeholder: '<?= $this->translate->_("All"); ?>' });
+            $('.pdl-select2').select2({ allowClear: true, placeholder: "<?= $this->jsTranslate('All'); ?>" });
         }
         $('.pdl-wrapper .virt-pane').each(function() {
             ParticipantDualList.init($(this).attr('data-side'), this);

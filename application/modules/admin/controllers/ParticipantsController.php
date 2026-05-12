@@ -221,17 +221,10 @@ class Admin_ParticipantsController extends Zend_Controller_Action
         if ($request->isPost()) {
 
             $params = $request->getPost();
-            $participantService->addParticipantManagerMap($params);
+            $result = $participantService->addParticipantManagerMap($params);
 
             if ($request->isXmlHttpRequest()) {
-                $this->_helper->layout()->disableLayout();
-                $this->_helper->viewRenderer->setNoRender(true);
-                $alertMsg = new Zend_Session_Namespace('alertSpace');
-                $message = !empty($alertMsg->message) ? $alertMsg->message : 'Participants mapped successfully';
-                $alertMsg->message = null;
-                $this->getResponse()
-                    ->setHeader('Content-Type', 'application/json')
-                    ->setBody(json_encode(['success' => true, 'message' => $message]));
+                $this->sendMappingJsonResponse($result);
                 return;
             }
 
@@ -270,6 +263,57 @@ class Admin_ParticipantsController extends Zend_Controller_Action
                 $this->view->preselectedDmLabel = implode(', ', $label);
             }
         }
+    }
+
+    private function sendMappingJsonResponse($result)
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $alertMsg = new Zend_Session_Namespace('alertSpace');
+        $alertMsg->message = null;
+
+        $ok = is_array($result) ? !empty($result['ok']) : ($result !== false);
+        $count = is_array($result) && isset($result['count']) ? (int) $result['count'] : null;
+        $err = is_array($result) && !empty($result['error']) ? $result['error'] : null;
+        $traceId = is_array($result) && !empty($result['trace_id']) ? $result['trace_id'] : null;
+
+        $message = $this->buildMappingResponseMessage($ok, $count, $err);
+
+        $payload = [
+            'success'  => $ok,
+            'message'  => $message,
+            'count'    => $count,
+            'trace_id' => $traceId,
+        ];
+
+        // Only expose the technical error code outside production. End users
+        // see the friendly translated message + trace id; developers get
+        // detail via Monolog or in dev environments.
+        if (APPLICATION_ENV !== 'production') {
+            $payload['error'] = $err;
+        }
+
+        $this->getResponse()
+            ->setHeader('Content-Type', 'application/json')
+            ->setBody(json_encode($payload));
+    }
+
+    private function buildMappingResponseMessage($ok, $count, $err)
+    {
+        $t = $this->view->translate;
+        if ($err === 'empty_selection') {
+            $message = $t->_('No participants selected — nothing was changed. Use "Clear all mappings" if you really meant to remove them all.');
+        } elseif ($err === 'invalid_payload') {
+            $message = $t->_('Could not read the participant selection. Please reload the page and try again.');
+        } elseif (!$ok) {
+            $message = $t->_('Save failed. Please try again, or contact support if it keeps happening.');
+        } elseif ($count !== null) {
+            $message = sprintf($t->_('Mapped %d participant(s) successfully'), $count);
+        } else {
+            $message = $t->_('Mapping saved');
+        }
+        return $message;
     }
 
     public function getDatamanagerAction()

@@ -1570,34 +1570,61 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
 
     public function dmParticipantMap($params, $dmId, bool $isPtcc = false, bool $participantSide = false)
     {
+        $db = Zend_Db_Table_Abstract::getAdapter();
+        if (!isset($dmId) || empty($dmId)) {
+            return false;
+        }
+        $common = new Application_Service_Common();
+        $inTx = false;
         try {
-            $db = Zend_Db_Table_Abstract::getAdapter();
-            if (!isset($dmId) || empty($dmId)) {
-                return false;
-            }
-            $common = new Application_Service_Common();
             if (!$isPtcc) {
 
                 if ($participantSide) {
                     $params['participantsList'] = (array) $params['participantsList'];
-                    $db->delete('participant_manager_map', ['participant_id IN(' . implode(',', $params['participantsList']) . ')']);
+                    $ids = array_values(array_filter(array_map('intval', $params['participantsList'])));
+                    if (empty($ids)) {
+                        return ['ok' => true, 'count' => 0, 'skipped' => true];
+                    }
+                    $db->beginTransaction();
+                    $inTx = true;
+                    $db->delete('participant_manager_map', ['participant_id IN(' . implode(',', $ids) . ')']);
+                    $data = [];
                     foreach ($dmId as $dm) {
                         $data[] = [
-                            'participant_id' => $params['participantsList'][0],
-                            'dm_id' => $dm,
+                            'participant_id' => $ids[0],
+                            'dm_id' => (int) $dm,
                         ];
                     }
                 } else {
 
-                    $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $params['participantsList']) . ')', 'dm_id LIKE ' . $dmId]);
-                    foreach ($params['participantsList'] as $p) {
+                    $ids = array_values(array_filter(array_map('intval', (array) $params['participantsList'])));
+                    $allowEmpty = !empty($params['allowEmptyMapping']);
+                    if (empty($ids) && !$allowEmpty) {
+                        // refuse to wipe — caller must opt in via allowEmptyMapping
+                        return ['ok' => false, 'count' => 0, 'error' => 'empty_selection'];
+                    }
+                    $db->beginTransaction();
+                    $inTx = true;
+                    if (!empty($ids)) {
+                        $db->delete('participant_manager_map', ['participant_id NOT IN(' . implode(',', $ids) . ')', 'dm_id = ' . (int) $dmId]);
+                    } else {
+                        // explicit clear-all
+                        $db->delete('participant_manager_map', 'dm_id = ' . (int) $dmId);
+                    }
+                    $data = [];
+                    foreach ($ids as $p) {
                         $data[] = [
                             'participant_id' => $p,
-                            'dm_id' => $dmId,
+                            'dm_id' => (int) $dmId,
                         ];
                     }
                 }
-                $common->insertMultiple('participant_manager_map', $data, true);
+                if (!empty($data)) {
+                    $common->insertMultiple('participant_manager_map', $data, true);
+                }
+                $db->commit();
+                $inTx = false;
+                return ['ok' => true, 'count' => isset($ids) ? count($ids) : 0];
             } elseif ($isPtcc) {
                 $params['district'] = isset($params['district']) ? $common->removeEmpty((array) $params['district']) : [];
                 $params['province'] = isset($params['province']) ? $common->removeEmpty((array) $params['province']) : [];
@@ -1650,12 +1677,19 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
                 }
             }
         } catch (Exception $e) {
-            // If any of the queries failed and threw an exception,
-            // we want to roll back the whole transaction, reversing
-            // changes made in the transaction, even those that succeeded.
-            // Thus all changes are committed together, or none are.
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
+            if ($inTx) {
+                try { $db->rollBack(); } catch (Exception $ignored) {}
+            }
+            $traceId = 'pmm-' . bin2hex(random_bytes(4));
+            Pt_Commons_LoggerUtility::logError('dmParticipantMap failed', [
+                'trace_id' => $traceId,
+                'dm_id'    => $dmId,
+                'file'     => $e->getFile(),
+                'line'     => $e->getLine(),
+                'message'  => $e->getMessage(),
+                'trace'    => $e->getTraceAsString(),
+            ]);
+            return ['ok' => false, 'count' => 0, 'error' => 'save_failed', 'trace_id' => $traceId];
         }
     }
 
