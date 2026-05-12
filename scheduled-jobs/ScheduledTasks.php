@@ -54,4 +54,13 @@ $schedule->run($phpPath . " " . SCHEDULED_JOBS_FOLDER . "/reset-stale-jobs.php")
     ->preventOverlapping()
     ->description('Resetting stale processing jobs');
 
+// Validate participant + data_manager email addresses (syntax + MX), batched.
+// Runs every 4 hours; processes oldest-checked rows first, re-checks failed
+// rows after the recheck-days window so transient domain failures get retried.
+$schedule->run($phpPath . " " . BIN_PATH . "/check-participant-emails.php --quiet")
+    ->cron('15 */4 * * *')
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Checking participant + DM email validity');
+
 return $schedule;
