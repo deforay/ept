@@ -908,11 +908,33 @@ class Application_Service_Participants
 
         $skipEmail = !empty($data['skipEmail']) && $data['skipEmail'] === 'on';
 
-        // convenience closures
-        $applySkip = function (Zend_Db_Select $sql, $col) use ($skipEmail, $host) {
+        // Status values that mean "do not deliver" — populated by
+        // bin/check-participant-emails.php (syntax+MX) and bin/process-bounces.php
+        // (hard bounces). 'valid' and 'unknown' both stay eligible: unknown
+        // rows haven't been classified yet, and we'd rather attempt-and-bounce
+        // than silently skip everything on a fresh install.
+        $badStatuses = "'hard_bounce','invalid_domain','invalid_syntax'";
+
+        // HAVING expression that filters out rows where the CASE picked neither
+        // primary nor secondary (both empty or both flagged bad).
+        $havingDeliverable = 'email IS NOT NULL';
+
+        // Pick the primary if its stamped status is OK; otherwise fall back to
+        // the secondary; otherwise NULL (HAVING drops the row).
+        $emailPicker = function (string $primaryCol, string $primaryStatusCol, string $secondaryCol, string $secondaryStatusCol) use ($badStatuses): string {
+            return "CASE
+                WHEN $primaryCol IS NOT NULL AND $primaryCol <> ''
+                     AND $primaryStatusCol NOT IN ($badStatuses) THEN $primaryCol
+                WHEN $secondaryCol IS NOT NULL AND $secondaryCol <> ''
+                     AND $secondaryStatusCol NOT IN ($badStatuses) THEN $secondaryCol
+                ELSE NULL
+            END";
+        };
+
+        $applySkip = function (Zend_Db_Select $sql) use ($skipEmail, $host) {
             if ($skipEmail && $host !== '') {
-                $sql->where("LOWER($col) NOT LIKE ?", '%@' . $host)
-                    ->where("LOWER($col) NOT LIKE ?", '%@%.' . $host);
+                $sql->having("LOWER(email) NOT LIKE ?", '%@' . $host)
+                    ->having("LOWER(email) NOT LIKE ?", '%@%.' . $host);
             }
             return $sql;
         };
@@ -921,23 +943,24 @@ class Application_Service_Participants
 
         if (in_array('participant', (array) $data['sendMail'], true)) {
             $sql = $db->select()->from(['p' => 'participant'], [
-                'p.email',
-                'name' => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p')),
+                'email' => new Zend_Db_Expr($emailPicker('p.email', 'p.email_status', 'p.additional_email', 'p.additional_email_status')),
+                'name'  => new Zend_Db_Expr(Application_Model_DbTable_Participants::participantNameGroupConcatExpr('p')),
             ])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'p.participant_id=spm.participant_id', [])
                 ->joinLeft(['s' => 'shipment'], 's.shipment_id=spm.shipment_id', ['s.shipment_code'])
                 ->joinLeft(['d' => 'distributions'], 'd.distribution_id=s.distribution_id', ['distribution_code', 'distribution_date'])
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
-                ->group('p.email');
+                ->group('email')
+                ->having($havingDeliverable);
 
-            $result[] = $db->fetchAll($applySkip($sql, 'p.email'));
+            $result[] = $db->fetchAll($applySkip($sql));
         }
 
         if (in_array('datamanager', (array) $data['sendMail'], true)) {
             $sql = $db->select()->from(['dm' => 'data_manager'], [
-                'email' => 'dm.primary_email',
-                'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'email' => new Zend_Db_Expr($emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status')),
+                'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
@@ -946,15 +969,16 @@ class Application_Service_Participants
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "manager"')
-                ->group('dm.primary_email');
+                ->group('email')
+                ->having($havingDeliverable);
 
-            $result[] = $db->fetchAll($applySkip($sql, 'dm.primary_email'));
+            $result[] = $db->fetchAll($applySkip($sql));
         }
 
         if (in_array('ptcc', (array) $data['sendMail'], true)) {
             $sql = $db->select()->from(['dm' => 'data_manager'], [
-                'email' => 'dm.primary_email',
-                'name' => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
+                'email' => new Zend_Db_Expr($emailPicker('dm.primary_email', 'dm.primary_email_status', 'dm.secondary_email', 'dm.secondary_email_status')),
+                'name'  => new Zend_Db_Expr("GROUP_CONCAT(DISTINCT dm.first_name,' ',dm.last_name ORDER BY dm.first_name SEPARATOR ', ')"),
             ])
                 ->joinLeft(['pmm' => 'participant_manager_map'], 'dm.dm_id=pmm.dm_id', [])
                 ->joinLeft(['spm' => 'shipment_participant_map'], 'spm.participant_id=pmm.participant_id', [])
@@ -963,9 +987,10 @@ class Application_Service_Participants
                 ->joinLeft(['sl' => 'scheme_list'], 'sl.scheme_id=s.scheme_type', ['SCHEME' => 'sl.scheme_name'])
                 ->where('s.shipment_id IN(?)', (array) $data['shipments'])
                 ->where('data_manager_type LIKE "ptcc"')
-                ->group('dm.primary_email');
+                ->group('email')
+                ->having($havingDeliverable);
 
-            $result[] = $db->fetchAll($applySkip($sql, 'dm.primary_email'));
+            $result[] = $db->fetchAll($applySkip($sql));
         }
 
         return $result;
