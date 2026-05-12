@@ -150,17 +150,17 @@ foreach ($savedSettings as $key => $savedValue) {
     id="covid19SampleTable">
     <thead>
         <tr align="center">
-            <th style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
-            <th style="text-align: center; vertical-align: middle;">
+            <th scope="col" style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
+            <th scope="col" style="text-align: center; vertical-align: middle;">
                 <?= $this->translate->_("Sample Preparation Date"); ?>
             </th>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
-            <th style="width:10%; text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
+            <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Final Result"); ?></th>
+            <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
+            <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
             <?php if ($isEditMode): ?>
-                <th style="width:10%; text-align: center;"><?= $this->translate->_("Score"); ?></th>
+                <th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Score"); ?></th>
             <?php endif; ?>
-            <th style="width:20%; text-align: center;"><?= $this->translate->_("Option"); ?></th>
+            <th scope="col" style="width:20%; text-align: center;"><?= $this->translate->_("Option"); ?></th>
         </tr>
     </thead>
     <tbody>
@@ -411,11 +411,11 @@ foreach ($savedSettings as $key => $savedValue) {
             '<table style="width: 100%; margin: 0 auto;" class="table table-bordered table-striped clearfix">' +
             '<thead>' +
             '<tr align="center">' +
-            '<th style="width:20%; text-align: center;"><?= $this->translate->_("Platform Name"); ?></th>' +
-            '<th style="width:10%; text-align: center;"><?= $this->translate->_("Lot Number"); ?></th>' +
-            '<th style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th>' +
-            '<th style="width:15%; text-align: center;"><?= $this->translate->_("Result"); ?></th>' +
-            '<th style="width: 5%; text-align: center;"><?= $this->translate->_("Options"); ?></th>' +
+            '<th scope="col" style="width:20%; text-align: center;"><?= $this->translate->_("Platform Name"); ?></th>' +
+            '<th scope="col" style="width:10%; text-align: center;"><?= $this->translate->_("Lot Number"); ?></th>' +
+            '<th scope="col" style="width:12%; text-align: center;"><?= $this->translate->_("Expiry"); ?></th>' +
+            '<th scope="col" style="width:15%; text-align: center;"><?= $this->translate->_("Result"); ?></th>' +
+            '<th scope="col" style="width: 5%; text-align: center;"><?= $this->translate->_("Options"); ?></th>' +
             '</tr>' +
             '</thead>' +
             '<tbody>' +

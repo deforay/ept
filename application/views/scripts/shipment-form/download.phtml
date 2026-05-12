@@ -305,9 +305,9 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	}
 
 	$labInfo .= '<tr style="background-color:#CCCCCC;">';
-	$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">PT Panel Identifier</th>';
+	$labInfo .= '<th scope="col" style="text-align:center;font-weight:bold;width:' . $width . '%;">PT Panel Identifier</th>';
 	if ($syphilisActive) {
-		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Type of Test</th>';
+		$labInfo .= '<th scope="col" style="text-align:center;font-weight:bold;width:' . $width . '%;">Type of Test</th>';
 	}
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-1</td>';
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Result-2</td>';
@@ -323,14 +323,14 @@ if ($this->shipment["scheme_type"] == 'dts') {
 	}
 	$labInfo .= '<td style="text-align:center;font-weight:bold;width:' . $width . '%;">Final HIV Interpretation* </td>';
 	if (in_array("ghanaNationalDtsAlgo", $allowedAlgorithms)) {
-		$labInfo .= '<th style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </th>';
+		$labInfo .= '<th scope="col" style="text-align:center;font-weight:bold;width:' . $width . '%;">Is this a Retest? </th>';
 	}
 	$labInfo .= '</tr>';
 	foreach ($this->shipment["referenceResult"] as $sample) {
 		$labInfo .= '<tr style="background-color:#F7F7F7;">';
 		$labInfo .= '<td style="font-weight:bold;">' . $sample['sample_label'] . '</td>';
 		if ($syphilisActive) {
-			$labInfo .= '<th>
+			$labInfo .= '<th scope="col">
 				<span style="border-bottom: 1px solid gray;">HIV</span><hr>
 				<span>SYPHILIS</span>
 			</th>';

@@ -22,10 +22,10 @@ $adminSession = new Zend_Session_Namespace('administrators');
     id="testPlatformTable">
     <thead>
         <tr>
-            <th><?= $this->translate->_("Gene type Name"); ?></th>
-            <th><?= $this->translate->_("Scheme Name"); ?></th>
-            <th><?= $this->translate->_("Created On"); ?></th>
-            <th><?= $this->translate->_("Action"); ?></th>
+            <th scope="col"><?= $this->translate->_("Gene type Name"); ?></th>
+            <th scope="col"><?= $this->translate->_("Scheme Name"); ?></th>
+            <th scope="col"><?= $this->translate->_("Created On"); ?></th>
+            <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
     </thead>
     <tbody>

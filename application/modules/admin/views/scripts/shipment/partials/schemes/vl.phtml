@@ -131,13 +131,13 @@ foreach ($savedSettings as $key => $savedValue) {
     id="vlSampleTable">
     <thead>
         <tr align="center">
-            <th style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
-            <th style="text-align: center; vertical-align: middle;">
+            <th scope="col" style="width:25%; text-align: center;"><?= $this->translate->_("Sample Label"); ?></th>
+            <th scope="col" style="text-align: center; vertical-align: middle;">
                 <?= $this->translate->_("Sample Preparation Date"); ?>
             </th>
-            <th style="text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
-            <th style="text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
-            <th style="width:15%; text-align: center;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+            <th scope="col" style="text-align: center;"><?= $this->translate->_("Is it a Control?"); ?></th>
+            <th scope="col" style="text-align: center;"><?= $this->translate->_("Is it Mandatory?"); ?></th>
+            <th scope="col" style="width:15%; text-align: center;"><?= $this->translate->_("Add/Remove Row"); ?></th>
         </tr>
     </thead>
     <tbody>
@@ -239,13 +239,13 @@ foreach ($savedSettings as $key => $savedValue) {
                                             class="table table-bordered table-striped clearfix">
                                             <thead>
                                                 <tr align="center">
-                                                    <th style="width:50%; text-align: center;">
+                                                    <th scope="col" style="width:50%; text-align: center;">
                                                         <?= $this->translate->_("VL Assay"); ?>
                                                     </th>
-                                                    <th style="width:20%; text-align: center;">
+                                                    <th scope="col" style="width:20%; text-align: center;">
                                                         <?= $this->translate->_("Viral Load"); ?> (log<sub>10</sub> copies/ml)
                                                     </th>
-                                                    <th style="width:15%; text-align: center;"></th>
+                                                    <th scope="col" style="width:15%; text-align: center;"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -328,7 +328,7 @@ foreach ($savedSettings as $key => $savedValue) {
         <?php if (!$isEditMode): ?>
             <!-- Extra empty row for ADD mode -->
             <tr align="center">
-                <th>
+                <th scope="col">
                     <input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm"
                         placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
                 </th>
@@ -391,7 +391,7 @@ foreach ($savedSettings as $key => $savedValue) {
     function addVlRow(obj) {
         sampleCounter++;
         $(obj.parentNode.parentNode).after('<tr align="center"> \
-        <th><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name" placeholder="Please enter the Sample Name" /></th> \
+        <th scope="col"><input type="text" name="sampleName[]" value="" class="isRequired form-control input-sm" title="Please enter the Sample Name" placeholder="Please enter the Sample Name" /></th> \
         <td>\
             <input type="text" name="samplePreparationDate[]" readonly="readonly" class="isRequired form-control input-sm datepicker" placeholder="Please enter the sample preparation date" title="Please enter the sample preparation date" />\
         </td>\
@@ -431,9 +431,9 @@ foreach ($savedSettings as $key => $savedValue) {
             '<table style="width: 70%; margin: 0 auto;" class="table table-bordered table-striped clearfix">' +
             '<thead>' +
             '<tr align="center">' +
-            '<th style="width:50%; text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>' +
-            '<th style="width:20%; text-align: center;"><?= $this->translate->_("Viral Load"); ?> (log<sub>10</sub> copies/ml)</th>' +
-            '<th style="width:15%; text-align: center;"></th>' +
+            '<th scope="col" style="width:50%; text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>' +
+            '<th scope="col" style="width:20%; text-align: center;"><?= $this->translate->_("Viral Load"); ?> (log<sub>10</sub> copies/ml)</th>' +
+            '<th scope="col" style="width:15%; text-align: center;"></th>' +
             '</tr>' +
             '</thead>' +
             '<tbody>' +

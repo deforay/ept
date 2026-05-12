@@ -55,29 +55,29 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
 				class="display datatable table table-bordered table-hover table-striped " id="currentSchemeTable">
 				<thead>
 					<tr>
-						<th>
+						<th scope="col">
 							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th><?= $this->translate->_("Scheme"); ?></th>
-						<th><?= $this->translate->_("Shipment Code"); ?></th>
-						<th><?= $this->translate->_("PT Survey Code"); ?></th>
-						<th><?= $this->translate->_("Participant ID"); ?></th>
-						<th><?= $this->translate->_("Participant"); ?></th>
-						<th><?= $this->translate->_("Institute Name"); ?></th>
-						<th><?= $this->translate->_("Result Due Date"); ?></th>
-						<th><?= $this->translate->_("Response<br />Date"); ?></th>
-						<th><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
+						<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
+						<th scope="col"><?= $this->translate->_("Institute Name"); ?></th>
+						<th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Response<br />Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 					</tr>
 					<tr class="column-search-row">
-						<th></th>
-						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
-						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
-						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
-						<th><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th><input style="width:100px;" type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
-						<th></th>
-						<th></th>
-						<th></th>
+						<th scope="col"></th>
+						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
+						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Participant ID'); ?>" /></th>
+						<th scope="col"><input style="width:130px;" type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+						<th scope="col"><input style="width:100px;" type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Institute Name'); ?>" /></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
 					</tr>
 				</thead>
 				<tbody>

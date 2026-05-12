@@ -8,30 +8,30 @@
 				class="display datatable table table-bordered table-hover table-striped " id="defaultedSchemeTable">
 				<thead>
 					<tr>
-						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th style="width:100px;">
+						<th scope="col" style="width:30px;"><?= $this->translate->_("Year"); ?></th>
+						<th scope="col" style="width:100px;">
 							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th><?= $this->translate->_("Participant Id"); ?></th>
-						<th><?= $this->translate->_("Participant"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
-						<th><?= $this->translate->_("Status"); ?></th>
-						<th style="width:100px;">
+						<th scope="col" style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
+						<th scope="col" style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant Id"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant"); ?></th>
+						<th scope="col" style="width:100px;"><?= $this->translate->_("Result Due Date"); ?></th>
+						<th scope="col"><?= $this->translate->_("Status"); ?></th>
+						<th scope="col" style="width:100px;">
 							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th scope="col" style="width:100px;"><?= $this->translate->_("Action"); ?></th>
 					</tr>
 				<tr class="column-search-row">
-					<th></th>
-					<th></th>
-					<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
-					<th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-					<th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-					<th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+					<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+					<th scope="col"></th>
 				</tr>
 				</thead>
 				<tbody>

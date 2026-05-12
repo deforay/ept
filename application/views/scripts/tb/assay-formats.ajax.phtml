@@ -52,7 +52,7 @@ if ($isLoggedInAsAdmin) {
                     <th scope="col" style="width:100px;"><?= $this->translate->_("PT Sample"); ?></th>
                     <th scope="col" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if ($isLoggedInAsAdmin) { ?>
-                        <!-- <th>Reference MTBC</th> -->
+                        <!-- <th scope="col">Reference MTBC</th> -->
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
                         <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
@@ -164,13 +164,13 @@ if ($isLoggedInAsAdmin) {
                     <th scope="row" style="width:100px;"><?= $this->translate->_("PT Sample"); ?></th>
                     <th scope="row" style="width:100px;"><?php echo $mtbcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php if ($isLoggedInAsAdmin) { ?>
-                        <!-- <th>Reference MTBC</th> -->
+                        <!-- <th scope="col">Reference MTBC</th> -->
                     <?php }
                     if ($this->assayDrug == "yes") { ?>
                         <th scope="row" style="width:120px;"><?php echo $refcTxt; ?> <span class='mandatory'>*</span></th>
                     <?php }
                     if ($isLoggedInAsAdmin && $this->assayDrug == "yes") { ?>
-                        <!-- <th>Reference RIF</th> -->
+                        <!-- <th scope="col">Reference RIF</th> -->
                     <?php } ?>
                     <th scope="col"><?= $this->translate->_("SPC"); ?> <span class='mandatory'>*</span></th>
                     <th scope="col"><?= $this->translate->_("IS1081-IS6110"); ?> <span class='mandatory'>*</span></th>
@@ -274,18 +274,18 @@ if ($isLoggedInAsAdmin) {
         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
             <thead>
                 <tr style="text-align:center;" class="dark">
-                    <th style="width:10%;">PT Sample</th>
-                    <th>Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
-                    <th>Ct or Melt Peak Temp, one field for each probe. Assay is 9-plex PCR katG, inhA, fabG1, oxyR-ahpC, gyrA, gyrB rrs, eis <span class='mandatory'>*</span></th>
-                    <th>Isoniazid INH <span class='mandatory'>*</span></th>
-                    <th>Fluoroquinolone FLQ <span class='mandatory'>*</span></th>
-                    <th>Amikacin AMK <span class='mandatory'>*</span></th>
-                    <th>Kanamycin KAN <span class='mandatory'>*</span></th>
-                    <th>Capreomycin CAP <span class='mandatory'>*</span></th>
-                    <th>Ethionamide ETH <span class='mandatory'>*</span></th>
-                    <th>Test Date <span class='mandatory'>*</span></th>
-                    <th>Tester Name <span class='mandatory'>*</span></th>
-                    <th>Error Code</th>
+                    <th scope="col" style="width:10%;">PT Sample</th>
+                    <th scope="col">Mycobacterium tuberculosis complex (MTBC) Detected <span class='mandatory'>*</span></th>
+                    <th scope="col">Ct or Melt Peak Temp, one field for each probe. Assay is 9-plex PCR katG, inhA, fabG1, oxyR-ahpC, gyrA, gyrB rrs, eis <span class='mandatory'>*</span></th>
+                    <th scope="col">Isoniazid INH <span class='mandatory'>*</span></th>
+                    <th scope="col">Fluoroquinolone FLQ <span class='mandatory'>*</span></th>
+                    <th scope="col">Amikacin AMK <span class='mandatory'>*</span></th>
+                    <th scope="col">Kanamycin KAN <span class='mandatory'>*</span></th>
+                    <th scope="col">Capreomycin CAP <span class='mandatory'>*</span></th>
+                    <th scope="col">Ethionamide ETH <span class='mandatory'>*</span></th>
+                    <th scope="col">Test Date <span class='mandatory'>*</span></th>
+                    <th scope="col">Tester Name <span class='mandatory'>*</span></th>
+                    <th scope="col">Error Code</th>
                 </tr>
             </thead>
 
@@ -303,7 +303,7 @@ if ($isLoggedInAsAdmin) {
                 $responseAttributes = json_decode($sample['response_attributes'], true);
                 $count++; ?>
                 <tr style="text-align:center;" class="light cepheidMTBXDRTest<?php echo $sample['sample_id']; ?>" style="<?php echo (!$rowShow) ? "display:none;" : ""; ?>">
-                    <th>
+                    <th scope="col">
                         <?php echo $sample['sample_label']; ?> <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                         <input type="hidden" id="sample<?php echo $count; ?>" name="cepheidMTBXDRTest[<?php echo $sample['sample_id']; ?>][sampleId]" value="<?php echo $sample['sample_id']; ?>" />
                     </th>
@@ -714,9 +714,9 @@ if ($isLoggedInAsAdmin) {
             <!-- <br>
             <thead>
                 <tr style="text-align:center;" class="light">
-                    <th colspan="2">Test Date</th>
-                    <th>Tester Name</th>
-                    <th>Error Code</th>
+                    <th scope="col" colspan="2">Test Date</th>
+                    <th scope="col">Tester Name</th>
+                    <th scope="col">Error Code</th>
                 </tr>
             </thead>
             <tbody>

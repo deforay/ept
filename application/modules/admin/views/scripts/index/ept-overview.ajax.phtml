@@ -82,27 +82,27 @@ ob_start();
     <table cellspacing="0" cellpadding="0"
         style="border-collapse:collapse;margin-bottom:12px;min-width:420px;">
         <tr>
-            <th style="<?= $esc($thStyle); ?>width:55%;">Active Participants</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>width:55%;">Active Participants</th>
             <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['active_participants'])); ?></td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Total Shipments</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Total Shipments</th>
             <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['total_shipments'])); ?></td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Finalized Shipments</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Finalized Shipments</th>
             <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['finalized_shipments'])); ?></td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Shipments (<?= $esc(date('Y')); ?>)</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Shipments (<?= $esc(date('Y')); ?>)</th>
             <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['shipments_this_year'])); ?></td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Shipments (Last 12 months)</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Shipments (Last 12 months)</th>
             <td style="<?= $esc($tdNum); ?>"><?= $esc($num($o['shipments_last_12_months'])); ?></td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Oldest Shipment</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Oldest Shipment</th>
             <td style="<?= $esc($tdStyle); ?>">
                 <strong><?= $esc($oldest['date']); ?></strong><?php if (!empty($oldest['code']) || !empty($oldest['scheme'])): ?>
                     <br><span style="color:#555;font-size:12px;">
@@ -114,7 +114,7 @@ ob_start();
             </td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Latest Shipment</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Latest Shipment</th>
             <td style="<?= $esc($tdStyle); ?>">
                 <strong><?= $esc($latest['date']); ?></strong><?php if (!empty($latest['code']) || !empty($latest['scheme'])): ?>
                     <br><span style="color:#555;font-size:12px;">
@@ -126,7 +126,7 @@ ob_start();
             </td>
         </tr>
         <tr>
-            <th style="<?= $esc($thStyle); ?>">Active Schemes (<?= count($activeSchemeNames); ?>)</th>
+            <th scope="col" style="<?= $esc($thStyle); ?>">Active Schemes (<?= count($activeSchemeNames); ?>)</th>
             <td style="<?= $esc($tdStyle); ?>">
                 <?php if (empty($activeSchemeNames)): ?>
                     —
@@ -146,9 +146,9 @@ ob_start();
         style="border-collapse:collapse;min-width:420px;">
         <thead>
             <tr>
-                <th style="<?= $esc($thStyle); ?>">Scheme</th>
-                <th style="<?= $esc($thStyle); ?>text-align:right;">Shipments</th>
-                <th style="<?= $esc($thStyle); ?>text-align:right;">Participants</th>
+                <th scope="col" style="<?= $esc($thStyle); ?>">Scheme</th>
+                <th scope="col" style="<?= $esc($thStyle); ?>text-align:right;">Shipments</th>
+                <th scope="col" style="<?= $esc($thStyle); ?>text-align:right;">Participants</th>
             </tr>
         </thead>
         <tbody>
@@ -272,15 +272,15 @@ ob_start();
                     style="border-collapse:collapse;width:100%;background:#fff;border:1px solid #e3e6ea;border-radius:4px;">
                     <thead>
                         <tr>
-                            <th
+                            <th scope="col"
                                 style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
                                 <?= $esc($this->translate->_('Scheme')); ?>
                             </th>
-                            <th
+                            <th scope="col"
                                 style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
                                 <?= $esc($this->translate->_('Shipments')); ?>
                             </th>
-                            <th
+                            <th scope="col"
                                 style="padding:8px 12px;background:#f6f8fa;border-bottom:1px solid #e3e6ea;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;color:#5a6573;font-weight:600;">
                                 <?= $esc($this->translate->_('Participants')); ?>
                             </th>

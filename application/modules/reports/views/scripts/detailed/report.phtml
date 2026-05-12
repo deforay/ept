@@ -75,11 +75,11 @@ foreach ($data as $row) {
 // Sort headers
 $shipmentCodes = array_keys($shipments);
 echo "<table id='participantsData' border='1' cellpadding='6' cellspacing='0' class='table table-striped table-bordered table-hover dataTable no-footer'>";
-echo "<thead><tr><th>".ucfirst($reportType)."</th>";
+echo "<thead><tr><th scope="col">".ucfirst($reportType)."</th>";
 foreach ($shipmentCodes as $code) {
-    echo "<th>{$code}</th>";
+    echo "<th scope="col">{$code}</th>";
 }
-echo "<th>TOTAL (Participants by ".ucfirst($reportType).")</th></tr></thead><tbody>";
+echo "<th scope="col">TOTAL (Participants by ".ucfirst($reportType).")</th></tr></thead><tbody>";
 
 // Fill rows by region
 foreach ($reportTypes as $key => $values) {
@@ -94,7 +94,7 @@ foreach ($reportTypes as $key => $values) {
 }
 
 // Totals row
-echo "<tr><th>Total (Participants by Test Event)</th>";
+echo "<tr><th scope="col">Total (Participants by Test Event)</th>";
 $grandTotal = 0;
 foreach ($shipmentCodes as $code) {
     $total = 0;
@@ -102,9 +102,9 @@ foreach ($shipmentCodes as $code) {
         $total += $values[$code] ?? 0;
     }
     $grandTotal += $total;
-    echo "<th style='text-align: center;'>{$total}</th>";
+    echo "<th scope="col" style='text-align: center;'>{$total}</th>";
 }
-echo "<th style='text-align: center;'>{$grandTotal}</th></tr>";
+echo "<th scope="col" style='text-align: center;'>{$grandTotal}</th></tr>";
 
 echo "</tbody></table>";
 ?>

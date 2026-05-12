@@ -39,30 +39,30 @@ $dtFormat = $genderHelper->getDateFormat();
 				class="display datatable table table-bordered table-hover table-striped " id="allSchemeTable">
 				<thead>
 					<tr>
-						<th></th>
-						<th style="width:30px;"><?= $this->translate->_("Year"); ?></th>
-						<th style="width:100px;">
+						<th scope="col"></th>
+						<th scope="col" style="width:30px;"><?= $this->translate->_("Year"); ?></th>
+						<th scope="col" style="width:100px;">
 							<?= $this->translate->_("Shipment"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
-						<th><?= $this->translate->_("Participant ID"); ?></th>
-						<th><?= $this->translate->_("Participant Name"); ?></th>
-						<th style="width:100px;">
+						<th scope="col" style="width:50px;"><?= $this->translate->_("Scheme"); ?></th>
+						<th scope="col" style="width:100px;"><?= $this->translate->_("Shipment Code"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant Name"); ?></th>
+						<th scope="col" style="width:100px;">
 							<?= $this->translate->_("Response"); ?><br /><?= $this->translate->_("Date"); ?></th>
-						<th style="width:100px;"><?= $this->translate->_("Action"); ?></th>
-						<th><?= $this->translate->_("Report"); ?></th>
+						<th scope="col" style="width:100px;"><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Report"); ?></th>
 					</tr>
 					<tr class="column-search-row">
-						<th></th>
-						<th></th>
-						<th></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th></th>
-						<th></th>
-						<th></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
+						<th scope="col"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -82,7 +82,7 @@ $dtFormat = $genderHelper->getDateFormat();
 		<h3><?= $this->translate->_("Quality Check Done"); ?></h3>
 		<table class="display datatable table table-bordered table-hover table-striped ">
 			<tr>
-				<th><?= $this->translate->_("QC Done on"); ?> : </th>
+				<th scope="col"><?= $this->translate->_("QC Done on"); ?> : </th>
 				<td><input type="text" id="qcDate" name="qcDate" style="width:180px;float:left;" maxlength="11" value=""
 						class="isRequired form-control" readonly="readonly" /></td>
 			</tr>

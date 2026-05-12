@@ -36,42 +36,42 @@ unset($this->result['use_range']);
 	<table class="table table-bordered table-striped table-hover table-condensed" style="width:100%;margin:0 auto;">
 		<thead>
 			<tr>
-				<th></th>
-				<th style="width:120px;"></th>
-				<th style="text-align: center;" colspan="4"><?php echo $calculatedOn; ?></th>
-				<th style="text-align: center;" colspan="4"><?php echo $updatedOn; ?></th>
-				<th style="text-align: center;" colspan="2"></th>
+				<th scope="col"></th>
+				<th scope="col" style="width:120px;"></th>
+				<th scope="col" style="text-align: center;" colspan="4"><?php echo $calculatedOn; ?></th>
+				<th scope="col" style="text-align: center;" colspan="4"><?php echo $updatedOn; ?></th>
+				<th scope="col" style="text-align: center;" colspan="2"></th>
 
 			</tr>
 			<tr>
-				<th style="text-align: center;"><?= $this->translate->_("Sample ID"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("Sample ID"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("VL Assay"); ?></th>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
 				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
 				<?php } ?>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
 				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
 				<?php } ?>
-				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Mean"); ?></th>
 				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Median"); ?></th>
 				<?php } ?>
 				<?php if ($methodOfEvaluation == 'standard') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("SD"); ?></th>
 				<?php } elseif ($methodOfEvaluation == 'iso17043') { ?>
-					<th style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
+					<th scope="col" style="text-align: center;"><?= $this->translate->_("Robust SD"); ?></th>
 				<?php } ?>
-				<th style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Use Range"); ?></th>
-				<th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("Low Limit"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("High Limit"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("Use Range"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
 
 			</tr>
 		</thead>

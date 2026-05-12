@@ -225,16 +225,16 @@ if ($this->reqFrom == "admin") {
                         <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
                             <thead>
                                 <tr align="CENTER" class="dark">
-                                    <th></th>
-                                    <th colspan="2"><?= $this->translate->_("EIA 1"); ?></th>
-                                    <th colspan="2"><?= $this->translate->_("EIA 2"); ?></th>
-                                    <th colspan="2"><?= $this->translate->_("EIA 3"); ?></th>
-                                    <th colspan="10"><?= $this->translate->_("Western Blot (If applicable)"); ?></th>
+                                    <th scope="col"></th>
+                                    <th scope="col" colspan="2"><?= $this->translate->_("EIA 1"); ?></th>
+                                    <th scope="col" colspan="2"><?= $this->translate->_("EIA 2"); ?></th>
+                                    <th scope="col" colspan="2"><?= $this->translate->_("EIA 3"); ?></th>
+                                    <th scope="col" colspan="10"><?= $this->translate->_("Western Blot (If applicable)"); ?></th>
 
                                 </tr>
                             </thead>
                             <tr align="CENTER" class="light">
-                                <th><?= $this->translate->_("Test Method Code"); ?></th>
+                                <th scope="col"><?= $this->translate->_("Test Method Code"); ?></th>
                                 <td colspan="2" class="dark">
                                     <select name="eia_1" id="eia_1" class="form-control" style="width: 200px"
                                         class="isRequired" title="<?= $this->htmlTranslate("Please Choose EIA 1"); ?>">
@@ -261,7 +261,7 @@ if ($this->reqFrom == "admin") {
                                 </td>
                             </tr>
                             <tr align="CENTER" class="dark">
-                                <th><?= $this->translate->_("Lot No."); ?></th>
+                                <th scope="col"><?= $this->translate->_("Lot No."); ?></th>
                                 <td colspan="2"><input type="text" class="form-control" size="40" maxlength="40"
                                         name="lot_no_1" id="lot_no_1"
                                         value="<?php echo ($this->allSamples[0]["lot_no_1"]); ?>" style="width: 90%"
@@ -283,7 +283,7 @@ if ($this->reqFrom == "admin") {
                             </tr>
 
                             <tr align="CENTER" class="light">
-                                <th><?= $this->translate->_("Expiry Date"); ?></th>
+                                <th scope="col"><?= $this->translate->_("Expiry Date"); ?></th>
                                 <td colspan="2"><input id="exp_date1" class="form-control" type="text" id="exp_date1"
                                         name="exp_date_1"
                                         value="<?php echo $this->dateFormat($this->allSamples[0]["exp_date_1"]); ?>"
@@ -307,25 +307,25 @@ if ($this->reqFrom == "admin") {
                             </tr>
                             <thead>
                                 <tr align="CENTER" class="dark">
-                                    <th></th>
-                                    <th>OD</th>
-                                    <th><?= $this->translate->_("Cutoff"); ?></th>
-                                    <th>OD</th>
-                                    <th><?= $this->translate->_("Cutoff"); ?></th>
-                                    <th>OD</th>
-                                    <th><?= $this->translate->_("Cutoff"); ?></th>
-                                    <th>160</th>
-                                    <th>120</th>
-                                    <th>66</th>
-                                    <th>55</th>
-                                    <th>51</th>
-                                    <th>41</th>
-                                    <th>31</th>
-                                    <th>24</th>
-                                    <th>17</th>
-                                    <th><?php echo $resultText; ?></th>
+                                    <th scope="col"></th>
+                                    <th scope="col">OD</th>
+                                    <th scope="col"><?= $this->translate->_("Cutoff"); ?></th>
+                                    <th scope="col">OD</th>
+                                    <th scope="col"><?= $this->translate->_("Cutoff"); ?></th>
+                                    <th scope="col">OD</th>
+                                    <th scope="col"><?= $this->translate->_("Cutoff"); ?></th>
+                                    <th scope="col">160</th>
+                                    <th scope="col">120</th>
+                                    <th scope="col">66</th>
+                                    <th scope="col">55</th>
+                                    <th scope="col">51</th>
+                                    <th scope="col">41</th>
+                                    <th scope="col">31</th>
+                                    <th scope="col">24</th>
+                                    <th scope="col">17</th>
+                                    <th scope="col"><?php echo $resultText; ?></th>
                                     <?php if ($adminAccess) { ?>
-                                        <th class="colwidth"><?= $this->translate->_("Reference Result"); ?></th>
+                                        <th scope="col" class="colwidth"><?= $this->translate->_("Reference Result"); ?></th>
                                     <?php } ?>
                                 </tr>
                             </thead>
@@ -336,7 +336,7 @@ if ($this->reqFrom == "admin") {
                                 ?>
 
                                 <tr align="CENTER" class="light">
-                                    <th style="white-space: nowrap;">
+                                    <th scope="col" style="white-space: nowrap;">
                                         <?php echo ($sample['sample_label']); ?>
                                         <?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
                                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
@@ -447,7 +447,7 @@ if ($this->reqFrom == "admin") {
                     <hr>
                     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
                         <tr>
-                            <th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?></th>
+                            <th scope="col" style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?></th>
                             <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval"
                                     class="form-control isRequired"
                                     title="<?= $this->htmlTranslate("Please select if Supervisor Approval was conducted or not"); ?>">
@@ -457,7 +457,7 @@ if ($this->reqFrom == "admin") {
                                     <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
                                         echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
                                 </select></td>
-                            <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
+                            <th scope="col"><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
                                 <input name="participantSupervisor" id="participantSupervisor" type="text" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>
                                     value="<?php echo $this->shipment['participant_supervisor']; ?>"
@@ -467,7 +467,7 @@ if ($this->reqFrom == "admin") {
                         </tr>
                         <tr>
 
-                            <th><?= $this->translate->_("Comments"); ?> </th>
+                            <th scope="col"><?= $this->translate->_("Comments"); ?> </th>
                             <td colspan="3">
                                 <textarea class="form-control" name="userComments" id="userComments" type="text"
                                     size="120" maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
@@ -533,8 +533,8 @@ if ($this->reqFrom == "admin") {
                                     <td>
                                         <table class='table table-bordered'>
                                             <tr>
-                                                <th>Failure Reasons (or) Warnings</th>
-                                                <th>Corrective Actions (if any)</th>
+                                                <th scope="col">Failure Reasons (or) Warnings</th>
+                                                <th scope="col">Corrective Actions (if any)</th>
                                             </tr>
                                             <?php $i = 1;
                                             foreach ($warnings as $warning) { ?>

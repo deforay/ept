@@ -15,15 +15,15 @@ if (!empty($this->shipment)) {
 
             <table class="table table-bordered table-striped table-hover">
                 <tr>
-                    <th style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("Response"); ?> %</th>
-                    <th style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
-                    <th style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Code"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Scheme"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Samples"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Participants"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("No. of Responses"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Response"); ?> %</th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Number Passed"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Shipment Status"); ?></th>
+                    <th scope="col" style="text-align: center;"><?= $this->translate->_("Action"); ?></th>
                 </tr>
                 <?php
                 if (count($this->shipmentsUnderDistro) > 0) {
@@ -84,11 +84,11 @@ if (!empty($this->shipment)) {
     </h4>
     <table class="table table-bordered" style="margin:0 auto;">
         <tr>
-            <th style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
+            <th scope="col" style="text-align: right"><?= $this->translate->_("Scheme Type"); ?></th>
             <td><?php echo $this->shipment[0]['scheme_name']; ?></td>
-            <th style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
+            <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey Code"); ?></th>
             <td><?php echo $this->shipment[0]['distribution_code']; ?> </td>
-            <th style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
+            <th scope="col" style="text-align: right"><?= $this->translate->_("PT Survey/Shipment Date"); ?></th>
             <td><?php echo $this->dateFormat($this->shipment[0]['distribution_date']); ?></td>
         </tr>
     </table>
@@ -141,18 +141,18 @@ if (!empty($this->shipment)) {
         id="shipmentEvaluation" style="margin:10px auto;">
         <thead>
             <tr>
-                <th style="width:40px;"></th>
-                <th><?= $this->translate->_("Participant/Tester ID"); ?></th>
-                <th><?= $this->translate->_("Participant/Tester"); ?></th>
-                <th><?= $this->translate->_("Province"); ?></th>
-                <th><?= $this->translate->_("District"); ?></th>
-                <th><?= $this->translate->_("Response Score"); ?></th>
-                <th><?= $this->translate->_("Documentation Score"); ?></th>
-                <th><?= $this->translate->_("Result"); ?></th>
-                <th><?= $this->translate->_("Response Status"); ?></th>
-                <th><?= $this->translate->_("Responded On"); ?></th>
-                <th><?= $this->translate->_("Report"); ?></th>
-                <th style="display:none;">Map ID</th>
+                <th scope="col" style="width:40px;"></th>
+                <th scope="col"><?= $this->translate->_("Participant/Tester ID"); ?></th>
+                <th scope="col"><?= $this->translate->_("Participant/Tester"); ?></th>
+                <th scope="col"><?= $this->translate->_("Province"); ?></th>
+                <th scope="col"><?= $this->translate->_("District"); ?></th>
+                <th scope="col"><?= $this->translate->_("Response Score"); ?></th>
+                <th scope="col"><?= $this->translate->_("Documentation Score"); ?></th>
+                <th scope="col"><?= $this->translate->_("Result"); ?></th>
+                <th scope="col"><?= $this->translate->_("Response Status"); ?></th>
+                <th scope="col"><?= $this->translate->_("Responded On"); ?></th>
+                <th scope="col"><?= $this->translate->_("Report"); ?></th>
+                <th scope="col" style="display:none;">Map ID</th>
             </tr>
         </thead>
         <tbody>

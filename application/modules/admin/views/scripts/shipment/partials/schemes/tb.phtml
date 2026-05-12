@@ -151,15 +151,15 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
     class="hide table table-bordered table-striped reftable clearfix" id="microscopy">
     <thead>
         <tr>
-            <th style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Label"); ?>
+            <th scope="col" style="width:15%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Label"); ?>
             </th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?>
+            <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Preparation Date"); ?>
             </th>
-            <th style="text-align: center;vertical-align:middle;">
+            <th scope="col" style="text-align: center;vertical-align:middle;">
                 <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
-            <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
-            <th style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?>
+            <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Is it a Control?"); ?></th>
+            <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>
+            <th scope="col" style="width:5%;text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?>
             </th>
         </tr>
     </thead>
@@ -230,7 +230,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
             ?>
             <!-- Default empty row for ADD mode or when no samples exist -->
             <tr>
-                <th>
+                <th scope="col">
                     <input type="text" name="sampleName[1]" value=""
                         class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name"
                         title="Please enter the Sample Name" />
@@ -279,8 +279,8 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         style="border: 1px solid gray;">
         <thead>
             <tr>
-                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Details"); ?></th>
-                <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
+                <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Sample Details"); ?></th>
+                <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Add/Remove Row"); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -294,7 +294,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                         <td>
                             <table>
                                 <tr>
-                                    <th colspan="13">
+                                    <th scope="col" colspan="13">
                                         <input type="text"
                                             value="<?php echo htmlspecialchars($reference['sample_label'] ?? ''); ?>"
                                             name="sampleName[<?php echo htmlspecialchars($sampleId); ?>]"
@@ -303,23 +303,23 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("MTB/Rif"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
                                     </th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("Rif Resistance"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe D</th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe C</th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe E</th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe B</th>
-                                    <th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe A</th>
-                                    <th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
-                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe D</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe C</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe E</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe B</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe A</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
                                         <?= $this->translate->_("Sample Preparation Date"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("TB Isolate"); ?></th>
                                 </tr>
                                 <tr>
@@ -421,23 +421,23 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("MTB Ultra"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
                                     </th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("Rif Resistance"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
-                                    <th style="text-align: center;vertical-align:middle;">rpoB1</th>
-                                    <th style="text-align: center;vertical-align:middle;">rpoB2</th>
-                                    <th style="text-align: center;vertical-align:middle;">rpoB3</th>
-                                    <th style="text-align: center;vertical-align:middle;">rpoB4</th>
-                                    <th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
-                                    <th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
-                                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB1</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB2</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB3</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB4</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
+                                    <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
                                         <?= $this->translate->_("Is it a Control?"); ?></th>
-                                    <th style="text-align: center;vertical-align:middle;">
+                                    <th scope="col" style="text-align: center;vertical-align:middle;">
                                         <?= $this->translate->_("Mandatory?"); ?></th>
                                 </tr>
                                 <tr>
@@ -558,29 +558,29 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                     <td>
                         <table>
                             <tr>
-                                <th colspan="13"><input type="text" id="sampleName1" name="sampleName[1]" value=""
+                                <th scope="col" colspan="13"><input type="text" id="sampleName1" name="sampleName[1]" value=""
                                         class="isRequired molecularfield form-control input-sm"
                                         placeholder="Please enter the Sample Name" title="Please enter the Sample Name" />
                                 </th>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("MTB/Rif"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
                                 </th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("Rif Resistance"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">Probe D</th>
-                                <th style="text-align: center;vertical-align:middle;">Probe C</th>
-                                <th style="text-align: center;vertical-align:middle;">Probe E</th>
-                                <th style="text-align: center;vertical-align:middle;">Probe B</th>
-                                <th style="text-align: center;vertical-align:middle;">SPC Xpert</th>
-                                <th style="text-align: center;vertical-align:middle;">Probe A</th>
-                                <th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
-                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe D</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe C</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe E</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe B</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe A</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
                                     <?= $this->translate->_("Sample Preparation Date"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("TB Isolate"); ?></th>
                             </tr>
                             <tr>
@@ -649,23 +649,23 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                                         placeholder="Isolate" title="Please enter the TB Isolate" /></td>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="text-align: center;vertical-align:middle;">
+                                <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("MTB Ultra"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?>
                                 </th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("Rif Resistance"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
-                                <th style="text-align: center;vertical-align:middle;">rpoB1</th>
-                                <th style="text-align: center;vertical-align:middle;">rpoB2</th>
-                                <th style="text-align: center;vertical-align:middle;">rpoB3</th>
-                                <th style="text-align: center;vertical-align:middle;">rpoB4</th>
-                                <th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
-                                <th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
-                                <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">rpoB1</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">rpoB2</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">rpoB3</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">rpoB4</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>
+                                <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;">
                                     <?= $this->translate->_("Is it a Control?"); ?></th>
-                                <th style="text-align: center;vertical-align:middle;">
+                                <th scope="col" style="text-align: center;vertical-align:middle;">
                                     <?= $this->translate->_("Mandatory?"); ?></th>
                             </tr>
                             <tr>
@@ -817,7 +817,7 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         sampleCounter++;
         if (type == 'microscopy') {
             var html = '<tr> \
-            <th> \
+            <th scope="col"> \
                 <input type="text" name="sampleName[' + sampleCounter + ']" id="sampleName' + sampleCounter + '" value="" class="isRequired microscopyfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /> \
             </th> \
             <td>\
@@ -850,21 +850,21 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
         <td>\
             <table>\
                 <tr>\
-                    <th colspan="13"><input type="text" name="sampleName[' + sampleCounter + ']" id="sampleName' + sampleCounter + '" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>\
+                    <th scope="col" colspan="13"><input type="text" name="sampleName[' + sampleCounter + ']" id="sampleName' + sampleCounter + '" value="" class="isRequired molecularfield form-control input-sm" placeholder="Please enter the Sample Name" title="Please enter the Sample Name" /></th>\
                 </tr>\
                 <tr>\
-                    <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe D</th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe C</th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe E</th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe B</th>\
-                    <th style="text-align: center;vertical-align:middle;">SPC Xpert</th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe A</th>\
-                    <th style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>\
-                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>\
+                    <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB/Rif"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe D</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe C</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe E</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe B</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe A</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Probe A Mean Stability</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Sample Preparation Date"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("TB Isolate"); ?></th>\
                 </tr>\
                 <tr>\
                     <td>\
@@ -907,18 +907,18 @@ $currentTbTestType = $shipmentAttribute['tb_test_type'] ?? '';
                     <td><input type="text" name="tbIsolate[' + sampleCounter + ']" id="tbIsolate' + sampleCounter + '" class="form-control input-sm" placeholder="Isolate" title="Please enter the TB Isolate" /></td>\
                 </tr>\
                 <tr>\
-                    <th rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>\
-                    <th style="text-align: center;vertical-align:middle;">rpoB1</th>\
-                    <th style="text-align: center;vertical-align:middle;">rpoB2</th>\
-                    <th style="text-align: center;vertical-align:middle;">rpoB3</th>\
-                    <th style="text-align: center;vertical-align:middle;">rpoB4</th>\
-                    <th style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>\
-                    <th style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>\
-                    <th style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>\
-                    <th style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>\
+                    <th scope="col" rowspan="2" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Ultra"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("MTB Detected"); ?><br /><?= $this->translate->_("(Level)"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Rif Resistance"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">IS1081-IS6110</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB1</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB2</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB3</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">rpoB4</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">SPC Xpert Ultra</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;">Lowerst rpoB Mean Stabillity</th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;border-left: solid 1px gray;"><?= $this->translate->_("Is it a Control?"); ?></th>\
+                    <th scope="col" style="text-align: center;vertical-align:middle;"><?= $this->translate->_("Mandatory?"); ?></th>\
                 </tr>\
                 <tr>\
                     <td>\

@@ -84,10 +84,10 @@ foreach ($this->otherTestsPossibleResults as $row) {
 					<div id=error></div>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr class="dark">
-							<th style="width:20%;"><?= $this->translate->_("Shipment Code"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("Custom Test Name"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("PT Shipment Date"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("Result Submission Deadline"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Shipment Code"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Custom Test Name"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("PT Shipment Date"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Result Submission Deadline"); ?></th>
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
@@ -104,10 +104,10 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							</td>
 						</tr>
 						<tr class="dark">
-							<th style="width:20%;"><?= $this->translate->_("Participant Site Name"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("Participant ID"); ?></th>
-							<th style="width:20%;"><?= $this->translate->_("Country"); ?></th>
-							<th style="width:20%;"></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Participant Site Name"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Participant ID"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Country"); ?></th>
+							<th scope="col" style="width:20%;"></th>
 						</tr>
 						<tr class="light" style="text-align: center;">
 							<td style="width:20%;">
@@ -278,26 +278,26 @@ foreach ($this->otherTestsPossibleResults as $row) {
 							id="other">
 							<thead>
 								<tr>
-									<th><?= $this->translate->_("Control/Sample"); ?></th>
+									<th scope="col"><?= $this->translate->_("Control/Sample"); ?></th>
 									<?php if (isset($userTestConfig['testType']) && !empty($userTestConfig['testType']) && $userTestConfig['testType'] == 'quantitative') { ?>
-										<th style="width: 15%;"><?= $this->translate->_("Result"); ?></th>
-										<th style="width: 15%;"><?= $this->translate->_("Invalid/Error"); ?></th>
-										<th style="width: 15%;"><?= $this->translate->_("Error Code"); ?></th>
+										<th scope="col" style="width: 15%;"><?= $this->translate->_("Result"); ?></th>
+										<th scope="col" style="width: 15%;"><?= $this->translate->_("Invalid/Error"); ?></th>
+										<th scope="col" style="width: 15%;"><?= $this->translate->_("Error Code"); ?></th>
 									<?php } else { ?>
 										<th scope="col"><?= (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) ? $this->translate->_("Test 1 Result") : $this->translate->_("Test Result"); ?><span
 												class='mandatory'>*</span></th>
 										<?php if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] >= 2) { ?>
-											<th><?= $this->translate->_("Test 2 Result"); ?></th>
+											<th scope="col"><?= $this->translate->_("Test 2 Result"); ?></th>
 										<?php }
 										if (isset($userTestConfig['numberOfTests']) && $userTestConfig['numberOfTests'] == 3) { ?>
-											<th><?= $this->translate->_("Test 3 Result"); ?></th>
+											<th scope="col"><?= $this->translate->_("Test 3 Result"); ?></th>
 										<?php } ?>
 										<th scope="col"><?php echo $resultText; ?><span class='mandatory'>*</span></th>
 										<?php if ($adminAccess) { ?>
 											<th scope="col"><?= $this->translate->_("Expected Result"); ?></th>
 										<?php }
 										if (isset($userTestConfig['captureAdditionalDetails']) && $userTestConfig['captureAdditionalDetails'] == 'yes') { ?>
-											<th><?= $userTestConfig['additionalDetailLabel'] ?? $this->translate->_('Additional Detail'); ?>
+											<th scope="col"><?= $userTestConfig['additionalDetailLabel'] ?? $this->translate->_('Additional Detail'); ?>
 											</th>
 										<?php } ?>
 									<?php } ?>
@@ -353,7 +353,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 									</tr>
 								<?php } else { ?>
 									<tr align="CENTER" class="light other<?php echo $sample['sample_id']; ?>">
-										<th>
+										<th scope="col">
 											<?php echo $sample['sample_label']; ?>
 											<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>
 											<input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
@@ -422,7 +422,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
 									class="mandatory">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval"
@@ -434,7 +434,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 										echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
-							<th class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
+							<th scope="col" class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
 								<label for="participantSupervisor"><?= $this->translate->_("Supervisor Name"); ?> <span
 										class="mandatory">*</span></label></th>
 							<td class="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>
@@ -443,7 +443,7 @@ foreach ($this->otherTestsPossibleResults as $row) {
 									value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
 						</tr>
 						<tr>
-							<th><?= $this->translate->_("Comments"); ?> </th>
+							<th scope="col"><?= $this->translate->_("Comments"); ?> </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" class="form-control" size="120"
 									maxlength="40"><?php echo $this->shipment['user_comment']; ?></textarea>
@@ -510,8 +510,8 @@ foreach ($this->otherTestsPossibleResults as $row) {
 								<td>
 									<table class='table table-bordered'>
 										<tr>
-											<th><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
-											<th><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
+											<th scope="col"><?= $this->translate->_("Failure Reasons (or) Warnings"); ?></th>
+											<th scope="col"><?= $this->translate->_("Corrective Actions (if any)"); ?></th>
 										</tr>
 										<?php $i = 1;
 										foreach ($warnings as $warning) { ?>

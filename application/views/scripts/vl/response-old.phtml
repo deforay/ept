@@ -261,9 +261,9 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 								</td>
 							</tr>
 							<tr align="center" class="">
-								<th style="width: 30%;font-size: 1.2em;">Control/Sample</th>
-								<th style="font-size: 1.2em;">Viral Load (log<sub>10</sub> copies/ml)</th>
-								<th style="width: 30%;font-size: 1.2em;">TND (Target Not Detected)</th>
+								<th scope="col" style="width: 30%;font-size: 1.2em;">Control/Sample</th>
+								<th scope="col" style="font-size: 1.2em;">Viral Load (log<sub>10</sub> copies/ml)</th>
+								<th scope="col" style="width: 30%;font-size: 1.2em;">TND (Target Not Detected)</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -320,7 +320,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;">Upload File</th>
+							<th scope="col" style="width:20%;">Upload File</th>
 							<td colspan="3">
 								<?php
 								$hideUploadFileArea = false;
@@ -345,7 +345,7 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 							</td>
 						</tr>
 						<tr>
-							<th style="width:20%;">Supervisor Review <span class="mandatory ptTestPerformed">*</span></th>
+							<th scope="col" style="width:20%;">Supervisor Review <span class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval" class="isRequired form-control">
 									<option value="">--Select--</option>
@@ -353,14 +353,14 @@ if (isset($this->shipment["shipment_test_report_date"]) && trim($this->shipment[
 									<option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no') echo " selected "; ?>>No</option>
 								</select>
 							</td>
-							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name <span class="mandatory">*</span></label></th>
+							<th scope="col"><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>>Supervisor Name <span class="mandatory">*</span></label></th>
 							<td><input name="participantSupervisor" id="participantSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?> type="text" class="form-control" value="<?php echo $this->shipment['participant_supervisor']; ?>" /></td>
 
 						</tr>
 
 						<tr>
 
-							<th>Comments </th>
+							<th scope="col">Comments </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" class=" form-control" size="120"><?php echo $this->shipment['user_comment']; ?></textarea>
 

@@ -31,23 +31,23 @@
     <thead>
         <tr>
 
-            <th><?= $this->translate->_("Shipment Code"); ?></th>
-            <th><?= $this->translate->_("Scheme Type"); ?></th>
-            <th><?= $this->translate->_("PT Survey Code"); ?></th>
-            <th><?= $this->translate->_("PT Survey Date"); ?></th>
-            <th><?= $this->translate->_("Result Due Date"); ?></th>
-            <th><?= $this->translate->_("No. of Samples"); ?></th>
-            <th><?= $this->translate->_("No. of Participants Selected"); ?></th>
-            <th><?= $this->translate->_("Response Switch"); ?></th>
-            <th><?= $this->translate->_("Status"); ?></th>
+            <th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+            <th scope="col"><?= $this->translate->_("Scheme Type"); ?></th>
+            <th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
+            <th scope="col"><?= $this->translate->_("PT Survey Date"); ?></th>
+            <th scope="col"><?= $this->translate->_("Result Due Date"); ?></th>
+            <th scope="col"><?= $this->translate->_("No. of Samples"); ?></th>
+            <th scope="col"><?= $this->translate->_("No. of Participants Selected"); ?></th>
+            <th scope="col"><?= $this->translate->_("Response Switch"); ?></th>
+            <th scope="col"><?= $this->translate->_("Status"); ?></th>
 
-            <!--            <th>Last Mailed On</th>
-            <th>Mailed Count</th>-->
-            <th><?= $this->translate->_("Action"); ?></th>
+            <!--            <th scope="col">Last Mailed On</th>
+            <th scope="col">Mailed Count</th>-->
+            <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
-            <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
-            <th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search Shipment Code'); ?>" /></th>
+            <th scope="col">
                 <select class="form-control input-sm col-search" data-col="1">
                     <option value=""><?= $this->translate->_("All"); ?></option>
                     <?php foreach ($this->schemes as $scheme) { ?>
@@ -55,14 +55,14 @@
                     <?php } ?>
                 </select>
             </th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search PT Survey Code'); ?>" /></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>

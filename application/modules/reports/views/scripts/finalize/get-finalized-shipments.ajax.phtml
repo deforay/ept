@@ -13,15 +13,15 @@ if ($this->shipments == false && count($this->shipments) <= 0) {
 		<div class="modal-body">
 			<table class="table table-bordered table-striped table-hover">
 				<tr>
-					<th style="text-align: center;">Shipment Code</th>
-					<th style="text-align: center;">Scheme</th>
-					<th style="text-align: center;">No. of Samples</th>
-					<th style="text-align: center;">No. of Participants</th>
-					<th style="text-align: center;">No. of Responses</th>
-					<th style="text-align: center;">Response %</th>
-					<th style="text-align: center;">Number Passed</th>
-					<th style="text-align: center;">Shipment Status</th>
-					<th style="text-align: center;">Action</th>
+					<th scope="col" style="text-align: center;">Shipment Code</th>
+					<th scope="col" style="text-align: center;">Scheme</th>
+					<th scope="col" style="text-align: center;">No. of Samples</th>
+					<th scope="col" style="text-align: center;">No. of Participants</th>
+					<th scope="col" style="text-align: center;">No. of Responses</th>
+					<th scope="col" style="text-align: center;">Response %</th>
+					<th scope="col" style="text-align: center;">Number Passed</th>
+					<th scope="col" style="text-align: center;">Shipment Status</th>
+					<th scope="col" style="text-align: center;">Action</th>
 				</tr>
 				<?php
 				if (count($this->shipments) > 0) {

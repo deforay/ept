@@ -9,18 +9,18 @@
     id="distroTable">
     <thead>
         <tr>
-            <th><?= $this->translate->_("PT Survey Date"); ?></th>
-            <th><?= $this->translate->_("PT Survey Code"); ?></th>
-            <th><?= $this->translate->_("Shipment Code(s)"); ?></th>
-            <th><?= $this->translate->_("Status"); ?></th>
-            <th><?= $this->translate->_("Action"); ?></th>
+            <th scope="col"><?= $this->translate->_("PT Survey Date"); ?></th>
+            <th scope="col"><?= $this->translate->_("PT Survey Code"); ?></th>
+            <th scope="col"><?= $this->translate->_("Shipment Code(s)"); ?></th>
+            <th scope="col"><?= $this->translate->_("Status"); ?></th>
+            <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
          <tr class="column-search-row">
-            <th></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
-            <th></th>
+            <th scope="col"></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Survey Code'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Code'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>

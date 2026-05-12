@@ -154,27 +154,27 @@
 		id="shipmentTable">
 		<thead>
 			<tr>
-				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
-				<!-- <th style="text-align: center;">No. of Samples</th> -->
-				<th style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
-				<th style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Code"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("PT Survey Date"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Shipment Code"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Result Due Date"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Scheme"); ?></th>
+				<!-- <th scope="col" style="text-align: center;">No. of Samples</th> -->
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Participants"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Responses"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Passed"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Status"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for Participants"); ?></th>
+				<th scope="col" style="text-align: center;"><?= $this->htmlTranslate("Reports for PT Admin"); ?></th>
 			</tr>
 			<tr class="column-search-row">
-				<th><input type="text" class="form-control input-sm col-search" data-col="0"
+				<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0"
 						placeholder="<?= $this->htmlTranslate('Search PT Survey Code'); ?>" /></th>
-				<th></th>
-				<th><input type="text" class="form-control input-sm col-search" data-col="2"
+				<th scope="col"></th>
+				<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2"
 						placeholder="<?= $this->htmlTranslate('Search Shipment Code'); ?>" /></th>
-				<th></th>
-				<th>
+				<th scope="col"></th>
+				<th scope="col">
 					<select class="form-control input-sm col-search" data-col="4">
 						<option value=""><?= $this->htmlTranslate("All"); ?></option>
 						<?php foreach ($this->schemes as $scheme) { ?>
@@ -184,12 +184,12 @@
 						<?php } ?>
 					</select>
 				</th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+				<th scope="col"></th>
+				<th scope="col"></th>
 			</tr>
 		</thead>
 		<tbody>

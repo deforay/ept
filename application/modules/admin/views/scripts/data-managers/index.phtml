@@ -75,42 +75,42 @@ if (isset($this->ptcc) && !empty($this->ptcc) && $this->ptcc == 1) {
     id="usersTable">
     <thead>
         <tr>
-            <th style="width:32px;"><input type="checkbox" id="dmSelectAll" title="<?= $this->translate->_('Select all on this page'); ?>" /></th>
-            <th><?= $this->translate->_("First Name"); ?></th>
-            <th><?= $this->translate->_("Last Name"); ?></th>
+            <th scope="col" style="width:32px;"><input type="checkbox" id="dmSelectAll" title="<?= $this->translate->_('Select all on this page'); ?>" /></th>
+            <th scope="col"><?= $this->translate->_("First Name"); ?></th>
+            <th scope="col"><?= $this->translate->_("Last Name"); ?></th>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                <th><?= $this->translate->_("Institute"); ?></th>
+                <th scope="col"><?= $this->translate->_("Institute"); ?></th>
             <?php } ?>
-            <th><?= $this->translate->_("Cell/Mobile"); ?></th>
-            <th><?= $this->translate->_("Primary Email"); ?></th>
-            <th><?= $this->translate->_("Status"); ?></th>
+            <th scope="col"><?= $this->translate->_("Cell/Mobile"); ?></th>
+            <th scope="col"><?= $this->translate->_("Primary Email"); ?></th>
+            <th scope="col"><?= $this->translate->_("Status"); ?></th>
             <?php if (isset($ptcc) && !empty($ptcc) && $ptcc == 1) { ?>
-                <th><?= $this->translate->_("Country"); ?></th>
-                <th><?= $this->translate->_("State"); ?></th>
-                <th><?= $this->translate->_("District"); ?></th>
+                <th scope="col"><?= $this->translate->_("Country"); ?></th>
+                <th scope="col"><?= $this->translate->_("State"); ?></th>
+                <th scope="col"><?= $this->translate->_("District"); ?></th>
             <?php } ?>
-            <th><?= $this->translate->_("Mapped Participants"); ?></th>
-            <th><?= $this->translate->_("Action"); ?></th>
+            <th scope="col"><?= $this->translate->_("Mapped Participants"); ?></th>
+            <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
         <tr class="column-search-row">
-            <th></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search First Name'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Last Name'); ?>" /></th>
+            <th scope="col"></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search First Name'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Last Name'); ?>" /></th>
             <?php if (!isset($ptcc) || empty($ptcc) || $ptcc != 1) { ?>
-                <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Institute'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Institute'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
             <?php } else { ?>
-                <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
-                <th><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Mobile'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="4" placeholder="<?= $this->translate->_('Search Email'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="5" placeholder="<?= $this->translate->_('Search Status'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="6" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="7" placeholder="<?= $this->translate->_('Search State'); ?>" /></th>
+                <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="8" placeholder="<?= $this->translate->_('Search District'); ?>" /></th>
             <?php } ?>
-            <th></th>
-            <th></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>

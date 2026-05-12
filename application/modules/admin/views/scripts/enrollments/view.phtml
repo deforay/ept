@@ -10,10 +10,10 @@
 			style="width: 100%;margin: auto;">
 			<thead>
 				<tr>
-					<th><?= $this->translate->_("Shipment Code"); ?></th>
-					<th><?= $this->translate->_("Shipment Date"); ?></th>
-					<th><?= $this->translate->_("Shipment Type"); ?></th>
-					<th><?= $this->translate->_("Status"); ?></th>
+					<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+					<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
+					<th scope="col"><?= $this->translate->_("Shipment Type"); ?></th>
+					<th scope="col"><?= $this->translate->_("Status"); ?></th>
 				</tr>
 			</thead>
 			<?php foreach ($this->enrollmentDetails as $ed) {

@@ -316,7 +316,7 @@ if ($adminAccess) {
 							</td>
 						</tr>
 						<tr class="htp">
-							<th colspan="4">
+							<th scope="col" colspan="4">
 								<h4><?= $this->translate->_("EXTRACTION"); ?></h4>
 							</th>
 						</tr>
@@ -366,7 +366,7 @@ if ($adminAccess) {
 							</td>
 						</tr>
 						<tr class="htp">
-							<th colspan="4">
+							<th scope="col" colspan="4">
 								<h4><?= $this->translate->_("AMPLIFICATION"); ?></h4>
 							</th>
 						</tr>
@@ -551,42 +551,42 @@ if ($adminAccess) {
 								</td>
 							</tr>
 							<tr align="center" class="">
-								<th style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?>
+								<th scope="col" style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Control/Sample"); ?>
 								</th>
-								<th style="width: 15%;font-size: 1.2em;">
+								<th scope="col" style="width: 15%;font-size: 1.2em;">
 									<?= $this->translate->_("Viral Load"); ?><br>(log<sub>10</sub>
 									<?= $this->translate->_("copies/ml"); ?>)</th>
-								<th style="width: 10%;font-size: 1.2em;">
+								<th scope="col" style="width: 10%;font-size: 1.2em;">
 									<?= $this->translate->_("TND (Target Not Detected)"); ?></th>
-								<th style="width: 30%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
+								<th scope="col" style="width: 30%;font-size: 1.2em;"><?= $this->translate->_("Comment"); ?></th>
+								<th scope="col" class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
 									style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Invalid/Error"); ?>
 								</th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
+								<th scope="col" class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
 									style="width: 15%;font-size: 1.2em;"><?= $this->translate->_("Error Code"); ?></th>
-								<th class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
+								<th scope="col" class="<?php echo ($this->invalidVlResult) ? '' : 'hide'; ?> invalidVlResult "
 									style="width: 15%;font-size: 1.2em;">
 									<?= $this->translate->_("Module Number/Instrument Serial"); ?></th>
 
 								<?php if ($adminAccess) {
 									if ($shipmentAttributes['methodOfEvaluation'] == 'standard') { ?>
-										<th style="text-align: center;font-size:17px;">
+										<th scope="col" style="text-align: center;font-size:17px;">
 											<?= $this->translate->_("Lower Limit"); ?></th>
-										<th style="text-align: center;font-size:17px;">
+										<th scope="col" style="text-align: center;font-size:17px;">
 											<?= $this->translate->_("Higher Limit"); ?></th>
 									<?php } elseif ($shipmentAttributes['methodOfEvaluation'] == 'iso17043') { ?>
-										<th style="text-align: center;font-size:17px;">
+										<th scope="col" style="text-align: center;font-size:17px;">
 											<?= $this->translate->_("Lower Limit (Q1)"); ?></th>
-										<th style="text-align: center;font-size:17px;">
+										<th scope="col" style="text-align: center;font-size:17px;">
 											<?= $this->translate->_("Higher Limit (Q3)"); ?></th>
-										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Median"); ?>
+										<th scope="col" style="text-align: center;font-size:17px;"><?= $this->translate->_("Median"); ?>
 										</th>
-										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("Robust SD"); ?>
+										<th scope="col" style="text-align: center;font-size:17px;"><?= $this->translate->_("Robust SD"); ?>
 										</th>
-										<th style="text-align: center;font-size:17px;"><?= $this->translate->_("z Score"); ?>
+										<th scope="col" style="text-align: center;font-size:17px;"><?= $this->translate->_("z Score"); ?>
 										</th>
 									<?php } ?>
-									<th style="text-align: center;font-size:17px;">
+									<th scope="col" style="text-align: center;font-size:17px;">
 										<?= $this->translate->_("Acceptable?"); ?></th>
 								<?php } ?>
 							</tr>
@@ -776,9 +776,9 @@ if ($adminAccess) {
 								</legend>
 							</caption>
 							<tr>
-								<th><?= $this->translate->_("z Score"); ?></th>
-								<th><?= $this->translate->_("Results Interpretation"); ?></th>
-								<th><?= $this->translate->_("Recommended Action"); ?></th>
+								<th scope="col"><?= $this->translate->_("z Score"); ?></th>
+								<th scope="col"><?= $this->translate->_("Results Interpretation"); ?></th>
+								<th scope="col"><?= $this->translate->_("Recommended Action"); ?></th>
 							</tr>
 
 							<tr>
@@ -803,7 +803,7 @@ if ($adminAccess) {
 					<?php } ?>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
 							<td colspan="3">
 								<?php
 								$hideUploadFileArea = false;
@@ -832,7 +832,7 @@ if ($adminAccess) {
 							</td>
 						</tr>
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
 									class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval"
@@ -844,7 +844,7 @@ if ($adminAccess) {
 										echo " selected "; ?>><?= $this->translate->_("No"); ?></option>
 								</select>
 							</td>
-							<th class="labSupervisor"><label for="participantSupervisor" class="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span
+							<th scope="col" class="labSupervisor"><label for="participantSupervisor" class="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span
 										class="mandatory">*</span></label></th>
 							<td class="labSupervisor"><input name="participantSupervisor" id="participantSupervisor"
 									<?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>
@@ -853,7 +853,7 @@ if ($adminAccess) {
 						</tr>
 
 						<tr>
-							<th><?= $this->translate->_("Comments"); ?> </th>
+							<th scope="col"><?= $this->translate->_("Comments"); ?> </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" class=" form-control"
 									size="120"><?php echo $this->shipment['user_comment']; ?></textarea>
@@ -920,8 +920,8 @@ if ($adminAccess) {
 								<td>
 									<table class='table table-bordered'>
 										<tr>
-											<th>Failure Reasons (or) Warnings</th>
-											<th>Corrective Actions (if any)</th>
+											<th scope="col">Failure Reasons (or) Warnings</th>
+											<th scope="col">Corrective Actions (if any)</th>
 										</tr>
 										<?php $i = 1;
 										foreach ($warnings as $warning) { ?>

@@ -9,14 +9,14 @@
 			<table class="table" id="participantsTable">
 				<thead>
 					<tr>
-						<th><?= $this->translate->_("Participant ID"); ?></th>
-						<th><?= $this->translate->_("Lab/Participant Name"); ?></th>
-						<th><?= $this->translate->_("Scheme Name"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
+						<th scope="col"><?= $this->translate->_("Lab/Participant Name"); ?></th>
+						<th scope="col"><?= $this->translate->_("Scheme Name"); ?></th>
 					</tr>
 					<tr class="column-search-row">
-						<th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-						<th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+						<th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
 					</tr>
 				</thead>
 				<?php

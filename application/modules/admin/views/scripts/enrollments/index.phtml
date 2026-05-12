@@ -17,7 +17,7 @@
 <div style="clear:both;margin-bottom:10px;">
     <table>
         <tr>
-            <th><?= $this->translate->_("Number of active participants enrolled in each scheme"); ?> : </td>
+            <th scope="col"><?= $this->translate->_("Number of active participants enrolled in each scheme"); ?> : </td>
             <td> <?php
             $dataScheme = array();
             foreach ($this->schemeCount as $schemeName => $pCount) {
@@ -39,20 +39,20 @@
     id="usersTable">
     <thead>
         <tr>
-            <th><?= $this->translate->_("Unique"); ?> <br /> <?= $this->translate->_("Participant ID"); ?></th>
-            <th><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
-            <th><?= $this->translate->_("Country"); ?></th>
-            <th style="width:15%"><?= $this->translate->_("Scheme"); ?></th>
-            <th><?= $this->translate->_("Enrolled On"); ?></th>
-            <th><?= $this->translate->_("Action"); ?></th>
+            <th scope="col"><?= $this->translate->_("Unique"); ?> <br /> <?= $this->translate->_("Participant ID"); ?></th>
+            <th scope="col"><?= $this->translate->_("Lab Name/Participant Name"); ?></th>
+            <th scope="col"><?= $this->translate->_("Country"); ?></th>
+            <th scope="col" style="width:15%"><?= $this->translate->_("Scheme"); ?></th>
+            <th scope="col"><?= $this->translate->_("Enrolled On"); ?></th>
+            <th scope="col"><?= $this->translate->_("Action"); ?></th>
         </tr>
           <tr class="column-search-row">
-            <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
-            <th><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
-            <th></th>
-            <th></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="2" placeholder="<?= $this->translate->_('Search Country'); ?>" /></th>
+            <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="3" placeholder="<?= $this->translate->_('Search Scheme'); ?>" /></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>

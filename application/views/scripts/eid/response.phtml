@@ -418,14 +418,14 @@ if ($this->reqFrom == "admin") {
 							style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
 
 							<tr align="center" class="">
-								<th style="width:25%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?>
+								<th scope="col" style="width:25%;text-align: center;"><?= $this->translate->_("Control/Sample"); ?>
 								</th>
-								<th style="width:25%;text-align: center;"><?= $this->translate->_("Your Results"); ?>
+								<th scope="col" style="width:25%;text-align: center;"><?= $this->translate->_("Your Results"); ?>
 								</th>
-								<!-- <th style="width:25%;text-align: center;">HIV CT/OD</th> -->
-								<!-- <th style="width:25%;text-align: center;">IC/QS Values</th> -->
+								<!-- <th scope="col" style="width:25%;text-align: center;">HIV CT/OD</th> -->
+								<!-- <th scope="col" style="width:25%;text-align: center;">IC/QS Values</th> -->
 								<?php if ($adminAccess) { ?>
-									<th style="width:25%;text-align: center;">
+									<th scope="col" style="width:25%;text-align: center;">
 										<?= $this->translate->_("Reference Results"); ?></th>
 								<?php } ?>
 							</tr>
@@ -445,7 +445,7 @@ if ($this->reqFrom == "admin") {
 
 							<tr class="light vlResultSection" align="CENTER"
 								style="<?php echo (isset($this->shipment['is_pt_test_not_performed']) && $this->shipment['is_pt_test_not_performed'] == 'yes') ? 'display:none;' : ''; ?>">
-								<th style="white-space: nowrap">
+								<th scope="col" style="white-space: nowrap">
 									<!--< ?php echo $sample['sample_label']; ?> < ?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory'>*</span>" : "&nbsp;&nbsp;"; ?>-->
 									<?php echo $sample['sample_label']; ?>
 									<?php echo ($sample['mandatory'] == 1) ? " <span class='mandatory vlResultMandatory'>*</span>" : "&nbsp;&nbsp;<span class='mandatory vlResultMandatory' style='visibility:hidden;'>*</span>"; ?>
@@ -524,7 +524,7 @@ if ($this->reqFrom == "admin") {
 					<hr>
 					<table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Upload File"); ?></th>
 							<td colspan="3">
 								<?php
 								$hideUploadFileArea = false;
@@ -553,7 +553,7 @@ if ($this->reqFrom == "admin") {
 							</td>
 						</tr>
 						<tr>
-							<th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
+							<th scope="col" style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
 									class="mandatory ptTestPerformed">*</span></th>
 							<td style="width:20%;">
 								<select name="supervisorApproval" id="supervisorApproval"
@@ -565,7 +565,7 @@ if ($this->reqFrom == "admin") {
 										echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
 								</select>
 							</td>
-							<th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span
+							<th scope="col"><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?> <span
 										class="mandatory">*</span></label></th>
 							<td><input name="participantSupervisor" id="participantSupervisor" type="text"
 									class="form-control" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>
@@ -574,7 +574,7 @@ if ($this->reqFrom == "admin") {
 						</tr>
 						<tr>
 
-							<th><?= $this->translate->_("Comments"); ?> </th>
+							<th scope="col"><?= $this->translate->_("Comments"); ?> </th>
 							<td colspan="3">
 								<textarea name="userComments" id="userComments" size="120"
 									class="form-control"><?php echo $this->shipment['user_comment']; ?></textarea>
@@ -638,8 +638,8 @@ if ($this->reqFrom == "admin") {
 							<td>
 								<table class='table table-bordered'>
 									<tr>
-										<th>Failure Reasons (or) Warnings</th>
-										<th>Corrective Actions (if any)</th>
+										<th scope="col">Failure Reasons (or) Warnings</th>
+										<th scope="col">Corrective Actions (if any)</th>
 									</tr>
 									<?php $i = 1;
 									foreach ($warnings as $warning) { ?>

@@ -363,15 +363,15 @@ if ($this->reqFrom == "admin") {
                             style="width:100%;max-width:1000px;margin:10px auto;display:none;">
                             <thead>
                                 <tr align="CENTER" class="dark">
-                                    <th style="width:12%;"></th>
-                                    <th class='testOne'><?= $this->translate->_("Test-1"); ?></th>
-                                    <th class='testTwo'><?= $this->translate->_("Test-2"); ?></th>
-                                    <th class='testThree'><?= $this->translate->_("Test-3"); ?></th>
-                                    <th></th>
+                                    <th scope="col" style="width:12%;"></th>
+                                    <th scope="col" class='testOne'><?= $this->translate->_("Test-1"); ?></th>
+                                    <th scope="col" class='testTwo'><?= $this->translate->_("Test-2"); ?></th>
+                                    <th scope="col" class='testThree'><?= $this->translate->_("Test-3"); ?></th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tr align="CENTER" class="light">
-                                <th> <?= $this->translate->_("Test Platform"); ?></th>
+                                <th scope="col"> <?= $this->translate->_("Test Platform"); ?></th>
                                 <td class="dark" width="20%">
                                     <select name="test_type_1" id="test_type_1" style="width: 100%;"
                                         class="form-control" title="<?= $this->htmlTranslate("Please Choose Test Kit 1"); ?>"
@@ -498,7 +498,7 @@ if ($this->reqFrom == "admin") {
                             }
                             ?>
                             <tr align="CENTER" class="dark">
-                                <th><?= $this->translate->_("Name of PCR reagent"); ?></th>
+                                <th scope="col"><?= $this->translate->_("Name of PCR reagent"); ?></th>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter name of PCR reagent 1"); ?>" class="form-control"
                                         name="name_of_pcr_reagent_1" id="name_of_pcr_reagent_1"
                                         value="<?php echo ($nameOfPcrReagent1); ?>" style="width: 100%;"
@@ -514,7 +514,7 @@ if ($this->reqFrom == "admin") {
                             </tr>
 
                             <tr align="CENTER" class="light">
-                                <th><?= $this->translate->_("PCR reagent Lot number"); ?></th>
+                                <th scope="col"><?= $this->translate->_("PCR reagent Lot number"); ?></th>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent Lot no 1"); ?>" class="form-control"
                                         name="pcr_reagent_lot_no_1" id="pcr_reagent_lot_no_1"
                                         value="<?php echo ($pcrLotNo1); ?>" style="width: 100%;"
@@ -530,7 +530,7 @@ if ($this->reqFrom == "admin") {
                             </tr>
 
                             <tr align="CENTER" class="dark">
-                                <th><?= $this->translate->_("PCR reagent expiry date"); ?></th>
+                                <th scope="col"><?= $this->translate->_("PCR reagent expiry date"); ?></th>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter PCR reagent expiry date 1"); ?>"
                                         class="expDatepicker form-control" name="pcr_reagent_exp_date_1"
                                         id="pcr_reagent_exp_date_1" value="<?php echo ($pcrExpDate1); ?>"
@@ -561,7 +561,7 @@ if ($this->reqFrom == "admin") {
                             </tr>
 
                             <tr align="CENTER" class="light">
-                                <th><?= $this->translate->_("Lot No."); ?></th>
+                                <th scope="col"><?= $this->translate->_("Lot No."); ?></th>
                                 <td><input type="text" placeholder="<?= $this->htmlTranslate("Enter lot no 1"); ?>" class="form-control" maxlength="40"
                                         name="lot_no_1" id="lot_no_1" value="<?php echo ($lotNo1); ?>"
                                         style="width: 100%;" title="<?= $this->htmlTranslate("Please enter Lot No. 1"); ?>" /></td>
@@ -588,7 +588,7 @@ if ($this->reqFrom == "admin") {
                             }
                             ?>
                             <tr align="CENTER" class="dark">
-                                <th><?= $this->translate->_("Expiry Date"); ?></th>
+                                <th scope="col"><?= $this->translate->_("Expiry Date"); ?></th>
                                 <td><input id="exp_date1" placeholder="<?= $this->htmlTranslate("Enter expiry date 1"); ?>" type="text" id="exp_date1"
                                         name="exp_date_1" style="width:71%;float: left;"
                                         value="<?php echo $expDate1; ?>" size="11" maxlength="11"
@@ -616,16 +616,16 @@ if ($this->reqFrom == "admin") {
                             </tr>
                             <thead>
                                 <tr align="CENTER" class="light">
-                                    <th><?= $this->translate->_("Sample Number"); ?></th>
-                                    <th class='resultOne'><?= $this->translate->_("Result-1"); ?></th>
-                                    <th class='testTwo'><?= $this->translate->_("Result-2"); ?></th>
-                                    <th class='testThree'><?= $this->translate->_("Result-3"); ?></th>
-                                    <th><?php echo $resultText; ?></th>
+                                    <th scope="col"><?= $this->translate->_("Sample Number"); ?></th>
+                                    <th scope="col" class='resultOne'><?= $this->translate->_("Result-1"); ?></th>
+                                    <th scope="col" class='testTwo'><?= $this->translate->_("Result-2"); ?></th>
+                                    <th scope="col" class='testThree'><?= $this->translate->_("Result-3"); ?></th>
+                                    <th scope="col"><?php echo $resultText; ?></th>
                                     <?php if ($adminAccess) { ?>
-                                        <th class="colwidth" style="width: <?php echo $width; ?>%;">
+                                        <th scope="col" class="colwidth" style="width: <?php echo $width; ?>%;">
                                             <?= $this->translate->_("Reference Result"); ?></th>
                                     <?php } ?>
-                                    <th><?= $this->translate->_("Gene Types"); ?></th>
+                                    <th scope="col"><?= $this->translate->_("Gene Types"); ?></th>
                                 </tr>
                             </thead>
                             <?php
@@ -635,7 +635,7 @@ if ($this->reqFrom == "admin") {
                                 ?>
                                 <tr align="CENTER" class="dark">
 
-                                    <th style="white-space: nowrap;">
+                                    <th scope="col" style="white-space: nowrap;">
                                         <span
                                             id="sampleLabel<?php echo $sample['sample_id']; ?>"><?php echo ($sample['sample_label']); ?></span>
                                         <input type="hidden" id="sample<?php echo $count; ?>" name="sampleId[]"
@@ -724,13 +724,13 @@ if ($this->reqFrom == "admin") {
                         <table class="table table-bordered">
                             <tr>
                                 <?php if (isset($this->customField1) && $this->customField1 != "") { ?>
-                                    <th style="width: 25%;padding:5px;"><?php echo $this->customField1; ?> </th>
+                                    <th scope="col" style="width: 25%;padding:5px;"><?php echo $this->customField1; ?> </th>
                                     <td style="width: 25%;padding:5px;"><input name="customField1" id="customField1" type="text"
                                             size="80" maxlength="40" value="<?php echo $this->shipment['custom_field_1']; ?>"
                                             class="form-control" /></td>
                                 <?php }
                                 if (isset($this->customField2) && $this->customField2 != "") { ?>
-                                    <th style="width: 25%;padding:5px;"><?php echo $this->customField2; ?> </th>
+                                    <th scope="col" style="width: 25%;padding:5px;"><?php echo $this->customField2; ?> </th>
                                     <td style="width: 25%;padding:5px;"><input name="customField2" id="customField2" type="text"
                                             class="form-control" value="<?php echo $this->shipment['custom_field_2']; ?>" />
                                     </td>
@@ -741,7 +741,7 @@ if ($this->reqFrom == "admin") {
                     <hr>
                     <table class="table table-bordered table-striped" style="width:100%;margin:10px auto;">
                         <tr>
-                            <th style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
+                            <th scope="col" style="width:20%;"><?= $this->translate->_("Supervisor Review"); ?> <span
                                     class="mandatory ptTestPerformed">*</span></th>
                             <td style="width:20%;"><select name="supervisorApproval" id="supervisorApproval"
                                     class="isRequired form-control"
@@ -752,7 +752,7 @@ if ($this->reqFrom == "admin") {
                                     <option value="no" <?php if ($this->shipment['supervisor_approval'] == 'no')
                                         echo " selected "; ?>><?= $this->translate->_("NO"); ?></option>
                                 </select></td>
-                            <th><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
+                            <th scope="col"><label id="labSupervisor" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>><?= $this->translate->_("Supervisor Name"); ?></label></th>
                             <td>
                                 <input name="participantSupervisor" id="participantSupervisor" type="text"
                                     class="form-control" <?php echo (isset($this->shipment['supervisor_approval']) && $this->shipment['supervisor_approval'] == 'yes') ? "" : "style='display:none;'" ?>
@@ -761,7 +761,7 @@ if ($this->reqFrom == "admin") {
 
                         </tr>
                         <tr>
-                            <th><?= $this->translate->_("Comments"); ?> </th>
+                            <th scope="col"><?= $this->translate->_("Comments"); ?> </th>
                             <td colspan="3">
                                 <input name="userComments" id="userComments" type="text" size="120" class="form-control"
                                     value="<?php echo $this->shipment['user_comment']; ?>" />
@@ -827,8 +827,8 @@ if ($this->reqFrom == "admin") {
                                     <td>
                                         <table class='table table-bordered'>
                                             <tr>
-                                                <th>Failure Reasons (or) Warnings</th>
-                                                <th>Corrective Actions (if any)</th>
+                                                <th scope="col">Failure Reasons (or) Warnings</th>
+                                                <th scope="col">Corrective Actions (if any)</th>
                                             </tr>
                                             <?php $i = 1;
                                             foreach ($warnings as $warning) { ?>
@@ -1266,10 +1266,10 @@ if ($this->reqFrom == "admin") {
                 <table style="width: 100%;margin: 0 auto;" id="geneTypeTable' + sampleId + '" class="table table-bordered table-striped clearfix">\
                     <thead>\
                         <tr align="center">\
-                            <th style="text-align: center;">Gene Type</th>\
-                            <th style="text-align: center;">CT Value</th>\
-                            <th style="text-align: center;">Remarks</th>\
-                            <th style="text-align: center;">Action</th>\
+                            <th scope="col" style="text-align: center;">Gene Type</th>\
+                            <th scope="col" style="text-align: center;">CT Value</th>\
+                            <th scope="col" style="text-align: center;">Remarks</th>\
+                            <th scope="col" style="text-align: center;">Action</th>\
                         </tr>\
                     </thead>\
                     <tbody>' + strTxt.join("") + '</tbody>\

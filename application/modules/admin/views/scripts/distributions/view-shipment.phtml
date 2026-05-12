@@ -7,11 +7,11 @@
   		<div class="modal-body">
   			<table class="table table-bordered table-striped table-hover">
   				<tr>
-  					<th><?= $this->translate->_("Shipment Code"); ?></th>
-  					<th><?= $this->translate->_("Shipment Date"); ?></th>
-  					<th><?= $this->translate->_("Scheme"); ?></th>
-  					<th><?= $this->translate->_("No of Samples"); ?></th>
-  					<th><?= $this->translate->_("Status"); ?></th>
+  					<th scope="col"><?= $this->translate->_("Shipment Code"); ?></th>
+  					<th scope="col"><?= $this->translate->_("Shipment Date"); ?></th>
+  					<th scope="col"><?= $this->translate->_("Scheme"); ?></th>
+  					<th scope="col"><?= $this->translate->_("No of Samples"); ?></th>
+  					<th scope="col"><?= $this->translate->_("Status"); ?></th>
   				</tr>
   				<?php
 					if (count($this->shipments) > 0) {

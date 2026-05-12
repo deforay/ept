@@ -16,19 +16,19 @@
 			<table id="participantsTable" class="table table-striped table-bordered">
 				<thead>
 					<tr>
-						<th><?= $this->translate->_("Participant ID"); ?></th>
-						<th><?= $this->translate->_("Particpant Name"); ?></th>
-						<th><?= $this->translate->_("Particpant Mobile"); ?></th>
-						<th><?= $this->translate->_("Participant e-mail"); ?></th>
-						<!--<th>Group</th>-->
-						<th><?= $this->translate->_("Action"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant ID"); ?></th>
+						<th scope="col"><?= $this->translate->_("Particpant Name"); ?></th>
+						<th scope="col"><?= $this->translate->_("Particpant Mobile"); ?></th>
+						<th scope="col"><?= $this->translate->_("Participant e-mail"); ?></th>
+						<!--<th scope="col">Group</th>-->
+						<th scope="col"><?= $this->translate->_("Action"); ?></th>
 					</tr>
 					<tr class="column-search-row">
-                        <th><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
-                        <th><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
-                        <th></th>
-                        <th></th>
-						<th></th>
+                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="0" placeholder="<?= $this->translate->_('Search ID'); ?>" /></th>
+                        <th scope="col"><input type="text" class="form-control input-sm col-search" data-col="1" placeholder="<?= $this->translate->_('Search Name'); ?>" /></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+						<th scope="col"></th>
                     </tr>
 				</thead>
 
