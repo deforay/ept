@@ -185,6 +185,16 @@
 			allowClear: true
 		});
 
+		<?php
+		// IDs actually saved to *this* shipment (vs. the view's suggested pre-selection
+		// on a fresh shipment, which is just scheme-wide enrollment).
+		$savedShipmentParticipantIds = [];
+		if (isset($this->previouslySelected) && is_array($this->previouslySelected)) {
+			foreach ($this->previouslySelected as $p) {
+				if (isset($p['participant_id'])) $savedShipmentParticipantIds[] = (int) $p['participant_id'];
+			}
+		}
+		?>
 		VirtualDualList.bind('#participants', {
 			container: '#participantsWidget',
 			unselectedLabel: "<?= $this->jsTranslate('Participants not yet enrolled for this scheme'); ?>",
@@ -194,7 +204,8 @@
 			pendingRemoveLabel: "<?= $this->jsTranslate('pending skip'); ?>",
 			legendSaved: "<?= $this->jsTranslate('Already on this shipment'); ?>",
 			legendAdded: "<?= $this->jsTranslate('Pending ship (save to apply)'); ?>",
-			legendRemoved: "<?= $this->jsTranslate('Pending skip (save to apply)'); ?>"
+			legendRemoved: "<?= $this->jsTranslate('Pending skip (save to apply)'); ?>",
+			savedIds: <?php echo json_encode($savedShipmentParticipantIds); ?>
 		});
 
 		<?php if (isset($this->participantListsName) && count($this->participantListsName) > 0) { ?>

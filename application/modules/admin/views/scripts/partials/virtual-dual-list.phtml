@@ -233,15 +233,26 @@
     Instance.prototype.reload = function() {
         this.state = { left: [], right: [] };
         var self = this;
+        // If caller provided savedIds, use that as the source of truth for what's
+        // "actually saved" — otherwise fall back to the option's selected state.
+        // Needed for flows like ship-it on a fresh shipment, where the view
+        // pre-selects suggestions that aren't yet persisted.
+        var savedMap = null;
+        if (this.opts.savedIds && this.opts.savedIds.length !== undefined) {
+            savedMap = {};
+            for (var k = 0; k < this.opts.savedIds.length; k++) {
+                savedMap[String(this.opts.savedIds[k])] = true;
+            }
+        }
         this.$select.find('option').each(function() {
             var $o = $(this);
             var id = $o.val();
             if (id === '' || id == null) return;
             var label = $o.text();
-            // savedRight captures the option's selected state at load time
-            // so subsequent user moves can be rendered as pending add/remove.
-            var item = { id: id, label: label, _lc: String(label).toLowerCase(), savedRight: !!this.selected };
-            if (this.selected) self.state.right.push(item);
+            var isSelected = !!this.selected;
+            var isSaved = savedMap ? !!savedMap[String(id)] : isSelected;
+            var item = { id: id, label: label, _lc: String(label).toLowerCase(), savedRight: isSaved };
+            if (isSelected) self.state.right.push(item);
             else self.state.left.push(item);
         });
         if (self.panes.left)  { self.panes.left.$search.val('');  self.panes.left.filter  = ''; self.panes.left.$scroll.scrollTop(0); }
