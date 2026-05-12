@@ -63,4 +63,13 @@ $schedule->run($phpPath . " " . BIN_PATH . "/check-participant-emails.php --quie
     ->preventOverlapping()
     ->description('Checking participant + DM email validity');
 
+// Process bounce inbox (IMAP). No-ops if email.bounce.host is empty in
+// application.ini. Read-only by default; UID-tracked idempotency means
+// re-runs are safe.
+$schedule->run($phpPath . " " . BIN_PATH . "/process-bounces.php --quiet")
+    ->everyThirtyMinutes()
+    ->timezone($timezone)
+    ->preventOverlapping()
+    ->description('Processing email bounces');
+
 return $schedule;
