@@ -40,8 +40,9 @@ try {
 
     $io = new SymfonyStyle(new ArgvInput(), new ConsoleOutput());
 
-    $opts = getopt('', ['batch::', 'recheck-days::', 'table::', 'dry-run', 'quiet']);
+    $opts = getopt('', ['batch::', 'max-batches::', 'recheck-days::', 'table::', 'dry-run', 'quiet']);
     $batchSize    = max(1, (int) ($opts['batch']         ?? 500));
+    $maxBatches   = max(1, (int) ($opts['max-batches']   ?? 10000));
     $recheckDays  = max(1, (int) ($opts['recheck-days']  ?? 30));
     $tableFilter  = strtolower((string) ($opts['table']  ?? 'all'));
     $dryRun       = array_key_exists('dry-run', $opts);
@@ -59,8 +60,9 @@ try {
     if (!$quiet) {
         $io->title('Participant email validity check');
         $io->writeln(sprintf(
-            ' batch=%d  recheck-days=%d  table=%s  dry-run=%s',
+            ' batch=%d  max-batches=%d  recheck-days=%d  table=%s  dry-run=%s',
             $batchSize,
+            $maxBatches,
             $recheckDays,
             $tableFilter,
             $dryRun ? 'yes' : 'no'
@@ -95,8 +97,32 @@ try {
         return $mxCache[$domain] ? 'valid' : 'invalid_domain';
     };
 
-    $processTable = function (string $table, string $pk, string $primaryCol, string $secondaryCol, string $primaryStatusCol, string $secondaryStatusCol) use ($db, $batchSize, $recheckDays, $dryRun, $quiet, $io, $classify, &$totals): void {
-        $sql = sprintf(
+    $processBatch = function (string $table, array $rows, string $pk, string $primaryStatusCol, string $secondaryStatusCol) use ($db, $dryRun, $classify, &$totals): void {
+        foreach ($rows as $row) {
+            $primaryStatus   = $classify($row['primary_addr']);
+            $secondaryStatus = $classify($row['secondary_addr']);
+
+            $totals[$table]['scanned']++;
+            $totals[$table][classifyOverall($primaryStatus, $secondaryStatus)]++;
+
+            if ($dryRun) {
+                continue;
+            }
+
+            $db->update(
+                $table,
+                [
+                    $primaryStatusCol         => $primaryStatus,
+                    $secondaryStatusCol       => $secondaryStatus,
+                    'email_status_checked_at' => new Zend_Db_Expr('NOW()'),
+                ],
+                [$db->quoteIdentifier($pk) . ' = ?' => $row['pk']]
+            );
+        }
+    };
+
+    $processTable = function (string $table, string $pk, string $primaryCol, string $secondaryCol, string $primaryStatusCol, string $secondaryStatusCol) use ($db, $batchSize, $maxBatches, $recheckDays, $dryRun, $quiet, $io, $processBatch, &$totals): void {
+        $sqlTemplate = sprintf(
             'SELECT %s AS pk, %s AS primary_addr, %s AS secondary_addr
                FROM %s
               WHERE (
@@ -119,47 +145,41 @@ try {
             $batchSize
         );
 
-        $rows = $db->fetchAll($sql);
-        if (!$rows) {
-            if (!$quiet) {
-                $io->writeln("  $table: nothing to process");
+        if (!$quiet) {
+            $io->section($table);
+        }
+
+        // In dry-run mode the SELECT would return the same rows forever
+        // (no UPDATE moves checked_at forward), so cap to one batch.
+        $effectiveMaxBatches = $dryRun ? 1 : $maxBatches;
+
+        $batchNum = 0;
+        while ($batchNum < $effectiveMaxBatches) {
+            $rows = $db->fetchAll($sqlTemplate);
+            if (!$rows) {
+                if (!$quiet) {
+                    $io->writeln($batchNum === 0 ? '  nothing to process' : sprintf('  done — %d batch(es)', $batchNum));
+                }
+                return;
             }
-            return;
+            $batchNum++;
+            $processBatch($table, $rows, $pk, $primaryStatusCol, $secondaryStatusCol);
+
+            if (!$quiet) {
+                $io->writeln(sprintf(
+                    '  batch %d: %d rows  (totals: valid=%d invalid_domain=%d invalid_syntax=%d unknown=%d)',
+                    $batchNum,
+                    count($rows),
+                    $totals[$table]['valid'],
+                    $totals[$table]['invalid_domain'],
+                    $totals[$table]['invalid_syntax'],
+                    $totals[$table]['unknown']
+                ));
+            }
         }
 
         if (!$quiet) {
-            $io->section($table . ' (' . count($rows) . ' rows)');
-        }
-
-        foreach ($rows as $row) {
-            $primaryStatus   = $classify($row['primary_addr']);
-            $secondaryStatus = $classify($row['secondary_addr']);
-
-            $totals[$table]['scanned']++;
-            // Bookkeeping: count the "worst" outcome of the two; "valid" wins
-            // over "unknown" wins over "invalid_*"; this is just for the summary.
-            $bookkeep = (in_array('valid', [$primaryStatus, $secondaryStatus], true))
-                ? 'valid'
-                : (($primaryStatus === 'unknown' && $secondaryStatus === 'unknown')
-                    ? 'unknown'
-                    : (in_array('invalid_domain', [$primaryStatus, $secondaryStatus], true)
-                        ? 'invalid_domain'
-                        : 'invalid_syntax'));
-            $totals[$table][$bookkeep]++;
-
-            if ($dryRun) {
-                continue;
-            }
-
-            $db->update(
-                $table,
-                [
-                    $primaryStatusCol         => $primaryStatus,
-                    $secondaryStatusCol       => $secondaryStatus,
-                    'email_status_checked_at' => new Zend_Db_Expr('NOW()'),
-                ],
-                [$db->quoteIdentifier($pk) . ' = ?' => $row['pk']]
-            );
+            $io->note(sprintf('%s: stopped at --max-batches=%d cap; rerun to continue.', $table, $effectiveMaxBatches));
         }
     };
 
@@ -203,4 +223,18 @@ try {
     }
     fwrite(STDERR, 'check-participant-emails failed: ' . $e->getMessage() . PHP_EOL);
     exit(1);
+}
+
+/**
+ * Collapse the (primary, secondary) classification pair into a single bucket
+ * for summary counting. "valid" wins over "unknown" wins over "invalid_*".
+ */
+function classifyOverall(string $primary, string $secondary): string
+{
+    return match (true) {
+        $primary === 'valid'   || $secondary === 'valid'                     => 'valid',
+        $primary === 'unknown' && $secondary === 'unknown'                   => 'unknown',
+        $primary === 'invalid_domain' || $secondary === 'invalid_domain'     => 'invalid_domain',
+        default                                                              => 'invalid_syntax',
+    };
 }

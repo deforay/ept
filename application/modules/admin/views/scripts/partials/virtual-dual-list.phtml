@@ -24,15 +24,27 @@
 ?>
 <style>
     .vdl-wrapper { width: 100%; box-sizing: border-box; }
+    .vdl-legend { margin: 0 0 8px 0; font-size: 12px; color: #555; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .vdl-legend .vdl-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .vdl-legend .vdl-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
     .vdl-dual { display: flex; gap: 20px; align-items: stretch; width: 100%; }
     .vdl-dual .vdl-pane { flex: 1 1 0; border: 1px solid #ccc; background: #fff; display: flex; flex-direction: column; min-width: 0; }
     .vdl-dual .vdl-pane-header { padding: 8px; border-bottom: 1px solid #eee; background: #f7f7f7; }
     .vdl-dual .vdl-pane-header input { width: 100%; box-sizing: border-box; }
     .vdl-dual .vdl-pane-scroll { position: relative; height: 360px; overflow-y: auto; background: #fff; }
     .vdl-dual .vdl-pane-inner { position: relative; width: 100%; }
-    .vdl-dual .vdl-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
+    .vdl-dual .vdl-row { position: absolute; left: 0; right: 0; height: 30px; line-height: 30px; padding: 0 12px 0 28px; cursor: pointer; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; box-sizing: border-box; }
     .vdl-dual .vdl-row:hover { background: #337ab7; color: #fff; }
+    .vdl-dual .vdl-row::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 11px; font-weight: 700; border-radius: 50%; color: #fff; }
+    .vdl-dual .vdl-row.vdl-row-added { background: #e8f5e9; border-left: 3px solid #2e7d32; padding-left: 26px; }
+    .vdl-dual .vdl-row.vdl-row-added::before { content: '+'; background: #2e7d32; }
+    .vdl-dual .vdl-row.vdl-row-removed { background: #fff3e0; border-left: 3px solid #ef6c00; padding-left: 26px; }
+    .vdl-dual .vdl-row.vdl-row-removed::before { content: '\2212'; background: #ef6c00; }
+    .vdl-dual .vdl-row.vdl-row-saved::before { content: '\2713'; background: #607d8b; }
     .vdl-dual .vdl-pane-footer { padding: 10px; background: #2c3e50; color: #fff; text-align: center; font-weight: 600; font-size: 13px; }
+    .vdl-dual .vdl-pane-footer .vdl-diff { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .vdl-dual .vdl-pane-footer .vdl-diff-added { background: #2e7d32; }
+    .vdl-dual .vdl-pane-footer .vdl-diff-removed { background: #ef6c00; }
     .vdl-dual .vdl-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 22px; padding: 0 4px; user-select: none; flex: 0 0 auto; }
 </style>
 <script>
@@ -70,19 +82,36 @@
         var filterPh  = this.opts.filterPlaceholder || 'Type to filter';
         var leftLbl   = this.opts.unselectedLabel    || 'Unselected';
         var rightLbl  = this.opts.selectedLabel      || 'Selected';
+        var pendingAddLbl    = this.opts.pendingAddLabel    || 'pending add';
+        var pendingRemoveLbl = this.opts.pendingRemoveLabel || 'pending remove';
+        var showLegend = this.opts.showLegend !== false;
+        var legendSaved   = this.opts.legendSaved   || 'Saved (already selected)';
+        var legendAdded   = this.opts.legendAdded   || 'Pending add (save to apply)';
+        var legendRemoved = this.opts.legendRemoved || 'Pending remove (save to apply)';
+
+        var legendHtml = '';
+        if (showLegend) {
+            legendHtml =
+                '<div class="vdl-legend">' +
+                    '<span class="vdl-legend-item"><span class="vdl-legend-swatch" style="background:#607d8b;"></span>' + escapeHtml(legendSaved) + '</span>' +
+                    '<span class="vdl-legend-item"><span class="vdl-legend-swatch" style="background:#2e7d32;"></span>' + escapeHtml(legendAdded) + '</span>' +
+                    '<span class="vdl-legend-item"><span class="vdl-legend-swatch" style="background:#ef6c00;"></span>' + escapeHtml(legendRemoved) + '</span>' +
+                '</div>';
+        }
 
         var html =
+            legendHtml +
             '<div class="vdl-dual">' +
                 '<div class="vdl-pane" data-side="left">' +
                     '<div class="vdl-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="' + escapeHtml(filterPh) + '"></div>' +
                     '<div class="vdl-pane-scroll"><div class="vdl-pane-inner"></div></div>' +
-                    '<div class="vdl-pane-footer">' + escapeHtml(leftLbl) + ' (<span class="vdl-count">0</span>)</div>' +
+                    '<div class="vdl-pane-footer">' + escapeHtml(leftLbl) + ' (<span class="vdl-count">0</span>)<span class="vdl-diff vdl-diff-removed" style="display:none;">&minus; <span class="vdl-diff-count">0</span> ' + escapeHtml(pendingRemoveLbl) + '</span></div>' +
                 '</div>' +
                 '<div class="vdl-arrows">&#8646;</div>' +
                 '<div class="vdl-pane" data-side="right">' +
                     '<div class="vdl-pane-header"><input type="text" class="form-control" autocomplete="off" placeholder="' + escapeHtml(filterPh) + '"></div>' +
                     '<div class="vdl-pane-scroll"><div class="vdl-pane-inner"></div></div>' +
-                    '<div class="vdl-pane-footer">' + escapeHtml(rightLbl) + ' (<span class="vdl-count">0</span>)</div>' +
+                    '<div class="vdl-pane-footer">' + escapeHtml(rightLbl) + ' (<span class="vdl-count">0</span>)<span class="vdl-diff vdl-diff-added" style="display:none;">+ <span class="vdl-diff-count">0</span> ' + escapeHtml(pendingAddLbl) + '</span></div>' +
                 '</div>' +
             '</div>';
 
@@ -104,6 +133,8 @@
             $inner:  $pane.find('.vdl-pane-inner'),
             $search: $pane.find('.vdl-pane-header input'),
             $count:  $pane.find('.vdl-count'),
+            $diff:   $pane.find('.vdl-diff'),
+            $diffCount: $pane.find('.vdl-diff-count'),
             filter: '',
             filtered: []
         };
@@ -133,7 +164,28 @@
         }
         pane.$count.text(pane.filtered.length);
         pane.$inner.css('height', (pane.filtered.length * ROW_HEIGHT) + 'px');
+        this._updateDiff(pane);
     };
+
+    Instance.prototype._updateDiff = function(pane) {
+        if (!pane.$diff || pane.$diff.length === 0) return;
+        var src = this.state[pane.side];
+        var diffCount = 0;
+        if (pane.side === 'right') {
+            for (var i = 0; i < src.length; i++) if (!src[i].savedRight) diffCount++;
+        } else {
+            for (var j = 0; j < src.length; j++) if (src[j].savedRight) diffCount++;
+        }
+        pane.$diffCount.text(diffCount);
+        pane.$diff.toggle(diffCount > 0);
+    };
+
+    function rowClass(it, side) {
+        if (side === 'right') {
+            return it.savedRight ? 'vdl-row-saved' : 'vdl-row-added';
+        }
+        return it.savedRight ? 'vdl-row-removed' : '';
+    }
 
     Instance.prototype._render = function(pane) {
         var st = pane.$scroll.scrollTop();
@@ -143,7 +195,8 @@
         var parts = [];
         for (var i = first; i < last; i++) {
             var it = pane.filtered[i];
-            parts.push('<div class="vdl-row" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
+            var cls = rowClass(it, pane.side);
+            parts.push('<div class="vdl-row' + (cls ? ' ' + cls : '') + '" style="top:' + (i * ROW_HEIGHT) + 'px" data-id="' + escapeHtml(it.id) + '">' + escapeHtml(it.label) + '</div>');
         }
         pane.$inner.html(parts.join(''));
     };
@@ -185,7 +238,9 @@
             var id = $o.val();
             if (id === '' || id == null) return;
             var label = $o.text();
-            var item = { id: id, label: label, _lc: String(label).toLowerCase() };
+            // savedRight captures the option's selected state at load time
+            // so subsequent user moves can be rendered as pending add/remove.
+            var item = { id: id, label: label, _lc: String(label).toLowerCase(), savedRight: !!this.selected };
             if (this.selected) self.state.right.push(item);
             else self.state.left.push(item);
         });
