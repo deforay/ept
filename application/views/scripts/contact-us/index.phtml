@@ -63,7 +63,7 @@
 					<div class="col-sm-offset-2 col-sm-10">
 						<div class="d-flex align-items-start" style="gap:10px;">
 							<div class="d-flex flex-column align-items-center" style="flex-shrink:0;">
-								<img id="capChaw" src="/captcha/<?php echo rand(); ?>" style="height:58px;width:auto;border-radius:4px;" alt="<?= $this->htmlTranslate("Security check"); ?>" />
+								<img id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" style="height:58px;width:auto;border-radius:4px;" alt="<?= $this->htmlTranslate("Security check"); ?>" />
 								<button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-sm text-muted p-0" style="font-size:12px;margin-top:2px;"><i class="icon-refresh"></i> <?= $this->translate->_("Get New Image"); ?></button>
 							</div>
 							<input type="text" id="challengeResponse" class="form-control isRequired" placeholder="<?= $this->htmlTranslate("Enter text from image"); ?>" title="<?= $this->htmlTranslate("Please enter the text from the image"); ?>" maxlength="40" style="width:240px;flex:none;">

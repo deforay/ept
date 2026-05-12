@@ -64,7 +64,7 @@
                         </div>
                     </div>
                     <div class="form-group text-center">
-                        <img class="col-lg-3 captcha" id="capChaw" src="/captcha/<?php echo rand(); ?>" style="margin-top: -50px;height: 85px;" />
+                        <img class="col-lg-3 captcha" id="capChaw" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" style="margin-top: -50px;height: 85px;" alt="<?= $this->htmlTranslate("Security check"); ?>" />
                         <div class="col-lg-3 col-md-6 col-sm-6 captcha" style="margin-top: -30px;">
                             <input type="text" style="margin:0;width:100%;padding:3px;margin-top:8px" id="challengeResponse" placeholder="<?= $this->htmlTranslate("Enter text from image on left"); ?>" class="isRequired form-control" title="<?= $this->htmlTranslate("Please enter the text from the image."); ?>" maxlength="40">
                             <a onclick="getCaptcha('capChaw');return false;" style="cursor:pointer;font-size:12px;margin:5px;"><i class="icon-refresh icon-white"></i><?= $this->translate->_("Get New Image"); ?></a>

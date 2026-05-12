@@ -196,7 +196,7 @@ if ($alertStatus === 'success') {
 		</div>
 		<div class="captcha-row">
 			<div class="captcha-col">
-				<img id="capChaw" class="captcha-img" src="/captcha/<?php echo rand(); ?>" alt="CAPTCHA" />
+				<img id="capChaw" class="captcha-img" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" alt="CAPTCHA" />
 				<button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="btn btn-link btn-xs captcha-refresh"><i class="icon-refresh"></i> <?= $this->translate->_("Get New Image"); ?></button>
 			</div>
 			<input type="text" id="challengeResponse" placeholder="Enter text from image" class="form-control captcha-input" title="Please enter the text from the image." maxlength="40" />

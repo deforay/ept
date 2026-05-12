@@ -135,7 +135,7 @@ if ($alertStatus === 'success') {
 				<div class="form-group">
 					<div class="captcha-row challangeDiv">
 						<div class="captcha-col">
-							<img id="capChaw" class="captcha-img" src="/captcha/<?php echo rand(); ?>" alt="<?= $this->htmlTranslate("Security check"); ?>" />
+							<img id="capChaw" class="captcha-img" src="/captcha/<?php echo Pt_Commons_MiscUtility::generateRandomNumber(); ?>" alt="<?= $this->htmlTranslate("Security check"); ?>" />
 							<button type="button" tabindex="-1" onclick="getCaptcha('capChaw');return false;" class="get-img btn btn-link btn-sm captcha-refresh" style="padding:0;"><i class="bx bx-refresh"></i> <?= $this->translate->_("Get New Image"); ?></button>
 						</div>
 						<div class="form-floating">
