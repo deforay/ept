@@ -5,6 +5,46 @@ $authNameSpace = new Zend_Session_Namespace('datamanagers');
     #currentSchemeTable > tbody > tr > td { vertical-align: middle; }
     #currentSchemeTable tr.row-unmapped > td { background-color: #fcf8e3 !important; }
     #currentSchemeTable tr.row-unmapped:hover > td { background-color: #faf2cc !important; }
+
+    /* Constrain narrow columns so they don't waste horizontal space.
+       Columns are 1-indexed: 1=Shipment Date, 2=Scheme, 3=Shipment Code,
+       4=PT Survey Code, 5=Participant ID, 6=Participant, 7=Institute Name,
+       8=Result Due Date, 9=Response Date, 10=Action. */
+    #currentSchemeTable th:nth-child(1),
+    #currentSchemeTable td:nth-child(1),
+    #currentSchemeTable th:nth-child(8),
+    #currentSchemeTable td:nth-child(8),
+    #currentSchemeTable th:nth-child(9),
+    #currentSchemeTable td:nth-child(9) {
+        white-space: nowrap;
+        width: 1%;
+    }
+    #currentSchemeTable th:nth-child(3),
+    #currentSchemeTable td:nth-child(3),
+    #currentSchemeTable th:nth-child(4),
+    #currentSchemeTable td:nth-child(4) {
+        white-space: nowrap;
+        width: 1%;
+    }
+    #currentSchemeTable th:nth-child(5),
+    #currentSchemeTable td:nth-child(5) {
+        white-space: nowrap;
+        width: 1%;
+    }
+    #currentSchemeTable th:nth-child(10),
+    #currentSchemeTable td:nth-child(10) {
+        white-space: nowrap;
+        width: 1%;
+    }
+    /* Scheme + Participant + Institute Name get the remaining space and may wrap */
+    #currentSchemeTable th:nth-child(2),
+    #currentSchemeTable td:nth-child(2),
+    #currentSchemeTable th:nth-child(6),
+    #currentSchemeTable td:nth-child(6),
+    #currentSchemeTable th:nth-child(7),
+    #currentSchemeTable td:nth-child(7) {
+        white-space: normal;
+    }
 </style>
 <section class="content-header">
 	<h1><?= $this->translate->_("Report PT Data"); ?> </h1>
