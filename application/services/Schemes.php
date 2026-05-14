@@ -68,52 +68,86 @@ class Application_Service_Schemes
 
     public function setRecommededDtsTestkit($recommended, $testMode = 'dts')
     {
-
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->delete('dts_recommended_testkits', 'dts_test_mode = "' . $testMode . '"');
-        foreach ($recommended as $testNo => $kits) {
-            if (!empty($kits)) {
-                foreach ($kits as $kit) {
-                    $data = [
-                        'test_no' => $testNo,
-                        'testkit' => $kit,
-                        'dts_test_mode' => $testMode,
-                    ];
-                    $db->insert('dts_recommended_testkits', $data);
+        $db->beginTransaction();
+        try {
+            $db->delete('dts_recommended_testkits', 'dts_test_mode = "' . $testMode . '"');
+            foreach ($recommended as $testNo => $kits) {
+                if (!empty($kits)) {
+                    foreach ($kits as $kit) {
+                        $db->insert('dts_recommended_testkits', [
+                            'test_no' => $testNo,
+                            'testkit' => $kit,
+                            'dts_test_mode' => $testMode,
+                        ]);
+                    }
                 }
             }
+            $db->commit();
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('setRecommededDtsTestkit rolled back: ' . $e->getMessage(), [
+                'testMode' => $testMode,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function setRecommededCovid19TestTypes($recommended)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        $db->delete('covid19_recommended_test_types');
-        foreach ($recommended as $testNo => $types) {
-            if (isset($types) && $types != null) {
-                foreach ($types as $type) {
-                    $data = [
-                        'test_no' => $testNo,
-                        'test_type' => $type,
-                    ];
-                    $db->insert('covid19_recommended_test_types', $data);
+        $db->beginTransaction();
+        try {
+            $db->delete('covid19_recommended_test_types');
+            foreach ($recommended as $testNo => $types) {
+                if (!empty($types)) {
+                    foreach ($types as $type) {
+                        $db->insert('covid19_recommended_test_types', [
+                            'test_no' => $testNo,
+                            'test_type' => $type,
+                        ]);
+                    }
                 }
             }
+            $db->commit();
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('setRecommededCovid19TestTypes rolled back: ' . $e->getMessage(), [
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
+
     public function setRecommededCustomTestTypes($params)
     {
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-
-        $db->delete('generic_recommended_test_types', 'scheme_id = "' . $params['schemeCode'] . '"');
-        if (isset($params['customTestkit']) && !empty($params['customTestkit'])) {
-            foreach ($params['customTestkit'] as $kit) {
-                $data = [
-                    'scheme_id' => $params['schemeCode'],
-                    'testkit' => $kit,
-                ];
-                $db->insert('generic_recommended_test_types', $data);
+        $db->beginTransaction();
+        try {
+            $db->delete('generic_recommended_test_types', 'scheme_id = "' . $params['schemeCode'] . '"');
+            if (!empty($params['customTestkit'])) {
+                foreach ($params['customTestkit'] as $kit) {
+                    $db->insert('generic_recommended_test_types', [
+                        'scheme_id' => $params['schemeCode'],
+                        'testkit' => $kit,
+                    ]);
+                }
             }
+            $db->commit();
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('setRecommededCustomTestTypes rolled back: ' . $e->getMessage(), [
+                'schemeCode' => $params['schemeCode'] ?? null,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 

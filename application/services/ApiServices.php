@@ -225,10 +225,12 @@ class Application_Service_ApiServices
             }
             $response = [];
             $schemeType = '';
+            $this->db->beginTransaction();
             foreach ($parameters['data'] as $key => $param) {
                 $param = (array) $param;
                 $schemeType = $param['schemeType'];
                 if (!$this->shipmentService->isShipmentEditable($param['shipmentId'], $param['participantId'])) {
+                    $this->db->rollBack();
                     return ['status' => 'fail', 'message' => 'Responding for this shipment is not allowed at this time. Please contact your PT Provider for any clarifications..'];
                 }
                 $mandatoryFields = ['shipmentDate', 'testingDate', 'sampleRehydrationDate', 'algorithm'];
@@ -384,11 +386,20 @@ class Application_Service_ApiServices
                     'message' => 'Shipment form not saved. Please re-sync again',
                 ];
             }
+            $this->db->commit();
             $transactionId = $transactionId ?? Pt_Commons_General::generateULID();
             self::addApiTracking($transactionId, $aResult['dm_id'], count($parameters['data']), 'save-shipments', $schemeType, $_SERVER['REQUEST_URI'], $parameters, $payload, 'json');
             return $payload;
         } catch (Throwable $exc) {
-            Pt_Commons_LoggerUtility::log('error', $exc->getFile() . ':' . $exc->getLine() . ' - ' . $exc->getMessage());
+            try {
+                $this->db->rollBack();
+            } catch (Throwable $ignore) { /* no active transaction */
+            }
+            Pt_Commons_LoggerUtility::logError('saveShipmentDetailsFromAPI rolled back: ' . $exc->getMessage(), [
+                'file'  => $exc->getFile(),
+                'line'  => $exc->getLine(),
+                'trace' => substr($exc->getTraceAsString(), 0, 8000),
+            ]);
             return 0;
         }
     }

@@ -966,6 +966,8 @@ class Application_Service_Shipments
 
     public function removeDtsResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1002,15 +1004,23 @@ class Application_Service_Shipments
 
             $dtsResponseDb = new Application_Model_DbTable_ResponseDts();
             $dtsResponseDb->removeShipmentResults($mapId);
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeDtsResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function removeCovid19Results($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1051,15 +1061,23 @@ class Application_Service_Shipments
 
             $covid19ResponseDb = new Application_Model_DbTable_ResponseCovid19();
             $covid19ResponseDb->removeShipmentResults($mapId);
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeCovid19Results rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function removeTbResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1093,15 +1111,23 @@ class Application_Service_Shipments
 
             $tbResponseDb = new Application_Model_DbTable_ResponseTb();
             $tbResponseDb->removeShipmentResults($mapId);
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeTbResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function removeGenericTestResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1135,15 +1161,23 @@ class Application_Service_Shipments
 
             $genericTestResponseDb = new Application_Model_DbTable_ResponseGenericTest();
             $genericTestResponseDb->removeShipmentResults($mapId);
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeGenericTestResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function removeDtsEidResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1180,14 +1214,22 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseEid();
             $responseDb->delete("shipment_map_id=$mapId");
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeDtsEidResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
     public function removeRecencyResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1224,15 +1266,23 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseRecency();
             $responseDb->delete("shipment_map_id=$mapId");
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeRecencyResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
     public function removeDtsVlResults($mapId)
     {
+        $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
         try {
             $shipmentParticipantDb = new Application_Model_DbTable_ShipmentParticipantMap();
             $authNameSpace = new Zend_Session_Namespace('datamanagers');
@@ -1269,10 +1319,16 @@ class Application_Service_Shipments
 
             $responseDb = new Application_Model_DbTable_ResponseVl();
             $responseDb->delete("shipment_map_id=$mapId");
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeDtsVlResults rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
@@ -2306,11 +2362,11 @@ class Application_Service_Shipments
 
     public function removeShipment($sid)
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $db->beginTransaction();
         try {
-
             $shipmentDb = new Application_Model_DbTable_Shipments();
             $row = $shipmentDb->fetchRow('shipment_id=' . $sid);
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
             if ($row['scheme_type'] == 'dts') {
                 $db->delete('reference_dts_eia', 'shipment_id=' . $sid);
                 $db->delete('reference_dts_wb', 'shipment_id=' . $sid);
@@ -2329,12 +2385,17 @@ class Application_Service_Shipments
             $shipmentParticipantMap->delete('shipment_id=' . $sid);
 
             $shipmentDb->delete('shipment_id=' . $sid);
-
+            $db->commit();
             return 'Shipment deleted.';
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            //return "Unable to delete. Please try again later or contact system admin for help";
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeShipment rolled back: ' . $e->getMessage(), [
+                'sid'   => $sid,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
@@ -3071,26 +3132,38 @@ class Application_Service_Shipments
 
     public function removeShipmentParticipant($mapId, $sId = '')
     {
+        $db = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $responseTables = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
+        $db->beginTransaction();
+        $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         try {
-            $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-            $responseTable = ['response_result_dbs', 'response_result_dts', 'response_result_eid', 'response_result_recency', 'response_result_tb', 'response_result_vl'];
-            $db->query('SET FOREIGN_KEY_CHECKS = 0;'); // Disable foreign key checks
-            foreach ($responseTable as $response) {
+            foreach ($responseTables as $response) {
                 $sql = $db->select()->from($response, ['shipment_map_id'])->where('shipment_map_id =?', $mapId);
-                if (isset($sId) && !empty($sId)) {
+                if (!empty($sId)) {
                     $sql = $sql->where('sample_id =?', $sId);
                 }
-                $shipment = $db->fetchRow($sql);
-                if ($shipment) {
+                if ($db->fetchRow($sql)) {
                     $db->delete($response, 'shipment_map_id = ' . $mapId);
                 }
             }
-            return $db->delete('shipment_participant_map', 'map_id = ' . $mapId);
-            $db->query('SET FOREIGN_KEY_CHECKS = 1;'); // Enable foreign key checks
-        } catch (Exception $e) {
-            error_log("ERROR : {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}");
-            error_log($e->getTraceAsString());
-            return 'Unable to delete. Please try again later or contact system admin for help';
+            $rows = $db->delete('shipment_participant_map', 'map_id = ' . $mapId);
+            $db->commit();
+            return $rows;
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('removeShipmentParticipant rolled back: ' . $e->getMessage(), [
+                'mapId' => $mapId,
+                'sId'   => $sId,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
+        } finally {
+            try {
+                $db->query('SET FOREIGN_KEY_CHECKS = 1;');
+            } catch (Throwable $ignore) { /* best-effort restore */
+            }
         }
     }
 
@@ -3575,7 +3648,11 @@ class Application_Service_Shipments
     {
         $authNameSpace = new Zend_Session_Namespace('administrators');
         $db = Zend_Db_Table_Abstract::getDefaultAdapter();
-        if (isset($sid) && !empty($sid)) {
+        if (empty($sid)) {
+            return null;
+        }
+        $db->beginTransaction();
+        try {
             $db->insert(
                 'scheduled_jobs',
                 [
@@ -3598,7 +3675,17 @@ class Application_Service_Shipments
                     "shipment_id = $sid"
                 );
             }
+            $db->commit();
             return $lastId;
+        } catch (Throwable $e) {
+            $db->rollBack();
+            Pt_Commons_LoggerUtility::logError('runTbFormCron rolled back: ' . $e->getMessage(), [
+                'sid'   => $sid,
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
         }
     }
 
