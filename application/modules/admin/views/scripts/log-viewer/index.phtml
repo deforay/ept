@@ -1,0 +1,224 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<style>
+    .logv-page { max-width: 1280px; margin: 0 auto; padding: 8px 4px 48px; font-size: 14px; color: #2d3748; }
+    .logv-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+    .logv-header h1 { font-size: 22px; font-weight: 600; color: #1a202c; margin: 0; }
+    .logv-summary { font-size: 13px; color: #718096; }
+
+    .logv-tabs { display: inline-flex; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .logv-tabs a { display: block; padding: 7px 14px; font-size: 13px; color: #4a5568; text-decoration: none; background: #fff; }
+    .logv-tabs a.is-active { background: #2b6cb0; color: #fff; }
+    .logv-tabs a + a { border-left: 1px solid #e2e8f0; }
+
+    .logv-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+    .logv-controls select, .logv-controls input[type="text"], .logv-controls input[type="number"] {
+        height: 36px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f7fafc; font-size: 13px; color: #2d3748;
+    }
+    .logv-controls input[type="text"] { min-width: 240px; flex: 1; }
+    .logv-controls input[type="number"] { width: 90px; }
+    .logv-controls .btn { height: 36px; padding: 0 14px; border: none; border-radius: 6px; background: #2b6cb0; color: #fff; font-size: 13px; cursor: pointer; }
+    .logv-controls .btn:hover { background: #2c5282; }
+    .logv-controls .btn.ghost { background: #edf2f7; color: #2d3748; }
+    .logv-controls .btn.ghost:hover { background: #e2e8f0; }
+
+    .logv-meta { font-size: 12px; color: #718096; margin: 6px 0 14px; min-height: 18px; }
+    .logv-meta .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #edf2f7; color: #2d3748; margin-right: 6px; }
+
+    .logv-rows { border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; overflow: hidden; }
+    .logv-row { display: grid; grid-template-columns: 170px 90px 1fr; gap: 12px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; align-items: flex-start; }
+    .logv-row:last-child { border-bottom: none; }
+    .logv-row:hover { background: #f7fafc; }
+    .logv-row .time { color: #718096; }
+    .logv-row .level { font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.4px; padding: 2px 6px; border-radius: 4px; align-self: flex-start; display: inline-block; }
+    .level-DEBUG    { background: #edf2f7; color: #4a5568; }
+    .level-INFO     { background: #ebf8ff; color: #2b6cb0; }
+    .level-WARNING  { background: #fefcbf; color: #975a16; }
+    .level-ERROR    { background: #fed7d7; color: #c53030; }
+    .level-CRITICAL { background: #c53030; color: #fff; }
+    .logv-row .msg { white-space: pre-wrap; word-break: break-word; color: #2d3748; }
+    .logv-row details { margin-top: 4px; }
+    .logv-row summary { color: #718096; font-size: 11.5px; cursor: pointer; }
+    .logv-row pre { margin: 4px 0 0; padding: 8px; background: #f7fafc; border-radius: 4px; overflow-x: auto; font-size: 11.5px; }
+
+    .logv-empty, .logv-loading { padding: 30px; text-align: center; color: #a0aec0; }
+</style>
+
+<div class="logv-page">
+    <div class="logv-header">
+        <div>
+            <h1><?= $this->translate->_('Log Viewer'); ?></h1>
+            <div class="logv-summary" id="logvSummary"></div>
+        </div>
+        <div class="logv-tabs">
+            <?php foreach ($this->channels as $key => $label): ?>
+                <a href="<?= $this->url(['module' => 'admin', 'controller' => 'log-viewer', 'action' => 'index'], 'default', true); ?>?channel=<?= htmlspecialchars($key, ENT_QUOTES); ?>"
+                    class="<?= $key === $this->channel ? 'is-active' : ''; ?>">
+                    <?= htmlspecialchars($label); ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="logv-controls">
+        <select id="logvFile">
+            <?php if (empty($this->files)): ?>
+                <option value=""><?= $this->translate->_('No log files yet'); ?></option>
+            <?php else: ?>
+                <?php foreach ($this->files as $f): ?>
+                    <option value="<?= htmlspecialchars($f['name'], ENT_QUOTES); ?>">
+                        <?= htmlspecialchars($f['date']); ?>
+                        (<?= number_format($f['size'] / 1024, 1); ?> KB)
+                    </option>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </select>
+
+        <select id="logvLevel">
+            <?php foreach ($this->levels as $lvl): ?>
+                <option value="<?= htmlspecialchars($lvl, ENT_QUOTES); ?>">
+                    <?= $lvl === '' ? $this->translate->_('All levels') : htmlspecialchars($lvl); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <input type="text" id="logvQ" placeholder="<?= $this->translate->_('Search text (case-insensitive)…'); ?>">
+        <input type="number" id="logvLimit" min="50" max="5000" step="50" value="500" title="<?= $this->translate->_('Max lines'); ?>">
+
+        <button class="btn" id="logvRefresh"><i class="fa fa-sync"></i> <?= $this->translate->_('Refresh'); ?></button>
+        <button class="btn ghost" id="logvClear"><?= $this->translate->_('Clear filters'); ?></button>
+    </div>
+
+    <div class="logv-meta" id="logvMeta"></div>
+
+    <div class="logv-rows" id="logvRows">
+        <div class="logv-loading"><?= $this->translate->_('Loading…'); ?></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var feedUrl = "<?= $this->url(['module' => 'admin', 'controller' => 'log-viewer', 'action' => 'feed'], 'default', true); ?>";
+    var channel = "<?= htmlspecialchars($this->channel, ENT_QUOTES); ?>";
+    var fileSel  = document.getElementById('logvFile');
+    var levelSel = document.getElementById('logvLevel');
+    var qInput   = document.getElementById('logvQ');
+    var limitIn  = document.getElementById('logvLimit');
+    var rowsEl   = document.getElementById('logvRows');
+    var metaEl   = document.getElementById('logvMeta');
+    var sumEl    = document.getElementById('logvSummary');
+
+    function el(tag, opts, children) {
+        var node = document.createElement(tag);
+        if (opts && opts.className) { node.className = opts.className; }
+        if (opts && opts.text != null) { node.textContent = opts.text; }
+        if (opts && opts.title) { node.title = opts.title; }
+        if (children) {
+            for (var i = 0; i < children.length; i++) {
+                if (children[i]) { node.appendChild(children[i]); }
+            }
+        }
+        return node;
+    }
+    function clear(node) { while (node.firstChild) { node.removeChild(node.firstChild); } }
+
+    function prettyContext(ctx) {
+        if (!ctx) { return ''; }
+        try {
+            var trimmed = ctx.trim();
+            if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
+                return JSON.stringify(JSON.parse(trimmed), null, 2);
+            }
+        } catch (e) { /* fall through */ }
+        return ctx;
+    }
+
+    function buildRow(row) {
+        var time = el('div', { className: 'time', text: row.time || '' });
+        var level = el('div', null, [
+            el('span', { className: 'level level-' + (row.level || 'INFO'), text: row.level || '' })
+        ]);
+        var msg = el('div', { className: 'msg', text: row.message || '' });
+        var body = el('div', null, [msg]);
+        var ctx = prettyContext(row.context);
+        if (ctx) {
+            var details = el('details', null, [
+                el('summary', { text: 'context' }),
+                el('pre', { text: ctx })
+            ]);
+            body.appendChild(details);
+        }
+        return el('div', { className: 'logv-row' }, [time, level, body]);
+    }
+
+    function render(payload) {
+        clear(rowsEl);
+        clear(metaEl);
+        clear(sumEl);
+        if (!payload.file) {
+            rowsEl.appendChild(el('div', { className: 'logv-empty', text: 'No log file selected.' }));
+            return;
+        }
+        var strong = el('strong', { text: payload.file });
+        sumEl.appendChild(strong);
+
+        var m = payload.meta || {};
+        var pills = [
+            (m.count || 0) + ' lines (cap ' + (m.limit || 0) + ')',
+            ((m.size || 0) / 1024).toFixed(1) + ' KB',
+            'Last write: ' + (m.mtime || '')
+        ];
+        for (var i = 0; i < pills.length; i++) {
+            metaEl.appendChild(el('span', { className: 'pill', text: pills[i] }));
+        }
+
+        var lines = payload.lines || [];
+        if (!lines.length) {
+            rowsEl.appendChild(el('div', { className: 'logv-empty', text: 'No matching lines.' }));
+            return;
+        }
+        var frag = document.createDocumentFragment();
+        for (var j = 0; j < lines.length; j++) {
+            frag.appendChild(buildRow(lines[j]));
+        }
+        rowsEl.appendChild(frag);
+    }
+
+    function load() {
+        clear(rowsEl);
+        rowsEl.appendChild(el('div', { className: 'logv-loading', text: 'Loading…' }));
+        var params = new URLSearchParams({
+            channel: channel,
+            file: fileSel.value || '',
+            level: levelSel.value || '',
+            q: qInput.value || '',
+            limit: limitIn.value || '500'
+        });
+        fetch(feedUrl + '?' + params.toString(), { credentials: 'same-origin' })
+            .then(function (r) { return r.json(); })
+            .then(render)
+            .catch(function () {
+                clear(rowsEl);
+                rowsEl.appendChild(el('div', { className: 'logv-empty', text: 'Failed to load.' }));
+            });
+    }
+
+    document.getElementById('logvRefresh').addEventListener('click', load);
+    document.getElementById('logvClear').addEventListener('click', function () {
+        levelSel.value = '';
+        qInput.value = '';
+        limitIn.value = '500';
+        load();
+    });
+    fileSel.addEventListener('change', load);
+    levelSel.addEventListener('change', load);
+    var qTimer;
+    qInput.addEventListener('input', function () {
+        clearTimeout(qTimer);
+        qTimer = setTimeout(load, 300);
+    });
+    limitIn.addEventListener('change', load);
+
+    load();
+})();
+</script>

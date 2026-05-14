@@ -290,6 +290,14 @@ if (!$pstatus && in_array('config-ept', $privileges)) {
 		'keywords' => ['log', 'history', 'changes']
 	];
 	$spotlightItems[] = [
+		'id' => 'log-viewer',
+		'title' => $this->translate->_('Log Viewer'),
+		'category' => $this->translate->_('Configure'),
+		'icon' => 'icon-file-text',
+		'url' => $this->url(['module' => 'admin', 'controller' => 'log-viewer'], 'default', true),
+		'keywords' => ['log', 'errors', 'app', 'client', 'browser', 'javascript', 'monolog', 'debug']
+	];
+	$spotlightItems[] = [
 		'id' => 'api-sync-history',
 		'title' => $this->translate->_('API Sync History'),
 		'category' => $this->translate->_('Configure'),
@@ -767,6 +775,7 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 			-moz-appearance: textfield !important;
 		}
 	</style>
+	<script src="<?= $this->baseUrl('js/clientError.js'); ?>" defer></script>
 </head>
 
 <body>
@@ -951,6 +960,9 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 									<li class="divider"></li>
 									<li id="AuditLog"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'audit-log'), 'default', true); ?>"><?= $this->translate->_("Audit Log"); ?></a>
+									</li>
+									<li id="LogViewer"><a
+											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'log-viewer'), 'default', true); ?>"><?= $this->translate->_("Log Viewer"); ?></a>
 									</li>
 									<li id="ApiSyncHistory"><a
 											href="<?php echo $this->url(array('module' => 'admin', 'controller' => 'api-history'), 'default', true); ?>"><?= $this->translate->_("API Sync History"); ?></a>
@@ -1311,6 +1323,8 @@ $resolvedHelpSlug = $helpSlugMap["$controllerName/$actionName"]
 				$('#ContactMessages').addClass('active');
 			} else if (splitsUrl[2] == 'audit-log') {
 				$('#AuditLog').addClass('active');
+			} else if (splitsUrl[2] == 'log-viewer') {
+				$('#LogViewer').addClass('active');
 			} else if (splitsUrl[2] == 'api-history') {
 				$('#ApiSyncHistory').addClass('active');
 			} else if (splitsUrl[2] == 'distributions') {
