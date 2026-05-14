@@ -18,7 +18,9 @@ class Admin_LogViewerController extends Zend_Controller_Action
             return null;
         }
         $ajaxContext = $this->_helper->getHelper('AjaxContext');
-        $ajaxContext->addActionContext('feed', 'json')->initContext();
+        $ajaxContext->addActionContext('feed', 'json')
+                    ->addActionContext('delete', 'json')
+                    ->initContext();
         $this->_helper->layout()->pageName = 'configMenu';
     }
 
@@ -68,6 +70,71 @@ class Admin_LogViewerController extends Zend_Controller_Action
             ->setBody(json_encode($payload));
     }
 
+    public function deleteAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $request  = $this->getRequest();
+        $response = $this->getResponse();
+        $response->setHeader('Content-Type', 'application/json');
+
+        if (!$request->isPost()) {
+            $response->setHttpResponseCode(405);
+            $response->setBody(json_encode(['ok' => false, 'error' => 'method_not_allowed']));
+            return;
+        }
+
+        $channel = $this->resolveChannel();
+        $files   = Pt_Commons_LoggerUtility::listLogFiles($channel);
+        $mode    = (string) $request->getParam('mode', 'file');
+        $result  = $mode === 'all'
+            ? $this->deleteAllFiles($channel, $files)
+            : $this->deleteSingleFile($channel, $files, (string) $request->getParam('file', ''));
+
+        $response->setHttpResponseCode($result['status']);
+        $response->setBody(json_encode($result['body']));
+    }
+
+    private function deleteAllFiles(string $channel, array $files): array
+    {
+        $deleted = 0;
+        foreach ($files as $f) {
+            if (@unlink($f['path'])) {
+                $deleted++;
+            }
+        }
+        Pt_Commons_LoggerUtility::logWarning('Log files cleared via admin viewer', [
+            'channel' => $channel,
+            'deleted' => $deleted,
+            'admin'   => (new Zend_Session_Namespace('administrators'))->primary ?? null,
+        ]);
+        return ['status' => 200, 'body' => ['ok' => true, 'deleted' => $deleted]];
+    }
+
+    private function deleteSingleFile(string $channel, array $files, string $name): array
+    {
+        $target = null;
+        foreach ($files as $f) {
+            if ($f['name'] === $name) {
+                $target = $f;
+                break;
+            }
+        }
+        if ($target === null) {
+            return ['status' => 404, 'body' => ['ok' => false, 'error' => 'not_found']];
+        }
+        if (!@unlink($target['path'])) {
+            return ['status' => 500, 'body' => ['ok' => false, 'error' => 'unlink_failed']];
+        }
+        Pt_Commons_LoggerUtility::logWarning('Log file deleted via admin viewer', [
+            'channel' => $channel,
+            'file'    => $target['name'],
+            'admin'   => (new Zend_Session_Namespace('administrators'))->primary ?? null,
+        ]);
+        return ['status' => 200, 'body' => ['ok' => true, 'deleted' => 1]];
+    }
+
     private function resolveChannel(): string
     {
         $channel = (string) $this->getRequest()->getParam('channel', Pt_Commons_LoggerUtility::APP_CHANNEL);
@@ -97,7 +164,7 @@ class Admin_LogViewerController extends Zend_Controller_Action
             $out['channel'] = $m[2];
             $out['level']   = $m[3];
             $rest           = $m[4];
-            if (preg_match('/^(.*?) (\{.*\}) (\[.*\]|\{.*\}|\[\])$/s', $rest, $mm)) {
+            if (preg_match('/^(.*?) (\{.*\}) (\[.*\]|\{.*\})$/s', $rest, $mm)) {
                 $out['message'] = $mm[1];
                 $out['context'] = $mm[2];
             } else {

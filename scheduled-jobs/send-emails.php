@@ -117,7 +117,10 @@ try {
     $globalConfigDb = new Application_Model_DbTable_GlobalConfig();
     $smtpJson = $globalConfigDb->getValue('mail');
     if ($smtpJson === null || trim($smtpJson) === '') {
-        throw new Exception('Email SMTP Settings not set in System Config');
+        // Not an error — expected on environments that haven't configured outbound mail yet.
+        // Cron fires every minute; logging this at ERROR floods the log.
+        error_log('send-emails.php: SMTP not configured; skipping run.');
+        exit(0);
     }
     $smtpMailDetails = json_decode($smtpJson);
 

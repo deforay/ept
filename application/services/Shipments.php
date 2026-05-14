@@ -2448,6 +2448,8 @@ class Application_Service_Shipments
     public function updateShipment($params)
     {
         $dbAdapter = Zend_Db_Table_Abstract::getDefaultAdapter();
+        $dbAdapter->beginTransaction();
+        try {
         $shipmentRow = $dbAdapter->fetchRow($dbAdapter->select()->from(['s' => 'shipment'])->where('shipment_id = ' . $params['shipmentId']));
         // DTS edit mode can intentionally retain saved shipment settings or refresh specific ones from config.
         $dtsSchemeType = $params['dtsSchemeType'] ?? (Pt_Commons_SchemeConfig::get('dts.dtsSchemeType') ?? 'updated-3-tests');
@@ -2951,6 +2953,17 @@ class Application_Service_Shipments
             ],
             'shipment_id = ' . $params['shipmentId']
         );
+            $dbAdapter->commit();
+        } catch (Throwable $e) {
+            $dbAdapter->rollBack();
+            Pt_Commons_LoggerUtility::logError('updateShipment rolled back: ' . $e->getMessage(), [
+                'shipmentId' => $params['shipmentId'] ?? null,
+                'file'       => $e->getFile(),
+                'line'       => $e->getLine(),
+                'trace'      => substr($e->getTraceAsString(), 0, 8000),
+            ]);
+            throw $e;
+        }
     }
 
     public function getShipmentOverview($parameters)

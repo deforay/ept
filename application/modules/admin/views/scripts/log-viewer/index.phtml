@@ -21,6 +21,8 @@
     .logv-controls .btn:hover { background: #2c5282; }
     .logv-controls .btn.ghost { background: #edf2f7; color: #2d3748; }
     .logv-controls .btn.ghost:hover { background: #e2e8f0; }
+    .logv-controls .btn.danger { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+    .logv-controls .btn.danger:hover { background: #c53030; color: #fff; border-color: #c53030; }
 
     .logv-meta { font-size: 12px; color: #718096; margin: 6px 0 14px; min-height: 18px; }
     .logv-meta .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #edf2f7; color: #2d3748; margin-right: 6px; }
@@ -85,8 +87,10 @@
         <input type="text" id="logvQ" placeholder="<?= $this->translate->_('Search text (case-insensitive)…'); ?>">
         <input type="number" id="logvLimit" min="50" max="5000" step="50" value="500" title="<?= $this->translate->_('Max lines'); ?>">
 
-        <button class="btn" id="logvRefresh"><i class="fa fa-sync"></i> <?= $this->translate->_('Refresh'); ?></button>
-        <button class="btn ghost" id="logvClear"><?= $this->translate->_('Clear filters'); ?></button>
+        <button class="btn" id="logvRefresh" type="button"><i class="fa fa-sync"></i> <?= $this->translate->_('Refresh'); ?></button>
+        <button class="btn ghost" id="logvClear" type="button"><?= $this->translate->_('Clear filters'); ?></button>
+        <button class="btn danger" id="logvDelete" type="button" title="<?= $this->translate->_('Delete the selected log file'); ?>"><i class="fa fa-trash"></i> <?= $this->translate->_('Delete file'); ?></button>
+        <button class="btn danger" id="logvDeleteAll" type="button" title="<?= $this->translate->_('Delete every log file in this channel'); ?>"><i class="fa fa-trash-alt"></i> <?= $this->translate->_('Delete all'); ?></button>
     </div>
 
     <div class="logv-meta" id="logvMeta"></div>
@@ -203,12 +207,46 @@
             });
     }
 
+    var deleteUrl = "<?= $this->url(['module' => 'admin', 'controller' => 'log-viewer', 'action' => 'delete'], 'default', true); ?>";
+
+    function postDelete(params, onDone) {
+        var body = new URLSearchParams(params).toString();
+        fetch(deleteUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            credentials: 'same-origin',
+            body: body
+        }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+          .then(function (res) {
+              if (!res.ok || !res.json.ok) {
+                  alert('Delete failed: ' + (res.json.error || 'unknown'));
+                  return;
+              }
+              if (typeof onDone === 'function') { onDone(res.json); }
+          })
+          .catch(function () { alert('Delete failed (network).'); });
+    }
+
     document.getElementById('logvRefresh').addEventListener('click', load);
     document.getElementById('logvClear').addEventListener('click', function () {
         levelSel.value = '';
         qInput.value = '';
         limitIn.value = '500';
         load();
+    });
+    document.getElementById('logvDelete').addEventListener('click', function () {
+        var name = fileSel.value;
+        if (!name) { return; }
+        if (!confirm('Delete log file "' + name + '"? This cannot be undone.')) { return; }
+        postDelete({ channel: channel, mode: 'file', file: name }, function () { location.reload(); });
+    });
+    document.getElementById('logvDeleteAll').addEventListener('click', function () {
+        if (!confirm('Delete ALL log files for the "' + channel + '" channel? This cannot be undone.')) { return; }
+        if (!confirm('Are you sure? Every dated file in this channel will be removed.')) { return; }
+        postDelete({ channel: channel, mode: 'all' }, function (json) {
+            alert('Deleted ' + (json.deleted || 0) + ' file(s).');
+            location.reload();
+        });
     });
     fileSel.addEventListener('change', load);
     levelSel.addEventListener('change', load);

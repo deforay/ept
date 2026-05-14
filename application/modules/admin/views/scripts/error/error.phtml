@@ -1,28 +1,171 @@
-<div class="container" style="max-width: 760px; margin: 40px auto;">
-    <div class="panel panel-danger">
-        <div class="panel-heading">
-            <h3 class="panel-title"><?= $this->translate->_("An error occurred"); ?></h3>
+<?php
+$response   = $this->response ?? null;
+$statusCode = 500;
+if (method_exists($this, 'getResponse')) {
+    // not available in view; rely on $this->httpStatus passed by controller if set
+}
+$is404 = (isset($this->message) && stripos((string) $this->message, 'not found') !== false);
+$statusCode = $is404 ? 404 : 500;
+$heading    = $is404
+    ? $this->translate->_('Page not found')
+    : $this->translate->_('Something went wrong');
+$subtext = $is404
+    ? $this->translate->_('We couldn’t find the page you were looking for. It may have been moved, renamed, or removed.')
+    : $this->translate->_('An unexpected error occurred while processing your request. Our team has been notified. You can try again or head back to your dashboard.');
+?>
+<style>
+    .ept-err {
+        max-width: 720px;
+        margin: 64px auto;
+        padding: 0 20px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #2d3748;
+    }
+    .ept-err__card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 40px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        text-align: center;
+    }
+    .ept-err__badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: <?= $is404 ? '#ebf8ff' : '#fff5f5'; ?>;
+        color: <?= $is404 ? '#2b6cb0' : '#c53030'; ?>;
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        line-height: 1;
+    }
+    .ept-err__code {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: <?= $is404 ? '#2b6cb0' : '#c53030'; ?>;
+        background: <?= $is404 ? '#ebf8ff' : '#fff5f5'; ?>;
+        padding: 4px 10px;
+        border-radius: 999px;
+        margin-bottom: 14px;
+    }
+    .ept-err__title {
+        font-size: 26px;
+        font-weight: 600;
+        color: #1a202c;
+        margin: 0 0 10px;
+    }
+    .ept-err__sub {
+        font-size: 14.5px;
+        color: #4a5568;
+        line-height: 1.55;
+        margin: 0 0 24px;
+    }
+    .ept-err__actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .ept-err__btn {
+        height: 38px;
+        padding: 0 18px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    .ept-err__btn--primary { background: #2b6cb0; color: #fff; }
+    .ept-err__btn--primary:hover { background: #2c5282; color: #fff; }
+    .ept-err__btn--ghost { background: #edf2f7; color: #2d3748; border-color: #e2e8f0; }
+    .ept-err__btn--ghost:hover { background: #e2e8f0; }
+
+    .ept-err__details {
+        margin-top: 28px;
+        text-align: left;
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 18px;
+    }
+    .ept-err__details summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        color: #4a5568;
+        list-style: none;
+    }
+    .ept-err__details summary::-webkit-details-marker { display: none; }
+    .ept-err__details summary::before { content: '▸ '; color: #a0aec0; }
+    .ept-err__details[open] summary::before { content: '▾ '; }
+    .ept-err__details h4 {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #718096;
+        margin: 16px 0 6px;
+    }
+    .ept-err__details pre {
+        background: #1a202c;
+        color: #e2e8f0;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+        max-height: 240px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    .ept-err__msg {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+        background: #fffaf0;
+        border-left: 3px solid #dd6b20;
+        padding: 8px 12px;
+        border-radius: 4px;
+        color: #2d3748;
+    }
+</style>
+
+<div class="ept-err">
+    <div class="ept-err__card">
+        <div class="ept-err__badge"><?= $is404 ? '?' : '!'; ?></div>
+        <div class="ept-err__code"><?= (int) $statusCode; ?> · <?= $is404 ? 'Not Found' : 'Application Error'; ?></div>
+        <h1 class="ept-err__title"><?= htmlspecialchars($heading); ?></h1>
+        <p class="ept-err__sub"><?= htmlspecialchars($subtext); ?></p>
+        <div class="ept-err__actions">
+            <a class="ept-err__btn ept-err__btn--primary" href="/admin">
+                <?= $this->translate->_('Back to Dashboard'); ?>
+            </a>
+            <a class="ept-err__btn ept-err__btn--ghost" href="javascript:history.back()">
+                <?= $this->translate->_('Go Back'); ?>
+            </a>
         </div>
-        <div class="panel-body">
-            <p style="font-size: 15px; margin: 0 0 12px;"><?= $this->escape($this->message); ?></p>
 
-            <?php if (isset($this->exception)) : ?>
-                <hr />
-                <h4><?= $this->translate->_("Exception information"); ?></h4>
-                <p><b><?= $this->translate->_("Message"); ?>:</b> <?= $this->escape($this->exception->getMessage()); ?></p>
-
-                <h4><?= $this->translate->_("Stack trace"); ?></h4>
-                <pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow: auto;"><?= $this->escape($this->exception->getTraceAsString()); ?></pre>
-
-                <?php if (isset($this->request)) : ?>
-                    <h4><?= $this->translate->_("Request Parameters"); ?></h4>
-                    <pre style="white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow: auto;"><?= $this->escape(var_export($this->request->getParams(), true)); ?></pre>
+        <?php if (isset($this->exception) && $this->exception): ?>
+            <details class="ept-err__details" open>
+                <summary><?= $this->translate->_('Technical details'); ?></summary>
+                <h4><?= $this->translate->_('Message'); ?></h4>
+                <div class="ept-err__msg"><?= $this->escape($this->exception->getMessage()); ?></div>
+                <h4><?= $this->translate->_('Stack trace'); ?></h4>
+                <pre><?= $this->escape($this->exception->getTraceAsString()); ?></pre>
+                <?php if (isset($this->request)): ?>
+                    <h4><?= $this->translate->_('Request parameters'); ?></h4>
+                    <pre><?= $this->escape(var_export($this->request->getParams(), true)); ?></pre>
                 <?php endif; ?>
-            <?php endif; ?>
-
-            <p style="margin-top: 16px;">
-                <a class="btn btn-default" href="/admin"><?= $this->translate->_("Go to dashboard"); ?></a>
-            </p>
-        </div>
+            </details>
+        <?php endif; ?>
     </div>
 </div>

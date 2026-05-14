@@ -32,6 +32,8 @@ class Admin_ErrorController extends Zend_Controller_Action
             $log->log('Request Parameters', $priority, $errors->request->getParams());
         }
 
+        $this->logToMonolog($errors, $priority);
+
         if ($this->getRequest()->isXmlHttpRequest()) {
             $this->_helper->layout()->disableLayout();
             $this->_helper->viewRenderer->setNoRender(true);
@@ -70,5 +72,43 @@ class Admin_ErrorController extends Zend_Controller_Action
             return false;
         }
         return $bootstrap->getResource('Log');
+    }
+
+    /**
+     * Mirror the uncaught-exception details into the Monolog application channel
+     * so the admin Log Viewer (and rotating files) sees them.
+     */
+    private function logToMonolog(ArrayObject $errors, int $priority): void
+    {
+        if (!class_exists('Pt_Commons_LoggerUtility')) {
+            return;
+        }
+        $exception = $errors->exception ?? null;
+        $request   = $errors->request   ?? null;
+        $admin     = new Zend_Session_Namespace('administrators');
+        $context = [
+            'type'    => (string) ($errors->type ?? ''),
+            'url'     => $request ? (string) $request->getRequestUri() : '',
+            'method'  => $request ? strtoupper((string) $request->getMethod()) : '',
+            'module'  => $request ? (string) $request->getModuleName() : '',
+            'controller' => $request ? (string) $request->getControllerName() : '',
+            'action'  => $request ? (string) $request->getActionName() : '',
+            'params'  => $request ? $request->getParams() : [],
+            'ip'      => $_SERVER['REMOTE_ADDR'] ?? '',
+            'admin'   => $admin->primary ?? null,
+        ];
+        if ($exception instanceof Throwable) {
+            $message = get_class($exception) . ': ' . $exception->getMessage()
+                . ' at ' . $exception->getFile() . ':' . $exception->getLine();
+            $context['trace'] = substr($exception->getTraceAsString(), 0, 8000);
+        } else {
+            $message = (string) ($this->view->message ?? 'Application error');
+        }
+
+        if ($priority <= Zend_Log::ERR) {
+            Pt_Commons_LoggerUtility::logError($message, $context);
+        } else {
+            Pt_Commons_LoggerUtility::logWarning($message, $context);
+        }
     }
 }

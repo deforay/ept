@@ -1,32 +1,102 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title><?= $this->translate->_("Oops!! Something went wrong"); ?> .. </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><?= $this->translate->_('Something went wrong'); ?> · ePT</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #2d3748;
+            background: #f7fafc;
+        }
+        .ept-err { max-width: 720px; margin: 64px auto; padding: 0 20px; }
+        .ept-err__card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 40px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            text-align: center;
+        }
+        .ept-err__badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #fff5f5;
+            color: #c53030;
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .ept-err__code {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #c53030;
+            background: #fff5f5;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+        .ept-err__title { font-size: 26px; font-weight: 600; color: #1a202c; margin: 0 0 10px; }
+        .ept-err__sub { font-size: 14.5px; color: #4a5568; line-height: 1.55; margin: 0 0 24px; }
+        .ept-err__actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .ept-err__btn {
+            height: 38px; padding: 0 18px; border-radius: 8px; font-size: 13.5px;
+            font-weight: 500; text-decoration: none;
+            display: inline-flex; align-items: center; border: 1px solid transparent;
+        }
+        .ept-err__btn--primary { background: #2b6cb0; color: #fff; }
+        .ept-err__btn--ghost { background: #edf2f7; color: #2d3748; border-color: #e2e8f0; }
+        .ept-err__details {
+            margin-top: 28px; text-align: left; background: #f7fafc;
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px;
+        }
+        .ept-err__details summary { cursor: pointer; font-weight: 600; font-size: 13px; color: #4a5568; }
+        .ept-err__details pre {
+            background: #1a202c; color: #e2e8f0; padding: 12px; border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px; max-height: 240px; overflow: auto; white-space: pre-wrap; word-break: break-word;
+        }
+        .ept-err__msg {
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 13px; background: #fffaf0; border-left: 3px solid #dd6b20;
+            padding: 8px 12px; border-radius: 4px; margin-top: 8px;
+        }
+    </style>
 </head>
-
 <body>
-	<h1><?= $this->translate->_("An error occurred"); ?></h1>
-	<h2><?php echo $this->message ?></h2>
+    <div class="ept-err">
+        <div class="ept-err__card">
+            <div class="ept-err__badge">!</div>
+            <div class="ept-err__code">500 · Application Error</div>
+            <h1 class="ept-err__title"><?= $this->translate->_('Something went wrong'); ?></h1>
+            <p class="ept-err__sub">
+                <?= $this->translate->_('An unexpected error occurred while processing your request. You can try again, or return to the homepage.'); ?>
+            </p>
+            <div class="ept-err__actions">
+                <a class="ept-err__btn ept-err__btn--primary" href="/"><?= $this->translate->_('Back to Home'); ?></a>
+                <a class="ept-err__btn ept-err__btn--ghost" href="javascript:history.back()"><?= $this->translate->_('Go Back'); ?></a>
+            </div>
 
-	<?php if (isset($this->exception)) : ?>
-
-		<h3><?= $this->translate->_("Exception information"); ?>:</h3>
-		<p>
-			<b><?= $this->translate->_("Message"); ?>:</b> <?php echo $this->exception->getMessage() ?>
-		</p>
-
-		<h3><?= $this->translate->_("Stack trace"); ?>:</h3>
-		<pre><?php echo $this->exception->getTraceAsString() ?>
-  </pre>
-
-		<h3><?= $this->translate->_("Request Parameters"); ?>:</h3>
-		<pre><?php echo $this->escape(var_export($this->request->getParams(), true)) ?>
-  </pre>
-
-	<?php endif ?>
-
+            <?php if (isset($this->exception) && $this->exception): ?>
+                <details class="ept-err__details" open>
+                    <summary><?= $this->translate->_('Technical details'); ?></summary>
+                    <div class="ept-err__msg"><?= $this->escape($this->exception->getMessage()); ?></div>
+                    <pre><?= $this->escape($this->exception->getTraceAsString()); ?></pre>
+                    <?php if (isset($this->request)): ?>
+                        <pre><?= $this->escape(var_export($this->request->getParams(), true)); ?></pre>
+                    <?php endif; ?>
+                </details>
+            <?php endif; ?>
+        </div>
+    </div>
 </body>
-
 </html>

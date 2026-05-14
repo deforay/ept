@@ -35,6 +35,8 @@ class ErrorController extends Zend_Controller_Action
             $log->log('Request Parameters', $priority, $errors->request->getParams());
         }
 
+        $this->logToMonolog($errors, $priority);
+
         // Return JSON for AJAX requests
         if ($this->getRequest()->isXmlHttpRequest()) {
             $this->_helper->layout()->disableLayout();
@@ -77,5 +79,37 @@ class ErrorController extends Zend_Controller_Action
         }
         $log = $bootstrap->getResource('Log');
         return $log;
+    }
+
+    private function logToMonolog(ArrayObject $errors, int $priority): void
+    {
+        if (!class_exists('Pt_Commons_LoggerUtility')) {
+            return;
+        }
+        $exception = $errors->exception ?? null;
+        $request   = $errors->request   ?? null;
+        $context = [
+            'type'       => (string) ($errors->type ?? ''),
+            'url'        => $request ? (string) $request->getRequestUri() : '',
+            'method'     => $request ? strtoupper((string) $request->getMethod()) : '',
+            'module'     => $request ? (string) $request->getModuleName() : '',
+            'controller' => $request ? (string) $request->getControllerName() : '',
+            'action'     => $request ? (string) $request->getActionName() : '',
+            'params'     => $request ? $request->getParams() : [],
+            'ip'         => $_SERVER['REMOTE_ADDR'] ?? '',
+        ];
+        if ($exception instanceof Throwable) {
+            $message = get_class($exception) . ': ' . $exception->getMessage()
+                . ' at ' . $exception->getFile() . ':' . $exception->getLine();
+            $context['trace'] = substr($exception->getTraceAsString(), 0, 8000);
+        } else {
+            $message = (string) ($this->view->message ?? 'Application error');
+        }
+
+        if ($priority <= Zend_Log::ERR) {
+            Pt_Commons_LoggerUtility::logError($message, $context);
+        } else {
+            Pt_Commons_LoggerUtility::logWarning($message, $context);
+        }
     }
 }
