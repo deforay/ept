@@ -1,6 +1,9 @@
 <?php
 $mappedDms = $this->mappedDms ?? [];
 $dmCount = count($mappedDms);
+$adminSession = new Zend_Session_Namespace('administrators');
+$adminPrivileges = array_map('trim', explode(',', (string)($adminSession->privileges ?? '')));
+$canViewAsParticipant = in_array('view-as-participant', $adminPrivileges, true);
 ?>
 <div class="dm-child-row" style="padding:10px 15px;background:#fafbfc;border-left:4px solid #337ab7;">
     <?php if ($dmCount === 0) { ?>
@@ -50,6 +53,9 @@ $dmCount = count($mappedDms);
                                 <a href="<?= $editUrl; ?>" class="btn btn-warning btn-xs" style="margin:1px;"><i class="icon-pencil"></i> <?= $this->translate->_('Edit'); ?></a>
                                 <a href="javascript:void(0);" class="btn btn-info btn-xs" style="margin:1px;" onclick="layoutModal('<?= $resetUrl; ?>','980','500');"><i class="icon-key"></i> <?= $this->translate->_('Reset Password'); ?></a>
                                 <a href="javascript:void(0);" class="btn btn-default btn-xs" style="margin:1px;" onclick="layoutModal('<?= $changeEmailUrl; ?>','700','520');"><i class="icon-envelope"></i> <?= $this->translate->_('Change Email'); ?></a>
+                                <?php if ($canViewAsParticipant) { ?>
+                                    <a href="/admin/impersonate/start?dm_id=<?= (int)$dm['dm_id']; ?>" target="_blank" rel="noopener" class="btn btn-danger btn-xs" style="margin:1px;" title="<?= $this->translate->_('Opens the participant UI as this user. Audited.'); ?>"><i class="icon-eye-open"></i> <?= $this->translate->_('View as'); ?></a>
+                                <?php } ?>
                             </td>
                         </tr>
                     <?php } ?>

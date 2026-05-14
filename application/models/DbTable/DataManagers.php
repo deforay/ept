@@ -264,6 +264,17 @@ class Application_Model_DbTable_DataManagers extends Zend_Db_Table_Abstract
             if (!$fromParticipant && !$isPtcc) {
                 $actions .= '<a href="javascript:void(0);" class="btn btn-success btn-xs" style="' . $btnStyle . '" onclick="layoutModal(\'/admin/participants/participant-manager-map/id/' . (int)$aRow['dm_id'] . '/modal/1\',\'1150\',\'700\');"><i class="icon-user"></i> ' . $translator->_('Map Participants') . '</a>';
             }
+            // "View as Participant" — only rendered for admins with the
+            // view-as-participant privilege. Opens in a new tab so the
+            // admin's current admin-side workflow isn't disrupted.
+            if (!$fromParticipant) {
+                $adminSession = new Zend_Session_Namespace('administrators');
+                $adminPrivileges = array_map('trim', explode(',', (string)($adminSession->privileges ?? '')));
+                if (in_array('view-as-participant', $adminPrivileges, true)) {
+                    $viewAsUrl = '/admin/impersonate/start?dm_id=' . (int)$aRow['dm_id'];
+                    $actions .= '<a href="' . $viewAsUrl . '" target="_blank" rel="noopener" class="btn btn-danger btn-xs" style="' . $btnStyle . '" title="' . $translator->_('Opens the participant UI as this user. Audited.') . '"><i class="icon-eye-open"></i> ' . $translator->_('View as') . '</a>';
+                }
+            }
             $row[] = $actions;
 
             $output['aaData'][] = $row;
